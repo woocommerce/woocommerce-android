@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import android.Manifest.permission
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -18,9 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import java.util.HashMap
 
 object WooPermissionUtils {
-    const val READ_STORAGE_PERMISSION_REQUEST_CODE = 10
-    const val WRITE_STORAGE_PERMISSION_REQUEST_CODE = 20
-    const val CAMERA_PERMISSION_REQUEST_CODE = 30
+    const val STORAGE_PERMISSION_REQUEST_CODE = 10
+    const val CAMERA_PERMISSION_REQUEST_CODE = 20
 
     /**
      * called by the onRequestPermissionsResult() of various activities and fragments - tracks
@@ -129,13 +129,12 @@ object WooPermissionUtils {
     /*
      * returns the name to display for a permission, ex: "permission.WRITE_EXTERNAL_STORAGE" > "Storage"
      */
-    fun getPermissionName(context: Context, permission: String): String {
+    private fun getPermissionName(context: Context, permission: String): String {
         return when (permission) {
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE -> context.getString(
-                    R.string.permission_storage
-            )
-            android.Manifest.permission.CAMERA -> context.getString(R.string.permission_camera)
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE ->
+                context.getString(R.string.permission_storage)
+            android.Manifest.permission.CAMERA ->
+                context.getString(R.string.permission_camera)
             else -> {
                 WooLog.w(WooLog.T.UTILS, "No name for requested permission")
                 context.getString(R.string.unknown)
@@ -176,5 +175,17 @@ object WooPermissionUtils {
         intent.data = uri
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(intent)
+    }
+
+    fun hasStoragePermission(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(
+                context, permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun hasCameraPermission(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(
+                context, permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }

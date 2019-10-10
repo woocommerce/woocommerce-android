@@ -57,8 +57,7 @@ object AppPrefs {
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
         // Application permissions
-        ASKED_PERMISSION_STORAGE_READ,
-        ASKED_PERMISSION_STORAGE_WRITE,
+        ASKED_PERMISSION_STORAGE,
         ASKED_PERMISSION_CAMERA,
     }
 
@@ -294,12 +293,10 @@ object AppPrefs {
      * key in shared preferences which stores a boolean telling whether the app has already
      * asked for the passed permission
      */
-    fun getPermissionAskedKey(permission: String): AppPrefs.PrefKey? {
+    fun getPermissionAskedKey(permission: String): PrefKey? {
         when (permission) {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE ->
-                return UndeletablePrefKey.ASKED_PERMISSION_STORAGE_WRITE
-            android.Manifest.permission.READ_EXTERNAL_STORAGE ->
-                return UndeletablePrefKey.ASKED_PERMISSION_STORAGE_READ
+                return UndeletablePrefKey.ASKED_PERMISSION_STORAGE
             android.Manifest.permission.CAMERA ->
                 return UndeletablePrefKey.ASKED_PERMISSION_CAMERA
             else -> {
