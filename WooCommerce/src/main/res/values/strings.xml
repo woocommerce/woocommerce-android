@@ -177,6 +177,7 @@
     <string name="orderlist_error_fetch_generic">Error fetching orders</string>
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
+    <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <!--
         Order Detail Views

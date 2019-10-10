@@ -1,6 +1,7 @@
 2.8
 -----
 * Revamped the order list page by providing a new tab for unfulfilled orders
+* Order search functionality has been redesigned and now displays counts by order status. Items in this list can be clicked to immediately filter by that order status as well as allows for searching for orders by order status.
 * Fixed missing cursor in order list search
 * See a list of issued refunds inside the order detail screen
  

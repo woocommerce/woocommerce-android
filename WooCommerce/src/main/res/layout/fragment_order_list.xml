@@ -6,7 +6,7 @@
     android:id="@+id/order_list_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.mystore.MyStoreFragment">
+    tools:context="com.woocommerce.android.ui.orders.OrderListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -27,13 +27,35 @@
         android:id="@+id/orderRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/default_window_background"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.woocommerce.android.ui.orders.OrderListView
-            android:id="@+id/order_list_view"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:layout_height="match_parent"
+            android:id="@+id/order_list_view_root">
+
+            <com.woocommerce.android.ui.orders.OrderListView
+                android:id="@+id/order_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <com.woocommerce.android.ui.orders.OrderStatusListView
+                android:id="@+id/order_status_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                style="@style/Woo.Card.WithoutPadding"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
 
