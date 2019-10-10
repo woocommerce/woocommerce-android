@@ -62,7 +62,11 @@ fun createEmptyUiState(
                 }
             }
             else -> {
-                createEmptyListUiState(orderListType, isSearchPromptRequired, shareStoreFunc)
+                if (isNetworkAvailable) {
+                    createEmptyListUiState(orderListType, isSearchPromptRequired, shareStoreFunc)
+                } else {
+                    createErrorListUiState(isNetworkAvailable, fetchFirstPage)
+                }
             }
         }
     } else {
