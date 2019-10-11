@@ -600,7 +600,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
+        requestCode: Int,
+        permissions: Array<String>,
         grantResults: IntArray
     ) {
         if (!isAdded) {
