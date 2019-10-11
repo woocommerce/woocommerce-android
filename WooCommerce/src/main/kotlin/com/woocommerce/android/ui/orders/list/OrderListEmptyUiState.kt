@@ -17,7 +17,7 @@ sealed class OrderListEmptyUiState(
     class ShareStore(
         onButtonClick: (() -> Unit)?
     ) : OrderListEmptyUiState(
-            title = UiStringRes(R.string.orderlist_no_orders),
+            title = UiStringRes(R.string.waiting_for_customers),
             imgResId = R.drawable.ic_woo_waiting_customers,
             buttonText = UiStringRes(R.string.share_store_button),
             onButtonClick = onButtonClick
@@ -94,7 +94,7 @@ private fun createEmptyListUiState(
     return when (orderListType) {
         SEARCH -> {
             if (isSearchPromptRequired) {
-                OrderListEmptyUiState.EmptyList(UiStringRes(R.string.orders_empty_message_with_search))
+                OrderListEmptyUiState.EmptyList(UiStringRes(R.string.orderlist_search_prompt))
             } else {
                 OrderListEmptyUiState.EmptyList(UiStringRes(R.string.orders_empty_message_with_search))
             }
