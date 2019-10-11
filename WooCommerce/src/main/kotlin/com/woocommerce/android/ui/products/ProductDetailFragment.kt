@@ -51,7 +51,6 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
-import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 import kotlin.math.max
@@ -135,23 +134,13 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.showImageUploadProgress.observe(this, Observer {
-            showProductImageUploadProgress(it)
+        viewModel.uploadingImageUri.observe(this, Observer {
+            showUploadingImageUri(it)
         })
 
         viewModel.exit.observe(this, Observer {
             activity?.onBackPressed()
         })
-    }
-
-    private fun showProductImageUploadProgress(show: Boolean) {
-        if (show) {
-            uploadImageProgress.visibility = View.VISIBLE
-            productDetail_image.setImageDrawable(null)
-        } else {
-            uploadImageProgress.visibility = View.GONE
-            viewModel.reloadProduct()
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -567,6 +556,22 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             intent.type = "image/*"
             val chooser = Intent.createChooser(intent, getString(R.string.product_change_photo))
             activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
+        }
+    }
+
+    /**
+     * Triggered by the viewModel when an image is being uploaded or has finished uploading
+     */
+    private fun showUploadingImageUri(imageUri: Uri?) {
+        val isUploading = imageUri != null
+        if (isUploading) {
+            uploadImageProgress.visibility = View.VISIBLE
+            productDetail_image.setImageURI(imageUri)
+            productDetail_image.imageAlpha = 128
+        } else {
+            uploadImageProgress.visibility = View.GONE
+            productDetail_image.imageAlpha = 255
+            viewModel.reloadProduct()
         }
     }
 

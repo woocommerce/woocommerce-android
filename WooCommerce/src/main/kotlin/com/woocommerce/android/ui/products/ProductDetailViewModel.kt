@@ -49,8 +49,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _showImageUploadProgress = MutableLiveData<Boolean>()
-    val showImageUploadProgress: LiveData<Boolean> = _showImageUploadProgress
+    private val _uploadingImageUri = MutableLiveData<Uri>()
+    val uploadingImageUri: LiveData<Uri> = _uploadingImageUri
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -171,7 +171,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun uploadProductMedia(context: Context, remoteProductId: Long, localImageUri: Uri) {
-        _showImageUploadProgress.value = true
+        _uploadingImageUri.value = localImageUri
         MediaUploadService.uploadProductMedia(context, remoteProductId, localImageUri)
     }
 
