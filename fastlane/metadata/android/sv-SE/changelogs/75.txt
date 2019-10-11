@@ -1,5 +1,0 @@
-2.6:
-- Har du inget Jetpack-konto? Nu kan du logga in på din webbplats och hoppa över skärmen som anger att Jetpack krävs. (Med detta sagt, du kommer att gå miste om kraftfulla funktioner – varför inte testa Jetpack!)
-- Det är möjligt att vissa användare som har en webbplats som är ansluten till Jetpack har stött på problem i samband med inloggningen. Detta är en bugg som inte längre kommer att förekomma.
-- Vi har åtgärdat hur statistiken för Min butik ser ut innan du tar emot din första beställning.
-- Ett fåtal av er upplevde ibland oväntade kraschar. Om du var en av dessa har vi goda nyheter: de kommer inte längre att hända.

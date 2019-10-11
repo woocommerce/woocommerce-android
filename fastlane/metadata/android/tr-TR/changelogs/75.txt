@@ -1,5 +1,0 @@
-2.6:
-- Jetpack hesabınız mı yok? Artık Jetpack zorunlu ekranını atlayarak sitenizde oturum açabilirsiniz. (Bununla birlikte, bazı önemli özellikleri kaçırıyorsunuz; Jetpack'i deneyin!)
-- Jetpack’e bağlı bir sitesi bulunmayan bazı müşterilerimiz oturum açarken sorun yaşayabilir. Bu, artık karşılaşmayacağınız bir hata.
-- Mağazam istatistiklerinizin ilk siparişinizi almadan önceki görünümünü düzelttik.
-- Küçük bir grup müşterimiz zaman zaman beklenmedik çökmelerle karşılaşıyor. Bu durum sizi tarif ediyorsa iyi haberlerimiz var: bunları artık yaşamayacaksınız.

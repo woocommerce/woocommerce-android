@@ -74,16 +74,14 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Displays loading skeleton then no orders list view correctly on first run`() {
+    fun `Displays empty view when no orders on first run only when no internet available`() {
+        doReturn(false).whenever(networkStatus).isConnected()
         presenter.takeView(orderListView)
         presenter.loadOrders(forceRefresh = true, isFirstRun = true)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
-
-        // OnOrderChanged callback from FluxC should trigger the appropriate UI update
-        doReturn(noOrders).whenever(orderStore).getOrdersForSite(any())
-        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
+        verify(dispatcher, times(0)).dispatch(any<Action<FetchOrdersPayload>>())
+        verify(orderListView, times(1)).showLoadOrdersError()
+        verify(orderListView, times(1)).showLoading(false)
         verify(orderListView, times(1)).showEmptyView(true)
-        verify(orderListView, times(2)).showLoading(true)
     }
 
     @Test

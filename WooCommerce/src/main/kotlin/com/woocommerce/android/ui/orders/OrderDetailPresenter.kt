@@ -10,7 +10,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.di.BG_THREAD
+import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.extensions.isVirtualProduct
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -20,6 +24,10 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -54,17 +62,22 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChange
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
+import javax.inject.Named
 
 @OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val refundStore: WCRefundStore,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
-    private val notificationStore: NotificationStore
+    private val notificationStore: NotificationStore,
+    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+    @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher
 ) : OrderDetailContract.Presenter {
     companion object {
         private val TAG: String = OrderDetailPresenter::class.java.simpleName
@@ -112,15 +125,40 @@ class OrderDetailPresenter @Inject constructor(
      * displaying the loaded order detail data in UI
      */
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
-        this.orderIdentifier = orderIdentifier
+        OrderDetailFragment@this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
+                loadRefunds(order.toAppModel())
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
+        }
+    }
+
+    private fun loadRefunds(order: Order) {
+        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId)
+        if (refunds.isNotEmpty()) {
+            orderView?.showOrderRefunds(refunds)
+        } else {
+            orderView?.showOrderRefundTotal(order.refundTotal)
+        }
+
+        if (networkStatus.isConnected()) {
+            GlobalScope.launch(backgroundDispatcher) {
+                val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
+                withContext(mainDispatcher) {
+                    if (!requestResult.isError) {
+                        requestResult.model?.let { freshRefunds ->
+                            orderView?.showOrderRefunds(freshRefunds)
+                        }
+                    } else {
+                        orderView?.showOrderRefundTotal(order.refundTotal)
+                    }
+                }
+            }
         }
     }
 
@@ -240,6 +278,11 @@ class OrderDetailPresenter @Inject constructor(
     override fun markOrderNotificationRead(context: Context, remoteNotificationId: Long) {
         NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNotificationId.toString())
         notificationStore.getNotificationByRemoteId(remoteNotificationId)?.let {
+            // Send event that an order with a matching notification was opened
+            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
+                    AnalyticsTracker.KEY_ALREADY_READ to it.read))
+
             if (!it.read) {
                 it.read = true
                 pendingMarkReadNotification = it

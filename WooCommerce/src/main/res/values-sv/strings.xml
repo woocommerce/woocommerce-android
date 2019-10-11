@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-04 00:54:04+0000
+Translation-Revision-Date: 2019-10-01 14:54:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">Prova de nya statistik som är tillgänglig med\nWooCommerce-adminplugin</string>
+    <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
+    <string name="beta_features">Betafunktioner</string>
+    <string name="order_begin_fulfillment">Börja uppfylla kraven</string>
+    <string name="orderdetail_net">Netto</string>
+    <string name="orderdetail_payment_paid_by_customer">Betald av kund</string>
+    <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
+    <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
+    <string name="my_store_stats_availability_message">Vi lanserar förbättrad statistik för butiker med hjälp av adminplugin-programmet WooCommerce</string>
+    <string name="my_store_stats_availability_title">Prova vår förbättrade statistik</string>
+    <string name="my_store_stats_reverted_message">Vi har återgått till gammal statistik eftersom vi\ninte kunde hitta adminplugin-programmet WooCommerce</string>
+    <string name="dashboard_state_no_data">Inga inkomster denna period</string>
+    <string name="no_thanks">Nej tack</string>
+    <string name="try_it_now">Prova nu</string>
+    <string name="products_total">Produkter totalt</string>
+    <string name="order_total">Ordersumma</string>
     <string name="dashboard_stats_todays_stats">Dagens statistik</string>
     <string name="login_sign_in">Logga in</string>
     <string name="login_jetpack_installed_sign_in">Har du redan Jetpack? %1$s</string>
@@ -399,9 +415,11 @@ Language: sv_SE
     <string name="waiting_for_customers">Väntar på kunder</string>
     <string name="share_store_dialog_title">Dela din butiks URL</string>
     <string name="share_store_button">Dela din butik</string>
+    <string name="wc_mark_all_read_success">Alla granskningar har markerats som lästa</string>
     <string name="login_update_required_title">Uppdatera butik till WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Kan inte ansluta till %s</string>
     <string name="dismiss">Avfärda</string>
+    <string name="wc_mark_all_read_error">Ett fel uppstod när alla granskningar skulle markeras som lästa</string>
     <string name="wc_mark_all_read">Markera alla som lästa</string>
     <string name="orderdetail_message_customer">Meddelande</string>
     <string name="orderdetail_call_customer">Ring</string>
@@ -623,10 +641,7 @@ Language: sv_SE
     <string name="orderdetail_customer_image_contentdesc">Kundprofilsbild</string>
     <string name="orderdetail_customer_provided_note">Kundnotering</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Betalning - återbetald</string>
     <string name="orderdetail_refunded">Återbetalad</string>
-    <string name="orderdetail_payment_summary_onhold">Betalning väntar för %s</string>
-    <string name="orderdetail_payment_summary_completed">Betalning på %1$s mottagen via %2$s</string>
     <string name="orderdetail_product_qty">Antal</string>
     <string name="orderdetail_product">Produkt</string>
     <string name="orderdetail_product_image_contentdesc">Produktbild</string>
@@ -665,7 +680,6 @@ Language: sv_SE
     <string name="dashboard_stats_updated_now">Uppdaterad alldeles nyss</string>
     <string name="dashboard_stats_error_content_description">Felbild</string>
     <string name="dashboard_stats_error">Det gick inte att hämta data</string>
-    <string name="dashboard_state_no_data">Ingen data tillgänglig</string>
     <string name="dashboard_stats_revenue">Intäkter</string>
     <string name="dashboard_stats_orders">Ordrar</string>
     <string name="dashboard_stats_visitors">Besökare</string>
@@ -683,6 +697,7 @@ Language: sv_SE
     <string name="login_prologue_banner">Hantera ordrar, spåra försäljning och övervaka butiksaktivitet med varningar i realtid.</string>
     <string name="login_jetpack_required">Denna app kräver Jetpack för att ansluta till din butik.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>
     <string name="already_logged_in_wpcom">Du är redan inloggad till ditt konto hos WordPress.com. Du kan inte lägga till någon webbplats från WordPress.com som är kopplad till ett annat konto.</string>
     <string name="cant_open_url">Kan inte öppna länken</string>
     <string name="error_no_sms_app">Ingen SMS-app hittades</string>
