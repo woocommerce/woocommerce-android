@@ -152,4 +152,6 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
     fun hideEmptyView() {
         empty_view.hide()
     }
+
+    fun isEmptyViewVisible() = empty_view.visibility == View.VISIBLE
 }

@@ -250,6 +250,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     // load orders based on the order status
                     AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
+                    isRefreshing = true
                     presenter.loadOrders(orderStatusFilter, true)
                 }
             }
@@ -450,6 +451,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun updateOrderStatusList(orderStatusList: List<WCOrderStatusModel>) {
         order_list_view_root.visibility = View.VISIBLE
         order_status_list_view.updateOrderStatusListView(orderStatusList)
+        // if empty view is currently displayed, then refresh the empty view message
+        // based on the order status list count
+        if (order_list_view.isEmptyViewVisible()) {
+            showEmptyView(true)
+        }
     }
 
     /**
