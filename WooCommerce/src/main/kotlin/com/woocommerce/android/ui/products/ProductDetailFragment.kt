@@ -542,11 +542,15 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     private fun chooseProductImage() {
-        requestStoragePermission()
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        val chooser = Intent.createChooser(intent, getString(R.string.choose_photo))
-        activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
+        // only show the chooser if user already allowed storage permission, otherwise simply request the
+        // permission and do nothing else - this will be called again if the user then agrees to allow
+        // storage permission
+        if (requestStoragePermission()) {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            val chooser = Intent.createChooser(intent, getString(R.string.choose_photo))
+            activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -605,29 +609,39 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         return false
     }
 
-    private fun requestStoragePermission() {
-        if (!isAdded || WooPermissionUtils.hasStoragePermission(activity!!)) {
-            return
+    /**
+     * Requests storage permission, returns true only if permission is already available
+     */
+    private fun requestStoragePermission(): Boolean {
+        if (!isAdded) {
+            return false
+        } else if (WooPermissionUtils.hasStoragePermission(activity!!)) {
+            return true
         }
 
         val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE)
         requestPermissions(permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE)
+        return false
     }
 
-    private fun requestCameraPermission() {
+    /**
+     * Requests camera & storage permissions, returns true only if permissions are already
+     * available. Note that we need to ask for both permissions because we also need storage
+     * permission to store media from the camera.
+     */
+    private fun requestCameraPermission(): Boolean {
         if (!isAdded) {
-            return
+            return false
         }
 
-        // in addition to CAMERA permission we also need a storage permission to store media from the camera
-        val hasWriteStorage = WooPermissionUtils.hasStoragePermission(activity!!)
+        val hasStorage = WooPermissionUtils.hasStoragePermission(activity!!)
         val hasCamera = WooPermissionUtils.hasCameraPermission(activity!!)
-        if (hasWriteStorage && hasCamera) {
-            return
+        if (hasStorage && hasCamera) {
+            return true
         }
 
         val permissions = when {
-            hasWriteStorage -> arrayOf(permission.CAMERA)
+            hasStorage -> arrayOf(permission.CAMERA)
             hasCamera -> arrayOf(permission.WRITE_EXTERNAL_STORAGE)
             else -> arrayOf(permission.CAMERA, permission.WRITE_EXTERNAL_STORAGE)
         }
@@ -636,6 +650,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 permissions,
                 WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
         )
+        return false
     }
 
     override fun onRequestPermissionsResult(
@@ -647,13 +662,19 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             return
         }
 
-        val checkForAlwaysDenied = requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
         val allGranted = WooPermissionUtils.setPermissionListAsked(
-                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied
+                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied = true
         )
 
-        if (allGranted && requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE) {
-            // TODO: show camera once we add this feature
+        if (allGranted) {
+            when (requestCode) {
+                WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
+                    chooseProductImage()
+                }
+                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
+                    // TODO: show camera once we add this feature
+                }
+            }
         }
     }
 }
