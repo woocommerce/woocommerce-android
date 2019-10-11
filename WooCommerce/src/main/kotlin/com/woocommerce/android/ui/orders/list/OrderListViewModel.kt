@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.app.Application
 import android.text.TextUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -11,8 +10,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.di.UI_THREAD
@@ -20,9 +17,8 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ThrottleLiveData
-import com.woocommerce.android.viewmodel.ScopedAndroidViewModel
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -55,9 +51,8 @@ class OrderListViewModel @Inject constructor(
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
-    private val selectedSite: SelectedSite,
-    appContext: Application
-) : ScopedAndroidViewModel(mainDispatcher, appContext), LifecycleOwner {
+    private val selectedSite: SelectedSite
+) : ScopedViewModel(mainDispatcher), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -100,6 +95,9 @@ class OrderListViewModel @Inject constructor(
                 backgroundDispatcher = bgDispatcher)
     }
     val emptyViewState: LiveData<OrderListEmptyUiState> = _emptyViewState
+
+    private val _shareStore = SingleLiveEvent<Unit>()
+    val shareStore: LiveData<Unit> = _shareStore
 
     var isSearching = false
     var searchQuery = ""
@@ -184,13 +182,21 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Notifies the view to share the store. It's necessary to do this from the fragment because
+     * doing this from here would require using the applicationContext which forces a new activity
+     * to be created.
+     */
     fun shareStore() {
-        AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-        selectedSite.getIfExists()?.let {
-            ActivityUtils.shareStoreUrl(appContext, it.url)
-        }
+        _shareStore.call()
     }
 
+    /**
+     * Reload the orders list with the database available in the database. This is the ideal way to
+     * load changes to orders that were initiated from within this app instance. If the change was
+     * successfully pushed to the API, then the database would already be updated so there is no
+     * need to hit the API again.
+     */
     fun reloadListFromCache() {
         pagedListWrapper?.invalidateData()
     }

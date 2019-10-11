@@ -34,6 +34,8 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusSelectorDialog
+import com.woocommerce.android.util.ActivityUtils
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiHelpers
 import dagger.android.support.AndroidSupportInjection
@@ -41,7 +43,6 @@ import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
 import kotlinx.android.synthetic.main.fragment_order_list.ordersList
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
-import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 private const val MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION = 2
@@ -285,6 +286,17 @@ class OrderListFragment : TopLevelFragment(),
             it?.let { emptyViewState -> updateEmptyViewForState(emptyViewState) }
         })
 
+        viewModel.shareStore.observe(this, Observer {
+            AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
+            selectedSite.getIfExists()?.let { site ->
+                context?.let { ctx ->
+                    selectedSite.getIfExists()?.let {
+                        ActivityUtils.shareStoreUrl(ctx, site.url)
+                    }
+                }
+            }
+        })
+
         viewModel.start()
         viewModel.loadList(orderStatusFilter, searchQuery)
     }
@@ -294,7 +306,7 @@ class OrderListFragment : TopLevelFragment(),
         ordersAdapter.submitList(pagedListData)
 
         if (pagedListData?.size != 0 && isSearching) {
-            ActivityUtils.hideKeyboard(activity)
+            WPActivityUtils.hideKeyboard(activity)
         }
 
         ordersList?.post {
@@ -455,7 +467,7 @@ class OrderListFragment : TopLevelFragment(),
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
         handleNewSearchRequest(query)
-        ActivityUtils.hideKeyboard(activity)
+        WPActivityUtils.hideKeyboard(activity)
         return true
     }
 
