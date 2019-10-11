@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.util.DisplayUtils
+import java.util.Locale
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
@@ -519,7 +520,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun getOrderStatusByTab(tab: TabLayout.Tab): String? {
         return when {
             isFilterEnabled -> orderStatusFilter
-            tab.position == 0 -> (tab.tag as? String)?.toLowerCase()
+            tab.position == 0 -> (tab.tag as? String)?.toLowerCase(Locale.getDefault())
             else -> null
         }
     }
@@ -633,6 +634,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     private fun refreshOrders() {
         isRefreshPending = true
+        refreshOrderStatusOptions()
         if (searchQuery.isEmpty() || isOrderStatusFilterEnabled()) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         } else {
