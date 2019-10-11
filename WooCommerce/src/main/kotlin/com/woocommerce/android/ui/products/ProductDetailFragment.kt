@@ -27,7 +27,6 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -45,6 +44,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithPar
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -58,7 +58,7 @@ import kotlin.math.max
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     companion object {
-        private const val ID_CHOOSE_PHOTO = 2
+        private const val MENU_ID_CHOOSE_PHOTO = 2
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
     }
 
@@ -156,9 +156,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
-        // TODO: hide behind FeatureFlag enum
-        if (BuildConfig.DEBUG) {
-            menu?.add(Menu.NONE, ID_CHOOSE_PHOTO, Menu.NONE, "Choose photo")
+        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
+            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.choose_photo)
         }
     }
 
@@ -169,7 +168,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 viewModel.onShareButtonClicked()
                 true
             }
-            ID_CHOOSE_PHOTO -> {
+            MENU_ID_CHOOSE_PHOTO -> {
                 chooseProductImage()
                 true
             }
@@ -546,7 +545,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         requestStoragePermission()
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
-        val chooser = Intent.createChooser(intent, "Choose photo")
+        val chooser = Intent.createChooser(intent, getString(R.string.choose_photo))
         activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
     }
 
@@ -560,8 +559,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             } else {
                 imageUri = data.data
             }
-            activity?.let {
-                MediaUploadService.uploadProductMedia(it, navArgs.remoteProductId, imageUri)
+            imageUri?.let { uri ->
+                MediaUploadService.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
             }
         }
     }
