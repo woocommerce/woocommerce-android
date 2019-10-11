@@ -72,7 +72,6 @@
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
-    <string name="choose_photo">Choose photo</string>
     <!--
         Date/Time Labels
     -->
@@ -393,6 +392,7 @@
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_change_photo">Change product photo</string>
     <!--
         Empty list messages
     -->

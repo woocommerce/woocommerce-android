@@ -50,6 +50,7 @@ import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
+import kotlinx.android.synthetic.main.top_earner_list_item.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
@@ -157,7 +158,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
-            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.choose_photo)
+            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_photo)
         }
     }
 
@@ -548,7 +549,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         if (requestStoragePermission()) {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
-            val chooser = Intent.createChooser(intent, getString(R.string.choose_photo))
+            val chooser = Intent.createChooser(intent, getString(R.string.product_change_photo))
             activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
         }
     }
@@ -564,6 +565,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 imageUri = data.data
             }
             imageUri?.let { uri ->
+                productDetail_image.setImageURI(uri)
                 MediaUploadService.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
             }
         }

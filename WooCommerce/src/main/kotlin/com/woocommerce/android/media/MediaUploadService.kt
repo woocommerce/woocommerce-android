@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
@@ -44,6 +45,7 @@ class MediaUploadService : JobIntentService() {
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var mediaStore: MediaStore
+    @Inject lateinit var productStore: WCProductStore
     @Inject lateinit var selectedSite: SelectedSite
 
     private val doneSignal = CountDownLatch(1)
@@ -115,10 +117,22 @@ class MediaUploadService : JobIntentService() {
             )
             // TODO
         } else {
-            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
-            // TODO
+            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
+            // media has been uploaded to assign it to the product
+            dispatchEditProductAction(event.media)
         }
 
         doneSignal.countDown()
+    }
+
+    private fun dispatchEditProductAction(media: MediaModel) {
+        val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
+        if (product == null) {
+            // TODO fire event so product detail knows to revert the image
+            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product is null")
+            return
+        }
+
+        // TODO dispatch event to change the product photo
     }
 }
