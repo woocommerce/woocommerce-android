@@ -147,7 +147,6 @@ class OrderListPresenter @Inject constructor(
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
         val options = getOrderStatusList()
         return if (options.isEmpty()) {
-            refreshOrderStatusOptions()
             emptyMap()
         } else {
             options.map { it.statusKey to it }.toMap()
@@ -162,7 +161,9 @@ class OrderListPresenter @Inject constructor(
         return if (options.isEmpty()) {
             refreshOrderStatusOptions()
             emptyList()
-        } else options
+        } else {
+            options
+        }
     }
 
     override fun refreshOrderStatusOptions() {

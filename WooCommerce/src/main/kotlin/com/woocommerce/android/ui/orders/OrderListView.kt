@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -65,12 +66,6 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
     fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
         ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
-
-    /**
-     * order list adapter method
-     * get order status options from the order list adapter
-     */
-    fun getOrderListStatusFilter() = ordersAdapter.orderStatusFilter
 
     /**
      * order list adapter method
@@ -145,13 +140,18 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         empty_view.setSiteToShare(siteModel, Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
     }
 
-    fun showEmptyView(@StringRes messageId: Int, showImage: Boolean, showShareButton: Boolean) {
-        empty_view.show(messageId, showImage, showShareButton)
+    fun showEmptyView(
+        @StringRes messageId: Int,
+        showImage: Boolean,
+        showShareButton: Boolean,
+        @DrawableRes imageId: Int? = null
+    ) {
+        empty_view.show(messageId, showImage, showShareButton, imageId = imageId)
     }
 
     fun hideEmptyView() {
         empty_view.hide()
     }
 
-    fun isEmptyViewDisplayed() = empty_view.visibility == View.VISIBLE
+    fun isEmptyViewVisible() = empty_view.visibility == View.VISIBLE
 }

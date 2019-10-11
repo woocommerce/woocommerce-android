@@ -14,6 +14,7 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -40,7 +41,9 @@ import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.util.DisplayUtils
+import java.util.Locale
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
@@ -58,6 +61,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
+        private const val ORDER_TAB_DEFAULT = 1
+        private const val ORDER_TAB_PROCESSING = 0
 
         fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -208,7 +213,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         presenter.takeView(this)
 
-        val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
         resources.getStringArray(R.array.order_list_tabs).toList()
                 .forEachIndexed { index, title ->
                     val tab = tab_layout.newTab().apply {
@@ -219,7 +223,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
                     // Start with the tab user had previously selected
                     // if no tab is selected, default to the `Processing` Tab
-                    if (index == tabPosition) {
+                    if (index == getTabPosition()) {
                         orderStatusFilter = getOrderStatusByTab(tab)
                         tab.select()
                     }
@@ -246,6 +250,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     // load orders based on the order status
                     AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
+                    isRefreshing = true
                     presenter.loadOrders(orderStatusFilter, true)
                 }
             }
@@ -369,11 +374,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
-    private fun isShowingAllOrders(): Boolean {
-        return !isSearching && orderStatusFilter.isNullOrEmpty()
-    }
+    private fun isOrderListEmpty() =
+            getOrderStatusOptions().filterValues { it.statusCount > 0 }.isNullOrEmpty()
 
-    private fun isShowingProcessingOrders() = tab_layout.selectedTabPosition == 0
+    private fun isShowingProcessingOrders() = tab_layout.selectedTabPosition == ORDER_TAB_PROCESSING
 
     /**
      * shows the view that appears for stores that have have no orders matching the current filter
@@ -387,29 +391,32 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             @StringRes val messageId: Int
             val showImage: Boolean
             val showShareButton: Boolean
+            @DrawableRes var imageId: Int? = null
             when {
                 isSearching -> {
                     showImage = false
                     showShareButton = false
                     messageId = R.string.orders_empty_message_with_search
                 }
-                isShowingAllOrders() -> {
-                    showImage = true
-                    showShareButton = true
-                    messageId = R.string.waiting_for_customers
-                }
                 isShowingProcessingOrders() -> {
-                    showImage = false
+                    showImage = true
                     showShareButton = false
-                    messageId = R.string.orders_empty_message_with_processing
+                    messageId = if (isOrderListEmpty()) {
+                        imageId = R.drawable.ic_hourglass_empty
+                        R.string.orders_empty_message_with_processing
+                    } else {
+                        imageId = R.drawable.ic_gridicons_checkmark
+                        R.string.orders_processed_empty_message
+                    }
                 }
                 else -> {
                     showImage = true
-                    showShareButton = true
+                    showShareButton = false
+                    imageId = R.drawable.ic_hourglass_empty
                     messageId = R.string.orders_empty_message_with_filter
                 }
             }
-            order_list_view.showEmptyView(messageId, showImage, showShareButton)
+            order_list_view.showEmptyView(messageId, showImage, showShareButton, imageId)
             isRefreshPending = false
             isRefreshing = false
         } else {
@@ -444,6 +451,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun updateOrderStatusList(orderStatusList: List<WCOrderStatusModel>) {
         order_list_view_root.visibility = View.VISIBLE
         order_status_list_view.updateOrderStatusListView(orderStatusList)
+        // if empty view is currently displayed, then refresh the empty view message
+        // based on the order status list count
+        if (order_list_view.isEmptyViewVisible()) {
+            showEmptyView(true)
+        }
     }
 
     /**
@@ -499,10 +511,22 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         presenter.refreshOrderStatusOptions()
     }
 
+    /**
+     * Method to return the default tab position to display.
+     * If there are no orders for a site or if there are no orders to process, the `All Orders` tab should be displayed.
+     * If there are orders/processing orders, default to whatever the user previously selected (Processing, by default)
+     */
+    private fun getTabPosition(): Int {
+        val orderStatusOptions = getOrderStatusOptions()
+        return if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
+            ORDER_TAB_DEFAULT
+        } else AppPrefs.getSelectedOrderListTabPosition()
+    }
+
     private fun getOrderStatusByTab(tab: TabLayout.Tab): String? {
         return when {
             isFilterEnabled -> orderStatusFilter
-            tab.position == 0 -> (tab.tag as? String)?.toLowerCase()
+            tab.position == 0 -> (tab.tag as? String)?.toLowerCase(Locale.getDefault())
             else -> null
         }
     }
@@ -616,6 +640,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     private fun refreshOrders() {
         isRefreshPending = true
+        refreshOrderStatusOptions()
         if (searchQuery.isEmpty() || isOrderStatusFilterEnabled()) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         } else {
@@ -680,7 +705,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
                 .plus(orderStatusFilter?.let { filter ->
-                    val orderStatusLabel = presenter.getOrderStatusOptions()[filter]?.label
+                    val orderStatusLabel = getOrderStatusOptions()[filter]?.label
                     getString(R.string.orderlist_filtered, orderStatusLabel)
                 } ?: "")
 
@@ -706,7 +731,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             }
             searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
-            val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
+            val tabPosition = getTabPosition()
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
 
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)

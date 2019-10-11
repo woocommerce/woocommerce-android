@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -64,12 +65,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         @StringRes messageId: Int,
         showImage: Boolean = true,
         showShareButton: Boolean = true,
-        showStats: Boolean = false
+        showStats: Boolean = false,
+        @DrawableRes imageId: Int? = null
     ) {
         showNoCustomersImage = showImage
         checkOrientation()
 
         empty_view_text.text = context.getText(messageId)
+        imageId?.let { empty_view_image.setImageDrawable(context.getDrawable(it)) }
 
         if (showShareButton && siteModel != null) {
             empty_view_share_button.visibility = View.VISIBLE
