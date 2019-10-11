@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.products
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.media.MediaUploadService
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -46,6 +49,9 @@ class ProductDetailViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
+    private val _showImageUploadProgress = MutableLiveData<Boolean>()
+    val showImageUploadProgress: LiveData<Boolean> = _showImageUploadProgress
+
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
 
@@ -74,6 +80,10 @@ class ProductDetailViewModel @Inject constructor(
         super.onCleared()
 
         productRepository.onCleanup()
+    }
+
+    fun reloadProduct() {
+        product.value = productRepository.getProduct(remoteProductId)
     }
 
     private fun loadProduct(remoteProductId: Long) {
@@ -158,6 +168,11 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             int.toString()
         }
+    }
+
+    fun uploadProductMedia(context: Context, remoteProductId: Long, localImageUri: Uri) {
+        _showImageUploadProgress.value = true
+        MediaUploadService.uploadProductMedia(context, remoteProductId, localImageUri)
     }
 
     data class Parameters(

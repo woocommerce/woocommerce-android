@@ -35,7 +35,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.media.MediaUploadService
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -50,9 +49,9 @@ import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
-import kotlinx.android.synthetic.main.top_earner_list_item.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
+import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 import kotlin.math.max
@@ -136,9 +135,23 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             uiMessageResolver.showSnack(it)
         })
 
+        viewModel.showImageUploadProgress.observe(this, Observer {
+            showProductImageUploadProgress(it)
+        })
+
         viewModel.exit.observe(this, Observer {
             activity?.onBackPressed()
         })
+    }
+
+    private fun showProductImageUploadProgress(show: Boolean) {
+        if (show) {
+            uploadImageProgress.visibility = View.VISIBLE
+            productDetail_image.setImageDrawable(null)
+        } else {
+            uploadImageProgress.visibility = View.GONE
+            viewModel.reloadProduct()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -206,9 +219,24 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
 
         updateActivityTitle()
+        showProductImage(product)
 
         isVariation = product.type == ProductType.VARIATION
 
+        // show status badge for unpublished products
+        product.status?.let { status ->
+            if (status != ProductStatus.PUBLISH) {
+                frameStatusBadge.visibility = View.VISIBLE
+                textStatusBadge.text = status.toString(activity!!)
+            }
+        }
+
+        addPrimaryCard(productData)
+        addPricingAndInventoryCard(productData)
+        addPurchaseDetailsCard(productData)
+    }
+
+    fun showProductImage(product: Product) {
         val imageUrl = product.firstImageUrl
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(activity!!)
@@ -226,18 +254,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             productDetail_image.visibility = View.GONE
             imageScrim.visibility = View.GONE
         }
-
-        // show status badge for unpublished products
-        product.status?.let { status ->
-            if (status != ProductStatus.PUBLISH) {
-                frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toString(activity!!)
-            }
-        }
-
-        addPrimaryCard(productData)
-        addPricingAndInventoryCard(productData)
-        addPurchaseDetailsCard(productData)
     }
 
     private fun addPrimaryCard(productData: ProductWithParameters) {
@@ -565,8 +581,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 imageUri = data.data
             }
             imageUri?.let { uri ->
-                productDetail_image.setImageURI(uri)
-                MediaUploadService.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
+                viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
             }
         }
     }
