@@ -16,4 +16,3 @@ sealed class OrderNoteListItem(val viewType: ViewType) {
         NOTE(1)
     }
 }
-
