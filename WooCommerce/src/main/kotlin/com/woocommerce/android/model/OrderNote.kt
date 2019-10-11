@@ -6,6 +6,7 @@ import java.util.Date
 
 data class OrderNote(
     val remoteNoteId: Long,
+    val author: String,
     val dateCreated: Date,
     val isCustomerNote: Boolean,
     val isSystemNote: Boolean,
@@ -17,6 +18,7 @@ data class OrderNote(
 fun WCOrderNoteModel.toAppModel(): OrderNote {
     return OrderNote(
             remoteNoteId,
+            author,
             DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
             isCustomerNote,
             isSystemNote,

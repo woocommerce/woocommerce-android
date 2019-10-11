@@ -28,8 +28,9 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(val ctx: Context, a
             note.isSystemNote -> ctx.getString(R.string.orderdetail_note_system)
             else -> ctx.getString(R.string.orderdetail_note_private)
         }
+        val header = if (note.isSystemNote) "$date ($type)" else "$date - ${note.author} ($type)"
 
-        orderNote_created.text = "$date ($type)"
+        orderNote_header.text = header
         orderNote_note.text = getHtmlText(note.note)
 
         when {
