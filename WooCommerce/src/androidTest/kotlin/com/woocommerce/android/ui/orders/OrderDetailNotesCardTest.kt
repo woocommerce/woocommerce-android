@@ -71,19 +71,19 @@ class OrderDetailNotesCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // verify that first note date displayed matches this format: April 5, 2019 at 10:42 PM
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(0, R.id.orderNote_created))
+        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(0, R.id.orderNote_header))
                 .check(matches(withText(DateUtils
                         .getFriendlyLongDateAtTimeString(appContext, mockOrderNotesList[0].dateCreated).capitalize()
                 )))
 
         // verify that second note displayed matches this format: November 5, 2018 at 7:45 PM
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(1, R.id.orderNote_created))
+        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(1, R.id.orderNote_header))
                 .check(matches(withText(DateUtils
                         .getFriendlyLongDateAtTimeString(appContext, mockOrderNotesList[1].dateCreated).capitalize()
                 )))
 
         // verify that third note displayed matches this format: December 4, 2016 at 5:45 PM
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(2, R.id.orderNote_created))
+        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(2, R.id.orderNote_header))
                 .check(matches(withText(DateUtils
                         .getFriendlyLongDateAtTimeString(appContext, mockOrderNotesList[2].dateCreated).capitalize()
                 )))

@@ -17,7 +17,7 @@
         tools:src="@drawable/ic_note_private"/>
 
     <TextView
-        android:id="@+id/orderNote_created"
+        android:id="@+id/orderNote_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
@@ -44,8 +44,8 @@
         android:lineSpacingMultiplier="1.5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/orderNote_created"
-        app:layout_constraintTop_toBottomOf="@id/orderNote_created"
+        app:layout_constraintStart_toStartOf="@id/orderNote_header"
+        app:layout_constraintTop_toBottomOf="@id/orderNote_header"
         app:layout_constrainedWidth="true"
         tools:text="Order status changed from pending payment to processing."/>
 
