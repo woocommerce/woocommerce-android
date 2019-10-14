@@ -11,21 +11,20 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_028"
+msgid ""
+"2.8:\n"
+"* Order list search was missing a cursor. Now it’s got one!\n"
+"* The updated order detail screen also shows a list of refunds you’ve issued.\n"
+"* The “Reviews” tab now displays all product reviews for the store.\n"
+msgstr ""
+
 msgctxt "release_note_027"
 msgid ""
 "2.7:\n"
 "- There’s a brand-new stats page (with more granular analytics) for those of you who use the WooCommerce Admin plugin! You can opt in to use it from the Settings page.\n"
 "- Who doesn’t like a more streamlined experience? If you’ve disabled the stats module on your site, we’ll hide the visitor stats section on your My Store page.\n"
 "- Enjoy a redesigned (and more readable) Customer Information and Payment sections in the order detail view.\n"
-msgstr ""
-
-msgctxt "release_note_026"
-msgid ""
-"2.6:\n"
-"- Don’t have a Jetpack account? Now you can log in to your site while bypassing the Jetpack-required screen. (That said, you’re missing out on some powerful features — give Jetpack a try!)\n"
-"- Some of you who do have a Jetpack-connected site would sometimes encounter issues while logging in. That’s a bug you’ll no longer run into.\n"
-"- We fixed the way your My Store stats look before you receive your first order.\n"
-"- A small group among you would occasionally deal with unexpected crashes; if that sounds like you, good news: you’ll no longer experience them.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
