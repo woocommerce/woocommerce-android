@@ -8,16 +8,20 @@ import com.woocommerce.android.JobServiceIds.JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjection
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
+import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
+import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
@@ -28,6 +32,11 @@ class MediaUploadService : JobIntentService() {
     companion object {
         private const val KEY_PRODUCT_ID = "key_product_id"
         private const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
+
+        class OnProductMediaUploadEvent(
+            var remoteProductId: Long,
+            val isError: Boolean
+        )
 
         fun uploadProductMedia(context: Context, productId: Long, localMediaUri: Uri) {
             val intent = Intent(context, MediaUploadService::class.java)
@@ -73,8 +82,9 @@ class MediaUploadService : JobIntentService() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
 
         val productId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
-        var localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
+        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
 
+        // TODO
         /*if (optimizeImages) {
             filename = ImageUtils.optimizeImage(this, filename, maxImageSize, imageQuality)
         }*/
@@ -115,24 +125,57 @@ class MediaUploadService : JobIntentService() {
                     WooLog.T.MEDIA,
                     "MediaUploadService > error uploading media: ${event.error.type}, ${event.error.message}"
             )
-            // TODO
+            val remoteProductId = event.media?.postId ?: 0L
+            dispatchFailure(remoteProductId)
+            doneSignal.countDown()
         } else {
             WooLog.i(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
             // media has been uploaded to assign it to the product
             dispatchEditProductAction(event.media)
         }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onProductImagesChanged(event: OnProductImagesChanged) {
+        val remoteProductId = event.product?.remoteProductId ?: 0L
+        if (event.isError) {
+            // TODO handle "Error getting remote image . Error: Invalid URL Provided."
+            WooLog.w(
+                    WooLog.T.MEDIA,
+                    "MediaUploadService > error changing product images: ${event.error.type}, ${event.error.message}"
+            )
+            dispatchFailure(remoteProductId)
+        } else {
+            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product images changed")
+            dispatchSuccess(remoteProductId)
+        }
 
         doneSignal.countDown()
     }
 
+    /**
+     * Called after media has been uploaded to dispatch a request to assign the uploaded media
+     * to the product
+     */
     private fun dispatchEditProductAction(media: MediaModel) {
         val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
         if (product == null) {
-            // TODO fire event so product detail knows to revert the image
             WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product is null")
-            return
+            dispatchFailure(media.postId)
+            doneSignal.countDown()
+        } else {
+            val mediaList = ArrayList<MediaModel>().also { it.add(media) }
+            val site = siteStore.getSiteByLocalId(media.localSiteId)
+            val payload = UpdateProductImagesPayload(site, media.postId, mediaList)
+            dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
         }
-
-        // TODO dispatch event to change the product photo
     }
+
+    private fun dispatchSuccess(remoteProductId: Long) {
+        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, true))
+    }
+
+    private fun dispatchFailure(remoteProductId: Long) {
+        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, true))    }
 }

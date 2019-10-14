@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.MediaUploadService
+import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -17,6 +18,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -66,6 +70,8 @@ class ProductDetailViewModel @Inject constructor(
                 _productData.value = combineData(prod, params)
             }
         }
+
+        EventBus.getDefault().register(this)
     }
 
     fun start(remoteProductId: Long) {
@@ -80,6 +86,7 @@ class ProductDetailViewModel @Inject constructor(
         super.onCleared()
 
         productRepository.onCleanup()
+        EventBus.getDefault().unregister(this)
     }
 
     fun reloadProduct() {
@@ -173,6 +180,15 @@ class ProductDetailViewModel @Inject constructor(
     fun uploadProductMedia(context: Context, remoteProductId: Long, localImageUri: Uri) {
         _uploadingImageUri.value = localImageUri
         MediaUploadService.uploadProductMedia(context, remoteProductId, localImageUri)
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductMediaUploadEvent) {
+        if (event.remoteProductId == remoteProductId || event.remoteProductId == 0L) {
+            _uploadingImageUri.value = null
+            // TODO handle failure
+        }
     }
 
     data class Parameters(
