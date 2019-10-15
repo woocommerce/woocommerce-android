@@ -22,6 +22,9 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
+import org.wordpress.android.util.ImageUtils
+import org.wordpress.android.util.MediaUtils
+import java.io.File
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
@@ -84,12 +87,11 @@ class MediaUploadService : JobIntentService() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
-        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
+        var localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
 
-        // TODO
-        /*if (optimizeImages) {
-            filename = ImageUtils.optimizeImage(this, filename, maxImageSize, imageQuality)
-        }*/
+        if (optimizeImages) {
+            localMediaUri = optimizeImageUri(localMediaUri)
+        }
 
         val media = MediaUploadUtils.mediaModelFromLocalUri(
                 this,
@@ -109,6 +111,13 @@ class MediaUploadService : JobIntentService() {
         super.onStopCurrentWork()
         WooLog.i(WooLog.T.MEDIA, "media upload service > onStopCurrentWork")
         return true
+    }
+
+    private fun optimizeImageUri(imageUri: Uri): Uri {
+        val filename = imageUri.path
+        val optimizedFilename = ImageUtils.optimizeImage(this, filename, maxImageSize, imageQuality)
+        val optimizedFile = File(optimizedFilename)
+        return Uri.fromFile(optimizedFile)
     }
 
     private fun dispatchUploadAction(media: MediaModel) {

@@ -392,7 +392,7 @@
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
-    <string name="product_change_photo">Change product photo</string>
+    <string name="product_change_image">Change product image</string>
     <string name="product_image_upload_error">Error uploading product photo</string>
     <!--
         Empty list messages

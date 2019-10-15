@@ -160,7 +160,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
-            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_photo)
+            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_image)
         }
     }
 
@@ -554,7 +554,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         if (requestStoragePermission()) {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
-            val chooser = Intent.createChooser(intent, getString(R.string.product_change_photo))
+            val chooser = Intent.createChooser(intent, getString(R.string.product_change_image))
             activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
         }
     }
