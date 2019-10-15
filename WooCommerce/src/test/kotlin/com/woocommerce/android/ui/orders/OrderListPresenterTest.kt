@@ -79,7 +79,7 @@ class OrderListPresenterTest {
         presenter.takeView(orderListView)
         presenter.loadOrders(forceRefresh = true, isFirstRun = true)
         verify(dispatcher, times(0)).dispatch(any<Action<FetchOrdersPayload>>())
-        verify(orderListView, times(1)).showLoadOrdersError()
+        verify(orderListView, times(1)).showNoConnectionError()
         verify(orderListView, times(1)).showLoading(false)
         verify(orderListView, times(1)).showEmptyView(true)
     }
