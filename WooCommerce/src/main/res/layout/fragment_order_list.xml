@@ -1,46 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/orderRefreshLayout"
+    android:id="@+id/order_list_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.woocommerce.android.ui.orders.OrderListFragment">
 
-    <RelativeLayout
-        android:id="@+id/ordersContainer"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="false">
+
+        <!-- Single tab for all stats -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            style="@style/Woo.OrderList.TabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+        android:id="@+id/orderRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true">
+        android:background="@color/default_window_background"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Orders List View -->
-        <LinearLayout
-            android:id="@+id/ordersView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:id="@+id/order_list_view_root">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/ordersList"
+            <com.woocommerce.android.ui.orders.OrderListView
+                android:id="@+id/order_list_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
-        <com.woocommerce.android.widgets.WCEmptyView
-            android:id="@+id/empty_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
+            <com.woocommerce.android.ui.orders.OrderStatusListView
+                android:id="@+id/order_status_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                style="@style/Woo.Card.WithoutPadding"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible"/>
 
-        <ProgressBar
-            android:id="@+id/load_more_progressbar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/margin_large"
-            android:visibility="gone"
-            tools:visibility="visible"/>
-    </RelativeLayout>
-</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
