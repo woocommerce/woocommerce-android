@@ -23,7 +23,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import org.wordpress.android.util.ImageUtils
-import org.wordpress.android.util.MediaUtils
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
@@ -87,10 +86,13 @@ class MediaUploadService : JobIntentService() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
-        var localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
+        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)?.let {
+            if (optimizeImages) optimizeImageUri(it) else it
+        }
 
-        if (optimizeImages) {
-            localMediaUri = optimizeImageUri(localMediaUri)
+        if (localMediaUri == null) {
+            handleFailure(remoteProductId)
+            return
         }
 
         val media = MediaUploadUtils.mediaModelFromLocalUri(
