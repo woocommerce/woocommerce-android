@@ -86,7 +86,7 @@ class OrderListPresenter @Inject constructor(
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else if (!networkStatus.isConnected()) {
             orderView?.let { order ->
-                order.showLoadOrdersError()
+                order.showNoConnectionError()
                 order.showLoading(false)
                 order.isRefreshPending = true
             }
