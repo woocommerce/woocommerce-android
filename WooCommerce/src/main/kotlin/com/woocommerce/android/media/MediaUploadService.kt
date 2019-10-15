@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import org.wordpress.android.util.ImageUtils
+import org.wordpress.android.util.MediaUtils
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
@@ -91,12 +92,12 @@ class MediaUploadService : JobIntentService() {
         }
 
         if (localMediaUri == null) {
+            WooLog.w(WooLog.T.MEDIA, "media upload service > null localMediaUri")
             handleFailure(remoteProductId)
             return
         }
 
         val media = MediaUploadUtils.mediaModelFromLocalUri(
-                this,
                 selectedSite.get().id,
                 localMediaUri,
                 mediaStore
@@ -106,7 +107,11 @@ class MediaUploadService : JobIntentService() {
             it.postId = remoteProductId
             it.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             dispatchUploadAction(it)
-        } ?: handleFailure(remoteProductId)
+            return
+        }
+
+        WooLog.w(WooLog.T.MEDIA, "media upload service > null media")
+        handleFailure(remoteProductId)
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -116,12 +121,14 @@ class MediaUploadService : JobIntentService() {
     }
 
     private fun optimizeImageUri(imageUri: Uri): Uri {
-        val filename = imageUri.path
-        val optimizedFilename = ImageUtils.optimizeImage(this, filename, maxImageSize, imageQuality)
-        val optimizedFile = File(optimizedFilename)
-        return Uri.fromFile(optimizedFile)
+        val path = MediaUtils.getRealPathFromURI(this, imageUri)
+        val optimizedFilename = ImageUtils.optimizeImage(this, path, maxImageSize, imageQuality)
+        return Uri.fromFile(File(optimizedFilename))
     }
 
+    /**
+     * Dispatch the request to upload device image to the WP media library and wait for it to complete
+     */
     private fun dispatchUploadAction(media: MediaModel) {
         val site = siteStore.getSiteByLocalId(media.localSiteId)
         val payload = UploadMediaPayload(site, media, stripImageLocation)
@@ -146,7 +153,6 @@ class MediaUploadService : JobIntentService() {
                 handleFailure(remoteProductId)
             }
             event.completed -> {
-                // media has been uploaded to assign it to the product
                 dispatchEditProductAction(event.media)
                 WooLog.i(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
             }
@@ -154,13 +160,13 @@ class MediaUploadService : JobIntentService() {
     }
 
     /**
-     * Called after media has been uploaded to dispatch a request to assign the uploaded media
+     * Called after device media has been uploaded to dispatch a request to assign the uploaded media
      * to the product
      */
     private fun dispatchEditProductAction(media: MediaModel) {
         val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
         if (product == null) {
-            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product is null")
+            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > product is null")
             handleFailure(media.postId)
         } else {
             val mediaList = ArrayList<MediaModel>().also { it.add(media) }
