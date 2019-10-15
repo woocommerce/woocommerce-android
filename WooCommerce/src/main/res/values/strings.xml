@@ -179,6 +179,7 @@
     <string name="orderlist_error_fetch_generic">Error fetching orders</string>
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
+    <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <!--
         Order Detail Views
@@ -281,6 +282,15 @@
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_confirm_discard">Discard this note?</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+
+    <!--
+    Order List Tab Labels
+    -->
+    <string-array name="order_list_tabs">
+        <item>Processing</item>
+        <item>All Orders</item>
+    </string-array>
+
     <!--
         Order Status Labels
     -->
@@ -397,7 +407,9 @@
     -->
     <string name="waiting_for_customers">Waiting for customers</string>
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
-    <string name="orders_empty_message_with_filter">No orders</string>
+    <string name="orders_empty_message_with_filter">No orders yet</string>
+    <string name="orders_empty_message_with_processing">No orders to process yet</string>
+    <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--

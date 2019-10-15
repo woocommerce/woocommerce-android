@@ -35,6 +35,7 @@ object AppPrefs {
         SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
         IS_V4_STATS_UI_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
+        SELECTED_ORDER_LIST_TAB_POSITION
     }
 
     /**
@@ -230,6 +231,13 @@ object AppPrefs {
     fun setDatabaseDowngraded(value: Boolean) {
         setBoolean(DATABASE_DOWNGRADED, value)
     }
+
+    fun setSelectedOrderListTab(selectedOrderListTabPosition: Int) {
+        setInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, selectedOrderListTabPosition)
+    }
+
+    fun getSelectedOrderListTabPosition() =
+            getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, 0)
 
     /**
      * Remove all user-related preferences.

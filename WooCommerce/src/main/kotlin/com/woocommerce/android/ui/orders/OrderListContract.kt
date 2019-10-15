@@ -23,6 +23,7 @@ interface OrderListContract {
         fun searchOrders(searchQuery: String)
         fun searchMoreOrders(searchQuery: String)
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
+        fun getOrderStatusList(): List<WCOrderStatusModel>
         fun refreshOrderStatusOptions()
         fun loadShipmentTrackingProviders(order: WCOrderModel)
     }
@@ -31,6 +32,7 @@ interface OrderListContract {
         var isRefreshPending: Boolean
         var isSearching: Boolean
         var isRefreshing: Boolean
+        var isFilterEnabled: Boolean
 
         fun setLoadingMoreIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, filterByStatus: String? = null, isFreshData: Boolean)
@@ -52,5 +54,7 @@ interface OrderListContract {
         fun showRefreshingIndicator(show: Boolean)
 
         fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>)
+        fun updateOrderStatusList(orderStatusList: List<WCOrderStatusModel>)
+        fun showNoOrderStatusListError()
     }
 }
