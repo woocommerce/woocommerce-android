@@ -26,7 +26,9 @@ import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
 /**
- * service which uploads photos to the WP media library
+ * service which changes a product's image via a two-step process:
+ *    1. uploads a device photo to the WP media library
+ *    2. when upload completes, assigns the uploaded media to the product
  */
 class MediaUploadService : JobIntentService() {
     companion object {
@@ -81,7 +83,7 @@ class MediaUploadService : JobIntentService() {
     override fun onHandleWork(intent: Intent) {
         WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
 
-        val productId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
+        val remoteProductId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
         val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
 
         // TODO
@@ -96,12 +98,11 @@ class MediaUploadService : JobIntentService() {
                 mediaStore
         )
 
-        // TODO: handle null media
         media?.let {
-            it.postId = productId
+            it.postId = remoteProductId
             it.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             dispatchUploadAction(it)
-        }
+        } ?: failure(remoteProductId)
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -126,12 +127,12 @@ class MediaUploadService : JobIntentService() {
                     "MediaUploadService > error uploading media: ${event.error.type}, ${event.error.message}"
             )
             val remoteProductId = event.media?.postId ?: 0L
-            dispatchFailure(remoteProductId)
+            failure(remoteProductId)
             doneSignal.countDown()
         } else {
-            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
             // media has been uploaded to assign it to the product
             dispatchEditProductAction(event.media)
+            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
         }
     }
 
@@ -145,10 +146,10 @@ class MediaUploadService : JobIntentService() {
                     WooLog.T.MEDIA,
                     "MediaUploadService > error changing product images: ${event.error.type}, ${event.error.message}"
             )
-            dispatchFailure(remoteProductId)
+            failure(remoteProductId)
         } else {
             WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product images changed")
-            dispatchSuccess(remoteProductId)
+            success(remoteProductId)
         }
 
         doneSignal.countDown()
@@ -162,7 +163,7 @@ class MediaUploadService : JobIntentService() {
         val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
         if (product == null) {
             WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product is null")
-            dispatchFailure(media.postId)
+            failure(media.postId)
             doneSignal.countDown()
         } else {
             val mediaList = ArrayList<MediaModel>().also { it.add(media) }
@@ -172,10 +173,10 @@ class MediaUploadService : JobIntentService() {
         }
     }
 
-    private fun dispatchSuccess(remoteProductId: Long) {
+    private fun success(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, true))
     }
 
-    private fun dispatchFailure(remoteProductId: Long) {
+    private fun failure(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, true))    }
 }

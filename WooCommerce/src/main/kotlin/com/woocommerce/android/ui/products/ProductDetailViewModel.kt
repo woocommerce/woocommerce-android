@@ -185,9 +185,9 @@ class ProductDetailViewModel @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductMediaUploadEvent) {
-        if (event.remoteProductId == remoteProductId || event.remoteProductId == 0L) {
-            _uploadingImageUri.value = null
-            // TODO handle failure
+        _uploadingImageUri.value = null
+        if (event.isError) {
+            _showSnackbarMessage.value = R.string.product_image_upload_error
         }
     }
 
