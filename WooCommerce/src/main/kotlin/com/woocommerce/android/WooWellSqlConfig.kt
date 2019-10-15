@@ -35,7 +35,7 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
 
             // the main activity uses this to determine when it needs to load the site list
             AppPrefs.setDatabaseDowngraded(true)
-            reset()
+            helper?.let { reset(it) }
         } else {
             super.onDowngrade(db, helper, oldVersion, newVersion)
         }
