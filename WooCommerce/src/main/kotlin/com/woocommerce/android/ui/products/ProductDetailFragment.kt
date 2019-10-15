@@ -571,7 +571,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         } else {
             uploadImageProgress.visibility = View.GONE
             productDetail_image.imageAlpha = 255
-            viewModel.reloadProduct()
         }
     }
 

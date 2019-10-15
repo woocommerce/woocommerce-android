@@ -36,7 +36,7 @@ class MediaUploadService : JobIntentService() {
         private const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
 
         class OnProductMediaUploadEvent(
-            var remoteProductId: Long,
+            var product: Long,
             val isError: Boolean
         )
 
@@ -102,7 +102,7 @@ class MediaUploadService : JobIntentService() {
             it.postId = remoteProductId
             it.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             dispatchUploadAction(it)
-        } ?: failure(remoteProductId)
+        } ?: handleFailure(remoteProductId)
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -121,38 +121,25 @@ class MediaUploadService : JobIntentService() {
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMediaUploaded(event: OnMediaUploaded) {
-        if (event.isError) {
-            WooLog.w(
-                    WooLog.T.MEDIA,
-                    "MediaUploadService > error uploading media: ${event.error.type}, ${event.error.message}"
-            )
-            val remoteProductId = event.media?.postId ?: 0L
-            failure(remoteProductId)
-            doneSignal.countDown()
-        } else {
-            // media has been uploaded to assign it to the product
-            dispatchEditProductAction(event.media)
-            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
+        val remoteProductId = event.media?.postId ?: 0L
+        when {
+            event.isError -> {
+                WooLog.w(
+                        WooLog.T.MEDIA,
+                        "MediaUploadService > error uploading media: ${event.error.type}, ${event.error.message}"
+                )
+                handleFailure(remoteProductId)
+            }
+            event.canceled -> {
+                WooLog.w(WooLog.T.MEDIA, "MediaUploadService > upload media cancelled")
+                handleFailure(remoteProductId)
+            }
+            event.completed -> {
+                // media has been uploaded to assign it to the product
+                dispatchEditProductAction(event.media)
+                WooLog.i(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
+            }
         }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductImagesChanged(event: OnProductImagesChanged) {
-        val remoteProductId = event.product?.remoteProductId ?: 0L
-        if (event.isError) {
-            // TODO handle "Error getting remote image . Error: Invalid URL Provided."
-            WooLog.w(
-                    WooLog.T.MEDIA,
-                    "MediaUploadService > error changing product images: ${event.error.type}, ${event.error.message}"
-            )
-            failure(remoteProductId)
-        } else {
-            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product images changed")
-            success(remoteProductId)
-        }
-
-        doneSignal.countDown()
     }
 
     /**
@@ -163,8 +150,7 @@ class MediaUploadService : JobIntentService() {
         val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
         if (product == null) {
             WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product is null")
-            failure(media.postId)
-            doneSignal.countDown()
+            handleFailure(media.postId)
         } else {
             val mediaList = ArrayList<MediaModel>().also { it.add(media) }
             val site = siteStore.getSiteByLocalId(media.localSiteId)
@@ -173,10 +159,29 @@ class MediaUploadService : JobIntentService() {
         }
     }
 
-    private fun success(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, true))
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onProductImagesChanged(event: OnProductImagesChanged) {
+        val remoteProductId = event.product?.remoteProductId ?: 0L
+        if (event.isError) {
+            WooLog.w(
+                    WooLog.T.MEDIA,
+                    "MediaUploadService > error changing product images: ${event.error.type}, ${event.error.message}"
+            )
+            handleFailure(remoteProductId)
+        } else {
+            WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product images changed")
+            handleSuccess(remoteProductId)
+        }
     }
 
-    private fun failure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, true))    }
+    private fun handleSuccess(remoteProductId: Long) {
+        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = false))
+        doneSignal.countDown()
+    }
+
+    private fun handleFailure(remoteProductId: Long) {
+        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = true))
+        doneSignal.countDown()
+    }
 }

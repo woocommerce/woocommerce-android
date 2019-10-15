@@ -188,6 +188,8 @@ class ProductDetailViewModel @Inject constructor(
         _uploadingImageUri.value = null
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_upload_error
+        } else {
+            reloadProduct()
         }
     }
 
