@@ -139,9 +139,9 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     private fun loadRefunds(order: Order) {
-        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId).sortedBy { it.dateCreated }
+        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId)
         if (refunds.isNotEmpty()) {
-            orderView?.showOrderRefunds(refunds)
+            orderView?.showOrderRefunds(refunds.reversed())
         } else {
             orderView?.showOrderRefundTotal(order.refundTotal)
         }
@@ -152,7 +152,7 @@ class OrderDetailPresenter @Inject constructor(
                 withContext(mainDispatcher) {
                     if (!requestResult.isError) {
                         requestResult.model?.let { freshRefunds ->
-                            orderView?.showOrderRefunds(freshRefunds)
+                            orderView?.showOrderRefunds(freshRefunds.reversed())
                         }
                     } else {
                         orderView?.showOrderRefundTotal(order.refundTotal)
