@@ -483,6 +483,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
             )
 
+            isRefreshing = true
             enableFilterListeners()
             order_list_view.clearAdapterData()
             presenter.loadOrders(orderStatusFilter, true)
@@ -701,7 +702,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      */
     private fun enableFilterListeners() {
         isFilterEnabled = true
-        isRefreshing = true
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
                 .plus(orderStatusFilter?.let { filter ->
