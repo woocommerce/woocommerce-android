@@ -14,7 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.OrderNote
 import kotlinx.android.synthetic.main.order_detail_note_item.view.*
 
-class OrderDetailOrderNoteItemView @JvmOverloads constructor(val ctx: Context, attrs: AttributeSet? = null)
+class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.order_detail_note_item, this)
@@ -24,9 +24,9 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(val ctx: Context, a
     fun initView(note: OrderNote) {
         val date = DateFormat.getTimeFormat(context).format(note.dateCreated)
         val type = when {
-            note.isCustomerNote -> ctx.getString(R.string.orderdetail_note_public)
-            note.isSystemNote -> ctx.getString(R.string.orderdetail_note_system)
-            else -> ctx.getString(R.string.orderdetail_note_private)
+            note.isCustomerNote -> context.getString(R.string.orderdetail_note_public)
+            note.isSystemNote -> context.getString(R.string.orderdetail_note_system)
+            else -> context.getString(R.string.orderdetail_note_private)
         }
         val header = if (note.isSystemNote) "$date ($type)" else "$date - ${note.author} ($type)"
 

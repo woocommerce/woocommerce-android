@@ -26,8 +26,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddOrderNoteFragment : BaseFragment(),
-        AddOrderNoteContract.View, BackPressListener {
+class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         private const val FIELD_NOTE_TEXT = "note_text"
