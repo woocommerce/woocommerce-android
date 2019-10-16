@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.Manifest.permission
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -18,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -34,10 +36,12 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
@@ -46,8 +50,6 @@ import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 import kotlin.math.max
-import androidx.navigation.fragment.navArgs
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     private enum class DetailCard {
@@ -560,5 +562,70 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             }
         }
         return false
+    }
+
+    /**
+     * Requests storage permission, returns true only if permission is already available
+     */
+    private fun requestStoragePermission(): Boolean {
+        if (!isAdded) {
+            return false
+        } else if (WooPermissionUtils.hasStoragePermission(activity!!)) {
+            return true
+        }
+
+        val permissions = arrayOf(permission.READ_EXTERNAL_STORAGE)
+        requestPermissions(
+                permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE
+        )
+        return false
+    }
+
+    /**
+     * Requests camera & storage permissions, returns true only if permissions are already
+     * available. Note that we need to ask for both permissions because we also need storage
+     * permission to store media from the camera.
+     */
+    private fun requestCameraPermission(): Boolean {
+        if (!isAdded) {
+            return false
+        }
+
+        val hasStorage = WooPermissionUtils.hasStoragePermission(activity!!)
+        val hasCamera = WooPermissionUtils.hasCameraPermission(activity!!)
+        if (hasStorage && hasCamera) {
+            return true
+        }
+
+        val permissions = when {
+            hasStorage -> arrayOf(permission.CAMERA)
+            hasCamera -> arrayOf(permission.WRITE_EXTERNAL_STORAGE)
+            else -> arrayOf(permission.CAMERA, permission.WRITE_EXTERNAL_STORAGE)
+        }
+
+        requestPermissions(
+                permissions,
+                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
+        )
+        return false
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (!isAdded) {
+            return
+        }
+
+        val checkForAlwaysDenied = requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
+        val allGranted = WooPermissionUtils.setPermissionListAsked(
+                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied
+        )
+
+        if (allGranted && requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE) {
+            // TODO: show camera once we add this feature
+        }
     }
 }

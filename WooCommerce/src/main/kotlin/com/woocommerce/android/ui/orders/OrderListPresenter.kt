@@ -84,6 +84,12 @@ class OrderListPresenter @Inject constructor(
             orderView?.showLoading(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+        } else if (!networkStatus.isConnected()) {
+            orderView?.let { order ->
+                order.showNoConnectionError()
+                order.showLoading(false)
+                order.isRefreshPending = true
+            }
         }
     }
 
@@ -107,7 +113,10 @@ class OrderListPresenter @Inject constructor(
                 val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, 0)
                 dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
             }
-            else -> orderView?.showNoConnectionError()
+            else -> {
+                orderView?.isRefreshPending = true
+                orderView?.showNoConnectionError()
+            }
         }
     }
 
@@ -130,29 +139,45 @@ class OrderListPresenter @Inject constructor(
 
     override fun canLoadMoreOrders(): Boolean {
         orderView?.let {
-            if (it.isSearching) return canSearchMore
+            if (it.isFilterEnabled || !it.isSearching) return canLoadMore
         }
-        return canLoadMore
+        return canSearchMore
     }
 
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
-        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        val options = getOrderStatusList()
         return if (options.isEmpty()) {
-            refreshOrderStatusOptions()
             emptyMap()
         } else {
             options.map { it.statusKey to it }.toMap()
         }
     }
 
+    /**
+     * Method to fetch order status list for a given site
+     */
+    override fun getOrderStatusList(): List<WCOrderStatusModel> {
+        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        return if (options.isEmpty()) {
+            refreshOrderStatusOptions()
+            emptyList()
+        } else {
+            options
+        }
+    }
+
     override fun refreshOrderStatusOptions() {
-        // Refresh the order status options from the API
-        if (!isOrderStatusOptionsRefreshing()) {
-            isRefreshingOrderStatusOptions = true
-            dispatcher.dispatch(
-                    WCOrderActionBuilder
-                            .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get()))
-            )
+        if (networkStatus.isConnected()) {
+            // Refresh the order status options from the API only if there is network
+            if (!isOrderStatusOptionsRefreshing()) {
+                isRefreshingOrderStatusOptions = true
+                dispatcher.dispatch(
+                        WCOrderActionBuilder
+                                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get()))
+                )
+            }
+        } else {
+            orderView?.showNoOrderStatusListError()
         }
     }
 
@@ -228,7 +253,11 @@ class OrderListPresenter @Inject constructor(
         }
 
         if (event.rowsAffected > 0) {
-            orderView?.setOrderStatusOptions(getOrderStatusOptions())
+            orderView?.let { order ->
+                val orderStatusList = getOrderStatusList()
+                order.setOrderStatusOptions(orderStatusList.map { it.statusKey to it }.toMap())
+                order.updateOrderStatusList(orderStatusList)
+            }
         }
     }
 
@@ -273,14 +302,10 @@ class OrderListPresenter @Inject constructor(
                 // for some reason, orderId is required to fetch shipment tracking providers
                 // so passing the first order in the order list
                 loadShipmentTrackingProviders(currentOrders[0])
-            } else {
-                if (!networkStatus.isConnected() || isFirstRun) {
-                    // if the device is offline or has not yet been initialized and has no cached orders to display,
-                    // show the loading indicator until a successful online refresh.
-                    view.showLoading(true)
-                } else {
-                    view.showEmptyView(true)
-                }
+            } else if (!networkStatus.isConnected() || !view.isRefreshing) {
+                // if the device is offline or has not yet been initialised and has no cached orders to display,
+                // show the empty view until internet connection is back again.
+                view.showEmptyView(true)
             }
         }
     }
@@ -334,6 +359,11 @@ class OrderListPresenter @Inject constructor(
             orderView?.let { order ->
                 if (order.isRefreshPending) {
                     order.refreshFragmentState()
+                }
+
+                // refresh order status options
+                if (order.isFilterEnabled) {
+                    order.updateOrderStatusList(getOrderStatusList())
                 }
             }
         }
