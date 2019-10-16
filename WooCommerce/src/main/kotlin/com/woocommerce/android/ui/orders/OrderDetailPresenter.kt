@@ -139,7 +139,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     private fun loadRefunds(order: Order) {
-        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId).reversed()
+        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId).sortedBy { it.dateCreated }
         if (refunds.isNotEmpty()) {
             orderView?.showOrderRefunds(refunds)
         } else {
