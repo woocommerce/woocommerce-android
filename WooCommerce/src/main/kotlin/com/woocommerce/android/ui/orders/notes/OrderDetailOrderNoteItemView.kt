@@ -21,7 +21,7 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
     }
 
     @SuppressLint("SetTextI18n")
-    fun initView(note: OrderNote) {
+    fun initView(note: OrderNote, showBottomPadding: Boolean) {
         val date = DateFormat.getTimeFormat(context).format(note.dateCreated)
         val type = when {
             note.isCustomerNote -> context.getString(R.string.orderdetail_note_public)
@@ -32,6 +32,8 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
 
         orderNote_header.text = header
         orderNote_note.text = getHtmlText(note.note)
+
+        orderNote_bottomSpacer.visibility = if (showBottomPadding) View.VISIBLE else View.GONE
 
         when {
             note.isCustomerNote -> {

@@ -23,7 +23,7 @@ class HeaderItemViewHolder(parent: ViewGroup) : OrderNoteViewHolder(parent, R.la
 
 class NoteItemViewHolder(parent: ViewGroup) : OrderNoteViewHolder(parent, R.layout.order_detail_note_list_note) {
     private val noteItem = itemView as OrderDetailOrderNoteItemView
-    fun bind(item: OrderNoteListItem.Note) {
-        noteItem.initView(item.note)
+    fun bind(item: OrderNoteListItem.Note, isLast: Boolean) {
+        noteItem.initView(item.note, isLast)
     }
 }
