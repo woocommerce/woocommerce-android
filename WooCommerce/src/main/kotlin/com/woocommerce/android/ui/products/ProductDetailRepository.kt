@@ -36,7 +36,6 @@ class ProductDetailRepository @Inject constructor(
 
     fun onCleanup() {
         dispatcher.unregister(this)
-        continuation = null
     }
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
@@ -47,6 +46,7 @@ class ProductDetailRepository @Inject constructor(
             dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
         }
 
+        continuation = null
         return getProduct(remoteProductId)
     }
 
