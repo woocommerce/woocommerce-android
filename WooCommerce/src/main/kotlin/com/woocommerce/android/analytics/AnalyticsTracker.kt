@@ -380,6 +380,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
     private fun flush() {
         tracksClient?.flush()
+
+        
     }
 
     private fun refreshMetadata(newUsername: String?, site: SiteModel? = null) {
