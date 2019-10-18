@@ -24,8 +24,8 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
 
 class OrderListAdapter(
-    val currencyFormatter: CurrencyFormatter,
-    val onItemSelected: (remoteOrderId: Long) -> Unit
+    val listener: OrderListListener,
+    val currencyFormatter: CurrencyFormatter
 ) : PagedListAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {
     companion object {
         private const val VIEW_TYPE_ORDER_ITEM = 0
@@ -126,7 +126,7 @@ class OrderListAdapter(
             processTagView(orderItemUI.status, this)
 
             this.itemView.setOnClickListener {
-                onItemSelected(orderItemUI.remoteOrderId.value)
+                listener.openOrderDetail(orderItemUI.remoteOrderId.value)
             }
         }
 
