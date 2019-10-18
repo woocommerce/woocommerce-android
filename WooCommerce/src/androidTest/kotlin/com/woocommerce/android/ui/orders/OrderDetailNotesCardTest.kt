@@ -22,7 +22,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
-import java.text.DateFormat
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
