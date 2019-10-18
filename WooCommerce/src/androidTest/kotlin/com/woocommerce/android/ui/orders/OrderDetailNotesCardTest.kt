@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -21,6 +22,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
+import java.text.DateFormat
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -71,7 +73,8 @@ class OrderDetailNotesCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // verify that first note date displayed matches this format: April 5, 2019 at 10:42 PM
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(0, R.id.orderNote_header))
+        onView(withId(R.id.notesList_notes)).perform(scrollTo())
+        onView(WCMatchers.withRecyclerView(R.id.notesList_notes).atPositionOnView(0, R.id.orderNote_header))
                 .check(matches(withText(DateUtils
                         .getFriendlyLongDateAtTimeString(appContext, mockOrderNotesList[0].dateCreated).capitalize()
                 )))
@@ -127,8 +130,8 @@ class OrderDetailNotesCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // verify that the first note item is set to "Note from customer"
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(0, R.id.orderNote_type))
-                .check(matches(withText(appContext.getString(R.string.orderdetail_note_public))))
+        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(0, R.id.orderNote_header))
+                .check(matches(withText("Nov 5, 2018 (System)")))
 
         // verify that the first note item icon is set to R.drawable.ic_note_public
         onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(0, R.id.orderNote_icon))
@@ -148,7 +151,7 @@ class OrderDetailNotesCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // verify that the second note item is set to "System Status"
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(1, R.id.orderNote_type))
+        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(1, R.id.orderNote_header))
                 .check(matches(withText(appContext.getString(R.string.orderdetail_note_system))))
 
         // verify that the second note item icon is set to R.drawable.ic_note_system
@@ -169,11 +172,11 @@ class OrderDetailNotesCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // verify that the third note item is set to "Private Note"
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(2, R.id.orderNote_type))
+        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(2, R.id.orderNote_header))
                 .check(matches(withText(appContext.getString(R.string.orderdetail_note_private))))
 
         // verify that the third note item icon is set to R.drawable.ic_note_private
-        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(2, R.id.orderNote_icon))
+        onView(WCMatchers.withRecyclerView(id.notesList_notes).atPositionOnView(2, R.id.orderNote_header))
                 .check(matches(WCMatchers.withDrawable(R.drawable.ic_note_private)))
     }
 }
