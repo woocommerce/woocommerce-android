@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.refunds
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED
@@ -17,6 +18,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.ui.orders.OrderNoteRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
@@ -28,6 +30,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -49,10 +52,14 @@ class IssueRefundViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
-    private val noteRepository: OrderNoteRepository
+    private val noteRepository: OrderNoteRepository,
+    private val gatewayStore: WCGatewayStore
 ) : ScopedViewModel(mainDispatcher) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
+        private const val REFUND_TYPE_AMOUNT = "amount"
+        private const val REFUND_TYPE_ITEMS = "items"
+        private const val REFUND_METHOD_MANUAL = "manual"
     }
 
     // region LiveData
@@ -83,6 +90,12 @@ class IssueRefundViewModel @Inject constructor(
     private val _screenTitle = MutableLiveData<String>()
     val screenTitle: LiveData<String> = _screenTitle
 
+    private val _refundMethod = MutableLiveData<String>()
+    val refundMethod: LiveData<String> = _refundMethod
+
+    private val _isManualRefundDescriptionVisible = MutableLiveData<Boolean>()
+    val isManualRefundDescriptionVisible: LiveData<Boolean> = _isManualRefundDescriptionVisible
+
     private val _formattedRefundAmount = MutableLiveData<String>()
     val formattedRefundAmount: LiveData<String> = _formattedRefundAmount
 
@@ -108,6 +121,8 @@ class IssueRefundViewModel @Inject constructor(
     private lateinit var order: Order
     private lateinit var maxRefund: BigDecimal
     private lateinit var formatCurrency: (BigDecimal) -> String
+    private lateinit var gateway: PaymentGateway
+
     private var refundContinuation: Continuation<Boolean>? = null
 
     fun start(orderId: Long) {
@@ -126,6 +141,30 @@ class IssueRefundViewModel @Inject constructor(
             _currencySettings.value = CurrencySettings(order.currency, decimals ?: DEFAULT_DECIMAL_PRECISION)
         }
         enteredAmount = BigDecimal.ZERO
+
+        initializePaymentGateway()
+    }
+
+    private fun initializePaymentGateway() {
+        val paymentGateway = gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
+        val manualPaymentTitle = resourceProvider.getString(string.order_refunds_manual_refund)
+
+        gateway = if (paymentGateway != null && paymentGateway.isEnabled) {
+            val paymentTitle = if (paymentGateway.supportsRefunds)
+                paymentGateway.title
+            else
+                "$manualPaymentTitle via ${paymentGateway.title}"
+
+            _refundMethod.value = paymentTitle
+            _isManualRefundDescriptionVisible.value = !paymentGateway.supportsRefunds
+
+            paymentGateway
+        } else {
+            _refundMethod.value = manualPaymentTitle
+            _isManualRefundDescriptionVisible.value = true
+
+            PaymentGateway(methodTitle = REFUND_METHOD_MANUAL)
+        }
     }
 
     fun onRefundEntered() {
@@ -159,12 +198,11 @@ class IssueRefundViewModel @Inject constructor(
                 // pause here until the snackbar is dismissed to allow for undo action
                 val wasRefundCanceled = waitForCancellation()
                 if (!wasRefundCanceled) {
-                    // TODO: Update this once the item & automatic refunds are supported
                     AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
                             AnalyticsTracker.KEY_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to (enteredAmount isEqualTo maxRefund).toString(),
-                            AnalyticsTracker.KEY_REFUND_TYPE to "amount",
-                            AnalyticsTracker.KEY_REFUND_METHOD to "manual",
+                            AnalyticsTracker.KEY_REFUND_TYPE to REFUND_TYPE_AMOUNT,
+                            AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
                             AnalyticsTracker.KEY_REFUND_AMOUNT to enteredAmount.toString()
                     ))
 
@@ -173,7 +211,8 @@ class IssueRefundViewModel @Inject constructor(
                                 selectedSite.get(),
                                 order.remoteId,
                                 enteredAmount,
-                                reason
+                                reason,
+                                gateway.supportsRefunds
                         )
                     }
 
