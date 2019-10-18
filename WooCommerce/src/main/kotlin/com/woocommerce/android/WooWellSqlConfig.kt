@@ -4,13 +4,13 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.view.Gravity
 import android.widget.Toast
-import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.yarolegovich.wellsql.WellTableManager
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 
-class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, ADDON_WOOCOMMERCE) {
+class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMMERCE) {
     /**
      * Detect when the database is downgraded in debug and beta builds so we can recreate all the tables.
      * The initial purpose of this was to avoid the hassle of devs switching branches and having to clear
@@ -18,7 +18,7 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, ADDON_WOOCOMM
      * build with a DB downgrade was released, resulting in a lot of crashes.
      */
     override fun onDowngrade(db: SQLiteDatabase?, helper: WellTableManager?, oldVersion: Int, newVersion: Int) {
-        if (BuildConfig.DEBUG || PackageUtils.isBetaBuild(context)) {
+        if (FeatureFlag.DB_DOWNGRADE.isEnabled(context)) {
             // note: don't call super() here because it throws an exception
             AppLog.w(T.DB, "Resetting database due to downgrade from version $oldVersion to $newVersion")
 
@@ -35,7 +35,7 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, ADDON_WOOCOMM
 
             // the main activity uses this to determine when it needs to load the site list
             AppPrefs.setDatabaseDowngraded(true)
-            reset(helper)
+            helper?.let { reset(it) }
         } else {
             super.onDowngrade(db, helper, oldVersion, newVersion)
         }

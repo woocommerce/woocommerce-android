@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-05 00:54:04+0000
+Translation-Revision-Date: 2019-10-01 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">Teste die neuen Statistiken, die im\nWooCommerce Admin-Plugin verfügbar ist</string>
+    <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
+    <string name="beta_features">Betafunktionen</string>
+    <string name="order_begin_fulfillment">Auftragsabwicklung starten</string>
+    <string name="orderdetail_net">Netto</string>
+    <string name="orderdetail_payment_paid_by_customer">Vom Kunden bezahlt</string>
+    <string name="orderdetail_payment_summary_onhold">Warten auf Zahlung per %s</string>
+    <string name="orderdetail_payment_summary_completed">%1$s per %2$s</string>
+    <string name="my_store_stats_availability_message">Wir werden Verbesserungen an den Statistiken für Shops über das WooCommerce Admin-Plugin einführen</string>
+    <string name="my_store_stats_availability_title">Teste unsere verbesserten Statistiken</string>
+    <string name="my_store_stats_reverted_message">Wir sund zu den alten Statistiken zurückgekehrt, da wir\ndas WooCommerce Admin-Plugin nicht finden konnten</string>
+    <string name="dashboard_state_no_data">Keine Einnahmen in diesem Zeitraum</string>
+    <string name="no_thanks">Nein, danke</string>
+    <string name="try_it_now">Jetzt ausprobieren</string>
+    <string name="products_total">Produkte insgesamt</string>
+    <string name="order_total">Auftrag insgesamt</string>
     <string name="dashboard_stats_todays_stats">Statistiken von heute</string>
     <string name="login_sign_in">Anmelden</string>
     <string name="login_jetpack_installed_sign_in">Du hast Jetpack bereits? %1$s</string>
@@ -399,9 +415,11 @@ Language: de
     <string name="waiting_for_customers">Warten auf Kunden</string>
     <string name="share_store_dialog_title">Teile die URL deines Shops</string>
     <string name="share_store_button">Teile deinen Shop</string>
+    <string name="wc_mark_all_read_success">Alle als gelesen markierten Bewertungen</string>
     <string name="login_update_required_title">Shop auf WooCommerce 3.5 aktualisieren</string>
     <string name="login_verifying_site_error">Verbindung zu %s kann nicht hergestellt werden</string>
     <string name="dismiss">Verwerfen</string>
+    <string name="wc_mark_all_read_error">Fehler beim Markieren aller Bewertungen als gelesen</string>
     <string name="wc_mark_all_read">Alle als gelesen markieren</string>
     <string name="orderdetail_message_customer">Nachricht</string>
     <string name="orderdetail_call_customer">Anrufen</string>
@@ -623,10 +641,7 @@ Language: de
     <string name="orderdetail_customer_image_contentdesc">Kundenprofilbild</string>
     <string name="orderdetail_customer_provided_note">Vom Kunden angegebener Hinweis</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Zahlung – rückerstattet</string>
     <string name="orderdetail_refunded">Rückerstattet</string>
-    <string name="orderdetail_payment_summary_onhold">Zahlung wartet auf %s</string>
-    <string name="orderdetail_payment_summary_completed">Zahlung von %1$s per %2$s erhalten</string>
     <string name="orderdetail_product_qty">MGE</string>
     <string name="orderdetail_product">Produkt</string>
     <string name="orderdetail_product_image_contentdesc">Produktabbildung</string>
@@ -665,7 +680,6 @@ Language: de
     <string name="dashboard_stats_updated_now">Gerade aktualisiert</string>
     <string name="dashboard_stats_error_content_description">Fehlerbild</string>
     <string name="dashboard_stats_error">Fehler beim Abrufen der Daten</string>
-    <string name="dashboard_state_no_data">Keine Daten verfügbar</string>
     <string name="dashboard_stats_revenue">Umsatz</string>
     <string name="dashboard_stats_orders">Bestellungen</string>
     <string name="dashboard_stats_visitors">Besucher</string>
@@ -683,6 +697,7 @@ Language: de
     <string name="login_prologue_banner">Bestellungen verwalten, Verkäufe verfolgen und Shopaktivitäten mit Echtzeitwarnungen überwachen.</string>
     <string name="login_jetpack_required">Für diese App muss Jetpack mit deinem Shop verbunden sein.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">Gib die Adresse des WooCommerce-Shops ein, den du verbinden möchtest.</string>
     <string name="already_logged_in_wpcom">Du bist bereits in einem WordPress.com-Konto angemeldet, du kannst keine WordPress.com-Website hinzufügen, die an ein anderes Konto gebunden ist.</string>
     <string name="cant_open_url">Link konnte nicht geöffnet werden</string>
     <string name="error_no_sms_app">Es wurde keine SMS-Anwendung gefunden</string>

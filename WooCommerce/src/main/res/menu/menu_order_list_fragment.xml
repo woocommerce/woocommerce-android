@@ -9,10 +9,4 @@
         android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always|collapseActionView"/>
-
-    <item
-        android:id="@+id/menu_filter"
-        android:icon="@drawable/ic_menu_filter"
-        android:title="@string/orderlist_filter"
-        app:showAsAction="always"/>
 </menu>

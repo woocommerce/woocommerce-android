@@ -9,11 +9,13 @@ import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
 object AppPrefs {
-    private interface PrefKey
+    interface PrefKey
 
     private lateinit var context: Context
 
@@ -32,7 +34,8 @@ object AppPrefs {
         SHOULD_DISPLAY_V4_STATS_AVAILABILITY_BANNER,
         SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
         IS_V4_STATS_UI_ENABLED,
-        LOGIN_USER_BYPASSED_JETPACK_REQUIRED
+        LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
+        SELECTED_ORDER_LIST_TAB_POSITION
     }
 
     /**
@@ -54,6 +57,9 @@ object AppPrefs {
         NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN,
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
+        // Application permissions
+        ASKED_PERMISSION_STORAGE,
+        ASKED_PERMISSION_CAMERA,
     }
 
     fun init(context: Context) {
@@ -226,6 +232,13 @@ object AppPrefs {
         setBoolean(DATABASE_DOWNGRADED, value)
     }
 
+    fun setSelectedOrderListTab(selectedOrderListTabPosition: Int) {
+        setInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, selectedOrderListTabPosition)
+    }
+
+    fun getSelectedOrderListTabPosition() =
+            getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, 0)
+
     /**
      * Remove all user-related preferences.
      */
@@ -251,10 +264,10 @@ object AppPrefs {
     private fun setString(key: PrefKey, value: String) =
             PreferenceUtils.setString(getPreferences(), key.toString(), value)
 
-    private fun getBoolean(key: PrefKey, default: Boolean) =
+    fun getBoolean(key: PrefKey, default: Boolean) =
             PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
 
-    private fun setBoolean(key: PrefKey, value: Boolean = false) =
+    fun setBoolean(key: PrefKey, value: Boolean = false) =
             PreferenceUtils.setBoolean(getPreferences(), key.toString(), value)
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
@@ -262,6 +275,8 @@ object AppPrefs {
     private fun remove(key: PrefKey) {
         getPreferences().edit().remove(key.toString()).apply()
     }
+
+    fun exists(key: PrefKey) = getPreferences().contains(key.toString())
 
     /**
      * Methods used to store values in SharedPreferences that are not backed up
@@ -280,5 +295,22 @@ object AppPrefs {
                 "${context.packageName}_deletable_preferences",
                 Context.MODE_PRIVATE
         )
+    }
+
+    /*
+     * key in shared preferences which stores a boolean telling whether the app has already
+     * asked for the passed permission
+     */
+    fun getPermissionAskedKey(permission: String): PrefKey? {
+        when (permission) {
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE ->
+                return UndeletablePrefKey.ASKED_PERMISSION_STORAGE
+            android.Manifest.permission.CAMERA ->
+                return UndeletablePrefKey.ASKED_PERMISSION_CAMERA
+            else -> {
+                WooLog.w(T.UTILS, "No key for requested permission: $permission")
+                return null
+            }
+        }
     }
 }

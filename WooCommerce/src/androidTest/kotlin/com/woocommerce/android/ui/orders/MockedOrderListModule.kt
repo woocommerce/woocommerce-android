@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
+import org.mockito.ArgumentMatchers.anyString
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -58,7 +60,7 @@ abstract class MockedOrderListModule {
              */
             doReturn(true).whenever(mockedOrderListPresenter).isOrderStatusOptionsRefreshing()
             doReturn(orderStatusList).whenever(mockedOrderListPresenter).getOrderStatusOptions()
-            doReturn(orders).whenever(mockedOrderListPresenter).fetchOrdersFromDb(null, false)
+            doReturn(orders).whenever(mockedOrderListPresenter).fetchOrdersFromDb(anyString(), eq(false))
             return mockedOrderListPresenter
         }
     }

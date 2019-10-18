@@ -70,6 +70,8 @@
     <string name="error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="read_more">Read more</string>
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
+    <string name="button_not_now">Not now</string>
+    <string name="unknown">Unknown</string>
     <!--
         Date/Time Labels
     -->
@@ -177,6 +179,7 @@
     <string name="orderlist_error_fetch_generic">Error fetching orders</string>
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
+    <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_fetching">Fetching orders...</string>
     <string name="orderlist_search_prompt">Search orders</string>
@@ -281,6 +284,15 @@
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_confirm_discard">Discard this note?</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+
+    <!--
+    Order List Tab Labels
+    -->
+    <string-array name="order_list_tabs">
+        <item>Processing</item>
+        <item>All Orders</item>
+    </string-array>
+
     <!--
         Order Status Labels
     -->
@@ -397,7 +409,9 @@
     -->
     <string name="waiting_for_customers">Waiting for customers</string>
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
-    <string name="orders_empty_message_with_filter">No orders</string>
+    <string name="orders_empty_message_with_filter">No orders yet</string>
+    <string name="orders_empty_message_with_processing">No orders to process yet</string>
+    <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
@@ -622,6 +636,13 @@
     <string name="product_status_private">Private</string>
     <string name="product_status_pending">Pending</string>
     <string name="product_status_draft">Draft</string>
+
+    <!-- permissions -->
+    <string name="permissions_denied_title">Permissions</string>
+    <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>
+    <string name="permission_storage">Storage</string>
+    <string name="permission_camera">Camera</string>
+    <string name="button_edit_permissions">Edit permissions</string>
 
     <!-- Other -->
     <string name="shared_element_transition" translatable="false">shared_element</string>

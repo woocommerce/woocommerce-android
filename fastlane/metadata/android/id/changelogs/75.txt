@@ -1,5 +1,0 @@
-2.6:
-- Belum punya akun Jetpack? Sekarang Anda bisa login ke situs dengan melewati layar wajib Jetpack. (Itu berarti, Anda melewatkan beberapa fitur hebat — coba Jetpack!)
-- Beberapa dari Anda yang mempunyai situs terkoneksi Jetpack terkadang mengalami masalah saat login. Itu adalah bug yang tidak akan Anda temui lagi.
-- Kami telah memperbaiki tampilan statistik Toko Saya sebelum Anda menerima pesanan pertama.
-- Beberapa orang terkadang harus berurusan dengan masalah crash, jika Anda termasuk salah satu yang pernah mengalaminya, ada kabar baik: Anda tidak akan mengalaminya lagi.
