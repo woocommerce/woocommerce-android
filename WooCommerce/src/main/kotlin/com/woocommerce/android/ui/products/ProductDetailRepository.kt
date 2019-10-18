@@ -46,6 +46,7 @@ class ProductDetailRepository @Inject constructor(
             dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
         }
 
+        continuation = null
         return getProduct(remoteProductId)
     }
 
