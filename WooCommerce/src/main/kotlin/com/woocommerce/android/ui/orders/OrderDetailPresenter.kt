@@ -354,6 +354,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel?.let { order ->
                     orderView?.showSkeleton(false)
                     orderView?.showOrderDetail(order, isFreshData = true)
+                    loadRefunds(order.toAppModel())
                     loadOrderNotes()
                     loadOrderShipmentTrackings()
                 } ?: orderView?.showLoadOrderError()
