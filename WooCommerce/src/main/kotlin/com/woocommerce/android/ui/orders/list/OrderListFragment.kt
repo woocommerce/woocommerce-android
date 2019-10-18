@@ -217,8 +217,7 @@ class OrderListFragment : TopLevelFragment(),
                     AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
                     isRefreshing = true
-                    // FIXME AMANDA
-//                    presenter.loadOrders(orderStatusFilter, true)
+                    viewModel.loadList(orderStatusFilter)
                 }
             }
 
@@ -234,8 +233,7 @@ class OrderListFragment : TopLevelFragment(),
         enableToolbarElevation(filterOrSearchEnabled)
 
         if (isOrderStatusFilterEnabled() && isActive && !deferInit) {
-            // FIXME AMANDA
-//            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending, isFirstRun = true)
+            viewModel.loadList(orderStatusFilter)
         }
     }
 
@@ -257,10 +255,9 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onDestroyView() {
         disableSearchListeners()
-        // FIXME AMANDA
-//        presenter.dropView()
         searchView = null
         orderListMenu = null
+        searchMenuItem = null
         super.onDestroyView()
     }
 
@@ -277,10 +274,11 @@ class OrderListFragment : TopLevelFragment(),
             if (!isChildFragmentShowing) {
                 showOptionsMenu(true)
 
-                // FIXME AMANDA
-//                clearSearchResults()
-
-                viewModel.reloadListFromCache()
+                if (isSearching) {
+                    clearSearchResults()
+                } else {
+                    viewModel.reloadListFromCache()
+                }
             }
         }
     }
@@ -290,8 +288,7 @@ class OrderListFragment : TopLevelFragment(),
         enableToolbarElevation(isChildFragmentShowing())
 
         if (isOrderStatusFilterEnabled()) {
-            // FIXME AMANDA
-//            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = this.isRefreshPending)
+            viewModel.reloadListFromCache()
         } else {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 20)
         }
@@ -466,8 +463,6 @@ class OrderListFragment : TopLevelFragment(),
             enableFilterListeners()
             order_list_view.clearAdapterData()
 
-            // FIXME AMANDA
-//            presenter.loadOrders(orderStatusFilter, true)
             viewModel.loadList(statusFilter = orderStatus)
 
             updateActivityTitle()
@@ -554,13 +549,11 @@ class OrderListFragment : TopLevelFragment(),
         if (isSearching) {
             searchQuery = ""
             isSearching = false
-            if (isFilterEnabled) disableFilterListeners()
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
 
-            // FIXME AMANDA - load orders
-//            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            viewModel.loadList(orderStatusFilter)
         }
     }
 
@@ -597,23 +590,6 @@ class OrderListFragment : TopLevelFragment(),
      */
     private fun submitSearchQuery(query: String) {
         viewModel.loadList(searchQuery = query)
-    }
-
-    /**
-     * Return to the non-search order view
-     */
-    private fun closeSearchView() {
-        if (isSearching) {
-            searchQuery = ""
-            isSearching = false
-            if (isFilterEnabled) disableFilterListeners()
-            disableSearchListeners()
-            searchMenuItem?.collapseActionView()
-            updateActivityTitle()
-
-            // FIXME AMANDA
-//            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
-        }
     }
 
     private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching
@@ -666,9 +642,6 @@ class OrderListFragment : TopLevelFragment(),
         searchView?.setOnQueryTextListener(this)
         displayOrderStatusListView()
 
-        // FIXME AMANDA
-//        order_status_list_view.updateOrderStatusListView(presenter.getOrderStatusList())
-
         (activity as? MainActivity)?.hideBottomNav()
     }
 
@@ -716,8 +689,7 @@ class OrderListFragment : TopLevelFragment(),
             val tabPosition = getTabPosition()
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
 
-            // FIXME AMANDA
-//            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            viewModel.loadList(orderStatusFilter)
 
             (activity as? MainActivity)?.hideBottomNav()
         }
