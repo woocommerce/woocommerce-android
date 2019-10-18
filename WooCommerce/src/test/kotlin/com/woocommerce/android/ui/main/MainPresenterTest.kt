@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -41,6 +42,7 @@ class MainPresenterTest {
     private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val notificationStore: NotificationStore = mock()
+    private val gatewayStore: WCGatewayStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val productImageMap: ProductImageMap = mock()
 
@@ -58,7 +60,8 @@ class MainPresenterTest {
                         wooCommerceStore,
                         notificationStore,
                         selectedSite,
-                        productImageMap
+                        productImageMap,
+                        gatewayStore
                 )
         )
         mainPresenter.takeView(mainContractView)
