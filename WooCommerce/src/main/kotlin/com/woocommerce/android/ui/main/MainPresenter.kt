@@ -15,6 +15,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher.RevenueStatsAvailabilityChangeEvent
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -36,6 +39,7 @@ import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
@@ -52,7 +56,8 @@ class MainPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite,
-    private val productImageMap: ProductImageMap
+    private val productImageMap: ProductImageMap,
+    private val gatewayStore: WCGatewayStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -172,6 +177,14 @@ class MainPresenter @Inject constructor(
             // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
             mainView?.updateSelectedSite()
             isHandlingMagicLink = false
+        }
+
+        // prefetch all gateways whenever the site changes
+        GlobalScope.launch(Dispatchers.Default) {
+            val result = gatewayStore.fetchAllGateways(selectedSite.get())
+            if (result.isError) {
+                WooLog.e(WooLog.T.UTILS, "${result.error.type.name}: ${result.error.message}")
+            }
         }
     }
 
