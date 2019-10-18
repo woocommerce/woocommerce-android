@@ -41,7 +41,7 @@
         android:layout_gravity="start"
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        android:lineSpacingMultiplier="1.5"
+        android:lineSpacingMultiplier="1.4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/orderNote_header"
