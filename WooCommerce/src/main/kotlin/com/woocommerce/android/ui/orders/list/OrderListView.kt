@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.list
 
 import android.content.Context
 import android.os.Parcelable
@@ -13,10 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.ui.orders.list.OrderListAdapter
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState
-import com.woocommerce.android.ui.orders.list.OrderListItemUIType
-import com.woocommerce.android.ui.orders.list.OrderListListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.widgets.SkeletonView
