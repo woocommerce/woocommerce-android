@@ -45,7 +45,7 @@ class LoginJetpackRequiredFragment : Fragment() {
     interface LoginJetpackRequiredListener {
         fun showJetpackInstructions()
         fun showWhatIsJetpackDialog()
-        fun showEmailLoginScreen(siteAddress: String)
+        fun showEmailLoginScreen(siteAddress: String?)
     }
 
     private var loginListener: LoginListener? = null

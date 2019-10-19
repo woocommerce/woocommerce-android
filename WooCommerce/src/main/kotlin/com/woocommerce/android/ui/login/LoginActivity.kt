@@ -268,9 +268,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app.
         siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
-
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
-        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        showEmailLoginScreen(siteAddress)
     }
 
     override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
@@ -447,8 +445,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 
-    override fun showEmailLoginScreen(siteAddress: String) {
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+    override fun showEmailLoginScreen(siteAddress: String?) {
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(false, siteAddress)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 }
