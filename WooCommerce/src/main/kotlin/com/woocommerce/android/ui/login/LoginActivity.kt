@@ -294,6 +294,33 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         }
     }
 
+    override fun gotXmlRpcEndpoint(
+        inputSiteAddress: String,
+        endpointAddress: String?,
+        hasJetpack: Boolean
+    ) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app. If the redirect url is available, use that as the preferred url. Strip the
+        // protocol from this url string prior to saving to AppPrefs since it's not needed and may cause issues
+        // when attempting to match the url to the authenticated account later in the login process.
+        val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+        AppPrefs.setLoginSiteAddress(inputSiteAddress.replaceFirst(protocolRegex, ""))
+
+        if (hasJetpack) {
+            showEmailLoginScreen(inputSiteAddress, endpointAddress)
+        } else {
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // Show the 'Jetpack required' fragment
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(inputSiteAddress, endpointAddress)
+            slideInFragment(
+                    fragment = jetpackReqFragment as Fragment,
+                    shouldAddToBackStack = true,
+                    tag = LoginJetpackRequiredFragment.TAG)
+        }
+    }
+
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app.
@@ -445,8 +472,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 
-    override fun showEmailLoginScreen(siteAddress: String?) {
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(false, siteAddress)
+    override fun showEmailLoginScreen(siteAddress: String?, siteXmlRpcAddress: String?) {
+        val loginEmailFragment = getLoginEmailFragment()
+                ?: LoginEmailFragment.newInstance(siteAddress, siteXmlRpcAddress)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 }
