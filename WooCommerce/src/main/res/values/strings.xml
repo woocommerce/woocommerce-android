@@ -72,6 +72,7 @@
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
+    <string name="try_again">Try again</string>
     <!--
         Date/Time Labels
     -->
@@ -125,6 +126,7 @@
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
     <string name="login_jetpack_view_instructions">View instructions</string>
+    <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
     <string name="login_jetpack_installed_sign_in">Already have Jetpack? %1$s</string>
