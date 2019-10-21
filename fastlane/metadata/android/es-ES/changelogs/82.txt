@@ -1,0 +1,4 @@
+2.8:
+* En la búsqueda de la lista de pedidos faltaba un cursor. Ahora ya cuenta con uno.
+* En la pantalla de información del pedido actualizada también se muestra una lista de los reembolsos que has realizado.
+* Ahora, la pestaña "Reseñas" muestra todas las reseñas de los productos de la tienda.

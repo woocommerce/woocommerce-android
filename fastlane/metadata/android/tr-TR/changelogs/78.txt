@@ -1,4 +1,0 @@
-2.7:
-- WooCommerce Yönetici eklentisini kullananlar için yepyeni bir istatistik sayfası oluşturuldu (daha ayrıntılı analiz içeriyor)! Ayarlar sayfasından kullanmayı seçebilirsiniz.
-- Daha düzenli bir deneyime kim hayır diyebilir? Sitenizde istatistik modülünü devre dışı bıraktıysanız, Mağazam sayfanızdaki ziyaretçi istatistikleri bölümünü gizleriz.
-- Sipariş ayrıntıları görünümünde, yeniden tasarladığımız (ve daha okunabilir özellikteki) Müşteri Bilgileri ve Ödeme bölümlerinin keyfini çıkarın.

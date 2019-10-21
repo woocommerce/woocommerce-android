@@ -1,90 +1,102 @@
 <ar>
-2.7:
-- ثمَّة صفحة إحصاءات جديدة تمامًا (مع مزيد من التحليلات الدقيقة) تخص أولئك الذين يستخدمون إضافة مسؤول WooCommerce! يمكنك الاشتراك لاستخدامها من صفحة الإعدادات.
-- مَن لا يحب تجربة أكثر بساطة؟ إذا قمت بتعطيل وحدة الإحصاءات على موقعك، فسنخفي قسم إحصاءات الزائر في صفحة متجري.
-- استمتع بقسمي معلومات العميل والسداد اللذين أعيد تصميمهما (وأكثر قابلية للقراءة) في عرض تفاصيل الطلب.
+2.8:
+* كان البحث في قائمة الطلب يفتقد إلى وجود مؤشر. يوجد مؤشر الآن!
+* تعرض أيضًا شاشة تفاصيل الطلب المُحدَّثة قائمة بالمبالغ المستردة التي نشرتها.
+* تعرض الآن علامة تبويب "المراجعات" جميع مراجعات المنتج في المتجر.
 </ar>
 <de-DE>
-2.7:
-- Es gibt eine brandneue Statistikseite mit noch detaillierteren Analysen für alle, die das WooCommerce Admin-Plugin verwenden! Du kannst sie über die Seite mit den Einstellungen verwenden.
-- Wer möchte eine Seite nicht optimal nutzen können? Wenn du das Statistikmodul auf deiner Website deaktiviert hast, blenden wir den Abschnitt mit den Besucherstatistiken auf deiner Seite „Mein Shop“ aus.
-- Der Bereich mit den Kundeninformationen und den Zahlungsdetails in der Ansicht mit den Auftragsdetails wurde neu entworfen und ist jetzt besser lesbar.
+2.8:
+* Bei der Bestelllistensuche gab es keinen Cursor. Jetzt wird er angezeigt.
+* Die Anzeige der aktualisierten Bestelldetails umfasst jetzt auch eine Liste der von dir ausgestellten Rückerstattungen.
+* Alle Produktbewertungen des Shops werden jetzt im Tab „Rezensionen“ angezeigt.
 </de-DE>
+<es-ES>
+2.8:
+* En la búsqueda de la lista de pedidos faltaba un cursor. Ahora ya cuenta con uno.
+* En la pantalla de información del pedido actualizada también se muestra una lista de los reembolsos que has realizado.
+* Ahora, la pestaña "Reseñas" muestra todas las reseñas de los productos de la tienda.
+</es-ES>
 <fr-FR>
-2.7 :
-- Une nouvelle page de statistiques (proposant des analyses plus approfondies) est disponible pour les utilisateurs de l'extension d'administration WooCommerce ! Vous pouvez vous inscrire afin de l'utiliser sur la page Paramètres.
-- Qui n'apprécie pas de profiter d'une expérience plus rationalisée ? Si vous avez désactivé le module de statistiques sur votre site, nous masquerons la section des statistiques détaillées sur vos visiteurs sur votre page Ma boutique.
-- Profitez de sections Informations sur le client et Paiement repensées (et plus lisibles) dans les vues des détails de la commande.
+2.8 :
+* La liste des commandes ne comportait pas de curseur. Elle en comporte désormais un !
+* Le nouvel écran des détails de la commande comporte également une liste des remboursements que vous avez effectués.
+* L'onglet « Avis » affiche désormais tous les avis sur les produits correspondant à la boutique.
 </fr-FR>
 <iw-IL>
-2.7:
-יש עמוד חדש לנתונים הסטטיסטיים (עם ניתוחים פרטניים נוספים) למשתמשים בתוסף הניהול של WooCommerce! אפשר להתחבר ולהשתמש בו מעמוד ההגדרות.
-- מי לא אוהב חוויה יעילה יותר? אם השבתת בעבר את מודול הנתונים הסטטיסטיים באתר שלך, אנחנו נסתיר את המקטע של הנתונים הסטטיסטיים של האורחים בעמוד "החנות שלי".
-- אפשר ליהנות ממקטעים מעוצבים מחדש (וקריאים יותר) של פרטי הלקוח ותשלומים בתצוגה של פרטי ההזמנה.
+2.8:
+* בחיפוש ברשימת ההזמנות היה חסר סמן. כעת הוספנו אותו!
+* המסך המעודכן של פרטי ההזמנה מציג גם את רשימת ההחזרים הכספיים שהנפקת.
+* הלשונית 'ביקורות' מציגה כעת את כל ביקורות המוצרים של החנות.
 </iw-IL>
 <id>
-2.7:
-- Ada halaman statistik baru (dengan analitik yang lebih mendetail) untuk Anda yang menggunakan plugin Admin WooCommerce! Anda dapat memilih untuk menggunakannya dari halaman Pengaturan.
-- Siapa yang tidak suka tampilan yang lebih simpel? Jika Anda telah menonaktifkan modul statistik di situs, kami akan menyembunyikan bagian statistik pengunjung di halaman Toko Saya.
-- Nikmati bagian Informasi Pelanggan dan Pembayaran dengan desain baru (dan lebih mudah dibaca) dalam tampilan detail pesanan.
+2.8:
+* Pencarian daftar pesanan tidak memiliki kursor. Sekarang sudah ada!
+* Layar detail pesanan yang baru juga menampilkan daftar pengembalian dana yang telah Anda keluarkan.
+* Tab “Ulasan” kini menampilkan semua ulasan produk untuk toko.
 </id>
 <it-IT>
-2.7:
-- Nuova pagina delle statistiche (con analisi più granulari) per coloro che usano il plugin WooCommerce Admin. Puoi decidere di usarla dalla pagina Impostazioni.
-- A chi non piace un'esperienza più semplificata? Se hai disabilitato il modulo delle statistiche sul tuo sito, nasconderemo la sezione delle statistiche sui visitatori nella pagina Il mio negozio.
-- Goditi le sezioni Informazioni cliente e Pagamento riprogettate (e più leggibili) nella schermata dei dettagli dell'ordine.
+2.8:
+* Nella ricerca nell'elenco degli ordini mancava un cursore. Ora lo abbiamo aggiunto.
+* La schermata dei dettagli dell'ordine aggiornata mostra anche un elenco dei rimborsi emessi.
+* La scheda "Recensioni" ora mostra tutte le recensioni prodotto del negozio.
 </it-IT>
 <ja-JP>
-2.7:
-- WooCommerce Admin プラグインで、より詳細な分析が可能な新しい統計ページを利用できるようになりました。「設定」ページから選択して、これを使用できます。
-- ユーザーエクスペリエンスの改善を行いました。サイトで統計モジュールを無効にすると、「自分のストア」ページで訪問者の統計セクションが非表示になるようにしました。
-- 注文の詳細画面の顧客情報と支払いのセクションのデザインがリニューアルされ、見やすくなりました。
+2.8:
+* 注文リスト検索でカーソルが表示されませんでしたが、表示されるようになりました !
+* 発行した返金のリストも表示されるように注文詳細の画面を更新しました。
+* 「レビュー」タブにストアのすべての製品レビューが表示されるようになりました。
 </ja-JP>
 <ko-KR>
-2.7:
-- WooCommerce 관리자 플러그인을 사용하는 사람들을 위한 새로운 통계 페이지(더 세분화된 분석 기능 포함)가 출시되었습니다! 설정 페이지에서 옵트인할 수 있습니다.
-- 누구나 간편한 환경을 선호합니다. 사이트에서 통계 모듈을 비활성화한 경우 내 스토어 페이지에서 방문자 통계 섹션이 숨겨집니다.
-- 주문 세부정보 보기에서 새롭게 디자인되어 가독성이 높아진 고객 정보 및 결제 섹션을 마음껏 이용해 보세요.
+2.8:
+* 주문 목록 검색에 커서가 없습니다. 이제 있습니다!
+* 업데이트된 주문 정보 화면에는 발행한 환불 목록도 표시됩니다.
+* “리뷰” 탭에 스토어에 대한 모든 제품 리뷰가 표시됩니다.
 </ko-KR>
 <nl-NL>
-2.7:
-- Voor degenen die de WooCommerce Admin-plugin gebruiken, is er nu een gloednieuwe statistiekenpagina (met grondigere analyse) beschikbaar! Je kunt je hiervoor aanmelden via de pagina Instellingen.
-- Wie houdt er nou niet van een meer gestroomlijnde ervaring? Als je de statistiekenmodule van je site hebt uitgeschakeld, verbergen wij het gedeelte met bezoekersstatistieken van je pagina Mijn winkel.
-- Geniet van de vernieuwde (en beter leesbare) gedeelten Klantgegevens en Betalingen in de het overzicht van bestelgegevens.
+2.8:
+* Cursor ontbrak bij zoekopdracht bestellijst. Nu heeft hij er een!
+* Het scherm met bestellingsdetails is bijgewerkt en toont nu ook een lijst van alle restituties die je hebt verzonden.
+* Het tabblad 'beoordelingen' geeft nu alle productbeoordelingen van de winkel weer.
 </nl-NL>
 <pt-BR>
-2.7:
-- Há uma nova página de estatísticas com análises mais granulares para quem usa o plugin WooCommerce Admin! Ative-a nas Configurações.
-- Quem não gosta de uma experiência simples? Se você desativou o módulo de estatísticas no seu site, a seção para visitantes será ocultada da página Minha loja.
-- Aproveite as seções replanejadas Pagamento e Informações do cliente na exibição de detalhes de pedido.
+2.8:
+* A pesquisa na lista de pedidos não está mais sem cursor!
+* A tela atualizada de detalhes de pedidos também exibe uma lista dos reembolsos emitidos.
+* Agora a guia “Avaliações” exibe todas as avaliações de produtos da loja.
 </pt-BR>
 <ru-RU>
-Версия 2.7
-– Те, кто использует плагин администратора WooCommerce, оценят новую страницу статистики, содержащую более подробные аналитические сведения. Чтобы использовать ее, выберите нужный параметр на странице "Настройки".
-– Вы согласны, что во всем должен быть порядок? Если вы отключили модуль статистики на сайте, на странице "Мой магазин" не будет отображаться раздел статистики посещений.
-– Оцените удобные обновленные разделы "Информация о заказчиках" и "Платежи" на экране сведений о заказе.
+Версия 2.8
+* Раньше при поиске по списку заказов не отображался курсор. Мы его вернули!
+* На обновленном экране сведений о заказе отображается список оформленных возвратов.
+* На вкладке "Отзывы" теперь отображаются все отзывы о товарах магазина.
 </ru-RU>
 <sv-SE>
-2.7:
-– Det finns en helt ny statistiksida (med mer detaljerade analyser) för dem som använder WooCommerce adminplugin-programmet! Du kan välja att använda det från sidan Inställningar.
-– Vem vill inte ha en mer effektiv upplevelse? Om du har inaktiverat statistikmodulen på din webbplats döljer vi avsnittet med besöksstatistik på sidan Min butik.
-– Njut av omdesignade (och med läsvänliga) avsnitt för kundinformation och betalning i vyn med orderinformation.
+2.8:
+* Genomsökningen av orderlistan saknade en markör. Nu finns det en sådan!
+* Den uppdaterade skärmen för orderdetaljer visar även en lista över återbetalningar som du har utfärdat.
+* Fliken "Recensioner" visar nu alla produktrecensioner för butiken.
 </sv-SE>
 <tr-TR>
-2.7:
-- WooCommerce Yönetici eklentisini kullananlar için yepyeni bir istatistik sayfası oluşturuldu (daha ayrıntılı analiz içeriyor)! Ayarlar sayfasından kullanmayı seçebilirsiniz.
-- Daha düzenli bir deneyime kim hayır diyebilir? Sitenizde istatistik modülünü devre dışı bıraktıysanız, Mağazam sayfanızdaki ziyaretçi istatistikleri bölümünü gizleriz.
-- Sipariş ayrıntıları görünümünde, yeniden tasarladığımız (ve daha okunabilir özellikteki) Müşteri Bilgileri ve Ödeme bölümlerinin keyfini çıkarın.
+2.8:
+* Sipariş listesi aramasında imleç yoktu. Artık var!
+* Güncellenen sipariş ayrıntıları ekranı, düzenlediğiniz para iadelerinin listesini de gösterir.
+* “İncelemeler” sekmesi, artık mağazanın tüm ürün incelemelerini görüntüler.
 </tr-TR>
+<zh-CN>
+2.8：
+* 订单列表搜索之前缺少光标。现在新增了光标！
+* 更新的订单详细信息屏幕还显示了您已发放的退款列表。
+*“评论”选项卡现在可显示商店的所有产品评论。
+</zh-CN>
 <zh-TW>
-2.7：
-- 我們已為 WooCommerce 管理員外掛程式提供全新的統計資料頁面 (包含更多細分分析)！從「設定」頁面即可選用此功能。
-- 誰不喜歡更精簡的使用體驗？如果你停用網站的統計資料模組，我們會在「我的商店」頁面中隱藏訪客統計資料區段。
-- 盡情使用訂單詳細資訊檢視畫面中，經過重新設計的「顧客資訊」和「付款」區段。
+2.8：
+* 訂單清單搜尋之前缺少了游標。現在問題已獲得解決！
+*更新後的訂單詳細資料畫面也會顯示已核發的退款清單。
+*「評論」分頁現在會顯示商店所有產品的評論。
 </zh-TW>
 <en-US>
-2.7:
-- There’s a brand-new stats page (with more granular analytics) for those of you who use the WooCommerce Admin plugin! You can opt in to use it from the Settings page.
-- Who doesn’t like a more streamlined experience? If you’ve disabled the stats module on your site, we’ll hide the visitor stats section on your My Store page.
-- Enjoy a redesigned (and more readable) Customer Information and Payment sections in the order detail view.
-/<en-US>
+2.8:
+* Order list search was missing a cursor. Now it’s got one!
+* The updated order detail screen also shows a list of refunds you’ve issued.
+* The “Reviews” tab now displays all product reviews for the store.
+</en-US>
