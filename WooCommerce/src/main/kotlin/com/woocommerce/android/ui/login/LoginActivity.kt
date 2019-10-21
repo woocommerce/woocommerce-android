@@ -271,31 +271,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         showEmailLoginScreen(siteAddress)
     }
 
-    override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
-        // Save site address to app prefs so it's available to MainActivity regardless of how the user
-        // logs into the app. If the redirect url is available, use that as the preferred url. Strip the
-        // protocol from this url string prior to saving to AppPrefs since it's not needed and may cause issues
-        // when attempting to match the url to the authenticated account later in the login process.
-        val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        AppPrefs.setLoginSiteAddress((redirectUrl ?: siteAddress).replaceFirst(protocolRegex, ""))
-
-        if (hasJetpack) {
-            showEmailLoginScreen(siteAddress)
-        } else {
-            // hide the keyboard
-            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
-
-            // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
-            slideInFragment(
-                    fragment = jetpackReqFragment as Fragment,
-                    shouldAddToBackStack = true,
-                    tag = LoginJetpackRequiredFragment.TAG)
-        }
-    }
-
-    override fun gotXmlRpcEndpoint(
-        inputSiteAddress: String,
+    override fun gotConnectedSiteInfo(
+        siteAddress: String,
+        redirectUrl: String?,
         endpointAddress: String?,
         hasJetpack: Boolean
     ) {
@@ -304,16 +282,16 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // protocol from this url string prior to saving to AppPrefs since it's not needed and may cause issues
         // when attempting to match the url to the authenticated account later in the login process.
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        AppPrefs.setLoginSiteAddress(inputSiteAddress.replaceFirst(protocolRegex, ""))
+        AppPrefs.setLoginSiteAddress((redirectUrl ?: siteAddress).replaceFirst(protocolRegex, ""))
 
         if (hasJetpack) {
-            showEmailLoginScreen(inputSiteAddress, endpointAddress)
+            showEmailLoginScreen(siteAddress, endpointAddress)
         } else {
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(inputSiteAddress, endpointAddress)
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress, endpointAddress)
             slideInFragment(
                     fragment = jetpackReqFragment as Fragment,
                     shouldAddToBackStack = true,
