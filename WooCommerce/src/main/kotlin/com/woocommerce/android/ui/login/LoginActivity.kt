@@ -377,6 +377,22 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         viewHelpAndSupport(Origin.LOGIN_USERNAME_PASSWORD)
     }
 
+    override fun helpNoJetpackScreen(
+        siteAddress: String,
+        endpointAddress: String?,
+        username: String,
+        password: String,
+        userAvatarUrl: String?
+    ) {
+        val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
+                siteAddress, endpointAddress, username, password, userAvatarUrl
+        )
+        slideInFragment(
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG)
+    }
+
     // SmartLock
 
     override fun saveCredentialsInSmartLock(
@@ -454,5 +470,16 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         val loginEmailFragment = getLoginEmailFragment()
                 ?: LoginEmailFragment.newInstance(siteAddress, siteXmlRpcAddress)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+    }
+
+    override fun showUsernamePasswordScreen(
+        siteAddress: String?,
+        endpointAddress: String?,
+        inputUsername: String?,
+        inputPassword: String?
+    ) {
+        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+                siteAddress, endpointAddress, null, null, inputUsername, inputPassword, false)
+        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 }

@@ -48,6 +48,12 @@ class LoginJetpackRequiredFragment : Fragment() {
         fun showJetpackInstructions()
         fun showWhatIsJetpackDialog()
         fun showEmailLoginScreen(siteAddress: String?, siteXmlRpcAddress: String? = null)
+        fun showUsernamePasswordScreen(
+            siteAddress: String?,
+            endpointAddress: String?,
+            inputUsername: String?,
+            inputPassword: String?
+        )
     }
 
     private var loginListener: LoginListener? = null

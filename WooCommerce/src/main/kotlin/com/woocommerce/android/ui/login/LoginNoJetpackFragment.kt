@@ -16,8 +16,10 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.widgets.WooClickableSpan
+import kotlinx.android.synthetic.main.fragment_login_no_jetpack.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
 import org.wordpress.android.login.LoginListener
@@ -27,14 +29,16 @@ class LoginNoJetpackFragment : Fragment() {
         const val TAG = "LoginNoJetpackFragment"
         private const val ARG_SITE_ADDRESS = "SITE-ADDRESS"
         private const val ARG_SITE_XMLRPC_ADDRESS = "SITE-XMLRPC-ADDRESS"
-        private val ARG_INPUT_USERNAME = "ARG_INPUT_USERNAME"
-        private val ARG_INPUT_PASSWORD = "ARG_INPUT_PASSWORD"
+        private const val ARG_INPUT_USERNAME = "ARG_INPUT_USERNAME"
+        private const val ARG_INPUT_PASSWORD = "ARG_INPUT_PASSWORD"
+        private const val ARG_USER_AVATAR_URL = "ARG_USER_AVATAR_URL"
 
         fun newInstance(
             siteAddress: String,
             endpointAddress: String?,
             inputUsername: String,
-            inputPassword: String
+            inputPassword: String,
+            userAvatarUrl: String?
         ): LoginNoJetpackFragment {
             val fragment = LoginNoJetpackFragment()
             val args = Bundle()
@@ -42,6 +46,7 @@ class LoginNoJetpackFragment : Fragment() {
             args.putString(ARG_SITE_XMLRPC_ADDRESS, endpointAddress)
             args.putString(ARG_INPUT_USERNAME, inputUsername)
             args.putString(ARG_INPUT_PASSWORD, inputPassword)
+            args.putString(ARG_USER_AVATAR_URL, userAvatarUrl)
             fragment.arguments = args
             return fragment
         }
@@ -53,6 +58,7 @@ class LoginNoJetpackFragment : Fragment() {
     private var siteXmlRpcAddress: String? = null
     private var mInputUsername: String? = null
     private var mInputPassword: String? = null
+    private var userAvatarUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +68,7 @@ class LoginNoJetpackFragment : Fragment() {
             siteXmlRpcAddress = it.getString(ARG_SITE_XMLRPC_ADDRESS, null)
             mInputUsername = it.getString(ARG_INPUT_USERNAME, null)
             mInputPassword = it.getString(ARG_INPUT_PASSWORD, null)
+            userAvatarUrl = it.getString(ARG_USER_AVATAR_URL, null)
         }
     }
 
@@ -77,7 +84,23 @@ class LoginNoJetpackFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        text_displayname.text = mInputUsername
+        with(text_username) {
+            val logOutText = getString(R.string.signout)
+            val usernameText = getString(R.string.login_no_jetpack_username, mInputUsername, logOutText)
+            text = usernameText
+        }
+
+        userAvatarUrl?.let {
+            GlideApp.with(this)
+                    .load(it)
+                    .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
+                    .circleCrop()
+                    .into(image_avatar)
+        }
+
         with(no_stores_view) {
+            visibility = View.VISIBLE
             val refreshAppText = getString(R.string.login_refresh_app_continue)
             val notConnectedText = getString(
                     R.string.login_not_connected_jetpack,
@@ -89,7 +112,9 @@ class LoginNoJetpackFragment : Fragment() {
             spannable.setSpan(
                     WooClickableSpan {
                         // TODO: add event here to track when refresh link is clicked
-                        // TODO: call the username password fragment
+                        jetpackLoginListener?.showUsernamePasswordScreen(
+                                siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                        )
                     },
                     (notConnectedText.length - refreshAppText.length),
                     notConnectedText.length,
@@ -102,16 +127,19 @@ class LoginNoJetpackFragment : Fragment() {
         with(button_primary) {
             text = getString(R.string.login_jetpack_view_setup_instructions)
             setOnClickListener {
-                // Add event here to track when primary button is clicked
+                // TODO: Add event here to track when primary button is clicked
                 jetpackLoginListener?.showJetpackInstructions()
             }
         }
 
         with(button_secondary) {
+            visibility = View.VISIBLE
             text = getString(R.string.try_again)
             setOnClickListener {
-                // Add event here to track when secondary button is clicked
-                // TODO: call the username password fragment
+                // TODO: Add event here to track when secondary button is clicked
+                jetpackLoginListener?.showUsernamePasswordScreen(
+                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                )
             }
         }
     }
