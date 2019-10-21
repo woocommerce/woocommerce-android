@@ -3,6 +3,11 @@
  
 2.9
 -----
+* The orders tab has received a major design overhaul! Search and filtering have been consolidated into a single view that includes a total count of orders by order status. The orders list is now broken up int two tabs: Processing & All. The Processing tab shows all orders waiting to be processed. 
+* The order detail view has also received some touchups. 
+* We now officially support Android 10!
+* Several minor bug fixes are also included in this release.
+
  
 2.8
 -----
