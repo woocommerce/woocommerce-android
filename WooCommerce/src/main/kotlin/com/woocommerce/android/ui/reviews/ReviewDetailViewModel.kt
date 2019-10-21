@@ -108,6 +108,7 @@ final class ReviewDetailViewModel @Inject constructor(
                     SUCCESS, NO_ACTION_NEEDED -> {
                         repository.getCachedProductReview(remoteReviewId)?.let { review ->
                             _productReview.value = review
+                            _isSkeletonShown.value = false
                         }
                     }
                     ERROR -> _showSnackbarMessage.value = R.string.wc_load_review_error

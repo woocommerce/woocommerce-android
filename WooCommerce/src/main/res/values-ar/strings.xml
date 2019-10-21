@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-03 00:54:03+0000
+Translation-Revision-Date: 2019-10-17 00:54:50+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_search_hint">البحث عن المنتجات</string>
+    <string name="product_list_empty_search">لا توجد منتجات متطابقة</string>
+    <string name="product_list_empty">لا توجد منتجات حتى الآن</string>
+    <string name="product_stock_count">%s متوافرة</string>
+    <string name="product_stock_status_instock_with_variations">\u2022%d من التباينات متوافرة</string>
+    <string name="product_image_content_description">صورة المنتج</string>
+    <string name="review_list_item_title">ترك %1$s مراجعة حول %2$s</string>
+    <string name="wc_unapproved">غير موافق عليه</string>
+    <string name="review_single_fetch_error">حدث خطأ في أثناء إحضار مراجعة المنتج الجديدة</string>
+    <string name="review_fetch_error">حدث خطأ في أثناء إحضار مراجعات المنتج</string>
+    <string name="order_refunds_refund_manual_refund_note">لا تدعم إلا عمليات استرداد الأموال اليدوية حاليًا. أكمل عملية استرداد الأموال من خلال لوحة التحكم في بوابة الدفع الخاصة بك، أو انقل الأموال يدويًا إلى العميل.</string>
+    <string name="order_refunds_manual_refund_error">حدث خطأ ما في عملية استرداد الأموال. يُرجى المحاولة مرة أخرى.</string>
+    <string name="order_refunds_manual_refund_successful">تم إرسال عملية استرداد الأموال بنجاح.</string>
+    <string name="order_refunds_manual_refund_progress_message">تجري معالجة عملية استرداد الأموال الخاصة بك لـ %s. يُرجى الانتظار…</string>
+    <string name="order_refunds_quote_image_description">أيقونة الاقتباس</string>
+    <string name="order_refunds_manual_refund">عملية استرداد الأموال اليدوية</string>
+    <string name="order_refunds_refund_details">تفاصيل استرداد الأموال</string>
+    <string name="order_refunds_refunded_via">تم استرداد الأموال بواسطة %s</string>
+    <string name="order_refunds_refund_via">استرداد الأموال بواسطة</string>
+    <string name="order_refunds_reason_hint">سبب استرداد الأموال (اختياري)</string>
+    <string name="order_refunds_reason">سبب استرداد الأموال</string>
+    <string name="order_refunds_refund_amount">مبلغ الاسترداد</string>
+    <string name="order_refunds_previously_refunded">تم الاسترداد مسبقًا</string>
+    <string name="order_refunds_refund_zero_error">لا بد من أن يكون مبلغ الاسترداد أكبر من 0</string>
+    <string name="order_refunds_refund_high_error">مبلغ الاسترداد أكبر من المبلغ المتوافر</string>
+    <string name="order_refunds_refund">مبلغ الاسترداد</string>
+    <string name="order_refunds_next_button_title">التالي</string>
+    <string name="order_refunds_restocking_note">باسترداد المبلغ، لن يُعاد تخزين أي عناصر</string>
+    <string name="order_refunds_title_with_amount">استرداد %s</string>
+    <string name="order_refunds_available_for_refund">%s متوافر للاسترداد</string>
+    <string name="orderdetail_issue_refund_button">نشر مبلغ الاسترداد</string>
+    <string name="orderdetail_refund_view_details">عرض التفاصيل</string>
+    <string name="orderdetail_refund_detail">%1$s بواسطة %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">تجربة الإحصاءات الجديدة المتاحة مع\nإضافة مسؤول WooCommerce</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>
@@ -442,9 +475,7 @@ Language: ar
     <string name="settings_notifs_device">إدارة الإخطارات</string>
     <string name="settings_notifs">الإخطارات</string>
     <string name="settings_confirm_logout">هل تريد بالتأكيد تسجيل الخروج من الحساب %s؟</string>
-    <string name="notifs_detail_loading_error">حدث خطأ أثناء تحميل تفاصيل الإخطار</string>
-    <string name="notifs_review_moderation_undo">تم وسم المراجعة كـ %1$s</string>
-    <string name="notifs_fetch_error">حدث خطأ أثناء إحضار الإخطارات</string>
+    <string name="review_moderation_undo">تم وسم المراجعة كـ %1$s</string>
     <string name="add_order_note_sublabel">في حالة تعطيلها، فستكون الملاحظة خاصة</string>
     <string name="order_error_fetch_generic">حدث خطأ أثناء إحضار الطلب</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -667,7 +698,6 @@ Language: ar
     <string name="dashboard_action_view_orders">عرض الطلبات</string>
     <string name="dashboard_action_view_order">عرض الطلب</string>
     <string name="dashboard_top_earners_empty">لا يوجد أي نشاط في هذه الفترة</string>
-    <string name="dashboard_top_earners_content_description">صورة المنتج</string>
     <string name="dashboard_top_earners_total_orders">إجمالي الطلبات: %s</string>
     <string name="dashboard_top_earners_total_spend">إجمالي الإنفاق</string>
     <string name="dashboard_top_earners_description">احصل على رؤى دقيقة حول كيفية أداء المنتجات في متجرك</string>

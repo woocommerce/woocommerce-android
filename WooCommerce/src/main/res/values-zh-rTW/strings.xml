@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-03 00:54:03+0000
+Translation-Revision-Date: 2019-10-16 04:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_search_hint">搜尋產品</string>
+    <string name="product_list_empty_search">沒有相符的產品</string>
+    <string name="product_list_empty">尚未有任何產品</string>
+    <string name="product_stock_count">尚有 %s 件庫存</string>
+    <string name="product_stock_status_instock_with_variations">尚有庫存 \u2022 %d 子類選項</string>
+    <string name="product_image_content_description">商品圖片</string>
+    <string name="review_list_item_title">%1$s 在%2$s 上留下了評論</string>
+    <string name="wc_unapproved">未核准</string>
+    <string name="review_single_fetch_error">擷取新產品評論時發生錯誤</string>
+    <string name="review_fetch_error">擷取產品評論時發生錯誤</string>
+    <string name="order_refunds_refund_manual_refund_note">目前只支援手動退款。你可透過付款閘道的儀表板完成退款，或手動轉帳給顧客。</string>
+    <string name="order_refunds_manual_refund_error">退款發生錯誤。請再試一次。</string>
+    <string name="order_refunds_manual_refund_successful">退款已成功轉出。</string>
+    <string name="order_refunds_manual_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
+    <string name="order_refunds_quote_image_description">報價圖示</string>
+    <string name="order_refunds_manual_refund">手動退款</string>
+    <string name="order_refunds_refund_details">退款詳細資料</string>
+    <string name="order_refunds_refunded_via">已透過 %s 退款</string>
+    <string name="order_refunds_refund_via">退款方式：</string>
+    <string name="order_refunds_reason_hint">退款理由 (選填)</string>
+    <string name="order_refunds_reason">退款原因</string>
+    <string name="order_refunds_refund_amount">退款金額</string>
+    <string name="order_refunds_previously_refunded">之前已退款</string>
+    <string name="order_refunds_refund_zero_error">退款金額必須大於 ０</string>
+    <string name="order_refunds_refund_high_error">退款超過可退款金額</string>
+    <string name="order_refunds_refund">退款</string>
+    <string name="order_refunds_next_button_title">下一筆</string>
+    <string name="order_refunds_restocking_note">要求退款即不得重新購買同一件商品</string>
+    <string name="order_refunds_title_with_amount">退款 %s</string>
+    <string name="order_refunds_available_for_refund">%s 可退款</string>
+    <string name="orderdetail_issue_refund_button">核發退款</string>
+    <string name="orderdetail_refund_view_details">檢視詳細資訊</string>
+    <string name="orderdetail_refund_detail">%1$s，退款方式：%2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">體驗下列外掛程式提供的全新統計資料：\nWooCommerce 管理員外掛程式</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
     <string name="beta_features">Beta 功能</string>
@@ -442,9 +475,7 @@ Language: zh_TW
     <string name="settings_notifs_device">管理通知</string>
     <string name="settings_notifs">通知</string>
     <string name="settings_confirm_logout">你確定要從帳戶 %s 登出嗎？</string>
-    <string name="notifs_detail_loading_error">載入通知詳細資訊時發生錯誤</string>
-    <string name="notifs_review_moderation_undo">已將評論標記為 %1$s</string>
-    <string name="notifs_fetch_error">擷取通知時發生錯誤</string>
+    <string name="review_moderation_undo">已將評論標記為 %1$s</string>
     <string name="add_order_note_sublabel">若停用，此備註將變成私人狀態</string>
     <string name="order_error_fetch_generic">擷取訂單時發生錯誤</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -667,7 +698,6 @@ Language: zh_TW
     <string name="dashboard_action_view_orders">查看訂單</string>
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_earners_empty">此期間沒有任何活動</string>
-    <string name="dashboard_top_earners_content_description">商品圖片</string>
     <string name="dashboard_top_earners_total_orders">訂單總數：%s</string>
     <string name="dashboard_top_earners_total_spend">消費總額</string>
     <string name="dashboard_top_earners_description">深入瞭解產品在商店上的成效</string>
