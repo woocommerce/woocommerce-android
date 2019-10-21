@@ -26,6 +26,7 @@ interface OrderListContract {
         fun getOrderStatusList(): List<WCOrderStatusModel>
         fun refreshOrderStatusOptions()
         fun loadShipmentTrackingProviders(order: WCOrderModel)
+        suspend fun loadPaymentGateways()
     }
 
     interface View : BaseView<Presenter> {
