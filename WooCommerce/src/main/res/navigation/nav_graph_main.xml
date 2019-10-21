@@ -71,7 +71,7 @@
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.AddOrderNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment"
         tools:layout="@layout/fragment_add_order_note">
         <argument
             android:name="orderId"

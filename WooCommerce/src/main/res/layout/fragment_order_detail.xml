@@ -69,7 +69,7 @@
                     tools:visibility="visible"/>
 
                 <!-- Order Notes -->
-                <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
+                <com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView
                     android:id="@+id/orderDetail_noteList"
                     style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"

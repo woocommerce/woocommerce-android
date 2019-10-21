@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_marginStart="56dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/orderNote_itemDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:background="@color/list_divider" />
+
+    <TextView
+        android:id="@+id/orderDetail_noteListHeader"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:layout_height="wrap_content"
+        tools:text="Jan 21, 2019"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
+
+</LinearLayout>

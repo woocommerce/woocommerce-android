@@ -17,7 +17,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.ui.orders.OrderNoteRepository
+import com.woocommerce.android.ui.orders.notes.OrderNoteRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
