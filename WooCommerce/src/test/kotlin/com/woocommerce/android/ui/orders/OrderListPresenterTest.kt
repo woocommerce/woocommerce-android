@@ -12,6 +12,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.test
+import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -22,6 +24,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
@@ -44,7 +47,14 @@ class OrderListPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite, networkStatus, gatewayStore))
+        presenter = spy(OrderListPresenter(
+                dispatcher,
+                orderStore,
+                selectedSite,
+                networkStatus,
+                gatewayStore,
+                Dispatchers.Unconfined)
+        )
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
@@ -143,6 +153,7 @@ class OrderListPresenterTest {
         presenter.takeView(orderListView)
         presenter.loadOrders(forceRefresh = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
+        doReturn(true).whenever(presenter).arePaymentGatewaysFetched
 
         // OnOrderChanged callback from FluxC with error should trigger error message
         presenter.onOrderChanged(OnOrderChanged(0).apply {
@@ -239,6 +250,17 @@ class OrderListPresenterTest {
     }
 
     @Test
+    fun `Do not load payment gateways if already loaded when network connected`() = test {
+        presenter.takeView(orderListView)
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(true).whenever(presenter).arePaymentGatewaysFetched
+
+        presenter.loadOrders(forceRefresh = false)
+        verify(presenter).loadPaymentGateways()
+        verify(gatewayStore, never()).fetchAllGateways(any())
+    }
+
+    @Test
     fun `Do not load shipment provider list if not already loaded but network not connected`() {
         // Do not load shipment provider lists if not loaded and network not connected
         presenter.takeView(orderListView)
@@ -248,6 +270,17 @@ class OrderListPresenterTest {
         presenter.loadOrders(forceRefresh = false)
         verify(presenter).loadShipmentTrackingProviders(orders[0])
         verify(dispatcher, never()).dispatch(any())
+    }
+
+    @Test
+    fun `Do not load payment gateways if not already loaded but network not connected`() = test {
+        presenter.takeView(orderListView)
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        presenter.loadOrders(forceRefresh = false)
+        verify(presenter).loadPaymentGateways()
+        verify(gatewayStore, never()).fetchAllGateways(any())
     }
 
     @Test
@@ -265,10 +298,24 @@ class OrderListPresenterTest {
     }
 
     @Test
+    fun `Load payment gateways if not already loaded but network is connected - success`() = test {
+        presenter.takeView(orderListView)
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
+        presenter.loadOrders(forceRefresh = false)
+        verify(orderListView).showOrders(orders, isFreshData = false)
+
+        verify(presenter).loadPaymentGateways()
+        verify(gatewayStore, atLeastOnce()).fetchAllGateways(any())
+        assertTrue(presenter.arePaymentGatewaysFetched)
+    }
+
+    @Test
     fun `Load shipment provider list if not already loaded but network is connected - failure`() {
         // load shipment tracking provider list only if not already fetched & network is connected - failure
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(true).whenever(presenter).arePaymentGatewaysFetched
         presenter.loadOrders(forceRefresh = false)
         verify(orderListView).showOrders(orders, isFreshData = false)
 
