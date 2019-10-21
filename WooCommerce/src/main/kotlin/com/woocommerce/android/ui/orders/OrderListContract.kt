@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 interface OrderListContract {
     interface Presenter : BasePresenter<View> {
         var isShipmentTrackingProviderFetched: Boolean
+        var arePaymentGatewaysFetched: Boolean
         fun loadOrders(filterByStatus: String? = null, forceRefresh: Boolean, isFirstRun: Boolean = false)
         fun loadMoreOrders(orderStatusFilter: String? = null)
         fun canLoadMoreOrders(): Boolean

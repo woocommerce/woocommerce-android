@@ -4,12 +4,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
+import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -34,6 +36,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
+import javax.inject.Named
 
 @OpenClassOnDebug
 @ActivityScope
@@ -42,7 +45,8 @@ class OrderListPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
-    private val gatewayStore: WCGatewayStore
+    private val gatewayStore: WCGatewayStore,
+    @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher
 ) : OrderListContract.Presenter {
     companion object {
         private val TAG: String = OrderListPresenter::class.java.simpleName
@@ -62,10 +66,11 @@ class OrderListPresenter @Inject constructor(
     private var canLoadMore = false
     private var canSearchMore = false
     private var nextSearchOffset = 0
-    private var arePaymentGatewaysFetched = false
 
     private var isRefreshingOrderStatusOptions = false
-    override var isShipmentTrackingProviderFetched: Boolean = false
+
+    override var isShipmentTrackingProviderFetched = false
+    override var arePaymentGatewaysFetched = false
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -301,7 +306,7 @@ class OrderListPresenter @Inject constructor(
         orderView?.let { view ->
             val currentOrders = removeFutureOrders(orders)
             if (currentOrders.count() > 0) {
-                GlobalScope.launch(Dispatchers.Default) {
+                GlobalScope.launch(backgroundDispatcher) {
                     // load shipment tracking providers list only if order list is fetched and displayed.
                     // for some reason, orderId is required to fetch shipment tracking providers
                     // so passing the first order in the order list
