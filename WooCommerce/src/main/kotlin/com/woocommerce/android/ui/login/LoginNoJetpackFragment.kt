@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.login
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -23,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_login_no_jetpack.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
 import org.wordpress.android.login.LoginListener
+import org.wordpress.android.login.LoginMode
 
 class LoginNoJetpackFragment : Fragment() {
     companion object {
@@ -89,6 +89,23 @@ class LoginNoJetpackFragment : Fragment() {
             val logOutText = getString(R.string.signout)
             val usernameText = getString(R.string.login_no_jetpack_username, mInputUsername, logOutText)
             text = usernameText
+
+            val spannable = SpannableString(usernameText)
+            spannable.setSpan(
+                    WooClickableSpan {
+                        // TODO: add event here to track when logout is clicked
+                        activity?.setResult(Activity.RESULT_CANCELED)
+                        val intent = Intent(activity, LoginActivity::class.java)
+                        LoginMode.WOO_LOGIN_MODE.putInto(intent)
+                        startActivity(intent)
+                        activity?.finish()
+                    },
+                    (usernameText.length - logOutText.length),
+                    usernameText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            setText(spannable, TextView.BufferType.SPANNABLE)
+            movementMethod = LinkMovementMethod.getInstance()
         }
 
         userAvatarUrl?.let {
@@ -101,27 +118,7 @@ class LoginNoJetpackFragment : Fragment() {
 
         with(no_stores_view) {
             visibility = View.VISIBLE
-            val refreshAppText = getString(R.string.login_refresh_app_continue)
-            val notConnectedText = getString(
-                    R.string.login_not_connected_jetpack,
-                    siteAddress,
-                    refreshAppText
-            )
-
-            val spannable = SpannableString(notConnectedText)
-            spannable.setSpan(
-                    WooClickableSpan {
-                        // TODO: add event here to track when refresh link is clicked
-                        jetpackLoginListener?.showUsernamePasswordScreen(
-                                siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
-                        )
-                    },
-                    (notConnectedText.length - refreshAppText.length),
-                    notConnectedText.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-            setText(spannable, TextView.BufferType.SPANNABLE)
-            movementMethod = LinkMovementMethod.getInstance()
+            text = getString(R.string.login_no_jetpack, siteAddress)
         }
 
         with(button_primary) {
@@ -142,21 +139,13 @@ class LoginNoJetpackFragment : Fragment() {
                 )
             }
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_login, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.help) {
-            // TODO: add tracking here when help is clicked
-            loginListener?.helpSiteAddress(siteAddress)
-            return true
+        with(button_help) {
+            setOnClickListener {
+                // TODO: add tracking here when help is clicked
+                loginListener?.helpSiteAddress(siteAddress)
+            }
         }
-
-        return false
     }
 
     override fun onAttach(context: Context?) {
