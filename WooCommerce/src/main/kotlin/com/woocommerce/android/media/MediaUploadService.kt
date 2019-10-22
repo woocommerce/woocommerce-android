@@ -173,6 +173,15 @@ class MediaUploadService : JobIntentService() {
             val imageList = ArrayList<WCProductImageModel>().also {
                 it.add(WCProductImageModel.fromMediaModel(media))
             }
+
+            // make sure we're only replacing the first image
+            with(product.getImages()) {
+                if (this.size > 1) {
+                    this.removeAt(0)
+                    imageList.addAll(this)
+                }
+            }
+
             val site = siteStore.getSiteByLocalId(media.localSiteId)
             val payload = UpdateProductImagesPayload(site, media.postId, imageList)
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
