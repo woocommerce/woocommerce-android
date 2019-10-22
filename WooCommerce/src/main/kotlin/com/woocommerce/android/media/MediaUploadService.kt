@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
@@ -169,9 +170,11 @@ class MediaUploadService : JobIntentService() {
             WooLog.w(WooLog.T.MEDIA, "MediaUploadService > product is null")
             handleFailure(media.postId)
         } else {
-            val mediaList = ArrayList<MediaModel>().also { it.add(media) }
+            val imageList = ArrayList<WCProductImageModel>().also {
+                it.add(WCProductImageModel.fromMediaModel(media))
+            }
             val site = siteStore.getSiteByLocalId(media.localSiteId)
-            val payload = UpdateProductImagesPayload(site, media.postId, mediaList)
+            val payload = UpdateProductImagesPayload(site, media.postId, imageList)
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
         }
     }
@@ -179,16 +182,15 @@ class MediaUploadService : JobIntentService() {
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductImagesChanged(event: OnProductImagesChanged) {
-        val remoteProductId = event.product?.remoteProductId ?: 0L
         if (event.isError) {
             WooLog.w(
                     WooLog.T.MEDIA,
                     "MediaUploadService > error changing product images: ${event.error.type}, ${event.error.message}"
             )
-            handleFailure(remoteProductId)
+            handleFailure(event.remoteProductId)
         } else {
             WooLog.i(WooLog.T.MEDIA, "MediaUploadService > product images changed")
-            handleSuccess(remoteProductId)
+            handleSuccess(event.remoteProductId)
         }
     }
 
