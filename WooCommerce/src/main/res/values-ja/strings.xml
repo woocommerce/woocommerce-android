@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-03 02:54:44+0000
+Translation-Revision-Date: 2019-10-17 00:55:01+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_search_hint">商品を検索</string>
+    <string name="product_list_empty_search">一致する商品はありません</string>
+    <string name="product_list_empty">まだ商品がありません</string>
+    <string name="product_stock_count">在庫%s個</string>
+    <string name="product_stock_status_instock_with_variations">在庫 \u2022 %d個のバリエーション</string>
+    <string name="product_image_content_description">商品画像</string>
+    <string name="review_list_item_title">%1$sさんが%2$sに関するレビューを書きました</string>
+    <string name="wc_unapproved">非承認</string>
+    <string name="review_single_fetch_error">新規の商品レビュー取得中にエラーが発生しました</string>
+    <string name="review_fetch_error">商品レビュー取得中にエラーが発生しました</string>
+    <string name="order_refunds_refund_manual_refund_note">現在、手動での返金のみに対応しています。決済方法ダッシュボードから返金を完了するか、手動で顧客に送金してください。</string>
+    <string name="order_refunds_manual_refund_error">返金処理でエラーが発生しました。もう一度お試しください。</string>
+    <string name="order_refunds_manual_refund_successful">返金処理を正常に送信しました。</string>
+    <string name="order_refunds_manual_refund_progress_message">%sの返金処理を実行中です。しばらくお待ちください…</string>
+    <string name="order_refunds_quote_image_description">見積もりアイコン</string>
+    <string name="order_refunds_manual_refund">手動返金</string>
+    <string name="order_refunds_refund_details">返金の詳細</string>
+    <string name="order_refunds_refunded_via">%s経由で返金済み</string>
+    <string name="order_refunds_refund_via">経由で返金</string>
+    <string name="order_refunds_reason_hint">返金の理由 (オプション)</string>
+    <string name="order_refunds_reason">返金の理由</string>
+    <string name="order_refunds_refund_amount">返金額</string>
+    <string name="order_refunds_previously_refunded">過去に返金済み</string>
+    <string name="order_refunds_refund_zero_error">返金額は0以上である必要があります</string>
+    <string name="order_refunds_refund_high_error">返金額が返金可能額を超えています</string>
+    <string name="order_refunds_refund">返金</string>
+    <string name="order_refunds_next_button_title">次へ</string>
+    <string name="order_refunds_restocking_note">返金しても、アイテムは在庫に戻りません</string>
+    <string name="order_refunds_title_with_amount">%sを返金</string>
+    <string name="order_refunds_available_for_refund">%sが返金可能</string>
+    <string name="orderdetail_issue_refund_button">返金を実行</string>
+    <string name="orderdetail_refund_view_details">詳細を表示</string>
+    <string name="orderdetail_refund_detail">%2$s経由で%1$s - %3$s</string>
     <string name="settings_enable_v4_stats_message">WooCommerce Admin プラグインで利用可能な\n新しい統計機能をお試しください</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
     <string name="beta_features">ベータ版の機能</string>
@@ -442,9 +475,7 @@ Language: ja_JP
     <string name="settings_notifs_device">通知の管理</string>
     <string name="settings_notifs">通知</string>
     <string name="settings_confirm_logout">アカウントからログアウトしてもよいですか%s?</string>
-    <string name="notifs_detail_loading_error">通知の詳細を読み込む際にエラーが発生しました</string>
-    <string name="notifs_review_moderation_undo">レビューを%1$sとしてマークする</string>
-    <string name="notifs_fetch_error">通知をダウンロードする際にエラーが発生しました</string>
+    <string name="review_moderation_undo">レビューを%1$sとしてマークする</string>
     <string name="add_order_note_sublabel">無効にするとメモは公開されません</string>
     <string name="order_error_fetch_generic">注文を取得する際にエラーが発生しました</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -667,7 +698,6 @@ Language: ja_JP
     <string name="dashboard_action_view_orders">注文を表示</string>
     <string name="dashboard_action_view_order">注文を表示</string>
     <string name="dashboard_top_earners_empty">この期間のアクティビティはありません</string>
-    <string name="dashboard_top_earners_content_description">商品画像</string>
     <string name="dashboard_top_earners_total_orders">注文合計:%s</string>
     <string name="dashboard_top_earners_total_spend">支払い合計額</string>
     <string name="dashboard_top_earners_description">ストアでの商品売り上げ状況に関する統計概要を得られます</string>

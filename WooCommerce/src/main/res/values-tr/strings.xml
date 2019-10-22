@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-01 14:54:03+0000
+Translation-Revision-Date: 2019-10-18 00:54:56+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_search_hint">Ürünleri ara</string>
+    <string name="product_list_empty_search">Eşleşen ürün yok</string>
+    <string name="product_list_empty">Henüz ürün yok</string>
+    <string name="product_stock_count">Stokta %s</string>
+    <string name="product_stock_status_instock_with_variations">Stokta \u2022 %d varyasyonları</string>
+    <string name="product_image_content_description">Ürün görseli</string>
+    <string name="review_list_item_title">%1$s, %2$s tarihinde bir inceleme yazdı</string>
+    <string name="wc_unapproved">Onaylanmamış</string>
+    <string name="review_single_fetch_error">Yeni ürün incelemesi alınırken hata</string>
+    <string name="review_fetch_error">Ürün incelemesi alınırken hata</string>
+    <string name="order_refunds_refund_manual_refund_note">Şu anda yalnızca elle iade desteklenmektedir. Ödeme geçidinizin panosundan veya parayı müşteriye elle aktararak iadeyi tamamlayın.</string>
+    <string name="order_refunds_manual_refund_error">Para iadesiyle ilgili bir şeyler yanlış gitti. Lütfen yeniden deneyin.</string>
+    <string name="order_refunds_manual_refund_successful">Para iadesi başarıyla bildirildi.</string>
+    <string name="order_refunds_manual_refund_progress_message">%s için para iadeniz işleniyor. Lütfen bekleyin…</string>
+    <string name="order_refunds_quote_image_description">Alıntı simgesi</string>
+    <string name="order_refunds_manual_refund">Elle para iadesi</string>
+    <string name="order_refunds_refund_details">Para İadesi ayrıntıları</string>
+    <string name="order_refunds_refunded_via">%s ile iade edildi</string>
+    <string name="order_refunds_refund_via">Para iade yöntemi</string>
+    <string name="order_refunds_reason_hint">Para iadesi nedeni (isteğe bağlı)</string>
+    <string name="order_refunds_reason">Para iadesi nedeni</string>
+    <string name="order_refunds_refund_amount">Para iadesi tutarı</string>
+    <string name="order_refunds_previously_refunded">Önceden iade edilen</string>
+    <string name="order_refunds_refund_zero_error">Para iadesi 0 değerinden büyük olmalıdır</string>
+    <string name="order_refunds_refund_high_error">Para iadesi, kullanılabilir miktardan daha yüksek</string>
+    <string name="order_refunds_refund">Para İadesi</string>
+    <string name="order_refunds_next_button_title">Sonraki</string>
+    <string name="order_refunds_restocking_note">Bir miktar iadesiyle, herhangi bir öğe yeniden stoklanmayacaktır</string>
+    <string name="order_refunds_title_with_amount">%s iade et</string>
+    <string name="order_refunds_available_for_refund">%s para iadesi için kullanılabilir</string>
+    <string name="orderdetail_issue_refund_button">Para iadesi düzenle</string>
+    <string name="orderdetail_refund_view_details">Detayları görüntüle</string>
+    <string name="orderdetail_refund_detail">%1$s, %2$s – %3$s aracılığıyla</string>
     <string name="settings_enable_v4_stats_message">Mevcut yeni istatistikleri deneyin:\nWooCommerce yönetici eklentisi</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
     <string name="beta_features">Beta özellikler</string>
@@ -442,9 +475,7 @@ Language: tr
     <string name="settings_notifs_device">Bildirimleri yönet</string>
     <string name="settings_notifs">Bildirimler</string>
     <string name="settings_confirm_logout">%s hesabının oturumunu kapatmak istediğinizden emin misiniz?</string>
-    <string name="notifs_detail_loading_error">Bildirim ayrıntıları yüklenirken hata oluştu</string>
-    <string name="notifs_review_moderation_undo">İnceleme %1$s olarak işaretlendi</string>
-    <string name="notifs_fetch_error">Bildirimler alınırken hata oluştu</string>
+    <string name="review_moderation_undo">İnceleme %1$s olarak işaretlendi</string>
     <string name="add_order_note_sublabel">Devre dışıysa not gizli olur</string>
     <string name="order_error_fetch_generic">Sipariş alınırken hata oluştu</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -667,7 +698,6 @@ Language: tr
     <string name="dashboard_action_view_orders">Siparişleri Görüntüle</string>
     <string name="dashboard_action_view_order">Siparişi Görüntüle</string>
     <string name="dashboard_top_earners_empty">Bu dönemde hiç etkinlik yok</string>
-    <string name="dashboard_top_earners_content_description">Ürün görseli</string>
     <string name="dashboard_top_earners_total_orders">Toplam sipariş: %s</string>
     <string name="dashboard_top_earners_total_spend">Toplam harcama</string>
     <string name="dashboard_top_earners_description">Ürünlerin mağazanızdaki performansına dair içgörüler edinin</string>

@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-01 14:54:03+0000
+Translation-Revision-Date: 2019-10-16 00:55:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_search_hint">Cerca prodotti</string>
+    <string name="product_list_empty_search">Nessun prodotto corrispondente</string>
+    <string name="product_list_empty">Ancora nessun prodotto</string>
+    <string name="product_stock_count">%s in magazzino</string>
+    <string name="product_stock_status_instock_with_variations">%d varianti \u2022 in magazzino</string>
+    <string name="product_image_content_description">Immagine prodotto</string>
+    <string name="review_list_item_title">%1$s ha lasciato una recensione per %2$s</string>
+    <string name="wc_unapproved">Non approvato</string>
+    <string name="review_single_fetch_error">Errore durante il recupero della nuova recensione prodotto</string>
+    <string name="review_fetch_error">Errore durante il recupero delle recensioni prodotto</string>
+    <string name="order_refunds_refund_manual_refund_note">Al momento sono supportati soltanto i rimborsi manuali. Completa il rimborso tramite la bacheca del tuo gateway di pagamento o trasferisci manualmente il denaro al cliente.</string>
+    <string name="order_refunds_manual_refund_error">Si è verificato un problema con il rimborso. Riprova.</string>
+    <string name="order_refunds_manual_refund_successful">Il rimborso è stato emesso correttamente.</string>
+    <string name="order_refunds_manual_refund_progress_message">Il rimborso per %s è in fase di elaborazione. Attendi…</string>
+    <string name="order_refunds_quote_image_description">Icona preventivo</string>
+    <string name="order_refunds_manual_refund">Rimborso manuale</string>
+    <string name="order_refunds_refund_details">Dettagli di rimborso</string>
+    <string name="order_refunds_refunded_via">Rimborso effettuato tramite %s</string>
+    <string name="order_refunds_refund_via">Rimborso tramite</string>
+    <string name="order_refunds_reason_hint">Motivo per il rimborso (opzionale)</string>
+    <string name="order_refunds_reason">Motivo per il rimborso</string>
+    <string name="order_refunds_refund_amount">Importo del rimborso</string>
+    <string name="order_refunds_previously_refunded">Precedentemente rimborsato</string>
+    <string name="order_refunds_refund_zero_error">Il rimborso deve essere maggiore di 0</string>
+    <string name="order_refunds_refund_high_error">Il rimborso è maggiore dell\'importo disponibile</string>
+    <string name="order_refunds_refund">Rimborso</string>
+    <string name="order_refunds_next_button_title">Successivo</string>
+    <string name="order_refunds_restocking_note">Rimborsando un importo, nessun articolo sarà rifornito</string>
+    <string name="order_refunds_title_with_amount">Rimborso %s</string>
+    <string name="order_refunds_available_for_refund">Disponibile per il rimborso: %s</string>
+    <string name="orderdetail_issue_refund_button">Emetti rimborso</string>
+    <string name="orderdetail_refund_view_details">Guarda i dettagli</string>
+    <string name="orderdetail_refund_detail">%1$s tramite %2$s - %3$s</string>
     <string name="settings_enable_v4_stats_message">Prova le nuove statistiche disponibili con il\nplugin WooCommerce Admin</string>
     <string name="settings_enable_v4_stats_title">Statistiche migliorate</string>
     <string name="beta_features">Funzionalità beta</string>
@@ -442,9 +475,7 @@ Language: it
     <string name="settings_notifs_device">Gestisci notifiche</string>
     <string name="settings_notifs">Notifiche</string>
     <string name="settings_confirm_logout">Desideri uscire dall\'account %s?</string>
-    <string name="notifs_detail_loading_error">Errore durante il caricamento dei dettagli della notifica</string>
-    <string name="notifs_review_moderation_undo">Recensione segnalata come %1$s</string>
-    <string name="notifs_fetch_error">Errore durante recupero delle notifiche</string>
+    <string name="review_moderation_undo">Recensione contrassegnata come %1$s</string>
     <string name="add_order_note_sublabel">Se disabilitata, la nota diventerà privata</string>
     <string name="order_error_fetch_generic">Errore durante il recupero dell\'ordine</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -667,7 +698,6 @@ Language: it
     <string name="dashboard_action_view_orders">Visualizza ordini</string>
     <string name="dashboard_action_view_order">Visualizza ordine</string>
     <string name="dashboard_top_earners_empty">Nessuna attività per questo periodo</string>
-    <string name="dashboard_top_earners_content_description">Immagine prodotto</string>
     <string name="dashboard_top_earners_total_orders">Ordini totali: %s</string>
     <string name="dashboard_top_earners_total_spend">Spesa totale</string>
     <string name="dashboard_top_earners_description">Ottieni informazioni su come i prodotti vengono tracciati nel negozio</string>

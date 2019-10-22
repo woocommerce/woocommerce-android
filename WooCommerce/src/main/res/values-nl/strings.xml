@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-01 14:54:03+0000
+Translation-Revision-Date: 2019-10-16 00:55:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_search_hint">Zoeken naar producten</string>
+    <string name="product_list_empty_search">Geen overeenkomende producten</string>
+    <string name="product_list_empty">Nog geen producten</string>
+    <string name="product_stock_count">%s op voorraad</string>
+    <string name="product_stock_status_instock_with_variations">Op voorraad \u2022 %d variaties</string>
+    <string name="product_image_content_description">Productafbeelding</string>
+    <string name="review_list_item_title">%1$s heeft een beoordeling geplaatst voor %2$s</string>
+    <string name="wc_unapproved">Afgekeurd</string>
+    <string name="review_single_fetch_error">Fout bij ophalen nieuwe productbeoordeling</string>
+    <string name="review_fetch_error">Fout bij ophalen productbeoordeling</string>
+    <string name="order_refunds_refund_manual_refund_note">Momenteel worden alleen handmatige restituties ondersteund. Rond de restitutie af via het dashboard van je betalingsgateway of door het geld handmatig over te maken naar de klant.</string>
+    <string name="order_refunds_manual_refund_error">Er is iets fout gegaan tijdens de restitutie. Probeer het nog eens.</string>
+    <string name="order_refunds_manual_refund_successful">De restitutie is verzonden.</string>
+    <string name="order_refunds_manual_refund_progress_message">Je restitutie van %s is in behandeling genomen. Een moment geduld…</string>
+    <string name="order_refunds_quote_image_description">Pictogram offerte</string>
+    <string name="order_refunds_manual_refund">Handmatige restitutie</string>
+    <string name="order_refunds_refund_details">Restitutiedetails</string>
+    <string name="order_refunds_refunded_via">Gerestitueerd via %s</string>
+    <string name="order_refunds_refund_via">Restitutie via</string>
+    <string name="order_refunds_reason_hint">Reden voor restitutie (optioneel)</string>
+    <string name="order_refunds_reason">Reden voor restitutie</string>
+    <string name="order_refunds_refund_amount">Restitutiebedrag</string>
+    <string name="order_refunds_previously_refunded">Eerder gerestitueerd</string>
+    <string name="order_refunds_refund_zero_error">Het restitutiebedrag moet hoger zijn dan 0</string>
+    <string name="order_refunds_refund_high_error">Het restitutiebedrag is hoger dan het beschikbare bedrag</string>
+    <string name="order_refunds_refund">Restitutie</string>
+    <string name="order_refunds_next_button_title">Volgende</string>
+    <string name="order_refunds_restocking_note">Door een bedrag te restitueren, worden voorraden van een product niet aangevuld</string>
+    <string name="order_refunds_title_with_amount">Restitutie %s</string>
+    <string name="order_refunds_available_for_refund">%s restitueerbaar</string>
+    <string name="orderdetail_issue_refund_button">Restitueren</string>
+    <string name="orderdetail_refund_view_details">Gegevens weergeven</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Probeer de nieuwe statistieken die beschikbaar zijn met de\nWooCommerce Admin-plugin</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
     <string name="beta_features">Bèta-functies</string>
@@ -442,9 +475,7 @@ Language: nl
     <string name="settings_notifs_device">Meldingen beheren</string>
     <string name="settings_notifs">Meldingen</string>
     <string name="settings_confirm_logout">Weet je zeker dat je wilt uitloggen bij het account %s?</string>
-    <string name="notifs_detail_loading_error">Meldingsgegevens laden mislukt</string>
-    <string name="notifs_review_moderation_undo">Beoordeling gemarkeerd als %1$s</string>
-    <string name="notifs_fetch_error">Fout bij ophalen meldingen</string>
+    <string name="review_moderation_undo">Beoordeling gemarkeerd als %1$s</string>
     <string name="add_order_note_sublabel">Als deze functie is uitgeschakeld, is de opmerking privé</string>
     <string name="order_error_fetch_generic">Fout bij ophalen bestelling</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -667,7 +698,6 @@ Language: nl
     <string name="dashboard_action_view_orders">Bestellingen weergeven</string>
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
     <string name="dashboard_top_earners_empty">Geen activiteiten deze periode</string>
-    <string name="dashboard_top_earners_content_description">Productafbeelding</string>
     <string name="dashboard_top_earners_total_orders">Totaalaantal bestellingen: %s</string>
     <string name="dashboard_top_earners_total_spend">Totaal uitgegeven</string>
     <string name="dashboard_top_earners_description">Krijg inzicht in hoe goed producten op je site presteren</string>

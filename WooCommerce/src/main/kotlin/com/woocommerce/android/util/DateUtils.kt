@@ -43,13 +43,12 @@ object DateUtils {
      * Returns a string in the format of {date} at {time}.
      */
     fun getFriendlyShortDateAtTimeString(context: Context, date: Date): String {
-        val timeGroup = TimeGroup.getTimeGroupForDate(date)
-        val dateLabel = when (timeGroup) {
+        val dateLabel = when (TimeGroup.getTimeGroupForDate(date)) {
             TimeGroup.GROUP_TODAY -> {
-                context.getString(R.string.date_timeframe_today).toLowerCase()
+                context.getString(R.string.date_timeframe_today).toLowerCase(Locale.getDefault())
             }
             TimeGroup.GROUP_YESTERDAY -> {
-                context.getString(R.string.date_timeframe_yesterday).toLowerCase()
+                context.getString(R.string.date_timeframe_yesterday).toLowerCase(Locale.getDefault())
             }
             else -> {
                 DateFormat.getDateFormat(context).format(date)
@@ -66,13 +65,16 @@ object DateUtils {
 
     fun getFriendlyLongDateAtTimeString(context: Context, rawDate: String): String {
         val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
-        val timeGroup = TimeGroup.getTimeGroupForDate(date)
-        val dateLabel = when (timeGroup) {
+        return getFriendlyShortDateAtTimeString(context, date)
+    }
+
+    fun getFriendlyLongDateAtTimeString(context: Context, date: Date): String {
+        val dateLabel = when (TimeGroup.getTimeGroupForDate(date)) {
             TimeGroup.GROUP_TODAY -> {
-                context.getString(R.string.date_timeframe_today).toLowerCase()
+                context.getString(R.string.date_timeframe_today).toLowerCase(Locale.getDefault())
             }
             TimeGroup.GROUP_YESTERDAY -> {
-                context.getString(R.string.date_timeframe_yesterday).toLowerCase()
+                context.getString(R.string.date_timeframe_yesterday).toLowerCase(Locale.getDefault())
             }
             else -> {
                 DateFormat.getLongDateFormat(context).format(date)

@@ -36,20 +36,25 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
         revenueStatsModel: WCRevenueStatsModel?,
         granularity: StatsGranularity
     ) {
-        val startInterval = revenueStatsModel?.getIntervalList()?.first()?.interval
-        val startDate = startInterval?.let { getDateValue(it, granularity) }
+        if (revenueStatsModel?.getIntervalList().isNullOrEmpty()) {
+            dashboard_date_range_value.visibility = View.GONE
+        } else {
+            val startInterval = revenueStatsModel?.getIntervalList()?.first()?.interval
+            val startDate = startInterval?.let { getDateValue(it, granularity) }
 
-        val dateRangeString = when (granularity) {
-            StatsGranularity.WEEKS -> {
-                val endInterval = revenueStatsModel?.getIntervalList()?.last()?.interval
-                val endDate = endInterval?.let { getDateValue(it, granularity) }
-                String.format("%s – %s", startDate, endDate)
+            val dateRangeString = when (granularity) {
+                StatsGranularity.WEEKS -> {
+                    val endInterval = revenueStatsModel?.getIntervalList()?.last()?.interval
+                    val endDate = endInterval?.let { getDateValue(it, granularity) }
+                    String.format("%s – %s", startDate, endDate)
+                }
+                else -> {
+                    startDate
+                }
             }
-            else -> {
-                startDate
-            }
+            dashboard_date_range_value.visibility = View.VISIBLE
+            dashboard_date_range_value.text = dateRangeString
         }
-        dashboard_date_range_value.text = dateRangeString
     }
 
     fun clearDateRangeValues() {

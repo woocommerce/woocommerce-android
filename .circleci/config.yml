@@ -4,7 +4,8 @@ copy_gradle_properties: &copy_gradle_properties
     command: cp gradle.properties-example gradle.properties
 
 orbs:
-  android: wordpress-mobile/android@0.0.27
+  # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
+  android: wordpress-mobile/android@1.0
   bundle-install: toshimaru/bundle-install@0.1.1
 
 version: 2.1

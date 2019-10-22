@@ -1,0 +1,4 @@
+2.8:
+* Cursor ontbrak bij zoekopdracht bestellijst. Nu heeft hij er een!
+* Het scherm met bestellingsdetails is bijgewerkt en toont nu ook een lijst van alle restituties die je hebt verzonden.
+* Het tabblad 'beoordelingen' geeft nu alle productbeoordelingen van de winkel weer.

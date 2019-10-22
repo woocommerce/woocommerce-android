@@ -266,6 +266,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         REVIEWS_MARK_ALL_READ_FAILED,
         REVIEWS_LIST_PULLED_TO_REFRESH,
         REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED,
+        REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
 
         // -- Product Review Detail
         REVIEW_LOADED,
