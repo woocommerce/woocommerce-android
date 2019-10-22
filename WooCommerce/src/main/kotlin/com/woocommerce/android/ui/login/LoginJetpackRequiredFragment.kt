@@ -32,13 +32,11 @@ class LoginJetpackRequiredFragment : Fragment() {
     companion object {
         const val TAG = "LoginJetpackRequiredFragment"
         const val ARG_SITE_ADDRESS = "SITE-ADDRESS"
-        const val ARG_SITE_XMLRPC_ADDRESS = "SITE-XMLRPC-ADDRESS"
 
-        fun newInstance(siteAddress: String, endpointAddress: String? = null): LoginJetpackRequiredFragment {
+        fun newInstance(siteAddress: String): LoginJetpackRequiredFragment {
             val fragment = LoginJetpackRequiredFragment()
             val args = Bundle()
             args.putString(ARG_SITE_ADDRESS, siteAddress)
-            args.putString(ARG_SITE_XMLRPC_ADDRESS, endpointAddress)
             fragment.arguments = args
             return fragment
         }
@@ -47,7 +45,7 @@ class LoginJetpackRequiredFragment : Fragment() {
     interface LoginJetpackRequiredListener {
         fun showJetpackInstructions()
         fun showWhatIsJetpackDialog()
-        fun showEmailLoginScreen(siteAddress: String?, siteXmlRpcAddress: String? = null)
+        fun showEmailLoginScreen(siteAddress: String?)
         fun showUsernamePasswordScreen(
             siteAddress: String?,
             endpointAddress: String?,
@@ -59,14 +57,12 @@ class LoginJetpackRequiredFragment : Fragment() {
     private var loginListener: LoginListener? = null
     private var jetpackLoginListener: LoginJetpackRequiredListener? = null
     private var siteAddress: String? = null
-    private var siteXmlRpcAddress: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
             siteAddress = it.getString(ARG_SITE_ADDRESS, null)
-            siteXmlRpcAddress = it.getString(ARG_SITE_XMLRPC_ADDRESS, null)
         }
     }
 
@@ -116,7 +112,7 @@ class LoginJetpackRequiredFragment : Fragment() {
                         AppPrefs.setLoginUserBypassedJetpackRequired()
 
                         // Display the login by email screen
-                        jetpackLoginListener?.showEmailLoginScreen(siteAddress.orEmpty(), siteXmlRpcAddress.orEmpty())
+                        jetpackLoginListener?.showEmailLoginScreen(siteAddress.orEmpty())
                     },
                     (jetpackInstalledText.length - signInText.length),
                     jetpackInstalledText.length,
