@@ -1,17 +1,18 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.notes
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
+import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
-import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.model.OrderNote
 import kotlinx.android.synthetic.main.order_detail_note_item.view.*
-import org.wordpress.android.fluxc.model.WCOrderNoteModel
 
 class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
@@ -19,21 +20,29 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
         View.inflate(context, R.layout.order_detail_note_item, this)
     }
 
-    fun initView(note: WCOrderNoteModel) {
-        orderNote_created.text = DateUtils.getFriendlyLongDateAtTimeString(context, note.dateCreated).capitalize()
+    @SuppressLint("SetTextI18n")
+    fun initView(note: OrderNote, showBottomPadding: Boolean) {
+        val date = DateFormat.getTimeFormat(context).format(note.dateCreated)
+        val type = when {
+            note.isCustomerNote -> context.getString(R.string.orderdetail_note_public)
+            note.isSystemNote -> context.getString(R.string.orderdetail_note_system)
+            else -> context.getString(R.string.orderdetail_note_private)
+        }
+        val header = if (note.isSystemNote) "$date ($type)" else "$date - ${note.author} ($type)"
+
+        orderNote_header.text = header
         orderNote_note.text = getHtmlText(note.note)
+
+        orderNote_bottomSpacer.visibility = if (showBottomPadding) View.VISIBLE else View.GONE
 
         when {
             note.isCustomerNote -> {
-                orderNote_type.text = context.getString(R.string.orderdetail_note_public)
                 orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_public))
             }
             note.isSystemNote -> {
-                orderNote_type.text = context.getString(R.string.orderdetail_note_system)
                 orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_system))
             }
             else -> {
-                orderNote_type.text = context.getString(R.string.orderdetail_note_private)
                 orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
             }
         }

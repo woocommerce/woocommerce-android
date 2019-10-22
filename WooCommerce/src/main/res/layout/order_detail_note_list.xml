@@ -34,7 +34,6 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/orderdetail_addnote_contentdesc"
             android:orientation="horizontal"
-            android:paddingBottom="@dimen/margin_medium"
             android:paddingTop="@dimen/margin_medium">
 
             <ImageView
@@ -59,22 +58,15 @@
 
         </LinearLayout>
 
-        <View
-            android:id="@+id/noteList_addNote_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/margin_large"
-            android:layout_marginEnd="@dimen/list_item_padding_end"
-            android:layout_marginStart="56dp"
-            android:background="@color/list_divider"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/notesList_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             tools:itemCount="4"
-            tools:listitem="@layout/order_detail_note_list_item"
+            tools:listitem="@layout/order_detail_note_list_note"
             tools:targetApi="lollipop"/>
+
     </LinearLayout>
+
 </merge>

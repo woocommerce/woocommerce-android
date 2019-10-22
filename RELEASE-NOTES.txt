@@ -8,6 +8,7 @@
 * Order search functionality has been redesigned and now displays counts by order status. Items in this list can be clicked to immediately filter by that order status as well as allows for searching for orders by order status.
 * Fixed missing cursor in order list search
 * See a list of issued refunds inside the order detail screen
+* Fixed rare crash on opening stats page with WooCommerce Admin plugin enabled
  
 2.7
 -----

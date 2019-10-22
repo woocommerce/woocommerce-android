@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,57 +10,50 @@
         android:id="@+id/orderNote_icon"
         android:layout_width="@dimen/order_note_icon"
         android:layout_height="@dimen/order_note_icon"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
         android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_note_private"/>
 
     <TextView
-        android:id="@+id/orderNote_created"
+        android:id="@+id/orderNote_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/card_section_padding_h"
-        android:paddingBottom="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constrainedWidth="true"
-        tools:text="Nov 13, 2017 at 9:54 AM"/>
-
-    <TextView
-        android:id="@+id/orderNote_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/card_section_padding_h"
-        android:paddingBottom="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+        android:layout_marginStart="@dimen/list_item_padding_start_from_icon"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
         android:textColor="@color/wc_grey_mid"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
-        app:layout_constraintTop_toBottomOf="@+id/orderNote_created"
+        app:layout_constraintStart_toEndOf="@id/orderNote_icon"
+        app:layout_constraintTop_toTopOf="@id/orderNote_icon"
         app:layout_constrainedWidth="true"
-        tools:text="Private Note"/>
+        tools:text="Nov 13, 2017 at 9:54 AM"/>
 
     <TextView
         android:id="@+id/orderNote_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/card_section_padding_h"
-        android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:layout_gravity="start"
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:lineSpacingMultiplier="1.2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
-        app:layout_constraintTop_toBottomOf="@+id/orderNote_type"
+        app:layout_constraintStart_toStartOf="@id/orderNote_header"
+        app:layout_constraintTop_toBottomOf="@id/orderNote_header"
         app:layout_constrainedWidth="true"
         tools:text="Order status changed from pending payment to processing."/>
-</merge>
+
+    <View
+        android:id="@+id/orderNote_bottomSpacer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_item_padding_intra_double"
+        app:layout_constraintStart_toStartOf="@id/orderNote_header"
+        app:layout_constraintTop_toBottomOf="@id/orderNote_note" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

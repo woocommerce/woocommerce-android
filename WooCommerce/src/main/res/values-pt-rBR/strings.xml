@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-01 00:54:04+0000
+Translation-Revision-Date: 2019-10-16 00:55:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="product_search_hint">Pesquisar produtos</string>
+    <string name="product_list_empty_search">Nenhum produto corresponde à pesquisa</string>
+    <string name="product_list_empty">Nenhum produto ainda</string>
+    <string name="product_stock_count">%s em estoque</string>
+    <string name="product_stock_status_instock_with_variations">Em estoque \u2022 %d variações</string>
+    <string name="product_image_content_description">Imagem do produto</string>
+    <string name="review_list_item_title">%1$s deixou uma avaliação em %2$s</string>
+    <string name="wc_unapproved">Rejeitado</string>
+    <string name="review_single_fetch_error">Erro ao buscar nova avaliação do produto</string>
+    <string name="review_fetch_error">Erro ao buscar avaliações do produto</string>
+    <string name="order_refunds_refund_manual_refund_note">No momento, apenas reembolsos manuais são aceitos. Conclua o reembolso pelo painel do seu gateway de pagamento ou transfira manualmente o dinheiro para o cliente.</string>
+    <string name="order_refunds_manual_refund_error">Ocorreu um erro no reembolso. Tente novamente.</string>
+    <string name="order_refunds_manual_refund_successful">O reembolso foi enviado com sucesso.</string>
+    <string name="order_refunds_manual_refund_progress_message">O reembolso para %s está sendo processado. Aguarde…</string>
+    <string name="order_refunds_quote_image_description">Ícone de aspas</string>
+    <string name="order_refunds_manual_refund">Reembolso manual</string>
+    <string name="order_refunds_refund_details">Detalhes do reembolso</string>
+    <string name="order_refunds_refunded_via">Reembolsado via %s</string>
+    <string name="order_refunds_refund_via">Reembolsar via</string>
+    <string name="order_refunds_reason_hint">Motivo do reembolso (opcional)</string>
+    <string name="order_refunds_reason">Motivo do reembolso</string>
+    <string name="order_refunds_refund_amount">Total do reembolso</string>
+    <string name="order_refunds_previously_refunded">Já reembolsado</string>
+    <string name="order_refunds_refund_zero_error">O reembolso deve ser superior a 0</string>
+    <string name="order_refunds_refund_high_error">O reembolso é superior ao valor disponível</string>
+    <string name="order_refunds_refund">Reembolsar</string>
+    <string name="order_refunds_next_button_title">Próximo</string>
+    <string name="order_refunds_restocking_note">Caso haja um reembolso, nenhum item voltará ao estoque</string>
+    <string name="order_refunds_title_with_amount">Reembolsar %s</string>
+    <string name="order_refunds_available_for_refund">Total de %s disponível para reembolso</string>
+    <string name="orderdetail_issue_refund_button">Emitir reembolso</string>
+    <string name="orderdetail_refund_view_details">Visualizar detalhes</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Experimente as novas estatísticas disponíveis com o\nplugin WooCommerce Admin</string>
     <string name="settings_enable_v4_stats_title">Estatísticas aprimoradas</string>
     <string name="beta_features">Funcionalidades Beta</string>
@@ -442,9 +475,7 @@ Language: pt_BR
     <string name="settings_notifs_device">Gerenciar notificações</string>
     <string name="settings_notifs">Notificações</string>
     <string name="settings_confirm_logout">Tem certeza de que deseja fazer logout da conta %s?</string>
-    <string name="notifs_detail_loading_error">Erro ao carregar detalhe da notificação</string>
-    <string name="notifs_review_moderation_undo">Avaliação marcada como %1$s</string>
-    <string name="notifs_fetch_error">Erro ao buscar notificações</string>
+    <string name="review_moderation_undo">Avaliação marcada como %1$s</string>
     <string name="add_order_note_sublabel">Se estiverem desativadas, a observação será em caráter privado</string>
     <string name="order_error_fetch_generic">Erro ao buscar pedido</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -667,7 +698,6 @@ Language: pt_BR
     <string name="dashboard_action_view_orders">Visualizar pedidos</string>
     <string name="dashboard_action_view_order">Ver pedido</string>
     <string name="dashboard_top_earners_empty">Nenhuma atividade no período</string>
-    <string name="dashboard_top_earners_content_description">Imagem do produto</string>
     <string name="dashboard_top_earners_total_orders">Total de pedidos: %s</string>
     <string name="dashboard_top_earners_total_spend">Total gasto</string>
     <string name="dashboard_top_earners_description">Obtenha informações sobre o desempenho dos produtos de sua loja</string>

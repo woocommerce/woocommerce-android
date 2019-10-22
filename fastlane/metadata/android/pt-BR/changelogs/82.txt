@@ -1,0 +1,4 @@
+2.8:
+* A pesquisa na lista de pedidos não está mais sem cursor!
+* A tela atualizada de detalhes de pedidos também exibe uma lista dos reembolsos emitidos.
+* Agora a guia “Avaliações” exibe todas as avaliações de produtos da loja.

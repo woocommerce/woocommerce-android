@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.model.ActionStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -52,6 +53,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var viewModel: ReviewListViewModel
     private lateinit var reviewsAdapter: ReviewListAdapter
@@ -293,7 +295,14 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.reviews_empty_message) else empty_view.hide()
+        if (show) {
+            empty_view.setSiteToShare(
+                    selectedSite.get(),
+                    Stat.REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
+            empty_view.show(R.string.reviews_empty_message)
+        } else {
+            empty_view.hide()
+        }
     }
 
     private fun showMarkAllReadMenuItem(show: Boolean) {
