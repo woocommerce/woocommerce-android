@@ -636,6 +636,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
+            isRefreshing = true
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
@@ -738,7 +739,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
             val tabPosition = getTabPosition()
-            orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
+            orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let {
+                it.select()
+                getOrderStatusByTab(it)
+            }
 
             (activity as? MainActivity)?.hideBottomNav()
         }
