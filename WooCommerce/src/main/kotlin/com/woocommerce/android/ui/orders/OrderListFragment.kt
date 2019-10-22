@@ -433,6 +433,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun refreshFragmentState() {
         if (isActive) {
             refreshOrders()
+        } else {
+            // refresh order status options in the background even when order list is hidden
+            // This is so that when an order status change takes place, we need to refresh the order
+            // status count in the local cache
+            refreshOrderStatusOptions()
         }
     }
 
