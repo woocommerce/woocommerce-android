@@ -42,7 +42,8 @@ data class Product(
     val downloadLimit: Int,
     val downloadExpiry: Int,
     val purchaseNote: String,
-    val numVariations: Int
+    val numVariations: Int,
+    val images: String
 )
 
 fun WCProductModel.toAppModel(): Product {
@@ -79,7 +80,8 @@ fun WCProductModel.toAppModel(): Product {
         this.downloadLimit,
         this.downloadExpiry,
         this.purchaseNote,
-        this.getNumVariations()
+        this.getNumVariations(),
+        this.images
     )
 }
 
