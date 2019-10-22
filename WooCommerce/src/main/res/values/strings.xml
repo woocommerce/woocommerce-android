@@ -518,7 +518,7 @@
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     <string name="login_magic_links_label">Almost there! We just need to verify\nyour Jetpack connected email address\n%1$s %2$s %3$s</string>
-    <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>
+    <string name="login_magic_links_sent_label">Email sent! Check your email on this device, and tap the link in the email you receive from WordPress.com</string>
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
     <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
