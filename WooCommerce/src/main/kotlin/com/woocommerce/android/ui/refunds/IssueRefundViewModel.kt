@@ -6,9 +6,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.di.UI_THREAD
@@ -169,7 +169,7 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onRefundEntered() {
         if (isInputValid()) {
-            AnalyticsTracker.track(ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED)
+            AnalyticsTracker.track(CREATE_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED)
             _showRefundSummary.call()
         } else {
             showValidationState()
@@ -184,7 +184,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundConfirmed(reason: String) {
-        AnalyticsTracker.track(ADD_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED)
+        AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED)
 
         if (networkStatus.isConnected()) {
             _showSnackbarMessageWithUndo.value = resourceProvider.getString(
@@ -259,7 +259,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onUndoTapped() {
-        AnalyticsTracker.track(ADD_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED)
+        AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED)
         refundContinuation?.resume(true)
     }
 
