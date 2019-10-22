@@ -677,6 +677,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         hideOrderStatusListView()
         showTabs(true)
         (activity as? MainActivity)?.showBottomNav()
+        enableToolbarElevation(false)
     }
 
     /**
@@ -693,6 +694,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         displayOrderStatusListView()
         order_status_list_view.updateOrderStatusListView(presenter.getOrderStatusList())
         (activity as? MainActivity)?.hideBottomNav()
+        enableToolbarElevation(true)
     }
 
     /**
@@ -747,13 +749,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun displayOrderStatusListView() {
         order_status_list_view.visibility = View.VISIBLE
         orderRefreshLayout.isEnabled = false
-        enableToolbarElevation(true)
     }
 
     private fun hideOrderStatusListView() {
         order_status_list_view.visibility = View.GONE
         orderRefreshLayout.isEnabled = true
-        enableToolbarElevation(false)
     }
 
     private fun checkOrientation() {
