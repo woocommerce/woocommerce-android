@@ -725,7 +725,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     /**
      * Method called when user clicks on the back button after selecting an order status.
-     * The order list for the currently displayed tab should be refreshed only if [isFilterEnabled] is true
      * 1. Hide the order status view
      * 2. Enable search again and update the hint query
      */
@@ -741,7 +740,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             val tabPosition = getTabPosition()
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
 
-            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
             (activity as? MainActivity)?.hideBottomNav()
         }
     }
