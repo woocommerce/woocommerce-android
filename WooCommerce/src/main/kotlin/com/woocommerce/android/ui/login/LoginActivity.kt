@@ -272,26 +272,43 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
+        // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
+        // with the protocol since it is needed for initiating forgot password flow etc in the login process.
+        val inputSiteAddress = redirectUrl ?: siteAddress
+
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
-        // logs into the app. If the redirect url is available, use that as the preferred url. Strip the
-        // protocol from this url string prior to saving to AppPrefs since it's not needed and may cause issues
-        // when attempting to match the url to the authenticated account later in the login process.
+        // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
+        // not needed and may cause issues when attempting to match the url to the authenticated account later
+        // in the login process.
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        AppPrefs.setLoginSiteAddress((redirectUrl ?: siteAddress).replaceFirst(protocolRegex, ""))
+        AppPrefs.setLoginSiteAddress(inputSiteAddress.replaceFirst(protocolRegex, ""))
 
         if (hasJetpack) {
-            showEmailLoginScreen(siteAddress)
+            showEmailLoginScreen(inputSiteAddress)
         } else {
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(inputSiteAddress)
             slideInFragment(
                     fragment = jetpackReqFragment as Fragment,
                     shouldAddToBackStack = true,
                     tag = LoginJetpackRequiredFragment.TAG)
         }
+    }
+
+    /**
+     * Method call when Login with Site credentials link is clicked in the [LoginEmailFragment]
+     * This method is called instead of [LoginListener.gotXmlRpcEndpoint] since calling that method overrides
+     * the already saved [inputSiteAddress] to AppPrefs without the protocol with the same site address but with
+     * the protocol. This may cause issues when attempting to match the url to the authenticated account later
+     * in the login process.
+     */
+    override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+                inputSiteAddress, null, null, null, null, null, false)
+        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
