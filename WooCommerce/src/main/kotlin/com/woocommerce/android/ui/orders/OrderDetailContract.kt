@@ -36,6 +36,7 @@ interface OrderDetailContract {
         fun refreshOrderStatusOptions()
         fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
         fun isVirtualProduct(order: WCOrderModel): Boolean
+        fun refreshOrderAfterDelay(refreshDelay: Long)
     }
 
     interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener, OrderRefundActionListener,
