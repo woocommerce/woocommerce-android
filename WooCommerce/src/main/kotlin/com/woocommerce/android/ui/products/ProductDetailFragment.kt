@@ -566,6 +566,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         val isUploading = imageUri != null
         if (isUploading) {
             uploadImageProgress.visibility = View.VISIBLE
+            productDetail_image.visibility = View.VISIBLE
             productDetail_image.setImageURI(imageUri)
             productDetail_image.imageAlpha = 128
         } else {
