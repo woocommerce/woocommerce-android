@@ -53,8 +53,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _uploadingImageUri = MutableLiveData<Uri>()
-    val uploadingImageUri: LiveData<Uri> = _uploadingImageUri
+    private val _isUploadingProductImage = MutableLiveData<Boolean>()
+    val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -95,6 +95,8 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun loadProduct(remoteProductId: Long) {
         loadParameters()
+
+        _isUploadingProductImage.value = MediaUploadService.isUploadingForProduct(remoteProductId)
 
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
@@ -178,14 +180,14 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun uploadProductMedia(context: Context, remoteProductId: Long, localImageUri: Uri) {
-        _uploadingImageUri.value = localImageUri
+        _isUploadingProductImage.value = true
         MediaUploadService.uploadProductMedia(context, remoteProductId, localImageUri)
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductMediaUploadEvent) {
-        _uploadingImageUri.value = null
+        _isUploadingProductImage.value = false
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_upload_error
         } else {

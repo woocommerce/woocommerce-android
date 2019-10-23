@@ -6,7 +6,6 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -134,8 +133,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.uploadingImageUri.observe(this, Observer {
-            showUploadingImageUri(it)
+        viewModel.isUploadingProductImage.observe(this, Observer {
+            showUploadImageProgress(it)
         })
 
         viewModel.exit.observe(this, Observer {
@@ -562,12 +561,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     /**
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
-    private fun showUploadingImageUri(imageUri: Uri?) {
-        val isUploading = imageUri != null
+    private fun showUploadImageProgress(isUploading: Boolean) {
         if (isUploading) {
             uploadImageProgress.visibility = View.VISIBLE
             productDetail_image.visibility = View.VISIBLE
-            productDetail_image.setImageURI(imageUri)
             productDetail_image.imageAlpha = 128
         } else {
             uploadImageProgress.visibility = View.GONE

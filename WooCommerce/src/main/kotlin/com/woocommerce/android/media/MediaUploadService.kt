@@ -39,14 +39,17 @@ class MediaUploadService : JobIntentService() {
         private const val KEY_PRODUCT_ID = "key_product_id"
         private const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
 
+        // map of remoteProductId / localImageUri
+        private val currentUploads = HashMap<Long, Uri>()
+
         class OnProductMediaUploadEvent(
-            var product: Long,
+            var remoteProductId: Long,
             val isError: Boolean
         )
 
-        fun uploadProductMedia(context: Context, productId: Long, localMediaUri: Uri) {
+        fun uploadProductMedia(context: Context, remoteProductId: Long, localMediaUri: Uri) {
             val intent = Intent(context, MediaUploadService::class.java)
-            intent.putExtra(KEY_PRODUCT_ID, productId)
+            intent.putExtra(KEY_PRODUCT_ID, remoteProductId)
             intent.putExtra(KEY_LOCAL_MEDIA_URI, localMediaUri)
             enqueueWork(
                     context,
@@ -54,6 +57,13 @@ class MediaUploadService : JobIntentService() {
                     JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID,
                     intent
             )
+        }
+
+        fun isUploadingForProduct(remoteProductId: Long): Boolean {
+            currentUploads.forEach {
+                if (remoteProductId == it.key) return true
+            }
+            return false
         }
     }
 
@@ -107,6 +117,7 @@ class MediaUploadService : JobIntentService() {
         media?.let {
             it.postId = remoteProductId
             it.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+            currentUploads[remoteProductId] = localMediaUri
             dispatchUploadAction(it)
             return
         }
@@ -207,10 +218,12 @@ class MediaUploadService : JobIntentService() {
     private fun handleSuccess(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = false))
         doneSignal.countDown()
+        currentUploads.remove(remoteProductId)
     }
 
     private fun handleFailure(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = true))
         doneSignal.countDown()
+        currentUploads.remove(remoteProductId)
     }
 }
