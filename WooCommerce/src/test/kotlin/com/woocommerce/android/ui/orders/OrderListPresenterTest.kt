@@ -248,7 +248,6 @@ class OrderListPresenterTest {
         doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
         presenter.isShipmentTrackingProviderFetched = true
 
-
         presenter.loadOrders(forceRefresh = false)
         verify(presenter).loadShipmentTrackingProviders(orders[0])
         verify(dispatcher, never()).dispatch(any())
