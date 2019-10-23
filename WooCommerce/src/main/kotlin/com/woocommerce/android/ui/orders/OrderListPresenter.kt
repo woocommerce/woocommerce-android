@@ -303,6 +303,9 @@ class OrderListPresenter @Inject constructor(
     override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean, isFirstRun: Boolean) {
         val orders = fetchOrdersFromDb(orderStatusFilter, isForceRefresh)
         orderView?.let { view ->
+            // if the order list is empty, hide the empty view before displaying new orders
+            view.showEmptyView(false)
+
             val currentOrders = removeFutureOrders(orders)
             if (currentOrders.count() > 0) {
                 GlobalScope.launch(backgroundDispatcher) {
@@ -315,7 +318,6 @@ class OrderListPresenter @Inject constructor(
                     loadPaymentGateways()
                 }
 
-                view.showEmptyView(false)
                 view.showOrders(currentOrders, orderStatusFilter, isForceRefresh)
             } else if (!networkStatus.isConnected() || !view.isRefreshing) {
                 // if the device is offline or has not yet been initialised and has no cached orders to display,
