@@ -357,6 +357,36 @@
     <style name="Woo.OrderList.TextAppearance.ListItem.Title.Bold">
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="Woo.OrderList.TabLayout" parent="Woo.TabLayout">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:elevation">@dimen/tablayout_elevation</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabPaddingStart">25dp</item>
+        <item name="tabPaddingEnd">25dp</item>
+        <item name="tabIndicatorHeight">2.5dp</item>
+        <item name="tabTextColor">@color/white_translucent_65</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabIndicatorColor">@color/white</item>
+    </style>
+
+    <!--
+        Order Status List Style
+    -->
+    <style name="Woo.OrderStatusListHeader" parent="Woo.ListHeader">
+        <item name="android:paddingTop">@dimen/margin_large</item>
+        <item name="android:paddingBottom">@dimen/margin_large</item>
+        <item name="android:background">@null</item>
+    </style>
+    <style name="Woo.OrderStatusList.Item" parent="Woo.OrderList.Item">
+        <item name="android:paddingTop">@dimen/margin_extra_large</item>
+        <item name="android:paddingBottom">@dimen/margin_extra_large</item>
+    </style>
+    <style name="Woo.OrderStatusList.TextAppearance.ListItem.Count" parent="Woo.TextAppearance.ListItem">
+        <item name="android:textColor">@color/wc_grey_mid</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
     <!--
         OrderDetail Styles
     -->

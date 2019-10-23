@@ -292,6 +292,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Order status changes
         SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
 
+        // -- Application permissions
+        APP_PERMISSION_GRANTED,
+        APP_PERMISSION_DENIED,
+
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED

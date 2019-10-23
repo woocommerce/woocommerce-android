@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -16,11 +16,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/date_title"
@@ -31,8 +27,8 @@
             android:layout_marginTop="@dimen/margin_extra_large"
             android:text="@string/dashboard_stats_todays_stats"
             android:textColor="@color/wc_grey_medium"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_medium"/>
+            android:textSize="@dimen/text_medium"
+            android:textStyle="bold"/>
 
         <View
             android:id="@+id/divider1"
@@ -62,12 +58,11 @@
         android:id="@+id/linearLayout2"
         style="@style/Woo.Card.WithoutPadding"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_padding"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/empty_view_stats_row"
         android:background="@color/white"
         android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/empty_view_stats_row">
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/empty_view_image"
@@ -97,4 +92,4 @@
     </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

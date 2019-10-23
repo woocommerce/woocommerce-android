@@ -1,9 +1,11 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.notes
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
+import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.View
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -19,10 +21,10 @@ class AddOrderNotePresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus
-) : AddOrderNoteContract.Presenter {
-    private var addNoteView: AddOrderNoteContract.View? = null
+) : Presenter {
+    private var addNoteView: View? = null
 
-    override fun takeView(view: AddOrderNoteContract.View) {
+    override fun takeView(view: View) {
         addNoteView = view
         dispatcher.register(this)
     }
