@@ -225,6 +225,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     private fun showProductImage(product: Product) {
+        if (viewModel.isUploadingProductImage.value == true) {
+            return
+        }
+
         val imageUrl = product.firstImageUrl
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(activity!!)
@@ -562,9 +566,11 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
     private fun showUploadImageProgress(isUploading: Boolean) {
+        productDetail_image.visibility = View.VISIBLE
+        imageScrim.visibility = View.VISIBLE
+
         if (isUploading) {
             uploadImageProgress.visibility = View.VISIBLE
-            productDetail_image.visibility = View.VISIBLE
             productDetail_image.imageAlpha = 128
         } else {
             uploadImageProgress.visibility = View.GONE
