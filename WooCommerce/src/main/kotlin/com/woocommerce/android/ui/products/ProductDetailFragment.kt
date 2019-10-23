@@ -225,7 +225,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         addPurchaseDetailsCard(productData)
     }
 
-    fun showProductImage(product: Product) {
+    private fun showProductImage(product: Product) {
         val imageUrl = product.firstImageUrl
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(activity!!)
@@ -552,7 +552,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         // permission and do nothing else - this will be called again if the user then agrees to allow
         // storage permission
         if (requestStoragePermission()) {
-            val intent = Intent(Intent.ACTION_PICK)
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*"
             val chooser = Intent.createChooser(intent, getString(R.string.product_change_image))
             activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
@@ -579,11 +579,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
             val clipData = data.clipData
-            val imageUri: Uri?
-            if (clipData != null && clipData.itemCount > 0) {
-                imageUri = clipData.getItemAt(0).uri
+            val imageUri = if (clipData != null && clipData.itemCount > 0) {
+                clipData.getItemAt(0).uri
             } else {
-                imageUri = data.data
+                data.data
             }
             imageUri?.let { uri ->
                 viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)

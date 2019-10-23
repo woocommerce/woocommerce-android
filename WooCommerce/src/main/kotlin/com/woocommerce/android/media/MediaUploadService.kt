@@ -122,9 +122,10 @@ class MediaUploadService : JobIntentService() {
     }
 
     private fun optimizeImageUri(imageUri: Uri): Uri {
-        val path = MediaUtils.getRealPathFromURI(this, imageUri)
-        val optimizedFilename = ImageUtils.optimizeImage(this, path, maxImageSize, imageQuality)
-        return Uri.fromFile(File(optimizedFilename))
+        MediaUtils.getRealPathFromURI(this, imageUri)?.let { path ->
+            val optimizedFilename = ImageUtils.optimizeImage(this, path, maxImageSize, imageQuality)
+            return Uri.fromFile(File(optimizedFilename))
+        } ?: return imageUri
     }
 
     /**

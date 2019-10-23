@@ -2,6 +2,8 @@ package com.woocommerce.android.media
 
 import android.net.Uri
 import android.webkit.MimeTypeMap
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.util.DateTimeUtils
@@ -14,8 +16,14 @@ object MediaUploadUtils {
         uri: Uri,
         mediaStore: MediaStore
     ): MediaModel? {
-        val file = File(uri.path)
+        if (uri.path.isNullOrEmpty()) {
+            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > uri path is null")
+            return null
+        }
+
+        val file = File(uri.path!!)
         if (!file.exists()) {
+            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > file does not exist")
             return null
         }
 
