@@ -23,6 +23,7 @@ public interface LoginListener {
     void loginViaSocialAccount(String email, String idToken, String service, boolean isPasswordRequired);
     void loggedInViaSocialAccount(ArrayList<Integer> oldSiteIds, boolean doLoginUpdate);
     void loginViaWpcomUsernameInstead();
+    void loginViaSiteCredentials(String inputSiteAddress);
     void helpEmailScreen(String email);
     void helpSocialEmailScreen(String email);
     void addGoogleLoginFragment();
@@ -59,6 +60,8 @@ public interface LoginListener {
                                     @NonNull String displayName, @Nullable Uri profilePicture);
     void loggedInViaUsernamePassword(ArrayList<Integer> oldSitesIds);
     void helpUsernamePassword(String url, String username, boolean isWpcom);
+    void helpNoJetpackScreen(String siteAddress, String endpointAddress, String username,
+                             String password, String userAvatarUrl);
 
     // Login 2FA screen callbacks
     void help2FaScreen(String email);

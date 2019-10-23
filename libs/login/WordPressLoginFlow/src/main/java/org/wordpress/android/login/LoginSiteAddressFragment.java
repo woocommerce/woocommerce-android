@@ -181,9 +181,6 @@ public class LoginSiteAddressFragment extends LoginBaseFormFragment<LoginListene
         String cleanedXmlrpcSuffix = UrlUtils.removeXmlrpcSuffix(mRequestedSiteAddress);
 
         if (mLoginListener.getLoginMode() == LoginMode.WOO_LOGIN_MODE) {
-            // TODO: This is temporary code to test out sign in flow milestone 1 effectiveness. If we move
-            // forward with this flow, we will need to just call the XMLRPC discovery code and handle all the
-            // edge cases such as HTTP auth and self-signed SSL.
             mAnalyticsListener.trackConnectedSiteInfoRequested(cleanedXmlrpcSuffix);
             mDispatcher.dispatch(SiteActionBuilder.newFetchConnectSiteInfoAction(cleanedXmlrpcSuffix));
         } else {
@@ -376,6 +373,7 @@ public class LoginSiteAddressFragment extends LoginBaseFormFragment<LoginListene
         }
 
         AppLog.i(T.NUX, "Discovery succeeded, endpoint: " + event.xmlRpcEndpoint);
+
         mLoginListener.gotXmlRpcEndpoint(requestedSiteAddress, event.xmlRpcEndpoint);
     }
 

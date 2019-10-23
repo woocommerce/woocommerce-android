@@ -16,10 +16,12 @@
     <string name="login_promo_text_jetpack">Manage your Jetpack-powered site on the go — you\'ve got WordPress in your pocket.</string>
     <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
     <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
+    <string name="enter_credentials_for_site">Log in with your %1$s site credentials</string>
     <string name="next">Next</string>
     <string name="open_mail">Open mail</string>
     <string name="alternatively">Alternatively:</string>
     <string name="enter_site_address_instead">Log in by entering your site address.</string>
+    <string name="enter_site_credentials_instead">Log in with site credentials</string>
     <string name="enter_username_instead">Log in with your username.</string>
     <string name="enter_verification_code">Almost there! Please enter the verification code from your Authenticator app.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
