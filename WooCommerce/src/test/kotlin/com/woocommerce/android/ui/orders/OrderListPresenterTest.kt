@@ -61,9 +61,10 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Displays the orders list view correctly`() {
+    fun `Displays the orders list view correctly`() = test {
         presenter.takeView(orderListView)
         presenter.loadOrders(forceRefresh = true)
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
@@ -73,10 +74,11 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Passes applied order status filter to view correctly`() {
+    fun `Passes applied order status filter to view correctly`() = test {
         val orderStatusFilter = "processing"
         presenter.takeView(orderListView)
         presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
@@ -97,9 +99,10 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Displays loading indicator then orders when cached orders present`() {
+    fun `Displays loading indicator then orders when cached orders present`() = test {
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
         presenter.loadOrders(forceRefresh = true, isFirstRun = false)
 
         // This is called twice, once for fetching orders, then again for shipment tracking
@@ -153,7 +156,6 @@ class OrderListPresenterTest {
         presenter.takeView(orderListView)
         presenter.loadOrders(forceRefresh = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
-        doReturn(true).whenever(presenter).arePaymentGatewaysFetched
 
         // OnOrderChanged callback from FluxC with error should trigger error message
         presenter.onOrderChanged(OnOrderChanged(0).apply {
@@ -223,10 +225,11 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Load shipment provider lists only if orders list is loaded`() {
+    fun `Load shipment provider lists only if orders list is loaded`() = test {
         // load shipment tracking only if order list is not empty
         presenter.takeView(orderListView)
         presenter.loadOrders(forceRefresh = true)
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
 
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
@@ -238,11 +241,13 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Do not load shipment provider lists if already loaded when network connected`() {
+    fun `Do not load shipment provider lists if already loaded when network connected`() = test {
         // do not load shipment tracking provider list only if already fetched
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
-        doReturn(true).whenever(presenter).isShipmentTrackingProviderFetched
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
+        presenter.isShipmentTrackingProviderFetched = true
+
 
         presenter.loadOrders(forceRefresh = false)
         verify(presenter).loadShipmentTrackingProviders(orders[0])
@@ -253,7 +258,8 @@ class OrderListPresenterTest {
     fun `Do not load payment gateways if already loaded when network connected`() = test {
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
-        doReturn(true).whenever(presenter).arePaymentGatewaysFetched
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
+        presenter.arePaymentGatewaysFetched = true
 
         presenter.loadOrders(forceRefresh = false)
         verify(presenter).loadPaymentGateways()
@@ -276,6 +282,7 @@ class OrderListPresenterTest {
     fun `Do not load payment gateways if not already loaded but network not connected`() = test {
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
         presenter.loadOrders(forceRefresh = false)
@@ -284,10 +291,12 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Load shipment provider list if not already loaded but network is connected - success`() {
+    fun `Load shipment provider list if not already loaded but network is connected - success`() = test {
         // load shipment tracking provider list only if not already fetched & network is connected - success
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
+
         presenter.loadOrders(forceRefresh = false)
         verify(orderListView).showOrders(orders, isFreshData = false)
 
@@ -302,6 +311,7 @@ class OrderListPresenterTest {
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
         doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
+
         presenter.loadOrders(forceRefresh = false)
         verify(orderListView).showOrders(orders, isFreshData = false)
 
@@ -311,11 +321,11 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Load shipment provider list if not already loaded but network is connected - failure`() {
+    fun `Load shipment provider list if not already loaded but network is connected - failure`() = test {
         // load shipment tracking provider list only if not already fetched & network is connected - failure
         presenter.takeView(orderListView)
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
-        doReturn(true).whenever(presenter).arePaymentGatewaysFetched
+        doReturn(WooResult("")).whenever(gatewayStore).fetchAllGateways(any())
         presenter.loadOrders(forceRefresh = false)
         verify(orderListView).showOrders(orders, isFreshData = false)
 
