@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.automattic.android.tracks.CrashLogging.CrashLogging
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -47,7 +46,7 @@ import kotlin.text.RegexOption.IGNORE_CASE
 
 @Suppress("SameParameterValue")
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
+        HasSupportFragmentInjector, LoginNoJetpackListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
@@ -299,9 +298,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     /**
-     * Method call when Login with Site credentials link is clicked in the [LoginEmailFragment]
+     * Method called when Login with Site credentials link is clicked in the [LoginEmailFragment]
      * This method is called instead of [LoginListener.gotXmlRpcEndpoint] since calling that method overrides
-     * the already saved [inputSiteAddress] to AppPrefs without the protocol with the same site address but with
+     * the already saved [inputSiteAddress] without the protocol, with the same site address but with
      * the protocol. This may cause issues when attempting to match the url to the authenticated account later
      * in the login process.
      */
