@@ -180,6 +180,11 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun uploadProductMedia(context: Context, remoteProductId: Long, localImageUri: Uri) {
+        // TODO: at some point we want to support uploading multiple product images
+        if (MediaUploadService.isBusy()) {
+            _showSnackbarMessage.value = R.string.product_image_already_uploading
+            return
+        }
         _isUploadingProductImage.value = true
         MediaUploadService.uploadProductMedia(context, remoteProductId, localImageUri)
     }

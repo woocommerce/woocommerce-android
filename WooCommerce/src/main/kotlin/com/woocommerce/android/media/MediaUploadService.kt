@@ -65,6 +65,8 @@ class MediaUploadService : JobIntentService() {
             }
             return false
         }
+
+        fun isBusy() = currentUploads.isNotEmpty()
     }
 
     @Inject lateinit var dispatcher: Dispatcher
