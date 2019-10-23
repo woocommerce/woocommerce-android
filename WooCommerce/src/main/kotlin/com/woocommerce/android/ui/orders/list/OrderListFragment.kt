@@ -556,8 +556,10 @@ class OrderListFragment : TopLevelFragment(),
         if (isSearching) {
             searchQuery = ""
             isSearching = false
+            isRefreshing = true
             disableSearchListeners()
             updateActivityTitle()
+            refreshOrderStatusOptions()
             searchMenuItem?.collapseActionView()
 
             viewModel.loadList(orderStatusFilter)
@@ -615,8 +617,7 @@ class OrderListFragment : TopLevelFragment(),
 
     private fun refreshOrders() {
         viewModel.fetchFirstPage()
-
-        // FIXME AMANDA - refresh order status counts
+        refreshOrderStatusOptions()
     }
 
     private fun refreshOrderStatusOptions() {
