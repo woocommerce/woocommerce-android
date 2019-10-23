@@ -293,9 +293,10 @@ class OrderListPresenter @Inject constructor(
     override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean, isFirstRun: Boolean) {
         val orders = fetchOrdersFromDb(orderStatusFilter, isForceRefresh)
         orderView?.let { view ->
+            // if the order list is empty, hide the empty view before displaying new orders
+            orderView?.showEmptyView(false)
             val currentOrders = removeFutureOrders(orders)
             if (currentOrders.count() > 0) {
-                view.showEmptyView(false)
                 view.showOrders(currentOrders, orderStatusFilter, isForceRefresh)
 
                 // load shipment tracking providers list only if order list is fetched and displayed.
