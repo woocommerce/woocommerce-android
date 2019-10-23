@@ -145,6 +145,14 @@ class IssueRefundViewModel @Inject constructor(
         initializePaymentGateway()
     }
 
+    fun resetEvents() {
+        _showSnackbarMessage.reset()
+        _showSnackbarMessageWithUndo.reset()
+        _showValidationError.reset()
+        _showRefundSummary.reset()
+        _exitAfterRefund.reset()
+    }
+
     private fun initializePaymentGateway() {
         val paymentGateway = gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
         val manualPaymentTitle = resourceProvider.getString(string.order_refunds_manual_refund)
@@ -223,7 +231,6 @@ class IssueRefundViewModel @Inject constructor(
                     }
 
                     val result = resultCall.await()
-
                     if (result.isError) {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_FAILED, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
