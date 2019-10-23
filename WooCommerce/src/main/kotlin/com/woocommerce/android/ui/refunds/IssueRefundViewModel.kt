@@ -7,6 +7,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -169,7 +170,11 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onRefundEntered() {
         if (isInputValid()) {
-            AnalyticsTracker.track(CREATE_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED)
+            AnalyticsTracker.track(
+                    CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED, mapOf(
+                    AnalyticsTracker.KEY_REFUND_TYPE to REFUND_TYPE_AMOUNT,
+                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+            ))
             _showRefundSummary.call()
         } else {
             showValidationState()
@@ -184,7 +189,9 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundConfirmed(reason: String) {
-        AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED)
+        AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED, mapOf(
+                AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+        ))
 
         if (networkStatus.isConnected()) {
             _showSnackbarMessageWithUndo.value = resourceProvider.getString(
@@ -199,7 +206,7 @@ class IssueRefundViewModel @Inject constructor(
                 val wasRefundCanceled = waitForCancellation()
                 if (!wasRefundCanceled) {
                     AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
-                            AnalyticsTracker.KEY_ID to order.remoteId,
+                            AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to (enteredAmount isEqualTo maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_TYPE to REFUND_TYPE_AMOUNT,
                             AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
@@ -220,6 +227,7 @@ class IssueRefundViewModel @Inject constructor(
 
                     if (result.isError) {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_FAILED, mapOf(
+                                AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                                 AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                                 AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
                                 AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
@@ -230,6 +238,7 @@ class IssueRefundViewModel @Inject constructor(
                         )
                     } else {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
+                                AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                                 AnalyticsTracker.KEY_ID to result.model?.id
                         ))
 
@@ -259,7 +268,9 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onUndoTapped() {
-        AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED)
+        AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED, mapOf(
+                AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+        ))
         refundContinuation?.resume(true)
     }
 
