@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.core.app.JobIntentService
 import com.woocommerce.android.JobServiceIds.JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjection
@@ -74,6 +75,7 @@ class MediaUploadService : JobIntentService() {
     @Inject lateinit var mediaStore: MediaStore
     @Inject lateinit var productStore: WCProductStore
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var productImageMap: ProductImageMap
 
     private val doneSignal = CountDownLatch(1)
 
@@ -221,6 +223,7 @@ class MediaUploadService : JobIntentService() {
         EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = false))
         doneSignal.countDown()
         currentUploads.remove(remoteProductId)
+        productImageMap.update(remoteProductId)
     }
 
     private fun handleFailure(remoteProductId: Long) {
