@@ -73,6 +73,7 @@
     <dimen name="list_item_padding_intra_h">8dp</dimen>
     <dimen name="list_item_padding_intra_v">4dp</dimen>
 
+    <dimen name="list_item_padding_start_from_icon">14dp</dimen>
     <dimen name="list_item_padding_start">16dp</dimen>
     <dimen name="list_item_padding_start_tablet">24dp</dimen>
 

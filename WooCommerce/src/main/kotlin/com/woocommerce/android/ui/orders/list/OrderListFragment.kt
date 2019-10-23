@@ -159,7 +159,7 @@ class OrderListFragment : TopLevelFragment(),
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
                     orderRefreshLayout.isRefreshing = false
-                    viewModel.fetchFirstPage()
+                    refreshOrders()
                 }
             }
         }
@@ -348,8 +348,15 @@ class OrderListFragment : TopLevelFragment(),
     override fun getFragmentTitle() = if (isFilterEnabled || isSearching) "" else getString(R.string.orders)
 
     override fun refreshFragmentState() {
-        order_list_view?.clearAdapterData()
-        viewModel.fetchFirstPage() // reload the active list from scratch
+        if (isActive) {
+            order_list_view?.clearAdapterData()
+            refreshOrders() // reload the active list from scratch
+        } else {
+            // refresh order status options in the background even when order list is hidden
+            // This is so that when an order status change takes place, we need to refresh the order
+            // status count in the local cache
+            refreshOrderStatusOptions()
+        }
     }
 
     override fun scrollToTop() {
@@ -606,6 +613,16 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
+    private fun refreshOrders() {
+        viewModel.fetchFirstPage()
+
+        // FIXME AMANDA - refresh order status counts
+    }
+
+    private fun refreshOrderStatusOptions() {
+        // FIXME AMANDA
+    }
+
     private fun rebuildSearchView() {
         // To prevent a timing issue that's causing the search bar
         // to not be expanded when returning from order detail.
@@ -627,6 +644,7 @@ class OrderListFragment : TopLevelFragment(),
         hideOrderStatusListView()
         showTabs(true)
         (activity as? MainActivity)?.showBottomNav()
+        enableToolbarElevation(false)
     }
 
     /**
@@ -643,6 +661,7 @@ class OrderListFragment : TopLevelFragment(),
         displayOrderStatusListView()
 
         (activity as? MainActivity)?.hideBottomNav()
+        enableToolbarElevation(true)
     }
 
     /**
@@ -673,7 +692,6 @@ class OrderListFragment : TopLevelFragment(),
 
     /**
      * Method called when user clicks on the back button after selecting an order status.
-     * The order list for the currently displayed tab should be refreshed only if [isFilterEnabled] is true
      * 1. Hide the order status view
      * 2. Enable search again and update the hint query
      */
@@ -687,7 +705,10 @@ class OrderListFragment : TopLevelFragment(),
             searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
             val tabPosition = getTabPosition()
-            orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
+            orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let {
+                it.select()
+                getOrderStatusByTab(it)
+            }
 
             viewModel.loadList(orderStatusFilter)
 
@@ -698,13 +719,11 @@ class OrderListFragment : TopLevelFragment(),
     private fun displayOrderStatusListView() {
         order_status_list_view.visibility = View.VISIBLE
         orderRefreshLayout.isEnabled = false
-        enableToolbarElevation(true)
     }
 
     private fun hideOrderStatusListView() {
         order_status_list_view.visibility = View.GONE
         orderRefreshLayout.isEnabled = true
-        enableToolbarElevation(false)
     }
 
     private fun checkOrientation() {

@@ -1,4 +1,0 @@
-2.7:
-- Voor degenen die de WooCommerce Admin-plugin gebruiken, is er nu een gloednieuwe statistiekenpagina (met grondigere analyse) beschikbaar! Je kunt je hiervoor aanmelden via de pagina Instellingen.
-- Wie houdt er nou niet van een meer gestroomlijnde ervaring? Als je de statistiekenmodule van je site hebt uitgeschakeld, verbergen wij het gedeelte met bezoekersstatistieken van je pagina Mijn winkel.
-- Geniet van de vernieuwde (en beter leesbare) gedeelten Klantgegevens en Betalingen in de het overzicht van bestelgegevens.

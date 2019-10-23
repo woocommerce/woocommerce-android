@@ -1,5 +1,6 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.notes
 
+import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -8,7 +9,7 @@ import dagger.android.ContributesAndroidInjector
 internal abstract class AddOrderNoteModule {
     @Binds
     abstract fun provideAddOrderNotePresenter(addOrderNotePresenter: AddOrderNotePresenter):
-            AddOrderNoteContract.Presenter
+            Presenter
 
     @ContributesAndroidInjector
     abstract fun addOrderNoteFragment(): AddOrderNoteFragment

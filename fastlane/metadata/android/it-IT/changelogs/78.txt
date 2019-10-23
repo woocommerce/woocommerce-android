@@ -1,4 +1,0 @@
-2.7:
-- Nuova pagina delle statistiche (con analisi più granulari) per coloro che usano il plugin WooCommerce Admin. Puoi decidere di usarla dalla pagina Impostazioni.
-- A chi non piace un'esperienza più semplificata? Se hai disabilitato il modulo delle statistiche sul tuo sito, nasconderemo la sezione delle statistiche sui visitatori nella pagina Il mio negozio.
-- Goditi le sezioni Informazioni cliente e Pagamento riprogettate (e più leggibili) nella schermata dei dettagli dell'ordine.
