@@ -520,6 +520,7 @@
     <string name="login_magic_links_label">Almost there! We just need to verify\nyour Jetpack connected email address\n%1$s %2$s %3$s</string>
     <string name="login_magic_links_sent_label">Email sent! Check your email on this device, and tap the link in the email you receive from WordPress.com</string>
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
+    <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
     <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
     <string name="enter_wpcom_password_google">To proceed with this Google account, please provide the matching WordPress.com password. This will be asked only once.</string>
