@@ -2,11 +2,15 @@ package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -33,16 +37,16 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
-import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
-class ReviewListViewModel @Inject constructor(
+class ReviewListViewModel @AssistedInject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val reviewRepository: ReviewListRepository,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    @Assisted private val handle: SavedStateHandle
 ) : ScopedViewModel(mainDispatcher) {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -268,4 +272,7 @@ class ReviewListViewModel @Inject constructor(
             }
         }
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ReviewListViewModel>
 }

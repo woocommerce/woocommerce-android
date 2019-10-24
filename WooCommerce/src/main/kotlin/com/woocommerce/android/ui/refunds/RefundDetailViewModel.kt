@@ -2,9 +2,13 @@ package com.woocommerce.android.ui.refunds
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
@@ -17,17 +21,17 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
-class RefundDetailViewModel @Inject constructor(
+class RefundDetailViewModel @AssistedInject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    @Assisted private val handle: SavedStateHandle
 ) : ScopedViewModel(mainDispatcher) {
     private val _screenTitle = MutableLiveData<String>()
     val screenTitle: LiveData<String> = _screenTitle
@@ -66,4 +70,7 @@ class RefundDetailViewModel @Inject constructor(
 
         _refundMethod.value = resourceProvider.getString(R.string.order_refunds_refunded_via).format(method)
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<RefundDetailViewModel>
 }

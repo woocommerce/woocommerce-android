@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.refunds
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -12,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFU
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -35,14 +39,13 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import javax.inject.Inject
 import javax.inject.Named
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @OpenClassOnDebug
-class IssueRefundViewModel @Inject constructor(
+class IssueRefundViewModel @AssistedInject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher,
     private val refundStore: WCRefundStore,
@@ -53,7 +56,8 @@ class IssueRefundViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
     private val noteRepository: OrderNoteRepository,
-    private val gatewayStore: WCGatewayStore
+    private val gatewayStore: WCGatewayStore,
+    @Assisted private val handle: SavedStateHandle
 ) : ScopedViewModel(mainDispatcher) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -314,4 +318,7 @@ class IssueRefundViewModel @Inject constructor(
     enum class InputValidationState { TOO_HIGH, TOO_LOW, VALID }
 
     data class CurrencySettings(val currency: String, val decimals: Int)
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<IssueRefundViewModel>
 }

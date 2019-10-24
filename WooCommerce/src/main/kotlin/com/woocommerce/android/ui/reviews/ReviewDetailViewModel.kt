@@ -2,11 +2,15 @@ package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
@@ -17,14 +21,14 @@ import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
-final class ReviewDetailViewModel @Inject constructor(
+final class ReviewDetailViewModel @AssistedInject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val repository: ReviewDetailRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    @Assisted private val handle: SavedStateHandle
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteReviewId = 0L
 
@@ -134,4 +138,7 @@ final class ReviewDetailViewModel @Inject constructor(
                     AnalyticsTracker.KEY_ALREADY_READ to it.read))
         }
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ReviewDetailViewModel>
 }
