@@ -49,16 +49,20 @@ class OrderDetailRefundListAdapter(
     ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.order_detail_refund_payment_item, parent, false)
     ) {
-        private val amount: TextView = itemView.findViewById(R.id.refundsList_refundAmount)
-        private val method: TextView = itemView.findViewById(R.id.refundsList_refundMethod)
+        private val amountTextView: TextView = itemView.findViewById(R.id.refundsList_refundAmount)
+        private val methodTextView: TextView = itemView.findViewById(R.id.refundsList_refundMethod)
 
         @SuppressLint("SetTextI18n") fun bind(refund: Refund) {
-            amount.text = "-${formatCurrency(refund.amount)}"
+            amountTextView.text = "-${formatCurrency(refund.amount)}"
 
             val linkText = itemView.resources.getString(R.string.orderdetail_refund_view_details)
+            val method = if (refund.automaticGatewayRefund)
+                order.paymentMethodTitle
+            else
+                itemView.context.getString(R.string.order_refunds_manual_refund)
             val methodText = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
                     DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
-                    order.paymentMethodTitle,
+                    method,
                     linkText
             )
             val spannable = SpannableString(methodText)
@@ -71,8 +75,8 @@ class OrderDetailRefundListAdapter(
                     start + linkText.length,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-            method.setText(spannable, TextView.BufferType.SPANNABLE)
-            method.movementMethod = LinkMovementMethod.getInstance()
+            methodTextView.setText(spannable, TextView.BufferType.SPANNABLE)
+            methodTextView.movementMethod = LinkMovementMethod.getInstance()
         }
     }
 
