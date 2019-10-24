@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-01 14:54:09+0000
+Translation-Revision-Date: 2019-10-16 00:55:10+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_search_hint">Sök produkter</string>
+    <string name="product_list_empty_search">Inga matchande produkter</string>
+    <string name="product_list_empty">Inga produkter ännu</string>
+    <string name="product_stock_count">%s i lager</string>
+    <string name="product_stock_status_instock_with_variations">I lager \u2022 %d variationer</string>
+    <string name="product_image_content_description">Produktbild</string>
+    <string name="review_list_item_title">%1$s lämnade en recension om %2$s</string>
+    <string name="wc_unapproved">Förkastad</string>
+    <string name="review_single_fetch_error">Den nya produktrecensionen kunde inte hämtas</string>
+    <string name="review_fetch_error">Produktrecensionerna kunde inte hämtas</string>
+    <string name="order_refunds_refund_manual_refund_note">För närvarande stöds endast manuella återbetalningar. Slutför återbetalningen via instrumentpanelen för din betalningsgateway eller överför pengarna manuellt till kunden.</string>
+    <string name="order_refunds_manual_refund_error">Något gick fel med återbetalningen. Var vänlig försök igen.</string>
+    <string name="order_refunds_manual_refund_successful">Återbetalningen har skickats.</string>
+    <string name="order_refunds_manual_refund_progress_message">Din återbetalning för %s behandlas. Vänligen vänta …</string>
+    <string name="order_refunds_quote_image_description">Offertikon</string>
+    <string name="order_refunds_manual_refund">Manuell återbetalning</string>
+    <string name="order_refunds_refund_details">Återbetalningsinformation</string>
+    <string name="order_refunds_refunded_via">Återbetald via %s</string>
+    <string name="order_refunds_refund_via">Återbetala via</string>
+    <string name="order_refunds_reason_hint">Orsak till återbetalning (valfritt)</string>
+    <string name="order_refunds_reason">Orsak till återbetalning</string>
+    <string name="order_refunds_refund_amount">Återbetalningsbelopp</string>
+    <string name="order_refunds_previously_refunded">Tidigare återbetalt</string>
+    <string name="order_refunds_refund_zero_error">Återbetalningen måste vara större än 0</string>
+    <string name="order_refunds_refund_high_error">Återbetalningen är högre än det tillgängliga beloppet</string>
+    <string name="order_refunds_refund">Återbetala</string>
+    <string name="order_refunds_next_button_title">Nästa</string>
+    <string name="order_refunds_restocking_note">Inga artiklar fylls på i lagret när ett belopp återbetalas</string>
+    <string name="order_refunds_title_with_amount">Återbetala %s</string>
+    <string name="order_refunds_available_for_refund">%s tillgängligt för återbetalning</string>
+    <string name="orderdetail_issue_refund_button">Utfärda återbetalning</string>
+    <string name="orderdetail_refund_view_details">Visa detaljer</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Prova de nya statistik som är tillgänglig med\nWooCommerce-adminplugin</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
     <string name="beta_features">Betafunktioner</string>
@@ -442,9 +475,7 @@ Language: sv_SE
     <string name="settings_notifs_device">Hantera notifikationer</string>
     <string name="settings_notifs">Aviseringar</string>
     <string name="settings_confirm_logout">Är du säker på att du vill logga ut från kontot %s?</string>
-    <string name="notifs_detail_loading_error">Det gick inte att läsa in aviseringsdetaljer</string>
-    <string name="notifs_review_moderation_undo">Recension markerad som %1$s</string>
-    <string name="notifs_fetch_error">Det gick inte att hämta aviseringar</string>
+    <string name="review_moderation_undo">Recension markerad som %1$s</string>
     <string name="add_order_note_sublabel">Om detta inaktiveras kommer noteringen att vara privat</string>
     <string name="order_error_fetch_generic">Det gick inte att hämta ordern</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -666,7 +697,6 @@ Language: sv_SE
     <string name="dashboard_action_view_orders">Visa ordrar</string>
     <string name="dashboard_action_view_order">Visa order</string>
     <string name="dashboard_top_earners_empty">Ingen aktivitet denna period</string>
-    <string name="dashboard_top_earners_content_description">Produktbild</string>
     <string name="dashboard_top_earners_total_orders">Totalt antal ordrar: %s</string>
     <string name="dashboard_top_earners_total_spend">Spenderat totalt</string>
     <string name="dashboard_top_earners_description">Få insikt i hur produkter presterar i din butik</string>

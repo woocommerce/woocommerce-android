@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-03 00:54:03+0000
+Translation-Revision-Date: 2019-10-16 00:55:06+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_search_hint">Поиск по товарам</string>
+    <string name="product_list_empty_search">Нет соответствующих товаров</string>
+    <string name="product_list_empty">В этом списке пока нет товаров</string>
+    <string name="product_stock_count">%s в наличии</string>
+    <string name="product_stock_status_instock_with_variations">В наличии \u2022 %d вар.</string>
+    <string name="product_image_content_description">Изображение продукта</string>
+    <string name="review_list_item_title">Пользователь %1$s оставил отзыв на %2$s</string>
+    <string name="wc_unapproved">Не одобрен</string>
+    <string name="review_single_fetch_error">Ошибка при получении нового отзыва о товаре</string>
+    <string name="review_fetch_error">Ошибка при получении отзывов о товарах</string>
+    <string name="order_refunds_refund_manual_refund_note">В настоящее время возвраты выполняются только в ручном режиме. Оформите возврат в консоли вашей платёжной системы или переведите деньги клиенту самостоятельно.</string>
+    <string name="order_refunds_manual_refund_error">В процессе возврата что-то пошло не так. Повторите попытку.</string>
+    <string name="order_refunds_manual_refund_successful">Средства возвращены заказчику.</string>
+    <string name="order_refunds_manual_refund_progress_message">Запрос на возврат средств за %s обрабатывается. Пожалуйста, подождите…</string>
+    <string name="order_refunds_quote_image_description">Значок кавычки</string>
+    <string name="order_refunds_manual_refund">Неавтоматизированный возврат</string>
+    <string name="order_refunds_refund_details">Описание возврата платежа</string>
+    <string name="order_refunds_refunded_via">Средства возвращены через %s</string>
+    <string name="order_refunds_refund_via">Возврат через</string>
+    <string name="order_refunds_reason_hint">Причина возврата (необязательно)</string>
+    <string name="order_refunds_reason">Причина возврата</string>
+    <string name="order_refunds_refund_amount">Сумма возврата</string>
+    <string name="order_refunds_previously_refunded">Предыдущие возвраты</string>
+    <string name="order_refunds_refund_zero_error">Сумма возврата должна быть больше 0</string>
+    <string name="order_refunds_refund_high_error">Сумма возврата превышает доступные средства</string>
+    <string name="order_refunds_refund">Возврат платежа</string>
+    <string name="order_refunds_next_button_title">Далее</string>
+    <string name="order_refunds_restocking_note">При возврате средств складские запасы не пополняются</string>
+    <string name="order_refunds_title_with_amount">Вернуть %s</string>
+    <string name="order_refunds_available_for_refund">%s доступно для возврата</string>
+    <string name="orderdetail_issue_refund_button">Оформить возврат</string>
+    <string name="orderdetail_refund_view_details">Подробности</string>
+    <string name="orderdetail_refund_detail">%1$s через %2$s — %3$s</string>
     <string name="settings_enable_v4_stats_message">Оцените новую страницу статистики в\nплагине администратора WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
@@ -442,9 +475,7 @@ Language: ru
     <string name="settings_notifs_device">Управление уведомлениями</string>
     <string name="settings_notifs">Уведомления</string>
     <string name="settings_confirm_logout">Вы уверены, что хотите выйти из учётной записи %s?</string>
-    <string name="notifs_detail_loading_error">Ошибка при загрузке данных уведомлений</string>
-    <string name="notifs_review_moderation_undo">Обзор помечен как %1$s</string>
-    <string name="notifs_fetch_error">Ошибка при загрузке уведомлений</string>
+    <string name="review_moderation_undo">Обзор помечен как %1$s</string>
     <string name="add_order_note_sublabel">При отключении примечание будет закрытым</string>
     <string name="order_error_fetch_generic">Ошибка при загрузке заказа</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -666,7 +697,6 @@ Language: ru
     <string name="dashboard_action_view_orders">Просмотреть заказы</string>
     <string name="dashboard_action_view_order">Просмотреть заказ</string>
     <string name="dashboard_top_earners_empty">Активность за этот период отсутствует</string>
-    <string name="dashboard_top_earners_content_description">Изображение продукта</string>
     <string name="dashboard_top_earners_total_orders">Всего заказов: %s</string>
     <string name="dashboard_top_earners_total_spend">Общий объём выручки</string>
     <string name="dashboard_top_earners_description">Получайте информацию об эффективности продаж различных продуктов в вашем магазине</string>

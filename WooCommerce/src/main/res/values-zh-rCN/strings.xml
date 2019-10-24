@@ -1,11 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-25 00:54:04+0000
+Translation-Revision-Date: 2019-10-16 00:55:07+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_search_hint">搜索产品</string>
+    <string name="product_list_empty_search">没有匹配的产品</string>
+    <string name="product_list_empty">尚无产品</string>
+    <string name="product_stock_count">%s有货</string>
+    <string name="product_stock_status_instock_with_variations">有货 \u2022 %d 个参数</string>
+    <string name="product_image_content_description">产品图片</string>
+    <string name="review_list_item_title">%1$s评论了“%2$s”</string>
+    <string name="wc_unapproved">未批准</string>
+    <string name="review_single_fetch_error">获取新产品评论时出错</string>
+    <string name="review_fetch_error">获取产品评论时出错</string>
+    <string name="order_refunds_refund_manual_refund_note">目前只支持手动退款。通过付款网关的控制面板完成退款，或将款项手动转给客户。</string>
+    <string name="order_refunds_manual_refund_error">退款时出错。请重试。</string>
+    <string name="order_refunds_manual_refund_successful">已成功提交退款。</string>
+    <string name="order_refunds_manual_refund_progress_message">您的 %s 退款正在处理。请稍候…</string>
+    <string name="order_refunds_quote_image_description">引用图标</string>
+    <string name="order_refunds_manual_refund">手动退款</string>
+    <string name="order_refunds_refund_details">退款详细信息</string>
+    <string name="order_refunds_refunded_via">已通过 %s 退款</string>
+    <string name="order_refunds_refund_via">退款方式</string>
+    <string name="order_refunds_reason_hint">退款原因（可选）</string>
+    <string name="order_refunds_reason">退款原因</string>
+    <string name="order_refunds_refund_amount">退款金额</string>
+    <string name="order_refunds_previously_refunded">退款记录</string>
+    <string name="order_refunds_refund_zero_error">退款金额必须大于 0</string>
+    <string name="order_refunds_refund_high_error">退款金额高于可用金额</string>
+    <string name="order_refunds_refund">退款</string>
+    <string name="order_refunds_next_button_title">下一步</string>
+    <string name="order_refunds_restocking_note">退款即表示，没有项目需要补货</string>
+    <string name="order_refunds_title_with_amount">退款 %s</string>
+    <string name="order_refunds_available_for_refund">%s 可用于退款</string>
+    <string name="orderdetail_issue_refund_button">发放退款</string>
+    <string name="orderdetail_refund_view_details">查看详细信息</string>
+    <string name="orderdetail_refund_detail">%1$s，通过 %2$s – %3$s</string>
+    <string name="settings_enable_v4_stats_message">试用新的统计页面（适用于\nWooCommerce Admin 插件）</string>
+    <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
+    <string name="beta_features">测试版功能</string>
+    <string name="order_begin_fulfillment">开始履行</string>
+    <string name="orderdetail_net">净额</string>
+    <string name="orderdetail_payment_paid_by_customer">客户支付</string>
+    <string name="orderdetail_payment_summary_onhold">等待通过 %s支付</string>
+    <string name="orderdetail_payment_summary_completed">%1$s（通过 %2$s）</string>
+    <string name="my_store_stats_availability_message">我们正面向使用了 WooCommerce Admin 插件的商店推出经改进的统计页面</string>
+    <string name="my_store_stats_availability_title">试用经改进的统计页面</string>
+    <string name="my_store_stats_reverted_message">由于无法找到 WooCommerce Admin 插件，\n因此已恢复旧版统计页面</string>
+    <string name="dashboard_state_no_data">此时间段内没有收入</string>
+    <string name="no_thanks">不用了，谢谢</string>
+    <string name="try_it_now">立即试用</string>
+    <string name="products_total">产品总计</string>
+    <string name="order_total">订单总计</string>
     <string name="dashboard_stats_todays_stats">今日统计</string>
     <string name="login_sign_in">登录</string>
     <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
@@ -426,9 +475,7 @@ Language: zh_CN
     <string name="settings_notifs_device">管理通知</string>
     <string name="settings_notifs">通知</string>
     <string name="settings_confirm_logout">是否确定要注销帐户 %s？</string>
-    <string name="notifs_detail_loading_error">加载通知详细信息时出错</string>
-    <string name="notifs_review_moderation_undo">评论已标记为 %1$s</string>
-    <string name="notifs_fetch_error">抓取通知时出错</string>
+    <string name="review_moderation_undo">评论已标记为 %1$s</string>
     <string name="add_order_note_sublabel">如果禁用，备注将不会公开</string>
     <string name="order_error_fetch_generic">抓取订单时出错</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -650,7 +697,6 @@ Language: zh_CN
     <string name="dashboard_action_view_orders">查看订单</string>
     <string name="dashboard_action_view_order">查看订单</string>
     <string name="dashboard_top_earners_empty">这段时间内没有任何活动</string>
-    <string name="dashboard_top_earners_content_description">产品图片</string>
     <string name="dashboard_top_earners_total_orders">订单总数：%s</string>
     <string name="dashboard_top_earners_total_spend">总花费</string>
     <string name="dashboard_top_earners_description">深入了解商店中产品的销售情况</string>

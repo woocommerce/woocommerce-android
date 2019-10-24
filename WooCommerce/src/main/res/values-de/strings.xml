@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-01 14:54:03+0000
+Translation-Revision-Date: 2019-10-17 00:54:50+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_search_hint">Produkte durchsuchen</string>
+    <string name="product_list_empty_search">Keine Produkte gefunden</string>
+    <string name="product_list_empty">Noch keine Produkte</string>
+    <string name="product_stock_count">%s auf Lager</string>
+    <string name="product_stock_status_instock_with_variations">Auf Lager \u2022 %d Varianten</string>
+    <string name="product_image_content_description">Produktbild</string>
+    <string name="review_list_item_title">%1$s hat eine Bewertung für %2$s hinterlassen</string>
+    <string name="wc_unapproved">Nicht genehmigt</string>
+    <string name="review_single_fetch_error">Fehler beim Abrufen neuer Produktbewertungen</string>
+    <string name="review_fetch_error">Fehler beim Abrufen von Produktbewertungen</string>
+    <string name="order_refunds_refund_manual_refund_note">Derzeit werden nur manuelle Rückerstattungen unterstützt. Schließe die Rückerstattung über das Dashboard deines Zahlungs-Gateways ab oder überweise dem Kunden das Geld manuell.</string>
+    <string name="order_refunds_manual_refund_error">Bei der Rückerstattung ist ein Fehler aufgetreten. Bitte versuche es erneut.</string>
+    <string name="order_refunds_manual_refund_successful">Die Rückerstattung wurde erfolgreich übermittelt.</string>
+    <string name="order_refunds_manual_refund_progress_message">Deine Rückerstattung für %s wird verarbeitet. Bitte warten …</string>
+    <string name="order_refunds_quote_image_description">Icon für Rückerstattungsangebot</string>
+    <string name="order_refunds_manual_refund">Manuelle Rückerstattung</string>
+    <string name="order_refunds_refund_details">Rückerstattungsdetails</string>
+    <string name="order_refunds_refunded_via">Rückerstattet per %s</string>
+    <string name="order_refunds_refund_via">Rückerstattung per</string>
+    <string name="order_refunds_reason_hint">Grund der Rückerstattung (optional)</string>
+    <string name="order_refunds_reason">Grund der Rückerstattung</string>
+    <string name="order_refunds_refund_amount">Rückerstattungsbetrag</string>
+    <string name="order_refunds_previously_refunded">Bisher zurückerstattet</string>
+    <string name="order_refunds_refund_zero_error">Der Rückerstattungsbetrag muss größer als Null sein.</string>
+    <string name="order_refunds_refund_high_error">Der Rückerstattungsbetrag übersteigt den verfügbaren Betrag.</string>
+    <string name="order_refunds_refund">Rückerstattung</string>
+    <string name="order_refunds_next_button_title">Weiter</string>
+    <string name="order_refunds_restocking_note">Wenn du einen Betrag rückerstattest, werden die entsprechenden Artikel im Lager nicht wieder aufgefüllt.</string>
+    <string name="order_refunds_title_with_amount">Rückerstattung in Höhe von %s</string>
+    <string name="order_refunds_available_for_refund">%s zur Rückerstattung verfügbar</string>
+    <string name="orderdetail_issue_refund_button">Rückerstattung ausstellen</string>
+    <string name="orderdetail_refund_view_details">Details anzeigen</string>
+    <string name="orderdetail_refund_detail">%1$s per %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Teste die neuen Statistiken, die im\nWooCommerce Admin-Plugin verfügbar ist</string>
     <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
     <string name="beta_features">Betafunktionen</string>
@@ -442,9 +475,7 @@ Language: de
     <string name="settings_notifs_device">Verwalten von Benachrichtigungen</string>
     <string name="settings_notifs">Benachrichtigungen</string>
     <string name="settings_confirm_logout">Möchtest du dich wirklich vom Konto %s abmelden?</string>
-    <string name="notifs_detail_loading_error">Fehler beim Laden des Benachrichtigungsdetails</string>
-    <string name="notifs_review_moderation_undo">Bewertung als %1$s markiert</string>
-    <string name="notifs_fetch_error">Fehler beim Abrufen von Benachrichtigungen</string>
+    <string name="review_moderation_undo">Bewertung als %1$s markiert</string>
     <string name="add_order_note_sublabel">Bei Deaktivierung wird der Hinweis privat</string>
     <string name="order_error_fetch_generic">Fehler beim Abrufen der Bestellung</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -666,7 +697,6 @@ Language: de
     <string name="dashboard_action_view_orders">Bestellungen anzeigen</string>
     <string name="dashboard_action_view_order">Bestellung anzeigen</string>
     <string name="dashboard_top_earners_empty">Keine Aktivitäten in diesem Zeitraum</string>
-    <string name="dashboard_top_earners_content_description">Produktabbildung</string>
     <string name="dashboard_top_earners_total_orders">Aufträge gesamt: %s</string>
     <string name="dashboard_top_earners_total_spend">Gesamtausgaben</string>
     <string name="dashboard_top_earners_description">Erfahre, wie erfolgreich Produkte in deinem Shop sind</string>

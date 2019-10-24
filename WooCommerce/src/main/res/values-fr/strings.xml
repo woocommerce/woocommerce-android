@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-01 14:54:03+0000
+Translation-Revision-Date: 2019-10-16 00:55:23+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_search_hint">Recherche produits</string>
+    <string name="product_list_empty_search">Aucun produit correspondant</string>
+    <string name="product_list_empty">Aucun produit pour le moment</string>
+    <string name="product_stock_count">%s en stock</string>
+    <string name="product_stock_status_instock_with_variations">En stock : \u2022 %d variantes</string>
+    <string name="product_image_content_description">Image produit</string>
+    <string name="review_list_item_title">%1$s a laissé un avis sur %2$s</string>
+    <string name="wc_unapproved">Désapprouvé</string>
+    <string name="review_single_fetch_error">Erreur lors de la récupération du nouvel avis sur le produit</string>
+    <string name="review_fetch_error">Erreur lors de la récupération des avis sur le produit</string>
+    <string name="order_refunds_refund_manual_refund_note">Actuellement, seuls les remboursements manuels sont acceptés. Effectuez le remboursement via le tableau de bord de votre passerelle de paiement, ou transférez l\'argent manuellement au client.</string>
+    <string name="order_refunds_manual_refund_error">Un problème est survenu lors du remboursement. Veuillez réessayer.</string>
+    <string name="order_refunds_manual_refund_successful">Le remboursement a bien été envoyé.</string>
+    <string name="order_refunds_manual_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>
+    <string name="order_refunds_quote_image_description">Icône de devis</string>
+    <string name="order_refunds_manual_refund">Remboursement manuel</string>
+    <string name="order_refunds_refund_details">Détails du remboursement</string>
+    <string name="order_refunds_refunded_via">Remboursement effectué via %s</string>
+    <string name="order_refunds_refund_via">Rembourser via</string>
+    <string name="order_refunds_reason_hint">Motif du remboursement (facultatif)</string>
+    <string name="order_refunds_reason">Motif du remboursement</string>
+    <string name="order_refunds_refund_amount">Montant du remboursement</string>
+    <string name="order_refunds_previously_refunded">Remboursements déjà effectués</string>
+    <string name="order_refunds_refund_zero_error">Le montant du remboursement doit être supérieur à 0</string>
+    <string name="order_refunds_refund_high_error">Le montant du remboursement est supérieur au montant disponible</string>
+    <string name="order_refunds_refund">Remboursement</string>
+    <string name="order_refunds_next_button_title">Suivant</string>
+    <string name="order_refunds_restocking_note">Si vous remboursez un montant, aucun article ne sera réapprovisionné</string>
+    <string name="order_refunds_title_with_amount">Rembourser %s</string>
+    <string name="order_refunds_available_for_refund">%s disponible(s) pour remboursement</string>
+    <string name="orderdetail_issue_refund_button">Effectuer le remboursement</string>
+    <string name="orderdetail_refund_view_details">Voir les détails</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Essayez les nouvelles statistiques disponibles avec\nl\'extension d\'administration WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistiques améliorées</string>
     <string name="beta_features">Fonctionnalités bêta</string>
@@ -441,9 +474,7 @@ Language: fr
     <string name="settings_notifs_device">Gérer les notifications</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_confirm_logout">Voulez-vous vraiment vous déconnecter du compte %s ?</string>
-    <string name="notifs_detail_loading_error">Erreur lors du chargement des détails de la notification</string>
-    <string name="notifs_review_moderation_undo">Avis marqué comme %1$s</string>
-    <string name="notifs_fetch_error">Erreur lors de l’extraction des notifications</string>
+    <string name="review_moderation_undo">Avis marqué comme %1$s</string>
     <string name="add_order_note_sublabel">Si cette option est désactivée, la note sera privée</string>
     <string name="order_error_fetch_generic">Erreur lors de l’extraction de la commande</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
@@ -665,7 +696,6 @@ Language: fr
     <string name="dashboard_action_view_orders">Voir les commandes</string>
     <string name="dashboard_action_view_order">Voir la commande</string>
     <string name="dashboard_top_earners_empty">Aucune activité sur cette période</string>
-    <string name="dashboard_top_earners_content_description">Image produit</string>
     <string name="dashboard_top_earners_total_orders">Commandes totales : %s</string>
     <string name="dashboard_top_earners_total_spend">Dépense totale</string>
     <string name="dashboard_top_earners_description">Obtenez des informations sur les performances des produits de votre boutique</string>
