@@ -16,9 +16,8 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -42,6 +41,7 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
@@ -59,10 +59,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         PurchaseDetails
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: ProductDetailViewModel
+    private val viewModel: ProductDetailViewModel by viewModels { viewModelFactory }
 
     private var productTitle = ""
     private var productImageUrl: String? = null
@@ -78,7 +78,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -101,10 +101,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
-            setupObservers(it)
-        }
-
+        setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
     }
 
@@ -143,14 +140,14 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         imageScrim.layoutParams.height = imageHeight / 3
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when {
-            item?.itemId == R.id.menu_share -> {
+            item.itemId == R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
                 true

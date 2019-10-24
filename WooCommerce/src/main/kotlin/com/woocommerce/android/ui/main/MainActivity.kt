@@ -218,14 +218,14 @@ class MainActivity : AppUpgradeActivity(),
         super.onDestroy()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
-        outState?.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
+        outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         super.onSaveInstanceState(outState)
     }
 
-    private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState?.also {
+    private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.also {
             val id = it.getInt(KEY_BOTTOM_NAV_POSITION, BottomNavigationPosition.DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
 

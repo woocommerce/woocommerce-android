@@ -55,7 +55,7 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         return inflater.inflate(R.layout.fragment_add_order_note, container, false)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -119,14 +119,14 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         super.onDestroyView()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu?.clear()
         inflater?.inflate(R.menu.menu_add, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
                 val noteText = getNoteText()

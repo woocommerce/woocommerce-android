@@ -4,23 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
 
 class IssueRefundFragment : DaggerFragment() {
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: IssueRefundViewModel
+    private val viewModel: IssueRefundViewModel by viewModels { viewModelFactory }
 
     private val navArgs: IssueRefundFragmentArgs by navArgs()
 
@@ -41,12 +41,8 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java)
-                .also {
-                    initializeViews(it)
-                    setupObservers(it)
-                }
-
+        initializeViews(viewModel)
+        setupObservers(viewModel)
         viewModel.start(navArgs.orderId)
     }
 

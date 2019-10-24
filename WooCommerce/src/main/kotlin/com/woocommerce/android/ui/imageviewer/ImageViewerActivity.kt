@@ -97,9 +97,9 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putString(KEY_IMAGE_URL, imageUrl)
-        outState?.putString(KEY_IMAGE_TITLE, imageTitle)
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(KEY_IMAGE_URL, imageUrl)
+        outState.putString(KEY_IMAGE_TITLE, imageTitle)
         super.onSaveInstanceState(outState)
     }
 

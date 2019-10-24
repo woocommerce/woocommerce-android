@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
@@ -24,8 +26,10 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     companion object {
         const val REFUND_SUCCESS_KEY = "refund-success-key"
     }
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private val viewModel: IssueRefundViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -44,10 +48,8 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     }
 
     private fun initializeViewModel() {
-        ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java).also {
-            initializeViews(it)
-            setupObservers(it)
-        }
+        initializeViews(viewModel)
+        setupObservers(viewModel)
     }
 
     @SuppressLint("SetTextI18n")

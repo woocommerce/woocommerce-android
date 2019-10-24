@@ -83,7 +83,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     private val navArgs: OrderDetailFragmentArgs by navArgs()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -665,7 +665,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                             orderStatus,
                             false,
                             listener = this)
-                    .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
+                    .also { it.show(requireFragmentManager(), OrderStatusSelectorDialog.TAG) }
         }
     }
 }
