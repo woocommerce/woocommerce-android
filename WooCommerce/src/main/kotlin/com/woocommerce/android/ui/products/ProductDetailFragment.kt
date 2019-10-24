@@ -653,7 +653,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 }
             } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
                 Uri.parse(currentPhotoPath)?.let { uri ->
-                    activity?.contentResolver?.notifyChange(uri, null)
                     viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
                 }
             }
