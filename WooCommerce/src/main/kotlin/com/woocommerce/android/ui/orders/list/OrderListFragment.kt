@@ -634,6 +634,8 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(true)
         (activity as? MainActivity)?.showBottomNav()
         enableToolbarElevation(false)
+
+        if (isFilterEnabled) disableFilterListeners()
     }
 
     /**
@@ -698,8 +700,6 @@ class OrderListFragment : TopLevelFragment(),
                 it.select()
                 getOrderStatusByTab(it)
             }
-
-            viewModel.loadList(orderStatusFilter)
 
             (activity as? MainActivity)?.hideBottomNav()
         }
