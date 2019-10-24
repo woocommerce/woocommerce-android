@@ -571,7 +571,6 @@ Language: tr
     <string name="magic_link_unavailable_error_message">Şu an uygun değil. Lütfen parolanızı girin</string>
     <string name="login_magic_link_email_requesting">Oturum açma e-postası istemek</string>
     <string name="login_magic_links_sent_label">Sihirli bağlantınız yola koyuldu. Bu cihazdaki e-posta adresinizi kontrol edin ve WordPress.com\'dan aldığınız e-posta içindeki bağlantıya basın.</string>
-    <string name="login_magic_links_label">Size anında giriş yapacağınız bir sihirli bağlantıyı e-posta ile göndereceğiz, hiç bir parolaya gerek yok. Artık tek tek yazmak yok.</string>
     <string name="password_incorrect">Bu parola yanlış gibi görünüyor. Lütfen bilgilerinizi iki kez kontrol edin ve tekrar deneyin.</string>
     <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz. Site adresinizi kullanarak oturum açmak için aşağıdaki bağlantıyı deneyin.</string>
     <string name="requesting_otp">SMS ile bir doğrulama kodu istemek.</string>

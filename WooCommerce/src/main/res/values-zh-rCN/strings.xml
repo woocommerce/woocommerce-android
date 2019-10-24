@@ -555,7 +555,6 @@ Language: zh_CN
     <string name="magic_link_unavailable_error_message">目前不可用。请输入密码</string>
     <string name="login_magic_link_email_requesting">正在请求登录电子邮件</string>
     <string name="login_magic_links_sent_label">神奇链接已经在路上！在此设备上查看电子邮件，并轻点来自 WordPress.com 的电子邮件中的链接。</string>
-    <string name="login_magic_links_label">我们将通过电子邮件向您发送一个神奇链接，通过它您无需密码即可登录。快去看邮件!</string>
     <string name="password_incorrect">密码似乎不对。请仔细检查您的信息，然后再试一次。</string>
     <string name="email_not_registered_wpcom">找不到与此电子邮件地址关联的 WordPress.com 帐户。请尝试使用您的站点地址通过以下链接登录。</string>
     <string name="requesting_otp">正在请求短信验证码。</string>

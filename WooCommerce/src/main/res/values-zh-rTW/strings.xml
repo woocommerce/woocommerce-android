@@ -571,7 +571,6 @@ Language: zh_TW
     <string name="magic_link_unavailable_error_message">目前無法使用。請輸入你的密碼</string>
     <string name="login_magic_link_email_requesting">要求登入的電子郵件</string>
     <string name="login_magic_links_sent_label">神奇連結已傳送！用此裝置查看電子郵件，點選你從 WordPress.com 收到的電子郵件中的連結。</string>
-    <string name="login_magic_links_label">我們會寄給你一個神奇的連結，讓你馬上就能登入，無須輸入密碼。不用再敲著兩隻手指打字了！</string>
     <string name="password_incorrect">看來你輸入的密碼不正確。請重新確認你的資訊，然後再試一次。</string>
     <string name="email_not_registered_wpcom">很抱歉，我們找不到與此電子郵件地址連結的 WordPress.com 帳號。請試著點擊下方連結，並使用你的網站位址登入。</string>
     <string name="requesting_otp">透過 SMS 要求驗證碼。</string>

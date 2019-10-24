@@ -571,7 +571,6 @@ Language: it
     <string name="magic_link_unavailable_error_message">Attualmente non disponibile. Inserisci la tua password</string>
     <string name="login_magic_link_email_requesting">Richiesta e-mail di accesso</string>
     <string name="login_magic_links_sent_label">Il tuo link sta arrivando! Controlla la tua e-mail su questo dispositivo e premi il link nell\'e-mail ricevuta da WordPress.com.</string>
-    <string name="login_magic_links_label">Ti invieremo per e-mail un link per accedere subito, senza password. Non ci sarà più bisogno di digitare la password!</string>
     <string name="password_incorrect">Sembra che la password non sia corretta. Verifica attentamente le informazioni e riprova.</string>
     <string name="email_not_registered_wpcom">Hmm, non siamo in grado di trovare un account WordPress.com connesso a questo indirizzo e-mail. Prova ad accedere con il seguente link usando l’indirizzo del tuo sito.</string>
     <string name="requesting_otp">Richiesta codice di verifica tramite SMS.</string>

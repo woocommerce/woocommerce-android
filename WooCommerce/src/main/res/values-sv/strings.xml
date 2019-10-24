@@ -571,7 +571,6 @@ Language: sv_SE
     <string name="magic_link_unavailable_error_message">Inte tillgänglig för närvarande. Ange ditt lösenord</string>
     <string name="login_magic_link_email_requesting">Begär e-postadress för inloggning</string>
     <string name="login_magic_links_sent_label">Din magiska länk är på väg! Kolla e-posten på din enhet och knacka på länken i e-postmeddelandet du just fick från WordPress.com</string>
-    <string name="login_magic_links_label">Vi skickar en magisk länk som låter dig logga in direkt, utan något lösenord. Slut på pekfingervalsandet!</string>
     <string name="password_incorrect">Det verkar som om ditt lösenord inte stämmer. Dubbelkolla dina uppgifer och försök igen.</string>
     <string name="email_not_registered_wpcom">Hmm, vi kan inte hitta något konto på WordPress.com som är kopplat till denna e-postadress. Prova länken nedan för att logga in med din webbsideadress.</string>
     <string name="requesting_otp">Begär en verifieringskod via SMS.</string>

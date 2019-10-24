@@ -571,7 +571,6 @@ Language: ja_JP
     <string name="magic_link_unavailable_error_message">現在ご利用いただけません。パスワードを入力してください</string>
     <string name="login_magic_link_email_requesting">ログインメールのリクエスト</string>
     <string name="login_magic_links_sent_label">マジックリンクがもうすぐ送られてきます。このデバイスでメールをチェックして、WordPress.com から届いたメールにあるリンクをタップしてください。</string>
-    <string name="login_magic_links_label">パスワードなしですぐにログインできるマジックリンクのメールをお送りします。面倒な入力は不要です !</string>
     <string name="password_incorrect">このパスワードは間違っているようです。入力した情報をもう一度確認してから、やり直してください。</string>
     <string name="email_not_registered_wpcom">このメールアドレスに連携されている WordPress.com アカウントが見つかりません。以下のリンクから、サイトアドレスを使用してログインしてください。</string>
     <string name="requesting_otp">SMS 経由で認証コードをリクエスト。</string>
