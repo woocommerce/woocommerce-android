@@ -6,8 +6,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,9 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.order_list_view.view.*
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 private const val MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION = 2
@@ -28,14 +24,12 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         View.inflate(context, R.layout.order_list_view, this)
     }
 
-    lateinit var ordersAdapter: OrderListAdapter
+    private lateinit var ordersAdapter: OrderListAdapter
     private lateinit var listener: OrderListListener
-
-    private val skeletonView = SkeletonView()
 
     fun init(
         currencyFormatter: CurrencyFormatter,
-        orderListListener: com.woocommerce.android.ui.orders.list.OrderListListener
+        orderListListener: OrderListListener
     ) {
         this.listener = orderListListener
         this.ordersAdapter = OrderListAdapter(orderListListener, currencyFormatter)
@@ -47,7 +41,7 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         )
 
         ordersList.apply {
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
@@ -118,11 +112,6 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
-    fun initEmptyView(siteModel: SiteModel) {
-        // FIXME AMANDA - empty view
-//        empty_view.setSiteToShare(siteModel, Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-    }
-
     fun updateEmptyViewForState(state: OrderListEmptyUiState) {
         empty_view?.let { emptyView ->
             if (state.emptyViewVisible) {
@@ -143,21 +132,6 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
     ) {
         UiHelpers.setTextOrHide(buttonView, text)
         buttonView.setOnClickListener { onButtonClick?.invoke() }
-    }
-
-    fun showEmptyView(
-        @StringRes messageId: Int,
-        showImage: Boolean,
-        showShareButton: Boolean,
-        @DrawableRes imageId: Int? = null
-    ) {
-        // FIXME AMANDA - empty view
-//        empty_view.show(messageId, showImage, showShareButton, imageId = imageId)
-    }
-
-    fun hideEmptyView() {
-        // FIXME AMANDA - empty view
-//        empty_view.hide()
     }
 
     fun isEmptyViewVisible() = empty_view.visibility == View.VISIBLE
