@@ -624,18 +624,6 @@ class OrderListFragment : TopLevelFragment(),
         // FIXME AMANDA
     }
 
-    private fun rebuildSearchView() {
-        // To prevent a timing issue that's causing the search bar
-        // to not be expanded when returning from order detail.
-        searchHandler.postDelayed({
-            val expanded = searchMenuItem?.expandActionView() ?: false
-            if (expanded) {
-                searchView?.setQuery(searchQuery, false)
-            }
-            enableSearchListeners()
-        }, 200L)
-    }
-
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
         orderListMenu?.findItem(R.id.menu_support)?.isVisible = true
