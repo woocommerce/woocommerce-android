@@ -5,4 +5,3 @@ interface OrderListListener {
     fun onFragmentScrollDown()
     fun onFragmentScrollUp()
 }
-

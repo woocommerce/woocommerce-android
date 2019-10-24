@@ -81,9 +81,6 @@ class OrderListViewModel @Inject constructor(
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
 
-    private val _scrollToPosition = SingleLiveEvent<Int>()
-    val scrollToPosition: LiveData<Int> = _scrollToPosition
-
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
@@ -158,27 +155,35 @@ class OrderListViewModel @Inject constructor(
         })
 
         this.pagedListWrapper = pagedListWrapper
-        fetchFirstPage()
+        fetchOrdersAndOrderStatusOptions()
     }
 
     /**
      * Refresh the order list with fresh data from the API as well as refresh order status
      * options if the network is available.
      */
-    fun fetchFirstPage() {
+    fun fetchOrdersAndOrderStatusOptions() {
         if (networkStatus.isConnected()) {
             launch {
                 pagedListWrapper?.fetchFirstPage()
-
-                // Fetch and load order status options
-                when (repository.fetchOrderStatusOptionsFromApi()) {
-                    RequestResult.SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
-                    else -> { /* do nothing */ }
-                }
+                fetchOrderStatusOptions()
             }
         } else {
             isRefreshPending = true
             showOfflineSnack()
+        }
+    }
+
+    /**
+     * Refresh the order count by order status list with fresh data from the API
+     */
+    fun fetchOrderStatusOptions() {
+        launch {
+            // Fetch and load order status options
+            when (repository.fetchOrderStatusOptionsFromApi()) {
+                RequestResult.SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
+                else -> { /* do nothing */ }
+            }
         }
     }
 
@@ -243,7 +248,7 @@ class OrderListViewModel @Inject constructor(
                 isListEmpty = pagedListWrapper.isEmpty.value ?: true,
                 isSearchPromptRequired = isEmptySearch(),
                 isError = pagedListWrapper.listError.value != null,
-                fetchFirstPage = this::fetchFirstPage,
+                fetchFirstPage = this::fetchOrdersAndOrderStatusOptions,
                 shareStoreFunc = this::shareStore)
         }
 
@@ -285,7 +290,7 @@ class OrderListViewModel @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
             // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> pagedListWrapper?.invalidateData()
+            UPDATE_ORDER_STATUS -> pagedListWrapper?.fetchFirstPage()
             else -> {}
         }
     }

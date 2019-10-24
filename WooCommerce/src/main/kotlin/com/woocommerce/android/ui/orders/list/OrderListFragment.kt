@@ -63,7 +63,6 @@ class OrderListFragment : TopLevelFragment(),
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val ORDER_TAB_DEFAULT = 1
-        private const val ORDER_TAB_PROCESSING = 0
 
         fun newInstance(orderStatusFilter: String? = null) =
             OrderListFragment().apply { this.orderStatusFilter = orderStatusFilter }
@@ -100,9 +99,9 @@ class OrderListFragment : TopLevelFragment(),
 
     /**
      * flag to check if the user selected any order status from the order status list
-     * If true, the data in the order list tab currently visible, will be refreshed
+     * If true, the data in the order list tab is currently visible and will be refreshed
      */
-    var isFilterEnabled: Boolean = false
+    private var isFilterEnabled: Boolean = false
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -197,7 +196,6 @@ class OrderListFragment : TopLevelFragment(),
                 }
 
         order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        order_list_view.initEmptyView(selectedSite.get())
         order_status_list_view.init(listener = this)
 
         listState?.let {
@@ -237,7 +235,7 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         checkOrientation()
     }
@@ -302,7 +300,7 @@ class OrderListFragment : TopLevelFragment(),
         if (!isChildFragmentShowing() && isSearching) {
             enableSearchListeners()
             searchMenuItem?.expandActionView()
-            if (isFilterEnabled) enableFilterListeners()
+            if (isFilterEnabled) displayFilteredList()
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
@@ -334,16 +332,7 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    private fun isShowingAllOrders(): Boolean {
-        return !isSearching && orderStatusFilter.isNullOrEmpty()
-    }
-
     private fun getOrderStatusOptions() = viewModel.orderStatusOptions.value.orEmpty()
-
-    private fun isOrderListEmpty() =
-            getOrderStatusOptions()?.filterValues { it.statusCount > 0 }.isNullOrEmpty()
-
-    private fun isShowingProcessingOrders() = tab_layout.selectedTabPosition == ORDER_TAB_PROCESSING
 
     override fun getFragmentTitle() = if (isFilterEnabled || isSearching) "" else getString(R.string.orders)
 
@@ -355,7 +344,7 @@ class OrderListFragment : TopLevelFragment(),
             // refresh order status options in the background even when order list is hidden
             // This is so that when an order status change takes place, we need to refresh the order
             // status count in the local cache
-            refreshOrderStatusOptions()
+            viewModel.fetchOrderStatusOptions()
         }
     }
 
@@ -392,10 +381,6 @@ class OrderListFragment : TopLevelFragment(),
 
         viewModel.showSnackbarMessage.observe(this, Observer { msg ->
             msg?.let { uiMessageResolver.showSnack(it) }
-        })
-
-        viewModel.scrollToPosition.observe(this, Observer {
-            // TODO AMANDA - needed?
         })
 
         viewModel.emptyViewState.observe(this, Observer {
@@ -444,13 +429,6 @@ class OrderListFragment : TopLevelFragment(),
     private fun updateOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
         order_list_view_root.visibility = View.VISIBLE
         order_status_list_view.updateOrderStatusListView(orderStatusList.values.toList())
-        // if empty view is currently displayed, then refresh the empty view message
-        // based on the order status list count
-        if (order_list_view.isEmptyViewVisible()) {
-
-            // FIXME AMANDA - empty view
-//            showEmptyView(true)
-        }
     }
 
     override fun onOrderStatusSelected(orderStatus: String?) {
@@ -463,11 +441,10 @@ class OrderListFragment : TopLevelFragment(),
         if (isAdded) {
             AnalyticsTracker.track(
                     Stat.ORDERS_LIST_FILTER,
-                    mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
-            )
+                    mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
 
             isRefreshing = true
-            enableFilterListeners()
+            displayFilteredList()
             order_list_view.clearAdapterData()
 
             viewModel.loadList(statusFilter = orderStatus)
@@ -525,9 +502,6 @@ class OrderListFragment : TopLevelFragment(),
             clearOrderListData()
         }
 
-        // FIXME AMANDA - empty view
-//        showEmptyView(false)
-
         return true
     }
 
@@ -541,7 +515,7 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         if (isFilterEnabled) {
-            disableFilterListeners()
+            closeFilteredList()
             enableSearchListeners()
             searchMenuItem?.isVisible = false
             searchView?.post { searchMenuItem?.expandActionView() }
@@ -559,7 +533,6 @@ class OrderListFragment : TopLevelFragment(),
             isRefreshing = true
             disableSearchListeners()
             updateActivityTitle()
-            refreshOrderStatusOptions()
             searchMenuItem?.collapseActionView()
 
             viewModel.loadList(orderStatusFilter)
@@ -616,12 +589,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun refreshOrders() {
-        viewModel.fetchFirstPage()
-        refreshOrderStatusOptions()
-    }
-
-    private fun refreshOrderStatusOptions() {
-        // FIXME AMANDA
+        viewModel.fetchOrdersAndOrderStatusOptions()
     }
 
     private fun disableSearchListeners() {
@@ -635,11 +603,12 @@ class OrderListFragment : TopLevelFragment(),
         (activity as? MainActivity)?.showBottomNav()
         enableToolbarElevation(false)
 
-        if (isFilterEnabled) disableFilterListeners()
+        if (isFilterEnabled) closeFilteredList()
     }
 
     /**
      * Method called when user clicks on the search menu icon.
+     *
      * 1. The settings menu is hidden when the search filter is active to prevent the search view
      *    getting collapsed if the settings menu from the [MainActivity] is clicked.
      * 2. The order status list view is displayed by default
@@ -657,6 +626,7 @@ class OrderListFragment : TopLevelFragment(),
 
     /**
      * Method called when user clicks on an order status from [OrderStatusListView]
+     *
      * 1. Hide the order status view
      * 2. Disable search
      * 3. Display the order status selected in the search query text area
@@ -665,7 +635,7 @@ class OrderListFragment : TopLevelFragment(),
      *    when back is clicked, the order list needs to be refreshed again from the api,
      *    since we only store the orders for a particular status in local cache.
      */
-    private fun enableFilterListeners() {
+    private fun displayFilteredList() {
         isFilterEnabled = true
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
@@ -683,10 +653,11 @@ class OrderListFragment : TopLevelFragment(),
 
     /**
      * Method called when user clicks on the back button after selecting an order status.
+     *
      * 1. Hide the order status view
      * 2. Enable search again and update the hint query
      */
-    private fun disableFilterListeners() {
+    private fun closeFilteredList() {
         if (isFilterEnabled) {
             isFilterEnabled = false
             searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
