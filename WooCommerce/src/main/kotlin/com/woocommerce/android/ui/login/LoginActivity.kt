@@ -50,6 +50,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
+        private const val MAGIC_LOGIN = "magic-login"
+        private const val TOKEN_PARAMETER = "token"
     }
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -66,7 +68,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
         setContentView(R.layout.activity_login)
 
-        if (savedInstanceState == null) {
+        if (hasMagicLinkLoginIntent()) {
+            getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
+        } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
             showPrologueFragment()
         }
@@ -83,6 +87,26 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
+    }
+
+    private fun hasMagicLinkLoginIntent(): Boolean {
+        val action = intent.action
+        val uri = intent.data
+        val host = uri?.host?.let { it } ?: ""
+        return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
+    }
+
+    private fun getAuthTokenFromIntent(): String? {
+        val uri = intent.data
+        return uri?.getQueryParameter(TOKEN_PARAMETER)
+    }
+
+    private fun showMagicLinkInterceptFragment(authToken: String) {
+        val fragment = MagicLinkInterceptFragment.newInstance(authToken)
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+                .addToBackStack(null)
+                .commitAllowingStateLoss()
     }
 
     override fun onPrologueFinished() {
