@@ -1,3 +1,7 @@
+3.0
+-----
+* Provided a new option for users to login via their site credentials
+
 2.9
 -----
  
