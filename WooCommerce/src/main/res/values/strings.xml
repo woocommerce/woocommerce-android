@@ -100,7 +100,7 @@
     <string name="cant_open_url">Unable to open the link</string>
     <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
     <string name="at_username">\@%s</string>
-    <string name="login_no_jetpack_username">Signed in as \@1%s\nWrong account? %2$s</string>
+    <string name="login_no_jetpack_username">Signed in as \@%1$s\nWrong account? %2$s</string>
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login">Log in</string>
     <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
@@ -217,9 +217,9 @@
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
-    <string name="orderdetail_note_private">Private Note</string>
-    <string name="orderdetail_note_public">Note to customer</string>
-    <string name="orderdetail_note_system">System status</string>
+    <string name="orderdetail_note_private">Private</string>
+    <string name="orderdetail_note_public">To customer</string>
+    <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>

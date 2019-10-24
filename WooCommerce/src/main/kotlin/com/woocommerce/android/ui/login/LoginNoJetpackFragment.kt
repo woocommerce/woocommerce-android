@@ -16,7 +16,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_login_no_jetpack.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
@@ -53,7 +52,7 @@ class LoginNoJetpackFragment : Fragment() {
     }
 
     private var loginListener: LoginListener? = null
-    private var jetpackLoginListener: LoginJetpackRequiredListener? = null
+    private var jetpackLoginListener: LoginNoJetpackListener? = null
     private var siteAddress: String? = null
     private var siteXmlRpcAddress: String? = null
     private var mInputUsername: String? = null
@@ -153,7 +152,13 @@ class LoginNoJetpackFragment : Fragment() {
 
         // this will throw if parent activity doesn't implement the login listener interface
         loginListener = context as? LoginListener
-        jetpackLoginListener = context as? LoginJetpackRequiredListener
+        jetpackLoginListener = context as? LoginNoJetpackListener
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        loginListener = null
+        jetpackLoginListener = null
     }
 
     override fun onResume() {

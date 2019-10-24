@@ -21,7 +21,7 @@
             style="@style/Woo.Card.WithoutPadding"/>
 
         <!-- Customer Provided Note -->
-        <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
+        <com.woocommerce.android.ui.orders.notes.OrderDetailCustomerNoteView
             android:id="@+id/orderFulfill_customerNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

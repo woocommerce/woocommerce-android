@@ -1,4 +1,0 @@
-2.7 :
-- Une nouvelle page de statistiques (proposant des analyses plus approfondies) est disponible pour les utilisateurs de l'extension d'administration WooCommerce ! Vous pouvez vous inscrire afin de l'utiliser sur la page Paramètres.
-- Qui n'apprécie pas de profiter d'une expérience plus rationalisée ? Si vous avez désactivé le module de statistiques sur votre site, nous masquerons la section des statistiques détaillées sur vos visiteurs sur votre page Ma boutique.
-- Profitez de sections Informations sur le client et Paiement repensées (et plus lisibles) dans les vues des détails de la commande.

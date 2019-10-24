@@ -227,6 +227,7 @@ object WcOrderTestUtils {
         val orderId = 1
         val remoteId: Long = 1
         val result = ArrayList<WCOrderNoteModel>()
+        val noteAuthor = "Author"
         val om1 = WCOrderNoteModel().apply {
             localSiteId = siteId
             localOrderId = orderId
@@ -235,6 +236,7 @@ object WcOrderTestUtils {
             note = "This should be displayed first"
             isCustomerNote = true
             isSystemNote = false
+            author = noteAuthor
         }
 
         val om2 = WCOrderNoteModel().apply {
@@ -245,6 +247,7 @@ object WcOrderTestUtils {
             note = "This should be displayed second"
             isCustomerNote = false
             isSystemNote = true
+            author = noteAuthor
         }
 
         val om3 = WCOrderNoteModel().apply {
@@ -255,6 +258,7 @@ object WcOrderTestUtils {
             note = "This should be displayed third"
             isSystemNote = false
             isCustomerNote = false
+            author = noteAuthor
         }
 
         result.add(om1)
