@@ -1,17 +1,17 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
+import dagger.Module
+import dagger.Binds
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.viewmodel.ViewModelKey
-import dagger.Binds
-import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class ProductListModule {
+abstract class RefundDetailModule {
     @Module
     companion object {
         @JvmStatic
@@ -20,11 +20,12 @@ abstract class ProductListModule {
             return null
         }
     }
-    @Binds
-    @IntoMap
-    @ViewModelKey(ProductListViewModel::class)
-    abstract fun bindFactory(factory: ProductListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
-    abstract fun bindSavedStateRegistryOwner(fragment: ProductListFragment): SavedStateRegistryOwner
+    @IntoMap
+    @ViewModelKey(RefundDetailViewModel::class)
+    abstract fun bindFactory(factory: RefundDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    abstract fun bindSavedStateRegistryOwner(fragment: RefundDetailFragment): SavedStateRegistryOwner
 }
