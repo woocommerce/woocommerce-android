@@ -6,10 +6,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -21,7 +18,6 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -55,11 +51,6 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.max
 
@@ -90,17 +81,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
-    private var currentPhotoPath: String? = null
     private val skeletonView = SkeletonView()
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        savedInstanceState?.let { bundle ->
-            currentPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -115,7 +98,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        currentPhotoPath?.let {
+        // TODO: we should update to using the saved state module for ViewModels so we don't have to do this
+        viewModel.capturedPhotoPath?.let {
             outState.putString(KEY_CURRENT_PHOTO_PATH, it)
         }
     }
@@ -134,15 +118,18 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
+        initializeViewModel(savedInstanceState)
     }
 
-    private fun initializeViewModel() {
+    private fun initializeViewModel(savedInstanceState: Bundle?) {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
             setupObservers(it)
         }
 
         viewModel.start(navArgs.remoteProductId)
+        savedInstanceState?.let { bundle ->
+            viewModel.capturedPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -598,47 +585,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     private fun captureProduceImage() {
         if (requestCameraPermission()) {
-            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-                // Ensure that there's a camera activity to handle the intent
-                takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
-                    // Create the File where the photo should go
-                    val photoFile: File? = try {
-                        createImageFile()
-                    } catch (ex: IOException) {
-                        // TODO: handle error
-                        null
-                    }
-
-                    // Continue only if the File was successfully created
-                    photoFile?.also {
-                        val authority = requireActivity().applicationContext.packageName + ".provider"
-                        val photoURI: Uri = FileProvider.getUriForFile(
-                                requireActivity(),
-                                authority,
-                                it
-                        )
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                        activity?.startActivityFromFragment(this, takePictureIntent, REQUEST_CODE_CAPTURE_PHOTO)
-                    }
-                }
+            viewModel.createCaptureImageIntent(requireActivity())?.let { intent ->
+                activity?.startActivityFromFragment(this, intent, REQUEST_CODE_CAPTURE_PHOTO)
             }
-        }
-    }
-
-    /**
-     * Creates a temporary file for captured photos
-     */
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val storageDir = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-                "JPEG_${timeStamp}_",
-                ".jpg",
-                storageDir
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
         }
     }
 
@@ -672,10 +621,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                     viewModel.uploadProductMedia(requireActivity(), navArgs.remoteProductId, uri)
                 }
             } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
-                Uri.parse(currentPhotoPath)?.let { uri ->
-                    viewModel.uploadProductMedia(requireActivity(), navArgs.remoteProductId, uri)
-                }
-                currentPhotoPath = null
+                viewModel.uploadCapturedImage(requireActivity(), navArgs.remoteProductId)
             }
         }
     }
@@ -783,7 +729,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                     chooseProductImage()
                 }
                 WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
-                    // TODO: show camera once we add this feature
+                    captureProduceImage()
                 }
             }
         }
