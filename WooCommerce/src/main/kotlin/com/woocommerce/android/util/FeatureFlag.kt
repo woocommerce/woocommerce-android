@@ -11,7 +11,6 @@ enum class FeatureFlag {
     PRODUCT_IMAGE_CHOOSER,
     DB_DOWNGRADE,
     REFUNDS;
-
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             PRODUCT_LIST -> BuildConfig.DEBUG

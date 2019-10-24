@@ -12,7 +12,6 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -25,7 +24,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
 
     init {
         View.inflate(context, R.layout.order_detail_payment_info, this)
-        orientation = LinearLayout.VERTICAL
+        orientation = VERTICAL
     }
 
     fun initView(
@@ -75,7 +74,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                         order.paymentMethodTitle
                 )
 
-                if (order.total - order.refundTotal > BigDecimal.ZERO && FeatureFlag.REFUNDS.isEnabled()) {
+                if (order.total - order.refundTotal > BigDecimal.ZERO) {
                     paymentInfo_issueRefundButtonSection.show()
                 } else {
                     paymentInfo_issueRefundButtonSection.hide()

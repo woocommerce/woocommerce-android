@@ -1,5 +1,6 @@
 3.0
 -----
+* Added a new refunding feature that brings the ability to specify the amount to refund
  
 2.9
 -----

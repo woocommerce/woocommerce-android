@@ -57,6 +57,8 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
+        viewModel.resetEvents()
+
         viewModel.screenTitle.observe(this, Observer {
             activity?.title = it
         })
