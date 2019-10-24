@@ -65,8 +65,11 @@ import kotlin.math.max
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     companion object {
+        private const val KEY_CURRENT_PHOTO_PATH = "photo_path"
+
         private const val MENU_ID_CHOOSE_PHOTO = 2
         private const val MENU_ID_CAPTURE_PHOTO = 3
+
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
         private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
     }
@@ -92,6 +95,13 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            currentPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -101,6 +111,13 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        currentPhotoPath?.let {
+            outState.putString(KEY_CURRENT_PHOTO_PATH, it)
+        }
     }
 
     override fun onDestroyView() {
@@ -608,6 +625,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
+    /**
+     * Creates a temporary file for captured photos
+     */
     @Throws(IOException::class)
     private fun createImageFile(): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
@@ -640,8 +660,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && data != null) {
-            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
                 val clipData = data.clipData
                 val imageUri = if (clipData != null && clipData.itemCount > 0) {
                     clipData.getItemAt(0).uri
@@ -649,12 +669,13 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                     data.data
                 }
                 imageUri?.let { uri ->
-                    viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
+                    viewModel.uploadProductMedia(requireActivity(), navArgs.remoteProductId, uri)
                 }
             } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
                 Uri.parse(currentPhotoPath)?.let { uri ->
-                    viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
+                    viewModel.uploadProductMedia(requireActivity(), navArgs.remoteProductId, uri)
                 }
+                currentPhotoPath = null
             }
         }
     }

@@ -113,7 +113,7 @@
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <!-- Provider for exposing file URIs on Android 7+ -->
+        <!-- Provider for exposing file URIs on Android 7+ (required for camera) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
