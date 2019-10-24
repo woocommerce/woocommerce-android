@@ -73,7 +73,9 @@ class OrderListFragment : TopLevelFragment(),
     @Inject internal lateinit var selectedSite: SelectedSite
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
-    private lateinit var viewModel: OrderListViewModel
+    private val viewModel: OrderListViewModel by lazy {
+        ViewModelProviders.of(requireActivity(), viewModelFactory).get(OrderListViewModel::class.java)
+    }
 
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null
@@ -353,8 +355,6 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(OrderListViewModel::class.java)
-
         // setup observers
         viewModel.isFetchingFirstPage.observe(this, Observer {
             orderRefreshLayout?.isRefreshing = it == true
