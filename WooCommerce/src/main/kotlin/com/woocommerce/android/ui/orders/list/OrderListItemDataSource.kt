@@ -47,8 +47,7 @@ class OrderListItemDataSource(
         // Fetch missing items
         fetcher.fetchOrders(
                 site = listDescriptor.site,
-                remoteItemIds = remoteItemIds.filter { !ordersMap.containsKey(it) }
-        )
+                remoteItemIds = remoteItemIds.filter { !ordersMap.containsKey(it) })
 
         val mapSummary = { remoteOrderId: RemoteId ->
             ordersMap[remoteOrderId].let { order ->
@@ -82,6 +81,7 @@ class OrderListItemDataSource(
         isListFullyFetched: Boolean
     ): List<OrderListItemIdentifier> {
         val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, remoteItemIds)
+                .filter { !isFutureOrder(it.value.dateCreated) } // Remove future orders
                 .let { summariesByRemoteId ->
                     remoteItemIds.mapNotNull { summariesByRemoteId[it] }
                 }
@@ -128,5 +128,18 @@ class OrderListItemDataSource(
     override fun fetchList(listDescriptor: WCOrderListDescriptor, offset: Long) {
         val fetchOrderListPayload = FetchOrderListPayload(listDescriptor, offset)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderListAction(fetchOrderListPayload))
+    }
+
+    /**
+     * Checks if an order is dated for the future.
+     */
+    private fun isFutureOrder(dateCreated: String): Boolean {
+        val now = DateTimeUtils.nowUTC()
+        val orderDate = DateTimeUtils.dateUTCFromIso8601(dateCreated) ?: Date()
+        if (orderDate.time >= now.time || DateTimeUtils.daysBetween(orderDate, now) == 1) {
+            return true
+        }
+
+        return false
     }
 }
