@@ -241,15 +241,15 @@ class ProductDetailViewModel @Inject constructor(
     private fun createCaptureImageFile(context: Context): File? {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        try {
-            return File.createTempFile(
+        return try {
+            File.createTempFile(
                     "JPEG_${timeStamp}_",
                     ".jpg",
                     storageDir
             )
         } catch (ex: IOException) {
             WooLog.e(T.MEDIA, ex)
-            return null
+            null
         }
     }
 
