@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                android:lineSpacingMultiplier="1.5"
+                android:lineSpacingMultiplier="1.2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/refundDetail_quoteImage"
                 app:layout_constraintTop_toTopOf="@+id/refundDetail_quoteImage"

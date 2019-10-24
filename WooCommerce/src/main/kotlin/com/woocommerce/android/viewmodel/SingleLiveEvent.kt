@@ -52,6 +52,10 @@ open class SingleLiveEvent<T> : MutableLiveData<T>() {
         })
     }
 
+    fun reset() {
+        pending.set(false)
+    }
+
     @MainThread
     override fun setValue(t: T?) {
         pending.set(true)
