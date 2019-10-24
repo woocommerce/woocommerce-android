@@ -6,7 +6,10 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -18,6 +21,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -51,13 +55,20 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.max
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     companion object {
         private const val MENU_ID_CHOOSE_PHOTO = 2
+        private const val MENU_ID_CAPTURE_PHOTO = 3
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
+        private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
     }
 
     private enum class DetailCard {
@@ -76,6 +87,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
+    private var currentPhotoPath: String? = null
     private val skeletonView = SkeletonView()
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
@@ -160,6 +172,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         inflater?.inflate(R.menu.menu_share, menu)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
             menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_image)
+            menu?.add(Menu.NONE, MENU_ID_CAPTURE_PHOTO, Menu.NONE, R.string.product_capture_image)
         }
     }
 
@@ -172,6 +185,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             }
             MENU_ID_CHOOSE_PHOTO -> {
                 chooseProductImage()
+                true
+            }
+            MENU_ID_CAPTURE_PHOTO -> {
+                captureProduceImage()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -562,6 +579,49 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
+    private fun captureProduceImage() {
+        if (requestCameraPermission()) {
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                // Ensure that there's a camera activity to handle the intent
+                takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
+                    // Create the File where the photo should go
+                    val photoFile: File? = try {
+                        createImageFile()
+                    } catch (ex: IOException) {
+                        // TODO: handle error
+                        null
+                    }
+
+                    // Continue only if the File was successfully created
+                    photoFile?.also {
+                        val authority = requireActivity().applicationContext.packageName + ".provider"
+                        val photoURI: Uri = FileProvider.getUriForFile(
+                                requireActivity(),
+                                authority,
+                                it
+                        )
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        activity?.startActivityFromFragment(this, takePictureIntent, REQUEST_CODE_CAPTURE_PHOTO)
+                    }
+                }
+            }
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val storageDir = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+                "JPEG_${timeStamp}_",
+                ".jpg",
+                storageDir
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
     /**
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
@@ -580,15 +640,22 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
-            val clipData = data.clipData
-            val imageUri = if (clipData != null && clipData.itemCount > 0) {
-                clipData.getItemAt(0).uri
-            } else {
-                data.data
-            }
-            imageUri?.let { uri ->
-                viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO) {
+                val clipData = data.clipData
+                val imageUri = if (clipData != null && clipData.itemCount > 0) {
+                    clipData.getItemAt(0).uri
+                } else {
+                    data.data
+                }
+                imageUri?.let { uri ->
+                    viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
+                }
+            } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
+                Uri.parse(currentPhotoPath)?.let { uri ->
+                    activity?.contentResolver?.notifyChange(uri, null)
+                    viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
+                }
             }
         }
     }
