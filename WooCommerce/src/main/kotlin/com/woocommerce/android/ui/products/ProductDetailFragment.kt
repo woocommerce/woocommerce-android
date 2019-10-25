@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -22,22 +21,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
@@ -50,11 +42,9 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
-import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
-import kotlin.math.max
 
-class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
+class ProductDetailFragment : BaseFragment() {
     companion object {
         private const val MENU_ID_CHOOSE_PHOTO = 2
         private const val MENU_ID_CAPTURE_PHOTO = 3
@@ -156,10 +146,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         val displayHeight = DisplayUtils.getDisplayPixelHeight(activity!!)
         val multiplier = if (DisplayUtils.isLandscape(activity!!)) 0.5f else 0.3f
         imageHeight = (displayHeight * multiplier).toInt()
-        productDetail_image.layoutParams.height = imageHeight
-
-        // set the height of the gradient scrim that appears atop the image
-        imageScrim.layoutParams.height = imageHeight / 3
+        imageGallery.layoutParams.height = imageHeight
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -219,7 +206,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
 
         updateActivityTitle()
-        showProductImage(product)
+        showProductImages(product)
 
         isVariation = product.type == ProductType.VARIATION
 
@@ -236,27 +223,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         addPurchaseDetailsCard(productData)
     }
 
-    private fun showProductImage(product: Product) {
-        if (viewModel.isUploadingProductImage.value == true) {
-            return
-        }
-
-        val imageUrl = product.firstImageUrl
-        if (imageUrl != null) {
-            val width = DisplayUtils.getDisplayPixelWidth(activity!!)
-            val height = DisplayUtils.getDisplayPixelHeight(activity!!)
-            val imageSize = max(width, height)
-            productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
-            GlideApp.with(activity!!)
-                    .load(productImageUrl)
-                    .error(R.drawable.ic_product)
-                    .placeholder(R.drawable.product_detail_image_background)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .listener(this)
-                    .into(productDetail_image)
-        } else {
-            productDetail_image.visibility = View.GONE
-            imageScrim.visibility = View.GONE
+    private fun showProductImages(product: Product) {
+        if (viewModel.isUploadingProductImage.value == false) {
+            imageGallery.showImages(product.images)
         }
     }
 
@@ -586,15 +555,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
     private fun showUploadImageProgress(isUploading: Boolean) {
-        productDetail_image.visibility = View.VISIBLE
-        imageScrim.visibility = View.VISIBLE
-
         if (isUploading) {
             uploadImageProgress.visibility = View.VISIBLE
-            productDetail_image.imageAlpha = 128
         } else {
             uploadImageProgress.visibility = View.GONE
-            productDetail_image.imageAlpha = 255
         }
     }
 
@@ -619,7 +583,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     /**
      * Glide failed to load the product image, do nothing so Glide will show the error drawable
-     */
+     *
     override fun onLoadFailed(
         e: GlideException?,
         model: Any?,
@@ -629,9 +593,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         return false
     }
 
-    /**
+    **
      * Glide loaded the product image, add click listener to show image full screen
-     */
+     *
     override fun onResourceReady(
         resource: Drawable?,
         model: Any?,
@@ -655,7 +619,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             }
         }
         return false
-    }
+    } */
 
     /**
      * Requests storage permission, returns true only if permission is already available
