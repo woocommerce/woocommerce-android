@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -20,7 +20,7 @@ class IssueRefundFragment : DaggerFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by viewModels { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
 
     private val navArgs: IssueRefundFragmentArgs by navArgs()
 

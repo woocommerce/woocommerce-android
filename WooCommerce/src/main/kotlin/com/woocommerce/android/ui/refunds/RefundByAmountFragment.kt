@@ -5,10 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
@@ -21,7 +19,7 @@ class RefundByAmountFragment : DaggerFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    private val viewModel: IssueRefundViewModel by viewModels { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
