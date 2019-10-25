@@ -56,8 +56,6 @@ import kotlin.math.max
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     companion object {
-        private const val KEY_CURRENT_PHOTO_PATH = "photo_path"
-
         private const val MENU_ID_CHOOSE_PHOTO = 2
         private const val MENU_ID_CAPTURE_PHOTO = 3
 
@@ -96,14 +94,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         super.onAttach(context)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        // TODO: we should update to using the saved state module for ViewModels so we don't have to do this
-        viewModel.capturedPhotoPath?.let {
-            outState.putString(KEY_CURRENT_PHOTO_PATH, it)
-        }
-    }
-
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
@@ -117,8 +107,12 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initializeViewModel(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.saveState(outState)
     }
 
     private fun initializeViewModel(savedInstanceState: Bundle?) {
@@ -126,10 +120,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             setupObservers(it)
         }
 
-        viewModel.start(navArgs.remoteProductId)
-        savedInstanceState?.let { bundle ->
-            viewModel.capturedPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
-        }
+        viewModel.start(navArgs.remoteProductId, savedInstanceState)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {

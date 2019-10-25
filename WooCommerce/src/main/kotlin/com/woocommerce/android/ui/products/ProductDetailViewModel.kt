@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
@@ -47,6 +48,10 @@ class ProductDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(mainDispatcher) {
+    companion object {
+        private const val KEY_CURRENT_PHOTO_PATH = "photo_path"
+    }
+
     private var remoteProductId = 0L
 
     private val product = MutableLiveData<Product>()
@@ -70,7 +75,7 @@ class ProductDetailViewModel @Inject constructor(
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
 
-    var capturedPhotoPath: String? = null
+    private var capturedPhotoPath: String? = null
 
     init {
         _productData.addSource(product) { prod ->
@@ -87,12 +92,21 @@ class ProductDetailViewModel @Inject constructor(
         EventBus.getDefault().register(this)
     }
 
-    fun start(remoteProductId: Long) {
+    fun start(remoteProductId: Long, savedInstanceState: Bundle?) {
         loadProduct(remoteProductId)
+        savedInstanceState?.let { bundle ->
+            capturedPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
+        }
     }
 
     fun onShareButtonClicked() {
         _shareProduct.value = product.value
+    }
+
+    fun saveState(bundle: Bundle) {
+        capturedPhotoPath?.let {
+            bundle.putString(KEY_CURRENT_PHOTO_PATH, it)
+        }
     }
 
     override fun onCleared() {
