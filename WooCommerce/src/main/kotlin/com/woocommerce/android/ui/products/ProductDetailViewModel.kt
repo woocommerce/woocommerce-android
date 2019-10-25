@@ -92,21 +92,21 @@ class ProductDetailViewModel @Inject constructor(
         EventBus.getDefault().register(this)
     }
 
-    fun start(remoteProductId: Long, savedInstanceState: Bundle?) {
+    fun start(remoteProductId: Long, savedInstanceState: Bundle? = null) {
         loadProduct(remoteProductId)
         savedInstanceState?.let { bundle ->
             capturedPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
         }
     }
 
-    fun onShareButtonClicked() {
-        _shareProduct.value = product.value
-    }
-
     fun saveState(bundle: Bundle) {
         capturedPhotoPath?.let {
             bundle.putString(KEY_CURRENT_PHOTO_PATH, it)
         }
+    }
+
+    fun onShareButtonClicked() {
+        _shareProduct.value = product.value
     }
 
     override fun onCleared() {
