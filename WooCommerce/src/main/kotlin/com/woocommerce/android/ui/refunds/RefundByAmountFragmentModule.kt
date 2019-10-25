@@ -5,8 +5,8 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class IssueRefundFragmentModule {
+abstract class RefundByAmountFragmentModule {
     @FragmentScope
     @ContributesAndroidInjector(modules = [IssueRefundModule::class])
-    abstract fun issueRefundFragment(): IssueRefundFragment
+    abstract fun refundByAmountFragment(): RefundByAmountFragment
 }

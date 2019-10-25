@@ -57,6 +57,8 @@ abstract class ActivityBindingModule {
 
     @Module(includes = [
         IssueRefundFragmentModule::class,
+        RefundByAmountFragmentModule::class,
+        RefundSummaryFragmentModule::class,
         RefundDetailFragmentModule::class
     ])
     object RefundModule
