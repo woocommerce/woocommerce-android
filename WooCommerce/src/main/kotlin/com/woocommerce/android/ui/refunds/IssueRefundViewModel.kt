@@ -13,8 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.BG_THREAD
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
@@ -30,7 +29,6 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationSt
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -39,15 +37,13 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import javax.inject.Named
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @OpenClassOnDebug
 class IssueRefundViewModel @AssistedInject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher,
+    dispatchers: CoroutineDispatchers,
     private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val wooStore: WooCommerceStore,
@@ -58,7 +54,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val noteRepository: OrderNoteRepository,
     private val gatewayStore: WCGatewayStore,
     @Assisted private val handle: SavedStateHandle
-) : ScopedViewModel(mainDispatcher) {
+) : ScopedViewModel(dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val REFUND_TYPE_AMOUNT = "amount"
@@ -224,7 +220,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                             AnalyticsTracker.KEY_REFUND_AMOUNT to enteredAmount.toString()
                     ))
 
-                    val resultCall = async(backgroundDispatcher) {
+                    val resultCall = async(dispatchers.main) {
                         return@async refundStore.createRefund(
                                 selectedSite.get(),
                                 order.remoteId,

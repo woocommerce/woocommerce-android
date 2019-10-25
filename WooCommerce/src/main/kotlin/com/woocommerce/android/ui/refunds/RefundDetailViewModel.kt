@@ -7,32 +7,30 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import javax.inject.Named
 
 @OpenClassOnDebug
 class RefundDetailViewModel @AssistedInject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+    dispatchers: CoroutineDispatchers,
     private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
     @Assisted private val handle: SavedStateHandle
-) : ScopedViewModel(mainDispatcher) {
+) : ScopedViewModel(dispatchers) {
     private val _screenTitle = MutableLiveData<String>()
     val screenTitle: LiveData<String> = _screenTitle
 

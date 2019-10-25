@@ -7,26 +7,24 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Named
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+    dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus,
     @Assisted private val handle: SavedStateHandle
-) : ScopedViewModel(mainDispatcher) {
+) : ScopedViewModel(dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }

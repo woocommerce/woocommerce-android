@@ -2,27 +2,25 @@ package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import kotlinx.coroutines.CoroutineDispatcher
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.math.roundToInt
 
 class MockedProductDetailViewModel @Inject constructor(
-    @Named(UI_THREAD) mainDispatcher: CoroutineDispatcher,
+    dispatchers: CoroutineDispatchers,
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
     productRepository: ProductDetailRepository,
     networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
 ) : ProductDetailViewModel(
-        mainDispatcher,
+        dispatchers,
         wooCommerceStore,
         selectedSite,
         productRepository,

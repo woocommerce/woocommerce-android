@@ -21,7 +21,6 @@ class IssueRefundFragment : DaggerFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
-
     private val navArgs: IssueRefundFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
