@@ -637,6 +637,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
             isRefreshing = true
+            refreshOrderStatusOptions()
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
