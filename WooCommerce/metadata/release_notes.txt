@@ -1,3 +1,4 @@
-* Order list search was missing a cursor. Now it’s got one!
-* The updated order detail screen also shows a list of refunds you’ve issued.
-* The “Reviews” tab now displays all product reviews for the store.
+* Hooray! We now support Android 10!
+* The orders tab has had an extreme makeover! Search and filtering share a single view that includes a total count of orders by order status. The orders list is displayed in two tabs: Processing & All.
+* The order detail view has also received some touchups.
+* Several minor bug fixes are also included in this release.
