@@ -36,8 +36,8 @@ import org.wordpress.android.login.di.LoginFragmentModule
 @Module
 abstract class ActivityBindingModule {
     @ActivityScope
-    @ContributesAndroidInjector(modules = [
-            ThreadModule::class,
+    @ContributesAndroidInjector(
+            modules = [
             MainModule::class,
             DashboardModule::class,
             MyStoreModule::class,
@@ -48,7 +48,6 @@ abstract class ActivityBindingModule {
             RefundModule::class,
             ProductModule::class,
             ReviewModule::class,
-            ViewModelAssistedFactoriesModule::class,
             AddOrderNoteModule::class,
             SitePickerModule::class,
             AddOrderShipmentTrackingModule::class,
