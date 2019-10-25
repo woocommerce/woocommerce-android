@@ -26,7 +26,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         val displayHeight = DisplayUtils.getDisplayPixelHeight(context)
         val multiplier = if (DisplayUtils.isLandscape(context)) 0.5f else 0.3f
         val imageHeight = (displayHeight * multiplier).toInt()
-        adapter = ImageGalleryAdapter(context, imageHeight)
+        adapter = ImageGalleryAdapter(context, imageHeight).also { setAdapter(it) }
 
         layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, HORIZONTAL, false)
         itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
@@ -62,13 +62,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val imageUrl = PhotonUtils.getPhotonImageUrl(imageList[position].src, 0, imageHeight)
+            val imageUrl = imageList[position].src
+            val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, 0, imageHeight)
             GlideApp.with(context)
-                    .load(imageUrl)
+                    .load(photonUrl)
                     .error(R.drawable.ic_product)
                     .placeholder(R.drawable.product_detail_image_background)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    // .listener(this)
                     .into(holder.productImage)
         }
     }
