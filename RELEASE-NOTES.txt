@@ -1,5 +1,6 @@
 3.0
 -----
+* The logic that loads and updates the orders list view with orders has been completely revamped and optimized. Orders now load faster!
  
 2.9
 -----

@@ -36,4 +36,13 @@
         <attr name="switchSummaryTextColor" format="reference|color"/>
         <attr name="switchTopPadding" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="ActionableEmptyView">
+        <!-- Optional: string text of button -->
+        <attr name="aevButton" format="string"/>
+        <!-- Optional: resource id of image -->
+        <attr name="aevImage" format="reference"/>
+        <!-- Required: string text of title -->
+        <attr name="aevTitle" format="string"/>
+    </declare-styleable>
 </resources>

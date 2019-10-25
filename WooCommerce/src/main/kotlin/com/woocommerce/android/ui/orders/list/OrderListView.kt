@@ -1,21 +1,22 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.list
 
 import android.content.Context
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
+import android.widget.Button
 import android.widget.LinearLayout
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.paging.PagedList
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.util.UiHelpers
 import kotlinx.android.synthetic.main.order_list_view.view.*
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+
+private const val MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION = 2
 
 class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -23,10 +24,8 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         View.inflate(context, R.layout.order_list_view, this)
     }
 
-    lateinit var ordersAdapter: OrderListAdapter
+    private lateinit var ordersAdapter: OrderListAdapter
     private lateinit var listener: OrderListListener
-
-    private val skeletonView = SkeletonView()
 
     fun init(
         currencyFormatter: CurrencyFormatter,
@@ -42,7 +41,7 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         )
 
         ordersList.apply {
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
@@ -68,32 +67,26 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
     }
 
     /**
-     * order list adapter method
-     * get order list item count from the order list adapter
+     * Submit new paged list data to the adapter
      */
-    fun getOrderListItemCount() = ordersAdapter.itemCount
+    fun submitPagedList(list: PagedList<OrderListItemUIType>?) {
+        val recyclerViewState = onFragmentSavedInstanceState()
+        ordersAdapter.submitList(list)
 
-    /**
-     * order list adapter method
-     * set orders to the order list adapter
-     */
-    fun setOrders(orders: List<WCOrderModel>) {
-        ordersAdapter.setOrders(orders)
-    }
-
-    /**
-     * order list adapter method
-     * add orders to the order list adapter
-     */
-    fun addOrders(orders: List<WCOrderModel>) {
-        ordersAdapter.addOrders(orders)
+        post {
+            (ordersList?.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
+                if (layoutManager.findFirstVisibleItemPosition() < MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION) {
+                    layoutManager.onRestoreInstanceState(recyclerViewState)
+                }
+            }
+        }
     }
 
     /**
      * clear order list adapter data
      */
     fun clearAdapterData() {
-        ordersAdapter.clearAdapterData()
+        ordersAdapter.submitList(null)
     }
 
     /**
@@ -119,38 +112,26 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
-    fun showSkeleton(show: Boolean) {
-        if (show) {
-            skeletonView.show(ordersList, R.layout.skeleton_order_list, delayed = true)
-        } else {
-            skeletonView.hide()
-        }
-    }
-
-    fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
-        ordersList?.let {
-            if (isFreshData) {
-                ordersList.scrollToPosition(0)
+    fun updateEmptyViewForState(state: OrderListEmptyUiState) {
+        empty_view?.let { emptyView ->
+            if (state.emptyViewVisible) {
+                UiHelpers.setTextOrHide(emptyView.title, state.title)
+                UiHelpers.setImageOrHide(emptyView.image, state.imgResId)
+                setupButtonOrHide(emptyView.button, state.buttonText, state.onButtonClick)
+                emptyView.visibility = View.VISIBLE
+            } else {
+                emptyView.visibility = View.GONE
             }
-            ordersAdapter.setOrders(orders, filterByStatus)
         }
     }
 
-    fun initEmptyView(siteModel: SiteModel) {
-        empty_view.setSiteToShare(siteModel, Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-    }
-
-    fun showEmptyView(
-        @StringRes messageId: Int,
-        showImage: Boolean,
-        showShareButton: Boolean,
-        @DrawableRes imageId: Int? = null
+    private fun setupButtonOrHide(
+        buttonView: Button,
+        text: UiString?,
+        onButtonClick: (() -> Unit)?
     ) {
-        empty_view.show(messageId, showImage, showShareButton, imageId = imageId)
-    }
-
-    fun hideEmptyView() {
-        empty_view.hide()
+        UiHelpers.setTextOrHide(buttonView, text)
+        buttonView.setOnClickListener { onButtonClick?.invoke() }
     }
 
     fun isEmptyViewVisible() = empty_view.visibility == View.VISIBLE

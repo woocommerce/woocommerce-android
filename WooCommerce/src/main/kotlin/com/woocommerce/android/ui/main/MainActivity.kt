@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
-import com.woocommerce.android.ui.orders.OrderListFragment
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
@@ -730,10 +730,11 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
-        bottomNavView.currentPosition = ORDERS
-
-        val navPos = BottomNavigationPosition.ORDERS.position
-        bottom_nav.active(navPos)
+        if (bottomNavView.currentPosition != ORDERS) {
+            bottomNavView.currentPosition = ORDERS
+            val navPos = BottomNavigationPosition.ORDERS.position
+            bottom_nav.active(navPos)
+        }
 
         if (markComplete) {
             // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
