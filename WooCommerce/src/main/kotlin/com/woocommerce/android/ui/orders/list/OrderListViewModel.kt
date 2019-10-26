@@ -121,8 +121,8 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun loadList(statusFilter: String? = null, searchQuery: String? = null) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
+    fun loadList(statusFilter: String? = null, searchQuery: String? = null, excludeFutureOrders: Boolean = false) {
+        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery, excludeFutureOrders)
 
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
