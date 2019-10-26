@@ -666,11 +666,8 @@ class OrderListFragment : TopLevelFragment(),
             }
             searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
-            val tabPosition = getTabPosition()
-            orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let {
-                it.select()
-                getOrderStatusByTab(it)
-            }
+            val tabPosition = calculateTabPosition()
+            tab_layout.getTabAt(tabPosition)?.select()
 
             (activity as? MainActivity)?.hideBottomNav()
         }
