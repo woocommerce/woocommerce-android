@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.list
 
 import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.model.TimeGroup.GROUP_FUTURE
 import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_MONTH
 import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_TWO_DAYS
 import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_WEEK
@@ -86,18 +87,30 @@ class OrderListItemDataSource(
                     remoteItemIds.mapNotNull { summariesByRemoteId[it] }
                 }
 
-        val listToday = ArrayList<OrderIdentifier>()
-        val listYesterday = ArrayList<OrderIdentifier>()
-        val listTwoDays = ArrayList<OrderIdentifier>()
-        val listWeek = ArrayList<OrderIdentifier>()
-        val listMonth = ArrayList<OrderIdentifier>()
+        val listFuture = mutableListOf<OrderIdentifier>()
+        val listToday = mutableListOf<OrderIdentifier>()
+        val listYesterday = mutableListOf<OrderIdentifier>()
+        val listTwoDays = mutableListOf<OrderIdentifier>()
+        val listWeek = mutableListOf<OrderIdentifier>()
+        val listMonth = mutableListOf<OrderIdentifier>()
         val mapToRemoteOrderIdentifier = { summary: WCOrderSummaryModel ->
             OrderIdentifier(RemoteId(summary.remoteOrderId))
         }
         orderSummaries.forEach {
-            // Default to today if the date cannot be parsed
-            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
+            // Default to today if the date cannot be parsed. This date is in UTC.
+            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: DateTimeUtils.nowUTC()
+
+            // Check if future-dated orders should be excluded from the results list.
+            if (listDescriptor.excludeFutureOrders) {
+                val currentUtcDate = DateTimeUtils.nowUTC()
+                if (date.after(currentUtcDate)) {
+                    // This order is dated for the future so skip adding it to the list
+                    return@forEach
+                }
+            }
+
             when (TimeGroup.getTimeGroupForDate(date)) {
+                GROUP_FUTURE -> listFuture.add(mapToRemoteOrderIdentifier(it))
                 GROUP_TODAY -> listToday.add(mapToRemoteOrderIdentifier(it))
                 GROUP_YESTERDAY -> listYesterday.add(mapToRemoteOrderIdentifier(it))
                 GROUP_OLDER_TWO_DAYS -> listTwoDays.add(mapToRemoteOrderIdentifier(it))
@@ -107,6 +120,10 @@ class OrderListItemDataSource(
         }
 
         val allItems = mutableListOf<OrderListItemIdentifier>()
+        if (listFuture.isNotEmpty()) {
+            allItems += listOf(SectionHeaderIdentifier(GROUP_FUTURE)) + listFuture
+        }
+
         if (listToday.isNotEmpty()) {
             allItems += listOf(SectionHeaderIdentifier(GROUP_TODAY)) + listToday
         }
