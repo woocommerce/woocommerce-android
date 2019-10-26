@@ -145,7 +145,7 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(FIELD_NOTE_TEXT, getNoteText())
-        outState.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
+        outState.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch?.isChecked ?: false)
         outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         super.onSaveInstanceState(outState)
     }
