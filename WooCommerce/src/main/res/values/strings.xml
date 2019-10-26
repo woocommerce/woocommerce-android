@@ -75,6 +75,7 @@
     <!--
         Date/Time Labels
     -->
+    <string name="date_timeframe_future">Future</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
@@ -181,7 +182,7 @@
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
-    <string name="orderlist_fetching">Fetching orders...</string>
+    <string name="orderlist_fetching">Fetching orders…</string>
     <string name="orderlist_search_prompt">Search orders</string>
     <!--
         Order Detail Views
@@ -284,15 +285,13 @@
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_confirm_discard">Discard this note?</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
-
     <!--
-    Order List Tab Labels
+        Order List Tab Labels
     -->
     <string-array name="order_list_tabs">
         <item>Processing</item>
         <item>All Orders</item>
     </string-array>
-
     <!--
         Order Status Labels
     -->
