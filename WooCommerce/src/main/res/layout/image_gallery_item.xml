@@ -2,9 +2,11 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/productImage"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:scaleType="centerInside"
-    android:transitionName="@string/shared_element_transition"
+    android:adjustViewBounds="true"
+    android:background="@drawable/product_detail_image_background"
     android:contentDescription="@string/product_image_content_description"
-    tools:src="@drawable/img_woo_logo" />
+    android:padding="@dimen/margin_large"
+    android:transitionName="@string/shared_element_transition"
+    tools:src="@drawable/ic_product" />
