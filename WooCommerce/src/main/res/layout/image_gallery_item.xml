@@ -5,7 +5,6 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:adjustViewBounds="true"
-    android:background="@drawable/product_detail_image_background"
     android:contentDescription="@string/product_image_content_description"
     android:padding="@dimen/margin_large"
     android:transitionName="@string/shared_element_transition"

@@ -12,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.product_list_item.view.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 
 class WCProductImageGalleryView @JvmOverloads constructor(
@@ -20,24 +19,24 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
+    companion object {
+        private var imageHeight = 0
+    }
     private val adapter : ImageGalleryAdapter
 
     init {
-        val displayHeight = DisplayUtils.getDisplayPixelHeight(context)
-        val multiplier = if (DisplayUtils.isLandscape(context)) 0.5f else 0.3f
-        val imageHeight = (displayHeight * multiplier).toInt()
-        adapter = ImageGalleryAdapter(context, imageHeight).also { setAdapter(it) }
-
         layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, HORIZONTAL, false)
         itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
+        adapter = ImageGalleryAdapter(context).also { setAdapter(it) }
         setHasFixedSize(false)
     }
 
     fun showImages(images: List<WCProductImageModel>) {
+        imageHeight = this.height
         adapter.showImages(images)
     }
 
-    private class ImageGalleryAdapter(private val context: Context, private val imageHeight: Int)  : RecyclerView.Adapter<ImageViewHolder>() {
+    private class ImageGalleryAdapter(private val context: Context)  : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
