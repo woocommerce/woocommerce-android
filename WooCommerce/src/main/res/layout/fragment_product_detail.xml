@@ -29,13 +29,14 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/product_detail_image_background"
                 app:layout_collapseMode="parallax">
 
                 <com.woocommerce.android.widgets.WCProductImageGalleryView
                     android:id="@+id/imageGallery"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/product_detail_image_background"
+                    android:layout_gravity="center_horizontal"
                     tools:height="200dp" />
 
                 <ProgressBar

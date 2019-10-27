@@ -14,6 +14,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -66,7 +68,6 @@ class ProductDetailFragment : BaseFragment() {
     private lateinit var viewModel: ProductDetailViewModel
 
     private var productTitle = ""
-    private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
@@ -206,7 +207,12 @@ class ProductDetailFragment : BaseFragment() {
         }
 
         updateActivityTitle()
-        showProductImages(product)
+
+        // if there's only one image, center it horizontally in the view
+        with(imageGallery.layoutParams as FrameLayout.LayoutParams) {
+            this.width = if (product.images.size == 1) WRAP_CONTENT else MATCH_PARENT
+        }
+        imageGallery.showImages(product.images)
 
         isVariation = product.type == ProductType.VARIATION
 
@@ -221,12 +227,6 @@ class ProductDetailFragment : BaseFragment() {
         addPrimaryCard(productData)
         addPricingAndInventoryCard(productData)
         addPurchaseDetailsCard(productData)
-    }
-
-    private fun showProductImages(product: Product) {
-        if (viewModel.isUploadingProductImage.value == false) {
-            imageGallery.showImages(product.images)
-        }
     }
 
     private fun addPrimaryCard(productData: ProductWithParameters) {
