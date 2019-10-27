@@ -26,7 +26,7 @@ final class ReviewDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val repository: ReviewDetailRepository,
     private val networkStatus: NetworkStatus,
-    @Assisted private val handle: SavedStateHandle
+    @Assisted private val savedState: SavedStateHandle
 ) : ScopedViewModel(dispatchers) {
     private var remoteReviewId = 0L
 

@@ -23,7 +23,7 @@ class ProductListViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus,
-    @Assisted private val handle: SavedStateHandle
+    @Assisted private val savedState: SavedStateHandle
 ) : ScopedViewModel(dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L

@@ -53,7 +53,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val noteRepository: OrderNoteRepository,
     private val gatewayStore: WCGatewayStore,
-    @Assisted private val handle: SavedStateHandle
+    @Assisted private val savedState: SavedStateHandle
 ) : ScopedViewModel(dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2

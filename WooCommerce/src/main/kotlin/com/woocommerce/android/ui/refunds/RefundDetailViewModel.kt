@@ -29,7 +29,7 @@ class RefundDetailViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
-    @Assisted private val handle: SavedStateHandle
+    @Assisted private val savedState: SavedStateHandle
 ) : ScopedViewModel(dispatchers) {
     private val _screenTitle = MutableLiveData<String>()
     val screenTitle: LiveData<String> = _screenTitle

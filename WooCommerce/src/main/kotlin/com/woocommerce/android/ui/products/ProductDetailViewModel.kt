@@ -29,7 +29,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    @Assisted private val handle: SavedStateHandle
+    @Assisted private val savedState: SavedStateHandle
 ) : ScopedViewModel(dispatchers) {
     private var remoteProductId = 0L
 

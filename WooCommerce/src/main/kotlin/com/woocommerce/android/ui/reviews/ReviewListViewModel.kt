@@ -44,7 +44,7 @@ class ReviewListViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    @Assisted private val handle: SavedStateHandle
+    @Assisted private val savedState: SavedStateHandle
 ) : ScopedViewModel(dispatchers) {
     companion object {
         private const val TAG = "ReviewListViewModel"
