@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import dagger.android.support.AndroidSupportInjection
@@ -17,7 +20,7 @@ import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
-class MagicLinkInterceptFragment : Fragment(), MagicLinkInterceptContract.View {
+class MagicLinkInterceptFragment : Fragment() {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
 
@@ -37,7 +40,9 @@ class MagicLinkInterceptFragment : Fragment(), MagicLinkInterceptContract.View {
     private var progressDialog: ProgressDialog? = null
 
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject lateinit var presenter: MagicLinkInterceptContract.Presenter
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var viewModel: MagicLinkInterceptViewModel
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -66,39 +71,58 @@ class MagicLinkInterceptFragment : Fragment(), MagicLinkInterceptContract.View {
 
         view.findViewById<Button>(org.wordpress.android.login.R.id.login_open_email_client).isEnabled = false
         view.findViewById<TextView>(org.wordpress.android.login.R.id.login_enter_password).visibility = View.GONE
+
+        initializeViewModel()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        presenter.takeView(this)
-        authToken?.let { presenter.storeMagicLinkToken(it) }
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(MagicLinkInterceptViewModel::class.java)
+        setupObservers()
+        authToken?.let { viewModel.updateMagicLinkAuthToken(it) }
     }
 
-    override fun hideProgressDialog() {
+    private fun setupObservers() {
+        viewModel.isLoading.observe(this, Observer {
+            showProgressDialog(it)
+        })
+
+        viewModel.isAuthTokenUpdated.observe(this, Observer { authTokenUpdated ->
+            if (authTokenUpdated) {
+                notifyMagicLinkTokenUpdated()
+                showSitePickerScreen()
+            } else showLoginScreen()
+        })
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = ProgressDialog.show(
+                    activity, "", getString(R.string.login_magic_link_token_updating), true
+            )
+            progressDialog?.setCancelable(false)
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
         progressDialog?.apply { if (isShowing) { cancel() } }
     }
 
-    override fun showProgressDialog() {
-        hideProgressDialog()
-        progressDialog = ProgressDialog.show(
-                activity, "", getString(R.string.login_magic_link_token_updating), true
-        )
-        progressDialog?.setCancelable(false)
-    }
-
-    override fun showSitePickerScreen() {
+    private fun showSitePickerScreen() {
         context?.let {
             SitePickerActivity.showSitePickerFromLogin(it)
             activity?.finish()
         }
     }
 
-    override fun notifyMagicLinkTokenUpdated() {
+    private fun notifyMagicLinkTokenUpdated() {
         loginAnalyticsListener.trackLoginMagicLinkSucceeded()
     }
 
-    override fun showLoginScreen() {
+    private fun showLoginScreen() {
         val intent = Intent(context, LoginActivity::class.java)
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)

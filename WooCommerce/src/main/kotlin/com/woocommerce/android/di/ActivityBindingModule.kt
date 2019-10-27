@@ -49,8 +49,6 @@ abstract class ActivityBindingModule {
             ReviewListModule::class,
             ReviewDetailModule::class,
             SitePickerModule::class,
-            ViewModelModule::class,
-            ThreadModule::class,
             AddOrderShipmentTrackingModule::class,
             AddOrderTrackingProviderListModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
