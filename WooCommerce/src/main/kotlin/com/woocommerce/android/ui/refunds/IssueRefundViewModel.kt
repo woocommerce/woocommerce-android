@@ -25,6 +25,9 @@ import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationErrorEvent
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbarEvent
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationErrorEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -63,11 +66,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     // region LiveData
-    private val _triggerEvent = SingleLiveEvent<ShowSnackbarEvent>()
-    val triggerEvent: LiveData<ShowSnackbarEvent> = _triggerEvent
-
-    private val _showValidationError = SingleLiveEvent<String>()
-    val showValidationError: LiveData<String> = _showValidationError
+    private val _triggerEvent = SingleLiveEvent<IssueRefundEvent>()
+    val triggerEvent: LiveData<IssueRefundEvent> = _triggerEvent
 
     private val _showRefundSummary = SingleLiveEvent<Unit>()
     val showRefundSummary: LiveData<Unit> = _showRefundSummary
@@ -151,9 +151,6 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     fun resetEvents() {
         _triggerEvent.reset()
-        _showValidationError.reset()
-        _showRefundSummary.reset()
-        _exitAfterRefund.reset()
     }
 
     private fun initializePaymentGateway() {
@@ -298,15 +295,19 @@ class IssueRefundViewModel @AssistedInject constructor(
     private fun showValidationState() {
         when (validateInput()) {
             TOO_HIGH -> {
-                _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_high_error)
+                _triggerEvent.value = ShowValidationErrorEvent(
+                        resourceProvider.getString(R.string.order_refunds_refund_high_error)
+                )
                 _isNextButtonEnabled.value = false
             }
             TOO_LOW -> {
-                _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_zero_error)
+                _triggerEvent.value = ShowValidationErrorEvent(
+                        resourceProvider.getString(R.string.order_refunds_refund_zero_error)
+                )
                 _isNextButtonEnabled.value = false
             }
             VALID -> {
-                _showValidationError.value = null
+                _triggerEvent.value = HideValidationErrorEvent
                 _isNextButtonEnabled.value = true
             }
         }
@@ -318,7 +319,11 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     data class CurrencySettings(val currency: String, val decimals: Int)
 
-    data class ShowSnackbarEvent(val message: String, val undoAction: (() -> Unit)? = null)
+    sealed class IssueRefundEvent {
+        data class ShowSnackbarEvent(val message: String, val undoAction: (() -> Unit)? = null) : IssueRefundEvent()
+        data class ShowValidationErrorEvent(val message: String) : IssueRefundEvent()
+        object HideValidationErrorEvent : IssueRefundEvent()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<IssueRefundViewModel>
