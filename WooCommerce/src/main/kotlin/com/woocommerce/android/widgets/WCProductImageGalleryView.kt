@@ -24,7 +24,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private var imageHeight = 0
     }
 
+    interface OnGalleryImageClickListener {
+        fun onGalleryImageClicked(imageUrl: String, sharedElement: View)
+    }
+
     private val adapter: ImageGalleryAdapter
+    private lateinit var listener: OnGalleryImageClickListener
 
     init {
         layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, HORIZONTAL, false)
@@ -33,13 +38,20 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         setHasFixedSize(false)
     }
 
-    fun showImages(images: List<WCProductImageModel>) {
+    fun showImages(images: List<WCProductImageModel>, listener: OnGalleryImageClickListener) {
         imageHeight = this.height
+        this.listener = listener
         adapter.showImages(images)
     }
 
-    private class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>() {
-        private val imageList = ArrayList<WCProductImageModel>()
+    private fun onImageClicked(position: Int, sharedElement: View) {
+        sharedElement.transitionName = "shared_element$position"
+        val imageUrl = adapter.imageList[position].src
+        listener.onGalleryImageClicked(imageUrl, sharedElement)
+    }
+
+    private inner class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>() {
+        val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
             imageList.clear()
@@ -73,7 +85,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
-    private class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val productImage: ImageView = view.productImage
+        init {
+            itemView.setOnClickListener {
+                onImageClicked(adapterPosition, productImage)
+            }
+        }
     }
 }

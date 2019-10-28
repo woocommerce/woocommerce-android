@@ -7,5 +7,4 @@
     android:adjustViewBounds="true"
     android:contentDescription="@string/product_image_content_description"
     android:padding="@dimen/margin_large"
-    android:transitionName="@string/shared_element_transition"
     tools:src="@drawable/ic_product" />

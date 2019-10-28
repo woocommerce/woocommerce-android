@@ -26,12 +26,14 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
@@ -40,13 +42,14 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
-class ProductDetailFragment : BaseFragment() {
+class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     companion object {
         private const val MENU_ID_CHOOSE_PHOTO = 2
         private const val MENU_ID_CAPTURE_PHOTO = 3
@@ -212,7 +215,7 @@ class ProductDetailFragment : BaseFragment() {
         with(imageGallery.layoutParams as FrameLayout.LayoutParams) {
             this.width = if (product.images.size == 1) WRAP_CONTENT else MATCH_PARENT
         }
-        imageGallery.showImages(product.images)
+        imageGallery.showImages(product.images, this)
 
         isVariation = product.type == ProductType.VARIATION
 
@@ -581,45 +584,15 @@ class ProductDetailFragment : BaseFragment() {
         }
     }
 
-    /**
-     * Glide failed to load the product image, do nothing so Glide will show the error drawable
-     *
-    override fun onLoadFailed(
-        e: GlideException?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        isFirstResource: Boolean
-    ): Boolean {
-        return false
+    override fun onGalleryImageClicked(imageUrl: String, sharedElement: View) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        ImageViewerActivity.show(
+                activity!!,
+                imageUrl,
+                title = productTitle,
+                sharedElement = sharedElement
+        )
     }
-
-    **
-     * Glide loaded the product image, add click listener to show image full screen
-     *
-    override fun onResourceReady(
-        resource: Drawable?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        dataSource: DataSource?,
-        isFirstResource: Boolean
-    ): Boolean {
-        productImageUrl?.let { imageUrl ->
-            // this is added to avoid nullPointerException when user clicks the back button exactly when this method
-            // is called. In that case, the productDetail_image will be null.
-            productDetail_image?.let { imageView ->
-                imageView.setOnClickListener {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                    ImageViewerActivity.show(
-                            activity!!,
-                            imageUrl,
-                            title = productTitle,
-                            sharedElement = imageView
-                    )
-                }
-            }
-        }
-        return false
-    } */
 
     /**
      * Requests storage permission, returns true only if permission is already available
