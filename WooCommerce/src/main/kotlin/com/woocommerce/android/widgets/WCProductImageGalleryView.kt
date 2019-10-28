@@ -61,9 +61,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
-        this.listener = listener
         imageHeight = this.height
         adapter.showImages(product.images)
+        this.listener = listener
+        this.visibility = if (product.images.size > 0) View.VISIBLE else View.GONE
     }
 
     private fun onImageClicked(position: Int, sharedElement: View) {

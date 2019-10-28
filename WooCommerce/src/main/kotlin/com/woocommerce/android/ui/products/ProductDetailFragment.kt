@@ -211,7 +211,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         updateActivityTitle()
 
-        // if there's only one image, center it horizontally in the view
+        // if there's only one image, center the gallery horizontally in it's parent view
         with(imageGallery.layoutParams as FrameLayout.LayoutParams) {
             this.width = if (product.images.size == 1) WRAP_CONTENT else MATCH_PARENT
         }
