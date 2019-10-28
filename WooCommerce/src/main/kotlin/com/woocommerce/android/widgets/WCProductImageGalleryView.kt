@@ -27,7 +27,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle), PreloadModelProvider<String> {
     companion object {
-        private const val MAX_IMAGES_TO_PRELOAD = 4
+        private const val MAX_IMAGES_TO_PRELOAD = 10
     }
 
     interface OnGalleryImageClickListener {
@@ -36,14 +36,21 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private var imageHeight = 0
     private val adapter: ImageGalleryAdapter
+    private val preloader: RecyclerViewPreloader<String>
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
+        // Set up the Glide preloader for recycler views - https://bumptech.github.io/glide/int/recyclerview.html
+        preloader = RecyclerViewPreloader<String>(Glide.with(this),
+                this,
+                ViewPreloadSizeProvider<String>(),
+                MAX_IMAGES_TO_PRELOAD)
+        addOnScrollListener(preloader)
+
         layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, HORIZONTAL, false)
         itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
         adapter = ImageGalleryAdapter(context).also { setAdapter(it) }
         setHasFixedSize(false)
-        initPreloader()
     }
 
     fun showImages(images: List<WCProductImageModel>, listener: OnGalleryImageClickListener) {
@@ -53,19 +60,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     /**
-     * Sets up the Glide image preloader for recycler views
-     * https://bumptech.github.io/glide/int/recyclerview.html
+     * Returns the image url at the passed position for the preloader
      */
-    private fun initPreloader() {
-        val sizeProvider = ViewPreloadSizeProvider<String>()
-        val preloader = RecyclerViewPreloader<String>(Glide.with(this), this, sizeProvider, MAX_IMAGES_TO_PRELOAD)
-        addOnScrollListener(preloader)
-    }
-
     override fun getPreloadItems(position: Int): MutableList<String> {
         return Collections.singletonList(getPhotonImageUrl(position))
     }
 
+    /**
+     * Returns the Glide request to use for both the preloader and the adapter - must use the same Glide
+     * options in both places for preloading to work
+     */
     override fun getPreloadRequestBuilder(imageUrl: String): RequestBuilder<*>? {
         return GlideApp.with(context)
                 .load(imageUrl)
@@ -74,6 +78,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .transition(DrawableTransitionOptions.withCrossFade())
     }
 
+    /**
+     * Returns a "photon-ized" url for the image at the passed position
+     */
     private fun getPhotonImageUrl(position: Int): String {
         val imageUrl = adapter.imageList[position].src
         return PhotonUtils.getPhotonImageUrl(imageUrl, 0, imageHeight)
@@ -89,9 +96,23 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
-            imageList.clear()
-            imageList.addAll(images)
-            notifyDataSetChanged()
+            if (!isSameImageList(images)) {
+                imageList.clear()
+                imageList.addAll(images)
+                notifyDataSetChanged()
+            }
+        }
+
+        private fun isSameImageList(images: List<WCProductImageModel>): Boolean {
+            if (images.size != imageList.size) {
+                return false
+            }
+            for (i in 0 until images.size) {
+                if (images[i].id != imageList[i].id) {
+                    return false
+                }
+            }
+            return true
         }
 
         override fun getItemCount(): Int {
@@ -109,15 +130,15 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            getPreloadRequestBuilder(getPhotonImageUrl(position))?.into(holder.productImage)
+            getPreloadRequestBuilder(getPhotonImageUrl(position))?.into(holder.imageView)
         }
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val productImage: ImageView = view.productImage
+        val imageView: ImageView = view.productImage
         init {
             itemView.setOnClickListener {
-                onImageClicked(adapterPosition, productImage)
+                onImageClicked(adapterPosition, imageView)
             }
         }
     }
