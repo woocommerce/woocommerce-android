@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -32,7 +33,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
     companion object {
-        private const val MAX_IMAGES_TO_PRELOAD = 10
+        private const val MAX_IMAGES_TO_PRELOAD = 5
     }
 
     interface OnGalleryImageClickListener {
@@ -58,10 +59,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         setHasFixedSize(false)
         setItemViewCacheSize(0)
         setAdapter(adapter)
+x
+        viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                imageHeight = this@WCProductImageGalleryView.height
+            }
+        })
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
-        imageHeight = this.height
         adapter.showImages(product.images)
         this.listener = listener
         this.visibility = if (product.images.size > 0) View.VISIBLE else View.GONE
