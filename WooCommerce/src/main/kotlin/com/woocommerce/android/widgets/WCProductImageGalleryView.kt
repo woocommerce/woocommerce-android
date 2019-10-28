@@ -7,27 +7,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader.PreloadModelProvider
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.product_list_item.view.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.PhotonUtils
+import java.util.Collections
 
 class WCProductImageGalleryView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : RecyclerView(context, attrs, defStyle) {
+) : RecyclerView(context, attrs, defStyle), PreloadModelProvider<String> {
     companion object {
-        private var imageHeight = 0
+        private const val MAX_IMAGES_TO_PRELOAD = 4
     }
 
     interface OnGalleryImageClickListener {
         fun onGalleryImageClicked(imageUrl: String, sharedElement: View)
     }
 
+    private var imageHeight = 0
     private val adapter: ImageGalleryAdapter
     private lateinit var listener: OnGalleryImageClickListener
 
@@ -36,12 +43,40 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
         adapter = ImageGalleryAdapter(context).also { setAdapter(it) }
         setHasFixedSize(false)
+        initPreloader()
     }
 
     fun showImages(images: List<WCProductImageModel>, listener: OnGalleryImageClickListener) {
-        imageHeight = this.height
         this.listener = listener
+        imageHeight = this.height
         adapter.showImages(images)
+    }
+
+    /**
+     * Sets up the Glide image preloader for recycler views
+     * https://bumptech.github.io/glide/int/recyclerview.html
+     */
+    private fun initPreloader() {
+        val sizeProvider = ViewPreloadSizeProvider<String>()
+        val preloader = RecyclerViewPreloader<String>(Glide.with(this), this, sizeProvider, MAX_IMAGES_TO_PRELOAD)
+        addOnScrollListener(preloader)
+    }
+
+    override fun getPreloadItems(position: Int): MutableList<String> {
+        return Collections.singletonList(getPhotonImageUrl(position))
+    }
+
+    override fun getPreloadRequestBuilder(imageUrl: String): RequestBuilder<*>? {
+        return GlideApp.with(context)
+                .load(imageUrl)
+                .error(R.drawable.ic_product)
+                .placeholder(R.drawable.product_detail_image_background)
+                .transition(DrawableTransitionOptions.withCrossFade())
+    }
+
+    private fun getPhotonImageUrl(position: Int): String {
+        val imageUrl = adapter.imageList[position].src
+        return PhotonUtils.getPhotonImageUrl(imageUrl, 0, imageHeight)
     }
 
     private fun onImageClicked(position: Int, sharedElement: View) {
@@ -74,14 +109,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val imageUrl = imageList[position].src
-            val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, 0, imageHeight)
-            GlideApp.with(context)
-                    .load(photonUrl)
-                    .error(R.drawable.ic_product)
-                    .placeholder(R.drawable.product_detail_image_background)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .into(holder.productImage)
+            getPreloadRequestBuilder(getPhotonImageUrl(position))?.into(holder.productImage)
         }
     }
 
