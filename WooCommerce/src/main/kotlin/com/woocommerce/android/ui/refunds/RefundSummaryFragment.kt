@@ -14,7 +14,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbarEvent
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.ExitAfterRefund
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
@@ -43,15 +44,15 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     }
 
     private fun initializeViewModel() {
-        initializeViews(viewModel)
-        setupObservers(viewModel)
+        initializeViews()
+        setupObservers()
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.triggerEvent.observe(this, Observer { event ->
+    private fun setupObservers() {
+        viewModel.eventTrigger.observe(this, Observer { event ->
+            event.isHandled = true
             when (event) {
-                is ShowSnackbarEvent -> {
+                is ShowSnackbar -> {
                     if (event.undoAction == null) {
                         uiMessageResolver.showSnack(event.message)
                     } else {
@@ -68,44 +69,29 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
                         snackbar.show()
                     }
                 }
+                is ExitAfterRefund -> {
+                    requireActivity().navigateBackWithResult(
+                            REFUND_REQUEST_CODE,
+                            Bundle(),
+                            R.id.nav_host_fragment_main,
+                            R.id.orderDetailFragment
+                    )
+                }
+                else -> event.isHandled = false
             }
         })
 
-        viewModel.isSummaryFormEnabled.observe(this, Observer {
-            refundSummary_btnRefund.isEnabled = it
-            refundSummary_reason.isEnabled = it
-        })
-
-        viewModel.formattedRefundAmount.observe(this, Observer {
-            refundSummary_refundAmount.text = it
-        })
-
-        viewModel.previousRefunds.observe(this, Observer {
-            refundSummary_previouslyRefunded.text = it
-        })
-
-        viewModel.refundMethod.observe(this, Observer {
-            refundSummary_method.text = it
-        })
-
-        viewModel.isManualRefundDescriptionVisible.observe(this, Observer { visible ->
-            refundSummary_methodDescription.visibility = if (visible) View.VISIBLE else View.GONE
-        })
-
-        viewModel.exitAfterRefund.observe(this, Observer {
-            val bundle = Bundle()
-            bundle.putBoolean(REFUND_SUCCESS_KEY, it)
-
-            requireActivity().navigateBackWithResult(
-                    REFUND_REQUEST_CODE,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.orderDetailFragment
-            )
+        viewModel.refundSummaryViewState.observe(this, Observer {
+            refundSummary_btnRefund.isEnabled = it.isFormEnabled
+            refundSummary_reason.isEnabled = it.isFormEnabled
+            refundSummary_refundAmount.text = it.refundAmount
+            refundSummary_previouslyRefunded.text = it.previouslyRefunded
+            refundSummary_method.text = it.refundMethod
+            refundSummary_methodDescription.visibility = if (it.isMethodDescriptionVisible) View.VISIBLE else View.GONE
         })
     }
 
-    private fun initializeViews(viewModel: IssueRefundViewModel) {
+    private fun initializeViews() {
         refundSummary_btnRefund.setOnClickListener {
             viewModel.onRefundConfirmed(refundSummary_reason.text.toString())
         }

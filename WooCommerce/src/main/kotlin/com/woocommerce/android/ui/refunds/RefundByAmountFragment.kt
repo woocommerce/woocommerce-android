@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.refunds
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.HideValidationError
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.ShowValidationError
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
@@ -38,22 +39,23 @@ class RefundByAmountFragment : DaggerFragment() {
     }
 
     private fun initializeViewModel() {
-        setupObservers(viewModel)
+        setupObservers()
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.availableForRefund.observe(this, Observer {
-            issueRefund_txtAvailableForRefund.text = it
-        })
-
-        viewModel.currencySettings.observe(this, Observer {
+    private fun setupObservers() {
+        viewModel.refundByAmountViewState.observe(this, Observer {
+            issueRefund_txtAvailableForRefund.text = it.availableForRefund
             issueRefund_refundAmount.initView(it.currency, it.decimals, currencyFormatter)
             issueRefund_refundAmount.setValue(viewModel.enteredAmount)
         })
 
-        viewModel.showValidationError.observe(this, Observer {
-            issueRefund_refundAmountInputLayout.error = it
+        viewModel.eventTrigger.observe(this, Observer { event ->
+            event.isHandled = true
+            when (event) {
+                is ShowValidationError -> issueRefund_refundAmountInputLayout.error = event.message
+                is HideValidationError -> issueRefund_refundAmountInputLayout.error = null
+                else -> event.isHandled = false
+            }
         })
 
         issueRefund_refundAmount.value.observe(this, Observer {
