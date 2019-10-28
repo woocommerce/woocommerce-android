@@ -496,7 +496,7 @@
     -->
     <string name="verification_code">Verification code</string>
     <string name="invalid_verification_code">Invalid verification code</string>
-    <string name="send_link">Send verification email</string>
+    <string name="send_link">Send link</string>
     <string name="enter_your_password_instead">Enter your password instead</string>
     <string name="password">Password</string>
     <string name="log_in">Log In</string>

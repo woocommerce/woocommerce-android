@@ -191,10 +191,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     //  -- BEGIN: LoginListener implementation methods
 
-    override fun gotWpcomEmail(email: String?) {
+    override fun gotWpcomEmail(email: String?, verifyEmail: Boolean) {
         if (getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT) {
             val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email,
-                    AuthEmailPayloadScheme.WOOCOMMERCE, false, null)
+                    AuthEmailPayloadScheme.WOOCOMMERCE, false, null, verifyEmail)
             slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
         } else {
             val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
