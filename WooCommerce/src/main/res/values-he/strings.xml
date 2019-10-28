@@ -602,6 +602,7 @@ Language: he_IL
     <string name="magic_link_unavailable_error_message">לא זמין כרגע. יש להזין סיסמה</string>
     <string name="login_magic_link_email_requesting">שולח בקשה לאימייל להתחברות</string>
     <string name="login_magic_links_sent_label">הקישור המיוחד שלך בדרך! עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
+    <string name="login_magic_links_label">נשלח לך קישור מיוחד להתחברות מיידית, ללא צורך בסיסמה. לא צריך לחפש או לנחש!</string>
     <string name="password_incorrect">נראה שהסיסמה הזו שגויה. יש לבדוק את המידע שהזנת ולנסות שוב.</string>
     <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו. מומלץ לנסות את הקישור למטה כדי להתחבר באמצעות כתובת האתר שלך.</string>
     <string name="requesting_otp">שולח קוד אימות באמצעות SMS.</string>

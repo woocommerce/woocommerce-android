@@ -602,6 +602,7 @@ Language: ko_KR
     <string name="magic_link_unavailable_error_message">현재 사용할 수 없습니다. 비밀번호를 입력하세요.</string>
     <string name="login_magic_link_email_requesting">로그인 이메일 요청 중</string>
     <string name="login_magic_links_sent_label">매직 링크가 전송되었습니다! 이 기기에서 이메일을 확인하고 워드프레스닷컴에서 받은 이메일의 링크를 누르세요.</string>
+    <string name="login_magic_links_label">암호 없이 즉시 로그인되는 링크를 이메일로 보내드립니다. 더 이상 암호를 직접 입력할 필요가 없습니다!</string>
     <string name="password_incorrect">이 비밀번호가 올바르지 않은 것 같습니다. 정보를 확인하고 다시 시도하세요.</string>
     <string name="email_not_registered_wpcom">이 이메일 주소에 연결된 워드프레스닷컴 계정을 찾을 수 없습니다. 아래 링크를 클릭하여 고객님의 사이트 주소로 로그인해 보세요.</string>
     <string name="requesting_otp">SMS를 통해 확인 코드를 요청 중입니다.</string>

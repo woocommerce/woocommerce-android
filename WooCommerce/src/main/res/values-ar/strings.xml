@@ -602,6 +602,7 @@ Language: ar
     <string name="magic_link_unavailable_error_message">غير متاح حاليًا. يُرجى إدخال كلمة مرورك</string>
     <string name="login_magic_link_email_requesting">طلب بريد إلكتروني لتسجيل الدخول</string>
     <string name="login_magic_links_sent_label">الارتباط السحري الخاص بك على وشك الحدوث! تحقق من بريدك الإلكتروني على هذا الجهاز، واضغط على الارتباط الوارد في رسالة البريد الإلكتروني التي تلقيتها من وردبرس.كوم</string>
+    <string name="login_magic_links_label">سنرسل إليك رسالة على البريد الإلكتروني تحتوي على ارتباط سحري يمكنك من تسجيل الدخول على الفور، دون الحاجة إلى كلمة مرور. لا توجد حاجة إلى تحديد المزيد أو النقر عليه!</string>
     <string name="password_incorrect">يبدو أن كلمة المرور هذه غير صحيحة. يرجى التحقق مجددًا من معلوماتك والمحاولة مرة أخرى.</string>
     <string name="email_not_registered_wpcom">حسنًا، لا يمكننا العثور على حساب وردبرس.كوم متصل بعنوان البريد الإلكتروني هذا. حاول الرابط أدناه لتسجيل الدخول باستخدام عنوان موقعك.</string>
     <string name="requesting_otp">طلب رمز تحقق عن طريق رسالة نصية قصيرة (SMS).</string>

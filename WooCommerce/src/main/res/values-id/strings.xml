@@ -602,6 +602,7 @@ Language: id
     <string name="magic_link_unavailable_error_message">Saat ini tidak tersedia. Masukkan kata sandi Anda</string>
     <string name="login_magic_link_email_requesting">Meminta email login</string>
     <string name="login_magic_links_sent_label">Tautan ajaib Anda segera tiba! Periksa email Anda di perangkat ini, dan ketuk tautan dalam email yang Anda terima dari WordPress.com</string>
+    <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan ajaib yang bisa Anda gunakan untuk login dalam sekejap, tanpa kata sandi. Tak perlu lagi repot mengetik!</string>
     <string name="password_incorrect">Sepertinya kata sandi ini salah. Periksa lagi informasi Anda dan coba lagi.</string>
     <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini. Coba tautan di bawah ini untuk login menggunakan alamat situs Anda.</string>
     <string name="requesting_otp">Meminta kode verifikasi melalui SMS.</string>

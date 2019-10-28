@@ -602,6 +602,7 @@ Language: pt_BR
     <string name="magic_link_unavailable_error_message">Atualmente indisponível. Digite sua senha</string>
     <string name="login_magic_link_email_requesting">Solicitando o e-mail de login</string>
     <string name="login_magic_links_sent_label">Seu link mágico está a caminho! Verifique seu e-mail neste dispositivo e toque no link que você recebeu do WordPress.com.</string>
+    <string name="login_magic_links_label">Enviaremos um e-mail pra você com um link mágico que fará você se conectar instantaneamente, sem precisar de senha. Chega de catar milho no teclado!</string>
     <string name="password_incorrect">Parece que esta senha está errada. Verifique seus dados e tente novamente.</string>
     <string name="email_not_registered_wpcom">Hmm, não foi possível encontrar uma conta do WordPress.com conectada a este endereço de e-mail. Tente o endereço abaixo para acessar usando o endereço do seu site.</string>
     <string name="requesting_otp">Solicitando um código de verificação via SMS.</string>

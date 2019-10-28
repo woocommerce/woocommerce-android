@@ -602,6 +602,7 @@ Language: ru
     <string name="magic_link_unavailable_error_message">В настоящий момент ссылка недоступна. Введите пароль</string>
     <string name="login_magic_link_email_requesting">Выполняется запрос электронного письма со ссылкой для входа</string>
     <string name="login_magic_links_sent_label">Ваша волшебная ссылка уже в пути! Проверьте почту с этого устройства и нажмите ссылку в письме от WordPress.com.</string>
+    <string name="login_magic_links_label">Мы отправим вам волшебную ссылку, по которой вы сможете сразу войти в систему без пароля. Не нужно больше тыкать по клавиатуре!</string>
     <string name="password_incorrect">Похоже, пароль введён неправильно. Проверьте правильность введенных данных и повторите попытку.</string>
     <string name="email_not_registered_wpcom">Хм, мы не можем найти учетную запись WordPress.com по указанному email адресу. Попробуйте войти по ссылке ниже указав адрес сайта.</string>
     <string name="requesting_otp">Выполняется запрос на получение проверочного кода в SMS-сообщении.</string>

@@ -602,6 +602,7 @@ Language: nl
     <string name="magic_link_unavailable_error_message">Momenteel niet beschikbaar. Voer je wachtwoord in</string>
     <string name="login_magic_link_email_requesting">E-mail voor inloggen aangevraagd</string>
     <string name="login_magic_links_sent_label">Je magische link is onderweg! Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt.</string>
+    <string name="login_magic_links_label">We sturen je een e-mail met een magische link waarmee je onmiddellijk kunt inloggen, zonder wachtwoord. Nooit meer moeite doen!</string>
     <string name="password_incorrect">Het lijkt erop alsof dit wachtwoord onjuist is. Controleer je gegevens en probeer het nogmaals.</string>
     <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres. Probeer de link hieronder om in te loggen met je site-adres.</string>
     <string name="requesting_otp">Verificatiecode via sms aanvragen.</string>

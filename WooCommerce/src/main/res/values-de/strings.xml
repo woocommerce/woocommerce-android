@@ -602,6 +602,7 @@ Language: de
     <string name="magic_link_unavailable_error_message">Zur Zeit nicht verfügbar. Bitte gib dein Passwort ein</string>
     <string name="login_magic_link_email_requesting">Anmelde-E-Mail wird angefordert</string>
     <string name="login_magic_links_sent_label">Dein magischer Link ist unterwegs! Überprüfe deine E-Mails auf diesem Gerät und tippe auf den Link in der E-Mail, die du von WordPress.com erhältst.</string>
+    <string name="login_magic_links_label">Wir senden dir per E-Mail einen magischen Link, mit dem du sofort angemeldet wirst, ohne dass du ein Passwort eingeben musst. Kein Zweifingersystem mehr!</string>
     <string name="password_incorrect">Dieses Passwort ist anscheinend falsch. Prüfe bitte deine Angaben und versuche es erneut.</string>
     <string name="email_not_registered_wpcom">Hmm, wir können kein WordPress.com-Konto finden, das mit dieser E-Mail-Adresse verknüpft ist. Versuche, dich über den unten stehenden Link mit deiner Website-Adresse anzumelden.</string>
     <string name="requesting_otp">Verifizierungscode wird per SMS angefordert.</string>
