@@ -60,6 +60,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         private const val REFUND_TYPE_AMOUNT = "amount"
         private const val REFUND_TYPE_ITEMS = "items"
         private const val REFUND_METHOD_MANUAL = "manual"
+        private const val ORDER_ID_SAVED_STATE_KEY = "ORDER_ID_SAVED_STATE_KEY"
     }
 
     // region LiveData
@@ -125,7 +126,14 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     private var refundContinuation: Continuation<Boolean>? = null
 
-    fun start(orderId: Long) {
+    init {
+        savedState.get<Long>(ORDER_ID_SAVED_STATE_KEY)?.let { orderId ->
+            initialize(orderId)
+        }
+    }
+
+    fun initialize(orderId: Long) {
+        savedState[ORDER_ID_SAVED_STATE_KEY] = orderId
         orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()?.let { order ->
             this.order = order
             this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)

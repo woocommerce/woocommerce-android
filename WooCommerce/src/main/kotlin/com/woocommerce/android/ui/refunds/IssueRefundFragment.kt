@@ -42,7 +42,7 @@ class IssueRefundFragment : DaggerFragment() {
     private fun initializeViewModel() {
         initializeViews(viewModel)
         setupObservers(viewModel)
-        viewModel.start(navArgs.orderId)
+        viewModel.initialize(navArgs.orderId)
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
