@@ -75,7 +75,7 @@
     <!--
         Date/Time Labels
     -->
-    <string name="date_timeframe_future">Future</string>
+    <string name="date_timeframe_future">Upcoming</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
