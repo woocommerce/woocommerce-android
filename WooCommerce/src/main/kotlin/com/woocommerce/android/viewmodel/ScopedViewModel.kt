@@ -1,5 +1,6 @@
 package com.woocommerce.android.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +16,9 @@ import kotlin.coroutines.CoroutineContext
 abstract class ScopedViewModel(
     protected val dispatchers: CoroutineDispatchers
 ) : ViewModel(), CoroutineScope {
+    private val _eventTrigger = MultiLiveEvent<IEvent>()
+    val eventTrigger: LiveData<IEvent> = _eventTrigger
+
     protected var job: Job = Job()
 
     override val coroutineContext: CoroutineContext
@@ -24,5 +28,13 @@ abstract class ScopedViewModel(
         super.onCleared()
 
         job.cancel()
+    }
+
+    protected fun triggerEvent(event: IEvent) {
+        _eventTrigger.value = event
+    }
+
+    fun resetTriggerEvent() {
+        _eventTrigger.reset()
     }
 }
