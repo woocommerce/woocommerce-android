@@ -215,7 +215,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         with(imageGallery.layoutParams as FrameLayout.LayoutParams) {
             this.width = if (product.images.size == 1) WRAP_CONTENT else MATCH_PARENT
         }
-        imageGallery.showImages(product.images, this)
+        imageGallery.showProductImages(product, this)
 
         isVariation = product.type == ProductType.VARIATION
 
