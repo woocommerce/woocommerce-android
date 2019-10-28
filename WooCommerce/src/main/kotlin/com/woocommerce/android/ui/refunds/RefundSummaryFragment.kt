@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.refunds
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,9 +21,6 @@ import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
 class RefundSummaryFragment : DaggerFragment(), BackPressListener {
-    companion object {
-        const val REFUND_SUCCESS_KEY = "refund-success-key"
-    }
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 

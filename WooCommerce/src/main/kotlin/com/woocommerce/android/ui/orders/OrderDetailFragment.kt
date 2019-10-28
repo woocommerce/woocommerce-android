@@ -641,10 +641,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
             REFUND_REQUEST_CODE -> {
-                val refundWasSuccessful = result.getBoolean(RefundSummaryFragment.REFUND_SUCCESS_KEY, false)
-                if (refundWasSuccessful) {
-                    presenter.refreshOrderAfterDelay(REFUNDS_REFRESH_DELAY)
-                }
+                presenter.refreshOrderAfterDelay(REFUNDS_REFRESH_DELAY)
             }
         }
     }

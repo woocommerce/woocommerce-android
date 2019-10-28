@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.refunds
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,7 +43,6 @@ class RefundDetailFragment : DaggerFragment() {
         viewModel.start(navArgs.orderId, navArgs.refundId)
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setupObservers(viewModel: RefundDetailViewModel) {
         viewModel.viewState.observe(this, Observer {
             activity?.title = it.screenTitle
