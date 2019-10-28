@@ -1,11 +1,11 @@
-package com.woocommerce.android.viewmodel;
+package com.woocommerce.android.viewmodel
 
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel
 
-import dagger.MapKey;
-import kotlin.annotation.AnnotationRetention;
-import kotlin.annotation.AnnotationTarget;
-import kotlin.annotation.MustBeDocumented;
+import dagger.MapKey
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.AnnotationTarget
+import kotlin.annotation.MustBeDocumented
 import kotlin.reflect.KClass
 
 @MustBeDocumented

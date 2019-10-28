@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView.OrderDetailNoteListener
-import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
