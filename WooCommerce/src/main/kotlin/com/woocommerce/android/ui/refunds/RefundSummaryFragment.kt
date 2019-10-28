@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.ShowSnackbarEvent
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
@@ -52,21 +53,26 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
 
     @SuppressLint("SetTextI18n")
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.showSnackbarMessageWithUndo.observe(this, Observer { message ->
-            uiMessageResolver.getUndoSnack(message, "", actionListener = View.OnClickListener {
-                viewModel.onUndoTapped()
-            }).also {
-                it.addCallback(object : Snackbar.Callback() {
-                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                        viewModel.onProceedWithRefund()
+        viewModel.triggerEvent.observe(this, Observer { event ->
+            when (event) {
+                is ShowSnackbarEvent -> {
+                    if (event.undoAction == null) {
+                        uiMessageResolver.showSnack(event.message)
+                    } else {
+                        val snackbar = uiMessageResolver.getUndoSnack(
+                                event.message,
+                                "",
+                                actionListener = View.OnClickListener { event.undoAction.invoke() }
+                        )
+                        snackbar.addCallback(object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                viewModel.onProceedWithRefund()
+                            }
+                        })
+                        snackbar.show()
                     }
-                })
-                it.show()
+                }
             }
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer { message ->
-            uiMessageResolver.showSnack(message)
         })
 
         viewModel.isSummaryFormEnabled.observe(this, Observer {

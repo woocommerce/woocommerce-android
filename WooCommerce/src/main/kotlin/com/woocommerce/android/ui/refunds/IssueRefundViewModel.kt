@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
@@ -64,11 +63,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     // region LiveData
-    private val _showSnackbarMessage = SingleLiveEvent<String>()
-    val showSnackbarMessage: LiveData<String> = _showSnackbarMessage
-
-    private val _showSnackbarMessageWithUndo = SingleLiveEvent<String>()
-    val showSnackbarMessageWithUndo: LiveData<String> = _showSnackbarMessageWithUndo
+    private val _triggerEvent = SingleLiveEvent<ShowSnackbarEvent>()
+    val triggerEvent: LiveData<ShowSnackbarEvent> = _triggerEvent
 
     private val _showValidationError = SingleLiveEvent<String>()
     val showValidationError: LiveData<String> = _showValidationError
@@ -154,8 +150,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun resetEvents() {
-        _showSnackbarMessage.reset()
-        _showSnackbarMessageWithUndo.reset()
+        _triggerEvent.reset()
         _showValidationError.reset()
         _showRefundSummary.reset()
         _exitAfterRefund.reset()
@@ -163,7 +158,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     private fun initializePaymentGateway() {
         val paymentGateway = gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
-        val manualPaymentTitle = resourceProvider.getString(string.order_refunds_manual_refund)
+        val manualPaymentTitle = resourceProvider.getString(R.string.order_refunds_manual_refund)
 
         gateway = if (paymentGateway != null && paymentGateway.isEnabled) {
             val paymentTitle = if (paymentGateway.supportsRefunds)
@@ -209,10 +204,17 @@ class IssueRefundViewModel @AssistedInject constructor(
         ))
 
         if (networkStatus.isConnected()) {
-            _showSnackbarMessageWithUndo.value = resourceProvider.getString(
-                    R.string.order_refunds_manual_refund_progress_message,
-                    formatCurrency(enteredAmount)
-            )
+            _triggerEvent.value = ShowSnackbarEvent(
+                    resourceProvider.getString(
+                            R.string.order_refunds_manual_refund_progress_message,
+                            formatCurrency(enteredAmount)
+                    )
+            ) {
+                AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED, mapOf(
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
+                )
+                refundContinuation?.resume(true)
+            }
 
             launch {
                 _isSummaryFormEnabled.value = false
@@ -247,8 +249,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
                         )
 
-                        _showSnackbarMessage.value = resourceProvider.getString(
-                                R.string.order_refunds_manual_refund_error
+                        _triggerEvent.value = ShowSnackbarEvent(
+                                resourceProvider.getString(R.string.order_refunds_manual_refund_error)
                         )
                     } else {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
@@ -260,8 +262,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                             noteRepository.createOrderNote(order.identifier, reason, true)
                         }
 
-                        _showSnackbarMessage.value = resourceProvider.getString(
-                                R.string.order_refunds_manual_refund_successful
+                        _triggerEvent.value = ShowSnackbarEvent(
+                                resourceProvider.getString(R.string.order_refunds_manual_refund_successful)
                         )
                         _exitAfterRefund.value = !result.isError
                     }
@@ -269,7 +271,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                 _isSummaryFormEnabled.value = true
             }
         } else {
-            _showSnackbarMessage.value = resourceProvider.getString(R.string.offline_error)
+            _triggerEvent.value = ShowSnackbarEvent(resourceProvider.getString(R.string.offline_error))
         }
     }
 
@@ -279,13 +281,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
         refundContinuation = null
         return wasRefundCanceled
-    }
-
-    fun onUndoTapped() {
-        AnalyticsTracker.track(CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED, mapOf(
-                AnalyticsTracker.KEY_ORDER_ID to order.remoteId
-        ))
-        refundContinuation?.resume(true)
     }
 
     fun onProceedWithRefund() {
@@ -322,6 +317,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     enum class InputValidationState { TOO_HIGH, TOO_LOW, VALID }
 
     data class CurrencySettings(val currency: String, val decimals: Int)
+
+    data class ShowSnackbarEvent(val message: String, val undoAction: (() -> Unit)? = null)
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<IssueRefundViewModel>
