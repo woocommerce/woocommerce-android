@@ -36,10 +36,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private var imageHeight = 0
     private val adapter: ImageGalleryAdapter
     private val request: GlideRequest<Drawable>
+    private val layoutInflater: LayoutInflater
 
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
+        layoutInflater = LayoutInflater.from(context)
         layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
         itemAnimator = DefaultItemAnimator()
 
@@ -115,7 +117,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             return ImageViewHolder(
-                    LayoutInflater.from(context).inflate(
+                    layoutInflater.inflate(
                             layout.image_gallery_item,
                             parent,
                             false
