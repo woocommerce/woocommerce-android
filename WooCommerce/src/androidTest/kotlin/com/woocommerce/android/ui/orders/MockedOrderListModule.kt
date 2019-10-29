@@ -58,7 +58,7 @@ abstract class MockedOrderListModule {
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
                     SelectedSite(mockContext, mock()),
                     NetworkStatus(mockContext),
-                    gatewayStoregrad
+                    gatewayStore
             ))
 
             /**
