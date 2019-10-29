@@ -211,7 +211,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         updateActivityTitle()
 
-        // if there's only one image, center the gallery horizontally in it's parent view
+        // if there's only one image, center the gallery horizontally
         with(imageGallery.layoutParams as FrameLayout.LayoutParams) {
             this.width = if (product.images.size == 1) WRAP_CONTENT else MATCH_PARENT
         }
@@ -584,13 +584,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    override fun onGalleryImageClicked(imageUrl: String, sharedElement: View) {
+    override fun onGalleryImageClicked(imageUrl: String, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         ImageViewerActivity.show(
-                activity!!,
+                requireActivity(),
                 imageUrl,
                 title = productTitle,
-                sharedElement = sharedElement
+                sharedElement = imageView
         )
     }
 

@@ -10,10 +10,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.ListPreloader.PreloadModelProvider
-import com.bumptech.glide.ListPreloader.PreloadSizeProvider
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.di.GlideApp
@@ -37,19 +37,21 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(imageUrl: String, sharedElement: View)
+        fun onGalleryImageClicked(imageUrl: String, imageView: View)
     }
 
     private var imageHeight = 0
     private val adapter: ImageGalleryAdapter
     private val preloader: RecyclerViewPreloader<String>
+    private val preloadSizeProvider = ViewPreloadSizeProvider<String>()
+
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
         adapter = ImageGalleryAdapter(context)
         preloader = RecyclerViewPreloader<String>(Glide.with(this),
                 adapter,
-                adapter,
+                preloadSizeProvider,
                 MAX_IMAGES_TO_PRELOAD)
         addOnScrollListener(preloader)
 
@@ -74,34 +76,33 @@ x
         this.visibility = if (product.images.size > 0) View.VISIBLE else View.GONE
     }
 
-    private fun onImageClicked(position: Int, sharedElement: View) {
-        sharedElement.transitionName = "shared_element$position"
-        listener.onGalleryImageClicked(adapter.getImageUrl(position), sharedElement)
+    private fun onImageClicked(position: Int, imageView: View) {
+        imageView.transitionName = "shared_element$position"
+        listener.onGalleryImageClicked(adapter.getImageUrl(position), imageView)
     }
 
     private inner class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>(),
-            PreloadModelProvider<String>,
-            PreloadSizeProvider<String> {
+            PreloadModelProvider<String> {
         private val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
-            if (!isSameImageList(images)) {
+            fun isSameImageList(): Boolean {
+                if (images.size != imageList.size) {
+                    return false
+                }
+                for (index in images.indices) {
+                    if (images[index].id != imageList[index].id) {
+                        return false
+                    }
+                }
+                return true
+            }
+
+            if (!isSameImageList()) {
                 imageList.clear()
                 imageList.addAll(images)
                 notifyDataSetChanged()
             }
-        }
-
-        private fun isSameImageList(images: List<WCProductImageModel>): Boolean {
-            if (images.size != imageList.size) {
-                return false
-            }
-            for (index in images.indices) {
-                if (images[index].id != imageList[index].id) {
-                    return false
-                }
-            }
-            return true
         }
 
         override fun getItemCount() = imageList.size
@@ -113,7 +114,7 @@ x
                             parent,
                             false
                     )
-            )
+            ).also { preloadSizeProvider.setView(it.imageView) }
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
@@ -131,12 +132,6 @@ x
         private fun getPhotonImageUrl(position: Int): String {
             return PhotonUtils.getPhotonImageUrl(getImageUrl(position), 0, imageHeight)
         }
-
-        /**
-         * Returns the dimensions to use for the preloader at the passed positions
-         */
-        override fun getPreloadSize(item: String, adapterPosition: Int, perItemPosition: Int) =
-                intArrayOf(0, imageHeight)
 
         /**
          * Returns the image url at the passed position for the preloader
