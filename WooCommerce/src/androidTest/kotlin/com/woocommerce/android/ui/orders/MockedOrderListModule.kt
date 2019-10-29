@@ -50,14 +50,15 @@ abstract class MockedOrderListModule {
             val mockDispatcher = mock<Dispatcher>()
             val mockContext = mock<Context>()
             val gatewayStore = mock<WCGatewayStore>()
-            val coroutineDispatchers = CoroutineDispatchers(Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
+            val coroutineDispatchers = CoroutineDispatchers(
+                    Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
             val mockedOrderListPresenter = spy(OrderListPresenter(
                     coroutineDispatchers,
                     mockDispatcher,
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
                     SelectedSite(mockContext, mock()),
                     NetworkStatus(mockContext),
-                    gatewayStore
+                    gatewayStoregrad
             ))
 
             /**
