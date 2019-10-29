@@ -39,15 +39,6 @@
                     android:layout_gravity="center_horizontal"
                     tools:height="200dp" />
 
-                <ProgressBar
-                    android:id="@+id/uploadImageProgress"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
                 <FrameLayout
                     android:id="@+id/frameStatusBadge"
                     android:layout_width="match_parent"

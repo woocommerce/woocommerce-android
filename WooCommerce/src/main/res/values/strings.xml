@@ -402,11 +402,6 @@
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
-    <string name="product_change_image">Change product image</string>
-    <string name="product_capture_image">Capture product image</string>
-    <string name="product_image_upload_error">Error uploading product photo</string>
-    <string name="product_image_already_uploading">A product image is already uploading</string>
-    <string name="product_image_capture_failed">Unable to access camera</string>
     <!--
         Empty list messages
     -->

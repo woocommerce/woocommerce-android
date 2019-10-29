@@ -90,15 +90,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViewModel(savedInstanceState)
+        initializeViewModel()
     }
 
-    private fun initializeViewModel(savedInstanceState: Bundle?) {
+    private fun initializeViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
             setupObservers(it)
         }
 
-        viewModel.start(navArgs.remoteProductId, savedInstanceState)
+        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {

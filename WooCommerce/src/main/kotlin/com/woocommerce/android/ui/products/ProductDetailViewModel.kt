@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -63,7 +62,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun start(remoteProductId: Long, savedInstanceState: Bundle? = null) {
+    fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
     }
 
@@ -75,10 +74,6 @@ class ProductDetailViewModel @Inject constructor(
         super.onCleared()
 
         productRepository.onCleanup()
-    }
-
-    fun reloadProduct() {
-        product.value = productRepository.getProduct(remoteProductId)
     }
 
     private fun loadProduct(remoteProductId: Long) {
