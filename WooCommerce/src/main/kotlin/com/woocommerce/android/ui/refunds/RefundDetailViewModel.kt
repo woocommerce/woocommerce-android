@@ -59,7 +59,11 @@ class RefundDetailViewModel @Inject constructor(
         _formattedRefundAmount.value = formatCurrency(refund.amount)
         _refundReason.value = refund.reason
 
-        val method = resourceProvider.getString(R.string.order_refunds_refunded_via).format(order.paymentMethodTitle)
-        _refundMethod.value = method
+        val method = if (refund.automaticGatewayRefund)
+            order.paymentMethodTitle
+        else
+            "${resourceProvider.getString(R.string.order_refunds_manual_refund)} - ${order.paymentMethodTitle}"
+
+        _refundMethod.value = resourceProvider.getString(R.string.order_refunds_refunded_via).format(method)
     }
 }

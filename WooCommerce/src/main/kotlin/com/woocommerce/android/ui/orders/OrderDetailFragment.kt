@@ -51,6 +51,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         const val REFUND_REQUEST_CODE = 1001
+        private const val REFUNDS_REFRESH_DELAY = 1000L
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
@@ -642,7 +643,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             REFUND_REQUEST_CODE -> {
                 val refundWasSuccessful = result.getBoolean(RefundSummaryFragment.REFUND_SUCCESS_KEY, false)
                 if (refundWasSuccessful) {
-                    presenter.refreshOrderDetail(false)
+                    presenter.refreshOrderAfterDelay(REFUNDS_REFRESH_DELAY)
                 }
             }
         }
