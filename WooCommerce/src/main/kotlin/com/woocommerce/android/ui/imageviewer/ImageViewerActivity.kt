@@ -39,7 +39,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             intent.putExtra(KEY_IMAGE_TITLE, title)
 
             // use a shared element transition if a shared element view was passed, otherwise default to fade-in
-            val options = if (sharedElement != null) {
+            val options = if (sharedElement != null && sharedElement.transitionName.isNotEmpty()) {
                 val transitionName = sharedElement.transitionName
                 intent.putExtra(KEY_TRANSITION_NAME, transitionName)
                 ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement, transitionName)

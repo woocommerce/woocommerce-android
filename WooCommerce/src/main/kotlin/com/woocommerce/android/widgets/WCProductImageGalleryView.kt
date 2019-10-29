@@ -11,11 +11,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.ListPreloader.PreloadModelProvider
-import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.di.GlideApp
@@ -24,51 +20,38 @@ import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.product_list_item.view.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.PhotonUtils
-import java.util.Collections
 
 /**
- * Custom recycler which displays all images for a product - uses Glide's preloader for recycler views for
- * faster loading - https://bumptech.github.io/glide/int/recyclerview.html
+ * Custom recycler which displays all images for a product
  */
 class WCProductImageGalleryView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
-    companion object {
-        private const val MAX_IMAGES_TO_PRELOAD = 5
-    }
-
     interface OnGalleryImageClickListener {
         fun onGalleryImageClicked(imageUrl: String, imageView: View)
     }
 
     private var imageHeight = 0
     private val adapter: ImageGalleryAdapter
-    private val preloader: RecyclerViewPreloader<String>
-    private val preloadSizeProvider = ViewPreloadSizeProvider<String>()
     private val request: GlideRequest<Drawable>
 
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
-        adapter = ImageGalleryAdapter(context).also { it.setHasStableIds(true) }
-
-        // create the image preloader and attach it to this recycle view
-        preloader = RecyclerViewPreloader<String>(Glide.with(this),
-                adapter,
-                preloadSizeProvider,
-                MAX_IMAGES_TO_PRELOAD)
-        addOnScrollListener(preloader)
-
         layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
         itemAnimator = DefaultItemAnimator()
 
         setHasFixedSize(false)
         setItemViewCacheSize(0)
-        setAdapter(adapter)
 
-        // cancel pending Glide request when image is recycled
+        adapter = ImageGalleryAdapter(context).also {
+            it.setHasStableIds(true)
+            setAdapter(it)
+        }
+
+        // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
         setRecyclerListener { holder ->
             glideRequests.clear((holder as ImageViewHolder).imageView)
@@ -101,8 +84,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         listener.onGalleryImageClicked(adapter.getImageUrl(position), imageView)
     }
 
-    private inner class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>(),
-            PreloadModelProvider<String> {
+    private inner class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
@@ -125,6 +107,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
+        fun getImageUrl(position: Int) = adapter.imageList[position].src
+
         override fun getItemCount() = imageList.size
 
         override fun getItemId(position: Int): Long = imageList[position].id
@@ -136,37 +120,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                             parent,
                             false
                     )
-            ).also { preloadSizeProvider.setView(it.imageView) }
+            )
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            getPreloadRequestBuilder(getPhotonImageUrl(position)).into(holder.imageView)
+            val photonUrl = PhotonUtils.getPhotonImageUrl(getImageUrl(position), 0, imageHeight)
+            request.load(photonUrl).into(holder.imageView)
         }
-
-        /**
-         * Get the actual image url for the image at the passed position
-         */
-        fun getImageUrl(position: Int) = adapter.imageList[position].src
-
-        /**
-         * Returns a "photon-ized" url for the image at the passed position
-         */
-        private fun getPhotonImageUrl(position: Int): String {
-            return PhotonUtils.getPhotonImageUrl(getImageUrl(position), 0, imageHeight)
-        }
-
-        /**
-         * Returns the image url at the passed position for the preloader
-         */
-        override fun getPreloadItems(position: Int): MutableList<String> {
-            return Collections.singletonList(getPhotonImageUrl(position))
-        }
-
-        /**
-         * Returns the Glide request to use for both the preloader and the adapter - must use the same Glide
-         * options in both places for preloading to work
-         */
-        override fun getPreloadRequestBuilder(imageUrl: String) = request.load(imageUrl)
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
