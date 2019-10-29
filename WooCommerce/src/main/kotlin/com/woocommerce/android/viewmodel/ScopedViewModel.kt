@@ -34,6 +34,7 @@ abstract class ScopedViewModel(
         _eventTrigger.value = event
     }
 
+    // This resets a pending event from being sent
     fun resetTriggerEvent() {
         _eventTrigger.reset()
     }

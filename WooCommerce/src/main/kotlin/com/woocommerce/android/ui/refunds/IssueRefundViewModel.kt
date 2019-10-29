@@ -119,6 +119,18 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                 savedState[ORDER_ID_SAVED_STATE_KEY] = orderId
             }
+        } else {
+            // If the ViewModel is already initialized it means it's being reused and we need to reset it.
+            // This logic can be removed once the scope is properly attached to the nav graph
+            val order = loadOrder(orderId)
+            if (order != null) {
+                this.order = order
+                enteredAmount = BigDecimal.ZERO
+                maxRefund = order.total - order.refundTotal
+
+                updateRefundByAmountState(order)
+                updateRefundSummaryState()
+            }
         }
     }
 
