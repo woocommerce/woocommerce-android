@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.ListPreloader.PreloadModelProvider
-import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.product_list_item.view.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
@@ -46,6 +47,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private val adapter: ImageGalleryAdapter
     private val preloader: RecyclerViewPreloader<String>
     private val preloadSizeProvider = ViewPreloadSizeProvider<String>()
+    private val request: GlideRequest<Drawable>
 
     private lateinit var listener: OnGalleryImageClickListener
 
@@ -65,6 +67,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         setAdapter(adapter)
 
         val glideRequests = GlideApp.with(this)
+        request = glideRequests
+                .asDrawable()
+                .error(R.drawable.ic_product)
+                .placeholder(R.drawable.product_detail_image_background)
+                .transition(DrawableTransitionOptions.withCrossFade())
         setRecyclerListener { holder ->
             glideRequests.clear((holder as ImageViewHolder).imageView)
         }
@@ -127,7 +134,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            getPreloadRequestBuilder(getPhotonImageUrl(position))?.into(holder.imageView)
+            getPreloadRequestBuilder(getPhotonImageUrl(position)).into(holder.imageView)
         }
 
         /**
@@ -153,13 +160,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
          * Returns the Glide request to use for both the preloader and the adapter - must use the same Glide
          * options in both places for preloading to work
          */
-        override fun getPreloadRequestBuilder(imageUrl: String): RequestBuilder<*>? {
-            return GlideApp.with(context)
-                    .load(imageUrl)
-                    .error(R.drawable.ic_product)
-                    .placeholder(R.drawable.product_detail_image_background)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-        }
+        override fun getPreloadRequestBuilder(imageUrl: String) = request.load(imageUrl)
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
