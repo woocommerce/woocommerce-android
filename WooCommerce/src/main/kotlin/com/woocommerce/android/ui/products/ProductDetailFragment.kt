@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.Manifest.permission
-import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -38,7 +36,6 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithPar
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -50,14 +47,6 @@ import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
-    companion object {
-        private const val MENU_ID_CHOOSE_PHOTO = 2
-        private const val MENU_ID_CAPTURE_PHOTO = 3
-
-        private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
-        private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
-    }
-
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -104,11 +93,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         initializeViewModel(savedInstanceState)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        viewModel.saveState(outState)
-    }
-
     private fun initializeViewModel(savedInstanceState: Bundle?) {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
             setupObservers(it)
@@ -134,10 +118,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.isUploadingProductImage.observe(this, Observer {
-            showUploadImageProgress(it)
-        })
-
         viewModel.exit.observe(this, Observer {
             activity?.onBackPressed()
         })
@@ -156,10 +136,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
-        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
-            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_image)
-            menu?.add(Menu.NONE, MENU_ID_CAPTURE_PHOTO, Menu.NONE, R.string.product_capture_image)
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -167,14 +143,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
-                true
-            }
-            MENU_ID_CHOOSE_PHOTO -> {
-                chooseProductImage()
-                true
-            }
-            MENU_ID_CAPTURE_PHOTO -> {
-                captureProduceImage()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -534,56 +502,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    private fun chooseProductImage() {
-        // only show the chooser if user already allowed storage permission, otherwise simply request the
-        // permission and do nothing else - this will be called again if the user then agrees to allow
-        // storage permission
-        if (requestStoragePermission()) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
-            val chooser = Intent.createChooser(intent, getString(R.string.product_change_image))
-            activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
-        }
-    }
-
-    private fun captureProduceImage() {
-        if (requestCameraPermission()) {
-            viewModel.createCaptureImageIntent(requireActivity())?.let { intent ->
-                activity?.startActivityFromFragment(this, intent, REQUEST_CODE_CAPTURE_PHOTO)
-            }
-        }
-    }
-
-    /**
-     * Triggered by the viewModel when an image is being uploaded or has finished uploading
-     */
-    private fun showUploadImageProgress(isUploading: Boolean) {
-        if (isUploading) {
-            uploadImageProgress.visibility = View.VISIBLE
-        } else {
-            uploadImageProgress.visibility = View.GONE
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
-                val clipData = data.clipData
-                val imageUri = if (clipData != null && clipData.itemCount > 0) {
-                    clipData.getItemAt(0).uri
-                } else {
-                    data.data
-                }
-                imageUri?.let { uri ->
-                    viewModel.uploadProductMedia(requireActivity(), navArgs.remoteProductId, uri)
-                }
-            } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
-                viewModel.uploadCapturedImage(requireActivity(), navArgs.remoteProductId)
-            }
-        }
-    }
-
     override fun onGalleryImageClicked(imageUrl: String, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         ImageViewerActivity.show(
@@ -654,10 +572,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         if (allGranted) {
             when (requestCode) {
                 WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
-                    chooseProductImage()
+                    // TODO chooseProductImage()
                 }
                 WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
-                    captureProduceImage()
+                    // TODO captureProduceImage()
                 }
             }
         }

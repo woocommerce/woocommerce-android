@@ -2,7 +2,6 @@ package com.woocommerce.android.di
 
 import android.app.Application
 import com.woocommerce.android.WooCommerce
-import com.woocommerce.android.media.MediaUploadModule
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import dagger.BindsInstance
@@ -32,8 +31,7 @@ import javax.inject.Singleton
         LoginServiceModule::class,
         NetworkStatusModule::class,
         CurrencyModule::class,
-        SupportModule::class,
-        MediaUploadModule::class])
+        SupportModule::class])
 interface AppComponent : AndroidInjector<WooCommerce> {
     override fun inject(app: WooCommerce)
 

@@ -1,40 +1,22 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
-import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
-import com.woocommerce.android.media.MediaUploadService
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.io.File
-import java.io.IOException
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.math.roundToInt
@@ -48,10 +30,6 @@ class ProductDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(mainDispatcher) {
-    companion object {
-        private const val KEY_CURRENT_PHOTO_PATH = "photo_path"
-    }
-
     private var remoteProductId = 0L
 
     private val product = MutableLiveData<Product>()
@@ -69,13 +47,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _isUploadingProductImage = MutableLiveData<Boolean>()
-    val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
-
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
-
-    private var capturedPhotoPath: String? = null
 
     init {
         _productData.addSource(product) { prod ->
@@ -88,21 +61,10 @@ class ProductDetailViewModel @Inject constructor(
                 _productData.value = combineData(prod, params)
             }
         }
-
-        EventBus.getDefault().register(this)
     }
 
     fun start(remoteProductId: Long, savedInstanceState: Bundle? = null) {
         loadProduct(remoteProductId)
-        savedInstanceState?.let { bundle ->
-            capturedPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
-        }
-    }
-
-    fun saveState(bundle: Bundle) {
-        capturedPhotoPath?.let {
-            bundle.putString(KEY_CURRENT_PHOTO_PATH, it)
-        }
     }
 
     fun onShareButtonClicked() {
@@ -113,7 +75,6 @@ class ProductDetailViewModel @Inject constructor(
         super.onCleared()
 
         productRepository.onCleanup()
-        EventBus.getDefault().unregister(this)
     }
 
     fun reloadProduct() {
@@ -122,8 +83,6 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun loadProduct(remoteProductId: Long) {
         loadParameters()
-
-        _isUploadingProductImage.value = MediaUploadService.isUploadingForProduct(remoteProductId)
 
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
@@ -203,78 +162,6 @@ class ProductDetailViewModel @Inject constructor(
             number.toString()
         } else {
             int.toString()
-        }
-    }
-
-    fun uploadCapturedImage(context: Context, remoteProductId: Long) {
-        Uri.parse(capturedPhotoPath)?.let { uri ->
-            uploadProductMedia(context, remoteProductId, uri)
-        }
-        capturedPhotoPath = null
-    }
-
-    fun uploadProductMedia(context: Context, remoteProductId: Long, localImageUri: Uri) {
-        // TODO: at some point we want to support uploading multiple product images
-        if (MediaUploadService.isBusy()) {
-            _showSnackbarMessage.value = R.string.product_image_already_uploading
-            return
-        }
-        _isUploadingProductImage.value = true
-        MediaUploadService.uploadProductMedia(context, remoteProductId, localImageUri)
-    }
-
-    /**
-     * Create an intent for capturing a device photo
-     */
-    fun createCaptureImageIntent(context: Context): Intent? {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
-            // Ensure that there's a camera activity to handle the intent
-            intent.resolveActivity(context.packageManager)?.also {
-                createCaptureImageFile(context)?.also { file ->
-                    capturedPhotoPath = file.absolutePath
-                    val authority = context.applicationContext.packageName + ".provider"
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                            context,
-                            authority,
-                            file
-                    )
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    return intent
-                }
-            }
-        }
-
-        WooLog.w(T.MEDIA, "ProductDetailViewModel > unable to create capture intent")
-        _showSnackbarMessage.value = R.string.product_image_capture_failed
-        return null
-    }
-
-    /**
-     * Creates a temporary file for captured photos
-     */
-    private fun createCaptureImageFile(context: Context): File? {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return try {
-            File.createTempFile(
-                    "JPEG_${timeStamp}_",
-                    ".jpg",
-                    storageDir
-            )
-        } catch (ex: IOException) {
-            WooLog.e(T.MEDIA, ex)
-            null
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductMediaUploadEvent) {
-        _isUploadingProductImage.value = false
-        if (event.isError) {
-            _showSnackbarMessage.value = R.string.product_image_upload_error
-        } else {
-            reloadProduct()
         }
     }
 
