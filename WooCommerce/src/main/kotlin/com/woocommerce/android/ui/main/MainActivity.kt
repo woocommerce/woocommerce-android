@@ -335,7 +335,9 @@ class MainActivity : AppUpgradeActivity(),
             }
             showBottomNav = when (destination.id) {
                 R.id.addOrderShipmentTrackingFragment,
-                R.id.addOrderNoteFragment -> {
+                R.id.addOrderNoteFragment,
+                R.id.issueRefundFragment,
+                R.id.refundSummaryFragment -> {
                     false
                 }
                 else -> {
