@@ -53,6 +53,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     init {
         adapter = ImageGalleryAdapter(context).also { it.setHasStableIds(true) }
+
+        // create the image preloader and attach it to this recycle view
         preloader = RecyclerViewPreloader<String>(Glide.with(this),
                 adapter,
                 preloadSizeProvider,
@@ -66,16 +68,20 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         setItemViewCacheSize(0)
         setAdapter(adapter)
 
+        // cancel pending Glide request when image is recycled
         val glideRequests = GlideApp.with(this)
+        setRecyclerListener { holder ->
+            glideRequests.clear((holder as ImageViewHolder).imageView)
+        }
+
+        // create a reusable Glide request for all images
         request = glideRequests
                 .asDrawable()
                 .error(R.drawable.ic_product)
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
-        setRecyclerListener { holder ->
-            glideRequests.clear((holder as ImageViewHolder).imageView)
-        }
 
+        // make images fit the entire height of the view
         viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -85,9 +91,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
-        adapter.showImages(product.images)
         this.listener = listener
         this.visibility = if (product.images.isNotEmpty()) View.VISIBLE else View.GONE
+        adapter.showImages(product.images)
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
