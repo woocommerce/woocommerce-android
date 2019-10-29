@@ -50,7 +50,6 @@ class RefundByAmountFragment : DaggerFragment() {
         })
 
         viewModel.eventTrigger.observe(this, Observer { event ->
-            event.isHandled = true
             when (event) {
                 is ShowValidationError -> issueRefund_refundAmountInputLayout.error = event.message
                 is HideValidationError -> issueRefund_refundAmountInputLayout.error = null

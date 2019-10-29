@@ -1,18 +1,3 @@
-/*
- *  Copyright 2017 Google Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
 package com.woocommerce.android.viewmodel
 
 import android.util.Log
@@ -33,20 +18,22 @@ import java.util.concurrent.atomic.AtomicBoolean
  * explicit call to setValue() or call().
  *
  *
- * Note that only one observer is going to be notified of changes.
+ * This is a mutation of SingleLiveEvent, which allows multiple observers. Once an observer marks the event as handled,
+ * no other observers are notified and no further updates will be sent, similar to SingleLiveEvent.
  */
 open class MultiLiveEvent<T : IEvent> : MutableLiveData<T>() {
+    companion object {
+        private const val TAG = "MultiLiveEvent"
+    }
+
     private val pending = AtomicBoolean(false)
 
     @MainThread
-    override fun observe(@NonNull owner: LifecycleOwner, @NonNull observer: Observer<in T>) {
-        if (hasActiveObservers()) {
-            Log.w(TAG, "Multiple observers registered but only one will be notified of changes.")
-        }
-
+    override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
         // Observe the internal MutableLiveData
         super.observe(owner, Observer { t ->
             if (pending.get()) {
+                t.isHandled = true
                 observer.onChanged(t)
                 pending.compareAndSet(t.isHandled, false)
             }
@@ -66,22 +53,5 @@ open class MultiLiveEvent<T : IEvent> : MutableLiveData<T>() {
     override fun postValue(value: T) {
         pending.set(true)
         super.postValue(value)
-    }
-
-    /**
-     * Used for cases where T is Void, to make calls cleaner.
-     */
-    @MainThread
-    fun call() {
-        value = null
-    }
-
-    fun asyncCall() {
-        pending.set(true)
-        super.postValue(null)
-    }
-
-    companion object {
-        private const val TAG = "SingleLiveEvent"
     }
 }

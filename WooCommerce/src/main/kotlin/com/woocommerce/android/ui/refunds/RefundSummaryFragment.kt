@@ -50,7 +50,6 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
 
     private fun setupObservers() {
         viewModel.eventTrigger.observe(this, Observer { event ->
-            event.isHandled = true
             when (event) {
                 is ShowSnackbar -> {
                     if (event.undoAction == null) {

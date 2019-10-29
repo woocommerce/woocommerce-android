@@ -62,7 +62,6 @@ class IssueRefundFragment : DaggerFragment() {
         })
 
         viewModel.eventTrigger.observe(this, Observer { event ->
-            event.isHandled = true
             when (event) {
                 is ShowRefundSummary -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
