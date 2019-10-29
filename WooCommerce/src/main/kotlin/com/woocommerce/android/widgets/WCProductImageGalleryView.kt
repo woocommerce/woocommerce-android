@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.ListPreloader.PreloadModelProvider
@@ -48,20 +50,25 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
-        adapter = ImageGalleryAdapter(context)
+        adapter = ImageGalleryAdapter(context).also { it.setHasStableIds(true) }
         preloader = RecyclerViewPreloader<String>(Glide.with(this),
                 adapter,
                 preloadSizeProvider,
                 MAX_IMAGES_TO_PRELOAD)
         addOnScrollListener(preloader)
 
-        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, HORIZONTAL, false)
-        itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
+        layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
+        itemAnimator = DefaultItemAnimator()
 
         setHasFixedSize(false)
         setItemViewCacheSize(0)
         setAdapter(adapter)
-x
+
+        val glideRequests = GlideApp.with(this)
+        setRecyclerListener { holder ->
+            glideRequests.clear((holder as ImageViewHolder).imageView)
+        }
+
         viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -73,7 +80,7 @@ x
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
         adapter.showImages(product.images)
         this.listener = listener
-        this.visibility = if (product.images.size > 0) View.VISIBLE else View.GONE
+        this.visibility = if (product.images.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
@@ -106,6 +113,8 @@ x
         }
 
         override fun getItemCount() = imageList.size
+
+        override fun getItemId(position: Int): Long = imageList[position].id
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             return ImageViewHolder(
