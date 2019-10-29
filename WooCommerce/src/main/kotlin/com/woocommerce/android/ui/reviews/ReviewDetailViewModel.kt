@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
 @OpenClassOnDebug
-final class ReviewDetailViewModel @AssistedInject constructor(
+class ReviewDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val repository: ReviewDetailRepository,
     private val networkStatus: NetworkStatus,

@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -9,23 +13,24 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import javax.inject.Inject
 import kotlin.math.roundToInt
 
-class MockedProductDetailViewModel @Inject constructor(
+class MockedProductDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
     productRepository: ProductDetailRepository,
     networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    @Assisted arg0: SavedStateHandle
 ) : ProductDetailViewModel(
         dispatchers,
         wooCommerceStore,
         selectedSite,
         productRepository,
         networkStatus,
-        currencyFormatter
+        currencyFormatter,
+        arg0
 ) {
     override val productData: LiveData<ProductWithParameters>
         get() = Transformations.map(super.productData) {
@@ -62,4 +67,7 @@ class MockedProductDetailViewModel @Inject constructor(
             currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
         } ?: amount.toString()
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<MockedProductDetailViewModel>
 }
