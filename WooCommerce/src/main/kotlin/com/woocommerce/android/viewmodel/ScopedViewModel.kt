@@ -1,6 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +15,7 @@ import kotlin.coroutines.CoroutineContext
  * When the ViewModel is destroyed, the coroutine job is cancelled and any running coroutine tied to it is stopped.
  */
 abstract class ScopedViewModel(
+    protected val savedState: SavedStateHandle,
     protected val dispatchers: CoroutineDispatchers
 ) : ViewModel(), CoroutineScope {
     private val _eventTrigger = MultiLiveEvent<IEvent>()

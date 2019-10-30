@@ -55,13 +55,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = spy(
                 ProductDetailViewModel(
+                        savedState,
                         coroutineDispatchers,
-                        wooCommerceStore,
                         selectedSite,
                         productRepository,
                         networkStatus,
                         currencyFormatter,
-                        savedState
+                        wooCommerceStore
                 )
         )
         val prodSettings = WCProductSettingsModel(0).apply {

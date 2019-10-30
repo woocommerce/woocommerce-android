@@ -39,13 +39,13 @@ import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatu
 
 @OpenClassOnDebug
 class ReviewListViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
-    private val reviewRepository: ReviewListRepository,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    @Assisted private val savedState: SavedStateHandle
-) : ScopedViewModel(dispatchers) {
+    private val reviewRepository: ReviewListRepository
+) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }

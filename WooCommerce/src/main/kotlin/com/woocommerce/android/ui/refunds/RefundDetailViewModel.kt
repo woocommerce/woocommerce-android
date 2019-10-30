@@ -24,14 +24,14 @@ import java.math.BigDecimal
 
 @OpenClassOnDebug
 class RefundDetailViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
-    private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
-    @Assisted private val savedState: SavedStateHandle
-) : ScopedViewModel(dispatchers) {
+    private val refundStore: WCRefundStore
+) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val REFUND_DETAIL_SAVED_STATE_KEY = "REFUND_DETAIL_SAVED_STATE_KEY"
     }

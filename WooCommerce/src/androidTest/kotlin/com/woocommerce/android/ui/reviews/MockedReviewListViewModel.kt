@@ -17,12 +17,12 @@ class MockedReviewListViewModel @AssistedInject constructor(
     selectedSite: SelectedSite,
     @Assisted arg0: SavedStateHandle
 ) : ReviewListViewModel(
+        arg0,
         dispatchers,
-        reviewRepository,
         networkStatus,
         dispatcher,
         selectedSite,
-        arg0
+        reviewRepository
 ) {
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<MockedReviewListViewModel>

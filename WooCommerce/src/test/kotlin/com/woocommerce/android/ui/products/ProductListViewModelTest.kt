@@ -32,10 +32,10 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = spy(
                 ProductListViewModel(
+                        savedState,
                         coroutineDispatchers,
                         productRepository,
-                        networkStatus,
-                        savedState
+                        networkStatus
                 )
         )
 

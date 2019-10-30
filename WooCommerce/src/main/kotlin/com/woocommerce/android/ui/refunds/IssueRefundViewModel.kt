@@ -55,8 +55,8 @@ const val REFUND_SUMMARY_SAVED_STATE_KEY = "REFUND_SUMMARY_SAVED_STATE_KEY"
 
 @OpenClassOnDebug
 class IssueRefundViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
-    private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
@@ -65,8 +65,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val noteRepository: OrderNoteRepository,
     private val gatewayStore: WCGatewayStore,
-    @Assisted private val savedState: SavedStateHandle
-) : ScopedViewModel(dispatchers) {
+    private val refundStore: WCRefundStore
+) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val REFUND_TYPE_AMOUNT = "amount"

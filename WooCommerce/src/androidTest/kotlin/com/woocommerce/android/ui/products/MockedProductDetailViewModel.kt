@@ -24,13 +24,13 @@ class MockedProductDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     @Assisted arg0: SavedStateHandle
 ) : ProductDetailViewModel(
+        arg0,
         dispatchers,
-        wooCommerceStore,
         selectedSite,
         productRepository,
         networkStatus,
         currencyFormatter,
-        arg0
+        wooCommerceStore
 ) {
     override val productData: LiveData<ProductWithParameters>
         get() = Transformations.map(super.productData) {

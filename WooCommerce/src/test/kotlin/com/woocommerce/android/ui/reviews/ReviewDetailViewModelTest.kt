@@ -43,7 +43,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         viewModel = spy(
-                ReviewDetailViewModel(coroutineDispatchers, repository, networkStatus, savedState))
+                ReviewDetailViewModel(savedState, coroutineDispatchers, networkStatus, repository))
 
         doReturn(true).whenever(networkStatus).isConnected()
     }
