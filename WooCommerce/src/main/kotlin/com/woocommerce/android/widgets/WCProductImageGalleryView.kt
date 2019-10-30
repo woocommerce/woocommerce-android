@@ -36,7 +36,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(imageUrl: String, imageView: View)
+        fun onGalleryImageClicked(image: WCProductImageModel, imageView: View)
     }
 
     private var imageHeight = 0
@@ -116,7 +116,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private fun onImageClicked(position: Int, imageView: View) {
         imageView.transitionName = "shared_element$position"
-        listener.onGalleryImageClicked(adapter.getImageUrl(position), imageView)
+        listener.onGalleryImageClicked(adapter.getImage(position), imageView)
     }
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
@@ -142,7 +142,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
-        fun getImageUrl(position: Int) = adapter.imageList[position].src
+        fun getImage(position: Int) = adapter.imageList[position]
 
         override fun getItemCount() = imageList.size
 
@@ -159,7 +159,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val photonUrl = PhotonUtils.getPhotonImageUrl(getImageUrl(position), 0, imageHeight)
+            val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
             request.load(photonUrl).into(holder.imageView)
         }
     }
