@@ -11,5 +11,6 @@
     <com.woocommerce.android.widgets.WCProductImageGalleryView
         android:id="@+id/imageGallery"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:isGridView="true" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
