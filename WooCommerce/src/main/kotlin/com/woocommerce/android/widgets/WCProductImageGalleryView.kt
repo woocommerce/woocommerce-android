@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
+import android.widget.ImageView.ScaleType.CENTER_CROP
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +35,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private var imageHeight = 0
+    private val orientation: Int
+
     private val adapter: ImageGalleryAdapter
     private val request: GlideRequest<Drawable>
     private val layoutInflater: LayoutInflater
@@ -41,9 +44,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
-        layoutInflater = LayoutInflater.from(context)
-        layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
+        orientation = attrs?.let {
+            val attributeArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
+            attributeArray.getInt(R.styleable.WCProductImageGalleryView_galleryOrientation, VERTICAL)
+        } ?: VERTICAL
+
+        layoutManager = LinearLayoutManager(context, orientation, false)
         itemAnimator = DefaultItemAnimator()
+        layoutInflater = LayoutInflater.from(context)
 
         setHasFixedSize(false)
         setItemViewCacheSize(0)
@@ -70,7 +78,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
-                imageHeight = this@WCProductImageGalleryView.height
+                val height = this@WCProductImageGalleryView.height
+                val width = this@WCProductImageGalleryView.width
+                imageHeight = if (orientation == HORIZONTAL) height else height / 3
             }
         })
     }
@@ -134,6 +144,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.productImage
         init {
+            if (orientation == VERTICAL) {
+                imageView.scaleType = CENTER_CROP
+            }
+            imageView.layoutParams.height = imageHeight
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, imageView)
             }
