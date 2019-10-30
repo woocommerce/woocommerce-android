@@ -41,7 +41,7 @@ class MediaUploadService : JobIntentService() {
         private const val KEY_PRODUCT_ID = "key_product_id"
         private const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
 
-        // map of remoteProductId / localImageUri
+        // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
 
         class OnProductMediaUploadEvent(
@@ -50,9 +50,10 @@ class MediaUploadService : JobIntentService() {
         )
 
         fun uploadProductMedia(context: Context, remoteProductId: Long, localMediaUri: Uri) {
-            val intent = Intent(context, MediaUploadService::class.java)
-            intent.putExtra(KEY_PRODUCT_ID, remoteProductId)
-            intent.putExtra(KEY_LOCAL_MEDIA_URI, localMediaUri)
+            val intent = Intent(context, MediaUploadService::class.java).also {
+                it.putExtra(KEY_PRODUCT_ID, remoteProductId)
+                it.putExtra(KEY_LOCAL_MEDIA_URI, localMediaUri)
+            }
             enqueueWork(
                     context,
                     MediaUploadService::class.java,
@@ -63,7 +64,7 @@ class MediaUploadService : JobIntentService() {
 
         fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
 
-        fun isBusy() = !currentUploads.isEmpty()
+        fun isBusy() = !currentUploads.isEmpty
     }
 
     @Inject lateinit var dispatcher: Dispatcher
