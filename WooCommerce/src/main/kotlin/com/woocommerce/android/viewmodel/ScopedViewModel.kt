@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
@@ -18,8 +19,8 @@ abstract class ScopedViewModel(
     protected val savedState: SavedStateHandle,
     protected val dispatchers: CoroutineDispatchers
 ) : ViewModel(), CoroutineScope {
-    private val _eventTrigger = MultiLiveEvent<IEvent>()
-    val eventTrigger: LiveData<IEvent> = _eventTrigger
+    private val _event = MultiLiveEvent<Event>()
+    val event: LiveData<Event> = _event
 
     protected var job: Job = Job()
 
@@ -32,12 +33,13 @@ abstract class ScopedViewModel(
         job.cancel()
     }
 
-    protected fun triggerEvent(event: IEvent) {
-        _eventTrigger.value = event
+    protected fun triggerEvent(event: Event) {
+        event.isHandled = false
+        _event.value = event
     }
 
     // This resets a pending event from being sent
-    fun resetTriggerEvent() {
-        _eventTrigger.reset()
+    fun resetEvent() {
+        _event.reset()
     }
 }

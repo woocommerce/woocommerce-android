@@ -4,6 +4,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -19,11 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * This is a mutation of SingleLiveEvent, which allows multiple observers. Once an observer marks the event as handled,
  * no other observers are notified and no further updates will be sent, similar to SingleLiveEvent.
  */
-open class MultiLiveEvent<T : IEvent> : MutableLiveData<T>() {
-    companion object {
-        private const val TAG = "MultiLiveEvent"
-    }
-
+open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
     private val pending = AtomicBoolean(false)
 
     @MainThread
@@ -52,4 +49,6 @@ open class MultiLiveEvent<T : IEvent> : MutableLiveData<T>() {
         pending.set(true)
         super.postValue(value)
     }
+
+    abstract class Event(var isHandled: Boolean = false)
 }
