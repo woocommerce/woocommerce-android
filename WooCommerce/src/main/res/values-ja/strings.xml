@@ -17,9 +17,9 @@ Language: ja_JP
     <string name="review_single_fetch_error">新規の商品レビュー取得中にエラーが発生しました</string>
     <string name="review_fetch_error">商品レビュー取得中にエラーが発生しました</string>
     <string name="order_refunds_refund_manual_refund_note">現在、手動での返金のみに対応しています。決済方法ダッシュボードから返金を完了するか、手動で顧客に送金してください。</string>
-    <string name="order_refunds_manual_refund_error">返金処理でエラーが発生しました。もう一度お試しください。</string>
-    <string name="order_refunds_manual_refund_successful">返金処理を正常に送信しました。</string>
-    <string name="order_refunds_manual_refund_progress_message">%sの返金処理を実行中です。しばらくお待ちください…</string>
+    <string name="order_refunds_amount_refund_error">返金処理でエラーが発生しました。もう一度お試しください。</string>
+    <string name="order_refunds_amount_refund_successful">返金処理を正常に送信しました。</string>
+    <string name="order_refunds_amount_refund_progress_message">%sの返金処理を実行中です。しばらくお待ちください…</string>
     <string name="order_refunds_quote_image_description">見積もりアイコン</string>
     <string name="order_refunds_manual_refund">手動返金</string>
     <string name="order_refunds_refund_details">返金の詳細</string>

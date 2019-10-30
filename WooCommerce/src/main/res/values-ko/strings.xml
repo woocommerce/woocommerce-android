@@ -17,9 +17,9 @@ Language: ko_KR
     <string name="review_single_fetch_error">신제품 리뷰를 가져오는 동안 오류 발생</string>
     <string name="review_fetch_error">제품 리뷰를 가져오는 동안 오류 발생</string>
     <string name="order_refunds_refund_manual_refund_note">현재 수동 환불만 지원됩니다. 결제 게이트웨이의 대시보드를 통해 환불을 완료하거나 수동으로 고객에게 돈을 이체합니다.</string>
-    <string name="order_refunds_manual_refund_error">환불에 문제가 발생했습니다. 다시 시도하세요.</string>
-    <string name="order_refunds_manual_refund_successful">환불이 성공적으로 제출되었습니다.</string>
-    <string name="order_refunds_manual_refund_progress_message">%s에 대한 환불을 처리 중입니다. 기다려주세요…</string>
+    <string name="order_refunds_amount_refund_error">환불에 문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="order_refunds_amount_refund_successful">환불이 성공적으로 제출되었습니다.</string>
+    <string name="order_refunds_amount_refund_progress_message">%s에 대한 환불을 처리 중입니다. 기다려주세요…</string>
     <string name="order_refunds_quote_image_description">인용 아이콘</string>
     <string name="order_refunds_manual_refund">수동 환불</string>
     <string name="order_refunds_refund_details">환불 정보</string>
