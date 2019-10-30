@@ -586,14 +586,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
-            val clipData = data.clipData
-            val imageUri = if (clipData != null && clipData.itemCount > 0) {
-                clipData.getItemAt(0).uri
-            } else {
-                data.data
-            }
-            imageUri?.let { uri ->
-                viewModel.uploadProductMedia(activity!!, navArgs.remoteProductId, uri)
+            data.data?.let { imageUri ->
+                viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
             }
         }
     }
