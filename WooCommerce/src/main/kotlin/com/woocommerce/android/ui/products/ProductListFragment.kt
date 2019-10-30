@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
+import com.woocommerce.android.ui.products.ProductListViewModel.SnackbarMessage
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
@@ -271,24 +272,17 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     private fun setupObservers(viewModel: ProductListViewModel) {
-        viewModel.productList.observe(this, Observer {
-            showProductList(it)
-        })
+        viewModel.viewStateLiveData.observe(this) { data ->
+            data.isSkeletonShown?.let { showSkeleton(it) }
+            data.isLoadingMore?.let { showLoadMoreProgress(it) }
+            data.productList?.let { showProductList(it) }
+            data.isRefreshing?.let { productsRefreshLayout.isRefreshing = it }
+        }
 
-        viewModel.isSkeletonShown.observe(this, Observer {
-            showSkeleton(it)
-        })
-
-        viewModel.isLoadingMore.observe(this, Observer {
-            showLoadMoreProgress(it)
-        })
-
-        viewModel.isRefreshing.observe(this, Observer {
-            productsRefreshLayout.isRefreshing = it
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is SnackbarMessage -> uiMessageResolver.showSnack(event.message)
+            }
         })
     }
 

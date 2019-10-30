@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -12,8 +11,9 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,19 +32,8 @@ class ProductListViewModel @AssistedInject constructor(
     private var canLoadMore = true
     private var isLoadingProducts = false
 
-    val productList = MutableLiveData<List<Product>>()
-
-    private val _isSkeletonShown = MutableLiveData<Boolean>()
-    val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
-
-    private val _showSnackbarMessage = SingleLiveEvent<Int>()
-    val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
-
-    private val _isLoadingMore = MutableLiveData<Boolean>()
-    val isLoadingMore: LiveData<Boolean> = _isLoadingMore
-
-    private val _isRefreshing = MutableLiveData<Boolean>()
-    val isRefreshing: LiveData<Boolean> = _isRefreshing
+    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateLiveData
 
     private var searchJob: Job? = null
 
@@ -71,16 +60,16 @@ class ProductListViewModel @AssistedInject constructor(
 
             launch {
                 isLoadingProducts = true
-                _isLoadingMore.value = loadMore
+                viewState = ViewState(isLoadingMore = loadMore)
 
                 if (!loadMore) {
                     // if this is the initial load, first get the products from the db and if there are any show
                     // them immediately, otherwise make sure the skeleton shows
                     val productsInDb = productRepository.getProductList()
-                    if (productsInDb.isEmpty()) {
-                        _isSkeletonShown.value = true
+                    viewState = if (productsInDb.isEmpty()) {
+                        ViewState(isSkeletonShown = true)
                     } else {
-                        productList.value = productsInDb
+                        ViewState(productList = productsInDb)
                     }
                 }
 
@@ -93,22 +82,21 @@ class ProductListViewModel @AssistedInject constructor(
             searchJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
                 isLoadingProducts = true
-                _isLoadingMore.value = loadMore
-                _isSkeletonShown.value = !loadMore
+                viewState = ViewState(isLoadingMore = loadMore, isSkeletonShown = !loadMore)
                 fetchProductList(searchQuery, loadMore)
             }
         }
     }
 
     fun refreshProducts(searchQuery: String? = null) {
-        _isRefreshing.value = true
+        viewState = ViewState(isRefreshing = true)
         loadProducts(searchQuery = searchQuery)
     }
 
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
-                productList.value = productRepository.fetchProductList(loadMore)
+                viewState = ViewState(productList = productRepository.fetchProductList(loadMore))
             } else {
                 val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
                 // make sure the search query hasn't changed while the fetch was processing
@@ -116,7 +104,7 @@ class ProductListViewModel @AssistedInject constructor(
                     if (loadMore) {
                         addProducts(fetchedProducts)
                     } else {
-                        productList.value = fetchedProducts
+                        viewState = ViewState(productList = fetchedProducts)
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
@@ -124,12 +112,10 @@ class ProductListViewModel @AssistedInject constructor(
             }
             canLoadMore = productRepository.canLoadMoreProducts
         } else {
-            _showSnackbarMessage.value = R.string.offline_error
+            triggerEvent(SnackbarMessage(R.string.offline_error))
         }
 
-        _isSkeletonShown.value = false
-        _isLoadingMore.value = false
-        _isRefreshing.value = false
+        viewState = ViewState(isSkeletonShown = false, isLoadingMore = false, isRefreshing = false)
         isLoadingProducts = false
     }
 
@@ -137,8 +123,17 @@ class ProductListViewModel @AssistedInject constructor(
      * Adds the passed list of products to the current list
      */
     private fun addProducts(products: List<Product>) {
-        productList.value = productList.value.orEmpty() + products
+        viewState = ViewState(productList = viewState.productList.orEmpty() + products)
     }
+
+    data class ViewState(
+        val productList: List<Product>? = null,
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingMore: Boolean? = null,
+        val isRefreshing: Boolean? = null
+    )
+
+    data class SnackbarMessage(@StringRes val message: Int) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductListViewModel>
