@@ -31,13 +31,15 @@ class LoginNoJetpackFragment : Fragment() {
         private const val ARG_INPUT_USERNAME = "ARG_INPUT_USERNAME"
         private const val ARG_INPUT_PASSWORD = "ARG_INPUT_PASSWORD"
         private const val ARG_USER_AVATAR_URL = "ARG_USER_AVATAR_URL"
+        private const val ARG_CHECK_JETPACK_AVAILABILITY = "ARG_CHECK_JETPACK_AVAILABILITY"
 
         fun newInstance(
             siteAddress: String,
             endpointAddress: String?,
             inputUsername: String,
             inputPassword: String,
-            userAvatarUrl: String?
+            userAvatarUrl: String?,
+            checkJetpackAvailability: Boolean = false
         ): LoginNoJetpackFragment {
             val fragment = LoginNoJetpackFragment()
             val args = Bundle()
@@ -46,6 +48,7 @@ class LoginNoJetpackFragment : Fragment() {
             args.putString(ARG_INPUT_USERNAME, inputUsername)
             args.putString(ARG_INPUT_PASSWORD, inputPassword)
             args.putString(ARG_USER_AVATAR_URL, userAvatarUrl)
+            args.putBoolean(ARG_CHECK_JETPACK_AVAILABILITY, checkJetpackAvailability)
             fragment.arguments = args
             return fragment
         }
@@ -59,6 +62,16 @@ class LoginNoJetpackFragment : Fragment() {
     private var mInputPassword: String? = null
     private var userAvatarUrl: String? = null
 
+    /**
+     * This flag, when set to true calls the CONNECT_SITE_INFO API to verify if Jetpack is
+     * installed/activated/connected to the site. This flag will be set to true only when the
+     * discovery process results in an error with the assumption being that certain discovery
+     * errors can only take place if Jetpack is not connected to the site. On the off chance
+     * that Jetpack is connected, but discovery still fails, we need to verify if Jetpack is
+     * available, before initiating the discovery process again.
+     * */
+    private var mCheckJetpackAvailability: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,6 +81,7 @@ class LoginNoJetpackFragment : Fragment() {
             mInputUsername = it.getString(ARG_INPUT_USERNAME, null)
             mInputPassword = it.getString(ARG_INPUT_PASSWORD, null)
             userAvatarUrl = it.getString(ARG_USER_AVATAR_URL, null)
+            mCheckJetpackAvailability = it.getBoolean(ARG_CHECK_JETPACK_AVAILABILITY)
         }
     }
 
@@ -133,9 +147,14 @@ class LoginNoJetpackFragment : Fragment() {
             text = getString(R.string.try_again)
             setOnClickListener {
                 // TODO: Add event here to track when secondary button is clicked
-                jetpackLoginListener?.showUsernamePasswordScreen(
-                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
-                )
+
+                if (mCheckJetpackAvailability) {
+                    // TODO: call the CONNECTED_SITE_INFO API to verify jetpack availability
+                } else {
+                    jetpackLoginListener?.showUsernamePasswordScreen(
+                            siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                    )
+                }
             }
         }
 
