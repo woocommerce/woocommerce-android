@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -31,7 +32,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
@@ -504,12 +504,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onGalleryImageClicked(imageUrl: String, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        ImageViewerActivity.show(
-                requireActivity(),
-                imageUrl,
-                title = productTitle,
-                sharedElement = imageView
-        )
+        val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
+        findNavController().navigate(action)
     }
 
     /**
