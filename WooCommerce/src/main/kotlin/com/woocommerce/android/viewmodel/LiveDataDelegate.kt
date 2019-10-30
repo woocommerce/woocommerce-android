@@ -3,9 +3,13 @@ package com.woocommerce.android.viewmodel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateHandle
 import kotlin.reflect.KProperty
 
 class LiveDataDelegate<T: Any>(private val liveData: MutableLiveData<T>) {
+    constructor(savedState: SavedStateHandle, initialValue: T) :
+            this(savedState.getLiveData(initialValue.javaClass.name, initialValue))
+
     val value
         get() = liveData.value
 

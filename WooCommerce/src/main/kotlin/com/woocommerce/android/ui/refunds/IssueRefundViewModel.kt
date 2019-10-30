@@ -48,10 +48,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 const val ORDER_ID_KEY = "ORDER_ID_KEY"
-const val ENTERED_AMOUNT_STATE_KEY = "ENTERED_AMOUNT_STATE_KEY"
-const val COMMON_STATE_KEY = "COMMON_STATE_KEY"
-const val REFUND_BY_AMOUNT_STATE_KEY = "REFUND_BY_AMOUNT_STATE_KEY"
-const val REFUND_SUMMARY_STATE_KEY = "REFUND_SUMMARY_STATE_KEY"
+const val ENTERED_AMOUNT_KEY = "ENTERED_AMOUNT_KEY"
 
 @OpenClassOnDebug
 class IssueRefundViewModel @AssistedInject constructor(
@@ -73,19 +70,13 @@ class IssueRefundViewModel @AssistedInject constructor(
         private const val REFUND_TYPE_ITEMS = "items"
         private const val REFUND_METHOD_MANUAL = "manual"
     }
-    final val commonStateLiveData = LiveDataDelegate(
-            savedState.getLiveData(COMMON_STATE_KEY, CommonViewState())
-    )
+
+    final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
+    final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState())
+    final val refundSummaryStateLiveData =  LiveDataDelegate(savedState, RefundSummaryViewState())
+
     private var commonState by commonStateLiveData
-
-    final val refundByAmountStateLiveData = LiveDataDelegate(
-            savedState.getLiveData(REFUND_BY_AMOUNT_STATE_KEY, RefundByAmountViewState())
-    )
     private var refundByAmountState by refundByAmountStateLiveData
-
-    final val refundSummaryStateLiveData =  LiveDataDelegate(
-            savedState.getLiveData(REFUND_SUMMARY_STATE_KEY, RefundSummaryViewState())
-    )
     private var refundSummaryState by refundSummaryStateLiveData
 
     private lateinit var order: Order
@@ -99,7 +90,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         private set(value) {
             field = value
             updateCommonState(value)
-            savedState[ENTERED_AMOUNT_STATE_KEY] = value
+            savedState[ENTERED_AMOUNT_KEY] = value
         }
 
     init {
@@ -115,7 +106,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                 this.order = order
                 this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
                 this.maxRefund = order.total - order.refundTotal
-                this.enteredAmount = savedState[ENTERED_AMOUNT_STATE_KEY] ?: BigDecimal.ZERO
+                this.enteredAmount = savedState[ENTERED_AMOUNT_KEY] ?: BigDecimal.ZERO
                 this.gateway = loadPaymentGateway()
 
                 updateRefundByAmountState(order)
