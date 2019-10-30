@@ -87,7 +87,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
 
-        // make images fit the entire height of the view
+        // if this is showing a grid make images a percentage of the view's height, otherwise make
+        // images fit the entire height of the view
         viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 viewTreeObserver.removeOnGlobalLayoutListener(this)

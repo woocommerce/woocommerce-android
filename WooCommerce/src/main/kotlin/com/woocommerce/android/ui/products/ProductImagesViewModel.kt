@@ -5,22 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
 class ProductImagesViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite,
-    private val productRepository: ProductDetailRepository,
-    private val networkStatus: NetworkStatus
+    private val productRepository: ProductDetailRepository
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
 
