@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,16 +13,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.widgets.WooClickableSpan
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_no_jetpack.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
+import javax.inject.Inject
 
 class LoginNoJetpackFragment : Fragment() {
     companion object {
@@ -62,15 +70,22 @@ class LoginNoJetpackFragment : Fragment() {
     private var mInputPassword: String? = null
     private var userAvatarUrl: String? = null
 
+    private var progressDialog: ProgressDialog? = null
+
     /**
      * This flag, when set to true calls the CONNECT_SITE_INFO API to verify if Jetpack is
      * installed/activated/connected to the site. This flag will be set to true only when the
-     * discovery process results in an error with the assumption being that certain discovery
+     * discovery process results in an error. The assumption being that certain discovery
      * errors can only take place if Jetpack is not connected to the site. On the off chance
      * that Jetpack is connected, but discovery still fails, we need to verify if Jetpack is
-     * available, before initiating the discovery process again.
+     * available in this class, before redirecting to the site credentials screen and
+     * initiating the discovery process again.
      * */
     private var mCheckJetpackAvailability: Boolean = false
+
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var viewModel: LoginNoJetpackViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,7 +164,8 @@ class LoginNoJetpackFragment : Fragment() {
                 // TODO: Add event here to track when secondary button is clicked
 
                 if (mCheckJetpackAvailability) {
-                    // TODO: call the CONNECTED_SITE_INFO API to verify jetpack availability
+                    // initiate the CONNECT_SITE_INFO API call
+                    siteAddress?.let { viewModel.verifyJetpackAvailable(it) }
                 } else {
                     jetpackLoginListener?.showUsernamePasswordScreen(
                             siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
@@ -164,9 +180,12 @@ class LoginNoJetpackFragment : Fragment() {
                 loginListener?.helpSiteAddress(siteAddress)
             }
         }
+
+        initializeViewModel()
     }
 
     override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface
@@ -184,5 +203,52 @@ class LoginNoJetpackFragment : Fragment() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
         // TODO: add tracking here on which screen is viewed
+    }
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(LoginNoJetpackViewModel::class.java)
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.isLoading.observe(this, Observer {
+            showProgressDialog(it)
+        })
+
+        viewModel.isJetpackAvailable.observe(this, Observer { isJetpackAvailable ->
+            if (isJetpackAvailable) {
+                AppPrefs.setLoginUserBypassedJetpackRequired(false)
+                redirectToSiteCredentialsScreen()
+            } else {
+                view?.let { Snackbar.make(
+                        it, getString(R.string.login_jetpack_not_found), Snackbar.LENGTH_LONG
+                ).show() }
+            }
+        })
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = ProgressDialog.show(activity, "", getString(R.string.login_verifying_site), true)
+            progressDialog?.setCancelable(false)
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.apply {
+            if (isShowing) {
+                cancel()
+                progressDialog = null
+        } }
+    }
+
+    private fun redirectToSiteCredentialsScreen() {
+        jetpackLoginListener?.showUsernamePasswordScreen(
+                siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+        )
     }
 }
