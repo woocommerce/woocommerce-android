@@ -32,7 +32,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
     companion object {
-        private const val NUM_GRID_COLS = 4
+        private const val NUM_GRID_COLS = 2
     }
 
     interface OnGalleryImageClickListener {
@@ -100,7 +100,17 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
         this.listener = listener
         this.visibility = if (product.images.isNotEmpty()) View.VISIBLE else View.GONE
-        adapter.showImages(product.images)
+
+        // if the imageHeight is already known show the images immediately, otherwise invalidate the view
+        // so the imageHeight can be determined and then show the images after a brief delay
+        if (imageHeight > 0) {
+            adapter.showImages(product.images)
+        } else {
+            invalidate()
+            postDelayed({
+                adapter.showImages(product.images)
+            }, 250)
+        }
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
