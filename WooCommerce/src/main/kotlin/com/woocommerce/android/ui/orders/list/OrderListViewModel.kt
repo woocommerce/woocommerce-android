@@ -60,7 +60,7 @@ class OrderListViewModel @Inject constructor(
 
     private var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     private val dataSource by lazy {
-        OrderListItemDataSource(dispatcher, orderStore, lifecycle)
+        OrderListItemDataSource(dispatcher, orderStore, networkStatus, lifecycle)
     }
 
     private var isStarted = false
@@ -303,6 +303,11 @@ class OrderListViewModel @Inject constructor(
             if (isRefreshPending) {
                 pagedListWrapper?.fetchFirstPage()
             }
+        } else {
+            // Invalidate the list data so that orders that have not
+            // yet been downloaded (the "loading" items) can be removed
+            // from the current list view.
+            pagedListWrapper?.invalidateData()
         }
     }
 }
