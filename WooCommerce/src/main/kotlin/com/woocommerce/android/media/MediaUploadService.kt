@@ -3,6 +3,7 @@ package com.woocommerce.android.media
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.collection.LongSparseArray
 import androidx.core.app.JobIntentService
 import com.woocommerce.android.JobServiceIds.JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID
 import com.woocommerce.android.tools.ProductImageMap
@@ -41,7 +42,7 @@ class MediaUploadService : JobIntentService() {
         private const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
 
         // map of remoteProductId / localImageUri
-        private val currentUploads = HashMap<Long, Uri>()
+        private val currentUploads = LongSparseArray<Uri>()
 
         class OnProductMediaUploadEvent(
             var remoteProductId: Long,
@@ -60,14 +61,9 @@ class MediaUploadService : JobIntentService() {
             )
         }
 
-        fun isUploadingForProduct(remoteProductId: Long): Boolean {
-            currentUploads.forEach {
-                if (remoteProductId == it.key) return true
-            }
-            return false
-        }
+        fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
 
-        fun isBusy() = currentUploads.isNotEmpty()
+        fun isBusy() = !currentUploads.isEmpty()
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -121,7 +117,7 @@ class MediaUploadService : JobIntentService() {
         media?.let {
             it.postId = remoteProductId
             it.setUploadState(MediaModel.MediaUploadState.UPLOADING)
-            currentUploads[remoteProductId] = localMediaUri
+            currentUploads.put(remoteProductId, localMediaUri)
             dispatchUploadAction(it)
             return
         }
