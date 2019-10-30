@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import dagger.android.support.AndroidSupportInjection
@@ -44,6 +45,8 @@ class MagicLinkInterceptFragment : Fragment() {
 
     private lateinit var viewModel: MagicLinkInterceptViewModel
 
+    private var retryButton: Button? = null
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -69,8 +72,14 @@ class MagicLinkInterceptFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(org.wordpress.android.login.R.id.login_open_email_client).isEnabled = false
-        view.findViewById<TextView>(org.wordpress.android.login.R.id.login_enter_password).visibility = View.GONE
+        retryButton = view.findViewById(R.id.login_open_email_client)
+        retryButton?.text = getString(R.string.retry)
+        showRetryButton(false)
+        retryButton?.setOnClickListener {
+            viewModel.fetchAccountInfo()
+        }
+
+        view.findViewById<TextView>(R.id.login_enter_password).visibility = View.GONE
 
         initializeViewModel()
     }
@@ -93,6 +102,16 @@ class MagicLinkInterceptFragment : Fragment() {
                 showSitePickerScreen()
             } else showLoginScreen()
         })
+
+        viewModel.showSnackbarMessage.observe(this, Observer { messageId ->
+            view?.let {
+                Snackbar.make(it, getString(messageId), Snackbar.LENGTH_LONG).show()
+            }
+        })
+
+        viewModel.showRetryOption.observe(this, Observer {
+            showRetryButton(it)
+        })
     }
 
     private fun showProgressDialog(show: Boolean) {
@@ -108,7 +127,12 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private fun hideProgressDialog() {
-        progressDialog?.apply { if (isShowing) { cancel() } }
+        progressDialog?.apply {
+            if (isShowing) {
+                cancel()
+                progressDialog = null
+            }
+        }
     }
 
     private fun showSitePickerScreen() {
@@ -127,5 +151,9 @@ class MagicLinkInterceptFragment : Fragment() {
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
         activity?.finish()
+    }
+
+    private fun showRetryButton(show: Boolean) {
+        retryButton?.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

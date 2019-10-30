@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login
 import com.woocommerce.android.ui.reviews.RequestResult
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.ui.reviews.RequestResult.RETRY
 import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
@@ -21,13 +22,15 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 class MagicLinkInterceptRepository @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val accountStore: AccountStore
+    private val accountStore: AccountStore,
+    private val loginAnalyticsListener: LoginAnalyticsListener
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
@@ -72,25 +75,45 @@ class MagicLinkInterceptRepository @Inject constructor(
                 // In this case, we need to fetch account details and the site list, and finally notify the view
                 // In all other login cases, this logic is handled by the login library
                 if (authTokenUpdatedResult && userIsLoggedIn()) {
-                    var fetchedAccountSettingsAndSites = false
+                    // Track magic link login success
+                    loginAnalyticsListener.trackLoginMagicLinkSucceeded()
 
-                    val fetchAccount = async {
-                        fetchedAccountSettingsAndSites = fetchAccount()
-                    }
-                    val fetchAccountSettings = async {
-                        fetchedAccountSettingsAndSites = fetchAccountSettings()
-                    }
-                    val fetchSites = async {
-                        fetchedAccountSettingsAndSites = fetchSites()
-                    }
-                    fetchAccount.await()
-                    fetchAccountSettings.await()
-                    fetchSites.await()
-
-                    if (fetchedAccountSettingsAndSites) SUCCESS else NO_ACTION_NEEDED
+                    // fetch account details
+                    fetchAccountInfo()
                 } else ERROR
             }
         } else NO_ACTION_NEEDED
+    }
+
+    /**
+     * Fetch the account, the account settings and site list from the API.
+     *
+     * Wait for all three requests to complete. If the fetch results in error for even one of the APIs
+     * return [RequestResult.RETRY].
+     *
+     * @return the result of the fetch as a [RequestResult]
+     */
+    suspend fun fetchAccountInfo(): RequestResult {
+        return coroutineScope {
+            var fetchedAccount = false
+            var fetchedAccountSettings = false
+            var fetchedSites = false
+
+            val fetchAccount = async {
+                fetchedAccount = fetchAccount()
+            }
+            val fetchAccountSettings = async {
+                fetchedAccountSettings = fetchAccountSettings()
+            }
+            val fetchSites = async {
+                fetchedSites = fetchSites()
+            }
+            fetchAccount.await()
+            fetchAccountSettings.await()
+            fetchSites.await()
+
+            if (fetchedAccount && fetchedAccountSettings && fetchedSites) SUCCESS else RETRY
+        }
     }
 
     /**
@@ -169,6 +192,7 @@ class MagicLinkInterceptRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
+            // TODO: error events will be handled in a different PR
             continuationUpdateToken?.resume(false)
         } else {
             continuationUpdateToken?.resume(true)
@@ -179,6 +203,9 @@ class MagicLinkInterceptRepository @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
+        if (event.isError) {
+            // TODO: error events will be handled in a different PR
+        }
         when {
             event.causeOfChange == AccountAction.FETCH_ACCOUNT -> {
                 // The user's account info has been fetched and stored - next, fetch the user's settings
@@ -197,6 +224,7 @@ class MagicLinkInterceptRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
         if (event.isError) {
+            // TODO: error events will be handled in a different PR
             continuationFetchSites?.resume(false)
         } else {
             continuationFetchSites?.resume(true)
