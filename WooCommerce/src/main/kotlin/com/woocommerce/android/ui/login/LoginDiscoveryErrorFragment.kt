@@ -99,21 +99,23 @@ class LoginDiscoveryErrorFragment : Fragment() {
         with(discovery_wordpress_option_view) {
             setOnClickListener {
                 // TODO: add event here to track when button is clicked
-                // TODO: Redirect to email page
+                jetpackLoginListener?.showEmailLoginScreen(siteAddress)
             }
         }
 
         with(discovery_troubleshoot_option_view) {
             setOnClickListener {
                 // TODO: add event here to track when button is clicked
-                // TODO: Redirect to instructions page
+                jetpackLoginListener?.showJetpackTroubleshootingTips()
             }
         }
 
         with(discovery_try_option_view) {
             setOnClickListener {
                 // TODO: add event here to track when button is clicked
-                // TODO: Redirect to site credentials page
+                jetpackLoginListener?.showUsernamePasswordScreen(
+                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                )
             }
         }
     }

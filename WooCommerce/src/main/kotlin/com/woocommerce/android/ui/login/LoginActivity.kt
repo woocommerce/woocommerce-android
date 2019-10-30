@@ -504,6 +504,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_view_instructions_link))
     }
 
+    override fun showJetpackTroubleshootingTips() {
+        ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_troubleshooting_link))
+    }
+
     override fun showWhatIsJetpackDialog() {
         LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
     }
