@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -10,6 +12,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductListViewModel.SnackbarMessage
+import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.test
@@ -30,6 +34,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
+
         viewModel = spy(
                 ProductListViewModel(
                         savedState,
@@ -47,7 +53,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(productList).whenever(productRepository).getProductList()
 
         val products = ArrayList<Product>()
-        viewModel.productList.observeForever { products.addAll(it) }
+        viewModel.viewStateLiveData.observeForever { it.productList?.let { products.addAll(it) } }
 
         viewModel.start()
         assertThat(products).isEqualTo(productList)
@@ -58,7 +64,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var message: Int? = null
-        viewModel.showSnackbarMessage.observeForever { message = it }
+        viewModel.event.observeForever { message = (it as SnackbarMessage).message }
 
         viewModel.start()
 
@@ -71,9 +77,10 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list skeleton correctly`() = test {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
 
         val isSkeletonShown = ArrayList<Boolean>()
-        viewModel.isSkeletonShown.observeForever { isSkeletonShown.add(it) }
+        viewModel.viewStateLiveData.observeForever { it.isSkeletonShown?.let { isSkeletonShown.add(it) } }
 
         viewModel.start()
         assertThat(isSkeletonShown).containsExactly(true, false)
@@ -82,9 +89,10 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list load more progress correctly`() = test {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
 
         val isLoadingMore = ArrayList<Boolean>()
-        viewModel.isLoadingMore.observeForever { isLoadingMore.add(it) }
+        viewModel.viewStateLiveData.observeForever { it.isLoadingMore?.let { isLoadingMore.add(it) } }
 
         viewModel.loadProducts(loadMore = true)
         assertThat(isLoadingMore).containsExactly(true, false)
