@@ -14,8 +14,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.ExitAfterRefund
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.ShowSnackbar
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ExitAfterRefund
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
@@ -49,7 +49,7 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     }
 
     private fun setupObservers() {
-        viewModel.eventTrigger.observe(this, Observer { event ->
+        viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowSnackbar -> {
                     if (event.undoAction == null) {
@@ -80,14 +80,14 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
             }
         })
 
-        viewModel.refundSummaryViewState.observe(this, Observer {
+        viewModel.refundSummaryStateLiveData.observe(this) {
             refundSummary_btnRefund.isEnabled = it.isFormEnabled
             refundSummary_reason.isEnabled = it.isFormEnabled
             refundSummary_refundAmount.text = it.refundAmount
             refundSummary_previouslyRefunded.text = it.previouslyRefunded
             refundSummary_method.text = it.refundMethod
             refundSummary_methodDescription.visibility = if (it.isMethodDescriptionVisible) View.VISIBLE else View.GONE
-        })
+        }
     }
 
     private fun initializeViews() {

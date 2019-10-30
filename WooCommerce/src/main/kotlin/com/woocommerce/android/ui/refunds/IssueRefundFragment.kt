@@ -12,7 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.ShowRefundSummary
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
@@ -54,14 +54,14 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.resetTriggerEvent()
+        viewModel.resetEvent()
 
-        viewModel.commonViewState.observe(this, Observer {
+        viewModel.commonStateLiveData.observe(this) {
             issueRefund_btnNext.isEnabled = it.isNextButtonEnabled
             requireActivity().title = it.screenTitle
-        })
+        }
 
-        viewModel.eventTrigger.observe(this, Observer { event ->
+        viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowRefundSummary -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()

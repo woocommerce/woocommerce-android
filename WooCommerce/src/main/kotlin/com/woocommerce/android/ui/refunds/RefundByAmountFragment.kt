@@ -8,8 +8,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.HideValidationError
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.Event.ShowValidationError
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
@@ -43,13 +43,13 @@ class RefundByAmountFragment : DaggerFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.refundByAmountViewState.observe(this, Observer {
+        viewModel.refundByAmountStateLiveData.observe(this) {
             issueRefund_txtAvailableForRefund.text = it.availableForRefund
             issueRefund_refundAmount.initView(it.currency, it.decimals, currencyFormatter)
             issueRefund_refundAmount.setValue(viewModel.enteredAmount)
-        })
+        }
 
-        viewModel.eventTrigger.observe(this, Observer { event ->
+        viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowValidationError -> issueRefund_refundAmountInputLayout.error = event.message
                 is HideValidationError -> issueRefund_refundAmountInputLayout.error = null
