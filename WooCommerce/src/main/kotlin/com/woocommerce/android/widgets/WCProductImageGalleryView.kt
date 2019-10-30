@@ -166,10 +166,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.productImage
         init {
-            if (isGridView) {
-                imageView.scaleType = ScaleType.CENTER_CROP
-                imageView.layoutParams.height = imageHeight
-            }
+            imageView.layoutParams.height = imageHeight
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, imageView)
             }
