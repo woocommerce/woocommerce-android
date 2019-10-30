@@ -1,11 +1,9 @@
 package com.woocommerce.android.media
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.collection.LongSparseArray
 import androidx.core.app.JobIntentService
-import com.woocommerce.android.JobServiceIds.JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -38,8 +36,8 @@ import javax.inject.Inject
  */
 class MediaUploadService : JobIntentService() {
     companion object {
-        private const val KEY_PRODUCT_ID = "key_product_id"
-        private const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
+        const val KEY_PRODUCT_ID = "key_product_id"
+        const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
@@ -48,19 +46,6 @@ class MediaUploadService : JobIntentService() {
             var remoteProductId: Long,
             val isError: Boolean
         )
-
-        fun uploadProductMedia(context: Context, remoteProductId: Long, localMediaUri: Uri) {
-            val intent = Intent(context, MediaUploadService::class.java).also {
-                it.putExtra(KEY_PRODUCT_ID, remoteProductId)
-                it.putExtra(KEY_LOCAL_MEDIA_URI, localMediaUri)
-            }
-            enqueueWork(
-                    context,
-                    MediaUploadService::class.java,
-                    JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID,
-                    intent
-            )
-        }
 
         fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
 

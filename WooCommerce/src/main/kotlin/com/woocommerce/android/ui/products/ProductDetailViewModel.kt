@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -10,6 +9,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.MediaUploadService
 import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadEvent
+import com.woocommerce.android.media.MediaUploadWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -34,7 +34,8 @@ class ProductDetailViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val mediaUploadWrapper: MediaUploadWrapper
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
 
@@ -186,14 +187,14 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun uploadProductMedia(context: Context, remoteProductId: Long, localImageUri: Uri) {
+    fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
         // TODO: at some point we want to support uploading multiple product images
         if (MediaUploadService.isBusy()) {
             _showSnackbarMessage.value = R.string.product_image_already_uploading
             return
         }
         _isUploadingProductImage.value = true
-        MediaUploadService.uploadProductMedia(context, remoteProductId, localImageUri)
+        mediaUploadWrapper.uploadProductMedia(remoteProductId, localImageUri)
     }
 
     @Suppress("unused")
