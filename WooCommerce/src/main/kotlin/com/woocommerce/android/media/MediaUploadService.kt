@@ -23,9 +23,6 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
-import org.wordpress.android.util.ImageUtils
-import org.wordpress.android.util.MediaUtils
-import java.io.File
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
@@ -38,6 +35,7 @@ class MediaUploadService : JobIntentService() {
     companion object {
         const val KEY_PRODUCT_ID = "key_product_id"
         const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
+        const val STRIP_LOCATION = true
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
@@ -61,12 +59,6 @@ class MediaUploadService : JobIntentService() {
 
     private val doneSignal = CountDownLatch(1)
 
-    // TODO: move to prefs?
-    private val stripImageLocation = true
-    private val optimizeImages = true
-    private val maxImageSize = 2000
-    private val imageQuality = 85
-
     override fun onCreate() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > created")
         AndroidInjection.inject(this)
@@ -84,9 +76,7 @@ class MediaUploadService : JobIntentService() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
-        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)?.let {
-            if (optimizeImages) optimizeImageUri(it) else it
-        }
+        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
 
         if (localMediaUri == null) {
             WooLog.w(WooLog.T.MEDIA, "media upload service > null localMediaUri")
@@ -118,19 +108,12 @@ class MediaUploadService : JobIntentService() {
         return true
     }
 
-    private fun optimizeImageUri(imageUri: Uri): Uri {
-        MediaUtils.getRealPathFromURI(this, imageUri)?.let { path ->
-            val optimizedFilename = ImageUtils.optimizeImage(this, path, maxImageSize, imageQuality)
-            return Uri.fromFile(File(optimizedFilename))
-        } ?: return imageUri
-    }
-
     /**
      * Dispatch the request to upload device image to the WP media library and wait for it to complete
      */
     private fun dispatchUploadAction(media: MediaModel) {
         val site = siteStore.getSiteByLocalId(media.localSiteId)
-        val payload = UploadMediaPayload(site, media, stripImageLocation)
+        val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
         doneSignal.await()
     }
