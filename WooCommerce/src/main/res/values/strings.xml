@@ -523,6 +523,8 @@
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
     <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
+    <string name="magic_link_update_error">An error has occurred. Please login to continue</string>
+    <string name="magic_link_fetch_account_error">There was some trouble fetching your account. You can retry now or close and try again later.</string>
     <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
     <string name="enter_wpcom_password_google">To proceed with this Google account, please provide the matching WordPress.com password. This will be asked only once.</string>
     <string name="connect_more">Connect Another Site</string>
