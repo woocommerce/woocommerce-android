@@ -16,6 +16,8 @@ class LiveDataDelegate<T: Any>(private val liveData: MutableLiveData<T>) {
     fun observe(owner: LifecycleOwner, observer: (T) -> Unit): Unit =
             liveData.observe(owner, Observer { observer(it) })
 
+    fun observeForever(observer: (T) -> Unit): Unit = liveData.observeForever(observer)
+
     operator fun setValue(ref: Any, p: KProperty<*>, value: T) {
         liveData.value = value
     }
