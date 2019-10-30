@@ -50,6 +50,9 @@ class ProductDetailViewModel @Inject constructor(
     private val _shareProduct = SingleLiveEvent<Product>()
     val shareProduct: LiveData<Product> = _shareProduct
 
+    private val _chooseProductImage = SingleLiveEvent<Product>()
+    val chooseProductImage: LiveData<Product> = _chooseProductImage
+
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
@@ -80,6 +83,10 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onShareButtonClicked() {
         _shareProduct.value = product.value
+    }
+
+    fun onChooseImageClicked() {
+        _chooseProductImage.value = product.value
     }
 
     override fun onCleared() {

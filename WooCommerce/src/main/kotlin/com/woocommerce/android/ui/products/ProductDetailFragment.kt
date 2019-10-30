@@ -129,6 +129,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             shareProduct(it)
         })
 
+        viewModel.chooseProductImage.observe(this, Observer {
+            chooseProductImage()
+        })
+
         viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
         })
@@ -171,7 +175,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 true
             }
             MENU_ID_CHOOSE_PHOTO -> {
-                chooseProductImage()
+                // TODO: analytics
+                viewModel.onChooseImageClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
