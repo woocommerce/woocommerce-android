@@ -38,10 +38,7 @@
     </declare-styleable>
 
     <declare-styleable name="WCProductImageGalleryView">
-        <attr name="galleryOrientation" format="enum">
-            <enum name="horizontal" value="0"/>
-            <enum name="vertical" value="1"/>
-        </attr>
+        <attr name="isGridView" format="boolean" />
     </declare-styleable>
 
 </resources>

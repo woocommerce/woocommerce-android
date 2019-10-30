@@ -34,10 +34,10 @@
 
                 <com.woocommerce.android.widgets.WCProductImageGalleryView
                     android:id="@+id/imageGallery"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
-                    app:galleryOrientation="vertical"
+                    app:isGridView="false"
                     tools:height="200dp" />
 
                 <FrameLayout

@@ -8,8 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
-import android.widget.ImageView.ScaleType.CENTER_CROP
+import android.widget.ImageView.ScaleType
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -30,12 +31,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
+    companion object {
+        private const val NUM_GRID_COLS = 4
+    }
+
     interface OnGalleryImageClickListener {
         fun onGalleryImageClicked(imageUrl: String, imageView: View)
     }
 
     private var imageHeight = 0
-    private val orientation: Int
+    private var isGridView: Boolean = false
 
     private val adapter: ImageGalleryAdapter
     private val request: GlideRequest<Drawable>
@@ -44,19 +49,27 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
-        orientation = attrs?.let {
-            val attributeArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
-            attributeArray.getInt(R.styleable.WCProductImageGalleryView_galleryOrientation, VERTICAL)
-        } ?: VERTICAL
+        attrs?.let {
+            val attrArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
+            try {
+                isGridView = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isGridView, false)
+            } finally {
+                attrArray.recycle()
+            }
+        }
 
-        layoutManager = LinearLayoutManager(context, orientation, false)
+        layoutManager = if (isGridView) {
+            GridLayoutManager(context, NUM_GRID_COLS)
+        } else {
+            LinearLayoutManager(context, HORIZONTAL, false)
+        }
         itemAnimator = DefaultItemAnimator()
         layoutInflater = LayoutInflater.from(context)
 
         setHasFixedSize(false)
         setItemViewCacheSize(0)
 
-        adapter = ImageGalleryAdapter(context).also {
+        adapter = ImageGalleryAdapter().also {
             it.setHasStableIds(true)
             setAdapter(it)
         }
@@ -79,8 +92,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             override fun onGlobalLayout() {
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
                 val height = this@WCProductImageGalleryView.height
-                val width = this@WCProductImageGalleryView.width
-                imageHeight = if (orientation == HORIZONTAL) height else height / 3
+                imageHeight = if (isGridView) height / 3 else height
             }
         })
     }
@@ -96,7 +108,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         listener.onGalleryImageClicked(adapter.getImageUrl(position), imageView)
     }
 
-    private inner class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>() {
+    private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
@@ -144,10 +156,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.productImage
         init {
-            if (orientation == VERTICAL) {
-                imageView.scaleType = CENTER_CROP
+            if (isGridView) {
+                imageView.scaleType = ScaleType.CENTER_CROP
+                imageView.layoutParams.height = imageHeight
             }
-            imageView.layoutParams.height = imageHeight
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, imageView)
             }
