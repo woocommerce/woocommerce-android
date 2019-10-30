@@ -8,18 +8,19 @@ import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
-import com.woocommerce.android.ui.orders.notes.AddOrderNoteModule
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderListModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
+import com.woocommerce.android.ui.orders.notes.AddOrderNoteModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.ProductDetailModule
+import com.woocommerce.android.ui.products.ProductImagesModule
 import com.woocommerce.android.ui.products.ProductListModule
 import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewDetailModule
@@ -44,6 +45,7 @@ abstract class ActivityBindingModule {
             RefundsModule::class,
             AddOrderNoteModule::class,
             ProductDetailModule::class,
+            ProductImagesModule::class,
             ProductListModule::class,
             ReviewListModule::class,
             ReviewDetailModule::class,

@@ -12,6 +12,9 @@
             android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productImagesFragment"
+            app:destination="@id/productImagesFragment" />
     </fragment>
     <fragment
         android:id="@+id/rootFragment"
@@ -174,6 +177,16 @@
             android:defaultValue="0L"/>
         <argument
             android:name="refundId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </fragment>
+    <fragment
+        android:id="@+id/productImagesFragment"
+        android:name="com.woocommerce.android.ui.products.ProductImagesFragment"
+        android:label="ProductImagesFragment"
+        tools:layout="@layout/fragment_product_images">
+        <argument
+            android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
     </fragment>
