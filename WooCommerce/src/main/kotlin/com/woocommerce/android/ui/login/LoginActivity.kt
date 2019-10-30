@@ -428,6 +428,23 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
                 tag = LoginJetpackRequiredFragment.TAG)
     }
 
+    override fun helpHandleDiscoveryError(
+        siteAddress: String,
+        endpointAddress: String?,
+        username: String,
+        password: String,
+        userAvatarUrl: String?,
+        errorMessage: Int
+    ) {
+        val discoveryErrorFragment = LoginDiscoveryErrorFragment.newInstance(
+                siteAddress, endpointAddress, username, password, userAvatarUrl, errorMessage
+        )
+        slideInFragment(
+                fragment = discoveryErrorFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG)
+    }
+
     // SmartLock
 
     override fun saveCredentialsInSmartLock(

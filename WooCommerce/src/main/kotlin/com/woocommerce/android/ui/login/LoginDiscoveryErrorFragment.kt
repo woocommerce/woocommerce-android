@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Html
 import android.view.LayoutInflater
@@ -13,9 +14,66 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.analytics.AnalyticsTracker
 import kotlinx.android.synthetic.main.fragment_login_discovery_error.*
+import org.wordpress.android.login.LoginListener
 
 class LoginDiscoveryErrorFragment : Fragment() {
+    companion object {
+        const val TAG = "LoginDiscoveryErrorFragment"
+        const val ARG_SITE_ADDRESS = "SITE-ARG_SITE_ADDRESS"
+        private const val ARG_SITE_XMLRPC_ADDRESS = "SITE_XMLRPC_ADDRESS"
+        private const val ARG_INPUT_USERNAME = "ARG_INPUT_USERNAME"
+        private const val ARG_INPUT_PASSWORD = "ARG_INPUT_PASSWORD"
+        private const val ARG_USER_AVATAR_URL = "ARG_USER_AVATAR_URL"
+        const val ARG_ERROR_MESSAGE = "ARG_ERROR_MESSAGE"
+
+        fun newInstance(
+            siteAddress: String,
+            endpointAddress: String?,
+            inputUsername: String,
+            inputPassword: String,
+            userAvatarUrl: String?,
+            errorMessage: Int
+        ): LoginDiscoveryErrorFragment {
+            val fragment = LoginDiscoveryErrorFragment()
+            val args = Bundle()
+            args.putString(ARG_SITE_ADDRESS, siteAddress)
+            args.putString(ARG_SITE_XMLRPC_ADDRESS, endpointAddress)
+            args.putString(ARG_INPUT_USERNAME, inputUsername)
+            args.putString(ARG_INPUT_PASSWORD, inputPassword)
+            args.putString(ARG_USER_AVATAR_URL, userAvatarUrl)
+            args.putInt(ARG_ERROR_MESSAGE, errorMessage)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    private var loginListener: LoginListener? = null
+    private var jetpackLoginListener: LoginNoJetpackListener? = null
+
+    private var errorMessage: Int? = null
+
+    // Below params are needed when redirecting back to Site credentials screen
+    private var siteAddress: String? = null
+    private var siteXmlRpcAddress: String? = null
+    private var mInputUsername: String? = null
+    private var mInputPassword: String? = null
+    private var userAvatarUrl: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            siteAddress = it.getString(ARG_SITE_ADDRESS, null)
+            siteXmlRpcAddress = it.getString(ARG_SITE_XMLRPC_ADDRESS, null)
+            mInputUsername = it.getString(ARG_INPUT_USERNAME, null)
+            mInputPassword = it.getString(ARG_INPUT_PASSWORD, null)
+            userAvatarUrl = it.getString(ARG_USER_AVATAR_URL, null)
+            errorMessage = it.getInt(ARG_ERROR_MESSAGE)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,7 +94,28 @@ class LoginDiscoveryErrorFragment : Fragment() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-        discovery_error_message.text = Html.fromHtml(getString(R.string.login_discovery_error_xmlrpc))
+        errorMessage?.let { discovery_error_message.text = Html.fromHtml(getString(it)) }
+
+        with(discovery_wordpress_option_view) {
+            setOnClickListener {
+                // TODO: add event here to track when button is clicked
+                // TODO: Redirect to email page
+            }
+        }
+
+        with(discovery_troubleshoot_option_view) {
+            setOnClickListener {
+                // TODO: add event here to track when button is clicked
+                // TODO: Redirect to instructions page
+            }
+        }
+
+        with(discovery_try_option_view) {
+            setOnClickListener {
+                // TODO: add event here to track when button is clicked
+                // TODO: Redirect to site credentials page
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
@@ -47,10 +126,30 @@ class LoginDiscoveryErrorFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
             // TODO: add event here
-            // TODO: redirect to help screen
+            loginListener?.helpSiteAddress(siteAddress)
             return true
         }
 
         return false
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        // this will throw if parent activity doesn't implement the login listener interface
+        loginListener = context as? LoginListener
+        jetpackLoginListener = context as? LoginNoJetpackListener
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        loginListener = null
+        jetpackLoginListener = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+        // TODO: add tracking here on which screen is viewed
     }
 }

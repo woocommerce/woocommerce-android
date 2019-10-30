@@ -199,6 +199,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/discovery_troubleshoot_option_view"/>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/discovery_try_option_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardElevation="0dp"
