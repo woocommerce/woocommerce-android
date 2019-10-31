@@ -12,8 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -180,10 +178,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         updateActivityTitle()
 
-        // if there's only one image, center the gallery horizontally
-        with(imageGallery.layoutParams as FrameLayout.LayoutParams) {
-            this.width = if (product.images.size == 1) WRAP_CONTENT else MATCH_PARENT
-        }
         imageGallery.showProductImages(product, this)
 
         isVariation = product.type == ProductType.VARIATION
