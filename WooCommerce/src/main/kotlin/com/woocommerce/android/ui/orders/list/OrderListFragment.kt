@@ -62,7 +62,9 @@ class OrderListFragment : TopLevelFragment(),
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
-        private const val ORDER_TAB_DEFAULT = 1
+        private const val TAB_INDEX_PROCESSING = 0
+        private const val TAB_INDEX_ALL = 1
+        private const val ORDER_TAB_DEFAULT = TAB_INDEX_PROCESSING
 
         fun newInstance(orderStatusFilter: String? = null) =
             OrderListFragment().apply { this.orderStatusFilter = orderStatusFilter }
@@ -189,10 +191,10 @@ class OrderListFragment : TopLevelFragment(),
                     }
                     tab_layout.addTab(tab)
 
-                    // Start with the tab user had previously selected
-                    // if no tab is selected, default to the `Processing` Tab
-                    if (index == getTabPosition()) {
-                        orderStatusFilter = getOrderStatusByTab(tab)
+                    // If this tab is the one that should be active, select it and load
+                    // the appropriate list.
+                    if (index == calculateTabPosition()) {
+                        orderStatusFilter = calculateOrderStatusFilter(tab)
                         tab.select()
                     }
                 }
@@ -208,16 +210,20 @@ class OrderListFragment : TopLevelFragment(),
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 val previousOrderStatus = orderStatusFilter
-                orderStatusFilter = getOrderStatusByTab(tab)
+
+                // Calculate the filter that should be active based on the selected
+                // tab and the state of the list.
+                orderStatusFilter = calculateOrderStatusFilter(tab)
 
                 if (orderStatusFilter != previousOrderStatus) {
-                    // store the selected tab in SharedPrefs
-                    // clear the adapter data
-                    // load orders based on the order status
+                    // store the selected tab in SharedPrefs and clear the adapter data,
+                    // then load orders with the calculated filter.
                     AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
                     isRefreshing = true
-                    viewModel.loadList(orderStatusFilter)
+                    viewModel.loadList(
+                            statusFilter = orderStatusFilter,
+                            excludeFutureOrders = shouldExcludeFutureOrders())
                 }
             }
 
@@ -233,7 +239,7 @@ class OrderListFragment : TopLevelFragment(),
         enableToolbarElevation(filterOrSearchEnabled)
 
         if (isOrderStatusFilterEnabled() && isActive && !deferInit) {
-            viewModel.loadList(orderStatusFilter)
+            viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
         }
     }
 
@@ -399,7 +405,7 @@ class OrderListFragment : TopLevelFragment(),
         })
 
         viewModel.start()
-        viewModel.loadList(orderStatusFilter, searchQuery)
+        viewModel.loadList(orderStatusFilter, searchQuery, shouldExcludeFutureOrders())
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
@@ -447,7 +453,7 @@ class OrderListFragment : TopLevelFragment(),
             displayFilteredList()
             order_list_view.clearAdapterData()
 
-            viewModel.loadList(statusFilter = orderStatus)
+            viewModel.loadList(statusFilter = orderStatus, excludeFutureOrders = shouldExcludeFutureOrders())
 
             updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
@@ -463,24 +469,46 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     /**
-     * Method to return the default tab position to display.
-     * If there are no orders for a site or if there are no orders to process, the `All Orders` tab should be displayed.
-     * If there are orders/processing orders, default to whatever the user previously selected (Processing, by default)
+     * Calculates the default tab position to display using the following logic:
+     * - If no orders for selected store -> "All Orders" tab
+     * - If no orders to process -> "All Orders" tab
+     * - The last tab the user viewed (saved in SharedPrefs)
+     * - Else the "Processing" tab (default)
+     *
+     * @return the index of the tab to be activated
      */
-    private fun getTabPosition(): Int {
+    private fun calculateTabPosition(): Int {
         val orderStatusOptions = getOrderStatusOptions()
         return if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
             ORDER_TAB_DEFAULT
-        } else AppPrefs.getSelectedOrderListTabPosition()
+        } else {
+            AppPrefs.getSelectedOrderListTabPosition()
+        }
     }
 
-    private fun getOrderStatusByTab(tab: TabLayout.Tab): String? {
+    /**
+     * Calculates the filter to apply based on the state of filtering and which tab is selected.
+     *
+     * @return If there is an active filter, return that filter. Otherwise, if the "Processing"
+     * tab is currently selected, return a filter of "processing", else return null (no filter).
+     */
+    private fun calculateOrderStatusFilter(tab: TabLayout.Tab): String? {
         return when {
             isFilterEnabled -> orderStatusFilter
             tab.position == 0 -> (tab.tag as? String)?.toLowerCase(Locale.getDefault())
             else -> null
         }
     }
+
+    /**
+     * Future orders are orders that have a created date that is in the future. This can be
+     * caused by the user manually changing the date of the order to a date in the future or
+     * a plugin saved an order with a date in the future (ex. Deposits plugin).
+     *
+     * We show future orders in all scenarios except in the "All" orders tab.
+     */
+    private fun shouldExcludeFutureOrders() =
+            !isSearching && !isFilterEnabled && tab_layout.selectedTabPosition == TAB_INDEX_ALL
 
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
@@ -535,7 +563,7 @@ class OrderListFragment : TopLevelFragment(),
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
 
-            viewModel.loadList(orderStatusFilter)
+            viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
         }
     }
 
@@ -571,7 +599,7 @@ class OrderListFragment : TopLevelFragment(),
      * view state.
      */
     private fun submitSearchQuery(query: String) {
-        viewModel.loadList(searchQuery = query)
+        viewModel.loadList(searchQuery = query, excludeFutureOrders = shouldExcludeFutureOrders())
     }
 
     private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching
@@ -666,11 +694,8 @@ class OrderListFragment : TopLevelFragment(),
             }
             searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
-            val tabPosition = getTabPosition()
-            orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let {
-                it.select()
-                getOrderStatusByTab(it)
-            }
+            val tabPosition = calculateTabPosition()
+            tab_layout.getTabAt(tabPosition)?.select()
 
             (activity as? MainActivity)?.hideBottomNav()
         }
