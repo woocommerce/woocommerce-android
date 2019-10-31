@@ -105,8 +105,10 @@
                         android:paddingStart="@dimen/card_padding_start"
                         android:paddingEnd="@dimen/card_padding_end"
                         android:text="@string/login_with_wordpress"
+                        android:textAlignment="textStart"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@+id/wordpress_option_icon"
+                        app:layout_constraintEnd_toStartOf="@+id/wordpress_option_arrow"
+                        app:layout_constraintStart_toEndOf="@+id/wordpress_option_icon"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
@@ -170,9 +172,11 @@
                         android:paddingStart="@dimen/card_padding_start"
                         android:paddingEnd="@dimen/card_padding_end"
                         android:text="@string/login_troubleshooting_tips"
+                        android:textAlignment="textStart"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@+id/troubleshoot_option_icon"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintEnd_toStartOf="@+id/troubleshoot_option_arrow"
+                        app:layout_constraintStart_toEndOf="@+id/troubleshoot_option_icon"
+                        app:layout_constraintTop_toTopOf="parent"/>
 
                     <ImageView
                         android:id="@+id/troubleshoot_option_arrow"
@@ -235,9 +239,11 @@
                         android:paddingStart="@dimen/card_padding_start"
                         android:paddingEnd="@dimen/card_padding_end"
                         android:text="@string/try_again"
+                        android:textAlignment="textStart"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@+id/try_option_icon"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintEnd_toStartOf="@+id/try_option_arrow"
+                        app:layout_constraintStart_toEndOf="@+id/try_option_icon"
+                        app:layout_constraintTop_toTopOf="parent"/>
 
                     <ImageView
                         android:id="@+id/try_option_arrow"
