@@ -36,7 +36,7 @@
                     android:id="@+id/imageGallery"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="@dimen/product_detail_property_margin"
                     tools:height="200dp" />
 
                 <FrameLayout
