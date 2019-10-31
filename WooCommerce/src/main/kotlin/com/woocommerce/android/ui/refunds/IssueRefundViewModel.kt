@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
@@ -138,17 +137,20 @@ class IssueRefundViewModel @AssistedInject constructor(
         val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                 ?: DEFAULT_DECIMAL_PRECISION
 
-        refundByAmountState = RefundByAmountViewState(
-                order.currency,
-                decimals,
-                resourceProvider.getString(R.string.order_refunds_available_for_refund, formatCurrency(maxRefund))
+        refundByAmountState = refundByAmountState.copy(
+                currency = order.currency,
+                decimals = decimals,
+                availableForRefund = resourceProvider.getString(R.string.order_refunds_available_for_refund,
+                        formatCurrency(maxRefund))
         )
     }
 
     private fun updateCommonState(amount: BigDecimal) {
-        commonState = commonState.copy(screenTitle = resourceProvider.getString(
-                        string.order_refunds_title_with_amount, formatCurrency(amount)
-                ))
+        commonState = commonState.copy(
+                screenTitle = resourceProvider.getString(
+                        R.string.order_refunds_title_with_amount, formatCurrency(amount)
+                )
+        )
     }
 
     private fun updateRefundSummaryState() {
@@ -339,25 +341,25 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     @Parcelize
     data class RefundByAmountViewState(
-        val currency: String = "",
+        val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val availableForRefund: String = ""
+        val availableForRefund: String? = null
     ) : Parcelable
 
     @Parcelize
     data class RefundSummaryViewState(
-        val isFormEnabled: Boolean = true,
-        val previouslyRefunded: String = "",
-        val refundAmount: String = "",
-        val refundMethod: String = "",
-        val refundReason: String = "",
-        val isMethodDescriptionVisible: Boolean = false
+        val isFormEnabled: Boolean? = null,
+        val previouslyRefunded: String? = null,
+        val refundAmount: String? = null,
+        val refundMethod: String? = null,
+        val refundReason: String? = null,
+        val isMethodDescriptionVisible: Boolean? = null
     ) : Parcelable
 
     @Parcelize
     data class CommonViewState(
-        val isNextButtonEnabled: Boolean = true,
-        val screenTitle: String = ""
+        val isNextButtonEnabled: Boolean? = null,
+        val screenTitle: String? = null
     ) : Parcelable
 
     sealed class IssueRefundEvent : Event() {

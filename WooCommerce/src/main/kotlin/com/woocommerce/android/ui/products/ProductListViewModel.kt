@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
@@ -14,6 +15,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,16 +62,16 @@ class ProductListViewModel @AssistedInject constructor(
 
             launch {
                 isLoadingProducts = true
-                viewState = ViewState(isLoadingMore = loadMore)
+                viewState = viewState.copy(isLoadingMore = loadMore)
 
                 if (!loadMore) {
                     // if this is the initial load, first get the products from the db and if there are any show
                     // them immediately, otherwise make sure the skeleton shows
                     val productsInDb = productRepository.getProductList()
                     viewState = if (productsInDb.isEmpty()) {
-                        ViewState(isSkeletonShown = true)
+                        viewState.copy(isSkeletonShown = true)
                     } else {
-                        ViewState(productList = productsInDb)
+                        viewState.copy(productList = productsInDb)
                     }
                 }
 
@@ -82,21 +84,21 @@ class ProductListViewModel @AssistedInject constructor(
             searchJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
                 isLoadingProducts = true
-                viewState = ViewState(isLoadingMore = loadMore, isSkeletonShown = !loadMore)
+                viewState = viewState.copy(isLoadingMore = loadMore, isSkeletonShown = !loadMore)
                 fetchProductList(searchQuery, loadMore)
             }
         }
     }
 
     fun refreshProducts(searchQuery: String? = null) {
-        viewState = ViewState(isRefreshing = true)
+        viewState = viewState.copy(isRefreshing = true)
         loadProducts(searchQuery = searchQuery)
     }
 
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
-                viewState = ViewState(productList = productRepository.fetchProductList(loadMore))
+                viewState = viewState.copy(productList = productRepository.fetchProductList(loadMore))
             } else {
                 val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
                 // make sure the search query hasn't changed while the fetch was processing
@@ -104,7 +106,7 @@ class ProductListViewModel @AssistedInject constructor(
                     if (loadMore) {
                         addProducts(fetchedProducts)
                     } else {
-                        viewState = ViewState(productList = fetchedProducts)
+                        viewState = viewState.copy(productList = fetchedProducts)
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
@@ -115,7 +117,7 @@ class ProductListViewModel @AssistedInject constructor(
             triggerEvent(SnackbarMessage(R.string.offline_error))
         }
 
-        viewState = ViewState(isSkeletonShown = false, isLoadingMore = false, isRefreshing = false)
+        viewState = viewState.copy(isSkeletonShown = false, isLoadingMore = false, isRefreshing = false)
         isLoadingProducts = false
     }
 
@@ -123,7 +125,7 @@ class ProductListViewModel @AssistedInject constructor(
      * Adds the passed list of products to the current list
      */
     private fun addProducts(products: List<Product>) {
-        viewState = ViewState(productList = viewState.productList.orEmpty() + products)
+        viewState = viewState.copy(productList = viewState.productList.orEmpty() + products)
     }
 
     @Parcelize
