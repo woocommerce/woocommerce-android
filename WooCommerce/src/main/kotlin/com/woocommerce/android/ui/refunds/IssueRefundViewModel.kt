@@ -122,10 +122,19 @@ class IssueRefundViewModel @AssistedInject constructor(
                 enteredAmount = BigDecimal.ZERO
                 maxRefund = order.total - order.refundTotal
 
+                resetLiveData()
                 updateRefundByAmountState(order)
                 updateRefundSummaryState()
             }
         }
+    }
+
+    // Temporary workaround for the activity ViewModel scope
+    private fun resetLiveData() {
+        resetEvent()
+        commonStateLiveData.reset()
+        refundByAmountStateLiveData.reset()
+        refundSummaryStateLiveData.reset()
     }
 
     private fun isNotInitialized(): Boolean = !this::order.isInitialized

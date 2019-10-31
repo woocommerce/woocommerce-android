@@ -39,6 +39,7 @@ abstract class ScopedViewModel(
     }
 
     // This resets a pending event from being sent
+    // Workaround for the activity ViewModel scope
     fun resetEvent() {
         _event.reset()
     }
