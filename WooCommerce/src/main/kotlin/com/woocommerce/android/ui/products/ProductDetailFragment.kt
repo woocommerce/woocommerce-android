@@ -141,8 +141,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu?.clear()
-        inflater?.inflate(R.menu.menu_share, menu)
+        menu.clear()
+        inflater.inflate(R.menu.menu_share, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
