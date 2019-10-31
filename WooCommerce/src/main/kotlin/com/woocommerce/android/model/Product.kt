@@ -1,14 +1,17 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
+@Parcelize
 data class Product(
     val remoteId: Long,
     val name: String,
@@ -43,7 +46,7 @@ data class Product(
     val downloadExpiry: Int,
     val purchaseNote: String,
     val numVariations: Int
-)
+) : Parcelable
 
 fun WCProductModel.toAppModel(): Product {
     return Product(

@@ -126,12 +126,13 @@ class ProductListViewModel @AssistedInject constructor(
         viewState = ViewState(productList = viewState.productList.orEmpty() + products)
     }
 
+    @Parcelize
     data class ViewState(
         val productList: List<Product>? = null,
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null
-    )
+    ) : Parcelable
 
     data class SnackbarMessage(@StringRes val message: Int) : Event()
 
