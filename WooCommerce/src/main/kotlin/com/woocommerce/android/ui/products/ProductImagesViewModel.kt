@@ -14,7 +14,7 @@ import javax.inject.Named
 @OpenClassOnDebug
 class ProductImagesViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val productRepository: ProductDetailRepository
+    private val productRepository: ProductImagesRepository
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
 
