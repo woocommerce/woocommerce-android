@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
@@ -54,11 +55,9 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.resetEvent()
-
-        viewModel.commonStateLiveData.observe(this) {
-            issueRefund_btnNext.isEnabled = it.isNextButtonEnabled
-            requireActivity().title = it.screenTitle
+        viewModel.commonStateLiveData.observe(this) { old, new ->
+            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) { issueRefund_btnNext.isEnabled = it }
+            new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
         }
 
         viewModel.event.observe(this, Observer { event ->

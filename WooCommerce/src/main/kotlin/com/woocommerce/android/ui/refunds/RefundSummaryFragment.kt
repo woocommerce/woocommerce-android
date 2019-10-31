@@ -10,8 +10,11 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ExitAfterRefund
@@ -80,13 +83,22 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
             }
         })
 
-        viewModel.refundSummaryStateLiveData.observe(this) {
-            refundSummary_btnRefund.isEnabled = it.isFormEnabled
-            refundSummary_reason.isEnabled = it.isFormEnabled
-            refundSummary_refundAmount.text = it.refundAmount
-            refundSummary_previouslyRefunded.text = it.previouslyRefunded
-            refundSummary_method.text = it.refundMethod
-            refundSummary_methodDescription.visibility = if (it.isMethodDescriptionVisible) View.VISIBLE else View.GONE
+        viewModel.refundSummaryStateLiveData.observe(this) { old, new ->
+            new.isFormEnabled?.takeIfNotEqualTo(old?.isFormEnabled) {
+                refundSummary_btnRefund.isEnabled = new.isFormEnabled
+                refundSummary_reason.isEnabled = new.isFormEnabled
+            }
+            new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) { refundSummary_refundAmount.text = it }
+            new.previouslyRefunded?.takeIfNotEqualTo(old?.previouslyRefunded) {
+                refundSummary_previouslyRefunded.text = it
+            }
+            new.refundMethod?.takeIfNotEqualTo(old?.refundMethod) { refundSummary_method.text = it }
+            new.isMethodDescriptionVisible?.takeIfNotEqualTo(old?.isMethodDescriptionVisible) { visible ->
+                if (visible)
+                    refundSummary_methodDescription.show()
+                else
+                    refundSummary_methodDescription.hide()
+            }
         }
     }
 

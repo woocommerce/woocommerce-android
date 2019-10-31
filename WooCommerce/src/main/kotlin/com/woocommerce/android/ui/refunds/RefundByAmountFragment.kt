@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.util.CurrencyFormatter
@@ -43,9 +44,13 @@ class RefundByAmountFragment : DaggerFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.refundByAmountStateLiveData.observe(this) {
-            issueRefund_txtAvailableForRefund.text = it.availableForRefund
-            issueRefund_refundAmount.initView(it.currency, it.decimals, currencyFormatter)
+        viewModel.refundByAmountStateLiveData.observe(this) { old, new ->
+            new.availableForRefund?.takeIfNotEqualTo(old?.availableForRefund) {
+                issueRefund_txtAvailableForRefund.text = it
+            }
+            new.currency?.takeIfNotEqualTo(old?.currency) {
+                issueRefund_refundAmount.initView(new.currency, new.decimals, currencyFormatter)
+            }
             issueRefund_refundAmount.setValue(viewModel.enteredAmount)
         }
 

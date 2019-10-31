@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.SnackbarMessage
@@ -53,7 +54,9 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(productList).whenever(productRepository).getProductList()
 
         val products = ArrayList<Product>()
-        viewModel.viewStateLiveData.observeForever { it.productList?.let { products.addAll(it) } }
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            if (old?.productList != new.productList)
+                new.productList?.let { products.addAll(it) } }
 
         viewModel.start()
         assertThat(products).isEqualTo(productList)
@@ -80,8 +83,9 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
 
         val isSkeletonShown = ArrayList<Boolean>()
-        viewModel.viewStateLiveData.observeForever { it.isSkeletonShown?.let { isSkeletonShown.add(it) } }
-
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
+        }
         viewModel.start()
         assertThat(isSkeletonShown).containsExactly(true, false)
     }
@@ -92,7 +96,9 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
 
         val isLoadingMore = ArrayList<Boolean>()
-        viewModel.viewStateLiveData.observeForever { it.isLoadingMore?.let { isLoadingMore.add(it) } }
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
+        }
 
         viewModel.loadProducts(loadMore = true)
         assertThat(isLoadingMore).containsExactly(true, false)

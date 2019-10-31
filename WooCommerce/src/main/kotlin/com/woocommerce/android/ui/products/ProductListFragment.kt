@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -272,11 +273,11 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     private fun setupObservers(viewModel: ProductListViewModel) {
-        viewModel.viewStateLiveData.observe(this) { data ->
-            data.isSkeletonShown?.let { showSkeleton(it) }
-            data.isLoadingMore?.let { showLoadMoreProgress(it) }
-            data.productList?.let { showProductList(it) }
-            data.isRefreshing?.let { productsRefreshLayout.isRefreshing = it }
+        viewModel.viewStateLiveData.observe(this) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            new.productList?.takeIfNotEqualTo(old?.productList) { showProductList(it) }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
         }
 
         viewModel.event.observe(this, Observer { event ->
