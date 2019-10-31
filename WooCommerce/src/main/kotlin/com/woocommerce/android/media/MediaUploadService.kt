@@ -85,6 +85,7 @@ class MediaUploadService : JobIntentService() {
         }
 
         val media = MediaUploadUtils.mediaModelFromLocalUri(
+                this,
                 selectedSite.get().id,
                 localMediaUri,
                 mediaStore
