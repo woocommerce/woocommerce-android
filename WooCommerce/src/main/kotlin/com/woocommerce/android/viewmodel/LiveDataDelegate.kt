@@ -7,12 +7,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import kotlin.reflect.KProperty
 
-class LiveDataDelegate<T: Parcelable>(private val liveData: MutableLiveData<T>) {
+class LiveDataDelegate<T : Parcelable>(private val liveData: MutableLiveData<T>) {
     constructor(savedState: SavedStateHandle, initialValue: T) :
             this(savedState.getLiveData(initialValue.javaClass.name, initialValue))
 
-    var previousValue : T? = null
-        private set
+    private var previousValue: T? = null
     val value
         get() = liveData.value
 
