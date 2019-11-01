@@ -65,6 +65,15 @@
                         tools:text="Private" />
                 </FrameLayout>
 
+                <ProgressBar
+                    android:id="@+id/imageUploadProgess"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
                 <View
                     style="@style/Woo.Settings.Divider"
                     android:layout_gravity="bottom" />
