@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
 import com.woocommerce.android.ui.reviews.RequestResult
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
@@ -215,7 +216,7 @@ class MagicLinkInterceptRepository @Inject constructor(
 
             val trackEvent = when {
                 event.causeOfChange == AccountAction.FETCH_ACCOUNT -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
-                event.causeOfChange == AccountAction.FETCH_ACCOUNT -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
+                event.causeOfChange == AccountAction.FETCH_ACCOUNT -> LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
                 else -> null
             }
             trackEvent?.let {
