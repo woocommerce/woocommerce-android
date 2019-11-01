@@ -405,6 +405,7 @@
     <string name="product_change_image">Change product image</string>
     <string name="product_image_upload_error">Error uploading product photo</string>
     <string name="product_image_already_uploading">A product image is already uploading</string>
+
     <!--
         Empty list messages
     -->
@@ -646,7 +647,6 @@
     <string name="button_edit_permissions">Edit permissions</string>
 
     <!-- Other -->
-    <string name="shared_element_transition" translatable="false">shared_element</string>
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
