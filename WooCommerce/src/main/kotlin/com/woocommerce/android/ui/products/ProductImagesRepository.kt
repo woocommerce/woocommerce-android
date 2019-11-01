@@ -22,11 +22,11 @@ class ProductImagesRepository @Inject constructor(
     private var continuation: Continuation<Boolean>? = null
 
     init {
-        dispatcher.register(this)
+        // TODO dispatcher.register(this)
     }
 
     fun onCleanup() {
-        dispatcher.unregister(this)
+        // TODO dispatcher.unregister(this)
     }
 
     fun getProduct(remoteProductId: Long): Product? =
