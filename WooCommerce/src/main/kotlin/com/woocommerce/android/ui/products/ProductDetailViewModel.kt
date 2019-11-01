@@ -54,6 +54,9 @@ class ProductDetailViewModel @Inject constructor(
     private val _chooseProductImage = SingleLiveEvent<Product>()
     val chooseProductImage: LiveData<Product> = _chooseProductImage
 
+    private val _captureProductImage = SingleLiveEvent<Product>()
+    val captureProductImage: LiveData<Product> = _captureProductImage
+
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
@@ -88,6 +91,10 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onChooseImageClicked() {
         _chooseProductImage.value = product.value
+    }
+
+    fun onCaptureImageClicked() {
+        _captureProductImage.value = product.value
     }
 
     override fun onCleared() {
