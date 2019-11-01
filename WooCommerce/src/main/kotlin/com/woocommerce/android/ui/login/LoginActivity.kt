@@ -535,7 +535,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     ) {
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
                 siteAddress, endpointAddress, null, null, inputUsername, inputPassword,
-                false, AppPrefs.getLoginUserBypassedJetpackRequired())
+                false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 }
