@@ -14,7 +14,6 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
     class Custom(value: String) : ProductStockStatus(value = value)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(stringResource)
         parcel.writeString(value)
     }
 
@@ -28,13 +27,13 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
                 "instock" -> InStock
                 "outofstock" -> OutOfStock
                 "onbackorder" -> OnBackorder
-                null -> NotAvailable
+                null, "" -> NotAvailable
                 else -> Custom(value)
             }
         }
 
         @JvmField
-        val CREATOR = object : Creator<ProductStockStatus>{
+        val CREATOR = object : Creator<ProductStockStatus > {
             override fun createFromParcel(parcel: Parcel): ProductStockStatus {
                 return fromString(parcel.readString())
             }
