@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -22,10 +21,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -33,7 +28,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -46,21 +40,18 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
+import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
-import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
-import kotlin.math.max
 
-class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
+class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     companion object {
         private const val MENU_ID_CHOOSE_PHOTO = 2
-        private const val MENU_ID_CAPTURE_PHOTO = 3
-
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
-        private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
     }
 
     private enum class DetailCard {
@@ -107,20 +98,16 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViewModel(savedInstanceState)
+
+        initializeViewModel()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        viewModel.saveState(outState)
-    }
-
-    private fun initializeViewModel(savedInstanceState: Bundle?) {
+    private fun initializeViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
             setupObservers(it)
         }
 
-        viewModel.start(navArgs.remoteProductId, savedInstanceState)
+        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -134,6 +121,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
         viewModel.shareProduct.observe(this, Observer {
             shareProduct(it)
+        })
+
+        viewModel.chooseProductImage.observe(this, Observer {
+            chooseProductImage()
         })
 
         viewModel.showSnackbarMessage.observe(this, Observer {
@@ -156,10 +147,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         val displayHeight = DisplayUtils.getDisplayPixelHeight(activity!!)
         val multiplier = if (DisplayUtils.isLandscape(activity!!)) 0.5f else 0.3f
         imageHeight = (displayHeight * multiplier).toInt()
-        productDetail_image.layoutParams.height = imageHeight
-
-        // set the height of the gradient scrim that appears atop the image
-        imageScrim.layoutParams.height = imageHeight / 3
+        imageGallery.layoutParams.height = imageHeight
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -167,7 +155,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         inflater?.inflate(R.menu.menu_share, menu)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
             menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_image)
-            menu?.add(Menu.NONE, MENU_ID_CAPTURE_PHOTO, Menu.NONE, R.string.product_capture_image)
         }
     }
 
@@ -179,11 +166,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 true
             }
             MENU_ID_CHOOSE_PHOTO -> {
-                chooseProductImage()
-                true
-            }
-            MENU_ID_CAPTURE_PHOTO -> {
-                captureProduceImage()
+                // TODO: analytics
+                viewModel.onChooseImageClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -219,7 +203,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
 
         updateActivityTitle()
-        showProductImage(product)
+        imageGallery.showProductImages(product, this)
 
         isVariation = product.type == ProductType.VARIATION
 
@@ -234,30 +218,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         addPrimaryCard(productData)
         addPricingAndInventoryCard(productData)
         addPurchaseDetailsCard(productData)
-    }
-
-    private fun showProductImage(product: Product) {
-        if (viewModel.isUploadingProductImage.value == true) {
-            return
-        }
-
-        val imageUrl = product.firstImageUrl
-        if (imageUrl != null) {
-            val width = DisplayUtils.getDisplayPixelWidth(activity!!)
-            val height = DisplayUtils.getDisplayPixelHeight(activity!!)
-            val imageSize = max(width, height)
-            productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
-            GlideApp.with(activity!!)
-                    .load(productImageUrl)
-                    .error(R.drawable.ic_product)
-                    .placeholder(R.drawable.product_detail_image_background)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .listener(this)
-                    .into(productDetail_image)
-        } else {
-            productDetail_image.visibility = View.GONE
-            imageScrim.visibility = View.GONE
-        }
     }
 
     private fun addPrimaryCard(productData: ProductWithParameters) {
@@ -574,87 +534,30 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
-    private fun captureProduceImage() {
-        if (requestCameraPermission()) {
-            viewModel.createCaptureImageIntent(requireActivity())?.let { intent ->
-                activity?.startActivityFromFragment(this, intent, REQUEST_CODE_CAPTURE_PHOTO)
-            }
-        }
-    }
-
     /**
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
     private fun showUploadImageProgress(isUploading: Boolean) {
-        productDetail_image.visibility = View.VISIBLE
-        imageScrim.visibility = View.VISIBLE
-
-        if (isUploading) {
-            uploadImageProgress.visibility = View.VISIBLE
-            productDetail_image.imageAlpha = 128
-        } else {
-            uploadImageProgress.visibility = View.GONE
-            productDetail_image.imageAlpha = 255
-        }
+        // TODO
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
-                val clipData = data.clipData
-                val imageUri = if (clipData != null && clipData.itemCount > 0) {
-                    clipData.getItemAt(0).uri
-                } else {
-                    data.data
-                }
-                imageUri?.let { uri ->
-                    viewModel.uploadProductMedia(requireActivity(), navArgs.remoteProductId, uri)
-                }
-            } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
-                viewModel.uploadCapturedImage(requireActivity(), navArgs.remoteProductId)
+        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
+            data.data?.let { imageUri ->
+                viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
             }
         }
     }
 
-    /**
-     * Glide failed to load the product image, do nothing so Glide will show the error drawable
-     */
-    override fun onLoadFailed(
-        e: GlideException?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        isFirstResource: Boolean
-    ): Boolean {
-        return false
-    }
-
-    /**
-     * Glide loaded the product image, add click listener to show image full screen
-     */
-    override fun onResourceReady(
-        resource: Drawable?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        dataSource: DataSource?,
-        isFirstResource: Boolean
-    ): Boolean {
-        productImageUrl?.let { imageUrl ->
-            // this is added to avoid nullPointerException when user clicks the back button exactly when this method
-            // is called. In that case, the productDetail_image will be null.
-            productDetail_image?.let { imageView ->
-                imageView.setOnClickListener {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                    ImageViewerActivity.show(
-                            activity!!,
-                            imageUrl,
-                            title = productTitle,
-                            sharedElement = imageView
-                    )
-                }
-            }
-        }
-        return false
+    override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        ImageViewerActivity.show(
+                requireActivity(),
+                image.src,
+                title = productTitle,
+                sharedElement = imageView
+        )
     }
 
     /**
@@ -720,7 +623,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                     chooseProductImage()
                 }
                 WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
-                    captureProduceImage()
+                    // TODO: show camera once we add this feature
                 }
             }
         }
