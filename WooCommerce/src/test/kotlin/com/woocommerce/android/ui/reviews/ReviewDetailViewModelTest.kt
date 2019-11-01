@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -9,9 +10,14 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Exit
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.ShowSnackbar
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.test
@@ -42,6 +48,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
+
         viewModel = spy(
                 ReviewDetailViewModel(savedState, coroutineDispatchers, networkStatus, repository))
 
@@ -54,13 +62,14 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
 
         val skeletonShown = mutableListOf<Boolean>()
-        viewModel.isSkeletonShown.observeForever { skeletonShown.add(it) }
+        var productReview: ProductReview? = null
+        viewModel.viewStateData.observeForever { old, new ->
+            new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
+        }
 
         var markAsRead: Long? = null
-        viewModel.markAsRead.observeForever { markAsRead = it }
-
-        var productReview: ProductReview? = null
-        viewModel.productReview.observeForever { productReview = it }
+        viewModel.event.observeForever { if (it is MarkNotificationAsRead) markAsRead = it.remoteNoteId }
 
         viewModel.start(REVIEW_ID)
 
@@ -78,16 +87,20 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
 
         val skeletonShown = mutableListOf<Boolean>()
-        viewModel.isSkeletonShown.observeForever { skeletonShown.add(it) }
-
-        var markAsRead: Long? = null
-        viewModel.markAsRead.observeForever { markAsRead = it }
-
         var productReview: ProductReview? = null
-        viewModel.productReview.observeForever { productReview = it }
+        viewModel.viewStateData.observeForever { old, new ->
+            new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
+        }
 
         var message: Int? = null
-        viewModel.showSnackbarMessage.observeForever { message = it }
+        var markAsRead: Long? = null
+        viewModel.event.observeForever {
+            when (it) {
+                is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
+                is ShowSnackbar -> message = it.message
+            }
+        }
 
         viewModel.start(REVIEW_ID)
 
@@ -112,7 +125,11 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         viewModel.start(REVIEW_ID)
 
         var exitCalled = false
-        viewModel.exit.observeForever { exitCalled = true }
+        viewModel.event.observeForever {
+            when (it) {
+                is Exit -> exitCalled = true
+            }
+        }
 
         viewModel.moderateReview(SPAM)
         assertTrue(exitCalled)
@@ -133,11 +150,14 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         // a reference to it.
         viewModel.start(REVIEW_ID)
 
-        var exitCalled = false
-        viewModel.exit.observeForever { exitCalled = true }
-
         var message: Int? = null
-        viewModel.showSnackbarMessage.observeForever { message = it }
+        var exitCalled = false
+        viewModel.event.observeForever {
+            when (it) {
+                is Exit -> exitCalled = true
+                is ShowSnackbar -> message = it.message
+            }
+        }
 
         viewModel.moderateReview(SPAM)
         assertFalse(exitCalled)

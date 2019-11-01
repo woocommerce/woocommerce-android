@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.ProductImageMap
@@ -27,6 +28,9 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Exit
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.ShowSnackbar
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -110,30 +114,21 @@ class ReviewDetailFragment : BaseFragment() {
     }
 
     private fun setupObservers(viewModel: ReviewDetailViewModel) {
-        viewModel.productReview.observe(this, Observer {
-            setReview(it)
-        })
+        viewModel.viewStateData.observe(this) { old, new ->
+            new.productReview?.takeIfNotEqualTo(old?.productReview) { setReview(it) }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+        }
 
-        viewModel.isSkeletonShown.observe(this, Observer {
-            showSkeleton(it)
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
-        viewModel.refreshProductImage.observe(this, Observer {
-            refreshProductImage(it)
-        })
-
-        viewModel.exit.observe(this, Observer {
-            exitDetailView()
-        })
-
-        viewModel.markAsRead.observe(this, Observer { remoteNoteId ->
-            // Remove all active notifications from the system bar
-            context?.let {
-                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(it, remoteNoteId.toString())
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MarkNotificationAsRead -> {
+                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
+                            requireContext(),
+                            event.remoteNoteId.toString()
+                    )
+                }
+                is Exit -> exitDetailView()
             }
         })
     }
