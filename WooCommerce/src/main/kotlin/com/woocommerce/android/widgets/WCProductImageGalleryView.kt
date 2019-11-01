@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
-import android.widget.ImageView.ScaleType
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +19,9 @@ import com.woocommerce.android.R.layout
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
+import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import kotlinx.android.synthetic.main.product_list_item.view.*
+import kotlinx.android.synthetic.main.product_list_item.view.productImage
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.PhotonUtils
 
@@ -166,6 +168,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.productImage
+        val uploadProgress: ProgressBar = view.uploadProgess
         init {
             imageView.layoutParams.height = imageHeight
             itemView.setOnClickListener {

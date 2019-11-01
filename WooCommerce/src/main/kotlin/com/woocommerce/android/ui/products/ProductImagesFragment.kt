@@ -136,7 +136,6 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                 else -> false
             }
         }
-
         popup.show()
     }
 
@@ -167,9 +166,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
     private fun showUploadImageProgress(isUploading: Boolean) {
-        // TODO - for now we simply show a progress spinner in the middle of the gallery, a separate PR
-        // will tackle showing the progress on the image being replaced
-        imageUploadProgess.visibility = if (isUploading) View.VISIBLE else View.GONE
+        // TODO: need to show progress for image being replaced or added
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

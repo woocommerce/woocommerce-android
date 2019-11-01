@@ -495,7 +495,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
+        val action = ProductDetailFragmentDirections
+                .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
         findNavController().navigate(action)
     }
 }
