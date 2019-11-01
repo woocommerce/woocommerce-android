@@ -100,6 +100,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED(siteless = true),
+        LOGIN_MAGIC_LINK_INTERCEPT_SCREEN_VIEWED(siteless = true),
+        LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
