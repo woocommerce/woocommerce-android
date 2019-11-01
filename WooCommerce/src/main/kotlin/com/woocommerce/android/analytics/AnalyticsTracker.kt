@@ -90,6 +90,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_VIEWED(siteless = true),
         LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED(siteless = true),
         LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_SCREEN_VIEWED(siteless = true),
+        LOGIN_NO_JETPACK_VIEW_INSTRUCTIONS_BUTTON_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_MENU_HELP_TAPPED(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
