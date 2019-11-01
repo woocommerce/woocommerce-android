@@ -236,8 +236,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice != null) {
                 val group = mapOf(
-                        Pair(getString(R.string.product_regular_price), requireNotNull(productData.regularPriceWithCurrency)),
-                        Pair(getString(R.string.product_sale_price), requireNotNull(productData.salePriceWithCurrency))
+                    getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency),
+                    getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {

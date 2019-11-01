@@ -104,7 +104,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         whenever(productRepository.getProduct(productRemoteId)).thenReturn(null)
 
         var message: Int? = null
-        viewModel.event.observeForever{
+        viewModel.event.observeForever {
             if (it is ShowSnackbar) message = it.message
         }
 
@@ -121,7 +121,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var message: Int? = null
-        viewModel.event.observeForever{
+        viewModel.event.observeForever {
             if (it is ShowSnackbar) message = it.message
         }
 
