@@ -33,11 +33,11 @@ class ProductImagesViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _chooseProductImage = SingleLiveEvent<Product>()
-    val chooseProductImage: LiveData<Product> = _chooseProductImage
+    private val _chooseProductImage = SingleLiveEvent<Unit>()
+    val chooseProductImage: LiveData<Unit> = _chooseProductImage
 
-    private val _captureProductImage = SingleLiveEvent<Product>()
-    val captureProductImage: LiveData<Product> = _captureProductImage
+    private val _captureProductImage = SingleLiveEvent<Unit>()
+    val captureProductImage: LiveData<Unit> = _captureProductImage
 
     private val _isUploadingProductImage = MutableLiveData<Boolean>()
     val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
@@ -66,11 +66,11 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onChooseImageClicked() {
-        _chooseProductImage.value = product.value
+        _chooseProductImage.call()
     }
 
     fun onCaptureImageClicked() {
-        _captureProductImage.value = product.value
+        _captureProductImage.call()
     }
 
     fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
