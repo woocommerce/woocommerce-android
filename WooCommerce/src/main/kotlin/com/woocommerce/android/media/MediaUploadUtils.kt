@@ -19,16 +19,9 @@ object MediaUploadUtils {
         localUri: Uri,
         mediaStore: MediaStore
     ): MediaModel? {
-        // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
-        val fetchedUri = fetchMedia(context, localUri)
-        if (fetchedUri == null) {
-            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > fetched media path is null or empty")
-            return null
-        }
-
-        val path = MediaUtils.getRealPathFromURI(context, fetchedUri)
+        val path = MediaUtils.getRealPathFromURI(context, localUri)
         if (path == null) {
-            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
+            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $localUri")
             return null
         }
 
@@ -39,10 +32,10 @@ object MediaUploadUtils {
         }
 
         val media = mediaStore.instantiateMediaModel()
-        var filename = org.wordpress.android.fluxc.utils.MediaUtils.getFileName(fetchedUri.path)
-        var fileExtension: String? = org.wordpress.android.fluxc.utils.MediaUtils.getExtension(fetchedUri.path)
+        var filename = org.wordpress.android.fluxc.utils.MediaUtils.getFileName(localUri.path)
+        var fileExtension: String? = org.wordpress.android.fluxc.utils.MediaUtils.getExtension(localUri.path)
 
-        var mimeType = UrlUtils.getUrlMimeType(fetchedUri.toString())
+        var mimeType = UrlUtils.getUrlMimeType(localUri.toString())
         if (mimeType == null) {
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension)
             if (mimeType == null) {
@@ -59,7 +52,7 @@ object MediaUploadUtils {
 
         media.fileName = filename
         media.title = filename
-        media.filePath = fetchedUri.path
+        media.filePath = localUri.path
         media.localSiteId = localSiteId
         media.fileExtension = fileExtension
         media.mimeType = mimeType
@@ -78,7 +71,7 @@ object MediaUploadUtils {
      *
      * @return A local {@link Uri} or null if the download failed
      */
-    private fun fetchMedia(context: Context, mediaUri: Uri): Uri? {
+    fun fetchMedia(context: Context, mediaUri: Uri): Uri? {
         if (MediaUtils.isInMediaStore(mediaUri)) {
             return mediaUri
         }

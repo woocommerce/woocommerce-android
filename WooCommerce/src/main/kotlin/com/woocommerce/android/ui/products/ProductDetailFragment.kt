@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.media.MediaUploadUtils
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -38,6 +39,8 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -565,7 +568,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
             data.data?.let { imageUri ->
-                viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
+                MediaUploadUtils.fetchMedia(requireActivity(), imageUri)?.let { fetchedUri ->
+                    viewModel.uploadProductMedia(navArgs.remoteProductId, fetchedUri)
+                    return
+                }
+                WooLog.w(T.MEDIA, "mediaModelFromLocalUri > fetched media path is null or empty")
             }
         } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
             viewModel.uploadCapturedImage(navArgs.remoteProductId)
