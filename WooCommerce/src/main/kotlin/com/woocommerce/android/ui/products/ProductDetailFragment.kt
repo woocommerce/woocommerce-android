@@ -51,7 +51,10 @@ import javax.inject.Inject
 class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     companion object {
         private const val MENU_ID_CHOOSE_PHOTO = 2
+        private const val MENU_ID_CAPTURE_PHOTO = 3
+
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
+        private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
     }
 
     private enum class DetailCard {
@@ -98,16 +101,20 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        initializeViewModel()
+        initializeViewModel(savedInstanceState)
     }
 
-    private fun initializeViewModel() {
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.saveState(outState)
+    }
+
+    private fun initializeViewModel(savedInstanceState: Bundle?) {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
             setupObservers(it)
         }
 
-        viewModel.start(navArgs.remoteProductId)
+        viewModel.start(navArgs.remoteProductId, savedInstanceState)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -155,6 +162,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         inflater?.inflate(R.menu.menu_share, menu)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
             menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_image)
+            menu?.add(Menu.NONE, MENU_ID_CAPTURE_PHOTO, Menu.NONE, R.string.product_capture_image)
         }
     }
 
@@ -168,6 +176,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             MENU_ID_CHOOSE_PHOTO -> {
                 // TODO: analytics
                 viewModel.onChooseImageClicked()
+                true
+            }
+            MENU_ID_CAPTURE_PHOTO -> {
+                captureProduceImage()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -534,6 +546,14 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
+    private fun captureProduceImage() {
+        if (requestCameraPermission()) {
+            viewModel.createCaptureImageIntent(requireActivity())?.let { intent ->
+                activity?.startActivityFromFragment(this, intent, REQUEST_CODE_CAPTURE_PHOTO)
+            }
+        }
+    }
+
     /**
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
@@ -547,6 +567,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             data.data?.let { imageUri ->
                 viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
             }
+        } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
+            viewModel.uploadCapturedImage(navArgs.remoteProductId)
         }
     }
 
@@ -623,7 +645,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                     chooseProductImage()
                 }
                 WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
-                    // TODO: show camera once we add this feature
+                    captureProduceImage()
                 }
             }
         }
