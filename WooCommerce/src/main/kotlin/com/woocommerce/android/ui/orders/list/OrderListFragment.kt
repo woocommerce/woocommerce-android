@@ -707,11 +707,13 @@ class OrderListFragment : TopLevelFragment(),
 
     private fun displayOrderStatusListView() {
         order_status_list_view.visibility = View.VISIBLE
+        order_list_view.visibility = View.GONE
         orderRefreshLayout.isEnabled = false
     }
 
     private fun hideOrderStatusListView() {
         order_status_list_view.visibility = View.GONE
+        order_list_view.visibility = View.VISIBLE
         orderRefreshLayout.isEnabled = true
     }
 
