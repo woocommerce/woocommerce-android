@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -29,6 +30,8 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -223,50 +226,44 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     @SuppressLint("InflateParams")
     private fun setupObservers() {
-        viewModel.reviewList.observe(this, Observer {
-            showReviewList(it)
-        })
+        viewModel.viewStateData.observe(this) { old, new ->
+            new.reviewList?.takeIfNotEqualTo(old?.reviewList) { showReviewList(it) }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { showMarkAllReadMenuItem(it) }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
+                if (isActive)
+                    notifsRefreshLayout.isRefreshing = it
+            }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+        }
 
-        viewModel.isSkeletonShown.observe(this, Observer {
-            showSkeleton(it)
-        })
-
-        viewModel.hasUnreadReviews.observe(this, Observer {
-            showMarkAllReadMenuItem(it)
-        })
-
-        viewModel.isRefreshing.observe(this, Observer {
-            if (isActive) notifsRefreshLayout.isRefreshing = it
-        })
-
-        viewModel.isLoadingMore.observe(this, Observer {
-            showLoadMoreProgress(it)
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
-        viewModel.isMarkingAllAsRead.observe(this, Observer {
-            when (it) {
-                ActionStatus.SUBMITTED -> {
-                    menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
-                }
-                ActionStatus.SUCCESS -> {
-                    menuMarkAllRead?.actionView = null
-                    showMarkAllReadMenuItem(show = false)
-
-                    // Remove all active notifications from the system bar
-                    context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
-                }
-                ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
-                else -> {}
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
             }
         })
 
         viewModel.moderateProductReview.observe(this, Observer {
             it?.let { request -> handleReviewModerationRequest(request) }
         })
+    }
+
+    private fun handleMarkAllAsReadEvent(status: ActionStatus) {
+        when (status) {
+            ActionStatus.SUBMITTED -> {
+                menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
+            }
+            ActionStatus.SUCCESS -> {
+                menuMarkAllRead?.actionView = null
+                showMarkAllReadMenuItem(show = false)
+
+                // Remove all active notifications from the system bar
+                context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
+            }
+            ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
+            else -> {}
+        }
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
