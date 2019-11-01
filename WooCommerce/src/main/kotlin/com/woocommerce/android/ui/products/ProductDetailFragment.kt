@@ -40,7 +40,6 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
@@ -494,11 +493,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
+    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         ImageViewerActivity.show(
                 requireActivity(),
-                image.src,
+                image.source,
                 title = productTitle,
                 sharedElement = imageView
         )
