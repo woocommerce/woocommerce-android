@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import dagger.android.support.DaggerFragment
@@ -44,16 +43,16 @@ class RefundDetailFragment : DaggerFragment() {
     }
 
     private fun setupObservers(viewModel: RefundDetailViewModel) {
-        viewModel.viewState.observe(this, Observer {
-            activity?.title = it.screenTitle
-            refundDetail_refundAmount.text = it.refundAmount
-            refundDetail_refundMethod.text = it.refundMethod
-            if (it.refundReason.isNullOrEmpty()) {
+        viewModel.viewStateData.observe(this) { _, data ->
+            activity?.title = data.screenTitle
+            refundDetail_refundAmount.text = data.refundAmount
+            refundDetail_refundMethod.text = data.refundMethod
+            if (data.refundReason.isNullOrEmpty()) {
                 refundDetail_reasonCard.hide()
             } else {
                 refundDetail_reasonCard.show()
-                refundDetail_refundReason.text = it.refundReason
+                refundDetail_refundReason.text = data.refundReason
             }
-        })
+        }
     }
 }
