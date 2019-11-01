@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.products
 
 import android.Manifest.permission
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,8 +15,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -29,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.media.MediaUploadUtils
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -36,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithPar
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -48,6 +51,16 @@ import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
+    companion object {
+        private const val MENU_ID_CHOOSE_PHOTO = 2
+        private const val MENU_ID_CAPTURE_PHOTO = 3
+
+        private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
+        private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
+
+        private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
+    }
+
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -64,11 +77,14 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
+    private var capturedPhotoUri: Uri? = null
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreate(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
+        }
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
@@ -94,6 +110,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         initializeViewModel()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
+    }
+
     private fun initializeViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
             setupObservers(it)
@@ -115,8 +136,20 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             shareProduct(it)
         })
 
+        viewModel.chooseProductImage.observe(this, Observer {
+            chooseProductImage()
+        })
+
+        viewModel.captureProductImage.observe(this, Observer {
+            captureProductImage()
+        })
+
         viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
+        })
+
+        viewModel.isUploadingProductImage.observe(this, Observer {
+            showUploadImageProgress(it)
         })
 
         viewModel.exit.observe(this, Observer {
@@ -137,6 +170,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
+        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
+            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_image)
+            menu?.add(Menu.NONE, MENU_ID_CAPTURE_PHOTO, Menu.NONE, R.string.product_capture_image)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -144,6 +181,14 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
+                true
+            }
+            MENU_ID_CHOOSE_PHOTO -> {
+                viewModel.onChooseImageClicked()
+                true
+            }
+            MENU_ID_CAPTURE_PHOTO -> {
+                viewModel.onCaptureImageClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -179,11 +224,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         updateActivityTitle()
-
-        // if there's only one image, center the gallery horizontally
-        with(imageGallery.layoutParams as FrameLayout.LayoutParams) {
-            this.width = if (product.images.size == 1) WRAP_CONTENT else MATCH_PARENT
-        }
         imageGallery.showProductImages(product, this)
 
         isVariation = product.type == ProductType.VARIATION
@@ -503,6 +543,51 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
+    private fun chooseProductImage() {
+        // only show the chooser if user already allowed storage permission, otherwise simply request the
+        // permission and do nothing else - this will be called again if the user then agrees to allow
+        // storage permission
+        if (requestStoragePermission()) {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            val chooser = Intent.createChooser(intent, getString(R.string.product_change_image))
+            activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
+        }
+    }
+
+    private fun captureProductImage() {
+        if (requestCameraPermission()) {
+            MediaUploadUtils.createCaptureImageIntent(requireActivity())?.let { intent ->
+                capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
+                requireActivity().startActivityFromFragment(this, intent, REQUEST_CODE_CAPTURE_PHOTO)
+            }
+        }
+    }
+
+    /**
+     * Triggered by the viewModel when an image is being uploaded or has finished uploading
+     */
+    private fun showUploadImageProgress(isUploading: Boolean) {
+        // TODO - for now we simply show a progress spinner in the middle of the gallery, a separate PR
+        // will tackle showing the progress on the image being replaced
+        imageUploadProgess.visibility = if (isUploading) View.VISIBLE else View.GONE
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
+                data.data?.let { imageUri ->
+                    viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                }
+            } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
+                capturedPhotoUri?.let { imageUri ->
+                    viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                }
+            }
+        }
+    }
+
     override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
@@ -569,10 +654,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         if (allGranted) {
             when (requestCode) {
                 WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
-                    // TODO chooseProductImage()
+                    chooseProductImage()
                 }
                 WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
-                    // TODO captureProduceImage()
+                    captureProductImage()
                 }
             }
         }
