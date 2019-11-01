@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -9,9 +10,11 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowSnackbar
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -42,17 +45,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productRemoteId = product.remoteId
     private lateinit var viewModel: ProductDetailViewModel
 
-    private val productWithParameters = ProductWithParameters(
+    private val productWithParameters = ViewState(
         product,
         "10kg",
         "1 x 2 x 3 cm",
         "CZK20.00",
         "CZK10.00",
-        "CZK30.00"
+        "CZK30.00",
+        false
     )
 
     @Before
     fun setup() {
+        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
+
         viewModel = spy(
                 ProductDetailViewModel(
                         savedState,
@@ -82,10 +88,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Displays the product detail view correctly`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        var productData: ProductWithParameters? = null
-        viewModel.productData.observeForever { productData = it }
+        var productData: ViewState? = null
+        viewModel.viewStateData.observeForever { old, new -> productData = new }
 
-        assertThat(productData).isNull()
+        assertThat(productData).isEqualTo(ViewState())
 
         viewModel.start(productRemoteId)
 
@@ -98,7 +104,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         whenever(productRepository.getProduct(productRemoteId)).thenReturn(null)
 
         var message: Int? = null
-        viewModel.showSnackbarMessage.observeForever { message = it }
+        viewModel.event.observeForever{
+            if (it is ShowSnackbar) message = it.message
+        }
 
         viewModel.start(productRemoteId)
 
@@ -113,7 +121,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var message: Int? = null
-        viewModel.showSnackbarMessage.observeForever { message = it }
+        viewModel.event.observeForever{
+            if (it is ShowSnackbar) message = it.message
+        }
 
         viewModel.start(productRemoteId)
 
@@ -128,7 +138,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(null).whenever(productRepository).getProduct(any())
 
         val isSkeletonShown = ArrayList<Boolean>()
-        viewModel.isSkeletonShown.observeForever { isSkeletonShown.add(it) }
+        viewModel.viewStateData.observeForever {
+            old, new -> new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
+        }
 
         viewModel.start(productRemoteId)
 

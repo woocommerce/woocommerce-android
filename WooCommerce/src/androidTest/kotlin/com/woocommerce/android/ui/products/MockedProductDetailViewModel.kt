@@ -32,12 +32,12 @@ class MockedProductDetailViewModel @AssistedInject constructor(
         currencyFormatter,
         wooCommerceStore
 ) {
-    override val productData: LiveData<ProductWithParameters>
+    override val productData: LiveData<ViewState>
         get() = Transformations.map(super.productData) {
             combineData(it.product, Parameters("$", "oz", "in"))
         }
 
-    private fun combineData(product: Product, parameters: Parameters): ProductWithParameters {
+    private fun combineData(product: Product, parameters: Parameters): ViewState {
         val weight = if (product.weight > 0) "${product.weight.roundToInt()}${parameters.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
@@ -52,7 +52,7 @@ class MockedProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
-        return ProductWithParameters(
+        return ViewState(
                 product,
                 weight,
                 size,
