@@ -402,6 +402,9 @@
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
+    <!--
+        Product images
+    -->
     <string name="product_images_title">Photos</string>
     <string name="product_add_photo">Add photo</string>
     <string name="product_change_image">Change product image</string>
@@ -409,6 +412,8 @@
     <string name="product_image_upload_error">Error uploading product photo</string>
     <string name="product_image_already_uploading">A product image is already uploading</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
+    <string name="image_source_device_chooser">Choose from device</string>
+    <string name="image_source_device_camera">Take a photo</string>
     <!--
         Empty list messages
     -->
