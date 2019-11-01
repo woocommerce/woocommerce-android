@@ -1,12 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
-import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,8 +14,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,12 +22,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.io.File
-import java.io.IOException
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.math.roundToInt
@@ -50,10 +37,6 @@ class ProductDetailViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val mediaUploadWrapper: MediaUploadWrapper
 ) : ScopedViewModel(mainDispatcher) {
-    companion object {
-        private const val KEY_CURRENT_PHOTO_PATH = "photo_path"
-    }
-
     private var remoteProductId = 0L
 
     private val product = MutableLiveData<Product>()
@@ -71,6 +54,9 @@ class ProductDetailViewModel @Inject constructor(
     private val _chooseProductImage = SingleLiveEvent<Product>()
     val chooseProductImage: LiveData<Product> = _chooseProductImage
 
+    private val _captureProductImage = SingleLiveEvent<Product>()
+    val captureProductImage: LiveData<Product> = _captureProductImage
+
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
@@ -79,8 +65,6 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
-
-    private var capturedPhotoPath: String? = null
 
     init {
         _productData.addSource(product) { prod ->
@@ -97,17 +81,8 @@ class ProductDetailViewModel @Inject constructor(
         EventBus.getDefault().register(this)
     }
 
-    fun start(remoteProductId: Long, savedInstanceState: Bundle? = null) {
+    fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        savedInstanceState?.let { bundle ->
-            capturedPhotoPath = bundle.getString(KEY_CURRENT_PHOTO_PATH)
-        }
-    }
-
-    fun saveState(bundle: Bundle) {
-        capturedPhotoPath?.let {
-            bundle.putString(KEY_CURRENT_PHOTO_PATH, it)
-        }
     }
 
     fun onShareButtonClicked() {
@@ -116,6 +91,10 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onChooseImageClicked() {
         _chooseProductImage.value = product.value
+    }
+
+    fun onCaptureImageClicked() {
+        _captureProductImage.value = product.value
     }
 
     override fun onCleared() {
@@ -215,13 +194,6 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun uploadCapturedImage(remoteProductId: Long) {
-        Uri.parse(capturedPhotoPath)?.let { uri ->
-            uploadProductMedia(remoteProductId, uri)
-        }
-        capturedPhotoPath = null
-    }
-
     fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
         // TODO: at some point we want to support uploading multiple product images
         if (MediaUploadService.isBusy()) {
@@ -231,50 +203,7 @@ class ProductDetailViewModel @Inject constructor(
         _isUploadingProductImage.value = true
         mediaUploadWrapper.uploadProductMedia(remoteProductId, localImageUri)
     }
-    /**
-     * Create an intent for capturing a device photo
-     * TODO: get rid of context
-     */
-    fun createCaptureImageIntent(context: Context): Intent? {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
-            // Ensure that there's a camera activity to handle the intent
-            intent.resolveActivity(context.packageManager)?.also {
-                createCaptureImageFile(context)?.also { file ->
-                    capturedPhotoPath = file.absolutePath
-                    val authority = context.applicationContext.packageName + ".provider"
-                    val imageUri = FileProvider.getUriForFile(
-                            context,
-                            authority,
-                            file
-                    )
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                    return intent
-                }
-            }
-        }
 
-        WooLog.w(T.MEDIA, "ProductDetailViewModel > unable to create capture intent")
-        _showSnackbarMessage.value = R.string.product_image_capture_failed
-        return null
-    }
-
-    /**
-     * Creates a temporary file for captured photos
-     */
-    private fun createCaptureImageFile(context: Context): File? {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return try {
-            File.createTempFile(
-                    "JPEG_${timeStamp}_",
-                    ".jpg",
-                    storageDir
-            )
-        } catch (ex: IOException) {
-            WooLog.e(T.MEDIA, ex)
-            null
-        }
-    }
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductMediaUploadEvent) {

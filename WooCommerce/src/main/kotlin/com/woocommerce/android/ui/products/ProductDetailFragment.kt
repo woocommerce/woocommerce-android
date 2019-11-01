@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -58,6 +59,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
         private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
+
+        private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
 
     private enum class DetailCard {
@@ -73,15 +76,17 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private lateinit var viewModel: ProductDetailViewModel
 
     private var productTitle = ""
-    private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
+    private var capturedPhotoUri: Uri? = null
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreate(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
+        }
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
@@ -104,20 +109,20 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViewModel(savedInstanceState)
+        initializeViewModel()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        viewModel.saveState(outState)
+        outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
     }
 
-    private fun initializeViewModel(savedInstanceState: Bundle?) {
+    private fun initializeViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
             setupObservers(it)
         }
 
-        viewModel.start(navArgs.remoteProductId, savedInstanceState)
+        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -135,6 +140,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         viewModel.chooseProductImage.observe(this, Observer {
             chooseProductImage()
+        })
+
+        viewModel.captureProductImage.observe(this, Observer {
+            captureProductImage()
         })
 
         viewModel.showSnackbarMessage.observe(this, Observer {
@@ -177,12 +186,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 true
             }
             MENU_ID_CHOOSE_PHOTO -> {
-                // TODO: analytics
                 viewModel.onChooseImageClicked()
                 true
             }
             MENU_ID_CAPTURE_PHOTO -> {
-                captureProduceImage()
+                viewModel.onCaptureImageClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -549,10 +557,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    private fun captureProduceImage() {
+    private fun captureProductImage() {
         if (requestCameraPermission()) {
-            viewModel.createCaptureImageIntent(requireActivity())?.let { intent ->
-                activity?.startActivityFromFragment(this, intent, REQUEST_CODE_CAPTURE_PHOTO)
+            MediaUploadUtils.createCaptureImageIntent(requireActivity())?.let { intent ->
+                capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
+                requireActivity().startActivityFromFragment(this, intent, REQUEST_CODE_CAPTURE_PHOTO)
             }
         }
     }
@@ -566,17 +575,16 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
-            data.data?.let { imageUri ->
-                // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
-                MediaUploadUtils.fetchMedia(requireActivity(), imageUri)?.let { fetchedUri ->
-                    viewModel.uploadProductMedia(navArgs.remoteProductId, fetchedUri)
-                    return
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
+                data.data?.let { imageUri ->
+                    viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
-                WooLog.w(T.MEDIA, "mediaModelFromLocalUri > fetched media path is null or empty")
+            } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
+                capturedPhotoUri?.let { imageUri ->
+                    viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                }
             }
-        } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
-            viewModel.uploadCapturedImage(navArgs.remoteProductId)
         }
     }
 
@@ -653,7 +661,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                     chooseProductImage()
                 }
                 WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
-                    captureProduceImage()
+                    captureProductImage()
                 }
             }
         }
