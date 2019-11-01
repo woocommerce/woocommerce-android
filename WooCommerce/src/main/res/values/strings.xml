@@ -407,8 +407,6 @@
     -->
     <string name="product_images_title">Photos</string>
     <string name="product_add_photo">Add photo</string>
-    <string name="product_change_image">Change product image</string>
-    <string name="product_capture_image">Capture product image</string>
     <string name="product_image_upload_error">Error uploading product photo</string>
     <string name="product_image_already_uploading">A product image is already uploading</string>
     <string name="product_image_capture_failed">Failed to capture image</string>

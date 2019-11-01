@@ -146,7 +146,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         if (requestStoragePermission()) {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*"
-            val chooser = Intent.createChooser(intent, getString(R.string.product_change_image))
+            val chooser = Intent.createChooser(intent, null)
             activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
         }
     }
@@ -166,7 +166,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
     private fun showUploadImageProgress(isUploading: Boolean) {
-        // TODO: need to show progress for image being replaced or added
+        // TODO: need to show progress for image being added
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
