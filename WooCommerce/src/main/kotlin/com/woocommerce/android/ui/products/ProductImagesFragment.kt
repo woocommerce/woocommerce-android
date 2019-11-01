@@ -166,7 +166,11 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
      * Triggered by the viewModel when an image is being uploaded or has finished uploading
      */
     private fun showUploadImageProgress(isUploading: Boolean) {
-        // TODO: need to show progress for image being added
+        if (isUploading) {
+            imageGallery.addUploadPlaceholder()
+        } else {
+            imageGallery.removeUploadPlaceholder()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

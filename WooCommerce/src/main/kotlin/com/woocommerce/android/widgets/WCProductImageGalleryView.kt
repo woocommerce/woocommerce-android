@@ -20,8 +20,6 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
-import kotlinx.android.synthetic.main.product_list_item.view.*
-import kotlinx.android.synthetic.main.product_list_item.view.productImage
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.PhotonUtils
 
@@ -35,6 +33,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 ) : RecyclerView(context, attrs, defStyle) {
     companion object {
         private const val NUM_GRID_COLS = 2
+        private const val PLACEHOLDER_ID = -1L
     }
 
     interface OnGalleryImageClickListener {
@@ -116,6 +115,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
+    fun addUploadPlaceholder() {
+        adapter.addUploadPlaceholder()
+    }
+
+    fun removeUploadPlaceholder() {
+        adapter.removeUploadPlaceholder()
+    }
+
     private fun onImageClicked(position: Int, imageView: View) {
         imageView.transitionName = "shared_element$position"
         listener.onGalleryImageClicked(adapter.getImage(position), imageView)
@@ -144,6 +151,22 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
+        fun addUploadPlaceholder() {
+            removeUploadPlaceholder()
+            val placeholder = WCProductImageModel(PLACEHOLDER_ID)
+            imageList.add(0, placeholder)
+            notifyItemInserted(0)
+        }
+
+        fun removeUploadPlaceholder() {
+            for (index in imageList.indices) {
+                if (imageList[index].id == PLACEHOLDER_ID) {
+                    imageList.removeAt(index)
+                    notifyItemRemoved(index)
+                }
+            }
+        }
+
         fun getImage(position: Int) = adapter.imageList[position]
 
         override fun getItemCount() = imageList.size
@@ -161,8 +184,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
-            request.load(photonUrl).into(holder.imageView)
+            if (getImage(position).id == PLACEHOLDER_ID) {
+                holder.uploadProgress.visibility = View.VISIBLE
+                holder.imageView.setImageDrawable(null)
+            } else {
+                holder.uploadProgress.visibility = View.GONE
+                val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
+                request.load(photonUrl).into(holder.imageView)
+            }
         }
     }
 
