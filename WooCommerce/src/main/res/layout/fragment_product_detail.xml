@@ -1,5 +1,4 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/productDetail_root"
@@ -14,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="false"
-        app:elevation="0dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -40,7 +39,7 @@
                     android:contentDescription="@string/orderdetail_product_image_contentdesc"
                     android:scaleType="centerCrop"
                     android:transitionName="@string/shared_element_transition"
-                    tools:height="200dp"/>
+                    tools:height="200dp" />
 
                 <ImageView
                     android:id="@+id/imageScrim"
@@ -49,7 +48,16 @@
                     android:layout_gravity="top"
                     android:background="@drawable/product_detail_gradient_scrim"
                     android:importantForAccessibility="no"
-                    tools:layout_height="74dp"/>
+                    tools:layout_height="74dp" />
+
+                <ProgressBar
+                    android:id="@+id/uploadImageProgress"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <FrameLayout
                     android:id="@+id/frameStatusBadge"
@@ -67,18 +75,18 @@
                         android:layout_gravity="bottom"
                         android:background="@drawable/product_detail_status_badge"
                         android:gravity="center"
-                        android:paddingBottom="@dimen/margin_small"
-                        android:paddingEnd="@dimen/margin_medium"
                         android:paddingStart="@dimen/margin_medium"
                         android:paddingTop="@dimen/margin_small"
+                        android:paddingEnd="@dimen/margin_medium"
+                        android:paddingBottom="@dimen/margin_small"
                         android:textColor="@color/wc_grey_dark"
                         android:textSize="@dimen/text_medium"
-                        tools:text="Private"/>
+                        tools:text="Private" />
                 </FrameLayout>
 
                 <View
                     style="@style/Woo.Settings.Divider"
-                    android:layout_gravity="bottom"/>
+                    android:layout_gravity="bottom" />
 
             </FrameLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>

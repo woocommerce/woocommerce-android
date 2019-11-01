@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.media.MediaUploadWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
@@ -32,6 +33,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
+    private val mediaUploadWrapper: MediaUploadWrapper = mock()
 
     private val product = ProductTestUtils.generateProduct()
     private val productRemoteId = product.remoteId
@@ -55,7 +57,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         selectedSite,
                         productRepository,
                         networkStatus,
-                        currencyFormatter
+                        currencyFormatter,
+                        mediaUploadWrapper
                 )
         )
         val prodSettings = WCProductSettingsModel(0).apply {

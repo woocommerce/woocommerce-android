@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products
 
 import android.Manifest.permission
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -40,6 +42,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithPar
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -52,6 +55,11 @@ import javax.inject.Inject
 import kotlin.math.max
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
+    companion object {
+        private const val MENU_ID_CHOOSE_PHOTO = 2
+        private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
+    }
+
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -121,8 +129,16 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             shareProduct(it)
         })
 
+        viewModel.chooseProductImage.observe(this, Observer {
+            chooseProductImage()
+        })
+
         viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
+        })
+
+        viewModel.isUploadingProductImage.observe(this, Observer {
+            showUploadImageProgress(it)
         })
 
         viewModel.exit.observe(this, Observer {
@@ -146,13 +162,21 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
+        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled()) {
+            menu?.add(Menu.NONE, MENU_ID_CHOOSE_PHOTO, Menu.NONE, R.string.product_change_image)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when {
-            item?.itemId == R.id.menu_share -> {
+        return when (item?.itemId) {
+            R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
+                true
+            }
+            MENU_ID_CHOOSE_PHOTO -> {
+                // TODO: analytics
+                viewModel.onChooseImageClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -188,8 +212,27 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
 
         updateActivityTitle()
+        showProductImage(product)
 
         isVariation = product.type == ProductType.VARIATION
+
+        // show status badge for unpublished products
+        product.status?.let { status ->
+            if (status != ProductStatus.PUBLISH) {
+                frameStatusBadge.visibility = View.VISIBLE
+                textStatusBadge.text = status.toString(activity!!)
+            }
+        }
+
+        addPrimaryCard(productData)
+        addPricingAndInventoryCard(productData)
+        addPurchaseDetailsCard(productData)
+    }
+
+    private fun showProductImage(product: Product) {
+        if (viewModel.isUploadingProductImage.value == true) {
+            return
+        }
 
         val imageUrl = product.firstImageUrl
         if (imageUrl != null) {
@@ -208,18 +251,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             productDetail_image.visibility = View.GONE
             imageScrim.visibility = View.GONE
         }
-
-        // show status badge for unpublished products
-        product.status?.let { status ->
-            if (status != ProductStatus.PUBLISH) {
-                frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toString(activity!!)
-            }
-        }
-
-        addPrimaryCard(productData)
-        addPricingAndInventoryCard(productData)
-        addPurchaseDetailsCard(productData)
     }
 
     private fun addPrimaryCard(productData: ProductWithParameters) {
@@ -524,6 +555,43 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
+    private fun chooseProductImage() {
+        // only show the chooser if user already allowed storage permission, otherwise simply request the
+        // permission and do nothing else - this will be called again if the user then agrees to allow
+        // storage permission
+        if (requestStoragePermission()) {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            val chooser = Intent.createChooser(intent, getString(R.string.product_change_image))
+            activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
+        }
+    }
+
+    /**
+     * Triggered by the viewModel when an image is being uploaded or has finished uploading
+     */
+    private fun showUploadImageProgress(isUploading: Boolean) {
+        productDetail_image.visibility = View.VISIBLE
+        imageScrim.visibility = View.VISIBLE
+
+        if (isUploading) {
+            uploadImageProgress.visibility = View.VISIBLE
+            productDetail_image.imageAlpha = 128
+        } else {
+            uploadImageProgress.visibility = View.GONE
+            productDetail_image.imageAlpha = 255
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
+            data.data?.let { imageUri ->
+                viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+            }
+        }
+    }
+
     /**
      * Glide failed to load the product image, do nothing so Glide will show the error drawable
      */
@@ -574,10 +642,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             return true
         }
 
-        val permissions = arrayOf(permission.READ_EXTERNAL_STORAGE)
-        requestPermissions(
-                permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE
-        )
+        val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE)
+        requestPermissions(permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE)
         return false
     }
 
@@ -619,13 +685,19 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             return
         }
 
-        val checkForAlwaysDenied = requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
         val allGranted = WooPermissionUtils.setPermissionListAsked(
-                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied
+                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied = true
         )
 
-        if (allGranted && requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE) {
-            // TODO: show camera once we add this feature
+        if (allGranted) {
+            when (requestCode) {
+                WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
+                    chooseProductImage()
+                }
+                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
+                    // TODO: show camera once we add this feature
+                }
+            }
         }
     }
 }
