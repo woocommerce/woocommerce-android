@@ -479,10 +479,17 @@ class OrderListFragment : TopLevelFragment(),
      */
     private fun calculateDefaultTabPosition(): Int {
         val orderStatusOptions = getOrderStatusOptions()
-        return if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
-            ORDER_TAB_DEFAULT
-        } else {
+        return if (AppPrefs.hasSelectedOrderListTabPosition()) {
+            // If the user has already changed tabs once then select
+            // the last tab they had selected.
             AppPrefs.getSelectedOrderListTabPosition()
+        } else if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
+            // There are no "processing" orders to display, show all.
+            TAB_INDEX_ALL
+        } else {
+            // Default to the "processing" tab if there are orders to
+            // process.
+            TAB_INDEX_PROCESSING
         }
     }
 
