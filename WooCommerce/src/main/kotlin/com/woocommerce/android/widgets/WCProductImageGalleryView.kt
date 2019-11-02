@@ -122,6 +122,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     fun addUploadPlaceholder() {
         adapter.addUploadPlaceholder()
+        smoothScrollToPosition(0)
     }
 
     fun removeUploadPlaceholder() {
@@ -155,7 +156,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 imageList.clear()
                 imageList.addAll(images)
                 notifyDataSetChanged()
-                addUploadPlaceholder()
             }
         }
 

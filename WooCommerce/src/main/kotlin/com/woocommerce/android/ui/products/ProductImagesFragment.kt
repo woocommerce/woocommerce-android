@@ -5,11 +5,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.transition.Fade
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import android.widget.PopupWindow
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -40,6 +43,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var viewModel: ProductImagesViewModel
+    private lateinit var imageSourcePopup: PopupWindow
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private var capturedPhotoUri: Uri? = null
@@ -62,6 +66,11 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
     }
 
+    override fun onPause() {
+        super.onPause()
+        dismissImageSourcePopup()
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -70,8 +79,9 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
+        createImageSourcePopup()
         addImageButton.setOnClickListener {
-            showImageSourceMenu()
+            showImageSourcePopup()
         }
     }
 
@@ -120,23 +130,35 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         )
     }
 
-    // TODO we need icons to show
-    private fun showImageSourceMenu() {
-        val popup = PopupMenu(requireActivity(), addImageButton).also { it.inflate(R.menu.menu_image_source) }
-        popup.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_device_chooser -> {
-                    viewModel.onChooseImageClicked()
-                    true
-                }
-                R.id.menu_device_camera -> {
-                    viewModel.onCaptureImageClicked()
-                    true
-                }
-                else -> false
+    private fun createImageSourcePopup() {
+        val contentView = requireActivity().layoutInflater.inflate(R.layout.image_source_popup, null).also {
+            it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
+                viewModel.onChooseImageClicked()
+            }
+            it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
+                viewModel.onCaptureImageClicked()
             }
         }
-        popup.show()
+
+        imageSourcePopup = PopupWindow(requireActivity()).also {
+            it.contentView = contentView
+            it.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            it.setBackgroundDrawable(null)
+            it.setFocusable(true)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                it.enterTransition = Fade()
+                it.exitTransition = Fade()
+            }
+        }
+    }
+
+    private fun showImageSourcePopup() {
+        imageSourcePopup.showAtLocation(addImageButton, Gravity.CENTER, 0, 0)
+    }
+
+    private fun dismissImageSourcePopup() {
+        imageSourcePopup.dismiss()
     }
 
     private fun chooseProductImage() {
