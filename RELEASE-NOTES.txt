@@ -1,6 +1,7 @@
 3.0
 -----
 * Added a new refunding feature that brings the ability to specify the amount to refund
+* Products with multiple images now show all images in a gallery.
 * Bugfix: Fixed a rare crash that would happen in the "Add Order Note" view while saving state when the app is pushed to the background.
  
 2.9

@@ -30,6 +30,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
         private const val KEY_IMAGE_TITLE = "image_title"
+        private const val KEY_TRANSITION_NAME = "transition_name"
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
         fun show(activity: Activity, imageUrl: String, title: String = "", sharedElement: View? = null) {
@@ -37,10 +38,10 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             intent.putExtra(KEY_IMAGE_URL, imageUrl)
             intent.putExtra(KEY_IMAGE_TITLE, title)
 
-            val transitionName = activity.getString(R.string.shared_element_transition)
-
             // use a shared element transition if a shared element view was passed, otherwise default to fade-in
-            val options = if (sharedElement != null) {
+            val options = if (sharedElement != null && sharedElement.transitionName.isNotEmpty()) {
+                val transitionName = sharedElement.transitionName
+                intent.putExtra(KEY_TRANSITION_NAME, transitionName)
                 ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement, transitionName)
             } else {
                 ActivityOptionsCompat.makeCustomAnimation(
@@ -55,6 +56,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
     private lateinit var imageUrl: String
     private lateinit var imageTitle: String
+    private lateinit var transitionName: String
 
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
@@ -75,6 +77,13 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         } else {
             savedInstanceState.getString(KEY_IMAGE_TITLE) ?: ""
         }
+
+        transitionName = if (savedInstanceState == null) {
+            intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
+        } else {
+            savedInstanceState.getString(KEY_TRANSITION_NAME) ?: ""
+        }
+        photoView.transitionName = transitionName
 
         val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
         toolbar.background = ColorDrawable(toolbarColor)
@@ -100,6 +109,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(KEY_IMAGE_URL, imageUrl)
         outState.putString(KEY_IMAGE_TITLE, imageTitle)
+        outState.putString(KEY_TRANSITION_NAME, transitionName)
         super.onSaveInstanceState(outState)
     }
 
