@@ -16,4 +16,14 @@
         android:contentDescription="@string/product_image_content_description"
         android:padding="1dp"
         tools:src="@drawable/ic_product" />
+
+
+    <ProgressBar
+        android:id="@+id/uploadProgess"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible" />
 </FrameLayout>

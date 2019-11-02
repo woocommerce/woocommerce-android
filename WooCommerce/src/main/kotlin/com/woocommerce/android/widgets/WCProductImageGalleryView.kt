@@ -7,14 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.widget.ImageView
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.woocommerce.android.R
-import com.woocommerce.android.R.layout
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
@@ -131,11 +129,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
-        imageView.transitionName = "shared_element$position"
-        listener.onGalleryImageClicked(adapter.getImage(position), imageView)
+        if (!adapter.isPlaceholder(position)) {
+            imageView.transitionName = "shared_element$position"
+            listener.onGalleryImageClicked(adapter.getImage(position), imageView)
+        }
     }
 
-    private inner class ImageGalleryAdapter : RecyclerView.Adapter<ViewHolder>() {
+    private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
@@ -176,7 +176,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
-        private fun isPlaceholder(position: Int) = imageList[position].id == PLACEHOLDER_ID
+        fun isPlaceholder(position: Int) = imageList[position].id == PLACEHOLDER_ID
 
         fun getImage(position: Int) = imageList[position]
 
@@ -187,40 +187,40 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         override fun getItemViewType(position: Int) =
                 if (isPlaceholder(position)) VIEW_TYPE_PLACEHOLDER else VIEW_TYPE_IMAGE
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return if (viewType == VIEW_TYPE_PLACEHOLDER) {
-                ImageViewHolder(
-                        layoutInflater.inflate(R.layout.image_gallery_item, parent, false)
-                )
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
+            val holder = ImageViewHolder(
+                    layoutInflater.inflate(R.layout.image_gallery_item, parent, false)
+            )
+
+            if (viewType == VIEW_TYPE_PLACEHOLDER) {
+                holder.imageView.layoutParams.width = placeholderWidth
+                holder.imageView.setBackgroundResource(R.drawable.product_detail_image_background)
+                holder.uploadProgess.visibility = View.VISIBLE
             } else {
-                PlaceholderViewHolder(
-                        layoutInflater.inflate(R.layout.image_gallery_placeholder_item, parent, false)
-                )
+                holder.imageView.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                holder.imageView.setBackgroundResource(R.drawable.picture_frame)
+                holder.uploadProgess.visibility = View.GONE
             }
+
+            return holder
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
             if (!isPlaceholder(position)) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
-                request.load(photonUrl).into((holder as ImageViewHolder).imageView)
+                request.load(photonUrl).into(holder.imageView)
             }
         }
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: ImageView = view.productImage
+        val imageView = view.productImage
+        val uploadProgess = view.uploadProgess
         init {
             imageView.layoutParams.height = imageHeight
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, imageView)
             }
-        }
-    }
-
-    private inner class PlaceholderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        init {
-            itemView.layoutParams.height = imageHeight
-            itemView.layoutParams.width = placeholderWidth
         }
     }
 }
