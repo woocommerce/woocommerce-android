@@ -13,7 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductListViewModel.SnackbarMessage
+import com.woocommerce.android.ui.products.ProductListViewModel.ShowSnackbar
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -67,7 +67,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var message: Int? = null
-        viewModel.event.observeForever { message = (it as SnackbarMessage).message }
+        viewModel.event.observeForever { message = (it as ShowSnackbar).message }
 
         viewModel.start()
 

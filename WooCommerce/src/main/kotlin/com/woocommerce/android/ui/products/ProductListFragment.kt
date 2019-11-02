@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
-import com.woocommerce.android.ui.products.ProductListViewModel.SnackbarMessage
+import com.woocommerce.android.ui.products.ProductListViewModel.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
@@ -282,7 +282,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
         viewModel.event.observe(this, Observer { event ->
             when (event) {
-                is SnackbarMessage -> uiMessageResolver.showSnack(event.message)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         })
     }

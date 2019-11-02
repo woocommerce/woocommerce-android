@@ -114,7 +114,7 @@ class ProductListViewModel @AssistedInject constructor(
             }
             canLoadMore = productRepository.canLoadMoreProducts
         } else {
-            triggerEvent(SnackbarMessage(R.string.offline_error))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
 
         viewState = viewState.copy(isSkeletonShown = false, isLoadingMore = false, isRefreshing = false)
@@ -136,7 +136,7 @@ class ProductListViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null
     ) : Parcelable
 
-    data class SnackbarMessage(@StringRes val message: Int) : Event()
+    data class ShowSnackbar(@StringRes val message: Int) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductListViewModel>
