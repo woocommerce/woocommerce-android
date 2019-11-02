@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +20,7 @@ import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 
 /**
@@ -32,8 +32,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
     companion object {
-        private const val NUM_GRID_COLS = 2
         private const val PLACEHOLDER_ID = -1L
+        private const val VIEW_TYPE_IMAGE = 0
+        private const val VIEW_TYPE_PLACEHOLDER = 1
     }
 
     interface OnGalleryImageClickListener {
@@ -41,7 +42,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private var imageHeight = 0
-    private var isGridView: Boolean = false
+    private var isGridView = false
+
+    private val numColumns: Int
+    private val placeholderWidth: Int
 
     private val adapter: ImageGalleryAdapter
     private val request: GlideRequest<Drawable>
@@ -59,8 +63,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
+        numColumns = if (DisplayUtils.isLandscape(context)) 3 else 2
+        placeholderWidth = DisplayUtils.getDisplayPixelWidth(context) / numColumns
+
         layoutManager = if (isGridView) {
-            GridLayoutManager(context, NUM_GRID_COLS)
+            GridLayoutManager(context, numColumns)
         } else {
             LinearLayoutManager(context, HORIZONTAL, false)
         }
@@ -111,7 +118,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             invalidate()
             postDelayed({
                 adapter.showImages(product.images)
-            }, 250)
+            }, 100)
         }
     }
 
@@ -128,7 +135,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         listener.onGalleryImageClicked(adapter.getImage(position), imageView)
     }
 
-    private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
+    private inner class ImageGalleryAdapter : RecyclerView.Adapter<ViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
 
         fun showImages(images: List<WCProductImageModel>) {
@@ -148,6 +155,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 imageList.clear()
                 imageList.addAll(images)
                 notifyDataSetChanged()
+                addUploadPlaceholder()
             }
         }
 
@@ -160,49 +168,59 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         fun removeUploadPlaceholder() {
             for (index in imageList.indices) {
-                if (imageList[index].id == PLACEHOLDER_ID) {
+                if (isPlaceholder(index)) {
                     imageList.removeAt(index)
                     notifyItemRemoved(index)
+                    return
                 }
             }
         }
 
-        fun getImage(position: Int) = adapter.imageList[position]
+        private fun isPlaceholder(position: Int) = imageList[position].id == PLACEHOLDER_ID
+
+        fun getImage(position: Int) = imageList[position]
 
         override fun getItemCount() = imageList.size
 
         override fun getItemId(position: Int): Long = imageList[position].id
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-            return ImageViewHolder(
-                    layoutInflater.inflate(
-                            layout.image_gallery_item,
-                            parent,
-                            false
-                    )
-            )
+        override fun getItemViewType(position: Int) =
+                if (isPlaceholder(position)) VIEW_TYPE_PLACEHOLDER else VIEW_TYPE_IMAGE
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return if (viewType == VIEW_TYPE_PLACEHOLDER) {
+                ImageViewHolder(
+                        layoutInflater.inflate(R.layout.image_gallery_item, parent, false)
+                )
+            } else {
+                PlaceholderViewHolder(
+                        layoutInflater.inflate(R.layout.image_gallery_placeholder_item, parent, false)
+                )
+            }
         }
 
-        override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            if (getImage(position).id == PLACEHOLDER_ID) {
-                holder.uploadProgress.visibility = View.VISIBLE
-                holder.imageView.setImageDrawable(null)
-            } else {
-                holder.uploadProgress.visibility = View.GONE
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            if (!isPlaceholder(position)) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
-                request.load(photonUrl).into(holder.imageView)
+                request.load(photonUrl).into((holder as ImageViewHolder).imageView)
             }
         }
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.productImage
-        val uploadProgress: ProgressBar = view.uploadProgess
         init {
             imageView.layoutParams.height = imageHeight
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, imageView)
             }
+        }
+    }
+
+    private inner class PlaceholderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        init {
+            itemView.layoutParams.height = imageHeight
+            itemView.layoutParams.width = placeholderWidth
         }
     }
 }
