@@ -6,7 +6,7 @@ import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 
-open class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
+sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
     object No : ProductBackorderStatus(R.string.product_backorders_no)
     object Yes : ProductBackorderStatus(R.string.product_backorders_yes)
     object Notify : ProductBackorderStatus(R.string.product_backorders_notify)
