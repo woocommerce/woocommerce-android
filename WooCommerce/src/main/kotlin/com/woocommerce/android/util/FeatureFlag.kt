@@ -8,11 +8,12 @@ import com.woocommerce.android.BuildConfig
  */
 enum class FeatureFlag {
     PRODUCT_LIST,
-    DB_DOWNGRADE;
-
+    DB_DOWNGRADE,
+    REFUNDS;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             PRODUCT_LIST -> BuildConfig.DEBUG
+            REFUNDS -> BuildConfig.DEBUG
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
