@@ -189,6 +189,7 @@
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_created">Created %1$s</string>
+    <string name="orderdetail_shipping_method">Shipping Method</string>
     <string name="orderdetail_shipping_details">Shipping details</string>
     <string name="orderdetail_billing_details">Billing details</string>
     <string name="orderdetail_email_contentdesc">email customer</string>
