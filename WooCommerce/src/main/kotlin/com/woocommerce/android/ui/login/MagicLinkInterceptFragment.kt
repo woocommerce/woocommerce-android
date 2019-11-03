@@ -107,7 +107,6 @@ class MagicLinkInterceptFragment : Fragment() {
 
         viewModel.isAuthTokenUpdated.observe(this, Observer { authTokenUpdated ->
             if (authTokenUpdated) {
-                notifyMagicLinkTokenUpdated()
                 showSitePickerScreen()
             } else showLoginScreen()
         })
@@ -149,10 +148,6 @@ class MagicLinkInterceptFragment : Fragment() {
             SitePickerActivity.showSitePickerFromLogin(it)
             activity?.finish()
         }
-    }
-
-    private fun notifyMagicLinkTokenUpdated() {
-        loginAnalyticsListener.trackLoginMagicLinkSucceeded()
     }
 
     private fun showLoginScreen() {
