@@ -215,29 +215,27 @@ class MagicLinkInterceptRepository @Inject constructor(
             WooLog.e(LOGIN, "onAccountChanged has error: ${event.error?.type} : ${event.error?.message}")
 
             val trackEvent = when {
-                event.causeOfChange == AccountAction.FETCH_ACCOUNT -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
-                event.causeOfChange == AccountAction.FETCH_ACCOUNT -> LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
-                else -> null
+                event.causeOfChange == AccountAction.FETCH_SETTINGS -> LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
+                else -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
             }
-            trackEvent?.let {
-                AnalyticsTracker.track(it, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
-            }
-        }
-        when {
-            event.causeOfChange == AccountAction.FETCH_ACCOUNT -> {
-                // The user's account info has been fetched and stored - next, fetch the user's settings
-                AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS)
-                continuationFetchAccount?.resume(!event.isError)
-                continuationFetchAccount = null
-            }
-            event.causeOfChange == AccountAction.FETCH_SETTINGS -> {
-                // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-                AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS)
-                continuationFetchAccountSettings?.resume(!event.isError)
-                continuationFetchAccountSettings = null
+            AnalyticsTracker.track(trackEvent, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+        } else {
+            when {
+                event.causeOfChange == AccountAction.FETCH_ACCOUNT -> {
+                    // The user's account info has been fetched and stored - next, fetch the user's settings
+                    AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS)
+                    continuationFetchAccount?.resume(!event.isError)
+                    continuationFetchAccount = null
+                }
+                event.causeOfChange == AccountAction.FETCH_SETTINGS -> {
+                    // The user's account settings have also been fetched and stored - now we can fetch the user's sites
+                    AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS)
+                    continuationFetchAccountSettings?.resume(!event.isError)
+                    continuationFetchAccountSettings = null
+                }
             }
         }
     }
