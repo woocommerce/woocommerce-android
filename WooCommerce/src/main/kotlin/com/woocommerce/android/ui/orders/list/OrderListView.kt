@@ -114,6 +114,10 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
+    fun hideEmptyView() {
+        empty_view?.visibility = View.GONE
+    }
+
     fun updateEmptyViewForState(state: OrderListEmptyUiState) {
         empty_view?.let { emptyView ->
             if (state.emptyViewVisible) {
@@ -122,7 +126,7 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
                 setupButtonOrHide(emptyView.button, state.buttonText, state.onButtonClick)
                 WooAnimUtils.fadeIn(emptyView, Duration.MEDIUM)
             } else {
-                emptyView.visibility = View.GONE
+                hideEmptyView()
             }
         }
     }

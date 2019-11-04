@@ -662,6 +662,8 @@ class OrderListFragment : TopLevelFragment(),
      * 2. The order status list view is displayed by default
      */
     private fun enableSearchListeners() {
+        order_list_view?.hideEmptyView()
+
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
         orderListMenu?.findItem(R.id.menu_support)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)
