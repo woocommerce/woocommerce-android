@@ -1,9 +1,12 @@
 package com.woocommerce.android.viewmodel
 
+import android.os.Bundle
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import javax.inject.Inject
-import javax.inject.Provider
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.savedstate.SavedStateRegistryOwner
+import com.woocommerce.android.di.ViewModelAssistedFactory
 
 /**
  * {@link Factory} implementation, which creates a {@link ViewModel}, which has an empty constructor. The factory instance
@@ -14,24 +17,13 @@ import androidx.lifecycle.ViewModelProvider
  */
 class ViewModelFactory
 @Inject constructor(
-    private val mViewModelsMap: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
-) : ViewModelProvider.Factory {
+    private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards ViewModelAssistedFactory<out ViewModel>>,
+    owner: SavedStateRegistryOwner,
+    defaultArgs: Bundle? = null
+) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(viewModelClass: Class<T>): T {
-        var creator: Provider<out ViewModel>? = mViewModelsMap[viewModelClass]
-        if (creator == null) {
-            for ((key, value) in mViewModelsMap) {
-                if (viewModelClass.isAssignableFrom(key)) {
-                    creator = value
-                    break
-                }
-            }
-        }
-        if (creator == null) {
-            throw IllegalArgumentException(
-                "View model not found [$viewModelClass]. Have you added corresponding method into the ViewModelModule."
-            )
-        }
-        return creator.get() as T
+    override fun <T : ViewModel> create(key: String, viewModelClass: Class<T>, savedState: SavedStateHandle): T {
+        return creators[viewModelClass]?.create(savedState) as? T
+                ?: throw IllegalArgumentException("[$viewModelClass] not found. Did you add it to a module?")
     }
 }

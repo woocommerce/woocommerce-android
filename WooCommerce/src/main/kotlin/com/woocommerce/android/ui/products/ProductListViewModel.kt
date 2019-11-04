@@ -2,27 +2,29 @@ package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Named
 
 @OpenClassOnDebug
-class ProductListViewModel @Inject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+class ProductListViewModel @AssistedInject constructor(
+    dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
-) : ScopedViewModel(mainDispatcher) {
+    private val networkStatus: NetworkStatus,
+    @Assisted private val savedState: SavedStateHandle
+) : ScopedViewModel(dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
@@ -137,4 +139,7 @@ class ProductListViewModel @Inject constructor(
     private fun addProducts(products: List<Product>) {
         productList.value = productList.value.orEmpty() + products
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ProductListViewModel>
 }

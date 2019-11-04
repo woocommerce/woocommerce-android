@@ -19,7 +19,6 @@ apply plugin: 'com.automattic.android.fetchstyle'
 
 allprojects {
     apply plugin: 'checkstyle'
-    apply plugin: 'kotlin-android-extensions'
 
     repositories {
         google()
@@ -109,7 +108,7 @@ ext {
     eventBusVersion = '3.1.1'
     googlePlayCoreVersion = '1.6.1'
     coroutinesVersion = '1.2.2'
-    archComponentsVersion = '2.0.0'
+    archComponentsVersion = '2.1.0'
     assertjVersion = '3.11.1'
 }
 

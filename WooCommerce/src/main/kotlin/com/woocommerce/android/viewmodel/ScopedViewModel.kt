@@ -1,7 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineDispatcher
+import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
@@ -12,11 +12,13 @@ import kotlin.coroutines.CoroutineContext
  *
  * When the ViewModel is destroyed, the coroutine job is cancelled and any running coroutine tied to it is stopped.
  */
-abstract class ScopedViewModel(private val defaultDispatcher: CoroutineDispatcher) : ViewModel(), CoroutineScope {
+abstract class ScopedViewModel(
+    protected val dispatchers: CoroutineDispatchers
+) : ViewModel(), CoroutineScope {
     protected var job: Job = Job()
 
     override val coroutineContext: CoroutineContext
-        get() = defaultDispatcher + job
+        get() = dispatchers.main + job
 
     override fun onCleared() {
         super.onCleared()

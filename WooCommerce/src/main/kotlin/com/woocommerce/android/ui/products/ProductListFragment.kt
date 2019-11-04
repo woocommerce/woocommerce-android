@@ -12,9 +12,8 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -26,6 +25,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -44,11 +44,12 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         fun newInstance() = ProductListFragment()
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: ProductListViewModel
     private lateinit var productAdapter: ProductListAdapter
+
+    private val viewModel: ProductListViewModel by viewModels { viewModelFactory }
 
     private val skeletonView = SkeletonView()
 
@@ -109,7 +110,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         outState.putString(KEY_SEARCH_QUERY, searchQuery)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -146,17 +147,17 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         showOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_product_list_fragment, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_product_list_fragment, menu)
 
-        searchMenuItem = menu?.findItem(R.id.menu_search)
+        searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
     }
@@ -197,8 +198,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         return !isChildShowing
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(Stat.PRODUCT_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
@@ -265,10 +266,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ProductListViewModel::class.java).also {
-            setupObservers(it)
-        }
+        setupObservers(viewModel)
         viewModel.start(searchQuery)
     }
 

@@ -25,6 +25,8 @@ import javax.inject.Singleton
         SelectedSiteModule::class,
         InterceptorModule::class,
         ActivityBindingModule::class,
+        ThreadModule::class,
+        ViewModelAssistedFactoriesModule::class,
         FCMServiceModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,

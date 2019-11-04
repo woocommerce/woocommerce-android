@@ -2,7 +2,10 @@ package com.woocommerce.android.di
 
 import javax.inject.Scope
 
-@MustBeDocumented
 @Scope
-@Retention(AnnotationRetention.RUNTIME)
+@Retention
 annotation class ActivityScope
+
+@Scope
+@Retention
+annotation class FragmentScope

@@ -3,32 +3,34 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import javax.inject.Inject
-import javax.inject.Named
 import kotlin.math.roundToInt
 
 @OpenClassOnDebug
-class ProductDetailViewModel @Inject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+class ProductDetailViewModel @AssistedInject constructor(
+    dispatchers: CoroutineDispatchers,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter
-) : ScopedViewModel(mainDispatcher) {
+    private val currencyFormatter: CurrencyFormatter,
+    @Assisted private val savedState: SavedStateHandle
+) : ScopedViewModel(dispatchers) {
     private var remoteProductId = 0L
 
     private val product = MutableLiveData<Product>()
@@ -174,4 +176,7 @@ class ProductDetailViewModel @Inject constructor(
         val salePriceWithCurrency: String,
         val regularPriceWithCurrency: String
     )
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }

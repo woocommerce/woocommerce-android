@@ -11,9 +11,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -30,6 +29,7 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
@@ -51,12 +51,13 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         fun newInstance() = ReviewListFragment()
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
 
-    private lateinit var viewModel: ReviewListViewModel
     private lateinit var reviewsAdapter: ReviewListAdapter
+
+    private val viewModel: ReviewListViewModel by viewModels { viewModelFactory }
 
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
@@ -153,19 +154,19 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         initializeViewModel()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_reviews_list_fragment, menu)
-        menuMarkAllRead = menu?.findItem(R.id.menu_mark_all_read)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_reviews_list_fragment, menu)
+        menuMarkAllRead = menu.findItem(R.id.menu_mark_all_read)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         viewModel.checkForUnreadReviews()
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_mark_all_read -> {
                 AnalyticsTracker.track(Stat.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
                 viewModel.markAllReviewsAsRead()
@@ -175,7 +176,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -215,8 +216,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ReviewListViewModel::class.java)
         setupObservers()
         viewModel.start()
     }
