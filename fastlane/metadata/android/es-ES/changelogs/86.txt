@@ -1,0 +1,5 @@
+2.9:
+* ¡Hurra! ¡Ya admitimos Android 10!
+* La pestaña de pedidos se ha renovado por completo. La búsqueda y el filtrado comparten la misma vista, que incluye el recuento total de pedidos según su estado. La lista de pedidos se muestra en dos pestañas: Procesando y Todo.
+* También hemos hecho algunos cambios en la vista de detalles del pedido.
+* Esta versión también incluye varias correcciones de errores menores.
