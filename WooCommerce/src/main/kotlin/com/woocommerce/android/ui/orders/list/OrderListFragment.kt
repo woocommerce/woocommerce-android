@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import dagger.android.support.AndroidSupportInjection
@@ -93,7 +92,7 @@ class OrderListFragment : TopLevelFragment(),
     // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
     // identical to the real value on the UI side.
     private var orderStatusFilter: String
-        private set(value) { viewModel.orderStatusFilter = value}
+        private set(value) { viewModel.orderStatusFilter = value }
         get() = viewModel.orderStatusFilter
 
     // Alias for interacting with [viewModel.isSearching] so the value is always identical
@@ -407,17 +406,6 @@ class OrderListFragment : TopLevelFragment(),
 
         viewModel.emptyViewState.observe(this, Observer {
             it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
-        })
-
-        viewModel.shareStore.observe(this, Observer {
-            AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-            selectedSite.getIfExists()?.let { site ->
-                context?.let { ctx ->
-                    selectedSite.getIfExists()?.let {
-                        ActivityUtils.shareStoreUrl(ctx, site.url)
-                    }
-                }
-            }
         })
 
         viewModel.start()

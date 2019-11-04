@@ -95,9 +95,6 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewState: LiveData<OrderListEmptyUiState> = _emptyViewState
 
-    private val _shareStore = SingleLiveEvent<Unit>()
-    val shareStore: LiveData<Unit> = _shareStore
-
     var isSearching = false
     var searchQuery = ""
     var orderStatusFilter = ""
@@ -191,15 +188,6 @@ class OrderListViewModel @Inject constructor(
     }
 
     /**
-     * Notifies the view to share the store. It's necessary to do this from the fragment because
-     * doing this from here would require using the applicationContext which forces a new activity
-     * to be created.
-     */
-    fun shareStore() {
-        _shareStore.call()
-    }
-
-    /**
      * Reload the orders list with the database available in the database. This is the ideal way to
      * load changes to orders that were initiated from within this app instance. If the change was
      * successfully pushed to the API, then the database would already be updated so there is no
@@ -264,8 +252,8 @@ class OrderListViewModel @Inject constructor(
         _emptyViewState.addSource(pagedListWrapper.listError) { _emptyViewState.postValue(update()) }
     }
 
-    private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty()
-            && orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value.toLowerCase(Locale.ROOT)
+    private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty() &&
+            orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value.toLowerCase(Locale.ROOT)
 
     private fun showOfflineSnack() {
         // Network is not connected
