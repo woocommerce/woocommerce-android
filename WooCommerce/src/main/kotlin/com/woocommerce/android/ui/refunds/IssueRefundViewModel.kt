@@ -243,7 +243,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                             AnalyticsTracker.KEY_REFUND_AMOUNT to enteredAmount.toString()
                     ))
 
-                    val resultCall = async(dispatchers.main) {
+                    val resultCall = async(dispatchers.io) {
                         return@async refundStore.createRefund(
                                 selectedSite.get(),
                                 order.remoteId,
