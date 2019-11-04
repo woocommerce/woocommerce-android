@@ -29,10 +29,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -495,8 +497,17 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
-        findNavController().navigate(action)
+        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+            val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
+            findNavController().navigate(action)
+        } else {
+            ImageViewerActivity.show(
+                    requireActivity(),
+                    image.src,
+                    title = getFragmentTitle(),
+                    sharedElement = imageView
+            )
+        }
     }
 }
