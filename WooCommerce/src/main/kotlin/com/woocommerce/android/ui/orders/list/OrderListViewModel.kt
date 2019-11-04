@@ -32,10 +32,12 @@ import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -240,23 +242,30 @@ class OrderListViewModel @Inject constructor(
      */
     private fun listenToEmptyViewStateLiveData(pagedListWrapper: PagedListWrapper<OrderListItemUIType>) {
         val update = {
-            val listType = if (this.isSearching) OrderListType.SEARCH else OrderListType.ALL
+            val listType = when {
+                this.isSearching -> OrderListType.SEARCH
+                isShowingProcessingTab() -> OrderListType.PROCESSING
+                else -> OrderListType.ALL
+            }
             createEmptyUiState(
                 orderListType = listType,
                 isNetworkAvailable = networkStatus.isConnected(),
                 isLoadingData = pagedListWrapper.isFetchingFirstPage.value ?: false ||
                         pagedListWrapper.data.value == null,
                 isListEmpty = pagedListWrapper.isEmpty.value ?: true,
+                hasOrders = repository.hasCachedOrdersForSite(),
                 isSearchPromptRequired = isEmptySearch(),
                 isError = pagedListWrapper.listError.value != null,
-                fetchFirstPage = this::fetchOrdersAndOrderStatusOptions,
-                shareStoreFunc = this::shareStore)
+                fetchFirstPage = this::fetchOrdersAndOrderStatusOptions)
         }
 
         _emptyViewState.addSource(pagedListWrapper.isEmpty) { _emptyViewState.postValue(update()) }
         _emptyViewState.addSource(pagedListWrapper.isFetchingFirstPage) { _emptyViewState.postValue(update()) }
         _emptyViewState.addSource(pagedListWrapper.listError) { _emptyViewState.postValue(update()) }
     }
+
+    private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty()
+            && orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value.toLowerCase(Locale.ROOT)
 
     private fun showOfflineSnack() {
         // Network is not connected

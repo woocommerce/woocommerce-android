@@ -72,6 +72,13 @@ class OrderListRepository @Inject constructor(
         }
     }
 
+    /**
+     * Checks to see if there are any orders in the db for the active store.
+     *
+     * @return True if there are orders in the db, else False
+     */
+    fun hasCachedOrdersForSite() = orderStore.hasCachedOrdersForSite(selectedSite.get())
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
