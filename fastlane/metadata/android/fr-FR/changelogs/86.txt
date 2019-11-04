@@ -1,0 +1,5 @@
+2.9 :
+* Bonne nouvelle ! Nous prenons désormais en charge Android 10 !
+* L'onglet des commandes a été complètement refondu ! La recherche et le filtrage partagent une vue uniquement qui inclut le nombre total de commandes par état des commandes. La liste des commandes apparaît dans deux onglets : Traitement et Toutes.
+*La vue présentant les détails de la commande a également reçu quelques modifications.
+* Cette version inclut également la résolution de plusieurs bugs mineurs.
