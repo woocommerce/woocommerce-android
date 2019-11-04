@@ -42,6 +42,15 @@
     </style>
 
     <!--
+        Number picker
+    -->
+    <style name="NumberPickerTheme" parent="AppTheme">
+        <item name="colorControlNormal">@color/transparent</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+    </style>
+
+    <!--
         Toolbar Theme
     -->
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
