@@ -237,7 +237,15 @@ object AppPrefs {
     }
 
     fun getSelectedOrderListTabPosition() =
-            getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, 0)
+            getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, -1)
+
+    /**
+     * Checks if the user has a saved order list tab position yet. If no position has been saved,
+     * then the value will be the default of -1.
+     *
+     * @return True if the saved position is not the default -1, else false
+     */
+    fun hasSelectedOrderListTabPosition() = getSelectedOrderListTabPosition() > -1
 
     /**
      * Remove all user-related preferences.

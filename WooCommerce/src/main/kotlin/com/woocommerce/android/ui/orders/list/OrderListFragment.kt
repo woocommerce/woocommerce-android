@@ -193,7 +193,7 @@ class OrderListFragment : TopLevelFragment(),
 
                     // If this tab is the one that should be active, select it and load
                     // the appropriate list.
-                    if (index == calculateTabPosition()) {
+                    if (index == calculateDefaultTabPosition()) {
                         orderStatusFilter = calculateOrderStatusFilter(tab)
                         tab.select()
                     }
@@ -477,13 +477,26 @@ class OrderListFragment : TopLevelFragment(),
      *
      * @return the index of the tab to be activated
      */
-    private fun calculateTabPosition(): Int {
+    private fun calculateDefaultTabPosition(): Int {
         val orderStatusOptions = getOrderStatusOptions()
-        return if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
-            ORDER_TAB_DEFAULT
-        } else {
+        return if (AppPrefs.hasSelectedOrderListTabPosition()) {
+            // If the user has already changed tabs once then select
+            // the last tab they had selected.
             AppPrefs.getSelectedOrderListTabPosition()
+        } else if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
+            // There are no "processing" orders to display, show all.
+            TAB_INDEX_ALL
+        } else {
+            // Default to the "processing" tab if there are orders to
+            // process.
+            TAB_INDEX_PROCESSING
         }
+    }
+
+    private fun getOrderStatusFilterForActiveTab(): String? {
+        return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+            calculateOrderStatusFilter(it)
+        } ?: null
     }
 
     /**
@@ -563,6 +576,7 @@ class OrderListFragment : TopLevelFragment(),
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
 
+            orderStatusFilter = getOrderStatusFilterForActiveTab()
             viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
         }
     }
@@ -694,20 +708,19 @@ class OrderListFragment : TopLevelFragment(),
             }
             searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
-            val tabPosition = calculateTabPosition()
-            tab_layout.getTabAt(tabPosition)?.select()
-
             (activity as? MainActivity)?.hideBottomNav()
         }
     }
 
     private fun displayOrderStatusListView() {
         order_status_list_view.visibility = View.VISIBLE
+        order_list_view.visibility = View.GONE
         orderRefreshLayout.isEnabled = false
     }
 
     private fun hideOrderStatusListView() {
         order_status_list_view.visibility = View.GONE
+        order_list_view.visibility = View.VISIBLE
         orderRefreshLayout.isEnabled = true
     }
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_TWO_DAYS
 import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_WEEK
 import com.woocommerce.android.model.TimeGroup.GROUP_TODAY
 import com.woocommerce.android.model.TimeGroup.GROUP_YESTERDAY
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier.OrderIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier.SectionHeaderIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
@@ -34,6 +35,7 @@ import java.util.Date
 class OrderListItemDataSource(
     val dispatcher: Dispatcher,
     val orderStore: WCOrderStore,
+    val networkStatus: NetworkStatus,
     lifecycle: Lifecycle
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
     private val fetcher = OrderFetcher(lifecycle, dispatcher)
@@ -84,7 +86,15 @@ class OrderListItemDataSource(
     ): List<OrderListItemIdentifier> {
         val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, remoteItemIds)
                 .let { summariesByRemoteId ->
-                    remoteItemIds.mapNotNull { summariesByRemoteId[it] }
+                    val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
+
+                    if (!networkStatus.isConnected()) {
+                        // The network is not connected so remove any order summaries from the list where
+                        // a matching order has not yet been downloaded. This prevents the user from seeing
+                        // a "loading" view for that item indefinitely.
+                        val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
+                        summaries.filter { cachedOrders.containsKey(RemoteId(it.remoteOrderId)) }
+                    } else summaries
                 }
 
         val listFuture = mutableListOf<OrderIdentifier>()

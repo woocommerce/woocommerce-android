@@ -78,12 +78,8 @@ class OrderFetcher @Inject constructor(
     fun onOrdersFetchedById(event: OnOrdersFetchedByIds) {
         if (event.isError) {
             WooLog.e(WooLog.T.ORDERS, "$TAG: Error fetching orders by remoteOrderId: ${event.error.message}")
-
             // FIXME: Add error handling
-
             // FIXME: Possible add new tracks event to track error fetching order list data "order_list_load_failed"
-
-            return
         }
         ongoingRequests.removeAll(event.orderIds)
     }
