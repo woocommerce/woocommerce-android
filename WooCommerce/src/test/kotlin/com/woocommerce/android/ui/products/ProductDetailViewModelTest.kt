@@ -57,8 +57,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         selectedSite,
                         productRepository,
                         networkStatus,
-                        currencyFormatter,
-                        mediaUploadWrapper
+                        currencyFormatter
                 )
         )
         val prodSettings = WCProductSettingsModel(0).apply {
