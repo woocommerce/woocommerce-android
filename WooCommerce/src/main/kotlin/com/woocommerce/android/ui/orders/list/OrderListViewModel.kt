@@ -98,6 +98,7 @@ class OrderListViewModel @Inject constructor(
 
     var isSearching = false
     var searchQuery = ""
+    var orderStatusFilter = ""
 
     init {
         lifecycleRegistry.markState(Lifecycle.State.CREATED)
