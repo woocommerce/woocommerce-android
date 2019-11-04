@@ -44,10 +44,11 @@ object MediaUploadUtils {
             return null
         }
 
-        if (AppPrefs.getImageOptimizationEnabled())  {
-            getOptimizedImageUri(context, path)?.let { optimizedUri ->
-                MediaUtils.getRealPathFromURI(context, optimizedUri)?.let { optimizedPath ->
-                    path = optimizedPath
+        // optimize the image if the setting is enabled
+        if (AppPrefs.getImageOptimizationEnabled()) {
+            getOptimizedImageUri(context, path)?.let { optUri ->
+                MediaUtils.getRealPathFromURI(context, optUri)?.let { optPath ->
+                    path = optPath
                 }
             }
         }
@@ -152,9 +153,12 @@ object MediaUploadUtils {
         return null
     }
 
+    /**
+     * Resize and compress the passed image
+     */
     private fun getOptimizedImageUri(context: Context, path: String): Uri? {
-        ImageUtils.optimizeImage(context, path, OPTIMIZE_IMAGE_MAX_SIZE, OPTIMIZE_IMAGE_QUALITY)?.let { optpath ->
-            return Uri.parse(optpath)
+        ImageUtils.optimizeImage(context, path, OPTIMIZE_IMAGE_MAX_SIZE, OPTIMIZE_IMAGE_QUALITY)?.let { optPath ->
+            return Uri.parse(optPath)
         }
 
         WooLog.w(T.MEDIA, "getOptimizedMedia > Optimized picture was null!")
