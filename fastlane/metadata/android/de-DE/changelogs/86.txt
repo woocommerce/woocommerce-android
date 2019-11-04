@@ -1,0 +1,5 @@
+2.9:
+* Hurra! Wir unterstützen jetzt Android 10!
+* Der Tab „Bestellungen“ wurde komplett überarbeitet! Die Such- und Filteroption sind jetzt auf einer gemeinsamen Ansicht verfügbar, die die Gesamtzahl der Bestellungen nach Bestellstatus enthält. Die Liste der Bestellungen wird auf zwei Tabs angezeigt: „In Bearbeitung“ und „Alle“.
+* Die Ansicht der Bestelldetails wurde ebenfalls in Teilen überarbeitet.
+* Diese Version enthält auch verschiedene kleine Fehlerbehebungen.
