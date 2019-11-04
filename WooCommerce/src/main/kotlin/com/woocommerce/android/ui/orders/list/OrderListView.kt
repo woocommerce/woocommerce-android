@@ -13,6 +13,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
@@ -118,7 +120,7 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
                 UiHelpers.setTextOrHide(emptyView.title, state.title)
                 UiHelpers.setImageOrHide(emptyView.image, state.imgResId)
                 setupButtonOrHide(emptyView.button, state.buttonText, state.onButtonClick)
-                emptyView.visibility = View.VISIBLE
+                WooAnimUtils.fadeIn(emptyView, Duration.MEDIUM)
             } else {
                 emptyView.visibility = View.GONE
             }
