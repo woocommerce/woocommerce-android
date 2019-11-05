@@ -24,6 +24,12 @@
         android:text="@string/order_refunds_items_select_all"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/text_large"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
         android:background="?attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
