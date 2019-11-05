@@ -34,10 +34,6 @@ class RefundDetailFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
-    }
-
-    private fun initializeViewModel() {
         setupObservers(viewModel)
         viewModel.start(navArgs.orderId, navArgs.refundId)
     }
