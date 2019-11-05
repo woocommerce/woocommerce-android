@@ -40,7 +40,11 @@ class MediaUploadService : JobIntentService() {
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
 
-        class OnProductMediaUploadEvent(
+        class OnProductMediaUploadStartedEvent(
+            var remoteProductId: Long
+        )
+
+        class OnProductMediaUploadCompletedEvent(
             var remoteProductId: Long,
             val isError: Boolean
         )
@@ -113,6 +117,9 @@ class MediaUploadService : JobIntentService() {
      * Dispatch the request to upload device image to the WP media library and wait for it to complete
      */
     private fun dispatchUploadAction(media: MediaModel) {
+        val remoteProductId = media.postId
+        EventBus.getDefault().post(OnProductMediaUploadStartedEvent(remoteProductId))
+
         val site = siteStore.getSiteByLocalId(media.localSiteId)
         val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
@@ -179,14 +186,14 @@ class MediaUploadService : JobIntentService() {
     }
 
     private fun handleSuccess(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = false))
+        EventBus.getDefault().post(OnProductMediaUploadCompletedEvent(remoteProductId, isError = false))
         doneSignal.countDown()
         currentUploads.remove(remoteProductId)
         productImageMap.update(remoteProductId)
     }
 
     private fun handleFailure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = true))
+        EventBus.getDefault().post(OnProductMediaUploadCompletedEvent(remoteProductId, isError = true))
         doneSignal.countDown()
         currentUploads.remove(remoteProductId)
     }
