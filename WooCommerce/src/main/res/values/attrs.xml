@@ -36,4 +36,9 @@
         <attr name="switchSummaryTextColor" format="reference|color"/>
         <attr name="switchTopPadding" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="WCProductImageGalleryView">
+        <attr name="isGridView" format="boolean" />
+    </declare-styleable>
+
 </resources>

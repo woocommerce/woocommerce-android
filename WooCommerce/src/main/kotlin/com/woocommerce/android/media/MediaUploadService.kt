@@ -40,7 +40,11 @@ class MediaUploadService : JobIntentService() {
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
 
-        class OnProductMediaUploadEvent(
+        class OnProductMediaUploadStartedEvent(
+            var remoteProductId: Long
+        )
+
+        class OnProductMediaUploadCompletedEvent(
             var remoteProductId: Long,
             val isError: Boolean
         )
@@ -113,6 +117,7 @@ class MediaUploadService : JobIntentService() {
      * Dispatch the request to upload device image to the WP media library and wait for it to complete
      */
     private fun dispatchUploadAction(media: MediaModel) {
+        EventBus.getDefault().post(OnProductMediaUploadStartedEvent(media.postId))
         val site = siteStore.getSiteByLocalId(media.localSiteId)
         val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
@@ -152,18 +157,11 @@ class MediaUploadService : JobIntentService() {
             WooLog.w(WooLog.T.MEDIA, "MediaUploadService > product is null")
             handleFailure(media.postId)
         } else {
+            // add the new image as the first (primary) one
             val imageList = ArrayList<WCProductImageModel>().also {
                 it.add(WCProductImageModel.fromMediaModel(media))
+                it.addAll(product.getImages())
             }
-
-            // make sure we're only replacing the first image
-            with(product.getImages()) {
-                if (this.size > 1) {
-                    this.removeAt(0)
-                    imageList.addAll(this)
-                }
-            }
-
             val site = siteStore.getSiteByLocalId(media.localSiteId)
             val payload = UpdateProductImagesPayload(site, media.postId, imageList)
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
@@ -186,14 +184,14 @@ class MediaUploadService : JobIntentService() {
     }
 
     private fun handleSuccess(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = false))
+        EventBus.getDefault().post(OnProductMediaUploadCompletedEvent(remoteProductId, isError = false))
         doneSignal.countDown()
         currentUploads.remove(remoteProductId)
         productImageMap.update(remoteProductId)
     }
 
     private fun handleFailure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadEvent(remoteProductId, isError = true))
+        EventBus.getDefault().post(OnProductMediaUploadCompletedEvent(remoteProductId, isError = true))
         doneSignal.countDown()
         currentUploads.remove(remoteProductId)
     }

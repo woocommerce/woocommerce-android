@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_device_chooser"
+        android:icon="@drawable/ic_gridicons_image"
+        android:title="@string/image_source_device_chooser" />
+
+    <item
+        android:id="@+id/menu_device_camera"
+        android:icon="@drawable/ic_gridicons_camera"
+        android:title="@string/image_source_device_camera" />
+</menu>
