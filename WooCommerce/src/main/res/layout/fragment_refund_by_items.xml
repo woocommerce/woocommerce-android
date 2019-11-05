@@ -1,0 +1,44 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    style="@style/Woo.Card"
+    tools:context="com.woocommerce.android.ui.refunds.RefundByItemsFragment">
+
+    <TextView
+        android:id="@+id/issueRefund_selectedItems"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Woo.TextAppearance.Title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="5 items selected" />
+
+    <TextView
+        android:id="@+id/issueRefund_selectAllButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:text="@string/order_refunds_items_select_all"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_large"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/issueRefund_products"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_selectAllButton"
+        tools:itemCount="3"
+        tools:listitem="@layout/refunds_product_list_item"
+        tools:targetApi="lollipop"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
