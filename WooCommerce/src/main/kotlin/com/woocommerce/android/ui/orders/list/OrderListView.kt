@@ -124,7 +124,9 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
                 UiHelpers.setTextOrHide(emptyView.title, state.title)
                 UiHelpers.setImageOrHide(emptyView.image, state.imgResId)
                 setupButtonOrHide(emptyView.button, state.buttonText, state.onButtonClick)
-                WooAnimUtils.fadeIn(emptyView, Duration.MEDIUM)
+                if (emptyView.visibility == View.GONE) {
+                    WooAnimUtils.fadeIn(emptyView, Duration.MEDIUM)
+                }
             } else {
                 hideEmptyView()
             }

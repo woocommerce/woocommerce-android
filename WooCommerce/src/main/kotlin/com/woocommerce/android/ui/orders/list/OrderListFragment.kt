@@ -224,10 +224,12 @@ class OrderListFragment : TopLevelFragment(),
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                val previousOrderStatus = orderStatusFilter
+                // Hide the empty view if visible
+                order_list_view.hideEmptyView()
 
                 // Calculate the filter that should be active based on the selected
                 // tab and the state of the list.
+                val previousOrderStatus = orderStatusFilter
                 orderStatusFilter = calculateOrderStatusFilter(tab)
 
                 if (orderStatusFilter != previousOrderStatus) {
