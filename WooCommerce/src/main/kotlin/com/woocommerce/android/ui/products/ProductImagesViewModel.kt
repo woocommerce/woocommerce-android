@@ -7,7 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.MediaUploadService
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadEvent
+import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadCompletedEvent
+import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadStartedEvent
 import com.woocommerce.android.media.MediaUploadWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -85,7 +86,15 @@ class ProductImagesViewModel @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductMediaUploadEvent) {
+    fun onEventMainThread(event: OnProductMediaUploadStartedEvent) {
+        if (remoteProductId == event.remoteProductId) {
+            _isUploadingProductImage.value = true
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductMediaUploadCompletedEvent) {
         _isUploadingProductImage.value = false
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_upload_error
