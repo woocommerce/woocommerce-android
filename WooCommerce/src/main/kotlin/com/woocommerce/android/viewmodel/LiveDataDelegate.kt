@@ -6,6 +6,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import kotlin.reflect.KProperty
 
+/**
+ *  A wrapper around [MutableLiveData], that creates an entry in the [SavedStateHandle] to preserve the data.
+ *  An initial value is required during the initialization.
+ *
+ *  This delegate can then be used as a proxy to access and modify the LiveData, which looks like a simple
+ *  variable manipulation.
+ */
 class LiveDataDelegate<T : Any>(private val liveData: MutableLiveData<T>) {
     constructor(savedState: SavedStateHandle, initialValue: T) :
             this(savedState.getLiveData(initialValue.javaClass.name, initialValue))
