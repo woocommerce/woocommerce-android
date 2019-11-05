@@ -61,7 +61,9 @@ public interface LoginListener {
     void loggedInViaUsernamePassword(ArrayList<Integer> oldSitesIds);
     void helpUsernamePassword(String url, String username, boolean isWpcom);
     void helpNoJetpackScreen(String siteAddress, String endpointAddress, String username,
-                             String password, String userAvatarUrl);
+                             String password, String userAvatarUrl, Boolean checkJetpackAvailability);
+    void helpHandleDiscoveryError(String siteAddress, String endpointAddress, String username,
+                                  String password, String userAvatarUrl, int errorMessage);
 
     // Login 2FA screen callbacks
     void help2FaScreen(String email);

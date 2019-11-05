@@ -4,6 +4,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginNoJetpackModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptModule
 import com.woocommerce.android.ui.main.MainActivity
@@ -54,7 +55,10 @@ abstract class ActivityBindingModule {
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = [LoginFragmentModule::class, MagicLinkInterceptModule::class])
+    @ContributesAndroidInjector(modules = [
+        LoginFragmentModule::class,
+        MagicLinkInterceptModule::class,
+        LoginNoJetpackModule::class])
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope

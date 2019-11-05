@@ -329,9 +329,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                inputSiteAddress, null, null, null, null, null, false)
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
@@ -417,13 +415,32 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         endpointAddress: String?,
         username: String,
         password: String,
-        userAvatarUrl: String?
+        userAvatarUrl: String?,
+        checkJetpackAvailability: Boolean
     ) {
         val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
-                siteAddress, endpointAddress, username, password, userAvatarUrl
+                siteAddress, endpointAddress, username, password, userAvatarUrl,
+                checkJetpackAvailability
         )
         slideInFragment(
                 fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG)
+    }
+
+    override fun helpHandleDiscoveryError(
+        siteAddress: String,
+        endpointAddress: String?,
+        username: String,
+        password: String,
+        userAvatarUrl: String?,
+        errorMessage: Int
+    ) {
+        val discoveryErrorFragment = LoginDiscoveryErrorFragment.newInstance(
+                siteAddress, endpointAddress, username, password, userAvatarUrl, errorMessage
+        )
+        slideInFragment(
+                fragment = discoveryErrorFragment as Fragment,
                 shouldAddToBackStack = true,
                 tag = LoginJetpackRequiredFragment.TAG)
     }
@@ -487,6 +504,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_view_instructions_link))
     }
 
+    override fun showJetpackTroubleshootingTips() {
+        ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_troubleshooting_link))
+    }
+
     override fun showWhatIsJetpackDialog() {
         LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
     }
@@ -513,7 +534,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         inputPassword: String?
     ) {
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                siteAddress, endpointAddress, null, null, inputUsername, inputPassword, false)
+                siteAddress, endpointAddress, null, null, inputUsername, inputPassword,
+                false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 }

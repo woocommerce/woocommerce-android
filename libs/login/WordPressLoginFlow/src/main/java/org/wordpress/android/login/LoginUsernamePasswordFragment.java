@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder;
 import org.wordpress.android.fluxc.generated.SiteActionBuilder;
 import org.wordpress.android.fluxc.model.SiteModel;
+import org.wordpress.android.fluxc.network.discovery.SelfHostedEndpointFinder.DiscoveryError;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType;
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged;
@@ -92,7 +93,9 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
     private boolean mIsWpcom;
 
     public static LoginUsernamePasswordFragment newInstance(String inputSiteAddress, String endpointAddress,
-            String siteName, String siteIconUrl, String inputUsername, String inputPassword, boolean isWpcom) {
+                                                            String siteName, String siteIconUrl,
+                                                            String inputUsername, String inputPassword,
+                                                            boolean isWpcom) {
         LoginUsernamePasswordFragment fragment = new LoginUsernamePasswordFragment();
         Bundle args = new Bundle();
         args.putString(ARG_INPUT_SITE_ADDRESS, inputSiteAddress);
@@ -137,10 +140,10 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
 
         if (mSiteIconUrl != null) {
             Glide.with(this)
-                .load(mSiteIconUrl)
-                .apply(RequestOptions.placeholderOf(R.drawable.ic_placeholder_blavatar_grey_lighten_20_40dp))
-                .apply(RequestOptions.errorOf(R.drawable.ic_placeholder_blavatar_grey_lighten_20_40dp))
-                .into(((ImageView) rootView.findViewById(R.id.login_blavatar)));
+                 .load(mSiteIconUrl)
+                 .apply(RequestOptions.placeholderOf(R.drawable.ic_placeholder_blavatar_grey_lighten_20_40dp))
+                 .apply(RequestOptions.errorOf(R.drawable.ic_placeholder_blavatar_grey_lighten_20_40dp))
+                 .into(((ImageView) rootView.findViewById(R.id.login_blavatar)));
         }
 
         TextView siteNameView = (rootView.findViewById(R.id.login_site_title));
@@ -348,9 +351,54 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
         return mInputSiteAddressWithoutSuffix;
     }
 
+    /**
+     * Woo users:
+     * [HTTP_AUTH_REQUIRED] is not supported by Jetpack and can only occur if jetpack is not
+     * available. Redirect to Jetpack required screen.
+     *
+     * The other discovery errors can take place even if Jetpack is available.
+     * Furthermore, for errors such as [MISSING_XMLRPC_METHOD], [XMLRPC_BLOCKED], [XMLRPC_FORBIDDEN]
+     * [NO_SITE_ERROR] and [GENERIC_ERROR], the jetpack available flag from the CONNECT_SITE_INFO
+     * API returns false even if Jetpack is available for the site.
+     * So we redirect to discovery error screen without checking for Jetpack availability.
+     * */
     @Override
-    public void showDiscoveryError(int messageId) {
-        // TODO: Add support to display discovery error messages
+    public void handleDiscoveryError(DiscoveryError error, String failedEndpoint) {
+        ActivityUtils.hideKeyboard(getActivity());
+        if (error == DiscoveryError.HTTP_AUTH_REQUIRED) {
+            mLoginListener.helpNoJetpackScreen(mInputSiteAddress, mEndpointAddress,
+                    getCleanedUsername(), mPasswordInput.getEditText().getText().toString(),
+                    mAccountStore.getAccount().getAvatarUrl(), true);
+        } else {
+            mLoginListener.helpHandleDiscoveryError(mInputSiteAddress, mEndpointAddress,
+                    getCleanedUsername(), mPasswordInput.getEditText().getText().toString(),
+                    mAccountStore.getAccount().getAvatarUrl(), getDiscoveryErrorMessage(error));
+        }
+    }
+
+    private int getDiscoveryErrorMessage(DiscoveryError error) {
+        int errorMessageId = 0;
+        switch (error) {
+            case HTTP_AUTH_REQUIRED:
+                errorMessageId = R.string.login_discovery_error_http_auth;
+                break;
+            case ERRONEOUS_SSL_CERTIFICATE:
+                errorMessageId = R.string.login_discovery_error_ssl;
+                break;
+            case INVALID_URL:
+            case NO_SITE_ERROR:
+            case WORDPRESS_COM_SITE:
+            case GENERIC_ERROR:
+                errorMessageId = R.string.login_discovery_error_generic;
+                break;
+
+            case MISSING_XMLRPC_METHOD:
+            case XMLRPC_BLOCKED:
+            case XMLRPC_FORBIDDEN:
+                errorMessageId = R.string.login_discovery_error_xmlrpc;
+                break;
+        }
+        return errorMessageId;
     }
 
     @Override
@@ -527,6 +575,14 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
 
             endProgress();
 
+            if (mLoginListener.getLoginMode() == LoginMode.WOO_LOGIN_MODE) {
+                // Woo users: One of the errors that can happen here is the XML-RPC endpoint could
+                // be blocked by plugins such as `Disable XML-RPC`. Redirect the user to discovery
+                // error screen in such cases.
+                handleDiscoveryError(DiscoveryError.XMLRPC_BLOCKED, mInputSiteAddress);
+                return;
+            }
+
             String errorMessage;
             if (event.error.type == SiteErrorType.DUPLICATE_SITE) {
                 if (event.rowsAffected == 0) {
@@ -567,7 +623,8 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
                     if (userEmail == null || userEmail.isEmpty()) {
                         mLoginListener.helpNoJetpackScreen(lastAddedXMLRPCSite.getUrl(),
                                 lastAddedXMLRPCSite.getXmlRpcUrl(), lastAddedXMLRPCSite.getUsername(),
-                                lastAddedXMLRPCSite.getPassword(), mAccountStore.getAccount().getAvatarUrl());
+                                lastAddedXMLRPCSite.getPassword(), mAccountStore.getAccount().getAvatarUrl(),
+                                false);
                     } else {
                         mLoginListener.gotWpcomEmail(userEmail, true);
                     }
