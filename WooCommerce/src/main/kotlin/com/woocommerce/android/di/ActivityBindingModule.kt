@@ -21,8 +21,7 @@ import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.ProductsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
-import com.woocommerce.android.ui.reviews.ReviewDetailFragmentModule
-import com.woocommerce.android.ui.reviews.ReviewListFragmentModule
+import com.woocommerce.android.ui.reviews.ReviewsModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
@@ -43,19 +42,13 @@ abstract class ActivityBindingModule {
             OrderFulfillmentModule::class,
             RefundsModule::class,
             ProductsModule::class,
-            ReviewModule::class,
+            ReviewsModule::class,
             AddOrderNoteModule::class,
             SitePickerModule::class,
             AddOrderShipmentTrackingModule::class,
             AddOrderTrackingProviderListModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
-
-    @Module(includes = [
-        ReviewDetailFragmentModule::class,
-        ReviewListFragmentModule::class
-    ])
-    object ReviewModule
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [LoginFragmentModule::class])
