@@ -117,7 +117,7 @@ class MediaUploadService : JobIntentService() {
      * Dispatch the request to upload device image to the WP media library and wait for it to complete
      */
     private fun dispatchUploadAction(media: MediaModel) {
-        EventBus.getDefault().post(OnProductMediaUploadStartedEvent( media.postId))
+        EventBus.getDefault().post(OnProductMediaUploadStartedEvent(media.postId))
         val site = siteStore.getSiteByLocalId(media.localSiteId)
         val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
