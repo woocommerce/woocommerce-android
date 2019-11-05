@@ -26,9 +26,11 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbar
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
+import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -72,10 +74,12 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState())
+    final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData
+    private var refundByItemsState by refundByItemsStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
 
     private lateinit var order: Order
@@ -109,6 +113,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                 this.gateway = loadPaymentGateway()
 
                 updateRefundByAmountState(order)
+                updateRefundByItemsState(order)
                 updateRefundSummaryState()
 
                 savedState[ORDER_ID_KEY] = orderId
@@ -151,6 +156,13 @@ class IssueRefundViewModel @AssistedInject constructor(
                 decimals = decimals,
                 availableForRefund = resourceProvider.getString(R.string.order_refunds_available_for_refund,
                         formatCurrency(maxRefund))
+        )
+    }
+
+    private fun updateRefundByItemsState(order: Order) {
+        refundByItemsState = refundByItemsState.copy(
+                currency = order.currency,
+                items = order.items.map { RefundListItem(it) }
         )
     }
 
@@ -307,6 +319,11 @@ class IssueRefundViewModel @AssistedInject constructor(
         refundContinuation?.resume(false)
     }
 
+    fun onProductItemQuantityTapped(productId: Long) {
+        val quantity = refundByItemsState.items?.first { it.product.productId == productId }?.quantity ?: 0
+        triggerEvent(ShowNumberPicker(quantity))
+    }
+
     private suspend fun waitForCancellation(): Boolean {
         val wasRefundCanceled = suspendCoroutine<Boolean> {
             refundContinuation = it
@@ -356,6 +373,12 @@ class IssueRefundViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @Parcelize
+    data class RefundByItemsViewState(
+        val currency: String? = null,
+        val items: List<RefundListItem>? = null
+    ) : Parcelable
+
+    @Parcelize
     data class RefundSummaryViewState(
         val isFormEnabled: Boolean? = null,
         val previouslyRefunded: String? = null,
@@ -374,6 +397,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     sealed class IssueRefundEvent : Event() {
         data class ShowSnackbar(val message: String, val undoAction: (() -> Unit)? = null) : IssueRefundEvent()
         data class ShowValidationError(val message: String) : IssueRefundEvent()
+        data class ShowNumberPicker(val initialValue: Int) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
         object ShowRefundSummary : IssueRefundEvent()
         object ExitAfterRefund : IssueRefundEvent()
