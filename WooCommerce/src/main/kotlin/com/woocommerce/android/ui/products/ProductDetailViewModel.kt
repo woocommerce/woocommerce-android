@@ -23,14 +23,14 @@ import kotlin.math.roundToInt
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
-    private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    @Assisted private val savedState: SavedStateHandle
-) : ScopedViewModel(dispatchers) {
+    private val wooCommerceStore: WooCommerceStore
+) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
 
     private val product = MutableLiveData<Product>()

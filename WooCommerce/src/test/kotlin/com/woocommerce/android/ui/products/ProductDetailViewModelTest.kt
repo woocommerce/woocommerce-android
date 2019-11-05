@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -11,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.test
@@ -32,7 +34,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
+    private val savedState: SavedStateHandle = mock()
 
+    private val coroutineDispatchers = CoroutineDispatchers(
+            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val product = ProductTestUtils.generateProduct()
     private val productRemoteId = product.remoteId
     private lateinit var viewModel: ProductDetailViewModel
@@ -50,12 +55,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = spy(
                 ProductDetailViewModel(
-                        Dispatchers.Unconfined,
-                        wooCommerceStore,
+                        savedState,
+                        coroutineDispatchers,
                         selectedSite,
                         productRepository,
                         networkStatus,
-                        currencyFormatter
+                        currencyFormatter,
+                        wooCommerceStore
                 )
         )
         val prodSettings = WCProductSettingsModel(0).apply {

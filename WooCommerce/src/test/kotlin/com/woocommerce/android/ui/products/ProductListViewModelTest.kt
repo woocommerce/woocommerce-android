@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -9,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,10 @@ import org.junit.Test
 class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
+    private val savedState: SavedStateHandle = mock()
 
+    private val coroutineDispatchers = CoroutineDispatchers(
+            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
 
@@ -27,7 +32,8 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = spy(
                 ProductListViewModel(
-                        Dispatchers.Unconfined,
+                        savedState,
+                        coroutineDispatchers,
                         productRepository,
                         networkStatus
                 )

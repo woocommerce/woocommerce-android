@@ -17,9 +17,9 @@ Language: fr
     <string name="review_single_fetch_error">Erreur lors de la récupération du nouvel avis sur le produit</string>
     <string name="review_fetch_error">Erreur lors de la récupération des avis sur le produit</string>
     <string name="order_refunds_refund_manual_refund_note">Actuellement, seuls les remboursements manuels sont acceptés. Effectuez le remboursement via le tableau de bord de votre passerelle de paiement, ou transférez l\'argent manuellement au client.</string>
-    <string name="order_refunds_manual_refund_error">Un problème est survenu lors du remboursement. Veuillez réessayer.</string>
-    <string name="order_refunds_manual_refund_successful">Le remboursement a bien été envoyé.</string>
-    <string name="order_refunds_manual_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>
+    <string name="order_refunds_amount_refund_error">Un problème est survenu lors du remboursement. Veuillez réessayer.</string>
+    <string name="order_refunds_amount_refund_successful">Le remboursement a bien été envoyé.</string>
+    <string name="order_refunds_amount_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>
     <string name="order_refunds_quote_image_description">Icône de devis</string>
     <string name="order_refunds_manual_refund">Remboursement manuel</string>
     <string name="order_refunds_refund_details">Détails du remboursement</string>

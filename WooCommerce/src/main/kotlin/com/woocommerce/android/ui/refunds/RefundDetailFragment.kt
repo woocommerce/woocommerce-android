@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.refunds
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,26 +43,16 @@ class RefundDetailFragment : DaggerFragment() {
         viewModel.start(navArgs.orderId, navArgs.refundId)
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setupObservers(viewModel: RefundDetailViewModel) {
-        viewModel.screenTitle.observe(this, Observer {
-            activity?.title = it
-        })
-
-        viewModel.formattedRefundAmount.observe(this, Observer {
-            refundDetail_refundAmount.text = it
-        })
-
-        viewModel.refundMethod.observe(this, Observer {
-            refundDetail_refundMethod.text = it
-        })
-
-        viewModel.refundReason.observe(this, Observer {
-            if (it.isNullOrEmpty()) {
+        viewModel.viewState.observe(this, Observer {
+            activity?.title = it.screenTitle
+            refundDetail_refundAmount.text = it.refundAmount
+            refundDetail_refundMethod.text = it.refundMethod
+            if (it.refundReason.isNullOrEmpty()) {
                 refundDetail_reasonCard.hide()
             } else {
                 refundDetail_reasonCard.show()
-                refundDetail_refundReason.text = it
+                refundDetail_refundReason.text = it.refundReason
             }
         })
     }

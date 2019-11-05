@@ -17,9 +17,9 @@ Language: es
     <string name="review_single_fetch_error">No se ha podido obtener la reseña del producto</string>
     <string name="review_fetch_error">No se han podido obtener las reseñas de los productos</string>
     <string name="order_refunds_refund_manual_refund_note">Actualmente, solo se admiten los reembolsos manuales. Realiza el reembolso a través del escritorio de tu pasarela de pago o transfiere manualmente el dinero al cliente.</string>
-    <string name="order_refunds_manual_refund_error">No se ha podido realizar el reembolso. Inténtalo de nuevo.</string>
-    <string name="order_refunds_manual_refund_successful">Se ha enviado el reembolso.</string>
-    <string name="order_refunds_manual_refund_progress_message">Tu reembolso de %s se está procesando. Por favor, espera…</string>
+    <string name="order_refunds_amount_refund_error">No se ha podido realizar el reembolso. Inténtalo de nuevo.</string>
+    <string name="order_refunds_amount_refund_successful">Se ha enviado el reembolso.</string>
+    <string name="order_refunds_amount_refund_progress_message">Tu reembolso de %s se está procesando. Por favor, espera…</string>
     <string name="order_refunds_quote_image_description">Icono de comilla</string>
     <string name="order_refunds_manual_refund">Reembolso manual</string>
     <string name="order_refunds_refund_details">Información del reembolso</string>

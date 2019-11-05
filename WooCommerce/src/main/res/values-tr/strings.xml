@@ -17,9 +17,9 @@ Language: tr
     <string name="review_single_fetch_error">Yeni ürün incelemesi alınırken hata</string>
     <string name="review_fetch_error">Ürün incelemesi alınırken hata</string>
     <string name="order_refunds_refund_manual_refund_note">Şu anda yalnızca elle iade desteklenmektedir. Ödeme geçidinizin panosundan veya parayı müşteriye elle aktararak iadeyi tamamlayın.</string>
-    <string name="order_refunds_manual_refund_error">Para iadesiyle ilgili bir şeyler yanlış gitti. Lütfen yeniden deneyin.</string>
-    <string name="order_refunds_manual_refund_successful">Para iadesi başarıyla bildirildi.</string>
-    <string name="order_refunds_manual_refund_progress_message">%s için para iadeniz işleniyor. Lütfen bekleyin…</string>
+    <string name="order_refunds_amount_refund_error">Para iadesiyle ilgili bir şeyler yanlış gitti. Lütfen yeniden deneyin.</string>
+    <string name="order_refunds_amount_refund_successful">Para iadesi başarıyla bildirildi.</string>
+    <string name="order_refunds_amount_refund_progress_message">%s için para iadeniz işleniyor. Lütfen bekleyin…</string>
     <string name="order_refunds_quote_image_description">Alıntı simgesi</string>
     <string name="order_refunds_manual_refund">Elle para iadesi</string>
     <string name="order_refunds_refund_details">Para İadesi ayrıntıları</string>

@@ -20,11 +20,11 @@ import kotlinx.coroutines.launch
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus,
-    @Assisted private val savedState: SavedStateHandle
-) : ScopedViewModel(dispatchers) {
+    private val networkStatus: NetworkStatus
+) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }

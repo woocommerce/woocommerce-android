@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -11,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +32,10 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
     private val networkStatus: NetworkStatus = mock()
     private val repository: ReviewDetailRepository = mock()
+    private val savedState: SavedStateHandle = mock()
 
+    private val coroutineDispatchers = CoroutineDispatchers(
+            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
     private val notification = ProductReviewTestUtils.generateReviewNotification(NOTIF_ID)
@@ -38,7 +43,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         viewModel = spy(
-                ReviewDetailViewModel(Dispatchers.Unconfined, repository, networkStatus))
+                ReviewDetailViewModel(savedState, coroutineDispatchers, networkStatus, repository))
 
         doReturn(true).whenever(networkStatus).isConnected()
     }

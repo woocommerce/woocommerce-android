@@ -17,9 +17,9 @@ Language: id
     <string name="review_single_fetch_error">Error saat memuat ulasan produk baru</string>
     <string name="review_fetch_error">Error saat memuat ulasan produk</string>
     <string name="order_refunds_refund_manual_refund_note">Saat ini, hanya pengembalian dana manual yang didukung. Lakukan pengembalian dana lewat dasbor gateway pembayaran Anda, atau transfer uangnya secara manual kepada pelanggan.</string>
-    <string name="order_refunds_manual_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
-    <string name="order_refunds_manual_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
-    <string name="order_refunds_manual_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
+    <string name="order_refunds_amount_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
+    <string name="order_refunds_amount_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
+    <string name="order_refunds_amount_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
     <string name="order_refunds_quote_image_description">Ikon kutipan</string>
     <string name="order_refunds_manual_refund">Pengembalian dana manual</string>
     <string name="order_refunds_refund_details">Rincian pengembalian dana</string>

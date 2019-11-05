@@ -22,12 +22,12 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
 @OpenClassOnDebug
-final class ReviewDetailViewModel @AssistedInject constructor(
+class ReviewDetailViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
-    private val repository: ReviewDetailRepository,
     private val networkStatus: NetworkStatus,
-    @Assisted private val savedState: SavedStateHandle
-) : ScopedViewModel(dispatchers) {
+    private val repository: ReviewDetailRepository
+) : ScopedViewModel(savedState, dispatchers) {
     private var remoteReviewId = 0L
 
     private val _productReview = MutableLiveData<ProductReview>()

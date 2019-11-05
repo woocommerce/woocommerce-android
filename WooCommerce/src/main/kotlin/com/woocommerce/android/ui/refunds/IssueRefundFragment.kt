@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
@@ -42,29 +43,32 @@ class IssueRefundFragment : DaggerFragment() {
     private fun initializeViewModel() {
         initializeViews(viewModel)
         setupObservers(viewModel)
-        viewModel.start(navArgs.orderId)
+
+        viewModel.initialize(navArgs.orderId)
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
         issueRefund_btnNext.setOnClickListener {
-            viewModel.onRefundEntered()
+            viewModel.onNextButtonTapped()
         }
     }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.resetEvents()
+        viewModel.resetEvent()
 
-        viewModel.screenTitle.observe(this, Observer {
-            activity?.title = it
-        })
+        viewModel.commonStateLiveData.observe(this) {
+            issueRefund_btnNext.isEnabled = it.isNextButtonEnabled
+            requireActivity().title = it.screenTitle
+        }
 
-        viewModel.isNextButtonEnabled.observe(this, Observer {
-            issueRefund_btnNext.isEnabled = it
-        })
-
-        viewModel.showRefundSummary.observe(this, Observer {
-            val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
-            findNavController().navigate(action)
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowRefundSummary -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
+                    findNavController().navigate(action)
+                }
+                else -> event.isHandled = false
+            }
         })
     }
 }

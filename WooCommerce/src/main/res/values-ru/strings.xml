@@ -17,9 +17,9 @@ Language: ru
     <string name="review_single_fetch_error">Ошибка при получении нового отзыва о товаре</string>
     <string name="review_fetch_error">Ошибка при получении отзывов о товарах</string>
     <string name="order_refunds_refund_manual_refund_note">В настоящее время возвраты выполняются только в ручном режиме. Оформите возврат в консоли вашей платёжной системы или переведите деньги клиенту самостоятельно.</string>
-    <string name="order_refunds_manual_refund_error">В процессе возврата что-то пошло не так. Повторите попытку.</string>
-    <string name="order_refunds_manual_refund_successful">Средства возвращены заказчику.</string>
-    <string name="order_refunds_manual_refund_progress_message">Запрос на возврат средств за %s обрабатывается. Пожалуйста, подождите…</string>
+    <string name="order_refunds_amount_refund_error">В процессе возврата что-то пошло не так. Повторите попытку.</string>
+    <string name="order_refunds_amount_refund_successful">Средства возвращены заказчику.</string>
+    <string name="order_refunds_amount_refund_progress_message">Запрос на возврат средств за %s обрабатывается. Пожалуйста, подождите…</string>
     <string name="order_refunds_quote_image_description">Значок кавычки</string>
     <string name="order_refunds_manual_refund">Неавтоматизированный возврат</string>
     <string name="order_refunds_refund_details">Описание возврата платежа</string>
