@@ -21,10 +21,7 @@ import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.ProductDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductListFragmentModule
-import com.woocommerce.android.ui.refunds.IssueRefundFragmentModule
-import com.woocommerce.android.ui.refunds.RefundByAmountFragmentModule
-import com.woocommerce.android.ui.refunds.RefundDetailFragmentModule
-import com.woocommerce.android.ui.refunds.RefundSummaryFragmentModule
+import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentModule
 import com.woocommerce.android.ui.reviews.ReviewListFragmentModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
@@ -45,7 +42,7 @@ abstract class ActivityBindingModule {
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
-            RefundModule::class,
+            RefundsModule::class,
             ProductModule::class,
             ReviewModule::class,
             AddOrderNoteModule::class,
@@ -54,14 +51,6 @@ abstract class ActivityBindingModule {
             AddOrderTrackingProviderListModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
-
-    @Module(includes = [
-        IssueRefundFragmentModule::class,
-        RefundByAmountFragmentModule::class,
-        RefundSummaryFragmentModule::class,
-        RefundDetailFragmentModule::class
-    ])
-    object RefundModule
 
     @Module(includes = [
         ProductDetailFragmentModule::class,
