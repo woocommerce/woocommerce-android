@@ -7,8 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.MediaUploadService
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadCompletedEvent
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadStartedEvent
+import com.woocommerce.android.media.MediaUploadService.Companion.OnProductImagesUploadCompletedEvent
+import com.woocommerce.android.media.MediaUploadService.Companion.OnProductImagesUploadStartedEvent
 import com.woocommerce.android.media.MediaUploadWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -17,7 +17,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -76,9 +75,8 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
-        // TODO: at some point we want to support uploading multiple product images
         if (MediaUploadService.isBusy()) {
-            _showSnackbarMessage.value = R.string.product_image_already_uploading
+            _showSnackbarMessage.value = R.string.product_image_upload_service_busy
             return
         }
         _isUploadingProductImage.value = true
@@ -87,7 +85,7 @@ class ProductImagesViewModel @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductMediaUploadStartedEvent) {
+    fun onEventMainThread(event: OnProductImagesUploadStartedEvent) {
         if (remoteProductId == event.remoteProductId) {
             _isUploadingProductImage.value = true
         }
@@ -95,7 +93,7 @@ class ProductImagesViewModel @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductMediaUploadCompletedEvent) {
+    fun onEventMainThread(event: OnProductImagesUploadCompletedEvent) {
         _isUploadingProductImage.value = false
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_upload_error

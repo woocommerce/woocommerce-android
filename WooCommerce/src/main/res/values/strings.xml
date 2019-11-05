@@ -410,7 +410,8 @@
     <string name="product_images_title">Photos</string>
     <string name="product_add_photo">Add photo</string>
     <string name="product_image_upload_error">Error uploading product photo</string>
-    <string name="product_image_already_uploading">A product image is already uploading</string>
+    <string name="product_image_upload_service_busy">Please wait for the current upload to complete</string>
+    <string name="product_image_removal_service_busy">Please wait for the current removal to complete</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
     <string name="image_source_title">Select an upload method</string>
     <string name="image_source_device_chooser">Choose from device</string>

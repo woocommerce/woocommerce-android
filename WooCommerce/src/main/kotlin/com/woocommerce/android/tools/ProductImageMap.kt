@@ -68,4 +68,8 @@ class ProductImageMap @Inject constructor(
             }
         }
     }
+
+    fun remove(remoteProductId: Long) {
+        map.remove(remoteProductId)
+    }
 }

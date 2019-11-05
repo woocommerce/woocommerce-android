@@ -4,8 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.collection.LongSparseArray
 import androidx.core.app.JobIntentService
-import com.woocommerce.android.media.MediaUploadService.Companion.MediaAction.ADD_MEDIA
-import com.woocommerce.android.media.MediaUploadService.Companion.MediaAction.REMOVE_MEDIA
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -37,36 +35,24 @@ class MediaUploadService : JobIntentService() {
     companion object {
         const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
         const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
-        const val KEY_REMOTE_MEDIA_ID = "key_remote_media_id"
-        const val KEY_ACTION = "action"
 
         const val STRIP_LOCATION = true
-
-        enum class MediaAction {
-            ADD_MEDIA,
-            REMOVE_MEDIA
-        }
-
-        private var currentAction: MediaAction? = null
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
 
-        // array of remoteProductId / remoteMediaId
-        private val currentRemovals = LongSparseArray<Long>()
-
-        class OnProductMediaUploadStartedEvent(
+        class OnProductImagesUploadStartedEvent(
             var remoteProductId: Long
         )
 
-        class OnProductMediaUploadCompletedEvent(
+        class OnProductImagesUploadCompletedEvent(
             var remoteProductId: Long,
             val isError: Boolean
         )
 
         fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
 
-        fun isBusy() = currentAction != null
+        fun isBusy() = !currentUploads.isEmpty
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -95,40 +81,29 @@ class MediaUploadService : JobIntentService() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
-        currentAction = intent.getSerializableExtra(KEY_ACTION) as MediaAction
+        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
 
-        if (currentAction == ADD_MEDIA) {
-            val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
-
-            if (localMediaUri == null) {
-                WooLog.w(WooLog.T.MEDIA, "media upload service > null localMediaUri")
-                handleFailure(remoteProductId)
-                return
-            }
-
-            MediaUploadUtils.mediaModelFromLocalUri(
-                    this,
-                    selectedSite.get().id,
-                    localMediaUri,
-                    mediaStore
-            )?.let { media ->
-                media.postId = remoteProductId
-                media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
-                currentUploads.put(remoteProductId, localMediaUri)
-                dispatchUploadAction(media)
-                return
-            }
-
-            WooLog.w(WooLog.T.MEDIA, "media upload service > null media")
+        if (localMediaUri == null) {
+            WooLog.w(WooLog.T.MEDIA, "media upload service > null localMediaUri")
             handleFailure(remoteProductId)
-        } else if (currentAction == REMOVE_MEDIA) {
-            val remoteMediaId = intent.getLongExtra(KEY_REMOTE_MEDIA_ID, 0)
-            currentRemovals.put(remoteProductId, remoteMediaId)
-            dispatchRemoveMediaAction(remoteProductId, remoteMediaId)
-        } else {
-            WooLog.w(WooLog.T.MEDIA, "media upload service > unknown action")
-            handleFailure(remoteProductId)
+            return
         }
+
+        MediaUploadUtils.mediaModelFromLocalUri(
+                this,
+                selectedSite.get().id,
+                localMediaUri,
+                mediaStore
+        )?.let { media ->
+            media.postId = remoteProductId
+            media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+            currentUploads.put(remoteProductId, localMediaUri)
+            dispatchUploadAction(media)
+            return
+        }
+
+        WooLog.w(WooLog.T.MEDIA, "media upload service > null media")
+        handleFailure(remoteProductId)
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -143,7 +118,7 @@ class MediaUploadService : JobIntentService() {
     private fun dispatchUploadAction(media: MediaModel) {
         // first fire an event that the upload is starting
         val remoteProductId = media.postId
-        EventBus.getDefault().post(OnProductMediaUploadStartedEvent(remoteProductId))
+        EventBus.getDefault().post(OnProductImagesUploadStartedEvent(remoteProductId))
 
         // then dispatch the upload request
         val site = siteStore.getSiteByLocalId(media.localSiteId)
@@ -196,34 +171,6 @@ class MediaUploadService : JobIntentService() {
         }
     }
 
-    /**
-     * Dispatches a request to remove a single image from a product
-     */
-    private fun dispatchRemoveMediaAction(remoteProductId: Long, remoteMediaId: Long) {
-        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-        if (product == null) {
-            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > product is null")
-            handleFailure(remoteProductId)
-            return
-        }
-
-        // build a new image list containing all the product images except the passed one
-        val imageList = ArrayList<WCProductImageModel>()
-        product.getImages().forEach { image ->
-            if (image.id != remoteMediaId) {
-                imageList.add(image)
-            }
-        }
-        if (imageList.size == product.getImages().size) {
-            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > product image not found")
-            handleFailure(remoteProductId)
-            return
-        }
-
-        val payload = UpdateProductImagesPayload(selectedSite.get(), remoteMediaId, imageList)
-        dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
-    }
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductImagesChanged(event: OnProductImagesChanged) {
@@ -240,25 +187,16 @@ class MediaUploadService : JobIntentService() {
     }
 
     private fun handleSuccess(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadCompletedEvent(remoteProductId, isError = false))
+        EventBus.getDefault().post(OnProductImagesUploadCompletedEvent(remoteProductId, isError = false))
         doneSignal.countDown()
         productImageMap.update(remoteProductId)
-        cleanUp(remoteProductId)
+        currentUploads.remove(remoteProductId)
     }
 
     private fun handleFailure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductMediaUploadCompletedEvent(remoteProductId, isError = true))
+        EventBus.getDefault().post(OnProductImagesUploadCompletedEvent(remoteProductId, isError = true))
         doneSignal.countDown()
         productImageMap.update(remoteProductId)
-        cleanUp(remoteProductId)
-    }
-
-    private fun cleanUp(remoteProductId: Long) {
-        if (currentAction == ADD_MEDIA) {
-            currentUploads.remove(remoteProductId)
-        } else if (currentAction == REMOVE_MEDIA) {
-            currentRemovals.remove(remoteProductId)
-        }
-        currentAction = null
+        currentUploads.remove(remoteProductId)
     }
 }
