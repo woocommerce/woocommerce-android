@@ -1,8 +1,12 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
+import com.woocommerce.android.model.Order.Address
+import com.woocommerce.android.model.Order.Address.Type.BILLING
+import com.woocommerce.android.model.Order.Address.Type.SHIPPING
 import com.woocommerce.android.model.Order.Item
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PENDING
@@ -10,6 +14,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
+@Parcelize
 data class Order(
     val identifier: OrderIdentifier,
     val remoteId: Long,
@@ -31,10 +36,11 @@ data class Order(
     val paymentMethod: String,
     val paymentMethodTitle: String,
     val pricesIncludeTax: Boolean,
-    val billingAddress: OrderAddress,
-    val shippingAddress: OrderAddress,
+    val billingAddress: Address,
+    val shippingAddress: Address,
     val items: List<Item>
-) {
+) : Parcelable {
+    @Parcelize
     data class Item(
         val productId: Long,
         val name: String,
@@ -45,7 +51,26 @@ data class Order(
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long
-    )
+    ) : Parcelable
+
+    @Parcelize
+    data class Address(
+        val address1: String,
+        val address2: String,
+        val city: String,
+        val company: String,
+        val country: String,
+        val firstName: String,
+        val lastName: String,
+        val postcode: String,
+        val state: String,
+        val type: Type
+    ) : Parcelable {
+        enum class Type {
+            BILLING,
+            SHIPPING
+        }
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {
@@ -70,8 +95,34 @@ fun WCOrderModel.toAppModel(): Order {
             this.paymentMethod,
             this.paymentMethodTitle,
             this.pricesIncludeTax,
-            this.getBillingAddress(),
-            this.getShippingAddress(),
+            this.getBillingAddress().let {
+                Address(
+                        it.address1,
+                        it.address2,
+                        it.city,
+                        it.company,
+                        it.country,
+                        it.firstName,
+                        it.lastName,
+                        it.postcode,
+                        it.state,
+                        BILLING
+                )
+            },
+            this.getShippingAddress().let {
+                Address(
+                        it.address1,
+                        it.address2,
+                        it.city,
+                        it.company,
+                        it.country,
+                        it.firstName,
+                        it.lastName,
+                        it.postcode,
+                        it.state,
+                        SHIPPING
+                )
+            },
             getLineItemList()
                     .filter { it.productId != null }
                     .map {
