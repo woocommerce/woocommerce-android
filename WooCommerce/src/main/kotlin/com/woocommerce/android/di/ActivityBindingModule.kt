@@ -19,8 +19,7 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
-import com.woocommerce.android.ui.products.ProductDetailFragmentModule
-import com.woocommerce.android.ui.products.ProductListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentModule
 import com.woocommerce.android.ui.reviews.ReviewListFragmentModule
@@ -43,7 +42,7 @@ abstract class ActivityBindingModule {
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
             RefundsModule::class,
-            ProductModule::class,
+            ProductsModule::class,
             ReviewModule::class,
             AddOrderNoteModule::class,
             SitePickerModule::class,
@@ -51,12 +50,6 @@ abstract class ActivityBindingModule {
             AddOrderTrackingProviderListModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
-
-    @Module(includes = [
-        ProductDetailFragmentModule::class,
-        ProductListFragmentModule::class
-    ])
-    object ProductModule
 
     @Module(includes = [
         ReviewDetailFragmentModule::class,
