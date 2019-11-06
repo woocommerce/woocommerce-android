@@ -13,7 +13,7 @@ import javax.inject.Singleton
  * can upload media to the service without requiring a context
  */
 @Singleton
-class ProductImagesWrapper
+class ProductImagesServiceWrapper
 @Inject constructor(private val context: Context) {
     fun uploadProductMedia(remoteProductId: Long, localMediaUri: Uri) {
         val intent = Intent(context, ProductImagesService::class.java).also {

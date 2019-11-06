@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.media.ProductImagesWrapper
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
@@ -33,7 +33,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
-    private val mediaUploadWrapper: ProductImagesWrapper = mock()
+    private val mediaUploadWrapper: ProductImagesServiceWrapper = mock()
 
     private val product = ProductTestUtils.generateProduct()
     private val productRemoteId = product.remoteId
