@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
 import android.widget.ProgressBar
+import androidx.collection.LongSparseArray
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -122,21 +123,23 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
-    fun addUploadPlaceholder() {
-        adapter.addUploadPlaceholder()
-        smoothScrollToPosition(0)
+    /**
+     * Adds a placeholder with a progress bar to indicate images that are uploading or being removed.
+     * Pass the remoteMediaId for media being removed, or nothing for media being uploaded
+     */
+    fun addPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
+        if (remoteMediaId == UPLOAD_PLACEHOLDER_ID) {
+            smoothScrollToPosition(0)
+        }
+        adapter.addPlaceholder(remoteMediaId)
     }
 
-    fun removeUploadPlaceholder() {
-        adapter.removeUploadPlaceholder()
-    }
-
-    fun addRemovalPlaceholder(remoteMediaId: Long) {
-        adapter.addRemovalPlaceholder(remoteMediaId)
+    fun clearPlaceholders() {
+        adapter.clearPlaceholders()
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
-        if (!adapter.isUploadPlaceholder(position)) {
+        if (!adapter.isPlaceholder(position)) {
             imageView.transitionName = "shared_element$position"
             listener.onGalleryImageClicked(adapter.getImage(position), imageView)
         }
@@ -144,7 +147,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
-        private var removePlaceholderId = 0L
+        private val placeholderIds = LongSparseArray<Boolean>()
 
         fun showImages(images: List<WCProductImageModel>) {
             fun isSameImageList(): Boolean {
@@ -166,33 +169,27 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
-        fun addUploadPlaceholder() {
-            removeUploadPlaceholder()
-            val placeholder = WCProductImageModel(UPLOAD_PLACEHOLDER_ID)
+        fun addPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
+            clearPlaceholders()
+            val placeholder = WCProductImageModel(remoteMediaId)
             imageList.add(0, placeholder)
             notifyItemInserted(0)
         }
 
-        fun removeUploadPlaceholder() {
+        fun clearPlaceholders() {
             for (index in imageList.indices) {
-                if (isUploadPlaceholder(index)) {
+                if (isPlaceholder(index)) {
                     imageList.removeAt(index)
                     notifyItemRemoved(index)
-                    return
                 }
             }
+            placeholderIds.clear()
         }
 
-        fun addRemovalPlaceholder(remoteMediaId: Long) {
-            if (remoteMediaId != removePlaceholderId) {
-                removePlaceholderId = remoteMediaId
-                notifyDataSetChanged()
-            }
+        fun isPlaceholder(position: Int): Boolean {
+            val mediaId = imageList[position].id
+            return placeholderIds[mediaId] == true
         }
-
-        fun isUploadPlaceholder(position: Int) = imageList[position].id == UPLOAD_PLACEHOLDER_ID
-
-        fun isRemovalPlaceholder(position: Int) = imageList[position].id == removePlaceholderId
 
         fun getImage(position: Int) = imageList[position]
 
@@ -202,8 +199,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         override fun getItemViewType(position: Int): Int {
             return when {
-                isUploadPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
-                isRemovalPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
+                isPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
                 else -> VIEW_TYPE_IMAGE
             }
         }
