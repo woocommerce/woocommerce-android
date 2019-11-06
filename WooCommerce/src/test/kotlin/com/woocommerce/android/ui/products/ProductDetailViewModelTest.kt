@@ -33,7 +33,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
-    private val mediaUploadWrapper: ProductImagesServiceWrapper = mock()
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
 
     private val product = ProductTestUtils.generateProduct()
     private val productRemoteId = product.remoteId
