@@ -444,11 +444,6 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onOrderStatusSelected(orderStatus: String?) {
-        if (orderStatusFilter == orderStatus) {
-            // Filter has not changed. Exit.
-            return
-        }
-
         orderStatusFilter = orderStatus ?: StringUtils.EMPTY
         if (isAdded) {
             AnalyticsTracker.track(
@@ -456,10 +451,16 @@ class OrderListFragment : TopLevelFragment(),
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
 
             isRefreshing = true
-            displayFilteredList()
-            order_list_view.clearAdapterData()
 
-            viewModel.loadList(statusFilter = orderStatus, excludeFutureOrders = shouldExcludeFutureOrders())
+            // Display the filtered list view
+            displayFilteredList()
+
+            // Load the filtered list
+            order_list_view.clearAdapterData()
+            viewModel.loadList(
+                    statusFilter = orderStatus,
+                    excludeFutureOrders = shouldExcludeFutureOrders()
+            )
 
             updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
