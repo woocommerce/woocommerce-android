@@ -114,15 +114,16 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
             if (it) {
                 imageGallery.addPlaceholder()
             } else {
-                imageGallery.clearPlaceholders()
+                imageGallery.removePlaceholder()
             }
         })
 
-        viewModel.removingProductRemoteMediaId.observe(this, Observer {
-            if (it > 0) {
-                imageGallery.addPlaceholder(it)
+        viewModel.isRemovingProductImage.observe(this, Observer {
+            val remoteMediaId = viewModel.removingRemoteMediaId
+            if (it) {
+                imageGallery.addPlaceholder(remoteMediaId)
             } else {
-                imageGallery.clearPlaceholders()
+                imageGallery.removePlaceholder(remoteMediaId)
             }
         })
 

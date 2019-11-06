@@ -28,6 +28,7 @@ class ProductImagesViewModel @Inject constructor(
     private val productImagesWrapper: ProductImagesServiceWrapper
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
+    var removingRemoteMediaId = 0L
 
     private val _product = MutableLiveData<Product>()
     val product: LiveData<Product> = _product
@@ -44,8 +45,8 @@ class ProductImagesViewModel @Inject constructor(
     private val _isUploadingProductImage = MutableLiveData<Boolean>()
     val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
 
-    private val _removingProductRemoteMediaId = MutableLiveData<Long>()
-    val removingProductRemoteMediaId: LiveData<Long> = _removingProductRemoteMediaId
+    private val _isRemovingProductImage = MutableLiveData<Boolean>()
+    val isRemovingProductImage: LiveData<Boolean> = _isRemovingProductImage
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -92,6 +93,8 @@ class ProductImagesViewModel @Inject constructor(
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
         }
+        removingRemoteMediaId = remoteMediaId
+        _isRemovingProductImage.value = true
         productImagesWrapper.removeProductMedia(remoteProductId, remoteMediaId)
     }
 
@@ -102,7 +105,7 @@ class ProductImagesViewModel @Inject constructor(
             if (event.action == Action.UPLOAD_IMAGE) {
                 _isUploadingProductImage.value = true
             } else if (event.action == Action.REMOVE_IMAGE) {
-                _removingProductRemoteMediaId.value = event.remoteMediaId
+                _isRemovingProductImage.value = true
             }
         }
     }
@@ -110,8 +113,12 @@ class ProductImagesViewModel @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        _isUploadingProductImage.value = false
-        _removingProductRemoteMediaId.value = 0
+        if (event.action == Action.UPLOAD_IMAGE) {
+            _isUploadingProductImage.value = false
+        } else if (event.action == Action.REMOVE_IMAGE) {
+            _isRemovingProductImage.value = false
+            removingRemoteMediaId = 0
+        }
 
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_service_error

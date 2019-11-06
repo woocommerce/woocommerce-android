@@ -124,7 +124,15 @@ class ProductImagesService : JobIntentService() {
             media.postId = remoteProductId
             media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             currentUploads.put(remoteProductId, localMediaUri)
-            dispatchUploadMediaAction(media)
+
+            // first fire an event that the upload is starting
+            EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(Action.UPLOAD_IMAGE, remoteProductId))
+
+            // then dispatch the upload request
+            val site = siteStore.getSiteByLocalId(media.localSiteId)
+            val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
+            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+            doneSignal.await()
             return
         }
 
@@ -133,36 +141,6 @@ class ProductImagesService : JobIntentService() {
     }
 
     private fun handleRemoval(intent: Intent, remoteProductId: Long) {
-        val remoteMediaId = intent.getLongExtra(KEY_REMOTE_MEDIA_ID, 0)
-        currentRemovals.put(remoteProductId, remoteMediaId)
-        dispatchRemoveMediaAction(remoteProductId, remoteMediaId)
-    }
-
-    override fun onStopCurrentWork(): Boolean {
-        super.onStopCurrentWork()
-        WooLog.i(T.MEDIA, "productImagesService > onStopCurrentWork")
-        return true
-    }
-
-    /**
-     * Dispatch the request to upload device image to the WP media library and wait for it to complete
-     */
-    private fun dispatchUploadMediaAction(media: MediaModel) {
-        // first fire an event that the upload is starting
-        val remoteProductId = media.postId
-        EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(Action.UPLOAD_IMAGE, remoteProductId))
-
-        // then dispatch the upload request
-        val site = siteStore.getSiteByLocalId(media.localSiteId)
-        val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
-        dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-        doneSignal.await()
-    }
-
-    /**
-     * Dispatches a request to remove a single image from a product
-     */
-    private fun dispatchRemoveMediaAction(remoteProductId: Long, remoteMediaId: Long) {
         val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
         if (product == null) {
             WooLog.w(T.MEDIA, "productImagesService > product is null")
@@ -171,6 +149,7 @@ class ProductImagesService : JobIntentService() {
         }
 
         // build a new image list containing all the product images except the passed one
+        val remoteMediaId = intent.getLongExtra(KEY_REMOTE_MEDIA_ID, 0)
         val imageList = ArrayList<WCProductImageModel>()
         product.getImages().forEach { image ->
             if (image.id != remoteMediaId) {
@@ -183,6 +162,8 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
+        currentRemovals.put(remoteProductId, remoteMediaId)
+
         // first fire an event that the removal is starting
         EventBus.getDefault()
                 .post(OnProductImagesUpdateStartedEvent(Action.REMOVE_IMAGE, remoteProductId, remoteMediaId))
@@ -191,6 +172,12 @@ class ProductImagesService : JobIntentService() {
         val payload = UpdateProductImagesPayload(selectedSite.get(), remoteProductId, imageList)
         dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
         doneSignal.await()
+    }
+
+    override fun onStopCurrentWork(): Boolean {
+        super.onStopCurrentWork()
+        WooLog.i(T.MEDIA, "productImagesService > onStopCurrentWork")
+        return true
     }
 
     @SuppressWarnings("unused")

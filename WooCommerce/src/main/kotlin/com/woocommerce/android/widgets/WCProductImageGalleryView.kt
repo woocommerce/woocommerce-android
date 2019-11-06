@@ -134,8 +134,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.addPlaceholder(remoteMediaId)
     }
 
-    fun clearPlaceholders() {
-        adapter.clearPlaceholders()
+    fun removePlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
+        adapter.removePlaceholder(remoteMediaId)
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
@@ -170,20 +170,32 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         fun addPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
-            clearPlaceholders()
-            val placeholder = WCProductImageModel(remoteMediaId)
-            imageList.add(0, placeholder)
-            notifyItemInserted(0)
-        }
+            removePlaceholder(remoteMediaId)
 
-        fun clearPlaceholders() {
-            for (index in imageList.indices) {
-                if (isPlaceholder(index)) {
-                    imageList.removeAt(index)
-                    notifyItemRemoved(index)
+            if (remoteMediaId == UPLOAD_PLACEHOLDER_ID) {
+                placeholderIds.put(remoteMediaId, true)
+                imageList.add(0, WCProductImageModel(remoteMediaId))
+                notifyItemInserted(0)
+            } else {
+                for (index in imageList.indices) {
+                    if (imageList[index].id == remoteMediaId) {
+                        placeholderIds.put(remoteMediaId, true)
+                        notifyItemChanged(index)
+                        break
+                    }
                 }
             }
-            placeholderIds.clear()
+        }
+
+        fun removePlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
+            for (index in imageList.indices) {
+                if (imageList[index].id == remoteMediaId) {
+                    imageList.removeAt(index)
+                    placeholderIds.delete(remoteMediaId)
+                    notifyItemRemoved(index)
+                    break
+                }
+            }
         }
 
         fun isPlaceholder(position: Int): Boolean {
