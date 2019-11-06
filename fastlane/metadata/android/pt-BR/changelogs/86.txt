@@ -1,0 +1,5 @@
+2.9:
+* Viva! Agora somos compatíveis com Android 10!
+* A guia de pedidos foi completamente reformada! A pesquisa e os filtros agora têm uma exibição única que inclui uma contagem total de pedidos exibidos por status do pedido. A lista de pedidos é exibida em duas guias: “Processamento” e “Todos”.
+* Os detalhes do pedido também tiveram alguns ajustes.
+* Várias correções de bugs menores também estão incluídas nesta versão.

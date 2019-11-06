@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-17 00:54:49+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="button_edit_permissions">Editar permisos</string>
+    <string name="permission_camera">Cámara</string>
+    <string name="permission_storage">Almacenamiento</string>
+    <string name="permissions_denied_message">Parece que has desactivado permisos requeridos para esta funcionalidad.&lt;br/>&lt;br/>Para cambiar este estado, modifica tus permisos y asegúrate de activar &lt;strong>%s&lt;/strong>.</string>
+    <string name="permissions_denied_title">Permisos</string>
+    <string name="orders_processed_empty_message">Se han procesado todos los pedidos</string>
+    <string name="orders_empty_message_with_processing">Aún no hay ningún pedido para procesar</string>
+    <string name="orderdetail_note_system">Sistema</string>
+    <string name="orderlist_search_hint">Buscar pedidos</string>
+    <string name="unknown">Desconocido</string>
+    <string name="button_not_now">Ahora no</string>
     <string name="product_search_hint">Buscar productos</string>
     <string name="product_list_empty_search">Ningún producto coincide con tu búsqueda.</string>
     <string name="product_list_empty">Aún no hay ningún producto</string>
@@ -443,7 +454,7 @@ Language: es
     <string name="app_rating_title">¿Te gusta Woo?</string>
     <string name="settings_selected_store">Tienda elegida</string>
     <string name="orders_empty_message_with_search">Ningún pedido coincide con tu búsqueda</string>
-    <string name="orders_empty_message_with_filter">No hay ningún pedido</string>
+    <string name="orders_empty_message_with_filter">No hay ningún pedido aún</string>
     <string name="waiting_for_customers_contentdesc">Esperando imagen de los clientes</string>
     <string name="waiting_for_customers">Esperando clientes</string>
     <string name="share_store_dialog_title">Comparte la URL de tu tienda</string>
@@ -483,8 +494,7 @@ Language: es
     <string name="back">Volver</string>
     <string name="notification_channel_review_title">Alertas de reseña de producto</string>
     <string name="notification_channel_order_title">Alertas de nuevo pedido</string>
-    <string name="orderdetail_note_system">Estado del sistema</string>
-    <string name="orderdetail_note_public">Enviar la nota al cliente</string>
+    <string name="orderdetail_note_public">Para el cliente</string>
     <string name="login_verifying_site">Verificando el sitio…</string>
     <string name="button_update_instructions">Actualizar instrucciones</string>
     <string name="search">Buscar</string>
@@ -667,7 +677,7 @@ Language: es
     <string name="orderdetail_payment_cleared">Se ha abonado el pago</string>
     <string name="orderdetail_order_fulfillment">Realizar el pedido núm. %s</string>
     <string name="orderdetail_order_notes">Notas del pedido</string>
-    <string name="orderdetail_note_private">Nota privada</string>
+    <string name="orderdetail_note_private">Privado</string>
     <string name="orderdetail_note_hint">Redactar una nota de pedido</string>
     <string name="orderdetail_customer_image_contentdesc">Imagen de perfil del cliente</string>
     <string name="orderdetail_customer_provided_note">Nota proporcionada por el cliente</string>
@@ -772,4 +782,8 @@ Language: es
     <string name="all">Todo</string>
     <string name="notification_channel_general_title">General</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>Se está procesando</item>
+        <item>Todos los pedidos</item>
+    </string-array>
 </resources>

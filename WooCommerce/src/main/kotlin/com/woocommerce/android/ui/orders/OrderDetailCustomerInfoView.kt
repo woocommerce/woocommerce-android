@@ -111,6 +111,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         if (!isShippingAvailable(order) || hide) {
             customerInfo_divider.visibility = View.GONE
             customerInfo_shippingSection.visibility = View.GONE
+            customerInfo_shippingMethodSection.visibility = View.GONE
             customerInfo_morePanel.visibility = View.VISIBLE
             formatViewAsShippingOnly()
             customerInfo_viewMore.setOnClickListener(null)
@@ -134,6 +135,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                     customerInfo_viewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
                     customerInfo_viewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
                 }
+            }
+
+            val shippingMethodList = order.getShippingLineList()
+            if (shippingMethodList.isNullOrEmpty()) {
+                customerInfo_shippingMethodSection.visibility = View.GONE
+            } else {
+                customerInfo_shippingMethodSection.visibility = View.VISIBLE
+                customerInfo_shippingMethod.text = shippingMethodList.first().methodTitle
             }
         }
     }
