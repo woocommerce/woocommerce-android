@@ -143,6 +143,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             bundle.putString(KEY_IMAGE_URL, imageUrl)
             bundle.putString(KEY_IMAGE_TITLE, imageTitle)
             bundle.putString(KEY_TRANSITION_NAME, transitionName)
+            bundle.putBoolean(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
             super.onSaveInstanceState(outState)
         }
     }

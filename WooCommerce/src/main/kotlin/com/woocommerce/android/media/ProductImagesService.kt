@@ -242,6 +242,7 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(currentAction, remoteProductId, isError = false))
         doneSignal.countDown()
         productImageMap.remove(remoteProductId)
+
         if (currentAction == Action.UPLOAD_IMAGE) {
             currentUploads.remove(remoteProductId)
         } else if (currentAction == Action.REMOVE_IMAGE) {
