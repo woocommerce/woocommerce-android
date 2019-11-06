@@ -54,8 +54,7 @@ class ProductImagesService : JobIntentService() {
 
         class OnProductImagesUpdateStartedEvent(
             var action: Action,
-            var remoteProductId: Long,
-            var remoteMediaId: Long = 0
+            var remoteProductId: Long
         )
 
         class OnProductImagesUpdateCompletedEvent(
@@ -97,13 +96,13 @@ class ProductImagesService : JobIntentService() {
         currentAction = intent.getSerializableExtra(KEY_ACTION) as Action
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
 
-        if (currentAction == Action.UPLOAD_IMAGE) {
-            handleUpload(intent, remoteProductId)
-        } else if (currentAction == Action.REMOVE_IMAGE) {
-            handleRemoval(intent, remoteProductId)
-        } else {
-            WooLog.w(T.MEDIA, "productImagesService > unsupported action")
-            handleFailure(remoteProductId)
+        when (currentAction) {
+            Action.UPLOAD_IMAGE -> handleUpload(intent, remoteProductId)
+            Action.REMOVE_IMAGE -> handleRemoval(intent, remoteProductId)
+            else -> {
+                WooLog.w(T.MEDIA, "productImagesService > unsupported action")
+                handleFailure(remoteProductId)
+            }
         }
     }
 
@@ -166,7 +165,7 @@ class ProductImagesService : JobIntentService() {
 
         // first fire an event that the removal is starting
         EventBus.getDefault()
-                .post(OnProductImagesUpdateStartedEvent(Action.REMOVE_IMAGE, remoteProductId, remoteMediaId))
+                .post(OnProductImagesUpdateStartedEvent(Action.REMOVE_IMAGE, remoteProductId))
 
         // then dispatch the request to remove it
         val payload = UpdateProductImagesPayload(selectedSite.get(), remoteProductId, imageList)

@@ -173,10 +173,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             removePlaceholder(remoteMediaId)
 
             if (remoteMediaId == UPLOAD_PLACEHOLDER_ID) {
+                // if this is an upload placeholder, we add a bogus image to the list with an id of UPLOAD_PLACEHOLDER_ID
                 placeholderIds.put(remoteMediaId, true)
                 imageList.add(0, WCProductImageModel(remoteMediaId))
                 notifyItemInserted(0)
             } else {
+                // otherwise we locate the passed media id in the list and mark it as being a placeholder
                 for (index in imageList.indices) {
                     if (imageList[index].id == remoteMediaId) {
                         placeholderIds.put(remoteMediaId, true)

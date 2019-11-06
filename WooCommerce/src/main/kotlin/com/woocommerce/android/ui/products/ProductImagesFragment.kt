@@ -162,7 +162,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
             it.contentView = contentView
             it.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             it.setBackgroundDrawable(null)
-            it.setFocusable(true)
+            it.isFocusable = true
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 it.enterTransition = Fade()
