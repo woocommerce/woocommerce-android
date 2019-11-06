@@ -46,6 +46,10 @@ import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
+    companion object {
+        private const val REQUEST_CODE_IMAGE_VIEWER = 2001
+    }
+
     private enum class DetailCard {
         Primary,
         PricingAndInventory,

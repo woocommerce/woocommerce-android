@@ -127,7 +127,8 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     requireActivity(),
                     product,
                     imageModel,
-                    sharedElement = imageView
+                    sharedElement = imageView,
+                    enableRemoveImage = true
             )
         }
     }

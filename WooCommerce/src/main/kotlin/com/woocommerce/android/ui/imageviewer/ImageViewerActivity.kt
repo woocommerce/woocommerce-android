@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.imageviewer
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -31,23 +32,29 @@ import org.wordpress.android.fluxc.model.WCProductImageModel
  */
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
+        const val RESULT_REMOVE_IMAGE = Activity.RESULT_FIRST_USER
+
         private const val KEY_IMAGE_URL = "image_url"
         private const val KEY_IMAGE_TITLE = "image_title"
         private const val KEY_IMAGE_REMOTE_PRODUCT_ID = "remote_product_id"
         private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
         private const val KEY_TRANSITION_NAME = "transition_name"
+        private const val KEY_ENABLE_REMOVE_IMAGE = "enable_remove_image"
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
         fun showProductImage(
             activity: Activity,
             productModel: Product,
             imageModel: WCProductImageModel,
-            sharedElement: View? = null
+            sharedElement: View? = null,
+            enableRemoveImage: Boolean = false,
+            requestCode: Int = 0
         ) {
             val intent = Intent(activity, ImageViewerActivity::class.java).also {
                 it.putExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, productModel.remoteId)
                 it.putExtra(KEY_IMAGE_REMOTE_MEDIA_ID, imageModel.id)
                 it.putExtra(KEY_IMAGE_URL, imageModel.src)
+                it.putExtra(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
 
                 if (imageModel.name.isNotEmpty()) {
                     it.putExtra(KEY_IMAGE_TITLE, imageModel.name)
@@ -68,12 +75,14 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                         R.anim.activity_fade_out
                 )
             }
-            ActivityCompat.startActivity(activity, intent, options.toBundle())
+            ActivityCompat.startActivityForResult(activity, intent, requestCode, options.toBundle())
         }
     }
 
     private var remoteProductId = 0L
     private var remoteMediaId = 0L
+    private var enableRemoveImage = false
+
     private lateinit var imageUrl: String
     private lateinit var imageTitle: String
     private lateinit var transitionName: String
@@ -86,35 +95,23 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
         setContentView(R.layout.activity_image_viewer)
 
-        remoteProductId = if (savedInstanceState == null) {
-            intent.getLongExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, 0L)
-        } else {
-            savedInstanceState.getLong(KEY_IMAGE_REMOTE_PRODUCT_ID)
-        }
+        remoteProductId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_PRODUCT_ID)
+                ?: intent.getLongExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, 0L)
 
-        remoteMediaId = if (savedInstanceState == null) {
-            intent.getLongExtra(KEY_IMAGE_REMOTE_MEDIA_ID, 0L)
-        } else {
-            savedInstanceState.getLong(KEY_IMAGE_REMOTE_MEDIA_ID)
-        }
+        remoteMediaId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_MEDIA_ID)
+                ?: intent.getLongExtra(KEY_IMAGE_REMOTE_MEDIA_ID, 0L)
 
-        imageUrl = if (savedInstanceState == null) {
-            intent.getStringExtra(KEY_IMAGE_URL) ?: ""
-        } else {
-            savedInstanceState.getString(KEY_IMAGE_URL) ?: ""
-        }
+        imageUrl = savedInstanceState?.getString(KEY_IMAGE_URL)
+                ?: intent.getStringExtra(KEY_IMAGE_URL) ?: intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
 
-        imageTitle = if (savedInstanceState == null) {
-            intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
-        } else {
-            savedInstanceState.getString(KEY_IMAGE_TITLE) ?: ""
-        }
+        imageTitle = savedInstanceState?.getString(KEY_IMAGE_TITLE)
+                ?: intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
 
-        transitionName = if (savedInstanceState == null) {
-            intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
-        } else {
-            savedInstanceState.getString(KEY_TRANSITION_NAME) ?: ""
-        }
+        enableRemoveImage = savedInstanceState?.getBoolean(KEY_ENABLE_REMOVE_IMAGE)
+                ?: intent.getBooleanExtra(KEY_ENABLE_REMOVE_IMAGE, false)
+
+        transitionName = savedInstanceState?.getString(KEY_TRANSITION_NAME)
+                ?: intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
         photoView.transitionName = transitionName
 
         val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
@@ -158,23 +155,23 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        if (remoteProductId != 0L && remoteMediaId != 0L) {
+        if (enableRemoveImage) {
             menuInflater.inflate(R.menu.menu_trash, menu)
         }
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.menu_trash -> {
-                removeProductImage()
-                return true
+                confirmRemoveProductImage()
+                true
             }
             android.R.id.home -> {
                 onBackPressed()
-                return true
+                true
             } else -> {
-                return super.onOptionsItemSelected(item)
+                super.onOptionsItemSelected(item)
             }
         }
     }
@@ -188,8 +185,23 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                 .into(photoView)
     }
 
-    private fun removeProductImage() {
-        // TODO
+    /**
+     * Confirms that the user meant to remove this image from the product - the actual removal must be
+     * done in the calling activity
+     */
+    private fun confirmRemoveProductImage() {
+        AlertDialog.Builder(this)
+                .setMessage(R.string.product_image_remove_confirmation)
+                .setCancelable(true)
+                .setPositiveButton(R.string.remove) { _, _ ->
+                    val data = Intent().also {
+                        it.putExtra(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
+                    }
+                    setResult(RESULT_REMOVE_IMAGE, data)
+                    finishAfterTransition()
+                }
+                .setNegativeButton(R.string.dont_remove, null)
+                .show()
     }
 
     private fun showProgress(show: Boolean) {
