@@ -124,7 +124,7 @@ class ProductImagesService : JobIntentService() {
             media.postId = remoteProductId
             media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             currentUploads.put(remoteProductId, localMediaUri)
-            dispatchUploadAction(media)
+            dispatchUploadMediaAction(media)
             return
         }
 
@@ -135,7 +135,7 @@ class ProductImagesService : JobIntentService() {
     private fun handleRemoval(intent: Intent, remoteProductId: Long) {
         val remoteMediaId = intent.getLongExtra(KEY_REMOTE_MEDIA_ID, 0)
         currentRemovals.put(remoteProductId, remoteMediaId)
-        dispatchRemovalAction(remoteProductId, remoteMediaId)
+        dispatchRemoveMediaAction(remoteProductId, remoteMediaId)
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -147,7 +147,7 @@ class ProductImagesService : JobIntentService() {
     /**
      * Dispatch the request to upload device image to the WP media library and wait for it to complete
      */
-    private fun dispatchUploadAction(media: MediaModel) {
+    private fun dispatchUploadMediaAction(media: MediaModel) {
         // first fire an event that the upload is starting
         val remoteProductId = media.postId
         EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(Action.UPLOAD_IMAGE, remoteProductId))
@@ -162,7 +162,7 @@ class ProductImagesService : JobIntentService() {
     /**
      * Dispatches a request to remove a single image from a product
      */
-    private fun dispatchRemovalAction(remoteProductId: Long, remoteMediaId: Long) {
+    private fun dispatchRemoveMediaAction(remoteProductId: Long, remoteMediaId: Long) {
         val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
         if (product == null) {
             WooLog.w(T.MEDIA, "productImagesService > product is null")
