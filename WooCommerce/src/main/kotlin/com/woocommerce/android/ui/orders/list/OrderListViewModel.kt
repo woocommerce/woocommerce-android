@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.text.TextUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -32,10 +31,12 @@ import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -93,11 +94,9 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewState: LiveData<OrderListEmptyUiState> = _emptyViewState
 
-    private val _shareStore = SingleLiveEvent<Unit>()
-    val shareStore: LiveData<Unit> = _shareStore
-
     var isSearching = false
     var searchQuery = ""
+    var orderStatusFilter = ""
 
     init {
         lifecycleRegistry.markState(Lifecycle.State.CREATED)
@@ -188,15 +187,6 @@ class OrderListViewModel @Inject constructor(
     }
 
     /**
-     * Notifies the view to share the store. It's necessary to do this from the fragment because
-     * doing this from here would require using the applicationContext which forces a new activity
-     * to be created.
-     */
-    fun shareStore() {
-        _shareStore.call()
-    }
-
-    /**
      * Reload the orders list with the database available in the database. This is the ideal way to
      * load changes to orders that were initiated from within this app instance. If the change was
      * successfully pushed to the API, then the database would already be updated so there is no
@@ -205,8 +195,6 @@ class OrderListViewModel @Inject constructor(
     fun reloadListFromCache() {
         pagedListWrapper?.invalidateData()
     }
-
-    private fun isEmptySearch() = TextUtils.isEmpty(searchQuery) && isSearching
 
     /**
      * Used to filter out dataset changes that might trigger an empty view when performing a search.
@@ -239,23 +227,29 @@ class OrderListViewModel @Inject constructor(
      */
     private fun listenToEmptyViewStateLiveData(pagedListWrapper: PagedListWrapper<OrderListItemUIType>) {
         val update = {
-            val listType = if (this.isSearching) OrderListType.SEARCH else OrderListType.ALL
+            val listType = when {
+                this.isSearching -> OrderListType.SEARCH
+                isShowingProcessingTab() -> OrderListType.PROCESSING
+                else -> OrderListType.ALL
+            }
             createEmptyUiState(
                 orderListType = listType,
                 isNetworkAvailable = networkStatus.isConnected(),
                 isLoadingData = pagedListWrapper.isFetchingFirstPage.value ?: false ||
                         pagedListWrapper.data.value == null,
                 isListEmpty = pagedListWrapper.isEmpty.value ?: true,
-                isSearchPromptRequired = isEmptySearch(),
+                hasOrders = repository.hasCachedOrdersForSite(),
                 isError = pagedListWrapper.listError.value != null,
-                fetchFirstPage = this::fetchOrdersAndOrderStatusOptions,
-                shareStoreFunc = this::shareStore)
+                fetchFirstPage = this::fetchOrdersAndOrderStatusOptions)
         }
 
         _emptyViewState.addSource(pagedListWrapper.isEmpty) { _emptyViewState.postValue(update()) }
         _emptyViewState.addSource(pagedListWrapper.isFetchingFirstPage) { _emptyViewState.postValue(update()) }
         _emptyViewState.addSource(pagedListWrapper.listError) { _emptyViewState.postValue(update()) }
     }
+
+    private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty() &&
+            orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value.toLowerCase(Locale.ROOT)
 
     private fun showOfflineSnack() {
         // Network is not connected

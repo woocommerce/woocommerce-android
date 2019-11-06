@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_main.*
@@ -60,14 +60,22 @@ class OrderListFragment : TopLevelFragment(),
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
+        const val ARG_ORDER_STATUS_FILTER = "args-order-status-filter"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
         private const val TAB_INDEX_ALL = 1
         private const val ORDER_TAB_DEFAULT = TAB_INDEX_PROCESSING
 
-        fun newInstance(orderStatusFilter: String? = null) =
-            OrderListFragment().apply { this.orderStatusFilter = orderStatusFilter }
+        fun newInstance(orderStatus: String? = null): OrderListFragment {
+            val fragment = OrderListFragment()
+            orderStatus?.let {
+                val args = Bundle()
+                args.putString(ARG_ORDER_STATUS_FILTER, orderStatus)
+                fragment.arguments = args
+            }
+            return fragment
+        }
     }
 
     @Inject internal lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -80,7 +88,12 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private var listState: Parcelable? = null // Save the state of the recycler view
-    private var orderStatusFilter: String? = null
+
+    // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
+    // identical to the real value on the UI side.
+    private var orderStatusFilter: String
+        private set(value) { viewModel.orderStatusFilter = value }
+        get() = viewModel.orderStatusFilter
 
     // Alias for interacting with [viewModel.isSearching] so the value is always identical
     // to the real value on the UI side.
@@ -118,10 +131,12 @@ class OrderListFragment : TopLevelFragment(),
         setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(STATE_KEY_LIST)
-            orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
+            orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, StringUtils.EMPTY)
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             isFilterEnabled = bundle.getBoolean(STATE_KEY_IS_FILTER_ENABLED)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
+        } ?: arguments?.let {
+            orderStatusFilter = it.getString(ARG_ORDER_STATUS_FILTER, StringUtils.EMPTY)
         }
     }
 
@@ -193,7 +208,7 @@ class OrderListFragment : TopLevelFragment(),
 
                     // If this tab is the one that should be active, select it and load
                     // the appropriate list.
-                    if (index == calculateDefaultTabPosition()) {
+                    if (index == calculateStartupTabPosition()) {
                         orderStatusFilter = calculateOrderStatusFilter(tab)
                         tab.select()
                     }
@@ -209,10 +224,12 @@ class OrderListFragment : TopLevelFragment(),
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                val previousOrderStatus = orderStatusFilter
+                // Hide the empty view if visible
+                order_list_view.hideEmptyView()
 
                 // Calculate the filter that should be active based on the selected
                 // tab and the state of the list.
+                val previousOrderStatus = orderStatusFilter
                 orderStatusFilter = calculateOrderStatusFilter(tab)
 
                 if (orderStatusFilter != previousOrderStatus) {
@@ -393,17 +410,6 @@ class OrderListFragment : TopLevelFragment(),
             it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
         })
 
-        viewModel.shareStore.observe(this, Observer {
-            AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-            selectedSite.getIfExists()?.let { site ->
-                context?.let { ctx ->
-                    selectedSite.getIfExists()?.let {
-                        ActivityUtils.shareStoreUrl(ctx, site.url)
-                    }
-                }
-            }
-        })
-
         viewModel.start()
         viewModel.loadList(orderStatusFilter, searchQuery, shouldExcludeFutureOrders())
     }
@@ -438,22 +444,23 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onOrderStatusSelected(orderStatus: String?) {
-        if (orderStatusFilter == orderStatus) {
-            // Filter has not changed. Exit.
-            return
-        }
-
-        orderStatusFilter = orderStatus
+        orderStatusFilter = orderStatus ?: StringUtils.EMPTY
         if (isAdded) {
             AnalyticsTracker.track(
                     Stat.ORDERS_LIST_FILTER,
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
 
             isRefreshing = true
-            displayFilteredList()
-            order_list_view.clearAdapterData()
 
-            viewModel.loadList(statusFilter = orderStatus, excludeFutureOrders = shouldExcludeFutureOrders())
+            // Display the filtered list view
+            displayFilteredList()
+
+            // Load the filtered list
+            order_list_view.clearAdapterData()
+            viewModel.loadList(
+                    statusFilter = orderStatus,
+                    excludeFutureOrders = shouldExcludeFutureOrders()
+            )
 
             updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
@@ -477,9 +484,11 @@ class OrderListFragment : TopLevelFragment(),
      *
      * @return the index of the tab to be activated
      */
-    private fun calculateDefaultTabPosition(): Int {
+    private fun calculateStartupTabPosition(): Int {
         val orderStatusOptions = getOrderStatusOptions()
-        return if (AppPrefs.hasSelectedOrderListTabPosition()) {
+        return if (orderStatusFilter == PROCESSING.value) {
+            TAB_INDEX_PROCESSING
+        } else if (AppPrefs.hasSelectedOrderListTabPosition()) {
             // If the user has already changed tabs once then select
             // the last tab they had selected.
             AppPrefs.getSelectedOrderListTabPosition()
@@ -493,10 +502,10 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    private fun getOrderStatusFilterForActiveTab(): String? {
+    private fun getOrderStatusFilterForActiveTab(): String {
         return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
             calculateOrderStatusFilter(it)
-        } ?: null
+        } ?: StringUtils.EMPTY
     }
 
     /**
@@ -505,11 +514,11 @@ class OrderListFragment : TopLevelFragment(),
      * @return If there is an active filter, return that filter. Otherwise, if the "Processing"
      * tab is currently selected, return a filter of "processing", else return null (no filter).
      */
-    private fun calculateOrderStatusFilter(tab: TabLayout.Tab): String? {
+    private fun calculateOrderStatusFilter(tab: TabLayout.Tab): String {
         return when {
             isFilterEnabled -> orderStatusFilter
-            tab.position == 0 -> (tab.tag as? String)?.toLowerCase(Locale.getDefault())
-            else -> null
+            tab.position == 0 -> (tab.tag as? String)?.toLowerCase(Locale.getDefault()) ?: StringUtils.EMPTY
+            else -> StringUtils.EMPTY
         }
     }
 
@@ -656,6 +665,8 @@ class OrderListFragment : TopLevelFragment(),
      * 2. The order status list view is displayed by default
      */
     private fun enableSearchListeners() {
+        order_list_view?.hideEmptyView()
+
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
         orderListMenu?.findItem(R.id.menu_support)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)

@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.io.IOException
 
 object StringUtils {
+    const val EMPTY = ""
     private const val ONE_MILLION = 1000000
     private const val ONE_THOUSAND = 1000
 
