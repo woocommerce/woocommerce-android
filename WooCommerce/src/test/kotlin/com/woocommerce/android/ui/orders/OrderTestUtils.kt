@@ -159,6 +159,6 @@ object OrderTestUtils {
         }
     }
 
-    fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel>
-            = generateOrderStatusOptions().map { it.statusKey to it }.toMap()
+    fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
+            generateOrderStatusOptions().map { it.statusKey to it }.toMap()
 }
