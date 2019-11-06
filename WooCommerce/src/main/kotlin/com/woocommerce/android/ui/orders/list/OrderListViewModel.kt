@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -59,13 +60,18 @@ class OrderListViewModel @Inject constructor(
     }
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    private var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+
     private val dataSource by lazy {
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, lifecycle)
     }
 
-    private var isStarted = false
-    private var isRefreshPending = true
+    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var isStarted = false
+
+    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var isRefreshPending = true
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
@@ -225,31 +231,33 @@ class OrderListViewModel @Inject constructor(
      * Builds the function for handling empty view state scenarios and links the various [LiveData] feeds as
      * a source for the [_emptyViewState] LivData object.
      */
-    private fun listenToEmptyViewStateLiveData(pagedListWrapper: PagedListWrapper<OrderListItemUIType>) {
-        val update = {
-            val listType = when {
-                this.isSearching -> OrderListType.SEARCH
-                isShowingProcessingTab() -> OrderListType.PROCESSING
-                else -> OrderListType.ALL
-            }
-            createEmptyUiState(
+    private fun listenToEmptyViewStateLiveData(wrapper: PagedListWrapper<OrderListItemUIType>) {
+        _emptyViewState.addSource(wrapper.isEmpty) { createAndPostEmptyUiState(wrapper) }
+        _emptyViewState.addSource(wrapper.isFetchingFirstPage) { createAndPostEmptyUiState(wrapper) }
+        _emptyViewState.addSource(wrapper.listError) { createAndPostEmptyUiState(wrapper) }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun createAndPostEmptyUiState(wrapper: PagedListWrapper<OrderListItemUIType>) {
+        val listType = when {
+            isSearching -> OrderListType.SEARCH
+            isShowingProcessingTab() -> OrderListType.PROCESSING
+            else -> OrderListType.ALL
+        }
+        val emptyView = createEmptyUiState(
                 orderListType = listType,
                 isNetworkAvailable = networkStatus.isConnected(),
-                isLoadingData = pagedListWrapper.isFetchingFirstPage.value ?: false ||
-                        pagedListWrapper.data.value == null,
-                isListEmpty = pagedListWrapper.isEmpty.value ?: true,
+                isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
+                        wrapper.data.value == null,
+                isListEmpty = wrapper.isEmpty.value ?: true,
                 hasOrders = repository.hasCachedOrdersForSite(),
-                isError = pagedListWrapper.listError.value != null,
+                isError = wrapper.listError.value != null,
                 fetchFirstPage = this::fetchOrdersAndOrderStatusOptions)
-        }
-
-        _emptyViewState.addSource(pagedListWrapper.isEmpty) { _emptyViewState.postValue(update()) }
-        _emptyViewState.addSource(pagedListWrapper.isFetchingFirstPage) { _emptyViewState.postValue(update()) }
-        _emptyViewState.addSource(pagedListWrapper.listError) { _emptyViewState.postValue(update()) }
+        _emptyViewState.postValue(emptyView)
     }
 
     private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty() &&
-            orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value.toLowerCase(Locale.ROOT)
+            orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
 
     private fun showOfflineSnack() {
         // Network is not connected
