@@ -356,7 +356,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `Display Loading empty view for any order list tab`() = test {
         whenever(viewModel.isSearching).doReturn(false)
 
-        whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
@@ -387,8 +386,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `Does not display the Loading empty view in search mode`() = test {
         whenever(viewModel.isSearching).doReturn(true)
 
-        whenever(pagedListWrapper.data.value).doReturn(mock())
-        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
