@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.Manifest.permission
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -20,10 +19,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -31,7 +26,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -43,15 +37,15 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
+import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
-import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
-import kotlin.math.max
 
-class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
+class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -65,7 +59,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     private lateinit var viewModel: ProductDetailViewModel
 
     private var productTitle = ""
-    private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
@@ -96,7 +89,6 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initializeViewModel()
     }
 
@@ -137,10 +129,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         val displayHeight = DisplayUtils.getDisplayPixelHeight(activity!!)
         val multiplier = if (DisplayUtils.isLandscape(activity!!)) 0.5f else 0.3f
         imageHeight = (displayHeight * multiplier).toInt()
-        productDetail_image.layoutParams.height = imageHeight
-
-        // set the height of the gradient scrim that appears atop the image
-        imageScrim.layoutParams.height = imageHeight / 3
+        imageGallery.layoutParams.height = imageHeight
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -149,8 +138,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when {
-            item?.itemId == R.id.menu_share -> {
+        return when (item?.itemId) {
+            R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
                 true
@@ -189,25 +178,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
         updateActivityTitle()
 
-        isVariation = product.type == ProductType.VARIATION
+        imageGallery.showProductImages(product, this)
 
-        val imageUrl = product.firstImageUrl
-        if (imageUrl != null) {
-            val width = DisplayUtils.getDisplayPixelWidth(activity!!)
-            val height = DisplayUtils.getDisplayPixelHeight(activity!!)
-            val imageSize = max(width, height)
-            productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
-            GlideApp.with(activity!!)
-                    .load(productImageUrl)
-                    .error(R.drawable.ic_product)
-                    .placeholder(R.drawable.product_detail_image_background)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .listener(this)
-                    .into(productDetail_image)
-        } else {
-            productDetail_image.visibility = View.GONE
-            imageScrim.visibility = View.GONE
-        }
+        isVariation = product.type == ProductType.VARIATION
 
         // show status badge for unpublished products
         product.status?.let { status ->
@@ -524,44 +497,14 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
-    /**
-     * Glide failed to load the product image, do nothing so Glide will show the error drawable
-     */
-    override fun onLoadFailed(
-        e: GlideException?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        isFirstResource: Boolean
-    ): Boolean {
-        return false
-    }
-
-    /**
-     * Glide loaded the product image, add click listener to show image full screen
-     */
-    override fun onResourceReady(
-        resource: Drawable?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        dataSource: DataSource?,
-        isFirstResource: Boolean
-    ): Boolean {
-        productImageUrl?.let { imageUrl ->
-            // this is added to avoid nullPointerException when user clicks the back button exactly when this method
-            // is called. In that case, the productDetail_image will be null.
-            productDetail_image?.let { imageView ->
-                imageView.setOnClickListener {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                    ImageViewerActivity.show(
-                            activity!!,
-                            imageUrl,
-                            title = productTitle,
-                            sharedElement = imageView
-                    )
-                }
-            }
-        }
-        return false
+    override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        ImageViewerActivity.show(
+                requireActivity(),
+                image.src,
+                title = productTitle,
+                sharedElement = imageView
+        )
     }
 
     /**
@@ -574,10 +517,8 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             return true
         }
 
-        val permissions = arrayOf(permission.READ_EXTERNAL_STORAGE)
-        requestPermissions(
-                permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE
-        )
+        val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE)
+        requestPermissions(permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE)
         return false
     }
 
@@ -619,13 +560,19 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             return
         }
 
-        val checkForAlwaysDenied = requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
         val allGranted = WooPermissionUtils.setPermissionListAsked(
-                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied
+                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied = true
         )
 
-        if (allGranted && requestCode == WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE) {
-            // TODO: show camera once we add this feature
+        if (allGranted) {
+            when (requestCode) {
+                WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
+                    // TODO chooseProductImage()
+                }
+                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
+                    // TODO captureProduceImage()
+                }
+            }
         }
     }
 }

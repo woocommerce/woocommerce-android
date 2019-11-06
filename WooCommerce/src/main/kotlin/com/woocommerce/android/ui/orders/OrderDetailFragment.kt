@@ -232,10 +232,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             )
 
             // check if product is a virtual product. If it is, hide only the shipping details card
+            val isVirtualProduct = presenter.isVirtualProduct(order)
             orderDetail_customerInfo.initView(
                     order = order,
                     shippingOnly = false,
-                    billingOnly = presenter.isVirtualProduct(order))
+                    billingOnly = isVirtualProduct)
+
+            showOrderShippingNotice(isVirtualProduct, order)
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(
@@ -254,6 +257,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         // hide the shipping details if products in an order is virtual
         val hideShipping = presenter.isVirtualProduct(order)
         orderDetail_customerInfo.initShippingSection(order, hideShipping)
+        showOrderShippingNotice(hideShipping, order)
     }
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
@@ -667,5 +671,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                             listener = this)
                     .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
         }
+    }
+
+    /**
+     * Hide the shipping method warning if order contains only virtual products
+     * or if the order contains only one shipping method
+     * */
+    private fun showOrderShippingNotice(isVirtualProduct: Boolean, order: WCOrderModel) {
+        val hideShippingMethodNotice = isVirtualProduct || !order.isMultiShippingLinesAvailable()
+        orderDetail_shippingMethodNotice.visibility = if (hideShippingMethodNotice) View.GONE else View.VISIBLE
     }
 }

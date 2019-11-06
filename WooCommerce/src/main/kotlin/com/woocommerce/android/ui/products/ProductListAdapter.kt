@@ -168,7 +168,8 @@ class ProductListAdapter(
                     oldItem.manageStock == newItem.manageStock &&
                     oldItem.type == newItem.type &&
                     oldItem.numVariations == newItem.numVariations &&
-                    oldItem.name == newItem.name
+                    oldItem.name == newItem.name &&
+                    oldItem.images == newItem.images
         }
     }
 

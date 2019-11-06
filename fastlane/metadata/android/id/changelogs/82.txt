@@ -1,4 +1,0 @@
-2.8:
-* Pencarian daftar pesanan tidak memiliki kursor. Sekarang sudah ada!
-* Layar detail pesanan yang baru juga menampilkan daftar pengembalian dana yang telah Anda keluarkan.
-* Tab “Ulasan” kini menampilkan semua ulasan produk untuk toko.

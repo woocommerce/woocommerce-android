@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-16 00:55:07+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="button_edit_permissions">עריכת הרשאות</string>
+    <string name="permission_camera">מצלמה</string>
+    <string name="permission_storage">אחסון</string>
+    <string name="permissions_denied_message">נראה שהשבתת את פעילות ההרשאות שנדרשות לתכונה זו.&lt;br/>&lt;br/>כדי לשנות זאת, יש לערוך את ההרשאות שלך ולוודא שהפעלת את &lt;strong>%s&lt;/strong>.</string>
+    <string name="permissions_denied_title">הרשאות</string>
+    <string name="orders_processed_empty_message">כל ההזמנות עובדו</string>
+    <string name="orders_empty_message_with_processing">טרם התקבלו הזמנות לעיבוד</string>
+    <string name="orderdetail_note_system">מערכת</string>
+    <string name="orderlist_search_hint">חיפוש הזמנות</string>
+    <string name="unknown">לא ידוע</string>
+    <string name="button_not_now">לא עכשיו</string>
     <string name="product_search_hint">חיפוש מוצרים</string>
     <string name="product_list_empty_search">אין מוצרים תואמים</string>
     <string name="product_list_empty">עדיין אין מוצרים</string>
@@ -443,7 +454,7 @@ Language: he_IL
     <string name="app_rating_title">מרוצה מ-Woo?</string>
     <string name="settings_selected_store">חנויות נבחרות</string>
     <string name="orders_empty_message_with_search">לא נמצאו הזמנות תואמות</string>
-    <string name="orders_empty_message_with_filter">אין הזמנות</string>
+    <string name="orders_empty_message_with_filter">עדיין לא התקבלו הזמנות</string>
     <string name="waiting_for_customers_contentdesc">בהמתנה לתמונות לקוחות</string>
     <string name="waiting_for_customers">בהמתנה ללקוחות</string>
     <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
@@ -483,8 +494,7 @@ Language: he_IL
     <string name="back">חזרה</string>
     <string name="notification_channel_review_title">התראות לגבי ביקורות על המוצר</string>
     <string name="notification_channel_order_title">התראות על הזמנות חדשות</string>
-    <string name="orderdetail_note_system">סטטוס מערכת</string>
-    <string name="orderdetail_note_public">הערה ללקוח</string>
+    <string name="orderdetail_note_public">ללקוח</string>
     <string name="login_verifying_site">מאשר את האתר…</string>
     <string name="button_update_instructions">יש לעדכן את ההוראות</string>
     <string name="search">חיפוש</string>
@@ -667,7 +677,7 @@ Language: he_IL
     <string name="orderdetail_payment_cleared">התשלום אושר</string>
     <string name="orderdetail_order_fulfillment">השלמת הזמנה מספר %s</string>
     <string name="orderdetail_order_notes">הערות להזמנה</string>
-    <string name="orderdetail_note_private">הערה פרטית</string>
+    <string name="orderdetail_note_private">פרטי</string>
     <string name="orderdetail_note_hint">יצירת הערה להזמנה</string>
     <string name="orderdetail_customer_image_contentdesc">תמונת פרופיל של לקוח</string>
     <string name="orderdetail_customer_provided_note">הערה שסופקה על-ידי הלקוח</string>
@@ -772,4 +782,8 @@ Language: he_IL
     <string name="all">הכול</string>
     <string name="notification_channel_general_title">כללי</string>
     <string name="app_name">Woocommerce</string>
+    <string-array name="order_list_tabs">
+        <item>בטיפול</item>
+        <item>כל ההזמנות</item>
+    </string-array>
 </resources>

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-17 00:54:50+0000
+Translation-Revision-Date: 2019-10-31 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="button_edit_permissions">Sunting izin</string>
+    <string name="permission_camera">Kamera</string>
+    <string name="permission_storage">Penyimpanan</string>
+    <string name="permissions_denied_message">Tampaknya Anda mematikan izin wajib untuk fitur ini.&lt;br/>&lt;br/>Untuk mengubahnya, edit izin Anda dan pastikan &lt;strong>%s&lt;/strong> telah aktif.</string>
+    <string name="permissions_denied_title">Izin</string>
+    <string name="orders_processed_empty_message">Semua pesanan telah diproses</string>
+    <string name="orders_empty_message_with_processing">Belum ada pesanan untuk diproses</string>
+    <string name="orderdetail_note_system">Sistem</string>
+    <string name="orderlist_search_hint">Cari pesanan</string>
+    <string name="unknown">Tidak diketahui</string>
+    <string name="button_not_now">Jangan sekarang</string>
     <string name="product_search_hint">Cari produk</string>
     <string name="product_list_empty_search">Tidak ada produk yang cocok</string>
     <string name="product_list_empty">Belum ada produk</string>
@@ -23,8 +34,8 @@ Language: id
     <string name="order_refunds_quote_image_description">Ikon kutipan</string>
     <string name="order_refunds_manual_refund">Pengembalian dana manual</string>
     <string name="order_refunds_refund_details">Rincian pengembalian dana</string>
-    <string name="order_refunds_refunded_via">Dana dikembalikan via %s</string>
-    <string name="order_refunds_refund_via">Kembalikan dana via</string>
+    <string name="order_refunds_refunded_via">Dana dikembalikan melalui %s</string>
+    <string name="order_refunds_refund_via">Kembalikan dana melalui</string>
     <string name="order_refunds_reason_hint">Alasan pengembalian dana (opsional)</string>
     <string name="order_refunds_reason">Alasan pengembalian dana</string>
     <string name="order_refunds_refund_amount">Jumlah pengembalian dana</string>
@@ -38,7 +49,7 @@ Language: id
     <string name="order_refunds_available_for_refund">%s tersedia untuk pengembalian dana</string>
     <string name="orderdetail_issue_refund_button">Keluarkan pengembalian dana</string>
     <string name="orderdetail_refund_view_details">Lihat rincian</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s melalui %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Cobalah statistik baru yang tersedia bersama\nPlugin admin WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
@@ -443,7 +454,7 @@ Language: id
     <string name="app_rating_title">Puas dengan Woo?</string>
     <string name="settings_selected_store">Toko pilihan</string>
     <string name="orders_empty_message_with_search">Tidak ada pesanan yang sesuai</string>
-    <string name="orders_empty_message_with_filter">Tidak ada pesanan</string>
+    <string name="orders_empty_message_with_filter">Belum ada pesanan</string>
     <string name="waiting_for_customers_contentdesc">Menunggu gambar pelanggan</string>
     <string name="waiting_for_customers">Menunggu pelanggan</string>
     <string name="share_store_dialog_title">Bagikan URL toko Anda</string>
@@ -483,8 +494,7 @@ Language: id
     <string name="back">Kembali</string>
     <string name="notification_channel_review_title">Pemberitahuan ulasan produk</string>
     <string name="notification_channel_order_title">Pemberitahuan pesanan baru</string>
-    <string name="orderdetail_note_system">Status sistem</string>
-    <string name="orderdetail_note_public">Catatan untuk pelanggan</string>
+    <string name="orderdetail_note_public">Ke pelanggan</string>
     <string name="login_verifying_site">Memverifikasi situs…</string>
     <string name="button_update_instructions">Petunjuk pembaruan</string>
     <string name="search">Cari</string>
@@ -667,7 +677,7 @@ Language: id
     <string name="orderdetail_payment_cleared">Pembayaran Beres</string>
     <string name="orderdetail_order_fulfillment">Penuhi Pesanan #%s</string>
     <string name="orderdetail_order_notes">Catatan Pesanan</string>
-    <string name="orderdetail_note_private">Catatan Privat</string>
+    <string name="orderdetail_note_private">Pribadi</string>
     <string name="orderdetail_note_hint">Tulis catatan pesanan</string>
     <string name="orderdetail_customer_image_contentdesc">Gambar profil pelanggan</string>
     <string name="orderdetail_customer_provided_note">Catatan yang Diberikan Pelanggan</string>
@@ -772,4 +782,8 @@ Language: id
     <string name="all">Semua</string>
     <string name="notification_channel_general_title">Umum</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>Dalam Proses</item>
+        <item>Semua Pesanan</item>
+    </string-array>
 </resources>
