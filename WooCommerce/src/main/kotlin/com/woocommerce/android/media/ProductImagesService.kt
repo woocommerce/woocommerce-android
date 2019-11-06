@@ -34,8 +34,8 @@ class ProductImagesService : JobIntentService() {
     companion object {
         const val KEY_ACTION = "action"
         const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
-        const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
         const val KEY_REMOTE_MEDIA_ID = "key_remote_media_id"
+        const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
 
         enum class Action {
             NONE,
@@ -188,7 +188,7 @@ class ProductImagesService : JobIntentService() {
                 .post(OnProductImagesUpdateStartedEvent(Action.REMOVE_IMAGE, remoteProductId, remoteMediaId))
 
         // then dispatch the request to remove it
-        val payload = UpdateProductImagesPayload(selectedSite.get(), remoteMediaId, imageList)
+        val payload = UpdateProductImagesPayload(selectedSite.get(), remoteProductId, imageList)
         dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
         doneSignal.await()
     }
