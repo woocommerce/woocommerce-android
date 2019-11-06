@@ -6,14 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
-import com.woocommerce.android.media.MediaRemovalService
-import com.woocommerce.android.media.MediaRemovalService.Companion.OnProductImageRemovalCompletedEvent
-import com.woocommerce.android.media.MediaRemovalService.Companion.OnProductImageRemovalStartedEvent
-import com.woocommerce.android.media.MediaRemovalWrapper
-import com.woocommerce.android.media.MediaUploadService
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductImagesUploadCompletedEvent
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductImagesUploadStartedEvent
-import com.woocommerce.android.media.MediaUploadWrapper
+import com.woocommerce.android.media.ProductImagesService
+import com.woocommerce.android.media.ProductImagesService.Companion.Action
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
+import com.woocommerce.android.media.ProductImagesWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -28,8 +25,7 @@ import javax.inject.Named
 class ProductImagesViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val productRepository: ProductImagesRepository,
-    private val mediaUploadWrapper: MediaUploadWrapper,
-    private val mediaRemovalWrapper: MediaRemovalWrapper
+    private val productImagesWrapper: ProductImagesWrapper
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
 
@@ -61,7 +57,7 @@ class ProductImagesViewModel @Inject constructor(
     fun start(remoteProductId: Long) {
         this.remoteProductId = remoteProductId
         loadProduct()
-        _isUploadingProductImage.value = MediaUploadService.isUploadingForProduct(remoteProductId)
+        _isUploadingProductImage.value = ProductImagesService.isUploadingForProduct(remoteProductId)
     }
 
     override fun onCleared() {
@@ -83,53 +79,40 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
-        if (MediaUploadService.isBusy()) {
+        if (ProductImagesService.isBusy()) {
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
         }
         _isUploadingProductImage.value = true
-        mediaUploadWrapper.uploadProductMedia(remoteProductId, localImageUri)
+        productImagesWrapper.uploadProductMedia(remoteProductId, localImageUri)
     }
 
     fun removeProductMedia(remoteProductId: Long, remoteMediaId: Long) {
-        if (MediaRemovalService.isBusy()) {
+        if (ProductImagesService.isBusy()) {
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
         }
-        mediaRemovalWrapper.removeProductMedia(remoteProductId, remoteMediaId)
+        productImagesWrapper.removeProductMedia(remoteProductId, remoteMediaId)
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUploadStartedEvent) {
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
         if (remoteProductId == event.remoteProductId) {
-            _isUploadingProductImage.value = true
+            if (event.action == Action.UPLOAD_IMAGE) {
+                _isUploadingProductImage.value = true
+            } else if (event.action == Action.REMOVE_IMAGE) {
+                _removingProductRemoteMediaId.value = event.remoteMediaId
+            }
         }
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUploadCompletedEvent) {
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         _isUploadingProductImage.value = false
-        if (event.isError) {
-            _showSnackbarMessage.value = R.string.product_image_service_error
-        } else {
-            loadProduct()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductImageRemovalStartedEvent(event: OnProductImageRemovalStartedEvent) {
-        if (remoteProductId == event.remoteProductId) {
-            _removingProductRemoteMediaId.value = event.remoteMediaId
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductImageRemovalCompletedEvent(event: OnProductImageRemovalCompletedEvent) {
         _removingProductRemoteMediaId.value = 0
+
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_service_error
         } else {

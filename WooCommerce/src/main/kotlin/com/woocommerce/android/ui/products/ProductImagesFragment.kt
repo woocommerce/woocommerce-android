@@ -20,7 +20,7 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.media.MediaUploadUtils
+import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
@@ -125,7 +125,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewModel.product.value?.let { product ->
             ImageViewerActivity.showProductImage(
-                    ProductImagesFragment@this,
+                    this,
                     product,
                     imageModel,
                     sharedElement = imageView,
@@ -180,7 +180,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private fun captureProductImage() {
         if (requestCameraPermission()) {
-            MediaUploadUtils.createCaptureImageIntent(requireActivity())?.let { intent ->
+            ProductImagesUtils.createCaptureImageIntent(requireActivity())?.let { intent ->
                 capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
                 requireActivity().startActivityFromFragment(this, intent,
                         REQUEST_CODE_CAPTURE_PHOTO

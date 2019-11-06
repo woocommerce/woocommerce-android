@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-object MediaUploadUtils {
+object ProductImagesUtils {
     private const val OPTIMIZE_IMAGE_MAX_SIZE = 3000
     private const val OPTIMIZE_IMAGE_QUALITY = 85
 

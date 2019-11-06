@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-internal abstract class MediaUploadModule {
+internal abstract class ProductImagesModule {
     @ContributesAndroidInjector
-    abstract fun mediaUploadService(): MediaUploadService
+    abstract fun productImagesService(): ProductImagesService
 }
