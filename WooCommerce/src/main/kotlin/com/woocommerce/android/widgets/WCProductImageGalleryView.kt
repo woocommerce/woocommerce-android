@@ -32,7 +32,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
     companion object {
-        private const val PLACEHOLDER_ID = -1L
+        private const val UPLOAD_PLACEHOLDER_ID = -1L
         private const val VIEW_TYPE_IMAGE = 0
         private const val VIEW_TYPE_PLACEHOLDER = 1
     }
@@ -131,8 +131,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.removeUploadPlaceholder()
     }
 
+    fun addRemovalPlaceholder(remoteMediaId: Long) {
+        adapter.addRemovalPlaceholder(remoteMediaId)
+    }
+
     private fun onImageClicked(position: Int, imageView: View) {
-        if (!adapter.isPlaceholder(position)) {
+        if (!adapter.isUploadPlaceholder(position)) {
             imageView.transitionName = "shared_element$position"
             listener.onGalleryImageClicked(adapter.getImage(position), imageView)
         }
@@ -140,6 +144,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
+        private var removePlaceholderId = 0L
 
         fun showImages(images: List<WCProductImageModel>) {
             fun isSameImageList(): Boolean {
@@ -163,14 +168,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         fun addUploadPlaceholder() {
             removeUploadPlaceholder()
-            val placeholder = WCProductImageModel(PLACEHOLDER_ID)
+            val placeholder = WCProductImageModel(UPLOAD_PLACEHOLDER_ID)
             imageList.add(0, placeholder)
             notifyItemInserted(0)
         }
 
         fun removeUploadPlaceholder() {
             for (index in imageList.indices) {
-                if (isPlaceholder(index)) {
+                if (isUploadPlaceholder(index)) {
                     imageList.removeAt(index)
                     notifyItemRemoved(index)
                     return
@@ -178,7 +183,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
-        fun isPlaceholder(position: Int) = imageList[position].id == PLACEHOLDER_ID
+        fun addRemovalPlaceholder(remoteMediaId: Long) {
+            if (remoteMediaId != removePlaceholderId) {
+                removePlaceholderId = remoteMediaId
+                notifyDataSetChanged()
+            }
+        }
+
+        fun isUploadPlaceholder(position: Int) = imageList[position].id == UPLOAD_PLACEHOLDER_ID
+
+        fun isRemovalPlaceholder(position: Int) = imageList[position].id == removePlaceholderId
 
         fun getImage(position: Int) = imageList[position]
 
@@ -186,8 +200,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         override fun getItemId(position: Int): Long = imageList[position].id
 
-        override fun getItemViewType(position: Int) =
-                if (isPlaceholder(position)) VIEW_TYPE_PLACEHOLDER else VIEW_TYPE_IMAGE
+        override fun getItemViewType(position: Int): Int {
+            return when {
+                isUploadPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
+                isRemovalPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
+                else -> VIEW_TYPE_IMAGE
+            }
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             val holder = ImageViewHolder(
@@ -208,7 +227,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            if (!isPlaceholder(position)) {
+            if (getItemViewType(position) == VIEW_TYPE_IMAGE) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
                 request.load(photonUrl).into(holder.imageView)
             }

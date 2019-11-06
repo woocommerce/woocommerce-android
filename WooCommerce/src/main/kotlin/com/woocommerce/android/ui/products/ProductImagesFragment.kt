@@ -111,7 +111,15 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         })
 
         viewModel.isUploadingProductImage.observe(this, Observer {
-            showUploadImageProgress(it)
+            if (it) {
+                imageGallery.addUploadPlaceholder()
+            } else {
+                imageGallery.removeUploadPlaceholder()
+            }
+        })
+
+        viewModel.removingProductRemoteMediaId.observe(this, Observer {
+            imageGallery.addRemovalPlaceholder(it)
         })
 
         viewModel.exit.observe(this, Observer {
@@ -186,17 +194,6 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                         REQUEST_CODE_CAPTURE_PHOTO
                 )
             }
-        }
-    }
-
-    /**
-     * Triggered by the viewModel when an image is being uploaded or has finished uploading
-     */
-    private fun showUploadImageProgress(isUploading: Boolean) {
-        if (isUploading) {
-            imageGallery.addUploadPlaceholder()
-        } else {
-            imageGallery.removeUploadPlaceholder()
         }
     }
 
