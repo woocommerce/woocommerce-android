@@ -12,7 +12,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/picture_frame"
         android:contentDescription="@string/product_image_content_description"
         android:padding="1dp"
         tools:src="@drawable/ic_product" />

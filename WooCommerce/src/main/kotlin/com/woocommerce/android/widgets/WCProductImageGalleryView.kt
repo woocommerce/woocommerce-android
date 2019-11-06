@@ -225,11 +225,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 holder.imageView.layoutParams.width = placeholderWidth
-                holder.imageView.setBackgroundResource(R.drawable.product_detail_image_background)
                 holder.uploadProgress.visibility = View.VISIBLE
             } else {
                 holder.imageView.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-                holder.imageView.setBackgroundResource(R.drawable.picture_frame)
                 holder.uploadProgress.visibility = View.GONE
             }
 
