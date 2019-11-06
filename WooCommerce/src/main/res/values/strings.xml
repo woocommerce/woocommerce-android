@@ -365,7 +365,10 @@
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>
     <string name="product_pricing_and_inventory">Pricing and inventory</string>
+    <string name="product_property_default_formatter" translatable="false">%1$s: %2$s</string>
+    <string name="product_property_variant_formatter" translatable="false">%1$s (%2$s options)</string>
     <string name="product_inventory">Inventory</string>
+    <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>

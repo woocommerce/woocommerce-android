@@ -269,6 +269,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         } else {
             addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
         }
+
+        // show product variants only if product type is variable
+        if (product.type == VARIABLE) {
+            var group = mutableMapOf<String, String>()
+            for (attribute in product.attributes) {
+                group[attribute.name] = attribute.options.size.toString()
+            }
+            addPropertyGroup(pricingCard, R.string.product_variants, group, R.string.product_property_variant_formatter)
+        }
     }
 
     private fun addPurchaseDetailsCard(productData: ProductWithParameters) {
@@ -361,7 +370,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun addPropertyGroup(
         card: DetailCard,
         @StringRes groupTitleId: Int,
-        properties: Map<String, String>
+        properties: Map<String, String>,
+        @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter
     ): WCProductPropertyView? {
         var propertyValue = ""
         properties.forEach { property ->
@@ -369,7 +379,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 if (propertyValue.isNotEmpty()) {
                     propertyValue += "\n"
                 }
-                propertyValue += "${property.key}: ${property.value}"
+                propertyValue += getString(propertyValueFormatterId, property.key, property.value)
             }
         }
         return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL)
