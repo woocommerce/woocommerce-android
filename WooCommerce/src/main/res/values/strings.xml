@@ -409,6 +409,7 @@
     -->
     <string name="product_images_title">Photos</string>
     <string name="product_add_photo">Add photo</string>
+    <string name="product_remove_photo">Remove photo</string>
     <string name="product_image_upload_error">Error uploading product photo</string>
     <string name="product_image_upload_service_busy">Please wait for the current upload to complete</string>
     <string name="product_image_removal_service_busy">Please wait for the current removal to complete</string>

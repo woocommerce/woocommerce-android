@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
@@ -21,7 +22,9 @@ import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.activity_image_viewer.*
+import org.wordpress.android.fluxc.model.WCProductImageModel
 
 /**
  * Full-screen image view with pinch-and-zoom
@@ -30,13 +33,28 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
         private const val KEY_IMAGE_TITLE = "image_title"
+        private const val KEY_IMAGE_REMOTE_PRODUCT_ID = "remote_product_id"
+        private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
         private const val KEY_TRANSITION_NAME = "transition_name"
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
-        fun show(activity: Activity, imageUrl: String, title: String = "", sharedElement: View? = null) {
-            val intent = Intent(activity, ImageViewerActivity::class.java)
-            intent.putExtra(KEY_IMAGE_URL, imageUrl)
-            intent.putExtra(KEY_IMAGE_TITLE, title)
+        fun showProductImage(
+            activity: Activity,
+            productModel: Product,
+            imageModel: WCProductImageModel,
+            sharedElement: View? = null
+        ) {
+            val intent = Intent(activity, ImageViewerActivity::class.java).also {
+                it.putExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, productModel.remoteId)
+                it.putExtra(KEY_IMAGE_REMOTE_MEDIA_ID, imageModel.id)
+                it.putExtra(KEY_IMAGE_URL, imageModel.src)
+
+                if (imageModel.name.isNotEmpty()) {
+                    it.putExtra(KEY_IMAGE_TITLE, imageModel.name)
+                } else {
+                    it.putExtra(KEY_IMAGE_TITLE, productModel.name)
+                }
+            }
 
             // use a shared element transition if a shared element view was passed, otherwise default to fade-in
             val options = if (sharedElement != null && sharedElement.transitionName.isNotEmpty()) {
@@ -54,6 +72,8 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
+    private var remoteProductId = 0L
+    private var remoteMediaId = 0L
     private lateinit var imageUrl: String
     private lateinit var imageTitle: String
     private lateinit var transitionName: String
@@ -65,6 +85,18 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_image_viewer)
+
+        remoteProductId = if (savedInstanceState == null) {
+            intent.getLongExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, 0L)
+        } else {
+            savedInstanceState.getLong(KEY_IMAGE_REMOTE_PRODUCT_ID)
+        }
+
+        remoteMediaId = if (savedInstanceState == null) {
+            intent.getLongExtra(KEY_IMAGE_REMOTE_MEDIA_ID, 0L)
+        } else {
+            savedInstanceState.getLong(KEY_IMAGE_REMOTE_MEDIA_ID)
+        }
 
         imageUrl = if (savedInstanceState == null) {
             intent.getStringExtra(KEY_IMAGE_URL) ?: ""
@@ -108,6 +140,8 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         outState?.let { bundle ->
+            bundle.putLong(KEY_IMAGE_REMOTE_PRODUCT_ID, remoteProductId)
+            bundle.putLong(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
             bundle.putString(KEY_IMAGE_URL, imageUrl)
             bundle.putString(KEY_IMAGE_TITLE, imageTitle)
             bundle.putString(KEY_TRANSITION_NAME, transitionName)
@@ -123,12 +157,26 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (remoteProductId != 0L && remoteMediaId != 0L) {
+            menuInflater.inflate(R.menu.menu_trash, menu)
         }
-        return super.onOptionsItemSelected(item)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_trash -> {
+                removeProductImage()
+                return true
+            }
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            } else -> {
+                return super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     private fun loadImage() {
@@ -138,6 +186,10 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                 .load(imageUrl)
                 .listener(this)
                 .into(photoView)
+    }
+
+    private fun removeProductImage() {
+        // TODO
     }
 
     private fun showProgress(show: Boolean) {

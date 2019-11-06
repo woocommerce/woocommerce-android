@@ -120,14 +120,16 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
-    override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
+    override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        ImageViewerActivity.show(
-                requireActivity(),
-                image.src,
-                title = getFragmentTitle(),
-                sharedElement = imageView
-        )
+        viewModel.product.value?.let { product ->
+            ImageViewerActivity.showProductImage(
+                    requireActivity(),
+                    product,
+                    imageModel,
+                    sharedElement = imageView
+            )
+        }
     }
 
     private fun createImageSourcePopup() {
