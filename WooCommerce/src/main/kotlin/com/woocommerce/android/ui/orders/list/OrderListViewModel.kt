@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.text.TextUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -197,8 +196,6 @@ class OrderListViewModel @Inject constructor(
         pagedListWrapper?.invalidateData()
     }
 
-    private fun isEmptySearch() = TextUtils.isEmpty(searchQuery) && isSearching
-
     /**
      * Used to filter out dataset changes that might trigger an empty view when performing a search.
      *
@@ -242,7 +239,6 @@ class OrderListViewModel @Inject constructor(
                         pagedListWrapper.data.value == null,
                 isListEmpty = pagedListWrapper.isEmpty.value ?: true,
                 hasOrders = repository.hasCachedOrdersForSite(),
-                isSearchPromptRequired = isEmptySearch(),
                 isError = pagedListWrapper.listError.value != null,
                 fetchFirstPage = this::fetchOrdersAndOrderStatusOptions)
         }

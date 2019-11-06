@@ -56,7 +56,6 @@ fun createEmptyUiState(
     isLoadingData: Boolean,
     isListEmpty: Boolean,
     hasOrders: Boolean,
-    isSearchPromptRequired: Boolean,
     isError: Boolean = false,
     fetchFirstPage: () -> Unit
 ): OrderListEmptyUiState {
@@ -73,7 +72,7 @@ fun createEmptyUiState(
             }
             else -> {
                 if (isNetworkAvailable) {
-                    createEmptyListUiState(orderListType, isSearchPromptRequired, hasOrders)
+                    createEmptyListUiState(orderListType, hasOrders)
                 } else {
                     createErrorListUiState(isNetworkAvailable, fetchFirstPage)
                 }
@@ -104,16 +103,11 @@ private fun createErrorListUiState(
  */
 private fun createEmptyListUiState(
     orderListType: OrderListType,
-    isSearchPromptRequired: Boolean,
     hasOrders: Boolean
 ): OrderListEmptyUiState {
     return when (orderListType) {
         SEARCH -> {
-            if (isSearchPromptRequired) {
-                OrderListEmptyUiState.EmptyList(UiStringRes(R.string.orderlist_search_prompt), null)
-            } else {
-                OrderListEmptyUiState.EmptyList(UiStringRes(R.string.orders_empty_message_with_search), null)
-            }
+            OrderListEmptyUiState.EmptyList(UiStringRes(R.string.orders_empty_message_with_search), null)
         }
         PROCESSING -> {
             if (hasOrders) {
