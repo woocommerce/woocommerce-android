@@ -46,10 +46,6 @@ import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
-    companion object {
-        private const val REQUEST_CODE_IMAGE_VIEWER = 2001
-    }
-
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -508,7 +504,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         } else {
             viewModel.productData.value?.product?.let { product ->
                 ImageViewerActivity.showProductImage(
-                        requireActivity(),
+                        ProductDetailFragment@this,
                         product,
                         imageModel,
                         sharedElement = imageView

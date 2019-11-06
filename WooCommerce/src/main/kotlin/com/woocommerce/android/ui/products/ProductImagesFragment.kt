@@ -35,6 +35,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     companion object {
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
         private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
+        private const val REQUEST_CODE_IMAGE_VIEWER = REQUEST_CODE_CAPTURE_PHOTO + 1
 
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
@@ -124,11 +125,12 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewModel.product.value?.let { product ->
             ImageViewerActivity.showProductImage(
-                    requireActivity(),
+                    ProductImagesFragment@this,
                     product,
                     imageModel,
                     sharedElement = imageView,
-                    enableRemoveImage = true
+                    enableRemoveImage = true,
+                    requestCode = REQUEST_CODE_IMAGE_VIEWER
             )
         }
     }
@@ -200,6 +202,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
                 data.data?.let { imageUri ->
@@ -208,6 +211,13 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
             } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
                 capturedPhotoUri?.let { imageUri ->
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                }
+            } else if (requestCode == REQUEST_CODE_IMAGE_VIEWER) {
+                data?.let {
+                    val remoteMediaId = it.getLongExtra(ImageViewerActivity.EXTRA_REMOVE_REMOTE_IMAGE_ID, 0)
+                    if (remoteMediaId != 0L) {
+                        viewModel.removeProductMedia(navArgs.remoteProductId, remoteMediaId)
+                    }
                 }
             }
         }

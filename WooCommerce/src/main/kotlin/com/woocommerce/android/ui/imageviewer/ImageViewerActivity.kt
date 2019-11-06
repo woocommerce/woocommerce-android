@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.imageviewer
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
@@ -14,9 +15,8 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -32,25 +32,28 @@ import org.wordpress.android.fluxc.model.WCProductImageModel
  */
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
-        const val RESULT_REMOVE_IMAGE = Activity.RESULT_FIRST_USER
+        const val EXTRA_REMOVE_REMOTE_IMAGE_ID = "remove_remote_media_id"
 
+        private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
         private const val KEY_IMAGE_URL = "image_url"
         private const val KEY_IMAGE_TITLE = "image_title"
         private const val KEY_IMAGE_REMOTE_PRODUCT_ID = "remote_product_id"
-        private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
         private const val KEY_TRANSITION_NAME = "transition_name"
         private const val KEY_ENABLE_REMOVE_IMAGE = "enable_remove_image"
+
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
         fun showProductImage(
-            activity: Activity,
+            fragment: Fragment,
             productModel: Product,
             imageModel: WCProductImageModel,
             sharedElement: View? = null,
             enableRemoveImage: Boolean = false,
             requestCode: Int = 0
         ) {
-            val intent = Intent(activity, ImageViewerActivity::class.java).also {
+            val context = fragment.requireActivity()
+
+            val intent = Intent(context, ImageViewerActivity::class.java).also {
                 it.putExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, productModel.remoteId)
                 it.putExtra(KEY_IMAGE_REMOTE_MEDIA_ID, imageModel.id)
                 it.putExtra(KEY_IMAGE_URL, imageModel.src)
@@ -67,15 +70,15 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             val options = if (sharedElement != null && sharedElement.transitionName.isNotEmpty()) {
                 val transitionName = sharedElement.transitionName
                 intent.putExtra(KEY_TRANSITION_NAME, transitionName)
-                ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement, transitionName)
+                ActivityOptions.makeSceneTransitionAnimation(context, sharedElement, transitionName)
             } else {
-                ActivityOptionsCompat.makeCustomAnimation(
-                        activity,
+                ActivityOptions.makeCustomAnimation(
+                        context,
                         R.anim.activity_fade_in,
                         R.anim.activity_fade_out
                 )
             }
-            ActivityCompat.startActivityForResult(activity, intent, requestCode, options.toBundle())
+            fragment.startActivityForResult(intent, requestCode, options.toBundle())
         }
     }
 
@@ -195,9 +198,9 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
                     val data = Intent().also {
-                        it.putExtra(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
+                        it.putExtra(EXTRA_REMOVE_REMOTE_IMAGE_ID, remoteMediaId)
                     }
-                    setResult(RESULT_REMOVE_IMAGE, data)
+                    setResult(Activity.RESULT_OK, data)
                     finishAfterTransition()
                 }
                 .setNegativeButton(R.string.dont_remove, null)
