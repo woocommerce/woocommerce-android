@@ -110,6 +110,11 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             betaFeaturesContainer.visibility = View.GONE
         }
 
+        switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
+        switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->
+            AppPrefs.setImageOptimizationEnabled(isChecked)
+        }
+
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifsContainerOlder.visibility = View.GONE

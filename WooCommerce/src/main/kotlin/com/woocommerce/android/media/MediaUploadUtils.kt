@@ -6,11 +6,13 @@ import android.net.Uri
 import android.os.Environment
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.MediaUtils
 import org.wordpress.android.util.UrlUtils
 import java.io.File
@@ -20,6 +22,9 @@ import java.util.Date
 import java.util.Locale
 
 object MediaUploadUtils {
+    private const val OPTIMIZE_IMAGE_MAX_SIZE = 3000
+    private const val OPTIMIZE_IMAGE_QUALITY = 85
+
     fun mediaModelFromLocalUri(
         context: Context,
         localSiteId: Int,
@@ -33,10 +38,19 @@ object MediaUploadUtils {
             return null
         }
 
-        val path = MediaUtils.getRealPathFromURI(context, fetchedUri)
+        var path = MediaUtils.getRealPathFromURI(context, fetchedUri)
         if (path == null) {
             WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
             return null
+        }
+
+        // optimize the image if the setting is enabled
+        if (AppPrefs.getImageOptimizationEnabled()) {
+            getOptimizedImageUri(context, path)?.let { optUri ->
+                MediaUtils.getRealPathFromURI(context, optUri)?.let { optPath ->
+                    path = optPath
+                }
+            }
         }
 
         val file = File(path)
@@ -85,7 +99,7 @@ object MediaUploadUtils {
      *
      * @return A local {@link Uri} or null if the download failed
      */
-    fun fetchMedia(context: Context, mediaUri: Uri): Uri? {
+    private fun fetchMedia(context: Context, mediaUri: Uri): Uri? {
         if (MediaUtils.isInMediaStore(mediaUri)) {
             return mediaUri
         }
@@ -136,6 +150,18 @@ object MediaUploadUtils {
                 }
             }
         }
+        return null
+    }
+
+    /**
+     * Resize and compress the passed image
+     */
+    private fun getOptimizedImageUri(context: Context, path: String): Uri? {
+        ImageUtils.optimizeImage(context, path, OPTIMIZE_IMAGE_MAX_SIZE, OPTIMIZE_IMAGE_QUALITY)?.let { optPath ->
+            return Uri.parse(optPath)
+        }
+
+        WooLog.w(T.MEDIA, "getOptimizedMedia > Optimized picture was null!")
         return null
     }
 }

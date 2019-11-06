@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -195,11 +197,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 holder.imageView.layoutParams.width = placeholderWidth
                 holder.imageView.setBackgroundResource(R.drawable.product_detail_image_background)
-                holder.uploadProgess.visibility = View.VISIBLE
+                holder.uploadProgress.visibility = View.VISIBLE
             } else {
                 holder.imageView.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
                 holder.imageView.setBackgroundResource(R.drawable.picture_frame)
-                holder.uploadProgess.visibility = View.GONE
+                holder.uploadProgress.visibility = View.GONE
             }
 
             return holder
@@ -214,8 +216,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView = view.productImage
-        val uploadProgess = view.uploadProgess
+        val imageView: ImageView = view.productImage
+        val uploadProgress: ProgressBar = view.uploadProgess
         init {
             imageView.layoutParams.height = imageHeight
             itemView.setOnClickListener {

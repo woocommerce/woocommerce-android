@@ -88,18 +88,16 @@ class MediaUploadService : JobIntentService() {
             return
         }
 
-        val media = MediaUploadUtils.mediaModelFromLocalUri(
+        MediaUploadUtils.mediaModelFromLocalUri(
                 this,
                 selectedSite.get().id,
                 localMediaUri,
                 mediaStore
-        )
-
-        media?.let {
-            it.postId = remoteProductId
-            it.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+        )?.let { media ->
+            media.postId = remoteProductId
+            media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             currentUploads.put(remoteProductId, localMediaUri)
-            dispatchUploadAction(it)
+            dispatchUploadAction(media)
             return
         }
 
@@ -117,7 +115,11 @@ class MediaUploadService : JobIntentService() {
      * Dispatch the request to upload device image to the WP media library and wait for it to complete
      */
     private fun dispatchUploadAction(media: MediaModel) {
-        EventBus.getDefault().post(OnProductMediaUploadStartedEvent(media.postId))
+        // first fire an event that the upload is starting
+        val remoteProductId = media.postId
+        EventBus.getDefault().post(OnProductMediaUploadStartedEvent(remoteProductId))
+
+        // then dispatch the upload request
         val site = siteStore.getSiteByLocalId(media.localSiteId)
         val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
