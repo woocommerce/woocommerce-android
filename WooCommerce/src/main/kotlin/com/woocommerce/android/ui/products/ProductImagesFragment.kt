@@ -149,7 +149,9 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun createImageSourcePopup() {
-        val contentView = requireActivity().layoutInflater.inflate(R.layout.image_source_popup, null).also {
+        val inflater = requireActivity().layoutInflater
+        val contentView = inflater.inflate(R.layout.image_source_popup, imageGallery, false)
+                .also {
             it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
                 viewModel.onChooseImageClicked()
             }
