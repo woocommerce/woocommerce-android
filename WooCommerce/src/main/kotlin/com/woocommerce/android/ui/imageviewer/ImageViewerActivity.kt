@@ -28,7 +28,7 @@ import kotlinx.android.synthetic.main.activity_image_viewer.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
 
 /**
- * Full-screen image view with pinch-and-zoom
+ * Full-screen product image viewer with pinch-and-zoom
  */
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
@@ -67,17 +67,15 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             }
 
             // use a shared element transition if a shared element view was passed, otherwise default to fade-in
-            val options = if (sharedElement != null && sharedElement.transitionName.isNotEmpty()) {
-                val transitionName = sharedElement.transitionName
-                intent.putExtra(KEY_TRANSITION_NAME, transitionName)
-                ActivityOptions.makeSceneTransitionAnimation(context, sharedElement, transitionName)
-            } else {
-                ActivityOptions.makeCustomAnimation(
-                        context,
-                        R.anim.activity_fade_in,
-                        R.anim.activity_fade_out
-                )
-            }
+            val options = sharedElement?.let {
+                intent.putExtra(KEY_TRANSITION_NAME, it.transitionName)
+                ActivityOptions.makeSceneTransitionAnimation(context, sharedElement, it.transitionName)
+            } ?: ActivityOptions.makeCustomAnimation(
+                    context,
+                    R.anim.activity_fade_in,
+                    R.anim.activity_fade_out
+            )
+
             fragment.startActivityForResult(intent, requestCode, options.toBundle())
         }
     }
@@ -197,6 +195,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
+                    // let the calling fragment know that the user requested to remove this image
                     val data = Intent().also {
                         it.putExtra(EXTRA_REMOVE_REMOTE_IMAGE_ID, remoteMediaId)
                     }

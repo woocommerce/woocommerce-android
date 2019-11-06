@@ -25,7 +25,7 @@ import javax.inject.Named
 class ProductImagesViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val productRepository: ProductImagesRepository,
-    private val productImagesWrapper: ProductImagesServiceWrapper
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
     var removingRemoteMediaId = 0L
@@ -63,7 +63,6 @@ class ProductImagesViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        productRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -85,7 +84,7 @@ class ProductImagesViewModel @Inject constructor(
             return
         }
         _isUploadingProductImage.value = true
-        productImagesWrapper.uploadProductMedia(remoteProductId, localImageUri)
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localImageUri)
     }
 
     fun removeProductMedia(remoteProductId: Long, remoteMediaId: Long) {
@@ -95,7 +94,7 @@ class ProductImagesViewModel @Inject constructor(
         }
         removingRemoteMediaId = remoteMediaId
         _isRemovingProductImage.value = true
-        productImagesWrapper.removeProductMedia(remoteProductId, remoteMediaId)
+        productImagesServiceWrapper.removeProductMedia(remoteProductId, remoteMediaId)
     }
 
     @Suppress("unused")

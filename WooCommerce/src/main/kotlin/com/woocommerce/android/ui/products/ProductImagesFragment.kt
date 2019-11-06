@@ -206,18 +206,16 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
-                data.data?.let { imageUri ->
+            when (requestCode) {
+                REQUEST_CODE_CHOOSE_PHOTO -> data?.data?.let { imageUri ->
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
-            } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
-                capturedPhotoUri?.let { imageUri ->
+                REQUEST_CODE_CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
-            } else if (requestCode == REQUEST_CODE_IMAGE_VIEWER) {
-                data?.let {
-                    val remoteMediaId = it.getLongExtra(ImageViewerActivity.EXTRA_REMOVE_REMOTE_IMAGE_ID, 0)
-                    if (remoteMediaId != 0L) {
+                REQUEST_CODE_IMAGE_VIEWER -> data?.let { intent ->
+                    val remoteMediaId = intent.getLongExtra(ImageViewerActivity.EXTRA_REMOVE_REMOTE_IMAGE_ID, 0)
+                    if (remoteMediaId > 0) {
                         viewModel.removeProductMedia(navArgs.remoteProductId, remoteMediaId)
                     }
                 }
