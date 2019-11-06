@@ -1,7 +1,7 @@
 package com.woocommerce.android.di
 
 import android.app.Application
-import com.woocommerce.android.media.ProductImagesModule
+import com.woocommerce.android.media.ProductImagesServiceModule
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import dagger.BindsInstance
@@ -32,7 +32,7 @@ import javax.inject.Singleton
         NetworkStatusModule::class,
         CurrencyModule::class,
         SupportModule::class,
-        ProductImagesModule::class])
+        ProductImagesServiceModule::class])
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

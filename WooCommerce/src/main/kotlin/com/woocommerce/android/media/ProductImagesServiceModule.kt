@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-internal abstract class ProductImagesModule {
+internal abstract class ProductImagesServiceModule {
     @ContributesAndroidInjector
     abstract fun productImagesService(): ProductImagesService
 }
