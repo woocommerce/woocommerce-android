@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
@@ -216,12 +217,15 @@ class MagicLinkInterceptRepository @Inject constructor(
 
             val trackEvent = when {
                 event.causeOfChange == AccountAction.FETCH_SETTINGS -> LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
-                else -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
+                event.error?.type == AccountErrorType.ACCOUNT_FETCH_ERROR -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
+                else -> null
             }
-            AnalyticsTracker.track(trackEvent, mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+            trackEvent?.let {
+                AnalyticsTracker.track(it, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+            }
         } else {
             when {
                 event.causeOfChange == AccountAction.FETCH_ACCOUNT -> {
