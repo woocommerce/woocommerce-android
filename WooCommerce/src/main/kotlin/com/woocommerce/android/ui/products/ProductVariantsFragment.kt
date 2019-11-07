@@ -89,6 +89,10 @@ class ProductVariantsFragment: BaseFragment() {
             uiMessageResolver.showSnack(it)
         })
 
+        viewModel.isRefreshing.observe(this, Observer {
+            productVariantsRefreshLayout.isRefreshing = it
+        })
+
         viewModel.exit.observe(this, Observer {
             activity?.onBackPressed()
         })
@@ -117,7 +121,7 @@ class ProductVariantsFragment: BaseFragment() {
             scrollUpChild = productVariantsList
             setOnRefreshListener {
                 // TODO: add event here for ptr in a different commit
-                // TODO: refresh product
+                viewModel.refreshProductVariants(navArgs.remoteProductId)
             }
         }
     }

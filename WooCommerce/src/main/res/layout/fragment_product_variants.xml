@@ -7,8 +7,14 @@
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.products.ProductVariantsFragment">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productVariantsList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    </FrameLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

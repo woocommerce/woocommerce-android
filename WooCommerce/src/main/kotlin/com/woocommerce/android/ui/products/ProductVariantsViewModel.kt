@@ -40,12 +40,17 @@ class ProductVariantsViewModel @Inject constructor(
         loadProductVariants(remoteProductId)
     }
 
+    fun refreshProductVariants(remoteProductId: Long) {
+        _isRefreshing.value = true
+        loadProductVariants(remoteProductId, forceRefresh = true)
+    }
+
     override fun onCleared() {
         super.onCleared()
         productVariantsRepository.onCleanup()
     }
 
-    private fun loadProductVariants(remoteProductId: Long) {
+    private fun loadProductVariants(remoteProductId: Long, forceRefresh: Boolean = false) {
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
 
@@ -56,11 +61,10 @@ class ProductVariantsViewModel @Inject constructor(
                 fetchProductVariants(remoteProductId)
             } else {
                 productVariantList.value = combineData(variantsInDb)
-                if (shouldFetch) {
+                if (shouldFetch || forceRefresh) {
                     fetchProductVariants(remoteProductId)
                 }
             }
-            _isSkeletonShown.value = false
         }
     }
 
@@ -75,8 +79,9 @@ class ProductVariantsViewModel @Inject constructor(
             }
         } else {
             _showSnackbarMessage.value = R.string.offline_error
-            _isSkeletonShown.value = false
         }
+        _isRefreshing.value = false
+        _isSkeletonShown.value = false
     }
 
     private fun combineData(productVariants: List<ProductVariant>): List<ProductVariant> {
