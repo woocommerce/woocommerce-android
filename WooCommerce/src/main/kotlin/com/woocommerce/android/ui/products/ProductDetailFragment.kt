@@ -116,6 +116,14 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             uiMessageResolver.showSnack(it)
         })
 
+        viewModel.isUploadingProductImage.observe(this, Observer {
+            if (it) {
+                imageGallery.addPlaceholder()
+            } else {
+                imageGallery.removePlaceholder()
+            }
+        })
+
         viewModel.exit.observe(this, Observer {
             activity?.onBackPressed()
         })
@@ -504,7 +512,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         } else {
             viewModel.productData.value?.product?.let { product ->
                 ImageViewerActivity.showProductImage(
-                        ProductDetailFragment@this,
+                        this,
                         product,
                         imageModel,
                         sharedElement = imageView

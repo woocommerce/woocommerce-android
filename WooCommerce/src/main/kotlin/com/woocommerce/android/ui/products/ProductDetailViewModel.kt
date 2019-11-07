@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -50,6 +51,9 @@ class ProductDetailViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
+    private val _isUploadingProductImage = MutableLiveData<Boolean>()
+    val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
+
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
 
@@ -70,6 +74,9 @@ class ProductDetailViewModel @Inject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
+
+        val isUploading = ProductImagesService.isUploadingForProduct(remoteProductId)
+        setIsUploadingImage(isUploading)
     }
 
     fun onShareButtonClicked() {
@@ -123,6 +130,12 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             _showSnackbarMessage.value = R.string.offline_error
             _isSkeletonShown.value = false
+        }
+    }
+
+    private fun setIsUploadingImage(isUploading: Boolean) {
+        if (isUploading != _isUploadingProductImage.value) {
+            _isUploadingProductImage.value = isUploading
         }
     }
 
@@ -188,6 +201,7 @@ class ProductDetailViewModel @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        setIsUploadingImage(false)
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_service_error
         } else {
