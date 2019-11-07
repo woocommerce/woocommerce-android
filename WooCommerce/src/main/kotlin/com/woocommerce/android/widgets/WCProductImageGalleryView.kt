@@ -111,6 +111,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         this.listener = listener
         this.visibility = if (product.images.isNotEmpty()) View.VISIBLE else View.GONE
 
+        if (adapter.isSameImageList(product.images)) {
+            return
+        }
         // if the imageHeight is already known show the images immediately, otherwise invalidate the view
         // so the imageHeight can be determined and then show the images after a brief delay
         if (imageHeight > 0) {
@@ -151,23 +154,21 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private val placeholderIds = LongSparseArray<Boolean>()
 
         fun showImages(images: List<WCProductImageModel>) {
-            fun isSameImageList(): Boolean {
-                if (images.size != imageList.size) {
+            imageList.clear()
+            imageList.addAll(images)
+            notifyDataSetChanged()
+        }
+
+        fun isSameImageList(images: List<WCProductImageModel>): Boolean {
+            if (images.size != imageList.size) {
+                return false
+            }
+            for (index in images.indices) {
+                if (images[index].id != imageList[index].id) {
                     return false
                 }
-                for (index in images.indices) {
-                    if (images[index].id != imageList[index].id) {
-                        return false
-                    }
-                }
-                return true
             }
-
-            if (!isSameImageList()) {
-                imageList.clear()
-                imageList.addAll(images)
-                notifyDataSetChanged()
-            }
+            return true
         }
 
         private fun indexOfImage(remoteMediaId: Long): Int {

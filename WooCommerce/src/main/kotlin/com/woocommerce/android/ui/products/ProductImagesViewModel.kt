@@ -58,7 +58,9 @@ class ProductImagesViewModel @Inject constructor(
     fun start(remoteProductId: Long) {
         this.remoteProductId = remoteProductId
         loadProduct()
-        setIsUploadingImage(ProductImagesService.isUploadingForProduct(remoteProductId))
+
+        val isUploading = ProductImagesService.isUploadingForProduct(remoteProductId)
+        setIsUploadingImage(isUploading)
     }
 
     override fun onCleared() {
