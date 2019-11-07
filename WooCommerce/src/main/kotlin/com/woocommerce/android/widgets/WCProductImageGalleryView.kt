@@ -33,9 +33,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
     companion object {
-        private const val UPLOAD_PLACEHOLDER_ID = -1L
         private const val VIEW_TYPE_IMAGE = 0
         private const val VIEW_TYPE_PLACEHOLDER = 1
+
+        private const val UPLOAD_PLACEHOLDER_ID = -1L
     }
 
     interface OnGalleryImageClickListener {
@@ -45,9 +46,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private var imageHeight = 0
     private var isGridView = false
 
-    private val numColumns: Int
     private val placeholderWidth: Int
-
     private val adapter: ImageGalleryAdapter
     private val request: GlideRequest<Drawable>
     private val layoutInflater: LayoutInflater
@@ -64,7 +63,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
-        numColumns = if (DisplayUtils.isLandscape(context)) 3 else 2
+        val numColumns = if (DisplayUtils.isLandscape(context)) 3 else 2
         placeholderWidth = DisplayUtils.getDisplayPixelWidth(context) / numColumns
 
         layoutManager = if (isGridView) {
@@ -72,6 +71,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         } else {
             LinearLayoutManager(context, HORIZONTAL, false)
         }
+
         itemAnimator = DefaultItemAnimator()
         layoutInflater = LayoutInflater.from(context)
 
@@ -125,7 +125,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     /**
      * Adds a placeholder with a progress bar to indicate images that are uploading or being removed.
-     * Pass the remoteMediaId for media being removed, or nothing for media being uploaded
+     * Pass the remoteMediaId for media being removed, or nothing for media being uploaded (since we
+     * don't know their media id until the upload completes)
      */
     fun addPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
         if (remoteMediaId == UPLOAD_PLACEHOLDER_ID) {
@@ -187,7 +188,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 imageList.add(0, WCProductImageModel(remoteMediaId))
                 notifyItemInserted(0)
             } else {
-                // otherwise we locate the passed media id in the list and mark it as being a placeholde
+                // otherwise we locate the passed media id in the list and mark it as being a placeholder
                 val index = indexOfImage(remoteMediaId)
                 if (index > -1) {
                     placeholderIds.put(remoteMediaId, true)

@@ -13,6 +13,7 @@
         android:layout_marginBottom="16dp"
         android:adjustViewBounds="true"
         android:contentDescription="@string/product_image_content_description"
+        tools:layout_height="200dp"
         tools:src="@drawable/ic_product" />
 
 
