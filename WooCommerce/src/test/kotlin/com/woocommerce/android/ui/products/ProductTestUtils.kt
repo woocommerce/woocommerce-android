@@ -57,7 +57,7 @@ object ProductTestUtils {
 
     fun generateProductVariantList(productId: Long = 1L): List<ProductVariant> {
         with(ArrayList<ProductVariant>()) {
-            add(generateProductVariant(productId,1))
+            add(generateProductVariant(productId, 1))
             add(generateProductVariant(productId, 2))
             add(generateProductVariant(productId, 3))
             add(generateProductVariant(productId, 4))

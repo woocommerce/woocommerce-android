@@ -277,8 +277,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             for (attribute in product.attributes) {
                 group[attribute.name] = attribute.options.size.toString()
             }
-            addPropertyGroup(pricingCard, R.string.product_variants, group, R.string.product_property_variant_formatter)
-            {
+            addPropertyGroup(pricingCard, R.string.product_variants, group, R.string.product_property_variant_formatter
+            ) {
                 showProductVariations(product.remoteId)
             }
         }

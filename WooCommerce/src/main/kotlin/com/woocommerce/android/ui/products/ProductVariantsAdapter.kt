@@ -27,7 +27,9 @@ class ProductVariantsAdapter(
     override fun getItemCount() = productVariantList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductVariantViewHolder {
-        val holder = ProductVariantViewHolder(LayoutInflater.from(context).inflate(R.layout.product_variant_list_item, parent, false))
+        val holder = ProductVariantViewHolder(
+                LayoutInflater.from(context).inflate(R.layout.product_variant_list_item, parent, false)
+        )
         holder.imgVariantOption.clipToOutline = true
         return holder
     }

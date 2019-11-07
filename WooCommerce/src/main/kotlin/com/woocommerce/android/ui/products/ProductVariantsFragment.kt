@@ -23,7 +23,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_variants.*
 import javax.inject.Inject
 
-class ProductVariantsFragment: BaseFragment() {
+class ProductVariantsFragment : BaseFragment() {
     companion object {
         const val TAG: String = "ProductVariantsFragment"
     }
