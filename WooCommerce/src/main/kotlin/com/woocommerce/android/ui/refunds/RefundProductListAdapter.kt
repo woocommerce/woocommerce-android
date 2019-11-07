@@ -101,7 +101,8 @@ class RefundProductListAdapter(
             val new = newList[newItemPosition]
             return old.product.name == old.product.name &&
                     old.product.price isEqualTo new.product.price &&
-                    old.product.quantity == new.product.quantity
+                    old.product.quantity == new.product.quantity &&
+                    old.quantity == new.quantity
         }
     }
 }
