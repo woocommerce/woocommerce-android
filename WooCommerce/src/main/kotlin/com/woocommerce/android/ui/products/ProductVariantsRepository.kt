@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCHED_PRODUCT_VARIAT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -20,6 +21,7 @@ import kotlin.coroutines.resume
 class ProductVariantsRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -65,9 +67,14 @@ class ProductVariantsRepository @Inject constructor(
      * Returns all product variants for a product and current site that are in the database
      */
     fun getProductVariantList(remoteProductId: Long): List<ProductVariant> {
-        val wcProducts = productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
-        return wcProducts.map { it.toAppModel() }
+        return productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
+                .map { it.toAppModel() }
     }
+
+    /**
+     * Returns the currency code for the site
+     */
+    fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

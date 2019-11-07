@@ -6,17 +6,20 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Named
 
 class ProductVariantsViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val productVariantsRepository: ProductVariantsRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
     val productVariantList = MutableLiveData<List<ProductVariant>>()
@@ -42,7 +45,7 @@ class ProductVariantsViewModel @Inject constructor(
         productVariantsRepository.onCleanup()
     }
 
-    fun loadProductVariants(remoteProductId: Long) {
+    private fun loadProductVariants(remoteProductId: Long) {
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
 
@@ -52,7 +55,7 @@ class ProductVariantsViewModel @Inject constructor(
                 _isSkeletonShown.value = true
                 fetchProductVariants(remoteProductId)
             } else {
-                productVariantList.value = variantsInDb
+                productVariantList.value = combineData(variantsInDb)
                 if (shouldFetch) {
                     fetchProductVariants(remoteProductId)
                 }
@@ -68,11 +71,21 @@ class ProductVariantsViewModel @Inject constructor(
                 _showSnackbarMessage.value = R.string.product_variants_fetch_product_variants_error
                 _exit.call()
             } else {
-                productVariantList.value = fetchedVariants
+                productVariantList.value = combineData(fetchedVariants)
             }
         } else {
             _showSnackbarMessage.value = R.string.offline_error
             _isSkeletonShown.value = false
         }
+    }
+
+    private fun combineData(productVariants: List<ProductVariant>): List<ProductVariant> {
+        val currencyCode = productVariantsRepository.getCurrencyCode()
+        productVariants.map { productVariant ->
+            productVariant.priceWithCurrency = currencyCode?.let {
+                currencyFormatter.formatCurrency(productVariant.price ?: BigDecimal.ZERO, it)
+            } ?: productVariant.price.toString()
+        }
+        return productVariants
     }
 }

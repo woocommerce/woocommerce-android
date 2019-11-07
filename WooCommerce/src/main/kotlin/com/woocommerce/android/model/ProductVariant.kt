@@ -12,7 +12,8 @@ data class ProductVariant(
     val price: BigDecimal?,
     val stockStatus: ProductStockStatus,
     val stockQuantity: Int,
-    val attributes: String?
+    val optionName: String,
+    var priceWithCurrency: String? = null
 )
 
 fun WCProductVariationModel.toAppModel(): ProductVariant {
@@ -31,7 +32,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
  * Given a list of [ProductVariantOption]
  * returns the product variant combination name in the format {option1} - {option2}
  */
-private fun getAttributeOptionName(variantOptions: List<ProductVariantOption>): String? {
+private fun getAttributeOptionName(variantOptions: List<ProductVariantOption>): String {
     var optionName = ""
     for (variantOption in variantOptions) {
         if (!variantOption.option.isNullOrEmpty()) {
