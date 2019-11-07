@@ -26,7 +26,6 @@ class LiveDataDelegate<T : Parcelable>(
 
     private var previousValue: T? = null
 
-
     fun observe(owner: LifecycleOwner, observer: (T?, T) -> Unit) {
         _liveData.observe(owner, Observer {
             observer(previousValue, it)
