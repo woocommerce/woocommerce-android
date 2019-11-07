@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithPar
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -277,9 +278,14 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             for (attribute in product.attributes) {
                 group[attribute.name] = attribute.options.size.toString()
             }
-            addPropertyGroup(pricingCard, R.string.product_variants, group, R.string.product_property_variant_formatter
-            ) {
-                showProductVariations(product.remoteId)
+
+            val productVariantFormatter = R.string.product_property_variant_formatter
+            if (FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
+                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter) {
+                    showProductVariations(product.remoteId)
+                }
+            } else {
+                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter)
             }
         }
     }
