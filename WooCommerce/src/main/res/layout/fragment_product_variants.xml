@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/productVariantsRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.woocommerce.android.ui.products.ProductVariantsFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/productVariantsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
