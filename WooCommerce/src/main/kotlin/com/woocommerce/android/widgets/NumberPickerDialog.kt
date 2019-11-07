@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.NumberPicker
+import android.widget.NumberPicker.Formatter
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 
@@ -29,18 +30,30 @@ class NumberPickerDialog : DialogFragment(),
 
         private const val DEFAULT_MIN_VALUE = 0
         private const val DEFAULT_MAX_VALUE = 99
+
+        fun createInstance(
+            args: Bundle,
+            format: Formatter
+        ) : NumberPickerDialog {
+            val dialog = NumberPickerDialog()
+            dialog.setNumberFormat(format)
+            dialog.arguments = args
+            return dialog
+        }
     }
 
     private lateinit var headerText: TextView
     private lateinit var numberPicker: NumberPicker
-    private lateinit var format: NumberPicker.Formatter
+    private lateinit var format: Formatter
     private var minValue: Int = 0
     private var maxValue: Int = 0
     private var confirmed: Boolean = false
 
     private val resultIntent: Intent?
         get() = if (confirmed) {
-            Intent().putExtra(CUR_VALUE_KEY, numberPicker.value)
+            val intent = Intent()
+            arguments?.let { intent.replaceExtras(it) }
+            intent.putExtra(CUR_VALUE_KEY, numberPicker.value)
         } else null
 
     init {
@@ -110,7 +123,7 @@ class NumberPickerDialog : DialogFragment(),
         super.onDismiss(dialog)
     }
 
-    fun setNumberFormat(format: NumberPicker.Formatter) {
+    fun setNumberFormat(format: Formatter) {
         this.format = format
     }
 }

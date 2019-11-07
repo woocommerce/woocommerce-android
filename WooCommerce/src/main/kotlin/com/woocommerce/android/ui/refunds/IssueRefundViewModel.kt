@@ -319,9 +319,18 @@ class IssueRefundViewModel @AssistedInject constructor(
         refundContinuation?.resume(false)
     }
 
-    fun onProductItemQuantityTapped(productId: Long) {
-        val quantity = refundByItemsState.items?.first { it.product.productId == productId }?.quantity ?: 0
-        triggerEvent(ShowNumberPicker(quantity))
+    fun onRefundQuantityTapped(productId: Long) {
+        val refundItem = refundByItemsState.items?.firstOrNull { it.product.productId == productId }
+        if (refundItem != null) {
+            triggerEvent(ShowNumberPicker(refundItem))
+        }
+    }
+
+    fun onRefundQuantityChanged(productId: Long, quantity: Int) {
+        refundByItemsState = refundByItemsState.copy(items = refundByItemsState.items?.toMutableList()?.apply {
+            val index = this.indexOfFirst { it.product.productId == productId }
+            this[index] = this[index].copy(quantity = quantity)
+        })
     }
 
     private suspend fun waitForCancellation(): Boolean {
@@ -397,7 +406,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     sealed class IssueRefundEvent : Event() {
         data class ShowSnackbar(val message: String, val undoAction: (() -> Unit)? = null) : IssueRefundEvent()
         data class ShowValidationError(val message: String) : IssueRefundEvent()
-        data class ShowNumberPicker(val initialValue: Int) : IssueRefundEvent()
+        data class ShowNumberPicker(val refundItem: RefundListItem) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
         object ShowRefundSummary : IssueRefundEvent()
         object ExitAfterRefund : IssueRefundEvent()
