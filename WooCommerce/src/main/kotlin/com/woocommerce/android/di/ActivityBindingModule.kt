@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.ProductDetailModule
 import com.woocommerce.android.ui.products.ProductListModule
+import com.woocommerce.android.ui.products.ProductVariantsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewDetailModule
 import com.woocommerce.android.ui.reviews.ReviewListModule
@@ -45,6 +46,7 @@ abstract class ActivityBindingModule {
             AddOrderNoteModule::class,
             ProductDetailModule::class,
             ProductListModule::class,
+            ProductVariantsModule::class,
             ReviewListModule::class,
             ReviewDetailModule::class,
             SitePickerModule::class,
