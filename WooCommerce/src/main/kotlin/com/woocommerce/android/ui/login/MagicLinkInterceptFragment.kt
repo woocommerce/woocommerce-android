@@ -42,7 +42,6 @@ class MagicLinkInterceptFragment : Fragment() {
     private var authToken: String? = null
     private var progressDialog: ProgressDialog? = null
 
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModel: MagicLinkInterceptViewModel
