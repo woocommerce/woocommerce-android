@@ -102,7 +102,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED(siteless = true),
         LOGIN_MAGIC_LINK_INTERCEPT_SCREEN_VIEWED(siteless = true),
         LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED(siteless = true),
-        LOGIN_MAGIC_LINK_UPDATE_FAILED(siteless = true),
+        LOGIN_MAGIC_LINK_UPDATE_TOKEN_FAILED(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_SITES_FAILED(siteless = true),

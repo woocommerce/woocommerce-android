@@ -197,7 +197,7 @@ class MagicLinkInterceptRepository @Inject constructor(
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
             WooLog.e(LOGIN, "onAuthenticationChanged has error: ${event.error?.type} : ${event.error?.message}")
-            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_UPDATE_FAILED, mapOf(
+            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_UPDATE_TOKEN_FAILED, mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
                     AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
