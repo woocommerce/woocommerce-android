@@ -58,7 +58,7 @@ class ProductImagesViewModel @Inject constructor(
     fun start(remoteProductId: Long) {
         this.remoteProductId = remoteProductId
         loadProduct()
-        _isUploadingProductImage.value = ProductImagesService.isUploadingForProduct(remoteProductId)
+        setIsUploadingImage(ProductImagesService.isUploadingForProduct(remoteProductId))
     }
 
     override fun onCleared() {
@@ -83,7 +83,6 @@ class ProductImagesViewModel @Inject constructor(
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
         }
-        _isUploadingProductImage.value = true
         productImagesServiceWrapper.uploadProductMedia(remoteProductId, localImageUri)
     }
 
@@ -93,8 +92,19 @@ class ProductImagesViewModel @Inject constructor(
             return
         }
         removingRemoteMediaId = remoteMediaId
-        _isRemovingProductImage.value = true
         productImagesServiceWrapper.removeProductMedia(remoteProductId, remoteMediaId)
+    }
+
+    private fun setIsUploadingImage(isUploading: Boolean) {
+        if (isUploading != _isUploadingProductImage.value) {
+            _isUploadingProductImage.value = isUploading
+        }
+    }
+
+    private fun setIsRemovingImage(isRemoving: Boolean) {
+        if (isRemoving != _isRemovingProductImage.value) {
+            _isRemovingProductImage.value = isRemoving
+        }
     }
 
     @Suppress("unused")
@@ -102,9 +112,9 @@ class ProductImagesViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
         if (remoteProductId == event.remoteProductId) {
             if (event.action == Action.UPLOAD_IMAGE) {
-                _isUploadingProductImage.value = true
+                setIsUploadingImage(true)
             } else if (event.action == Action.REMOVE_IMAGE) {
-                _isRemovingProductImage.value = true
+                setIsRemovingImage(true)
             }
         }
     }
@@ -113,9 +123,9 @@ class ProductImagesViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         if (event.action == Action.UPLOAD_IMAGE) {
-            _isUploadingProductImage.value = false
+            setIsUploadingImage(false)
         } else if (event.action == Action.REMOVE_IMAGE) {
-            _isRemovingProductImage.value = false
+            setIsRemovingImage(false)
             removingRemoteMediaId = 0
         }
 
