@@ -14,15 +14,14 @@ import kotlin.reflect.KProperty
  *  This delegate can then be used as a proxy to access and modify the LiveData, which looks like a simple
  *  variable manipulation.
  */
-class LiveDataDelegate<T : Parcelable>(val liveData: MutableLiveData<T>, initialValue: T) {
-    constructor(savedState: SavedStateHandle, initialValue: T, savedStateKey: String = initialValue.javaClass.name) :
-            this(savedState.getLiveData(savedStateKey, initialValue), initialValue)
-
-    init {
-        liveData.value = initialValue
-    }
-
+class LiveDataDelegate<T : Parcelable>(
+    savedState: SavedStateHandle,
+    initialValue: T,
+    savedStateKey: String = initialValue.javaClass.name
+) {
+    private val liveData: MutableLiveData<T> = savedState.getLiveData(savedStateKey, initialValue)
     private var previousValue: T? = null
+
     val value: T
         get() = liveData.value!!
 
