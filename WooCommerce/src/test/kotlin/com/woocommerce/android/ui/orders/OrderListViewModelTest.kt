@@ -48,7 +48,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
 
-    private val orders = OrderTestUtils.generateOrders()
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
