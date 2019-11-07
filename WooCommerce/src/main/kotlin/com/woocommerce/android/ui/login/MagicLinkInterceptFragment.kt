@@ -15,9 +15,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import dagger.android.support.AndroidSupportInjection
-import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
@@ -40,7 +41,6 @@ class MagicLinkInterceptFragment : Fragment() {
     private var authToken: String? = null
     private var progressDialog: ProgressDialog? = null
 
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModel: MagicLinkInterceptViewModel
@@ -76,12 +76,19 @@ class MagicLinkInterceptFragment : Fragment() {
         retryButton?.text = getString(R.string.retry)
         showRetryButton(false)
         retryButton?.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED)
             viewModel.fetchAccountInfo()
         }
 
         view.findViewById<TextView>(R.id.login_enter_password).visibility = View.GONE
 
         initializeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+        AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_INTERCEPT_SCREEN_VIEWED)
     }
 
     private fun initializeViewModel() {
@@ -98,7 +105,6 @@ class MagicLinkInterceptFragment : Fragment() {
 
         viewModel.isAuthTokenUpdated.observe(this, Observer { authTokenUpdated ->
             if (authTokenUpdated) {
-                notifyMagicLinkTokenUpdated()
                 showSitePickerScreen()
             } else showLoginScreen()
         })
@@ -140,10 +146,6 @@ class MagicLinkInterceptFragment : Fragment() {
             SitePickerActivity.showSitePickerFromLogin(it)
             activity?.finish()
         }
-    }
-
-    private fun notifyMagicLinkTokenUpdated() {
-        loginAnalyticsListener.trackLoginMagicLinkSucceeded()
     }
 
     private fun showLoginScreen() {

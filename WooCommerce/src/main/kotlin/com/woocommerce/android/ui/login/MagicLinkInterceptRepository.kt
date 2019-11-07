@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
 import com.woocommerce.android.ui.reviews.RequestResult
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
@@ -18,6 +21,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
@@ -192,7 +196,12 @@ class MagicLinkInterceptRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
-            // TODO: error events will be handled in a different PR
+            WooLog.e(LOGIN, "onAuthenticationChanged has error: ${event.error?.type} : ${event.error?.message}")
+            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_UPDATE_TOKEN_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+
             continuationUpdateToken?.resume(false)
         } else {
             continuationUpdateToken?.resume(true)
@@ -204,18 +213,33 @@ class MagicLinkInterceptRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
-            // TODO: error events will be handled in a different PR
-        }
-        when {
-            event.causeOfChange == AccountAction.FETCH_ACCOUNT -> {
-                // The user's account info has been fetched and stored - next, fetch the user's settings
-                continuationFetchAccount?.resume(!event.isError)
-                continuationFetchAccount = null
+            WooLog.e(LOGIN, "onAccountChanged has error: ${event.error?.type} : ${event.error?.message}")
+
+            val trackEvent = when {
+                event.causeOfChange == AccountAction.FETCH_SETTINGS -> LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
+                event.error?.type == AccountErrorType.ACCOUNT_FETCH_ERROR -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
+                else -> null
             }
-            event.causeOfChange == AccountAction.FETCH_SETTINGS -> {
-                // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-                continuationFetchAccountSettings?.resume(!event.isError)
-                continuationFetchAccountSettings = null
+            trackEvent?.let {
+                AnalyticsTracker.track(it, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+            }
+        } else {
+            when {
+                event.causeOfChange == AccountAction.FETCH_ACCOUNT -> {
+                    // The user's account info has been fetched and stored - next, fetch the user's settings
+                    AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS)
+                    continuationFetchAccount?.resume(!event.isError)
+                    continuationFetchAccount = null
+                }
+                event.causeOfChange == AccountAction.FETCH_SETTINGS -> {
+                    // The user's account settings have also been fetched and stored - now we can fetch the user's sites
+                    AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS)
+                    continuationFetchAccountSettings?.resume(!event.isError)
+                    continuationFetchAccountSettings = null
+                }
             }
         }
     }
@@ -224,9 +248,14 @@ class MagicLinkInterceptRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
         if (event.isError) {
-            // TODO: error events will be handled in a different PR
+            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_SITES_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+
             continuationFetchSites?.resume(false)
         } else {
+            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS)
             continuationFetchSites?.resume(true)
         }
         isHandlingMagicLink = false

@@ -21,6 +21,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
@@ -121,7 +122,7 @@ class LoginNoJetpackFragment : Fragment() {
             val spannable = SpannableString(usernameText)
             spannable.setSpan(
                     WooClickableSpan {
-                        // TODO: add event here to track when logout is clicked
+                        AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED)
                         activity?.setResult(Activity.RESULT_CANCELED)
                         val intent = Intent(activity, LoginActivity::class.java)
                         LoginMode.WOO_LOGIN_MODE.putInto(intent)
@@ -152,7 +153,7 @@ class LoginNoJetpackFragment : Fragment() {
         with(button_primary) {
             text = getString(R.string.login_jetpack_view_setup_instructions)
             setOnClickListener {
-                // TODO: Add event here to track when primary button is clicked
+                AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
                 jetpackLoginListener?.showJetpackInstructions()
             }
         }
@@ -161,8 +162,7 @@ class LoginNoJetpackFragment : Fragment() {
             visibility = View.VISIBLE
             text = getString(R.string.try_again)
             setOnClickListener {
-                // TODO: Add event here to track when secondary button is clicked
-
+                AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED)
                 if (mCheckJetpackAvailability) {
                     // initiate the CONNECT_SITE_INFO API call
                     siteAddress?.let { viewModel.verifyJetpackAvailable(it) }
@@ -176,7 +176,7 @@ class LoginNoJetpackFragment : Fragment() {
 
         with(button_help) {
             setOnClickListener {
-                // TODO: add tracking here when help is clicked
+                AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_MENU_HELP_TAPPED)
                 loginListener?.helpSiteAddress(siteAddress)
             }
         }
@@ -202,7 +202,7 @@ class LoginNoJetpackFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        // TODO: add tracking here on which screen is viewed
+        AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_SCREEN_VIEWED)
     }
 
     private fun initializeViewModel() {

@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import kotlinx.android.synthetic.main.fragment_login_discovery_error.*
 import org.wordpress.android.login.LoginListener
 
@@ -98,21 +99,21 @@ class LoginDiscoveryErrorFragment : Fragment() {
 
         with(discovery_wordpress_option_view) {
             setOnClickListener {
-                // TODO: add event here to track when button is clicked
+                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED)
                 jetpackLoginListener?.showEmailLoginScreen(siteAddress)
             }
         }
 
         with(discovery_troubleshoot_option_view) {
             setOnClickListener {
-                // TODO: add event here to track when button is clicked
+                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED)
                 jetpackLoginListener?.showJetpackTroubleshootingTips()
             }
         }
 
         with(discovery_try_option_view) {
             setOnClickListener {
-                // TODO: add event here to track when button is clicked
+                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 jetpackLoginListener?.showUsernamePasswordScreen(
                         siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
                 )
@@ -127,7 +128,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
-            // TODO: add event here
+            AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
             return true
         }
@@ -152,6 +153,6 @@ class LoginDiscoveryErrorFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        // TODO: add tracking here on which screen is viewed
+        AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED)
     }
 }
