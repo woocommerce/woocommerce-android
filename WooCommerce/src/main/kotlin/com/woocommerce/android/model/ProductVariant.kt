@@ -37,9 +37,9 @@ private fun getAttributeOptionName(variantOptions: List<ProductVariantOption>): 
     for (variantOption in variantOptions) {
         if (!variantOption.option.isNullOrEmpty()) {
             if (optionName.isNotEmpty()) {
-                optionName += "-"
+                optionName += " - "
             }
-            optionName += " ${variantOption.option} "
+            optionName += "${variantOption.option}"
         }
     }
     return optionName
