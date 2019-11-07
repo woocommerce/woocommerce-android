@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -83,9 +85,14 @@ class ProductVariantsRepository @Inject constructor(
             isLoadingProductVariants = false
             if (event.isError) {
                 loadContinuation?.resume(false)
-                // TODO: add analytics here in a different commit
+                AnalyticsTracker.track(
+                        Stat.PRODUCT_VARIANTS_LOAD_ERROR,
+                        this.javaClass.simpleName,
+                        event.error.type.toString(),
+                        event.error.message
+                )
             } else {
-                // TODO: add analytics here in a different commit
+                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_LOADED)
                 loadContinuation?.resume(true)
             }
             loadContinuation = null

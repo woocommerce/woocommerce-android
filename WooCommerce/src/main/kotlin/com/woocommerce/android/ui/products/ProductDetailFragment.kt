@@ -282,6 +282,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             val productVariantFormatter = R.string.product_property_variant_formatter
             if (FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
                 addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter) {
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
                     showProductVariations(product.remoteId)
                 }
             } else {

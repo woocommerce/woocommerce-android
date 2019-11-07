@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -120,7 +121,7 @@ class ProductVariantsFragment : BaseFragment() {
             )
             scrollUpChild = productVariantsList
             setOnRefreshListener {
-                // TODO: add event here for ptr in a different commit
+                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
                 viewModel.refreshProductVariants(navArgs.remoteProductId)
             }
         }
