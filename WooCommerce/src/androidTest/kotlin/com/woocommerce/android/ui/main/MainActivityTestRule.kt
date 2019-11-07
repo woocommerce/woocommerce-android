@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.MockedAddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
+import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import com.woocommerce.android.ui.products.MockedProductDetailModule
@@ -38,6 +39,17 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         // The reason for doing this here is the same as for the MockedMainModule
         MockedSelectedSiteModule.setSiteModel(siteModel)
         return super.launchActivity(startIntent)
+    }
+
+    /**
+     * Setting mock data for order list screen
+     */
+    fun setOrderListWithMockData(
+        orders: List<WCOrderModel> = WcOrderTestUtils.generateOrders(),
+        orderStatusList: Map<String, WCOrderStatusModel> = WcOrderTestUtils.generateOrderStatusOptions()
+    ) {
+        MockedOrderListModule.setMockedOrders(orders)
+        MockedOrderListModule.setMockedOrderStatusList(orderStatusList)
     }
 
     /**

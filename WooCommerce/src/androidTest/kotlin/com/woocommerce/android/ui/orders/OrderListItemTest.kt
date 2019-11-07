@@ -46,7 +46,7 @@ class OrderListItemTest : TestBase() {
 
         // add mock data to order list screen
         // TODO AMANDA - FIX TEST
-//        activityTestRule.setOrderListWithMockData(orders)
+        activityTestRule.setOrderListWithMockData(orders)
 
         // Click on Orders tab in the bottom bar
         onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
