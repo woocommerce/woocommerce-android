@@ -156,6 +156,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun showImages(images: List<WCProductImageModel>) {
             imageList.clear()
             imageList.addAll(images)
+            restorePlaceholders()
             notifyDataSetChanged()
         }
 
@@ -214,6 +215,19 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return placeholderIds[mediaId] == true
         }
 
+        /**
+         * Called after image list has been updated to make sure we restore any existing upload
+         * placeholders (it's not necessary to restore removal placeholders since those contain
+         * actual image ids, whereas upload placeholders do not since we don't know the id until
+         * the upload completes)
+         */
+        private fun restorePlaceholders() {
+            for (index in 0 until placeholderIds.size()) {
+                if (placeholderIds.valueAt(index) && placeholderIds.keyAt(index) == UPLOAD_PLACEHOLDER_ID) {
+                    imageList.add(0, WCProductImageModel(UPLOAD_PLACEHOLDER_ID))
+                }
+            }
+        }
         fun getImage(position: Int) = imageList[position]
 
         override fun getItemCount() = imageList.size
