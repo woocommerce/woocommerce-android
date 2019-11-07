@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductListViewModel
+import com.woocommerce.android.ui.products.ProductVariantsViewModel
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel
 import com.woocommerce.android.ui.refunds.RefundDetailViewModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -25,6 +26,11 @@ internal abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ProductListViewModel::class)
     internal abstract fun pluginProductListViewModel(viewModel: ProductListViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProductVariantsViewModel::class)
+    internal abstract fun pluginProductVariantsViewModel(viewModel: ProductVariantsViewModel): ViewModel
 
     @Binds
     @IntoMap
