@@ -29,16 +29,17 @@ class CurrencyEditText : AppCompatEditText {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    init {
+        this.inputType = InputType.TYPE_CLASS_NUMBER
+    }
+
     fun initView(
         currency: String,
         decimals: Int,
         currencyFormatter: CurrencyFormatter
     ) {
-        this.inputType = InputType.TYPE_CLASS_NUMBER
         this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(currency)
         this.decimals = decimals
-
-        _value.value = BigDecimal.ZERO
     }
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
