@@ -165,7 +165,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (!isSameImageList()) {
                 imageList.clear()
                 imageList.addAll(images)
-                restoreUploadPlaceholders()
                 notifyDataSetChanged()
             }
         }
@@ -204,17 +203,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     placeholderIds.delete(remoteMediaId)
                     notifyItemRemoved(index)
                     break
-                }
-            }
-        }
-
-        private fun restoreUploadPlaceholders() {
-            if (placeholderIds.isEmpty) {
-                return
-            }
-            for (i in 0 until placeholderIds.size()) {
-                if (placeholderIds.valueAt(i) && placeholderIds.keyAt(i) == UPLOAD_PLACEHOLDER_ID) {
-                    imageList.add(0, WCProductImageModel(UPLOAD_PLACEHOLDER_ID))
                 }
             }
         }
