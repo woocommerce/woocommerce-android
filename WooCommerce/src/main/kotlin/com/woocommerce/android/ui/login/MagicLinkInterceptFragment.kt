@@ -19,7 +19,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import dagger.android.support.AndroidSupportInjection
-import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
