@@ -165,8 +165,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (!isSameImageList()) {
                 imageList.clear()
                 imageList.addAll(images)
+                restoreUploadPlaceholders()
                 notifyDataSetChanged()
             }
+        }
+
+        private fun indexOfImage(remoteMediaId: Long): Int {
+            for (index in imageList.indices) {
+                if (imageList[index].id == remoteMediaId) {
+                    return index
+                }
+            }
+            return -1
         }
 
         fun addPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
@@ -178,13 +188,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 imageList.add(0, WCProductImageModel(remoteMediaId))
                 notifyItemInserted(0)
             } else {
-                // otherwise we locate the passed media id in the list and mark it as being a placeholder
-                for (index in imageList.indices) {
-                    if (imageList[index].id == remoteMediaId) {
-                        placeholderIds.put(remoteMediaId, true)
-                        notifyItemChanged(index)
-                        break
-                    }
+                // otherwise we locate the passed media id in the list and mark it as being a placeholde
+                val index = indexOfImage(remoteMediaId)
+                if (index > -1) {
+                    placeholderIds.put(remoteMediaId, true)
+                    notifyItemChanged(index)
                 }
             }
         }
@@ -196,6 +204,17 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     placeholderIds.delete(remoteMediaId)
                     notifyItemRemoved(index)
                     break
+                }
+            }
+        }
+
+        private fun restoreUploadPlaceholders() {
+            if (placeholderIds.isEmpty) {
+                return
+            }
+            for (i in 0 until placeholderIds.size()) {
+                if (placeholderIds.valueAt(i) && placeholderIds.keyAt(i) == UPLOAD_PLACEHOLDER_ID) {
+                    imageList.add(0, WCProductImageModel(UPLOAD_PLACEHOLDER_ID))
                 }
             }
         }
