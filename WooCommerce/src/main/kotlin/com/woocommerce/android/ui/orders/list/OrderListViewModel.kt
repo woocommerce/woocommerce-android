@@ -48,14 +48,14 @@ typealias PagedOrdersList = PagedList<OrderListItemUIType>
 class OrderListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     @Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
-    private val repository: OrderListRepository,
+    protected val repository: OrderListRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(mainDispatcher), LifecycleOwner {
-    private val lifecycleRegistry: LifecycleRegistry by lazy {
+    protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
@@ -73,7 +73,7 @@ class OrderListViewModel @Inject constructor(
     @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var isRefreshPending = true
 
-    private val _pagedListData = MediatorLiveData<PagedOrdersList>()
+    protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()

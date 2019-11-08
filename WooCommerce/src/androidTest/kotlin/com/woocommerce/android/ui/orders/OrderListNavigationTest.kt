@@ -46,7 +46,7 @@ class OrderListNavigationTest : TestBase() {
         activityTestRule.setOrderListWithMockData()
 
         // Click on Orders tab in the bottom bar
-        onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
+        onView(withId(R.id.orders)).perform(click())
     }
 
     @Test
@@ -59,7 +59,7 @@ class OrderListNavigationTest : TestBase() {
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail())
 
         // click on the first order in the list and check if redirected to order detail
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
+        onView(withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // Ensure that the toolbar title displays "Order #" + order number
