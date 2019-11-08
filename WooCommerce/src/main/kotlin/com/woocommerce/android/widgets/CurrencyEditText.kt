@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.util.CurrencyFormatter
 import java.math.BigDecimal
+import java.math.RoundingMode.DOWN
 import java.math.RoundingMode.HALF_UP
 import kotlin.math.pow
 
@@ -69,6 +70,10 @@ class CurrencyEditText : AppCompatEditText {
 
             if (decimals > 0) {
                 cleanValue = cleanValue.divide(BigDecimal(10f.pow(decimals).toInt()), decimals, HALF_UP)
+            }
+
+            if (lengthBefore > lengthAfter) {
+                cleanValue = cleanValue.divide(BigDecimal(10f.pow(lengthBefore - lengthAfter).toInt()), DOWN)
             }
 
             _value.value = cleanValue

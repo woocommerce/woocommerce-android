@@ -82,6 +82,14 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
             refundSummary_previouslyRefunded.text = it
         })
 
+        viewModel.refundMethod.observe(this, Observer {
+            refundSummary_method.text = it
+        })
+
+        viewModel.isManualRefundDescriptionVisible.observe(this, Observer { visible ->
+            refundSummary_methodDescription.visibility = if (visible) View.VISIBLE else View.GONE
+        })
+
         viewModel.exitAfterRefund.observe(this, Observer {
             val bundle = Bundle()
             bundle.putBoolean(REFUND_SUCCESS_KEY, it)

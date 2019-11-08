@@ -119,6 +119,7 @@
                 android:textAppearance="@style/Woo.TextAppearance.Medium.Purple" />
 
             <TextView
+                android:id="@+id/refundSummary_method"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/card_item_padding_intra_h"
@@ -127,11 +128,13 @@
                 android:textAppearance="@style/Woo.Refunds.TextAppearance" />
 
             <TextView
+                android:id="@+id/refundSummary_methodDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/card_item_padding_intra_h"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
                 android:text="@string/order_refunds_refund_manual_refund_note"
+                android:lineSpacingMultiplier="1.4"
                 android:textColor="@color/wc_grey_medium"
                 android:textAlignment="viewStart"
                 android:textIsSelectable="true"/>

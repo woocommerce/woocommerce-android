@@ -189,6 +189,7 @@
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_created">Created %1$s</string>
+    <string name="orderdetail_shipping_method">Shipping method</string>
     <string name="orderdetail_shipping_details">Shipping details</string>
     <string name="orderdetail_billing_details">Billing details</string>
     <string name="orderdetail_email_contentdesc">email customer</string>
@@ -228,6 +229,7 @@
     <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
+    <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
@@ -271,7 +273,7 @@
     <string name="order_refunds_manual_refund_progress_message">Your refund for %s is being processed. Please wait…</string>
     <string name="order_refunds_manual_refund_successful">The refund was successfully submitted.</string>
     <string name="order_refunds_manual_refund_error">Something went wrong with the refund. Please try again.</string>
-    <string name="order_refunds_refund_manual_refund_note">Currently, only manual refunds are supported. Complete the refund through your payment gateway\'s dashboard, or manually transfer the money to the customer.</string>
+    <string name="order_refunds_refund_manual_refund_note">The payment method does not support automatic refunds. Complete the refund by transferring the money to the customer manually.</string>
     <!--
         Add Order Note
     -->
@@ -643,7 +645,6 @@
     <string name="button_edit_permissions">Edit permissions</string>
 
     <!-- Other -->
-    <string name="shared_element_transition" translatable="false">shared_element</string>
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
