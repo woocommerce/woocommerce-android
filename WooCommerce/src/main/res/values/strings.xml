@@ -417,6 +417,7 @@
     <string name="product_image_service_busy">Please wait for the current operation to complete</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
     <string name="product_image_remove_confirmation">Remove this image from the product?</string>
+    <string name="product_images_camera_error">Unable to access camera</string>
     <string name="image_source_title">Select an upload method</string>
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>

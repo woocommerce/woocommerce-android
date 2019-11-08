@@ -195,12 +195,16 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private fun captureProductImage() {
         if (requestCameraPermission()) {
-            ProductImagesUtils.createCaptureImageIntent(requireActivity())?.let { intent ->
-                capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
-                requireActivity().startActivityFromFragment(this, intent,
-                        REQUEST_CODE_CAPTURE_PHOTO
-                )
+            val intent = ProductImagesUtils.createCaptureImageIntent(requireActivity())
+            if (intent == null) {
+                uiMessageResolver.showSnack(R.string.product_images_camera_error)
+                return
             }
+            capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
+            requireActivity().startActivityFromFragment(
+                    this, intent,
+                    REQUEST_CODE_CAPTURE_PHOTO
+            )
         }
     }
 
