@@ -129,6 +129,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                 resetLiveData()
                 updateRefundByAmountState(order)
+                updateRefundByItemsState(order)
                 updateRefundSummaryState()
             }
         }
@@ -140,6 +141,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         commonStateLiveData.reset()
         refundByAmountStateLiveData.reset()
         refundSummaryStateLiveData.reset()
+        refundByItemsStateLiveData.reset()
     }
 
     private fun isNotInitialized(): Boolean = !this::order.isInitialized
@@ -331,6 +333,12 @@ class IssueRefundViewModel @AssistedInject constructor(
             val index = this.indexOfFirst { it.product.productId == productId }
             this[index] = this[index].copy(quantity = quantity)
         })
+    }
+
+    fun onSelectAllButtonTapped() {
+        refundByItemsState.items?.forEach {
+            onRefundQuantityChanged(it.product.productId, it.product.quantity.toInt())
+        }
     }
 
     private suspend fun waitForCancellation(): Boolean {
