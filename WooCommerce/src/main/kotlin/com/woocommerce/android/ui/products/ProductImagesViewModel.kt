@@ -148,7 +148,11 @@ class ProductImagesViewModel @Inject constructor(
         }
 
         if (event.isError) {
-            _showSnackbarMessage.value = R.string.product_image_service_error
+            _showSnackbarMessage.value = when (event.action) {
+                Action.UPLOAD_IMAGE -> R.string.product_image_service_error_uploading
+                Action.REMOVE_IMAGE -> R.string.product_image_service_error_removing
+                else -> R.string.error_generic_network
+            }
         } else {
             loadProduct()
         }
