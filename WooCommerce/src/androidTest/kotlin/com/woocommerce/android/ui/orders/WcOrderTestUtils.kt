@@ -42,7 +42,7 @@ object WcOrderTestUtils {
     )
 
     fun generateOrderListUIItems(): List<OrderListItemUIType> {
-        val result = mutableListOf<OrderListItemUIType>()
+        val result = ArrayList<OrderListItemUIType>()
         val om1 = OrderListItemUI(
                 remoteOrderId = RemoteId(1),
                 orderNumber = "100",
