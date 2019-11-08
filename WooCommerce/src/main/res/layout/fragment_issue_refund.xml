@@ -17,7 +17,7 @@
             android:id="@+id/refundByAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="com.woocommerce.android.ui.refunds.RefundByAmountFragment" />
+            android:name="com.woocommerce.android.ui.refunds.RefundByItemsFragment" />
 
         <!-- Button: Next -->
         <androidx.appcompat.widget.AppCompatButton
