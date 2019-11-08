@@ -74,9 +74,14 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
-    final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState())
+    final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState()) {
+        val selectedTotal = it.items?.fold(BigDecimal.ZERO, { total, item ->
+            total + item.quantity.toBigDecimal().times(item.product.price)
+        }) ?: BigDecimal.ZERO
+        updateScreenTitle(selectedTotal)
+    }
     final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState()) {
-        updateScreenTitle()
+        updateScreenTitle(it.enteredAmount)
     }
 
     private var commonState by commonStateLiveData
@@ -142,10 +147,10 @@ class IssueRefundViewModel @AssistedInject constructor(
     private fun loadOrder(orderId: Long): Order? =
             orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()
 
-    private fun updateScreenTitle() {
+    private fun updateScreenTitle(amount: BigDecimal) {
         commonState = commonState.copy(
                 screenTitle = resourceProvider.getString(
-                        string.order_refunds_title_with_amount, formatCurrency(refundByAmountState.enteredAmount)
+                        string.order_refunds_title_with_amount, formatCurrency(amount)
                 )
         )
     }
