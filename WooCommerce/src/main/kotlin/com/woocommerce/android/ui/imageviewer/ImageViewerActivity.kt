@@ -15,6 +15,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.DataSource
@@ -22,6 +23,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.R.style
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.activity_image_viewer.*
@@ -40,6 +42,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         private const val KEY_IMAGE_REMOTE_PRODUCT_ID = "remote_product_id"
         private const val KEY_TRANSITION_NAME = "transition_name"
         private const val KEY_ENABLE_REMOVE_IMAGE = "enable_remove_image"
+        private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
 
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
@@ -91,6 +94,9 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
 
+    private var confirmationDialog: AlertDialog? = null
+    private var isConfirmationShowing = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -134,6 +140,10 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         photoView.setOnPhotoTapListener { view, x, y ->
             showToolbar(true)
         }
+
+        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMATION_SHOWING) == true) {
+            confirmRemoveProductImage()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -144,8 +154,14 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             bundle.putString(KEY_IMAGE_TITLE, imageTitle)
             bundle.putString(KEY_TRANSITION_NAME, transitionName)
             bundle.putBoolean(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
+            bundle.putBoolean(KEY_IS_CONFIRMATION_SHOWING, isConfirmationShowing)
             super.onSaveInstanceState(outState)
         }
+    }
+
+    override fun onPause() {
+        confirmationDialog?.dismiss()
+        super.onPause()
     }
 
     override fun finishAfterTransition() {
@@ -192,7 +208,8 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
      * done in the calling activity
      */
     private fun confirmRemoveProductImage() {
-        AlertDialog.Builder(this)
+        isConfirmationShowing = true
+        confirmationDialog = AlertDialog.Builder(ContextThemeWrapper(this, style.AppTheme))
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
@@ -203,7 +220,9 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                     setResult(Activity.RESULT_OK, data)
                     finishAfterTransition()
                 }
-                .setNegativeButton(R.string.dont_remove, null)
+                .setNegativeButton(R.string.dont_remove, { _, _ ->
+                    isConfirmationShowing = false
+                })
                 .show()
     }
 
