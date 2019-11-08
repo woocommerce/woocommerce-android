@@ -53,6 +53,10 @@ class RefundByItemsFragment : DaggerFragment() {
     private fun initializeViews() {
         issueRefund_products.layoutManager = LinearLayoutManager(context)
         issueRefund_products.setHasFixedSize(true)
+
+        issueRefund_selectAllButton.setOnClickListener {
+            viewModel.onSelectAllButtonTapped()
+        }
     }
 
     private fun setupObservers() {
