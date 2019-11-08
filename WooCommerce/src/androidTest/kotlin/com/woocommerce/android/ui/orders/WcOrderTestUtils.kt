@@ -2,8 +2,12 @@ package com.woocommerce.android.ui.orders
 
 import com.google.gson.Gson
 import com.woocommerce.android.helpers.WCDateTimeTestUtils
+import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_MONTH
+import com.woocommerce.android.model.TimeGroup.GROUP_TODAY
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
@@ -43,6 +47,11 @@ object WcOrderTestUtils {
 
     fun generateOrderListUIItems(): List<OrderListItemUIType> {
         val result = ArrayList<OrderListItemUIType>()
+
+        val h1 = SectionHeader(GROUP_TODAY)
+
+        val l1 = LoadingItem(RemoteId(7))
+
         val om1 = OrderListItemUI(
                 remoteOrderId = RemoteId(1),
                 orderNumber = "100",
@@ -62,6 +71,8 @@ object WcOrderTestUtils {
                 // Yesterday
                 dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(1)),
                 currencyCode = "CAD")
+
+        val h2 = SectionHeader(GROUP_OLDER_MONTH)
 
         val om3 = OrderListItemUI(
                 remoteOrderId = RemoteId(3),
@@ -108,8 +119,11 @@ object WcOrderTestUtils {
                 dateCreated = "2018-02-02T16:11:13Z",
                 currencyCode = "USD")
 
+        result.add(h1)
+        result.add(l1)
         result.add(om1)
         result.add(om2)
+        result.add(h2)
         result.add(om3)
         result.add(om4)
         result.add(om5)
