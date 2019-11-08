@@ -26,6 +26,7 @@ object ProductTestUtils {
             width = "2"
             height = "3"
             variations = "[]"
+            attributes = "[]"
         }.toAppModel()
     }
 
