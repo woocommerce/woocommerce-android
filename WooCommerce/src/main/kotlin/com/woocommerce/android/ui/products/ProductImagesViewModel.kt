@@ -12,6 +12,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,7 +26,8 @@ import javax.inject.Named
 class ProductImagesViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val productRepository: ProductImagesRepository,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
     var removingRemoteMediaId = 0L
@@ -81,6 +83,9 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
+        if (!checkNetwork()) {
+            return
+        }
         if (ProductImagesService.isBusy()) {
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
@@ -89,12 +94,23 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun removeProductMedia(remoteProductId: Long, remoteMediaId: Long) {
+        if (!checkNetwork()) {
+            return
+        }
         if (ProductImagesService.isBusy()) {
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
         }
         removingRemoteMediaId = remoteMediaId
         productImagesServiceWrapper.removeProductMedia(remoteProductId, remoteMediaId)
+    }
+
+    private fun checkNetwork(): Boolean {
+        if (networkStatus.isConnected()) {
+            return true
+        }
+        _showSnackbarMessage.value = R.string.network_activity_no_connectivity
+        return false
     }
 
     private fun setIsUploadingImage(isUploading: Boolean) {
