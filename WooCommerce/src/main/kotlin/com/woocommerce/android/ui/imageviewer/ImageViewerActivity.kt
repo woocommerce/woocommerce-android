@@ -15,6 +15,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.DataSource
@@ -22,6 +23,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.R.style
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.activity_image_viewer.*
@@ -192,7 +194,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
      * done in the calling activity
      */
     private fun confirmRemoveProductImage() {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(ContextThemeWrapper(this, style.AppTheme))
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
