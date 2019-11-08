@@ -68,9 +68,12 @@ class RefundByItemsFragment : DaggerFragment() {
                         imageMap
                 )
             }
-            new.items?.takeIfNotEqualTo(old?.items) {
+            new.items?.takeIfNotEqualTo(old?.items) { list ->
                 val adapter = issueRefund_products.adapter as RefundProductListAdapter
-                adapter.update(it)
+                adapter.update(list)
+
+                val selectedItemsHeader = getString(R.string.order_refunds_items_selected, list.sumBy { it.quantity })
+                issueRefund_selectedItems.text = selectedItemsHeader
             }
         }
 
