@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.collection.LongSparseArray
@@ -37,6 +36,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private const val VIEW_TYPE_PLACEHOLDER = 1
 
         private const val UPLOAD_PLACEHOLDER_ID = -1L
+        private const val NUM_COLUMNS = 2
     }
 
     interface OnGalleryImageClickListener {
@@ -63,11 +63,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
-        val numColumns = if (DisplayUtils.isLandscape(context)) 3 else 2
-        placeholderWidth = DisplayUtils.getDisplayPixelWidth(context) / numColumns
+        placeholderWidth = DisplayUtils.getDisplayPixelWidth(context) / NUM_COLUMNS
 
         layoutManager = if (isGridView) {
-            GridLayoutManager(context, numColumns)
+            GridLayoutManager(context, NUM_COLUMNS)
         } else {
             LinearLayoutManager(context, HORIZONTAL, false)
         }
@@ -96,15 +95,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
 
-        // if this is showing a grid make images a percentage of the view's height, otherwise make
-        // images fit the entire height of the view
-        viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val height = this@WCProductImageGalleryView.height
-                imageHeight = if (isGridView) height / 3 else height
-            }
-        })
+        imageHeight = if (isGridView) {
+            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height_grid)
+        } else {
+            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height)
+        }
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {

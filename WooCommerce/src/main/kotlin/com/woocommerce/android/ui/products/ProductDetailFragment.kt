@@ -41,7 +41,6 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageC
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
@@ -127,16 +126,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         viewModel.exit.observe(this, Observer {
             activity?.onBackPressed()
         })
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        // make image height a percentage of screen height, adjusting for landscape
-        val displayHeight = DisplayUtils.getDisplayPixelHeight(activity!!)
-        val multiplier = if (DisplayUtils.isLandscape(activity!!)) 0.5f else 0.3f
-        imageHeight = (displayHeight * multiplier).toInt()
-        imageGallery.layoutParams.height = imageHeight
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
