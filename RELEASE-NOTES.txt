@@ -1,3 +1,7 @@
+3.1
+-----
+* Added a new variants section in the Product detail screen for variable products
+
 3.0
 -----
 * Added a new refunding feature that brings the ability to specify the amount to refund
