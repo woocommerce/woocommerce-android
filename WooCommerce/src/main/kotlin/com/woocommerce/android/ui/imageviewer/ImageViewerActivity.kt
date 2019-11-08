@@ -92,6 +92,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
+    private var confirmationDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,6 +151,11 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
+    override fun onPause() {
+        confirmationDialog?.dismiss()
+        super.onPause()
+    }
+
     override fun finishAfterTransition() {
         if (canTransitionOnFinish) {
             super.finishAfterTransition()
@@ -194,7 +200,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
      * done in the calling activity
      */
     private fun confirmRemoveProductImage() {
-        AlertDialog.Builder(ContextThemeWrapper(this, style.AppTheme))
+        confirmationDialog = AlertDialog.Builder(ContextThemeWrapper(this, style.AppTheme))
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
