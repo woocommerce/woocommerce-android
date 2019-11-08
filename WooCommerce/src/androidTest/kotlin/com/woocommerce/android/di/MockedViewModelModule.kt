@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.woocommerce.android.ui.orders.list.MockedOrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.products.MockedProductDetailViewModel
 import com.woocommerce.android.ui.reviews.ReviewListViewModel
@@ -26,7 +27,7 @@ internal abstract class MockedViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(OrderListViewModel::class)
-    internal abstract fun orderListViewModel(viewModel: OrderListViewModel): ViewModel
+    internal abstract fun orderListViewModel(viewModel: MockedOrderListViewModel): ViewModel
 
     @Binds
     internal abstract fun provideViewModelFactory(viewModelFactor: ViewModelFactory): ViewModelProvider.Factory
