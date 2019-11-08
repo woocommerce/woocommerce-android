@@ -105,7 +105,7 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        findNavController().popBackStack(R.id.orderDetailFragment, false)
+        findNavController().popBackStack()
         return false
     }
 }
