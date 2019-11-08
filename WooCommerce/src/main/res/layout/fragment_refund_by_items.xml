@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    style="@style/Woo.Card"
+    style="@style/Woo.Card.WithoutPadding"
     tools:context="com.woocommerce.android.ui.refunds.RefundByItemsFragment">
 
     <TextView
@@ -12,25 +12,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/Woo.TextAppearance.Title"
+        android:paddingStart="@dimen/card_padding_start"
+        android:paddingEnd="@dimen/card_padding_end"
+        app:layout_constraintBottom_toTopOf="@+id/issueRefund_products"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="5 items selected" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/issueRefund_selectAllButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
+        style="@style/Woo.Button"
         android:text="@string/order_refunds_items_select_all"
-        android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/text_large"
-        android:clickable="true"
-        android:focusable="true"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:background="?attr/selectableItemBackground"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,6 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
+        android:paddingStart="@dimen/card_padding_start"
+        android:paddingEnd="@dimen/card_padding_end"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_selectAllButton"
