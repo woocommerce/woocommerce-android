@@ -57,6 +57,10 @@ class RefundByItemsFragment : DaggerFragment() {
         issueRefund_selectAllButton.setOnClickListener {
             viewModel.onSelectAllButtonTapped()
         }
+
+        issueRefund_btnNextFromItems.setOnClickListener {
+            viewModel.onNextButtonTappedFromItems()
+        }
     }
 
     private fun setupObservers() {
@@ -72,7 +76,10 @@ class RefundByItemsFragment : DaggerFragment() {
                 val adapter = issueRefund_products.adapter as RefundProductListAdapter
                 adapter.update(list)
 
-                val selectedItemsHeader = getString(R.string.order_refunds_items_selected, list.sumBy { it.quantity })
+                val selectedItems = list.sumBy { it.quantity }
+                issueRefund_btnNextFromItems.isEnabled = selectedItems > 0
+
+                val selectedItemsHeader = getString(R.string.order_refunds_items_selected, selectedItems)
                 issueRefund_selectedItems.text = selectedItemsHeader
             }
         }

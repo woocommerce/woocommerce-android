@@ -52,10 +52,6 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
-        issueRefund_btnNext.setOnClickListener {
-            viewModel.onNextButtonTapped()
-        }
-
         issueRefund_viewPager.adapter = RefundPageAdapter(requireFragmentManager())
         issueRefund_viewPager.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
@@ -77,8 +73,9 @@ class IssueRefundFragment : DaggerFragment() {
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
         viewModel.commonStateLiveData.observe(this) { old, new ->
-            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) { issueRefund_btnNext.isEnabled = it }
             new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
+            new.refundType.takeIfNotEqualTo(old?.refundType) {
+            }
         }
 
         viewModel.event.observe(this, Observer { event ->
@@ -95,8 +92,7 @@ class IssueRefundFragment : DaggerFragment() {
     private class RefundPageAdapter(
         fragmentManager: FragmentManager
     ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-        private val fragments = listOf(RefundByAmountFragment(), RefundByItemsFragment())
-        private val titles = listOf("items", "amount")
+        private val fragments = listOf(RefundByItemsFragment(), RefundByAmountFragment())
 
         override fun getItem(position: Int): Fragment {
             return fragments[position]
@@ -107,7 +103,7 @@ class IssueRefundFragment : DaggerFragment() {
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
-            return titles[position]
+            return RefundType.values()[position].name
         }
     }
 }

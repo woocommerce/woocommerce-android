@@ -427,6 +427,8 @@
     </style>
 
     <style name="Woo.Refunds.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
+
+    <style name="Woo.Refunds.TabLayout" parent="Woo.OrderList.TabLayout" />
     <!--
         Settings Styles
     -->

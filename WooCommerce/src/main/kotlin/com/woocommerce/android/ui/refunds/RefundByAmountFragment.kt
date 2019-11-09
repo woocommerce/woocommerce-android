@@ -36,7 +36,14 @@ class RefundByAmountFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initializeViews()
         setupObservers()
+    }
+
+    private fun initializeViews() {
+        issueRefund_btnNextFromAmount.setOnClickListener {
+            viewModel.onNextButtonTappedFromAmounts()
+        }
     }
 
     private fun setupObservers() {
@@ -49,6 +56,9 @@ class RefundByAmountFragment : DaggerFragment() {
             }
             new.enteredAmount.takeIfNotEqualTo(old?.enteredAmount) {
                 issueRefund_refundAmount.setValue(new.enteredAmount)
+            }
+            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
+                issueRefund_btnNextFromAmount.isEnabled = it
             }
         }
 

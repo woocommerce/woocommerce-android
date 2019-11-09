@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbar
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -202,25 +201,35 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
-    fun onNextButtonTapped() {
+    fun onNextButtonTappedFromItems() {
+        showRefundSummary()
+    }
+
+    fun onNextButtonTappedFromAmounts() {
         if (isInputValid()) {
-            refundSummaryStateLiveData.reset()
-            refundSummaryState = refundSummaryState.copy(
-                    isFormEnabled = true,
-                    previouslyRefunded = formatCurrency(order.refundTotal),
-                    refundAmount = formatCurrency(commonState.refundTotal)
-            )
-
-            AnalyticsTracker.track(
-                    CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED, mapOf(
-                    AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
-                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId
-            ))
-
-            triggerEvent(ShowRefundSummary(commonState.refundType))
+            showRefundSummary()
         } else {
             showValidationState()
         }
+    }
+
+    private fun showRefundSummary() {
+        refundSummaryStateLiveData.reset()
+        refundSummaryState = refundSummaryState.copy(
+                isFormEnabled = true,
+                previouslyRefunded = formatCurrency(order.refundTotal),
+                refundAmount = formatCurrency(commonState.refundTotal)
+        )
+
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
+                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                )
+        )
+
+        triggerEvent(ShowRefundSummary(commonState.refundType))
     }
 
     fun onManualRefundAmountChanged(amount: BigDecimal) {
@@ -364,23 +373,23 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private fun showValidationState() {
-        commonState = when (validateInput()) {
+        refundByAmountState = when (validateInput()) {
             TOO_HIGH -> {
                 triggerEvent(ShowValidationError(resourceProvider.getString(R.string.order_refunds_refund_high_error)))
-                commonState.copy(isNextButtonEnabled = false)
+                refundByAmountState.copy(isNextButtonEnabled = false)
             }
             TOO_LOW -> {
                 triggerEvent(ShowValidationError(resourceProvider.getString(R.string.order_refunds_refund_zero_error)))
-                commonState.copy(isNextButtonEnabled = false)
+                refundByAmountState.copy(isNextButtonEnabled = false)
             }
             VALID -> {
                 triggerEvent(HideValidationError)
-                commonState.copy(isNextButtonEnabled = true)
+                refundByAmountState.copy(isNextButtonEnabled = true)
             }
         }
     }
 
-    private fun isInputValid() = commonState.refundType == ITEMS || validateInput() == VALID
+    private fun isInputValid() = validateInput() == VALID
 
     private enum class InputValidationState {
         TOO_HIGH,
@@ -398,6 +407,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val availableForRefund: String? = null,
+        val isNextButtonEnabled: Boolean? = null,
         val enteredAmount: BigDecimal = BigDecimal.ZERO
     ) : Parcelable
 
@@ -405,6 +415,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     data class RefundByItemsViewState(
         val currency: String? = null,
         var items: List<RefundListItem>? = null,
+        val isNextButtonEnabled: Boolean? = null,
         val selectedTotal: BigDecimal = BigDecimal.ZERO
     ) : Parcelable
 
@@ -421,7 +432,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     @Parcelize
     data class CommonViewState(
         val refundTotal: BigDecimal = BigDecimal.ZERO,
-        val isNextButtonEnabled: Boolean? = null,
         val screenTitle: String? = null,
         val refundType: RefundType = ITEMS
     ) : Parcelable
