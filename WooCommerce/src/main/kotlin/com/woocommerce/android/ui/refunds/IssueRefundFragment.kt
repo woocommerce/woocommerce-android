@@ -19,6 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
@@ -52,7 +54,7 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
-        issueRefund_viewPager.adapter = RefundPageAdapter(requireFragmentManager())
+        issueRefund_viewPager.adapter = RefundPageAdapter(childFragmentManager)
         issueRefund_viewPager.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
             }
@@ -92,14 +94,15 @@ class IssueRefundFragment : DaggerFragment() {
     private class RefundPageAdapter(
         fragmentManager: FragmentManager
     ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-        private val fragments = listOf(RefundByItemsFragment(), RefundByAmountFragment())
-
         override fun getItem(position: Int): Fragment {
-            return fragments[position]
+            return when (RefundType.values()[position]) {
+                ITEMS -> RefundByItemsFragment()
+                AMOUNT -> RefundByAmountFragment()
+            }
         }
 
         override fun getCount(): Int {
-            return fragments.size
+            return RefundType.values().size
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
