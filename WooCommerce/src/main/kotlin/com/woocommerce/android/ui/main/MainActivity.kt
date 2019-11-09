@@ -63,6 +63,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
@@ -322,10 +323,12 @@ class MainActivity : AppUpgradeActivity(),
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
         val showBottomNav: Boolean
+        val showToolbarShadow: Boolean
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
             showBottomNav = true
+            showToolbarShadow = true
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
@@ -350,6 +353,10 @@ class MainActivity : AppUpgradeActivity(),
                     true
                 }
             }
+            showToolbarShadow = when (destination.id) {
+                R.id.issueRefundFragment -> false
+                else -> true
+            }
         }
         supportActionBar?.let { actionBar ->
             actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
@@ -359,6 +366,12 @@ class MainActivity : AppUpgradeActivity(),
                 R.drawable.ic_back_white_24dp
             }
             actionBar.setHomeAsUpIndicator(icon)
+
+            if (showToolbarShadow) {
+                actionBar.elevation = resources.getDimension(R.dimen.appbar_elevation)
+            } else {
+                actionBar.elevation = 0f
+            }
         }
 
         if (showBottomNav) {
