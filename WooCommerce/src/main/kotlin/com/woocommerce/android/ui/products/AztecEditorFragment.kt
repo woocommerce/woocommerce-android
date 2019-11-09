@@ -6,11 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainActivity
+import kotlinx.android.synthetic.main.fragment_aztec_editor.*
+import org.wordpress.aztec.Aztec
+import org.wordpress.aztec.ITextFormat
+import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
-class AztecEditorFragment : BaseFragment() {
+class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
     }
+
+    private lateinit var aztec: Aztec
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,4 +29,39 @@ class AztecEditorFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.product_description)
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as? MainActivity)?.hideBottomNav()
+
+        aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
+    }
+
+    override fun onToolbarCollapseButtonClicked() {
+        // Aztec Toolbar interface methods implemented by default with Aztec. Currently not used
+    }
+
+    override fun onToolbarExpandButtonClicked() {
+        // Aztec Toolbar interface methods implemented by default with Aztec. Currently not used
+    }
+
+    override fun onToolbarFormatButtonClicked(format: ITextFormat, isKeyboardShortcut: Boolean) {
+        // Aztec Toolbar interface methods implemented by default with Aztec. Currently not used
+    }
+
+    override fun onToolbarHeadingButtonClicked() {
+        // Aztec Toolbar interface methods implemented by default with Aztec. Currently not used
+    }
+
+    override fun onToolbarHtmlButtonClicked() {
+        // Aztec Toolbar interface methods implemented by default with Aztec. Currently not used
+    }
+
+    override fun onToolbarListButtonClicked() {
+        // Aztec Toolbar interface methods implemented by default with Aztec. Currently not used
+    }
+
+    override fun onToolbarMediaButtonClicked(): Boolean {
+        return false
+    }
 }
