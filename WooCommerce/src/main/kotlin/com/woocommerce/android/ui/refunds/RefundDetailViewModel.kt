@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedState
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -24,7 +24,7 @@ import java.math.BigDecimal
 
 @OpenClassOnDebug
 class RefundDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedState,
     dispatchers: CoroutineDispatchers,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,

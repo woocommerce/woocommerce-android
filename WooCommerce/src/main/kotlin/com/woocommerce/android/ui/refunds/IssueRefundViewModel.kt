@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedState
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -51,7 +51,7 @@ const val ORDER_ID_KEY = "ORDER_ID_KEY"
 
 @OpenClassOnDebug
 class IssueRefundViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedState,
     dispatchers: CoroutineDispatchers,
     private val orderStore: WCOrderStore,
     private val wooStore: WooCommerceStore,

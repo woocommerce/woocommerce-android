@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedState
 import androidx.lifecycle.Transformations
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -22,7 +22,7 @@ class MockedProductDetailViewModel @AssistedInject constructor(
     productRepository: ProductDetailRepository,
     networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    @Assisted arg0: SavedStateHandle
+    @Assisted arg0: SavedState
 ) : ProductDetailViewModel(
         arg0,
         dispatchers,

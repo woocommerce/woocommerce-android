@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedState
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock

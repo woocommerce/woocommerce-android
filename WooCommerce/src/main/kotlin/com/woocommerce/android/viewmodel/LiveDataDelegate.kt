@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateHandle
+import java.lang.IllegalStateException
 import kotlin.reflect.KProperty
 
 /**
@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty
  *  variable manipulation.
  */
 class LiveDataDelegate<T : Parcelable>(
-    savedState: SavedStateHandle,
+    savedState: SavedState,
     initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
     val onChange: (T) -> Unit = {}

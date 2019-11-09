@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedState
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedState,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
