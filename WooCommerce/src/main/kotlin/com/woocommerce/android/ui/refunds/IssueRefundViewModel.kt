@@ -343,6 +343,10 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
+    fun onRefundTabChanged(type: RefundType) {
+        commonState = commonState.copy(refundType = type)
+    }
+
     private suspend fun waitForCancellation(): Boolean {
         val wasRefundCanceled = suspendCoroutine<Boolean> {
             refundContinuation = it
@@ -385,8 +389,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     enum class RefundType {
-        AMOUNT,
-        ITEMS
+        ITEMS,
+        AMOUNT
     }
 
     @Parcelize
