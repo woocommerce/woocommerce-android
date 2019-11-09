@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -66,8 +65,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 lifecycle = any()
         )).doReturn(pagedListWrapper)
 
-        viewModel = spy(
-            OrderListViewModel(
+        viewModel = OrderListViewModel(
                 mainDispatcher = TEST_DISPATCHER,
                 bgDispatcher = TEST_DISPATCHER,
                 repository = repository,
@@ -75,9 +73,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 listStore = listStore,
                 networkStatus = networkStatus,
                 dispatcher = dispatcher,
-                selectedSite = selectedSite
-            )
-        )
+                selectedSite = selectedSite)
 
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
@@ -151,7 +147,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display |No orders yet| empty view when no orders for site for ALL tab`() = test {
-        whenever(viewModel.isSearching).doReturn(false)
+        viewModel.isSearching = false
         doReturn(true).whenever(repository).hasCachedOrdersForSite()
 
         whenever(pagedListWrapper.data.value).doReturn(mock())
@@ -186,8 +182,8 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display |No orders to process yet| empty view when no orders for site for PROCESSING tab`() = test {
-        whenever(viewModel.isSearching).doReturn(false)
-        whenever(viewModel.orderStatusFilter).doReturn(CoreOrderStatus.PROCESSING.value)
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
         doReturn(false).whenever(repository).hasCachedOrdersForSite()
 
         whenever(pagedListWrapper.data.value).doReturn(mock())
@@ -221,8 +217,8 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Processing Tab displays |All orders processed| empty view if no orders to process`() = test {
-        whenever(viewModel.isSearching).doReturn(false)
-        whenever(viewModel.orderStatusFilter).doReturn(CoreOrderStatus.PROCESSING.value)
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
         doReturn(true).whenever(repository).hasCachedOrdersForSite()
 
         whenever(pagedListWrapper.data.value).doReturn(mock())
@@ -255,8 +251,8 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display error empty view on fetch orders error when no cached orders`() = test {
-        whenever(viewModel.isSearching).doReturn(false)
-        whenever(viewModel.orderStatusFilter).doReturn(StringUtils.EMPTY)
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = StringUtils.EMPTY
 
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -289,10 +285,9 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display offline empty view when offline and list is empty`() = test {
-        whenever(viewModel.isSearching).doReturn(false)
-        whenever(viewModel.orderStatusFilter).doReturn(StringUtils.EMPTY)
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = StringUtils.EMPTY
         doReturn(false).whenever(networkStatus).isConnected()
-
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
@@ -322,8 +317,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display |No matching orders| for empty search result`() = test {
-        whenever(viewModel.isSearching).doReturn(true)
-
+        viewModel.isSearching = true
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
@@ -353,8 +347,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display Loading empty view for any order list tab`() = test {
-        whenever(viewModel.isSearching).doReturn(false)
-
+        viewModel.isSearching = false
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
@@ -383,8 +376,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Does not display the Loading empty view in search mode`() = test {
-        whenever(viewModel.isSearching).doReturn(true)
-
+        viewModel.isSearching = true
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
