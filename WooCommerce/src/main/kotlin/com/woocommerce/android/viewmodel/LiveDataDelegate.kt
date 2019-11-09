@@ -14,6 +14,10 @@ import kotlin.reflect.KProperty
  *
  *  This delegate can then be used as a proxy to access and modify the LiveData, which looks like a simple
  *  variable manipulation.
+ *
+ *  The delegate and its LiveData is intended to be used only by a single observer due to the way previous/new data is
+ *  being updated. If there is more than one, an [IllegalStateException] is thrown.
+ *
  */
 class LiveDataDelegate<T : Parcelable>(
     savedState: SavedState,
@@ -27,6 +31,11 @@ class LiveDataDelegate<T : Parcelable>(
     private var previousValue: T? = null
 
     fun observe(owner: LifecycleOwner, observer: (T?, T) -> Unit) {
+        if (_liveData.hasActiveObservers()) {
+            throw(IllegalStateException("Multiple observers registered but only one is supported."))
+        }
+
+        previousValue = null
         _liveData.observe(owner, Observer {
             observer(previousValue, it)
             previousValue = it
