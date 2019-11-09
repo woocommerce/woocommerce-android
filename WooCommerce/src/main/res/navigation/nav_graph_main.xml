@@ -12,6 +12,11 @@
             android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_aztecEditorFragment"
+            app:destination="@id/aztecEditorFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/rootFragment"
@@ -176,5 +181,10 @@
             android:name="refundId"
             app:argType="long"
             android:defaultValue="0L"/>
+    </fragment>
+    <fragment
+        android:id="@+id/aztecEditorFragment"
+        android:name="com.woocommerce.android.ui.products.AztecEditorFragment"
+        tools:layout="@layout/fragment_aztec_editor">
     </fragment>
 </navigation>

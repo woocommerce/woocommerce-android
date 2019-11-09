@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -143,6 +144,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         return when (item?.itemId) {
             R.id.menu_edit_description -> {
                 // TODO: temp flow to test aztec editor
+                // Once an entry point for edit products have been defined, this will be modified
+                findNavController().navigate(ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToAztecEditorFragment())
                 true
             }
             R.id.menu_share -> {
