@@ -54,7 +54,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
     }
 
     override fun onToolbarHtmlButtonClicked() {
-        // Aztec Toolbar interface methods implemented by default with Aztec. Currently not used
+        aztec.toolbar.toggleEditorMode()
     }
 
     override fun onToolbarListButtonClicked() {
