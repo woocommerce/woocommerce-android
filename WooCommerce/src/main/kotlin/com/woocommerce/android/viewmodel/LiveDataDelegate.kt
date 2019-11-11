@@ -23,7 +23,7 @@ class LiveDataDelegate<T : Parcelable>(
     savedState: SavedState,
     private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
-    private val onChange: (T) -> Unit = {}
+    var onChange: (T) -> Unit = {}
 ) {
     private val _liveData: MutableLiveData<T> = savedState.getLiveData(savedStateKey, initialValue)
     val liveData: LiveData<T> = _liveData
