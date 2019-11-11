@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbar
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -71,10 +72,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = {
-        val selectedTotal = it.items?.fold(BigDecimal.ZERO, { total, item ->
-            total + item.quantity.toBigDecimal().times(item.product.price)
-        }) ?: BigDecimal.ZERO
-        updateRefundTotal(selectedTotal)
+        updateRefundTotal(it.selectedTotal)
     })
     final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState(), onChange = {
         updateRefundTotal(it.enteredAmount)
@@ -410,10 +408,14 @@ class IssueRefundViewModel @AssistedInject constructor(
     @Parcelize
     data class RefundByItemsViewState(
         val currency: String? = null,
-        var items: List<RefundListItem>? = null,
-        val isNextButtonEnabled: Boolean? = null,
-        val selectedTotal: BigDecimal = BigDecimal.ZERO
-    ) : Parcelable
+        val items: List<RefundListItem>? = null,
+        val isNextButtonEnabled: Boolean? = null
+    ) : Parcelable {
+        val selectedTotal
+            get() = items?.fold(BigDecimal.ZERO, { total, item ->
+                total + item.quantity.toBigDecimal().times(item.product.price)
+            }) ?: BigDecimal.ZERO
+    }
 
     @Parcelize
     data class RefundSummaryViewState(
