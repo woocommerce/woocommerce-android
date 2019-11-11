@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -104,7 +105,7 @@ class ProductVariantsFragment : BaseFragment() {
 
         val activity = requireActivity()
 
-        productVariantsAdapter = ProductVariantsAdapter(activity)
+        productVariantsAdapter = ProductVariantsAdapter(activity, GlideApp.with(this))
         with(productVariantsList) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productVariantsAdapter

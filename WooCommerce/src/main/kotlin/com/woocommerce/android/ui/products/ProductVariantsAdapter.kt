@@ -10,14 +10,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
-import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.products.ProductVariantsAdapter.ProductVariantViewHolder
 import kotlinx.android.synthetic.main.product_variant_list_item.view.*
 import org.wordpress.android.util.PhotonUtils
 
 class ProductVariantsAdapter(
-    private val context: Context
+    private val context: Context,
+    private val glideRequest: GlideRequests
 ) : RecyclerView.Adapter<ProductVariantViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
     private val productVariantList = ArrayList<ProductVariant>()
@@ -48,8 +49,7 @@ class ProductVariantsAdapter(
 
         productVariant.imageUrl?.let {
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
-            GlideApp.with(context)
-                    .load(imageUrl)
+            glideRequest.load(imageUrl)
                     .placeholder(R.drawable.ic_product)
                     .into(holder.imgVariantOption)
         } ?: holder.imgVariantOption.setImageResource(R.drawable.ic_product)
