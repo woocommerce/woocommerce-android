@@ -1,14 +1,11 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -46,7 +43,7 @@ class OrderListNavigationTest : TestBase() {
         activityTestRule.setOrderListWithMockData()
 
         // Click on Orders tab in the bottom bar
-        onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
+        onView(withId(R.id.orders)).perform(click())
     }
 
     @Test
@@ -59,8 +56,8 @@ class OrderListNavigationTest : TestBase() {
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail())
 
         // click on the first order in the list and check if redirected to order detail
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
 
         // Ensure that the toolbar title displays "Order #" + order number
         onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(
@@ -82,8 +79,8 @@ class OrderListNavigationTest : TestBase() {
     @Test
     fun switchBackToDashboardViewFromOrderDetailView() {
         // click on the first order in the list and check if redirected to order detail
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, ViewActions.click()))
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // Clicking the "Dashboard" bottom bar option loads the DashboardFragment,
         // then clicking the "Orders" bottom bar option loads the OrderListFragment (so the detail view should no longer be visible)
@@ -96,8 +93,8 @@ class OrderListNavigationTest : TestBase() {
     @Test
     fun switchBackToOrderListViewFromOrderDetailView() {
         // click on the first order in the list and check if redirected to order detail
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, ViewActions.click()))
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // Clicking the "Orders" bottom bar option loads the OrderListFragment and
         // Changes the Toolbar title to "Orders"

@@ -61,7 +61,7 @@ fun createEmptyUiState(
 ): OrderListEmptyUiState {
     return if (isListEmpty) {
         when {
-            isError && isListEmpty -> createErrorListUiState(isNetworkAvailable, fetchFirstPage)
+            isError -> createErrorListUiState(isNetworkAvailable, fetchFirstPage)
             isLoadingData -> {
                 // don't show intermediate screen when loading search results
                 if (orderListType == SEARCH) {

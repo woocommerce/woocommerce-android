@@ -2,6 +2,13 @@ package com.woocommerce.android.ui.orders
 
 import com.google.gson.Gson
 import com.woocommerce.android.helpers.WCDateTimeTestUtils
+import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_MONTH
+import com.woocommerce.android.model.TimeGroup.GROUP_TODAY
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -37,6 +44,94 @@ object WcOrderTestUtils {
                     )
             )
     )
+
+    fun generateOrderListUIItems(): List<OrderListItemUIType> {
+        val result = ArrayList<OrderListItemUIType>()
+
+        val h1 = SectionHeader(GROUP_TODAY)
+
+        val l1 = LoadingItem(RemoteId(7))
+
+        val om1 = OrderListItemUI(
+                remoteOrderId = RemoteId(1),
+                orderNumber = "100",
+                orderName = "",
+                orderTotal = "14.53",
+                status = "processing",
+                dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTime()),
+                currencyCode = "USD")
+
+        val om2 = OrderListItemUI(
+                remoteOrderId = RemoteId(2),
+                orderNumber = "63",
+                // really long first & last name
+                orderName = "Itsareallylongnametoseehowitishandled andcontinuingwiththelongname",
+                orderTotal = "14.53",
+                status = "Pending",
+                // Yesterday
+                dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(1)),
+                currencyCode = "CAD")
+
+        val h2 = SectionHeader(GROUP_OLDER_MONTH)
+
+        val om3 = OrderListItemUI(
+                remoteOrderId = RemoteId(3),
+                orderNumber = "14",
+                orderName = "Mandy Sykes",
+                orderTotal = "14.53",
+                status = "On Hold",
+                dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(3)),
+                currencyCode = "EUR")
+
+        val om4 = OrderListItemUI(
+                remoteOrderId = RemoteId(4),
+                orderNumber = "15",
+                orderName = "Jennifer Johnson",
+                orderTotal = "14.53",
+                status = "Completed",
+                dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(14)),
+                currencyCode = "INR")
+
+        val om5 = OrderListItemUI(
+                remoteOrderId = RemoteId(5),
+                orderNumber = "3",
+                orderName = "Christopher Jones",
+                orderTotal = "14.53",
+                status = "Cancelled",
+                dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusMonths(2)),
+                currencyCode = "AUD")
+
+        val om6 = OrderListItemUI(
+                remoteOrderId = RemoteId(6),
+                orderNumber = "55",
+                orderName = "Carissa King",
+                orderTotal = "14.53",
+                status = "Refunded",
+                dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusMonths(2)),
+                currencyCode = "USD")
+
+        val om7 = OrderListItemUI(
+                remoteOrderId = RemoteId(6),
+                orderNumber = "55",
+                orderName = "Carissa King",
+                orderTotal = "14.53",
+                status = "Failed",
+                dateCreated = "2018-02-02T16:11:13Z",
+                currencyCode = "USD")
+
+        result.add(h1)
+        result.add(l1)
+        result.add(om1)
+        result.add(om2)
+        result.add(h2)
+        result.add(om3)
+        result.add(om4)
+        result.add(om5)
+        result.add(om6)
+        result.add(om7)
+
+        return result
+    }
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
