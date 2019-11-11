@@ -106,10 +106,19 @@ class IssueRefundViewModel @AssistedInject constructor(
     // temporary workaround for the activity ViewModel scope
     fun resetLiveData() {
         resetEvent()
+
+        commonState = CommonViewState()
+        refundByItemsState = RefundByItemsViewState()
+        refundSummaryState = RefundSummaryViewState()
+
+        initRefundByAmountState(order)
+        initRefundByItemsState(order)
+        initRefundSummaryState()
+
         commonStateLiveData.reset()
         refundByAmountStateLiveData.reset()
-        refundSummaryStateLiveData.reset()
         refundByItemsStateLiveData.reset()
+        refundSummaryStateLiveData.reset()
     }
 
     private fun loadOrder(orderId: Long): Order =
