@@ -22,6 +22,10 @@ class ProductVariantsAdapter(
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
     private val productVariantList = ArrayList<ProductVariant>()
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun getItemId(position: Int) = productVariantList[position].remoteProductId
 
     override fun getItemCount() = productVariantList.size
@@ -52,19 +56,19 @@ class ProductVariantsAdapter(
     }
 
     private class ProductVariantItemDiffUtil(
-        val items: List<ProductVariant>,
-        val result: List<ProductVariant>
+        val oldList: List<ProductVariant>,
+        val newList: List<ProductVariant>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                items[oldItemPosition].remoteProductId == result[newItemPosition].remoteProductId
+                oldList[oldItemPosition].remoteProductId == newList[newItemPosition].remoteProductId
 
-        override fun getOldListSize(): Int = items.size
+        override fun getOldListSize(): Int = oldList.size
 
-        override fun getNewListSize(): Int = result.size
+        override fun getNewListSize(): Int = newList.size
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = items[oldItemPosition]
-            val newItem = result[newItemPosition]
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
             return oldItem.stockQuantity == newItem.stockQuantity &&
                     oldItem.stockStatus == newItem.stockStatus &&
                     oldItem.imageUrl == newItem.imageUrl &&
