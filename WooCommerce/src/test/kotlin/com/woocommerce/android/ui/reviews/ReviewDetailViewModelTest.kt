@@ -38,7 +38,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
     private val networkStatus: NetworkStatus = mock()
     private val repository: ReviewDetailRepository = mock()
-    private val savedState: SavedStateHandle = mock()
+    private val savedState: SavedState = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
