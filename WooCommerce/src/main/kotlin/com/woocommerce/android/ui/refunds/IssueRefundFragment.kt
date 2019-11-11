@@ -38,16 +38,9 @@ class IssueRefundFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel(savedInstanceState == null)
-    }
-
-    private fun initializeViewModel(isNotBeingRestored: Boolean) {
         initializeViews(viewModel)
         setupObservers(viewModel)
 
-        if (isNotBeingRestored) {
-            viewModel.initialize(navArgs.orderId)
-        }
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
