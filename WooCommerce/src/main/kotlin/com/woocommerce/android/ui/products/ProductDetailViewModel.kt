@@ -197,7 +197,7 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * This event may happen if the user uploads or removes an image from the images fragment and returns
-     * to the detail fragment before the requesrs completes
+     * to the detail fragment before the request completes
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
