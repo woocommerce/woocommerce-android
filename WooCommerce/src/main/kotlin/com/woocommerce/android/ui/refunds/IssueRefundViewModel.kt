@@ -344,7 +344,12 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundTabChanged(type: RefundType) {
+        val refundAmount = when (type){
+            ITEMS -> refundByItemsState.selectedTotal
+            AMOUNT -> refundByAmountState.enteredAmount
+        }
         commonState = commonState.copy(refundType = type)
+        updateRefundTotal(refundAmount)
     }
 
     private suspend fun waitForCancellation(): Boolean {
