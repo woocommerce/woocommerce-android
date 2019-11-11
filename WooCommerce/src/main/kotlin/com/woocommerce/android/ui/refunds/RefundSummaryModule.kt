@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
+import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.main.MainActivity
@@ -12,13 +13,13 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class IssueRefundSubmodule {
+abstract class RefundSummaryModule {
     @Module
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(): Bundle? {
-            return null
+        fun provideDefaultArgs(fragment: RefundSummaryFragment): Bundle? {
+            return Bundle()
         }
     }
 
