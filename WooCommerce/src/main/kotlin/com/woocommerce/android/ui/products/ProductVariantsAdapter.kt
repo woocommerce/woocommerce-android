@@ -70,6 +70,7 @@ class ProductVariantsAdapter(
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
             return oldItem.stockQuantity == newItem.stockQuantity &&
+                    oldItem.price == newItem.price &&
                     oldItem.stockStatus == newItem.stockStatus &&
                     oldItem.imageUrl == newItem.imageUrl &&
                     oldItem.optionName == newItem.optionName
