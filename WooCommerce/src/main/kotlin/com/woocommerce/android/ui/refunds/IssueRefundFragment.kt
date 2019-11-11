@@ -25,6 +25,8 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
+import kotlinx.android.synthetic.main.fragment_refund_by_amount.*
+import org.wordpress.android.util.ActivityUtils
 
 class IssueRefundFragment : DaggerFragment(), BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -54,7 +56,7 @@ class IssueRefundFragment : DaggerFragment(), BackPressListener {
         issueRefund_viewPager.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-            
+
             override fun onPageSelected(position: Int) {
                 viewModel.onRefundTabChanged(RefundType.values()[position])
             }
@@ -65,7 +67,12 @@ class IssueRefundFragment : DaggerFragment(), BackPressListener {
     private fun setupObservers(viewModel: IssueRefundViewModel) {
         viewModel.commonStateLiveData.observe(this) { old, new ->
             new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
-            new.refundType.takeIfNotEqualTo(old?.refundType) {
+
+            if (new.refundType == AMOUNT) {
+                issueRefund_refundAmount.requestFocus()
+                ActivityUtils.showKeyboard(issueRefund_refundAmount)
+            } else {
+                ActivityUtils.hideKeyboard(requireActivity())
             }
         }
 
