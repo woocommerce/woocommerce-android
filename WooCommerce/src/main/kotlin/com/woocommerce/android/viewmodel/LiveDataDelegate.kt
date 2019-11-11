@@ -21,14 +21,17 @@ import kotlin.reflect.KProperty
  */
 class LiveDataDelegate<T : Parcelable>(
     savedState: SavedState,
-    initialValue: T,
+    private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
-    val onChange: (T) -> Unit = {}
+    private val onChange: (T) -> Unit = {}
 ) {
     private val _liveData: MutableLiveData<T> = savedState.getLiveData(savedStateKey, initialValue)
     val liveData: LiveData<T> = _liveData
 
     private var previousValue: T? = null
+
+    val hasInitialValue: Boolean
+        get() = _liveData.value == initialValue
 
     fun observe(owner: LifecycleOwner, observer: (T?, T) -> Unit) {
         if (_liveData.hasActiveObservers()) {
