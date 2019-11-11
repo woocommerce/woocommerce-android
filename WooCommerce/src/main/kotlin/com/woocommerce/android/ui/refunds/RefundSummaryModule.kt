@@ -2,23 +2,24 @@ package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
+import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
-import dagger.Module
-import dagger.Binds
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.ViewModelKey
+import dagger.Binds
+import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class IssueRefundModule {
+abstract class RefundSummaryModule {
     @Module
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(fragment: IssueRefundFragment): Bundle? {
-            return fragment.arguments
+        fun provideDefaultArgs(fragment: RefundSummaryFragment): Bundle? {
+            return Bundle()
         }
     }
 

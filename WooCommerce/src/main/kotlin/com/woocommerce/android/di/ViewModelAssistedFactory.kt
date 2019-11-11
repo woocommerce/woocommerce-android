@@ -1,6 +1,6 @@
 package com.woocommerce.android.di
 
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedState
 import androidx.lifecycle.ViewModel
 
 /**
@@ -13,5 +13,5 @@ import androidx.lifecycle.ViewModel
  *  Returns an instance of the ViewModel.
  */
 interface ViewModelAssistedFactory<T : ViewModel> {
-    fun create(savedState: SavedStateHandle): T
+    fun create(savedState: SavedState): T
 }

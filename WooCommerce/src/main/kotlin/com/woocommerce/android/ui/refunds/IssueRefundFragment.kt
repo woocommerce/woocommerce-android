@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.refunds
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +11,13 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
@@ -25,12 +26,11 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
 
-class IssueRefundFragment : DaggerFragment() {
+class IssueRefundFragment : DaggerFragment(), BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
-    private val navArgs: IssueRefundFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -47,25 +47,14 @@ class IssueRefundFragment : DaggerFragment() {
 
         initializeViews(viewModel)
         setupObservers(viewModel)
-
-        if (savedInstanceState == null) {
-            viewModel.initialize(navArgs.orderId)
-        }
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
         issueRefund_viewPager.adapter = RefundPageAdapter(childFragmentManager)
         issueRefund_viewPager.addOnPageChangeListener(object : OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
-            }
-
+            override fun onPageScrollStateChanged(state: Int) {}
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+            
             override fun onPageSelected(position: Int) {
                 viewModel.onRefundTabChanged(RefundType.values()[position])
             }
@@ -91,6 +80,13 @@ class IssueRefundFragment : DaggerFragment() {
         })
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        // temporary workaround for activity VM scope
+        viewModel.resetLiveData()
+        return true
+    }
+
+    @SuppressLint("WrongConstant")
     private class RefundPageAdapter(
         fragmentManager: FragmentManager
     ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

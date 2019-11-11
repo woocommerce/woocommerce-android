@@ -20,7 +20,7 @@ object RefundsModule {
     @Module
     abstract class RefundSummaryFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [IssueRefundModule::class])
+        @ContributesAndroidInjector(modules = [RefundSummaryModule::class])
         abstract fun refundSummaryFragment(): RefundSummaryFragment
     }
 
@@ -34,14 +34,14 @@ object RefundsModule {
     @Module
     abstract class RefundByItemsFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [IssueRefundModule::class])
+        @ContributesAndroidInjector(modules = [RefundByItemsModule::class])
         abstract fun refundByItemsFragment(): RefundByItemsFragment
     }
 
     @Module
     abstract class RefundByAmountFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [IssueRefundModule::class])
+        @ContributesAndroidInjector(modules = [RefundByAmountModule::class])
         abstract fun refundByAmountFragment(): RefundByAmountFragment
     }
 
