@@ -15,7 +15,7 @@ class MockedReviewListViewModel @AssistedInject constructor(
     networkStatus: NetworkStatus,
     dispatcher: Dispatcher,
     selectedSite: SelectedSite,
-    @Assisted arg0: SavedStateHandle
+    @Assisted arg0: SavedState
 ) : ReviewListViewModel(
         arg0,
         dispatchers,

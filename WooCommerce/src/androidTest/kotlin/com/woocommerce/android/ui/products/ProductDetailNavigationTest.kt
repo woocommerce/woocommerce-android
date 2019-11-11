@@ -137,7 +137,7 @@ class ProductDetailNavigationTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // since image is available, the imageView should be visible
-        onView(withId(R.id.productDetail_image)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.imageGallery)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
         // verify that product title label is displayed correctly
         onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 0))

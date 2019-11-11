@@ -38,7 +38,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     fun start(remoteProductId: Long) {

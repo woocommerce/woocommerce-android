@@ -11,7 +11,7 @@ class MockedReviewDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     reviewRepository: ReviewDetailRepository,
     networkStatus: NetworkStatus,
-    @Assisted arg0: SavedStateHandle
+    @Assisted arg0: SavedState
 ) : ReviewDetailViewModel(
         arg0,
         dispatchers,
