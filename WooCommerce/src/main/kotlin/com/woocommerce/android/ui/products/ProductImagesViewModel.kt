@@ -6,11 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
-import com.woocommerce.android.media.MediaUploadService
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadCompletedEvent
-import com.woocommerce.android.media.MediaUploadService.Companion.OnProductMediaUploadStartedEvent
-import com.woocommerce.android.media.MediaUploadWrapper
+import com.woocommerce.android.media.ProductImagesService
+import com.woocommerce.android.media.ProductImagesService.Companion.Action
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,9 +26,11 @@ import javax.inject.Named
 class ProductImagesViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val productRepository: ProductImagesRepository,
-    private val mediaUploadWrapper: MediaUploadWrapper
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
+    var removingRemoteMediaId = 0L
 
     private val _product = MutableLiveData<Product>()
     val product: LiveData<Product> = _product
@@ -43,6 +47,9 @@ class ProductImagesViewModel @Inject constructor(
     private val _isUploadingProductImage = MutableLiveData<Boolean>()
     val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
 
+    private val _isRemovingProductImage = MutableLiveData<Boolean>()
+    val isRemovingProductImage: LiveData<Boolean> = _isRemovingProductImage
+
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
 
@@ -53,12 +60,13 @@ class ProductImagesViewModel @Inject constructor(
     fun start(remoteProductId: Long) {
         this.remoteProductId = remoteProductId
         loadProduct()
-        _isUploadingProductImage.value = MediaUploadService.isUploadingForProduct(remoteProductId)
+
+        val isUploading = ProductImagesService.isUploadingForProduct(remoteProductId)
+        setIsUploadingImage(isUploading)
     }
 
     override fun onCleared() {
         super.onCleared()
-        productRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -75,29 +83,76 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
-        // TODO: at some point we want to support uploading multiple product images
-        if (MediaUploadService.isBusy()) {
-            _showSnackbarMessage.value = R.string.product_image_already_uploading
+        if (!checkNetwork()) {
             return
         }
-        _isUploadingProductImage.value = true
-        mediaUploadWrapper.uploadProductMedia(remoteProductId, localImageUri)
+        if (ProductImagesService.isBusy()) {
+            _showSnackbarMessage.value = R.string.product_image_service_busy
+            return
+        }
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localImageUri)
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductMediaUploadStartedEvent) {
-        if (remoteProductId == event.remoteProductId) {
-            _isUploadingProductImage.value = true
+    fun removeProductMedia(remoteProductId: Long, remoteMediaId: Long) {
+        if (!checkNetwork()) {
+            return
+        }
+        if (ProductImagesService.isBusy()) {
+            _showSnackbarMessage.value = R.string.product_image_service_busy
+            return
+        }
+        removingRemoteMediaId = remoteMediaId
+        productImagesServiceWrapper.removeProductMedia(remoteProductId, remoteMediaId)
+    }
+
+    private fun checkNetwork(): Boolean {
+        if (networkStatus.isConnected()) {
+            return true
+        }
+        _showSnackbarMessage.value = R.string.network_activity_no_connectivity
+        return false
+    }
+
+    private fun setIsUploadingImage(isUploading: Boolean) {
+        if (isUploading != _isUploadingProductImage.value) {
+            _isUploadingProductImage.value = isUploading
+        }
+    }
+
+    private fun setIsRemovingImage(isRemoving: Boolean) {
+        if (isRemoving != _isRemovingProductImage.value) {
+            _isRemovingProductImage.value = isRemoving
         }
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductMediaUploadCompletedEvent) {
-        _isUploadingProductImage.value = false
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
+        if (remoteProductId == event.remoteProductId) {
+            if (event.action == Action.UPLOAD_IMAGE) {
+                setIsUploadingImage(true)
+            } else if (event.action == Action.REMOVE_IMAGE) {
+                setIsRemovingImage(true)
+            }
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        if (event.action == Action.UPLOAD_IMAGE) {
+            setIsUploadingImage(false)
+        } else if (event.action == Action.REMOVE_IMAGE) {
+            setIsRemovingImage(false)
+            removingRemoteMediaId = 0
+        }
+
         if (event.isError) {
-            _showSnackbarMessage.value = R.string.product_image_upload_error
+            _showSnackbarMessage.value = when (event.action) {
+                Action.UPLOAD_IMAGE -> R.string.product_image_service_error_uploading
+                Action.REMOVE_IMAGE -> R.string.product_image_service_error_removing
+                else -> R.string.error_generic_network
+            }
         } else {
             loadProduct()
         }

@@ -20,7 +20,7 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.media.MediaUploadUtils
+import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
@@ -35,6 +35,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     companion object {
         private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
         private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
+        private const val REQUEST_CODE_IMAGE_VIEWER = REQUEST_CODE_CAPTURE_PHOTO + 1
 
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
@@ -110,7 +111,20 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         })
 
         viewModel.isUploadingProductImage.observe(this, Observer {
-            showUploadImageProgress(it)
+            if (it) {
+                imageGallery.addPlaceholder()
+            } else {
+                imageGallery.removePlaceholder()
+            }
+        })
+
+        viewModel.isRemovingProductImage.observe(this, Observer {
+            val remoteMediaId = viewModel.removingRemoteMediaId
+            if (it) {
+                imageGallery.addPlaceholder(remoteMediaId)
+            } else {
+                imageGallery.removePlaceholder(remoteMediaId)
+            }
         })
 
         viewModel.exit.observe(this, Observer {
@@ -120,18 +134,24 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
-    override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
+    override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        ImageViewerActivity.show(
-                requireActivity(),
-                image.src,
-                title = getFragmentTitle(),
-                sharedElement = imageView
-        )
+        viewModel.product.value?.let { product ->
+            ImageViewerActivity.showProductImage(
+                    this,
+                    product,
+                    imageModel,
+                    sharedElement = imageView,
+                    enableRemoveImage = true,
+                    requestCode = REQUEST_CODE_IMAGE_VIEWER
+            )
+        }
     }
 
     private fun createImageSourcePopup() {
-        val contentView = requireActivity().layoutInflater.inflate(R.layout.image_source_popup, null).also {
+        val inflater = requireActivity().layoutInflater
+        val contentView = inflater.inflate(R.layout.image_source_popup, imageGallery, false)
+                .also {
             it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
                 viewModel.onChooseImageClicked()
             }
@@ -144,7 +164,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
             it.contentView = contentView
             it.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             it.setBackgroundDrawable(null)
-            it.setFocusable(true)
+            it.isFocusable = true
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 it.enterTransition = Fade()
@@ -175,36 +195,35 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private fun captureProductImage() {
         if (requestCameraPermission()) {
-            MediaUploadUtils.createCaptureImageIntent(requireActivity())?.let { intent ->
-                capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
-                requireActivity().startActivityFromFragment(this, intent,
-                        REQUEST_CODE_CAPTURE_PHOTO
-                )
+            val intent = ProductImagesUtils.createCaptureImageIntent(requireActivity())
+            if (intent == null) {
+                uiMessageResolver.showSnack(R.string.product_images_camera_error)
+                return
             }
-        }
-    }
-
-    /**
-     * Triggered by the viewModel when an image is being uploaded or has finished uploading
-     */
-    private fun showUploadImageProgress(isUploading: Boolean) {
-        if (isUploading) {
-            imageGallery.addUploadPlaceholder()
-        } else {
-            imageGallery.removeUploadPlaceholder()
+            capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
+            requireActivity().startActivityFromFragment(
+                    this, intent,
+                    REQUEST_CODE_CAPTURE_PHOTO
+            )
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && data != null) {
-                data.data?.let { imageUri ->
+            when (requestCode) {
+                REQUEST_CODE_CHOOSE_PHOTO -> data?.data?.let { imageUri ->
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
-            } else if (requestCode == REQUEST_CODE_CAPTURE_PHOTO) {
-                capturedPhotoUri?.let { imageUri ->
+                REQUEST_CODE_CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                }
+                REQUEST_CODE_IMAGE_VIEWER -> data?.let { intent ->
+                    val remoteMediaId = intent.getLongExtra(ImageViewerActivity.EXTRA_REMOVE_REMOTE_IMAGE_ID, 0)
+                    if (remoteMediaId > 0) {
+                        viewModel.removeProductMedia(navArgs.remoteProductId, remoteMediaId)
+                    }
                 }
             }
         }

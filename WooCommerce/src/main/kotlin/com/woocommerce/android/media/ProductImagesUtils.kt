@@ -2,6 +2,7 @@ package com.woocommerce.android.media
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
 import android.webkit.MimeTypeMap
@@ -21,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-object MediaUploadUtils {
+object ProductImagesUtils {
     private const val OPTIMIZE_IMAGE_MAX_SIZE = 3000
     private const val OPTIMIZE_IMAGE_QUALITY = 85
 
@@ -130,10 +131,17 @@ object MediaUploadUtils {
         }
     }
 
+    private fun hasCamera(context: Context): Boolean =
+            context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+
     /**
      * Create an intent for capturing a device photo
      */
     fun createCaptureImageIntent(context: Context): Intent? {
+        if (!hasCamera(context)) {
+            return null
+        }
+
         Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
             // Ensure that there's a camera activity to handle the intent
             intent.resolveActivity(context.packageManager)?.also {

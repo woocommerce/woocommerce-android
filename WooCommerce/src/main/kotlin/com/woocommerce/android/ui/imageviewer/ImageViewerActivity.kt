@@ -1,58 +1,91 @@
 package com.woocommerce.android.ui.imageviewer
 
 import android.app.Activity
+import android.app.ActivityOptions
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.R.style
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.activity_image_viewer.*
+import org.wordpress.android.fluxc.model.WCProductImageModel
 
 /**
- * Full-screen image view with pinch-and-zoom
+ * Full-screen product image viewer with pinch-and-zoom
  */
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
+        const val EXTRA_REMOVE_REMOTE_IMAGE_ID = "remove_remote_media_id"
+
+        private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
         private const val KEY_IMAGE_URL = "image_url"
         private const val KEY_IMAGE_TITLE = "image_title"
+        private const val KEY_IMAGE_REMOTE_PRODUCT_ID = "remote_product_id"
         private const val KEY_TRANSITION_NAME = "transition_name"
+        private const val KEY_ENABLE_REMOVE_IMAGE = "enable_remove_image"
+        private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
+
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
-        fun show(activity: Activity, imageUrl: String, title: String = "", sharedElement: View? = null) {
-            val intent = Intent(activity, ImageViewerActivity::class.java)
-            intent.putExtra(KEY_IMAGE_URL, imageUrl)
-            intent.putExtra(KEY_IMAGE_TITLE, title)
+        fun showProductImage(
+            fragment: Fragment,
+            productModel: Product,
+            imageModel: WCProductImageModel,
+            sharedElement: View? = null,
+            enableRemoveImage: Boolean = false,
+            requestCode: Int = 0
+        ) {
+            val context = fragment.requireActivity()
+
+            val intent = Intent(context, ImageViewerActivity::class.java).also {
+                it.putExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, productModel.remoteId)
+                it.putExtra(KEY_IMAGE_REMOTE_MEDIA_ID, imageModel.id)
+                it.putExtra(KEY_IMAGE_URL, imageModel.src)
+                it.putExtra(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
+
+                if (imageModel.name.isNotEmpty()) {
+                    it.putExtra(KEY_IMAGE_TITLE, imageModel.name)
+                } else {
+                    it.putExtra(KEY_IMAGE_TITLE, productModel.name)
+                }
+            }
 
             // use a shared element transition if a shared element view was passed, otherwise default to fade-in
-            val options = if (sharedElement != null && sharedElement.transitionName.isNotEmpty()) {
-                val transitionName = sharedElement.transitionName
-                intent.putExtra(KEY_TRANSITION_NAME, transitionName)
-                ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement, transitionName)
-            } else {
-                ActivityOptionsCompat.makeCustomAnimation(
-                        activity,
-                        R.anim.activity_fade_in,
-                        R.anim.activity_fade_out
-                )
-            }
-            ActivityCompat.startActivity(activity, intent, options.toBundle())
+            val options = sharedElement?.let {
+                intent.putExtra(KEY_TRANSITION_NAME, it.transitionName)
+                ActivityOptions.makeSceneTransitionAnimation(context, sharedElement, it.transitionName)
+            } ?: ActivityOptions.makeCustomAnimation(
+                    context,
+                    R.anim.activity_fade_in,
+                    R.anim.activity_fade_out
+            )
+
+            fragment.startActivityForResult(intent, requestCode, options.toBundle())
         }
     }
+
+    private var remoteProductId = 0L
+    private var remoteMediaId = 0L
+    private var enableRemoveImage = false
 
     private lateinit var imageUrl: String
     private lateinit var imageTitle: String
@@ -61,28 +94,31 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
 
+    private var confirmationDialog: AlertDialog? = null
+    private var isConfirmationShowing = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_image_viewer)
 
-        imageUrl = if (savedInstanceState == null) {
-            intent.getStringExtra(KEY_IMAGE_URL) ?: ""
-        } else {
-            savedInstanceState.getString(KEY_IMAGE_URL) ?: ""
-        }
+        remoteProductId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_PRODUCT_ID)
+                ?: intent.getLongExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, 0L)
 
-        imageTitle = if (savedInstanceState == null) {
-            intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
-        } else {
-            savedInstanceState.getString(KEY_IMAGE_TITLE) ?: ""
-        }
+        remoteMediaId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_MEDIA_ID)
+                ?: intent.getLongExtra(KEY_IMAGE_REMOTE_MEDIA_ID, 0L)
 
-        transitionName = if (savedInstanceState == null) {
-            intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
-        } else {
-            savedInstanceState.getString(KEY_TRANSITION_NAME) ?: ""
-        }
+        imageUrl = savedInstanceState?.getString(KEY_IMAGE_URL)
+                ?: intent.getStringExtra(KEY_IMAGE_URL) ?: intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
+
+        imageTitle = savedInstanceState?.getString(KEY_IMAGE_TITLE)
+                ?: intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
+
+        enableRemoveImage = savedInstanceState?.getBoolean(KEY_ENABLE_REMOVE_IMAGE)
+                ?: intent.getBooleanExtra(KEY_ENABLE_REMOVE_IMAGE, false)
+
+        transitionName = savedInstanceState?.getString(KEY_TRANSITION_NAME)
+                ?: intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
         photoView.transitionName = transitionName
 
         val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
@@ -104,15 +140,28 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         photoView.setOnPhotoTapListener { view, x, y ->
             showToolbar(true)
         }
+
+        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMATION_SHOWING) == true) {
+            confirmRemoveProductImage()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         outState?.let { bundle ->
+            bundle.putLong(KEY_IMAGE_REMOTE_PRODUCT_ID, remoteProductId)
+            bundle.putLong(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
             bundle.putString(KEY_IMAGE_URL, imageUrl)
             bundle.putString(KEY_IMAGE_TITLE, imageTitle)
             bundle.putString(KEY_TRANSITION_NAME, transitionName)
+            bundle.putBoolean(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
+            bundle.putBoolean(KEY_IS_CONFIRMATION_SHOWING, isConfirmationShowing)
             super.onSaveInstanceState(outState)
         }
+    }
+
+    override fun onPause() {
+        confirmationDialog?.dismiss()
+        super.onPause()
     }
 
     override fun finishAfterTransition() {
@@ -123,12 +172,26 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (enableRemoveImage) {
+            menuInflater.inflate(R.menu.menu_trash, menu)
         }
-        return super.onOptionsItemSelected(item)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_trash -> {
+                confirmRemoveProductImage()
+                true
+            }
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            } else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     private fun loadImage() {
@@ -138,6 +201,29 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                 .load(imageUrl)
                 .listener(this)
                 .into(photoView)
+    }
+
+    /**
+     * Confirms that the user meant to remove this image from the product - the actual removal must be
+     * done in the calling activity
+     */
+    private fun confirmRemoveProductImage() {
+        isConfirmationShowing = true
+        confirmationDialog = AlertDialog.Builder(ContextThemeWrapper(this, style.AppTheme))
+                .setMessage(R.string.product_image_remove_confirmation)
+                .setCancelable(true)
+                .setPositiveButton(R.string.remove) { _, _ ->
+                    // let the calling fragment know that the user requested to remove this image
+                    val data = Intent().also {
+                        it.putExtra(EXTRA_REMOVE_REMOTE_IMAGE_ID, remoteMediaId)
+                    }
+                    setResult(Activity.RESULT_OK, data)
+                    finishAfterTransition()
+                }
+                .setNegativeButton(R.string.dont_remove, { _, _ ->
+                    isConfirmationShowing = false
+                })
+                .show()
     }
 
     private fun showProgress(show: Boolean) {

@@ -109,7 +109,7 @@
             android:resource="@array/preloaded_fonts"/>
 
         <service
-            android:name=".media.MediaUploadService"
+            android:name=".media.ProductImagesService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 

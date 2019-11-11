@@ -61,11 +61,7 @@ class ProductImageMap @Inject constructor(
         return null
     }
 
-    fun update(remoteProductId: Long) {
-        selectedSite.getIfExists()?.let { site ->
-            productStore.getProductByRemoteId(site, remoteProductId)?.getFirstImageUrl()?.let { imageUrl ->
-                map[remoteProductId] = imageUrl
-            }
-        }
+    fun remove(remoteProductId: Long) {
+        map.remove(remoteProductId)
     }
 }

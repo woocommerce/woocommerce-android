@@ -495,19 +495,21 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
+    override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
             val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
             findNavController().navigate(action)
         } else {
-            ImageViewerActivity.show(
-                    requireActivity(),
-                    image.src,
-                    title = getFragmentTitle(),
-                    sharedElement = imageView
-            )
+            viewModel.productData.value?.product?.let { product ->
+                ImageViewerActivity.showProductImage(
+                        ProductDetailFragment@this,
+                        product,
+                        imageModel,
+                        sharedElement = imageView
+                )
+            }
         }
     }
 }
