@@ -61,6 +61,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private lateinit var viewModel: ProductDetailViewModel
 
     private var productTitle = ""
+    private var productDesc = ""
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
@@ -146,7 +147,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 // TODO: temp flow to test aztec editor
                 // Once an entry point for edit products have been defined, this will be modified
                 findNavController().navigate(ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToAztecEditorFragment())
+                        .actionProductDetailFragmentToAztecEditorFragment(productDesc))
                 true
             }
             R.id.menu_share -> {
@@ -185,6 +186,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 }
             }
         }
+        productDesc = product.description
 
         updateActivityTitle()
 

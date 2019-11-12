@@ -186,5 +186,9 @@
         android:id="@+id/aztecEditorFragment"
         android:name="com.woocommerce.android.ui.products.AztecEditorFragment"
         tools:layout="@layout/fragment_aztec_editor">
+        <argument
+            android:name="productDescription"
+            app:argType="string"
+            android:defaultValue='""'/>
     </fragment>
 </navigation>

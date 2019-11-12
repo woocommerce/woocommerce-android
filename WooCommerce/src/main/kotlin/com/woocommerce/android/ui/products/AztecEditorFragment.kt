@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -18,6 +19,8 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
     }
 
     private lateinit var aztec: Aztec
+
+    private val navArgs: AztecEditorFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +38,10 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
         (activity as? MainActivity)?.hideBottomNav()
 
         aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
+        aztec.initSourceEditorHistory()
+
+        aztec.visualEditor.fromHtml(navArgs.productDescription)
+        aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.productDescription)
     }
 
     override fun onToolbarCollapseButtonClicked() {
