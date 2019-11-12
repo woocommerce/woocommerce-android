@@ -42,7 +42,7 @@ class ProductListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
 
     init {
-        if (viewState == ViewState()) {
+        if (viewStateLiveData.hasInitialValue) {
             loadProducts()
         }
     }
