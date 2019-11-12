@@ -150,20 +150,27 @@ class ProductImagesService : JobIntentService() {
         // build a new image list containing all the product images except the passed one
         val remoteMediaId = intent.getLongExtra(KEY_REMOTE_MEDIA_ID, 0)
         val imageList = ArrayList<WCProductImageModel>()
+        var removedImage: WCProductImageModel? = null
         product.getImages().forEach { image ->
-            if (image.id != remoteMediaId) {
+            if (image.id == remoteMediaId) {
+                removedImage = image
+            } else {
                 imageList.add(image)
             }
         }
-        if (imageList.size == product.getImages().size) {
+        if (removedImage == null) {
             WooLog.w(T.MEDIA, "productImagesService > product image not found")
             handleFailure(remoteProductId)
             return
         }
 
+        // add to the list of removals
         currentRemovals.put(remoteProductId, remoteMediaId)
 
-        // first fire an event that the removal is starting
+        // remove the image from SQLite so it's no longer available to the ui
+        productStore.deleteProductImage(selectedSite.get(), remoteProductId, remoteMediaId)
+
+        // fire an event that the removal is starting
         EventBus.getDefault()
                 .post(OnProductImagesUpdateStartedEvent(Action.REMOVE_IMAGE, remoteProductId))
 
@@ -223,6 +230,11 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
+    private fun dispatchFetchProductAction(remoteProductId: Long) {
+        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductImagesChanged(event: OnProductImagesChanged) {
@@ -254,7 +266,13 @@ class ProductImagesService : JobIntentService() {
     private fun handleFailure(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(currentAction, remoteProductId, isError = true))
         doneSignal.countDown()
-        currentUploads.remove(remoteProductId)
+        if (currentAction == Action.UPLOAD_IMAGE) {
+            currentUploads.remove(remoteProductId)
+        } else if (currentAction == Action.REMOVE_IMAGE) {
+            currentRemovals.delete(remoteProductId)
+            // get the product again since we removed an image from SQLite before making the request
+            dispatchFetchProductAction(remoteProductId)
+        }
         currentAction = Action.NONE
     }
 }
