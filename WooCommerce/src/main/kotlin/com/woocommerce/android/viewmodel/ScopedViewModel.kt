@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
  * When the ViewModel is destroyed, the coroutine job is cancelled and any running coroutine tied to it is stopped.
  */
 abstract class ScopedViewModel(
-    protected val savedState: SavedState,
+    protected val savedState: SavedStateWithArgs,
     protected val dispatchers: CoroutineDispatchers
 ) : ViewModel(), CoroutineScope {
     private val _event = MultiLiveEvent<Event>()

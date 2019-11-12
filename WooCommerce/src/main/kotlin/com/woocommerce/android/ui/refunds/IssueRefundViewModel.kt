@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Parcelable
-import com.woocommerce.android.viewmodel.SavedState
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -48,7 +48,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @OpenClassOnDebug
 class IssueRefundViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedState,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,

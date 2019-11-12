@@ -23,7 +23,7 @@ class ViewModelFactory
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(key: String, viewModelClass: Class<T>, savedState: SavedStateHandle): T {
-        return creators[viewModelClass]?.create(SavedState(savedState, defaultArgs)) as? T
+        return creators[viewModelClass]?.create(SavedStateWithArgs(savedState, defaultArgs)) as? T
                 ?: throw IllegalArgumentException("[$viewModelClass] not found. Did you add it to a module?")
     }
 }

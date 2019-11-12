@@ -11,8 +11,11 @@ import java.io.Serializable
 /**
  *  A wrapper for the [SavedStateHandle], which takes the arguments [Bundle] and provides a delegate for type-safe
  *  navigation arguments object. The arguments are supplied by the DI, usually coming from Fragment.arguments.
+ *
+ *  The advantage of mixing the the arguments with the saved state is that they are automatically preserved
+ *  in the [SavedStateHandle].
  */
-class SavedState(private val savedState: SavedStateHandle, val arguments: Bundle?) {
+class SavedStateWithArgs(private val savedState: SavedStateHandle, val arguments: Bundle?) {
     init {
         // there's a specific case, when the app is destroyed and the original arguments are lost;
         // the SaveStateHandle would contain the the preserved values, which must be restored

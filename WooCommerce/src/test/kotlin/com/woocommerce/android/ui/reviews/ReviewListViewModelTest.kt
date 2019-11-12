@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedState
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -34,7 +34,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val reviewListRepository: ReviewListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
-    private val savedState: SavedState = mock()
+    private val savedState: SavedStateWithArgs = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
