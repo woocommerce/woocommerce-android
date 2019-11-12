@@ -278,7 +278,9 @@ class ProductImagesService : JobIntentService() {
         } else if (currentAction == Action.REMOVE_IMAGE) {
             currentRemovals.delete(remoteProductId)
             // get the product again since we removed an image from SQLite before making the request
-            dispatchFetchProductAction(remoteProductId)
+            if (networkStatus.isConnected()) {
+                dispatchFetchProductAction(remoteProductId)
+            }
         }
         currentAction = Action.NONE
     }
