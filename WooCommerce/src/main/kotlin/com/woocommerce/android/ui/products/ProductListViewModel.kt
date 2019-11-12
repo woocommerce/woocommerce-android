@@ -92,7 +92,19 @@ class ProductListViewModel @AssistedInject constructor(
             return
         }
 
-        if (viewState.isSearchActive == false) {
+        if (viewState.isSearchActive == true) {
+            // cancel any existing search, then start a new one after a brief delay so we don't actually perform
+            // the fetch until the user stops typing
+            searchJob?.cancel()
+            searchJob = launch {
+                delay(SEARCH_TYPING_DELAY_MS)
+                viewState = viewState.copy(
+                        isLoadingMore = loadMore,
+                        isSkeletonShown = !loadMore
+                )
+                fetchProductList(viewState.query, loadMore)
+            }
+        } else {
             if (searchJob?.isActive == true || loadJob?.isActive == true) {
                 WooLog.d(WooLog.T.PRODUCTS, "already loading products")
                 return
@@ -113,18 +125,6 @@ class ProductListViewModel @AssistedInject constructor(
                 }
 
                 fetchProductList(loadMore = loadMore)
-            }
-        } else {
-            // cancel any existing search, then start a new one after a brief delay so we don't actually perform
-            // the fetch until the user stops typing
-            searchJob?.cancel()
-            searchJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
-                viewState = viewState.copy(
-                        isLoadingMore = loadMore,
-                        isSkeletonShown = !loadMore
-                )
-                fetchProductList(viewState.query, loadMore)
             }
         }
     }
