@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -57,7 +58,10 @@ class ProductListViewModel @AssistedInject constructor(
         if (query.length > 2) {
             onSearchRequested()
         } else {
-            viewState = viewState.copy(productList = emptyList())
+            launch {
+                searchJob?.cancelAndJoin()
+                viewState = viewState.copy(productList = emptyList(), isEmptyViewVisible = false)
+            }
         }
     }
 
@@ -71,8 +75,11 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun onSearchClosed() {
-        viewState = viewState.copy(query = null, isSearchActive = false)
-        loadProducts()
+        launch {
+            searchJob?.cancelAndJoin()
+            viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+            loadProducts()
+        }
     }
 
     fun onLoadMoreRequested() {
@@ -153,7 +160,7 @@ class ProductListViewModel @AssistedInject constructor(
             }
             viewState = viewState.copy(
                     canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = viewState.productList.isNullOrEmpty()
+                    isEmptyViewVisible = viewState.productList?.isEmpty() == true
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
