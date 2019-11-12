@@ -40,6 +40,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener,
         OnRequestPermissionsResultCallback {
     companion object {
         const val TAG: String = "AztecEditorFragment"
+        private const val FIELD_DESC_TEXT = "desc_text"
         private const val MEDIA_CAMERA_PHOTO_PERMISSION_REQUEST_CODE: Int = 1001
         private const val MEDIA_PHOTOS_PERMISSION_REQUEST_CODE: Int = 1003
         private const val REQUEST_MEDIA_CAMERA_PHOTO: Int = 2001
@@ -84,10 +85,20 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener,
                 .addPlugin(galleryButton)
                 .addPlugin(cameraButton)
 
-        aztec.visualEditor.fromHtml(navArgs.productDescription)
-        aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.productDescription)
+        savedInstanceState?.getString(FIELD_DESC_TEXT)?.let {
+            aztec.visualEditor.fromHtml(it)
+            aztec.sourceEditor?.displayStyledAndFormattedHtml(it)
+        } ?: run {
+            aztec.visualEditor.fromHtml(navArgs.productDescription)
+            aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.productDescription)
+        }
 
         aztec.initSourceEditorHistory()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(FIELD_DESC_TEXT, aztec.visualEditor.text.toString())
     }
 
     override fun onToolbarCollapseButtonClicked() {
