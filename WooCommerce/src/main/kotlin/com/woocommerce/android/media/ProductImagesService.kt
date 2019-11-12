@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.collection.LongSparseArray
 import androidx.core.app.JobIntentService
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -74,6 +75,7 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var productStore: WCProductStore
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var networkStatus: NetworkStatus
 
     private val doneSignal = CountDownLatch(1)
 
@@ -95,6 +97,11 @@ class ProductImagesService : JobIntentService() {
 
         currentAction = intent.getSerializableExtra(KEY_ACTION) as Action
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
+
+        if (!networkStatus.isConnected()) {
+            handleFailure(remoteProductId)
+            return
+        }
 
         when (currentAction) {
             Action.UPLOAD_IMAGE -> handleUpload(intent, remoteProductId)
