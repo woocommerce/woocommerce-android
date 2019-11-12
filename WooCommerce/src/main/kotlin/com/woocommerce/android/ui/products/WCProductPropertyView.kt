@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
@@ -19,6 +20,7 @@ class WCProductPropertyView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
     private var view: View? = null
+    private var propertyGroupImg: ImageView? = null
     private var propertyNameText: TextView? = null
     private var propertyValueText: TextView? = null
     private var ratingBar: RatingBar? = null
@@ -31,6 +33,16 @@ class WCProductPropertyView @JvmOverloads constructor(
             propertyValueText?.visibility = View.GONE
         } else {
             propertyValueText?.text = detail
+        }
+    }
+
+    /**
+     * Adds a click listener to the property view
+     */
+    fun setClickListener(onClickListener: ((view: View) -> Unit)? = null) {
+        onClickListener?.let {
+            propertyGroupImg?.visibility = View.VISIBLE
+            view?.setOnClickListener(onClickListener)
         }
     }
 
@@ -52,6 +64,7 @@ class WCProductPropertyView @JvmOverloads constructor(
             } else {
                 View.inflate(context, R.layout.product_property_view_horz, this)
             }
+            propertyGroupImg = view?.findViewById(R.id.imgProperty)
             propertyNameText = view?.findViewById(R.id.textPropertyName)
             propertyValueText = view?.findViewById(R.id.textPropertyValue)
             ratingBar = view?.findViewById(R.id.ratingBar)
