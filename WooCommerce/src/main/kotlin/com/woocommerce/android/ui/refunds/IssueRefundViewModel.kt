@@ -135,7 +135,10 @@ class IssueRefundViewModel @AssistedInject constructor(
             val paymentTitle: String
             val isManualRefund: Boolean
             if (gateway.isEnabled) {
-                paymentTitle = if (gateway.supportsRefunds) gateway.title else "$manualRefundMethod via ${gateway.title}"
+                paymentTitle = if (gateway.supportsRefunds)
+                    gateway.title
+                else
+                    "$manualRefundMethod via ${gateway.title}"
                 isManualRefund = !gateway.supportsRefunds
             } else {
                 paymentTitle = gateway.title

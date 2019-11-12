@@ -1,14 +1,10 @@
 package com.woocommerce.android.viewmodel
 
 import android.os.Bundle
-import androidx.annotation.MainThread
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import javax.inject.Inject
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavArgs
-import androidx.navigation.NavArgsLazy
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
 

@@ -26,8 +26,8 @@ class SavedState(private val savedState: SavedStateHandle, val arguments: Bundle
         }
     }
 
-    fun <T> getLiveData(key: String, initialValue: T? = null): MutableLiveData<T>
-            = savedState.getLiveData(key, initialValue)
+    fun <T> getLiveData(key: String, initialValue: T? = null): MutableLiveData<T> =
+            savedState.getLiveData(key, initialValue)
 
     operator fun <T> get(key: String): T? = savedState.get(key)
 
