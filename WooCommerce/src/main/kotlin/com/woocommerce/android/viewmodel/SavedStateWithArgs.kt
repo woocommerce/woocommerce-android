@@ -1,6 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -22,8 +23,12 @@ class SavedStateWithArgs(private val savedState: SavedStateHandle, val arguments
         if (arguments != null) {
             savedState.keys().forEach {
                 val value = savedState.get<Any>(it)
-                if (!arguments.containsKey(it) && value is Serializable) {
-                    arguments.putSerializable(it, savedState.get(it))
+                if (!arguments.containsKey(it)) {
+                    if (value is Serializable) {
+                        arguments.putSerializable(it, value)
+                    } else if (value is Parcelable) {
+                        arguments.putParcelable(it, value)
+                    }
                 }
             }
         }
