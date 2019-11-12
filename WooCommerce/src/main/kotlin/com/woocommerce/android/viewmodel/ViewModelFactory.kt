@@ -1,14 +1,10 @@
 package com.woocommerce.android.viewmodel
 
 import android.os.Bundle
-import androidx.annotation.MainThread
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import javax.inject.Inject
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavArgs
-import androidx.navigation.NavArgsLazy
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
 
@@ -27,7 +23,7 @@ class ViewModelFactory
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(key: String, viewModelClass: Class<T>, savedState: SavedStateHandle): T {
-        return creators[viewModelClass]?.create(SavedState(savedState, defaultArgs)) as? T
+        return creators[viewModelClass]?.create(SavedStateWithArgs(savedState, defaultArgs)) as? T
                 ?: throw IllegalArgumentException("[$viewModelClass] not found. Did you add it to a module?")
     }
 }

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import com.woocommerce.android.viewmodel.SavedState
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.nhaarman.mockitokotlin2.any
@@ -44,7 +44,7 @@ internal abstract class MockedProductDetailModule {
         ): MockedProductDetailViewModel {
             val mockProductRepository = mock<ProductDetailRepository>()
             val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
-            val savedState: SavedState = mock()
+            val savedState: SavedStateWithArgs = mock()
 
             val mockedProductDetailViewModel = spy(
                     MockedProductDetailViewModel(

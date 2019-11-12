@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
-import com.woocommerce.android.viewmodel.SavedState
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -15,7 +15,7 @@ class MockedReviewListViewModel @AssistedInject constructor(
     networkStatus: NetworkStatus,
     dispatcher: Dispatcher,
     selectedSite: SelectedSite,
-    @Assisted arg0: SavedState
+    @Assisted arg0: SavedStateWithArgs
 ) : ReviewListViewModel(
         arg0,
         dispatchers,

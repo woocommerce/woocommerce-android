@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Parcelable
-import com.woocommerce.android.viewmodel.SavedState
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -52,7 +52,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @OpenClassOnDebug
 class IssueRefundViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedState,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,
@@ -162,7 +162,10 @@ class IssueRefundViewModel @AssistedInject constructor(
             val paymentTitle: String
             val isManualRefund: Boolean
             if (gateway.isEnabled) {
-                paymentTitle = if (gateway.supportsRefunds) gateway.title else "$manualRefundMethod via ${gateway.title}"
+                paymentTitle = if (gateway.supportsRefunds)
+                    gateway.title
+                else
+                    "$manualRefundMethod via ${gateway.title}"
                 isManualRefund = !gateway.supportsRefunds
             } else {
                 paymentTitle = gateway.title

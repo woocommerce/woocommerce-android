@@ -20,7 +20,7 @@ import kotlin.reflect.KProperty
  *
  */
 class LiveDataDelegate<T : Parcelable>(
-    savedState: SavedState,
+    savedState: SavedStateWithArgs,
     private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
     private val onChange: (T) -> Unit = {}

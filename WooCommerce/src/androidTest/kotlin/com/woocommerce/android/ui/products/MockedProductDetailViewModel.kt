@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.viewmodel.SavedState
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -21,7 +21,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
     productRepository: ProductDetailRepository,
     networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    @Assisted val arg0: SavedState
+    @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
         arg0,
         dispatchers,
