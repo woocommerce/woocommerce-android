@@ -1,15 +1,17 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
-import org.wordpress.android.fluxc.model.WCProductImageModel
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
+@Parcelize
 data class Product(
     val remoteId: Long,
     val name: String,
@@ -44,8 +46,16 @@ data class Product(
     val downloadExpiry: Int,
     val purchaseNote: String,
     val numVariations: Int,
-    val images: List<WCProductImageModel>
-)
+    val images: List<Image>
+) : Parcelable {
+    @Parcelize
+    data class Image(
+        val id: Long,
+        val name: String,
+        val source: String,
+        val dateCreated: Date
+    ) : Parcelable
+}
 
 fun WCProductModel.toAppModel(): Product {
     return Product(
@@ -82,7 +92,14 @@ fun WCProductModel.toAppModel(): Product {
         this.downloadExpiry,
         this.purchaseNote,
         this.getNumVariations(),
-        this.getImages()
+        this.getImages().map {
+            Product.Image(
+                    it.id,
+                    it.name,
+                    it.src,
+                    DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
+            )
+        }
     )
 }
 
