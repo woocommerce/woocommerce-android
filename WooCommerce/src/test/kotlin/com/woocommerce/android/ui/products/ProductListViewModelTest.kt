@@ -13,7 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductListViewModel.ShowSnackbar
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowSnackbar
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -36,7 +36,10 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
+        doReturn(true).whenever(networkStatus).isConnected()
+    }
 
+    private fun createViewModel() {
         viewModel = spy(
                 ProductListViewModel(
                         savedState,
@@ -45,20 +48,21 @@ class ProductListViewModelTest : BaseUnitTest() {
                         networkStatus
                 )
         )
-
-        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test
     fun `Displays the product list view correctly`() {
         doReturn(productList).whenever(productRepository).getProductList()
 
+        createViewModel()
+
         val products = ArrayList<Product>()
         viewModel.viewStateLiveData.observeForever { old, new ->
             if (old?.productList != new.productList)
                 new.productList?.let { products.addAll(it) } }
 
-        viewModel.start()
+        viewModel.loadProducts()
+
         assertThat(products).isEqualTo(productList)
     }
 
@@ -66,10 +70,10 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Do not fetch product list from api when not connected`() = test {
         doReturn(false).whenever(networkStatus).isConnected()
 
+        createViewModel()
+
         var message: Int? = null
         viewModel.event.observeForever { message = (it as ShowSnackbar).message }
-
-        viewModel.start()
 
         verify(productRepository, times(1)).getProductList()
         verify(productRepository, times(0)).fetchProductList()
@@ -82,12 +86,16 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
 
+        createViewModel()
+
         val isSkeletonShown = ArrayList<Boolean>()
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
         }
-        viewModel.start()
-        assertThat(isSkeletonShown).containsExactly(true, false)
+
+        viewModel.loadProducts()
+
+        assertThat(isSkeletonShown).containsExactly(false, true, false)
     }
 
     @Test
@@ -95,12 +103,14 @@ class ProductListViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
 
+        createViewModel()
+
         val isLoadingMore = ArrayList<Boolean>()
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
         }
 
         viewModel.loadProducts(loadMore = true)
-        assertThat(isLoadingMore).containsExactly(true, false)
+        assertThat(isLoadingMore).containsExactly(false, true, false)
     }
 }
