@@ -88,6 +88,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
+        textAddImage.setDrawableColor(R.color.grey_darken_10)
     }
 
     private fun initializeViewModel() {
@@ -181,7 +182,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         if (product.images.isEmpty() && viewModel.isUploadingProductImage.value == false) {
             imageGallery.visibility = View.GONE
             if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
-                textAddImage.setDrawableColor(R.color.grey_darken_10)
                 addImageContainer.visibility = View.VISIBLE
                 addImageContainer.setOnClickListener {
                     viewModel.onAddImageClicked()
