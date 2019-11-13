@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.WooLog
@@ -14,6 +15,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -46,6 +50,10 @@ class ProductListViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
+    init {
+        EventBus.getDefault().register(this)
+    }
+
     fun start(searchQuery: String? = null) {
         loadProducts(searchQuery = searchQuery)
     }
@@ -53,6 +61,7 @@ class ProductListViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
+        EventBus.getDefault().unregister(this)
     }
 
     fun loadProducts(searchQuery: String? = null, loadMore: Boolean = false) {
@@ -136,5 +145,13 @@ class ProductListViewModel @Inject constructor(
      */
     private fun addProducts(products: List<Product>) {
         productList.value = productList.value.orEmpty() + products
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        if (!event.isError) {
+            loadProducts()
+        }
     }
 }

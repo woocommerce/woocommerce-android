@@ -144,6 +144,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
+        viewModel.loadProducts(searchQuery)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
