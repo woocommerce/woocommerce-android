@@ -54,7 +54,7 @@ subprojects {
 
     configurations {
         ktlint
-        compile.exclude group: 'org.jetbrains' , module:'annotations'
+        compile.exclude group: 'org.jetbrains' , module:'annotations-java5'
     }
 
     dependencies {
