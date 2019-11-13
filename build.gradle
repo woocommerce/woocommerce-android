@@ -19,7 +19,6 @@ apply plugin: 'com.automattic.android.fetchstyle'
 
 allprojects {
     apply plugin: 'checkstyle'
-    apply plugin: 'kotlin-android-extensions'
 
     repositories {
         google()
@@ -42,16 +41,6 @@ allprojects {
 }
 
 subprojects {
-    configurations.all {
-        resolutionStrategy {
-            forcedModules = [
-                    "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion",
-                    "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
-                    "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-            ]
-        }
-    }
-
     configurations {
         ktlint
         compile.exclude group: 'org.jetbrains' , module:'annotations-java5'
