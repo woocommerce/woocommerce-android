@@ -275,6 +275,8 @@
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_selected">%d items selected</string>
     <string name="order_refunds_item_description">%d x %s each</string>
+    <string name="order_refunds_products_refund">Products refund</string>
+    <string name="order_refunds_shipping_refund">Shipping refund</string>
     <!--
         Add Order Note
     -->
