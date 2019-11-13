@@ -206,6 +206,9 @@ dependencies {
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    implementation "org.apache.commons:commons-lang3:3.7"
+    implementation "org.apache.commons:commons-text:1.8"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
