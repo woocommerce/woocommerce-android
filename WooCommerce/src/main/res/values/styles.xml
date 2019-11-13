@@ -598,7 +598,18 @@
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textAlignment">center</item>
     </style>
-
+    <style name="Woo.Login.DiscoveryError"/>
+    <style name="Woo.Login.DiscoveryError.Title">
+        <item name="android:textSize">@dimen/text_double_extra_large</item>
+        <item name="android:textColor">@color/wc_grey_dark</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="Woo.Login.DiscoveryError.Message">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/wc_grey_dark</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+    
     <style name="Woo.Dialog.ProviderList">
         <item name="android:windowEnterAnimation">@anim/activity_slide_in_from_right</item>
         <item name="android:windowExitAnimation">@anim/activity_slide_out_to_right</item>

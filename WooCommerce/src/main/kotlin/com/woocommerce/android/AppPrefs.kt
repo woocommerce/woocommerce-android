@@ -217,8 +217,8 @@ object AppPrefs {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
     }
 
-    fun setLoginUserBypassedJetpackRequired() {
-        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, true)
+    fun setLoginUserBypassedJetpackRequired(bypassedLogin: Boolean = true) {
+        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, bypassedLogin)
     }
 
     fun getLoginUserBypassedJetpackRequired() =
