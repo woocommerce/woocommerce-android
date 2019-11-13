@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -12,10 +11,15 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.Exit
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowSnackbar
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -32,44 +36,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
+    private var parameters: Parameters? = null
 
-    private val product = MutableLiveData<Product>()
-    private val parameters = MutableLiveData<Parameters>()
-
-    private val _productData = MediatorLiveData<ProductWithParameters>()
-    val productData: LiveData<ProductWithParameters> = _productData
-
-    private val _isSkeletonShown = MutableLiveData<Boolean>()
-    val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
-
-    private val _shareProduct = SingleLiveEvent<Product>()
-    val shareProduct: LiveData<Product> = _shareProduct
-
-    private val _showSnackbarMessage = SingleLiveEvent<Int>()
-    val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
-
-    private val _exit = SingleLiveEvent<Unit>()
-    val exit: LiveData<Unit> = _exit
-
-    init {
-        _productData.addSource(product) { prod ->
-            parameters.value?.let { params ->
-                _productData.value = combineData(prod, params)
-            }
-        }
-        _productData.addSource(parameters) { params ->
-            product.value?.let { prod ->
-                _productData.value = combineData(prod, params)
-            }
-        }
-    }
+    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
     }
 
     fun onShareButtonClicked() {
-        _shareProduct.value = product.value
+        viewState.product?.let {
+            triggerEvent(ShareProduct(it))
+        }
     }
 
     override fun onCleared() {
@@ -87,15 +66,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         launch {
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
-                product.value = productInDb
+                updateProduct(productInDb)
                 if (shouldFetch) {
                     fetchProduct(remoteProductId)
                 }
             } else {
-                _isSkeletonShown.value = true
+                viewState = viewState.copy(isSkeletonShown = true)
                 fetchProduct(remoteProductId)
             }
-            _isSkeletonShown.value = false
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
@@ -104,37 +83,32 @@ class ProductDetailViewModel @AssistedInject constructor(
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
-        parameters.value = Parameters(currencyCode, weightUnit, dimensionUnit)
+
+        parameters = Parameters(currencyCode, weightUnit, dimensionUnit)
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
-                product.value = fetchedProduct
+                updateProduct(fetchedProduct)
             } else {
-                _showSnackbarMessage.value = R.string.product_detail_fetch_product_error
-                _exit.call()
+                triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
+                triggerEvent(Exit)
             }
         } else {
-            _showSnackbarMessage.value = R.string.offline_error
-            _isSkeletonShown.value = false
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
-        } ?: amount.toString()
-    }
-
-    private fun combineData(product: Product, parameters: Parameters): ProductWithParameters {
-        val weight = if (product.weight > 0) "${format(product.weight)}${parameters.weightUnit ?: ""}" else ""
+    private fun updateProduct(product: Product) {
+        val weight = if (product.weight > 0) "${format(product.weight)}${parameters?.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
         val hasWidth = product.width > 0
         val hasHeight = product.height > 0
-        val unit = parameters.dimensionUnit ?: ""
+        val unit = parameters?.dimensionUnit ?: ""
         val size = if (hasLength && hasWidth && hasHeight) {
             "${format(product.length)} x ${format(product.width)} x ${format(product.height)} $unit"
         } else if (hasWidth && hasHeight) {
@@ -143,14 +117,20 @@ class ProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
-        return ProductWithParameters(
-                product,
-                weight,
-                size,
-                formatCurrency(product.price, parameters.currencyCode),
-                formatCurrency(product.salePrice, parameters.currencyCode),
-                formatCurrency(product.regularPrice, parameters.currencyCode)
+        viewState = viewState.copy(
+                product = product,
+                weightWithUnits = weight,
+                sizeWithUnits = size,
+                priceWithCurrency = formatCurrency(product.price, parameters?.currencyCode),
+                salePriceWithCurrency = formatCurrency(product.salePrice, parameters?.currencyCode),
+                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters?.currencyCode)
         )
+    }
+
+    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
+        return currencyCode?.let {
+            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
+        } ?: amount.toString()
     }
 
     private fun format(number: Float): String {
@@ -162,20 +142,29 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    sealed class ProductDetailEvent : Event() {
+        data class ShowSnackbar(@StringRes val message: Int) : ProductDetailEvent()
+        data class ShareProduct(val product: Product) : ProductDetailEvent()
+        object Exit : ProductDetailEvent()
+    }
+
+    @Parcelize
     data class Parameters(
         val currencyCode: String?,
         val weightUnit: String?,
         val dimensionUnit: String?
-    )
+    ) : Parcelable
 
-    data class ProductWithParameters(
-        val product: Product,
-        val weightWithUnits: String,
-        val sizeWithUnits: String,
-        val priceWithCurrency: String,
-        val salePriceWithCurrency: String,
-        val regularPriceWithCurrency: String
-    )
+    @Parcelize
+    data class ViewState(
+        val product: Product? = null,
+        val weightWithUnits: String? = null,
+        val sizeWithUnits: String? = null,
+        val priceWithCurrency: String? = null,
+        val salePriceWithCurrency: String? = null,
+        val regularPriceWithCurrency: String? = null,
+        val isSkeletonShown: Boolean? = null
+    ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
