@@ -7,7 +7,6 @@
     android:orientation="vertical"
     android:background="@color/default_window_background">
 
-    <!-- Single tab for all stats -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/issueRefund_tabLayout"
         style="@style/Woo.Refunds.TabLayout"
