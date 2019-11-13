@@ -53,7 +53,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:drawableTop="@drawable/ic_gridicons_camera"
+                        android:drawableTop="@drawable/ic_gridicons_add_image"
                         android:drawablePadding="@dimen/margin_medium"
                         android:gravity="center"
                         android:text="@string/product_image_add"
