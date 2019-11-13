@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.di.UI_THREAD
-import com.woocommerce.android.ui.reviews.RequestResult
-import com.woocommerce.android.ui.reviews.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.ui.reviews.RequestResult.RETRY
-import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.RETRY
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher

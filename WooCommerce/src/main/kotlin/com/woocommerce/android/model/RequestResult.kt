@@ -7,5 +7,6 @@ package com.woocommerce.android.model
 enum class RequestResult {
     SUCCESS,
     ERROR,
-    NO_ACTION_NEEDED
+    NO_ACTION_NEEDED,
+    RETRY
 }
