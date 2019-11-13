@@ -32,7 +32,10 @@ import javax.inject.Singleton
         NetworkStatusModule::class,
         CurrencyModule::class,
         SupportModule::class,
-        ProductImagesServiceModule::class])
+        ProductImagesServiceModule::class,
+        ViewModelModule::class,
+        ThreadModule::class,
+        SupportModule::class])
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {
