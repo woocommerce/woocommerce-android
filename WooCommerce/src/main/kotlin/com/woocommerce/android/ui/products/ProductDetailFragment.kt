@@ -181,9 +181,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         if (product.images.isEmpty()) {
             imageGallery.visibility = View.GONE
             if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
-                addImageContainer.visibility = View.VISIBLE
                 textAddImage.setDrawableColor(R.color.grey_darken_10)
-                textAddImage.setOnClickListener {
+                addImageContainer.visibility = View.VISIBLE
+                addImageContainer.setOnClickListener {
                     viewModel.onAddImageClicked()
                 }
             }

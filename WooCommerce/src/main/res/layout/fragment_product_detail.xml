@@ -44,13 +44,11 @@
                     android:id="@+id/addImageContainer"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/product_image_gallery_image_height"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="vertical"
+                    android:background="@drawable/ripple_grey"
                     android:visibility="gone"
                     tools:visibility="visible">
 
                     <TextView
-                        android:background="?attr/selectableItemBackground"
                         android:id="@+id/textAddImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
