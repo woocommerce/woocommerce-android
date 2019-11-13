@@ -36,7 +36,6 @@ class ProductImagesService : JobIntentService() {
         const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
         const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
 
-
         private const val STRIP_LOCATION = true
 
         // array of remoteProductId / localImageUri
