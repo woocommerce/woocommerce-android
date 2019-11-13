@@ -1,11 +1,15 @@
 package com.woocommerce.android.extensions
 
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 
 typealias OnLinkClicked = (ClickableSpan) -> Unit
 
@@ -47,5 +51,14 @@ private fun addLinkListener(strBuilder: SpannableStringBuilder, span: ClickableS
     with(strBuilder) {
         setSpan(newSpan, getSpanStart(span), getSpanEnd(span), getSpanFlags(span))
         removeSpan(span)
+    }
+}
+
+/**
+ * Programmatically set the drawable tint (in xml android:drawableTint isn't supported until API 23)
+ */
+fun TextView.setDrawableColor(@ColorRes colorRes: Int) {
+    compoundDrawables.filterNotNull().forEach {
+        it.colorFilter = PorterDuffColorFilter(ContextCompat.getColor(context, colorRes), PorterDuff.Mode.SRC_IN)
     }
 }

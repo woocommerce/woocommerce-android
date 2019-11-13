@@ -29,7 +29,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/product_detail_image_background"
+                android:background="@color/grey_light"
                 app:layout_collapseMode="parallax">
 
                 <com.woocommerce.android.widgets.WCProductImageGalleryView
@@ -40,7 +40,7 @@
                     android:background="@color/white"
                     app:isGridView="false" />
 
-                <LinearLayout
+                <FrameLayout
                     android:id="@+id/addImageContainer"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/product_image_gallery_image_height"
@@ -50,23 +50,19 @@
                     android:visibility="gone"
                     tools:visibility="visible">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:importantForAccessibility="no"
-                        android:src="@drawable/ic_gridicons_camera"
-                        android:tint="@color/white" />
-
                     <TextView
+                        android:id="@+id/textAddImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_gridicons_camera"
+                        android:drawablePadding="@dimen/margin_medium"
                         android:gravity="center"
                         android:text="@string/product_image_add"
-                        android:textColor="@color/grey_50"
-                        android:textSize="@dimen/text_medium" />
-                </LinearLayout>
+                        android:textColor="@color/grey_darken_10"
+                        android:textSize="@dimen/text_medium"
+                        tools:drawableTint="@color/grey_darken_10" />
+                </FrameLayout>
 
                 <FrameLayout
                     android:id="@+id/frameStatusBadge"

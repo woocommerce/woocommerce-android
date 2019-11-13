@@ -110,10 +110,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
-    fun clear() {
-        adapter.clear()
-    }
-
     /**
      * Adds a placeholder with a progress bar to indicate images that are uploading or being removed.
      * Pass the remoteMediaId for media being removed, or nothing for media being uploaded (since we
@@ -167,13 +163,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 }
             }
             return -1
-        }
-
-        fun clear() {
-            if (imageList.size > 0) {
-                imageList.clear()
-                notifyDataSetChanged()
-            }
         }
 
         fun addPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {

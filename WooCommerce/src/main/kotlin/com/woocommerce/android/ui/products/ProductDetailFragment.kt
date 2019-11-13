@@ -26,6 +26,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -178,16 +179,18 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         updateActivityTitle()
 
         if (product.images.isEmpty()) {
-            imageGallery.clear()
+            imageGallery.visibility = View.GONE
             if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+                textAddImage.setDrawableColor(R.color.grey_darken_10)
                 addImageContainer.visibility = View.VISIBLE
                 addImageContainer.setOnClickListener {
                     viewModel.onAddImageClicked()
                 }
             }
         } else {
-            imageGallery.showProductImages(product, this)
             addImageContainer.visibility = View.GONE
+            imageGallery.visibility = View.VISIBLE
+            imageGallery.showProductImages(product, this)
         }
 
         isVariation = product.type == ProductType.VARIATION
