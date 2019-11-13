@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-17 00:54:50+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="button_edit_permissions">تحرير الأذونات</string>
+    <string name="permission_camera">الكاميرا</string>
+    <string name="permission_storage">مساحة التخزين</string>
+    <string name="permissions_denied_message">يبدو أنك أوقفت الأذونات المطلوبة لهذه الميزة.&lt;br/>&lt;br/>لتغيير هذا، قم بتحرير أذوناتك وتأكد من تمكين &lt;strong>%s&lt;/strong>.</string>
+    <string name="permissions_denied_title">أذونات</string>
+    <string name="orders_processed_empty_message">تمت معالجة جميع الطلبات</string>
+    <string name="orders_empty_message_with_processing">لا توجد أي طلبات مطلوب معالجتها حتى الآن</string>
+    <string name="orderdetail_note_system">النظام</string>
+    <string name="orderlist_search_hint">البحث عن الطلبات</string>
+    <string name="unknown">غير معروف</string>
+    <string name="button_not_now">ليس الآن</string>
     <string name="product_search_hint">البحث عن المنتجات</string>
     <string name="product_list_empty_search">لا توجد منتجات متطابقة</string>
     <string name="product_list_empty">لا توجد منتجات حتى الآن</string>
@@ -443,7 +454,7 @@ Language: ar
     <string name="app_rating_title">هل تستمتع بـ Woo؟</string>
     <string name="settings_selected_store">المتجر المحدّد</string>
     <string name="orders_empty_message_with_search">لا توجد طلبات مطابقة</string>
-    <string name="orders_empty_message_with_filter">لا توجد طلبات</string>
+    <string name="orders_empty_message_with_filter">لا توجد طلبات حتى الآن</string>
     <string name="waiting_for_customers_contentdesc">في انتظار صورة العملاء</string>
     <string name="waiting_for_customers">في انتظار العملاء</string>
     <string name="share_store_dialog_title">مشاركة عنوان URL الخاص بمتجرك</string>
@@ -483,8 +494,7 @@ Language: ar
     <string name="back">رجوع</string>
     <string name="notification_channel_review_title">تنبيهات مراجعة المنتجات</string>
     <string name="notification_channel_order_title">تنبيهات الطلب الجديد</string>
-    <string name="orderdetail_note_system">حالة النظام</string>
-    <string name="orderdetail_note_public">ملاحظة إلى العميل</string>
+    <string name="orderdetail_note_public">خاص بالعميل</string>
     <string name="login_verifying_site">جارٍ التحقُّق من الموقع…</string>
     <string name="button_update_instructions">إرشادات التحديث</string>
     <string name="search">بحث</string>
@@ -667,7 +677,7 @@ Language: ar
     <string name="orderdetail_payment_cleared">تم مسح الدفع</string>
     <string name="orderdetail_order_fulfillment">إتمام الطلب رقم #%s</string>
     <string name="orderdetail_order_notes">ملاحظات الطلب</string>
-    <string name="orderdetail_note_private">ملاحظة خاصة</string>
+    <string name="orderdetail_note_private">خاص</string>
     <string name="orderdetail_note_hint">إنشاء ملاحظة طلب</string>
     <string name="orderdetail_customer_image_contentdesc">صورة الملف الشخصي للعميل</string>
     <string name="orderdetail_customer_provided_note">الملاحظة المقدمة إلى العميل</string>
@@ -772,4 +782,8 @@ Language: ar
     <string name="all">الكل</string>
     <string name="notification_channel_general_title">عام</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>قيد المعالجة</item>
+        <item>جميع الطلبات</item>
+    </string-array>
 </resources>

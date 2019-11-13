@@ -1,3 +1,4 @@
-* Order list search was missing a cursor. Now it’s got one!
-* The updated order detail screen also shows a list of refunds you’ve issued.
-* The “Reviews” tab now displays all product reviews for the store.
+* The app now supports refunds by amount. It’s available on the order detail screen, and lets you manually issue a partial or full refund for a paid order.
+* Products with multiple images now show all images in a gallery.
+* Bug fix: Rarely, the saving while on the “Add Order Note” screen would lead to a crash. Now, “rarely” is “never.”
+* The order detail view now includes the order’s shipping method.

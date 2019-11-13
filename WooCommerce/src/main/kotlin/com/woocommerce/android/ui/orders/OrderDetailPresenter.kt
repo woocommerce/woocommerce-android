@@ -26,6 +26,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -135,6 +136,13 @@ class OrderDetailPresenter @Inject constructor(
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
+        }
+    }
+
+    override fun refreshOrderAfterDelay(refreshDelay: Long) {
+        GlobalScope.launch(backgroundDispatcher) {
+            delay(refreshDelay)
+            refreshOrderDetail(false)
         }
     }
 
@@ -354,6 +362,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel?.let { order ->
                     orderView?.showSkeleton(false)
                     orderView?.showOrderDetail(order, isFreshData = true)
+                    loadRefunds(order.toAppModel())
                     loadOrderNotes()
                     loadOrderShipmentTrackings()
                 } ?: orderView?.showLoadOrderError()

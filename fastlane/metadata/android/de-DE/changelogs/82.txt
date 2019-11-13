@@ -1,4 +1,0 @@
-2.8:
-* Bei der Bestelllistensuche gab es keinen Cursor. Jetzt wird er angezeigt.
-* Die Anzeige der aktualisierten Bestelldetails umfasst jetzt auch eine Liste der von dir ausgestellten Rückerstattungen.
-* Alle Produktbewertungen des Shops werden jetzt im Tab „Rezensionen“ angezeigt.

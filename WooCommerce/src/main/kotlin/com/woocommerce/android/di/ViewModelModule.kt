@@ -2,9 +2,12 @@ package com.woocommerce.android.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.woocommerce.android.ui.login.LoginNoJetpackViewModel
+import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductListViewModel
+import com.woocommerce.android.ui.products.ProductVariantsViewModel
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel
 import com.woocommerce.android.ui.refunds.RefundDetailViewModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -29,6 +32,11 @@ internal abstract class ViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(ProductVariantsViewModel::class)
+    internal abstract fun pluginProductVariantsViewModel(viewModel: ProductVariantsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(IssueRefundViewModel::class)
     internal abstract fun issueRefundViewModel(viewModel: IssueRefundViewModel): ViewModel
 
@@ -46,6 +54,16 @@ internal abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ReviewDetailViewModel::class)
     internal abstract fun pluginReviewDetailViewModel(viewModel: ReviewDetailViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MagicLinkInterceptViewModel::class)
+    internal abstract fun pluginMagicLinkInterceptViewModel(viewModel: MagicLinkInterceptViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LoginNoJetpackViewModel::class)
+    internal abstract fun pluginLoginNoJetpackViewModel(viewModel: LoginNoJetpackViewModel): ViewModel
 
     @Binds
     @IntoMap

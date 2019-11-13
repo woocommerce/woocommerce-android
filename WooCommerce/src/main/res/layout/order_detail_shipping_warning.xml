@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Notice Icon ImageView -->
+        <ImageView
+            android:id="@+id/shipping_method_notice_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_gridicons_notice" />
+
+        <!-- Notice Message -->
+        <TextView
+            android:id="@+id/shipping_method_notice_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/card_padding_start"
+            android:layout_marginEnd="@dimen/card_padding_end"
+            android:gravity="start"
+            android:lineSpacingExtra="4sp"
+            android:paddingBottom="@dimen/default_padding"
+            android:text="@string/orderdetail_shipping_notice"
+            android:textAppearance="@style/Woo.TextAppearance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/shipping_method_notice_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

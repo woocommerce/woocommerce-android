@@ -1,6 +1,17 @@
+3.1
+-----
+* Added a new variants section in the Product detail screen for variable products
+
+ 
 3.0
 -----
 * The logic that loads and updates the orders list view with orders has been completely revamped and optimized. Orders now load faster!
+* Can't remember your WordPress.com credentials? No problem! We've added a new login option that allows a user to enter their site credentials during login. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.
+
+* Added a new refunding feature that brings the ability to specify the amount to refund
+* Products with multiple images now show all images in a gallery.
+* Bugfix: Fixed a rare crash that would happen in the "Add Order Note" view while saving state when the app is pushed to the background.
+* The order detail view now includes the shipping method of the order.
  
 2.9
 -----
@@ -8,7 +19,6 @@
 * The order detail view has also received some touchups. 
 * We now officially support Android 10!
 * Several minor bug fixes are also included in this release.
-
  
 2.8
 -----

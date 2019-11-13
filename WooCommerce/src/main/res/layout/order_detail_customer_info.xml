@@ -89,6 +89,42 @@
 
         </LinearLayout>
 
+        <!-- Label: Shipping method -->
+        <LinearLayout
+            android:id="@+id/customerInfo_shippingMethodSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/card_item_padding_intra_double"
+            android:focusable="true"
+            android:orientation="vertical"
+            tools:visibility="visible"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
+                android:background="@color/list_divider"
+                app:srcCompat="@drawable/list_divider"/>
+
+            <TextView
+                android:id="@+id/customerInfo_shippingMethodLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/orderdetail_shipping_method"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
+
+            <TextView
+                android:id="@+id/customerInfo_shippingMethod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_item_padding_intra_h"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:textAlignment="viewStart"
+                tools:text="International Priority Mail Express Flat Rate"/>
+
+        </LinearLayout>
+
         <!-- Billing Section -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/customerInfo_morePanel"

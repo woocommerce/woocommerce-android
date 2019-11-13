@@ -1,4 +1,0 @@
-2.8:
-* Genomsökningen av orderlistan saknade en markör. Nu finns det en sådan!
-* Den uppdaterade skärmen för orderdetaljer visar även en lista över återbetalningar som du har utfärdat.
-* Fliken "Recensioner" visar nu alla produktrecensioner för butiken.
