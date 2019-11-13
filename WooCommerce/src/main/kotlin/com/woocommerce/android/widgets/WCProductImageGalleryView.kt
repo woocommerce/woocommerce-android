@@ -104,21 +104,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
         this.listener = listener
-        this.visibility = if (product.images.isNotEmpty()) View.VISIBLE else View.GONE
 
-        if (adapter.isSameImageList(product.images)) {
-            return
-        }
-        // if the imageHeight is already known show the images immediately, otherwise invalidate the view
-        // so the imageHeight can be determined and then show the images after a brief delay
-        if (imageHeight > 0) {
+        if (!adapter.isSameImageList(product.images)) {
             adapter.showImages(product.images)
-        } else {
-            invalidate()
-            postDelayed({
-                adapter.showImages(product.images)
-            }, 100)
         }
+    }
+
+    fun clear() {
+        adapter.clear()
     }
 
     /**
@@ -174,6 +167,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 }
             }
             return -1
+        }
+
+        fun clear() {
+            if (imageList.size > 0) {
+                imageList.clear()
+                notifyDataSetChanged()
+            }
         }
 
         fun addPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {

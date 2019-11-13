@@ -29,16 +29,44 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="@drawable/product_detail_image_background"
                 app:layout_collapseMode="parallax">
 
                 <com.woocommerce.android.widgets.WCProductImageGalleryView
                     android:id="@+id/imageGallery"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/product_image_gallery_image_height"
                     android:layout_gravity="center_horizontal"
-                    app:isGridView="false"
-                    tools:height="200dp" />
+                    android:background="@color/white"
+                    app:isGridView="false" />
+
+                <LinearLayout
+                    android:id="@+id/addImageContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/product_image_gallery_image_height"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_gridicons_camera"
+                        android:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:text="@string/product_image_add"
+                        android:textColor="@color/grey_50"
+                        android:textSize="@dimen/text_medium" />
+                </LinearLayout>
 
                 <FrameLayout
                     android:id="@+id/frameStatusBadge"

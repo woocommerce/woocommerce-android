@@ -46,6 +46,9 @@ class ProductDetailViewModel @Inject constructor(
     private val _isSkeletonShown = MutableLiveData<Boolean>()
     val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
 
+    private val _addProductImage = SingleLiveEvent<Unit>()
+    val addProductImage: LiveData<Unit> = _addProductImage
+
     private val _shareProduct = SingleLiveEvent<Product>()
     val shareProduct: LiveData<Product> = _shareProduct
 
@@ -82,6 +85,10 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onShareButtonClicked() {
         _shareProduct.value = product.value
+    }
+
+    fun onAddImageClicked() {
+        _addProductImage.call()
     }
 
     override fun onCleared() {

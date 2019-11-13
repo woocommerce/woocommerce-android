@@ -59,7 +59,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private var productTitle = ""
     private var isVariation = false
-    private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
@@ -107,6 +106,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             showProduct(it)
         })
 
+        viewModel.addProductImage.observe(this, Observer {
+            showProductImages()
+        })
+
         viewModel.shareProduct.observe(this, Observer {
             shareProduct(it)
         })
@@ -147,7 +150,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
-            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
+            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageGallery.height
         } else {
             skeletonView.hide()
         }
@@ -173,7 +176,19 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         updateActivityTitle()
-        imageGallery.showProductImages(product, this)
+
+        if (product.images.isEmpty()) {
+            imageGallery.clear()
+            if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+                addImageContainer.visibility = View.VISIBLE
+                addImageContainer.setOnClickListener {
+                    viewModel.onAddImageClicked()
+                }
+            }
+        } else {
+            imageGallery.showProductImages(product, this)
+            addImageContainer.visibility = View.GONE
+        }
 
         isVariation = product.type == ProductType.VARIATION
 
@@ -521,12 +536,16 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
+        showProductImages(imageModel, imageView)
+    }
+
+    private fun showProductImages(imageModel: WCProductImageModel? = null, imageView: View? = null) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
             val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
             findNavController().navigate(action)
-        } else {
+        } else if (imageModel != null) {
             viewModel.productData.value?.product?.let { product ->
                 ImageViewerActivity.showProductImage(
                         this,
