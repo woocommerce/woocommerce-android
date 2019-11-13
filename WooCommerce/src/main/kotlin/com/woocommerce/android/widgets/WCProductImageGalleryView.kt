@@ -155,18 +155,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return true
         }
 
-        private fun indexOfImage(remoteMediaId: Long): Int {
-            for (index in imageList.indices) {
-                if (imageList[index].id == remoteMediaId) {
-                    return index
-                }
-            }
-            return -1
-        }
-
         fun addUploadPlaceholder() {
-            imageList.add(0, WCProductImageModel(UPLOAD_PLACEHOLDER_ID))
-            notifyItemInserted(0)
+            val hasPlaceholder = imageList.size > 0 && isPlaceholder(0)
+            if (!hasPlaceholder) {
+                imageList.add(0, WCProductImageModel(UPLOAD_PLACEHOLDER_ID))
+                notifyItemInserted(0)
+            }
         }
 
         fun removeUploadPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
