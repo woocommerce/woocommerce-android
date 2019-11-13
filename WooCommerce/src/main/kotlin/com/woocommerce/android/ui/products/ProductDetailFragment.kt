@@ -178,7 +178,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         updateActivityTitle()
 
-        if (product.images.isEmpty()) {
+        if (product.images.isEmpty() && viewModel.isUploadingProductImage.value == false) {
             imageGallery.visibility = View.GONE
             if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
                 textAddImage.setDrawableColor(R.color.grey_darken_10)
