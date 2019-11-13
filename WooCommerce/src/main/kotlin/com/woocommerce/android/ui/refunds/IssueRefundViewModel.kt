@@ -46,6 +46,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -72,7 +73,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = {
-        updateRefundTotal(it.selectedTotal)
+        updateRefundTotal(it.productsRefund)
     })
     final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState(), onChange = {
         updateRefundTotal(it.enteredAmount)
@@ -151,7 +152,12 @@ class IssueRefundViewModel @AssistedInject constructor(
         if (refundByItemsStateLiveData.hasInitialValue) {
             refundByItemsState = refundByItemsState.copy(
                     currency = order.currency,
-                    items = order.items.map { RefundListItem(it) }
+                    items = order.items.map { RefundListItem(it) },
+                    subtotal = formatCurrency(BigDecimal.ZERO),
+                    taxes = formatCurrency(BigDecimal.ZERO),
+                    formattedDiscount = formatCurrency(BigDecimal.ZERO),
+                    discountCodes = order.discountCodes,
+                    formattedProductsRefund = formatCurrency(BigDecimal.ZERO)
             )
         }
     }
@@ -347,10 +353,31 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundQuantityChanged(productId: Long, quantity: Int) {
-        refundByItemsState = refundByItemsState.copy(items = refundByItemsState.items?.toMutableList()?.apply {
+        val items = refundByItemsState.items?.toMutableList()?.apply {
             val index = this.indexOfFirst { it.product.productId == productId }
             this[index] = this[index].copy(quantity = quantity)
-        })
+        }
+
+        var taxes = BigDecimal.ZERO
+        var subtotal = BigDecimal.ZERO
+        items?.forEach { item ->
+            subtotal += item.quantity.toBigDecimal().times(item.product.price)
+
+            val singleItemTax = item.product.totalTax.divide(item.product.quantity.toBigDecimal(), RoundingMode.HALF_UP)
+            taxes += item.quantity.toBigDecimal().times(singleItemTax)
+        }
+        val productsRefund = subtotal + taxes
+
+        refundByItemsState = refundByItemsState.copy(
+                items = items,
+                productsRefund = productsRefund,
+                formattedProductsRefund = formatCurrency(productsRefund),
+                taxes = formatCurrency(taxes),
+                discount = order.discountTotal,
+                formattedDiscount = "-${formatCurrency(order.discountTotal)}",
+                discountCodes = order.discountCodes,
+                subtotal = formatCurrency(subtotal)
+        )
     }
 
     fun onSelectAllButtonTapped() {
@@ -361,7 +388,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     fun onRefundTabChanged(type: RefundType) {
         val refundAmount = when (type){
-            ITEMS -> refundByItemsState.selectedTotal
+            ITEMS -> refundByItemsState.totalRefund
             AMOUNT -> refundByAmountState.enteredAmount
         }
         commonState = commonState.copy(refundType = type)
@@ -427,12 +454,31 @@ class IssueRefundViewModel @AssistedInject constructor(
     data class RefundByItemsViewState(
         val currency: String? = null,
         val items: List<RefundListItem>? = null,
-        val isNextButtonEnabled: Boolean? = null
+        val isNextButtonEnabled: Boolean? = null,
+        val productsRefund: BigDecimal = BigDecimal.ZERO,
+        val formattedProductsRefund: String? = null,
+        val discount: BigDecimal = BigDecimal.ZERO,
+        val formattedDiscount: String? = null,
+        val discountCodes: String? = null,
+        val subtotal: String? = null,
+        val taxes: String? = null,
+        val shippingRefund: BigDecimal = BigDecimal.ZERO,
+        val formattedShippingRefund: String? = null,
+        val shippingSubtotal: String? = null,
+        val shippingTaxes: String? = null
     ) : Parcelable {
-        val selectedTotal
-            get() = items?.fold(BigDecimal.ZERO, { total, item ->
-                total + item.quantity.toBigDecimal().times(item.product.price)
-            }) ?: BigDecimal.ZERO
+        val totalRefund: BigDecimal
+            get() {
+                val refund = productsRefund + shippingRefund - discount
+                return if (refund > BigDecimal.ZERO) {
+                    refund
+                } else {
+                    BigDecimal.ZERO
+                }
+            }
+
+        val isDiscountVisible: Boolean
+            get() = discount > BigDecimal.ZERO
     }
 
     @Parcelize

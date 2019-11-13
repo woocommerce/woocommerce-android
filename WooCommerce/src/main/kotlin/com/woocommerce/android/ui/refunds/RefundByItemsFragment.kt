@@ -11,6 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
@@ -81,6 +83,24 @@ class RefundByItemsFragment : DaggerFragment() {
 
                 val selectedItemsHeader = getString(R.string.order_refunds_items_selected, selectedItems)
                 issueRefund_selectedItems.text = selectedItemsHeader
+            }
+            new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
+                issueRefund_total.text = it
+            }
+            new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
+                if (isVisible) {
+                    issueRefund_discountTotal.text = new.formattedDiscount
+                    issueRefund_discountItems.text = new.discountCodes
+                    issueRefund_discountSection.show()
+                } else {
+                    issueRefund_discountSection.hide()
+                }
+            }
+            new.taxes?.takeIfNotEqualTo(old?.taxes) {
+                issueRefund_taxesTotal.text = it
+            }
+            new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
+                issueRefund_subtotal.text = it
             }
         }
 
