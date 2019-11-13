@@ -188,6 +188,7 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = false))
         doneSignal.countDown()
         productImageMap.remove(remoteProductId)
+        currentUploads.remove(remoteProductId)
     }
 
     private fun handleFailure(remoteProductId: Long) {
