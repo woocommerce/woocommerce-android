@@ -33,40 +33,27 @@ import javax.inject.Inject
  */
 class ProductImagesService : JobIntentService() {
     companion object {
-        const val KEY_ACTION = "action"
         const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
-        const val KEY_REMOTE_MEDIA_ID = "key_remote_media_id"
         const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
 
-        enum class Action {
-            NONE,
-            UPLOAD_IMAGE,
-            REMOVE_IMAGE
-        }
-        private var currentAction = Action.NONE
 
         private const val STRIP_LOCATION = true
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
 
-        // array of remoteProductId / remoteMediaId
-        private val currentRemovals = LongSparseArray<Long>()
-
         class OnProductImagesUpdateStartedEvent(
-            var action: Action,
             var remoteProductId: Long
         )
 
         class OnProductImagesUpdateCompletedEvent(
-            var action: Action,
             var remoteProductId: Long,
             val isError: Boolean
         )
 
         fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
 
-        fun isBusy() = currentAction != Action.NONE
+        fun isBusy() = !currentUploads.isEmpty
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -95,28 +82,15 @@ class ProductImagesService : JobIntentService() {
     override fun onHandleWork(intent: Intent) {
         WooLog.i(T.MEDIA, "productImagesService > onHandleWork")
 
-        currentAction = intent.getSerializableExtra(KEY_ACTION) as Action
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
-
-        if (!networkStatus.isConnected()) {
+        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
+        if (localMediaUri == null) {
+            WooLog.w(T.MEDIA, "productImagesService > null localMediaUri")
             handleFailure(remoteProductId)
             return
         }
 
-        when (currentAction) {
-            Action.UPLOAD_IMAGE -> handleUpload(intent, remoteProductId)
-            Action.REMOVE_IMAGE -> handleRemoval(intent, remoteProductId)
-            else -> {
-                WooLog.w(T.MEDIA, "productImagesService > unsupported action")
-                handleFailure(remoteProductId)
-            }
-        }
-    }
-
-    private fun handleUpload(intent: Intent, remoteProductId: Long) {
-        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
-        if (localMediaUri == null) {
-            WooLog.w(T.MEDIA, "productImagesService > null localMediaUri")
+        if (!networkStatus.isConnected()) {
             handleFailure(remoteProductId)
             return
         }
@@ -132,7 +106,7 @@ class ProductImagesService : JobIntentService() {
             currentUploads.put(remoteProductId, localMediaUri)
 
             // first fire an event that the upload is starting
-            EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(Action.UPLOAD_IMAGE, remoteProductId))
+            EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
 
             // then dispatch the upload request
             val site = siteStore.getSiteByLocalId(media.localSiteId)
@@ -144,47 +118,6 @@ class ProductImagesService : JobIntentService() {
 
         WooLog.w(T.MEDIA, "productImagesService > null media")
         handleFailure(remoteProductId)
-    }
-
-    private fun handleRemoval(intent: Intent, remoteProductId: Long) {
-        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-        if (product == null) {
-            WooLog.w(T.MEDIA, "productImagesService > product is null")
-            handleFailure(remoteProductId)
-            return
-        }
-
-        // build a new image list containing all the product images except the passed one
-        val remoteMediaId = intent.getLongExtra(KEY_REMOTE_MEDIA_ID, 0)
-        val imageList = ArrayList<WCProductImageModel>()
-        var removedImage: WCProductImageModel? = null
-        product.getImages().forEach { image ->
-            if (image.id == remoteMediaId) {
-                removedImage = image
-            } else {
-                imageList.add(image)
-            }
-        }
-        if (removedImage == null) {
-            WooLog.w(T.MEDIA, "productImagesService > product image not found")
-            handleFailure(remoteProductId)
-            return
-        }
-
-        // add to the list of removals
-        currentRemovals.put(remoteProductId, remoteMediaId)
-
-        // remove the image from SQLite so it's no longer available to the ui
-        productStore.deleteProductImage(selectedSite.get(), remoteProductId, remoteMediaId)
-
-        // fire an event that the removal is starting
-        EventBus.getDefault()
-                .post(OnProductImagesUpdateStartedEvent(Action.REMOVE_IMAGE, remoteProductId))
-
-        // then dispatch the request to remove it
-        val payload = UpdateProductImagesPayload(selectedSite.get(), remoteProductId, imageList)
-        dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
-        doneSignal.await()
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -237,11 +170,6 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
-    private fun dispatchFetchProductAction(remoteProductId: Long) {
-        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
-    }
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductImagesChanged(event: OnProductImagesChanged) {
@@ -258,30 +186,13 @@ class ProductImagesService : JobIntentService() {
     }
 
     private fun handleSuccess(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(currentAction, remoteProductId, isError = false))
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = false))
         doneSignal.countDown()
         productImageMap.remove(remoteProductId)
-
-        if (currentAction == Action.UPLOAD_IMAGE) {
-            currentUploads.remove(remoteProductId)
-        } else if (currentAction == Action.REMOVE_IMAGE) {
-            currentRemovals.delete(remoteProductId)
-        }
-        currentAction = Action.NONE
     }
 
     private fun handleFailure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(currentAction, remoteProductId, isError = true))
-        doneSignal.countDown()
-        if (currentAction == Action.UPLOAD_IMAGE) {
-            currentUploads.remove(remoteProductId)
-        } else if (currentAction == Action.REMOVE_IMAGE) {
-            currentRemovals.delete(remoteProductId)
-            // get the product again since we removed an image from SQLite before making the request
-            if (networkStatus.isConnected()) {
-                dispatchFetchProductAction(remoteProductId)
-            }
-        }
-        currentAction = Action.NONE
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = true))
+        currentUploads.remove(remoteProductId)
     }
 }
