@@ -92,12 +92,10 @@ class ProductImagesViewModel @Inject constructor(
         if (!checkNetwork()) {
             return
         }
-        if (ProductImagesService.isBusy()) {
-            _showSnackbarMessage.value = R.string.product_image_service_busy
-            return
-        }
-
-        if (!productRepository.removeProductImage(remoteProductId, remoteMediaId)) {
+        if (productRepository.removeProductImage(remoteProductId, remoteMediaId)) {
+            // reload the product to reflect the removed image
+            loadProduct()
+        } else {
             _showSnackbarMessage.value = R.string.product_image_service_error_removing
         }
     }

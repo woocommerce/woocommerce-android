@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -13,6 +12,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import javax.inject.Inject
 
@@ -73,9 +73,9 @@ class ProductImagesRepository @Inject constructor(
         return true
     }
 
-    @Suppress("unused")
+    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+    fun onProductImagesChanged(event: OnProductImagesChanged) {
         // fetch the product again if the update fails - this is to restore any image we removed
         // from SQLite above
         if (event.isError) {
