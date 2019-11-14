@@ -16,7 +16,7 @@ import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
-class ProductVariantsViewModel  @AssistedInject constructor(
+class ProductVariantsViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
     private val productVariantsRepository: ProductVariantsRepository,

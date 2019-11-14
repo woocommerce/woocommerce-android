@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.WCProductModel.ProductAttribute
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -57,7 +56,6 @@ data class Product(
         val source: String,
         val dateCreated: Date
     ) : Parcelable
-
 
     @Parcelize
     data class Attribute(

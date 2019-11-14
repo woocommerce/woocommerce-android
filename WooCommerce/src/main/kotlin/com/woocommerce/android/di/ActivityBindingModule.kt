@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.refunds.RefundDetailFragmentModule
 import com.woocommerce.android.ui.refunds.RefundSummaryFragmentModule
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentModule
 import com.woocommerce.android.ui.reviews.ReviewListFragmentModule
-import com.woocommerce.android.ui.products.ProductVariantsModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
