@@ -42,14 +42,8 @@ class LoginJetpackRequiredFragment : Fragment() {
         }
     }
 
-    interface LoginJetpackRequiredListener {
-        fun showJetpackInstructions()
-        fun showWhatIsJetpackDialog()
-        fun showEmailLoginScreen(siteAddress: String)
-    }
-
     private var loginListener: LoginListener? = null
-    private var jetpackLoginListener: LoginJetpackRequiredListener? = null
+    private var jetpackLoginListener: LoginNoJetpackListener? = null
     private var siteAddress: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -137,7 +131,13 @@ class LoginJetpackRequiredFragment : Fragment() {
 
         // this will throw if parent activity doesn't implement the login listener interface
         loginListener = context as? LoginListener
-        jetpackLoginListener = context as? LoginJetpackRequiredListener
+        jetpackLoginListener = context as? LoginNoJetpackListener
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        loginListener = null
+        jetpackLoginListener = null
     }
 
     override fun onResume() {
