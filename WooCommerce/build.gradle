@@ -240,7 +240,7 @@ android.buildTypes.all { buildType ->
 
     // If Google services file doesn't exist, copy example file.
     if (!file("google-services.json").exists()) {
-        tasks.copyGoogleServicesExampleFile.execute()
+        tasks.copyGoogleServicesExampleFile.copy()
     }
 
     // Print warning message if example Google services file is used.
