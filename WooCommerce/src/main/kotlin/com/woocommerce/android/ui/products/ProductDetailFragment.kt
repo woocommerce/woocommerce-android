@@ -17,6 +17,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -37,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -262,6 +264,24 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         } else {
             addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
         }
+
+        // show product variants only if product type is variable
+        if (product.type == VARIABLE) {
+            val group = mutableMapOf<String, String>()
+            for (attribute in product.attributes) {
+                group[attribute.name] = attribute.options.size.toString()
+            }
+
+            val productVariantFormatter = R.string.product_property_variant_formatter
+            if (FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
+                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter) {
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
+                    showProductVariations(product.remoteId)
+                }
+            } else {
+                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter)
+            }
+        }
     }
 
     private fun addPurchaseDetailsCard(productData: ViewState) {
@@ -354,7 +374,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun addPropertyGroup(
         card: DetailCard,
         @StringRes groupTitleId: Int,
-        properties: Map<String, String>
+        properties: Map<String, String>,
+        @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter,
+        propertyGroupClickListener: ((view: View) -> Unit)? = null
     ): WCProductPropertyView? {
         var propertyValue = ""
         properties.forEach { property ->
@@ -362,10 +384,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 if (propertyValue.isNotEmpty()) {
                     propertyValue += "\n"
                 }
-                propertyValue += "${property.key}: ${property.value}"
+                propertyValue += getString(propertyValueFormatterId, property.key, property.value)
             }
         }
-        return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL)
+        return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL)?.also {
+            it.setClickListener(propertyGroupClickListener)
+        }
     }
 
     /**
@@ -469,6 +493,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
         val title = resources.getText(R.string.product_share_dialog_title)
         startActivity(Intent.createChooser(shareIntent, title))
+    }
+
+    private fun showProductVariations(remoteId: Long) {
+        val action = ProductDetailFragmentDirections
+                .actionProductDetailFragmentToProductVariantsFragment(remoteId)
+        findNavController().navigate(action)
     }
 
     /**

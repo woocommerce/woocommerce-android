@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-16 00:55:22+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="button_edit_permissions">Machtigingen bewerken</string>
+    <string name="permission_camera">Camera</string>
+    <string name="permission_storage">Opslagcapaciteit</string>
+    <string name="permissions_denied_message">Het lijkt erop dat je de vereiste machtigingen voor deze functie hebt uitgeschakeld.&lt;br/>&lt;br/>Om dit te wijzigen, moet je je machtigingen bewerken en zorgen dat &lt;strong>%s&lt;/strong> is ingeschakeld.</string>
+    <string name="permissions_denied_title">Machtigingen</string>
+    <string name="orders_processed_empty_message">Alle bestellingen zijn verwerkt</string>
+    <string name="orders_empty_message_with_processing">Nog geen te verwerken bestellingen</string>
+    <string name="orderdetail_note_system">Systeem</string>
+    <string name="orderlist_search_hint">Bestellingen doorzoeken</string>
+    <string name="unknown">Onbekend</string>
+    <string name="button_not_now">Niet nu</string>
     <string name="product_search_hint">Zoeken naar producten</string>
     <string name="product_list_empty_search">Geen overeenkomende producten</string>
     <string name="product_list_empty">Nog geen producten</string>
@@ -443,7 +454,7 @@ Language: nl
     <string name="app_rating_title">Wat vind je van Woo?</string>
     <string name="settings_selected_store">Geselecteerde winkel</string>
     <string name="orders_empty_message_with_search">Geen overeenkomende bestellingen</string>
-    <string name="orders_empty_message_with_filter">Geen bestellingen</string>
+    <string name="orders_empty_message_with_filter">Nog geen bestellingen</string>
     <string name="waiting_for_customers_contentdesc">Wachten op klantenafbeelding</string>
     <string name="waiting_for_customers">Wachten op klanten</string>
     <string name="share_store_dialog_title">Deel de URL van je winkel</string>
@@ -483,8 +494,7 @@ Language: nl
     <string name="back">Terug</string>
     <string name="notification_channel_review_title">Meldingen productbeoordeling</string>
     <string name="notification_channel_order_title">Meldingen nieuwe bestelling</string>
-    <string name="orderdetail_note_system">Systeemstatus</string>
-    <string name="orderdetail_note_public">Bericht aan klant</string>
+    <string name="orderdetail_note_public">Aan klant</string>
     <string name="login_verifying_site">Site wordt geverifieerd …</string>
     <string name="button_update_instructions">Update-instructies</string>
     <string name="search">Zoeken</string>
@@ -667,7 +677,7 @@ Language: nl
     <string name="orderdetail_payment_cleared">Betaling gewist</string>
     <string name="orderdetail_order_fulfillment">Bestelling %s voltooien</string>
     <string name="orderdetail_order_notes">Berichten van bestelling</string>
-    <string name="orderdetail_note_private">Privébericht</string>
+    <string name="orderdetail_note_private">Privé</string>
     <string name="orderdetail_note_hint">Een bericht van bestelling opstellen</string>
     <string name="orderdetail_customer_image_contentdesc">Profielfoto klant</string>
     <string name="orderdetail_customer_provided_note">Bericht van klant</string>
@@ -772,4 +782,8 @@ Language: nl
     <string name="all">Alles</string>
     <string name="notification_channel_general_title">Algemeen</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>Bezig met verwerken</item>
+        <item>Alle bestellingen</item>
+    </string-array>
 </resources>
