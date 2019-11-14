@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class ProductImagesRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val productImageMap: ProductImageMap
 ) {
     init {
         dispatcher.register(this)
@@ -51,21 +53,21 @@ class ProductImagesRepository @Inject constructor(
 
         // build a new image list containing all the product images except the passed one
         val imageList = ArrayList<WCProductImageModel>()
-        var removedImage: WCProductImageModel? = null
         product.images.forEach { image ->
-            if (image.id == remoteMediaId) {
-                removedImage = image
-            } else {
+            if (image.id != remoteMediaId) {
                 imageList.add(image)
             }
         }
-        if (removedImage == null) {
+        if (product.images.size == imageList.size) {
             WooLog.w(T.MEDIA, "removeProductImage > product image not found")
             return false
         }
 
         // remove the image from SQLite so it's no longer available to the ui
         productStore.deleteProductImage(selectedSite.get(), remoteProductId, remoteMediaId)
+
+        // remove this product from our image cache so the image is re-fetched the next time it's needed
+        productImageMap.remove(remoteProductId)
 
         // then dispatch the request to remove it
         val payload = UpdateProductImagesPayload(selectedSite.get(), remoteProductId, imageList)

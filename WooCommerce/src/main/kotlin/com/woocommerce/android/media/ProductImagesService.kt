@@ -26,10 +26,17 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit.MINUTES
 import javax.inject.Inject
 
 /**
- * service which adds or removes a product image
+ * Service which adds a product image via a two-step process:
+ *
+ *      1. Uploads the image to the WP media library
+ *      2. When the upload completes, adds the uploaded media to the product
+ *
+ * For now tbe service only supports uploading a single image, but down the road
+ * we can extend it to support multiple uploads.
  */
 class ProductImagesService : JobIntentService() {
     companion object {
@@ -37,6 +44,7 @@ class ProductImagesService : JobIntentService() {
         const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
 
         private const val STRIP_LOCATION = true
+        private const val TIMEOUT_MINUTES = 2L
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
@@ -111,7 +119,14 @@ class ProductImagesService : JobIntentService() {
             val site = siteStore.getSiteByLocalId(media.localSiteId)
             val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-            doneSignal.await()
+
+            // wait as long as two minutes for the process to complete
+            try {
+                doneSignal.await(TIMEOUT_MINUTES, MINUTES)
+            } catch (e: InterruptedException) {
+                WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+                handleFailure(remoteProductId)
+            }
             return
         }
 
@@ -186,13 +201,14 @@ class ProductImagesService : JobIntentService() {
 
     private fun handleSuccess(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = false))
-        doneSignal.countDown()
         productImageMap.remove(remoteProductId)
         currentUploads.remove(remoteProductId)
+        doneSignal.countDown()
     }
 
     private fun handleFailure(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = true))
         currentUploads.remove(remoteProductId)
+        doneSignal.countDown()
     }
 }
