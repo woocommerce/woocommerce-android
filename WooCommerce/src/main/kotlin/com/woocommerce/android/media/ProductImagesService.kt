@@ -102,36 +102,37 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
-        ProductImagesUtils.mediaModelFromLocalUri(
+        val media = ProductImagesUtils.mediaModelFromLocalUri(
                 this,
                 selectedSite.get().id,
                 localMediaUri,
                 mediaStore
-        )?.let { media ->
-            media.postId = remoteProductId
-            media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
-            currentUploads.put(remoteProductId, localMediaUri)
-
-            // first fire an event that the upload is starting
-            EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
-
-            // then dispatch the upload request
-            val site = siteStore.getSiteByLocalId(media.localSiteId)
-            val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
-            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-
-            // wait as long as two minutes for the process to complete
-            try {
-                doneSignal.await(TIMEOUT_MINUTES, MINUTES)
-            } catch (e: InterruptedException) {
-                WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
-                handleFailure(remoteProductId)
-            }
+        )
+        if (media == null) {
+            WooLog.w(T.MEDIA, "productImagesService > null media")
+            handleFailure(remoteProductId)
             return
         }
 
-        WooLog.w(T.MEDIA, "productImagesService > null media")
-        handleFailure(remoteProductId)
+        media.postId = remoteProductId
+        media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+        currentUploads.put(remoteProductId, localMediaUri)
+
+        // first fire an event that the upload is starting
+        EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
+
+        // then dispatch the upload request
+        val site = siteStore.getSiteByLocalId(media.localSiteId)
+        val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
+        dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+
+        // wait as long as two minutes for the two-step process to complete
+        try {
+            doneSignal.await(TIMEOUT_MINUTES, MINUTES)
+        } catch (e: InterruptedException) {
+            WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+            handleFailure(remoteProductId)
+        }
     }
 
     override fun onStopCurrentWork(): Boolean {
