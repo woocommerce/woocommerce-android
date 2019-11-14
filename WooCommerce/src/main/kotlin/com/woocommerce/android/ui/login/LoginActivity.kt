@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.automattic.android.tracks.CrashLogging.CrashLogging
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -47,9 +46,11 @@ import kotlin.text.RegexOption.IGNORE_CASE
 
 @Suppress("SameParameterValue")
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
+        HasSupportFragmentInjector, LoginNoJetpackListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
+        private const val MAGIC_LOGIN = "magic-login"
+        private const val TOKEN_PARAMETER = "token"
     }
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -66,7 +67,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
         setContentView(R.layout.activity_login)
 
-        if (savedInstanceState == null) {
+        if (hasMagicLinkLoginIntent()) {
+            getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
+        } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
             showPrologueFragment()
         }
@@ -83,6 +86,26 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
+    }
+
+    private fun hasMagicLinkLoginIntent(): Boolean {
+        val action = intent.action
+        val uri = intent.data
+        val host = uri?.host?.let { it } ?: ""
+        return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
+    }
+
+    private fun getAuthTokenFromIntent(): String? {
+        val uri = intent.data
+        return uri?.getQueryParameter(TOKEN_PARAMETER)
+    }
+
+    private fun showMagicLinkInterceptFragment(authToken: String) {
+        val fragment = MagicLinkInterceptFragment.newInstance(authToken)
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+                .addToBackStack(null)
+                .commitAllowingStateLoss()
     }
 
     override fun onPrologueFinished() {
@@ -168,10 +191,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     //  -- BEGIN: LoginListener implementation methods
 
-    override fun gotWpcomEmail(email: String?) {
+    override fun gotWpcomEmail(email: String?, verifyEmail: Boolean) {
         if (getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT) {
             val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email,
-                    AuthEmailPayloadScheme.WOOCOMMERCE, false, null)
+                    AuthEmailPayloadScheme.WOOCOMMERCE, false, null, verifyEmail)
             slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
         } else {
             val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
@@ -268,32 +291,45 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app.
         siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
-
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
-        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        showEmailLoginScreen(siteAddress)
     }
 
     override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
+        // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
+        // with the protocol since it is needed for initiating forgot password flow etc in the login process.
+        val inputSiteAddress = redirectUrl ?: siteAddress
+
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
-        // logs into the app. If the redirect url is available, use that as the preferred url. Strip the
-        // protocol from this url string prior to saving to AppPrefs since it's not needed and may cause issues
-        // when attempting to match the url to the authenticated account later in the login process.
+        // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
+        // not needed and may cause issues when attempting to match the url to the authenticated account later
+        // in the login process.
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        AppPrefs.setLoginSiteAddress((redirectUrl ?: siteAddress).replaceFirst(protocolRegex, ""))
+        AppPrefs.setLoginSiteAddress(inputSiteAddress.replaceFirst(protocolRegex, ""))
 
         if (hasJetpack) {
-            showEmailLoginScreen(siteAddress)
+            showEmailLoginScreen(inputSiteAddress)
         } else {
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(inputSiteAddress)
             slideInFragment(
                     fragment = jetpackReqFragment as Fragment,
                     shouldAddToBackStack = true,
                     tag = LoginJetpackRequiredFragment.TAG)
         }
+    }
+
+    /**
+     * Method called when Login with Site credentials link is clicked in the [LoginEmailFragment]
+     * This method is called instead of [LoginListener.gotXmlRpcEndpoint] since calling that method overrides
+     * the already saved [inputSiteAddress] without the protocol, with the same site address but with
+     * the protocol. This may cause issues when attempting to match the url to the authenticated account later
+     * in the login process.
+     */
+    override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
@@ -374,6 +410,41 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         viewHelpAndSupport(Origin.LOGIN_USERNAME_PASSWORD)
     }
 
+    override fun helpNoJetpackScreen(
+        siteAddress: String,
+        endpointAddress: String?,
+        username: String,
+        password: String,
+        userAvatarUrl: String?,
+        checkJetpackAvailability: Boolean
+    ) {
+        val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
+                siteAddress, endpointAddress, username, password, userAvatarUrl,
+                checkJetpackAvailability
+        )
+        slideInFragment(
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG)
+    }
+
+    override fun helpHandleDiscoveryError(
+        siteAddress: String,
+        endpointAddress: String?,
+        username: String,
+        password: String,
+        userAvatarUrl: String?,
+        errorMessage: Int
+    ) {
+        val discoveryErrorFragment = LoginDiscoveryErrorFragment.newInstance(
+                siteAddress, endpointAddress, username, password, userAvatarUrl, errorMessage
+        )
+        slideInFragment(
+                fragment = discoveryErrorFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG)
+    }
+
     // SmartLock
 
     override fun saveCredentialsInSmartLock(
@@ -433,6 +504,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_view_instructions_link))
     }
 
+    override fun showJetpackTroubleshootingTips() {
+        ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_troubleshooting_link))
+    }
+
     override fun showWhatIsJetpackDialog() {
         LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
     }
@@ -447,8 +522,20 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 
-    override fun showEmailLoginScreen(siteAddress: String) {
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+    override fun showEmailLoginScreen(siteAddress: String?) {
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(siteAddress)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+    }
+
+    override fun showUsernamePasswordScreen(
+        siteAddress: String?,
+        endpointAddress: String?,
+        inputUsername: String?,
+        inputPassword: String?
+    ) {
+        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+                siteAddress, endpointAddress, null, null, inputUsername, inputPassword,
+                false)
+        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 }
