@@ -55,7 +55,6 @@ class OrderListFragment : TopLevelFragment(),
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_LIST = "list-state"
-        const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
@@ -65,7 +64,6 @@ class OrderListFragment : TopLevelFragment(),
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
         private const val TAB_INDEX_ALL = 1
-        private const val ORDER_TAB_DEFAULT = TAB_INDEX_PROCESSING
 
         fun newInstance(orderStatus: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -101,7 +99,6 @@ class OrderListFragment : TopLevelFragment(),
         private set(value) { viewModel.isSearching = value }
         get() = viewModel.isSearching
     var isRefreshing: Boolean = false
-    var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
 
     private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
@@ -255,7 +252,7 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(!filterOrSearchEnabled)
         enableToolbarElevation(filterOrSearchEnabled)
 
-        if (isOrderStatusFilterEnabled() && !deferInit) {
+        if (isOrderStatusFilterEnabled()) {
             viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
         }
     }
@@ -267,7 +264,6 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(STATE_KEY_LIST, order_list_view.onFragmentSavedInstanceState())
-        outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putBoolean(STATE_KEY_IS_FILTER_ENABLED, isFilterEnabled)
