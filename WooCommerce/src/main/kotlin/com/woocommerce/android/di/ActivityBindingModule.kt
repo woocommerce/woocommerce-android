@@ -4,7 +4,9 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginNoJetpackFragmentModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
+import com.woocommerce.android.ui.login.MagicLinkInterceptFragmentModule
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
@@ -19,9 +21,18 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
 import com.woocommerce.android.ui.refunds.RefundsModule
+import com.woocommerce.android.ui.refunds.RefundsModule.IssueRefundFragmentModule
+import com.woocommerce.android.ui.refunds.RefundsModule.RefundByAmountFragmentModule
+import com.woocommerce.android.ui.refunds.RefundsModule.RefundDetailFragmentModule
+import com.woocommerce.android.ui.refunds.RefundsModule.RefundSummaryFragmentModule
 import com.woocommerce.android.ui.reviews.ReviewsModule
+import com.woocommerce.android.ui.reviews.ReviewsModule.ReviewDetailFragmentModule
+import com.woocommerce.android.ui.reviews.ReviewsModule.ReviewListFragmentModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
@@ -50,8 +61,32 @@ abstract class ActivityBindingModule {
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
+    @Module(includes = [
+        IssueRefundFragmentModule::class,
+        RefundByAmountFragmentModule::class,
+        RefundSummaryFragmentModule::class,
+        RefundDetailFragmentModule::class
+    ])
+    object RefundModule
+
+    @Module(includes = [
+        ProductDetailFragmentModule::class,
+        ProductListFragmentModule::class,
+        ProductVariantsFragmentModule::class
+    ])
+    object ProductModule
+
+    @Module(includes = [
+        ReviewDetailFragmentModule::class,
+        ReviewListFragmentModule::class
+    ])
+    object ReviewModule
+
     @ActivityScope
-    @ContributesAndroidInjector(modules = [LoginFragmentModule::class])
+    @ContributesAndroidInjector(modules = [
+        LoginFragmentModule::class,
+        MagicLinkInterceptFragmentModule::class,
+        LoginNoJetpackFragmentModule::class])
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope
