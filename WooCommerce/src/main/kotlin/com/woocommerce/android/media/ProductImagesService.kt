@@ -26,7 +26,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -44,7 +44,7 @@ class ProductImagesService : JobIntentService() {
         const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
 
         private const val STRIP_LOCATION = true
-        private const val TIMEOUT_MINUTES = 2L
+        private const val TIMEOUT_SECONDS = 60L
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
@@ -128,7 +128,7 @@ class ProductImagesService : JobIntentService() {
 
         // wait as long as two minutes for the two-step process to complete
         try {
-            doneSignal.await(TIMEOUT_MINUTES, MINUTES)
+            doneSignal.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         } catch (e: InterruptedException) {
             WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
             handleFailure(remoteProductId)
