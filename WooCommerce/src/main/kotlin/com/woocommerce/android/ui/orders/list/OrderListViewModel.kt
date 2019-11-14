@@ -15,6 +15,8 @@ import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ThrottleLiveData
@@ -328,6 +330,15 @@ class OrderListViewModel @Inject constructor(
             // yet been downloaded (the "loading" items) can be removed
             // from the current list view.
             pagedListWrapper?.invalidateData()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: NotificationReceivedEvent) {
+        // a new order notification came in so refresh the active order list
+        if (event.channel == NEW_ORDER) {
+            pagedListWrapper?.fetchFirstPage()
         }
     }
 }
