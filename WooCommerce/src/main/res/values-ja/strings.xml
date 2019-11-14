@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-17 00:55:01+0000
+Translation-Revision-Date: 2019-10-31 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="button_edit_permissions">権限を編集</string>
+    <string name="permission_camera">カメラ</string>
+    <string name="permission_storage">ストレージ</string>
+    <string name="permissions_denied_message">この機能に必要な権限を無効にしているようです。&lt;br/>&lt;br/>これを変更するには、権限を編集して &lt;strong>%s&lt;/strong> が有効であることを確認してください。</string>
+    <string name="permissions_denied_title">権限</string>
+    <string name="orders_processed_empty_message">注文がすべて処理されました</string>
+    <string name="orders_empty_message_with_processing">処理する注文はまだありません</string>
+    <string name="orderdetail_note_system">システム</string>
+    <string name="orderlist_search_hint">注文を検索</string>
+    <string name="unknown">不明</string>
+    <string name="button_not_now">後で</string>
     <string name="product_search_hint">商品を検索</string>
     <string name="product_list_empty_search">一致する商品はありません</string>
     <string name="product_list_empty">まだ商品がありません</string>
@@ -443,7 +454,7 @@ Language: ja_JP
     <string name="app_rating_title">Woo を楽しんでいますか？</string>
     <string name="settings_selected_store">選択したストア</string>
     <string name="orders_empty_message_with_search">一致する注文はありません</string>
-    <string name="orders_empty_message_with_filter">注文はありません</string>
+    <string name="orders_empty_message_with_filter">注文はまだありません</string>
     <string name="waiting_for_customers_contentdesc">顧客の画像を待機中です</string>
     <string name="waiting_for_customers">顧客待ち</string>
     <string name="share_store_dialog_title">ストアの URL を共有します</string>
@@ -483,8 +494,7 @@ Language: ja_JP
     <string name="back">戻る</string>
     <string name="notification_channel_review_title">製品レビューアラート</string>
     <string name="notification_channel_order_title">新規注文アラート</string>
-    <string name="orderdetail_note_system">システム状況</string>
-    <string name="orderdetail_note_public">お客様への通知</string>
+    <string name="orderdetail_note_public">顧客向け</string>
     <string name="login_verifying_site">サイトを認証中です…</string>
     <string name="button_update_instructions">手順を更新</string>
     <string name="search">検索</string>
@@ -667,7 +677,7 @@ Language: ja_JP
     <string name="orderdetail_payment_cleared">決済済み</string>
     <string name="orderdetail_order_fulfillment">注文番号%sを履行</string>
     <string name="orderdetail_order_notes">注文メモ</string>
-    <string name="orderdetail_note_private">プライベートメモ</string>
+    <string name="orderdetail_note_private">非公開</string>
     <string name="orderdetail_note_hint">注文メモを作成します</string>
     <string name="orderdetail_customer_image_contentdesc">顧客プロフィール画像</string>
     <string name="orderdetail_customer_provided_note">顧客提供メモ</string>
@@ -772,4 +782,8 @@ Language: ja_JP
     <string name="all">すべて</string>
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>処理中</item>
+        <item>すべての注文</item>
+    </string-array>
 </resources>

@@ -138,14 +138,7 @@ class MainActivity : AppUpgradeActivity(),
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
-            if (hasMagicLinkLoginIntent()) {
-                // User has opened a magic link
-                // Trigger an account/site info fetch, and show a 'logging in...' dialog in the meantime
-                showProgressDialog(R.string.logging_in)
-                getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
-            } else {
-                showLoginScreen()
-            }
+            showLoginScreen()
             return
         }
 

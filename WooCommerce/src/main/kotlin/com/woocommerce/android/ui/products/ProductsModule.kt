@@ -24,4 +24,11 @@ object ProductsModule {
         @ContributesAndroidInjector(modules = [ProductDetailModule::class])
         abstract fun productDetailFragment(): ProductDetailFragment
     }
+
+    @Module
+    internal abstract class ProductVariantsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductVariantsModule::class])
+        abstract fun productVariantsFragment(): ProductVariantsFragment
+    }
 }

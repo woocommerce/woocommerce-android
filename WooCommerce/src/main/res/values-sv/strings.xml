@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-16 00:55:10+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="button_edit_permissions">Redigera behörigheter</string>
+    <string name="permission_camera">Kamera</string>
+    <string name="permission_storage">Lagring</string>
+    <string name="permissions_denied_message">Det verkar som om du har stängt av några behörigheter som krävs för denna funktion.&lt;br/>&lt;br/>För att ändra detta behöver du redigera appens behörigheter och se till att &lt;strong>%s&lt;/strong> är aktiverat.</string>
+    <string name="permissions_denied_title">Behörigheter</string>
+    <string name="orders_processed_empty_message">Alla ordrar har behandlats</string>
+    <string name="orders_empty_message_with_processing">Inga ordrar att behandla ännu</string>
+    <string name="orderdetail_note_system">System</string>
+    <string name="orderlist_search_hint">Sök ordrar</string>
+    <string name="unknown">Okänd</string>
+    <string name="button_not_now">Inte nu</string>
     <string name="product_search_hint">Sök produkter</string>
     <string name="product_list_empty_search">Inga matchande produkter</string>
     <string name="product_list_empty">Inga produkter ännu</string>
@@ -443,7 +454,7 @@ Language: sv_SE
     <string name="app_rating_title">Gillar du Woo?</string>
     <string name="settings_selected_store">Vald butik</string>
     <string name="orders_empty_message_with_search">Inga matchande ordrar</string>
-    <string name="orders_empty_message_with_filter">Inga ordrar</string>
+    <string name="orders_empty_message_with_filter">Inga ordrar ännu</string>
     <string name="waiting_for_customers_contentdesc">Väntar på kundbild</string>
     <string name="waiting_for_customers">Väntar på kunder</string>
     <string name="share_store_dialog_title">Dela din butiks URL</string>
@@ -483,8 +494,7 @@ Language: sv_SE
     <string name="back">Tillbaka</string>
     <string name="notification_channel_review_title">Produktrecensionsaviseringar</string>
     <string name="notification_channel_order_title">Ny order-aviseringar</string>
-    <string name="orderdetail_note_system">Systemstatus</string>
-    <string name="orderdetail_note_public">Kundmeddelande</string>
+    <string name="orderdetail_note_public">Till kund</string>
     <string name="login_verifying_site">Verifierar webbplats…</string>
     <string name="button_update_instructions">Uppdatera instruktioner</string>
     <string name="search">Sök</string>
@@ -667,7 +677,7 @@ Language: sv_SE
     <string name="orderdetail_payment_cleared">Betalning godkänd</string>
     <string name="orderdetail_order_fulfillment">Fullfölj order med nummer %s</string>
     <string name="orderdetail_order_notes">Ordernoteringar</string>
-    <string name="orderdetail_note_private">Privat notering</string>
+    <string name="orderdetail_note_private">Privat</string>
     <string name="orderdetail_note_hint">Skapa en ordernotering</string>
     <string name="orderdetail_customer_image_contentdesc">Kundprofilsbild</string>
     <string name="orderdetail_customer_provided_note">Kundnotering</string>
@@ -772,4 +782,8 @@ Language: sv_SE
     <string name="all">Alla</string>
     <string name="notification_channel_general_title">Allmänt</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>Behandlas</item>
+        <item>Alla ordrar</item>
+    </string-array>
 </resources>

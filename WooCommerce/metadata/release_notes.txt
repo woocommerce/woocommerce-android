@@ -1,4 +1,4 @@
-* Hooray! We now support Android 10!
-* The orders tab has had an extreme makeover! Search and filtering share a single view that includes a total count of orders by order status. The orders list is displayed in two tabs: Processing & All.
-* The order detail view has also received some touchups.
-* Several minor bug fixes are also included in this release.
+* The app now supports refunds by amount. It’s available on the order detail screen, and lets you manually issue a partial or full refund for a paid order.
+* Products with multiple images now show all images in a gallery.
+* Bug fix: Rarely, the saving while on the “Add Order Note” screen would lead to a crash. Now, “rarely” is “never.”
+* The order detail view now includes the order’s shipping method.
