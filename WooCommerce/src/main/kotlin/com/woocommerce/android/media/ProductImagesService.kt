@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.collection.LongSparseArray
 import androidx.core.app.JobIntentService
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -74,6 +75,7 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var productStore: WCProductStore
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var networkStatus: NetworkStatus
 
     private val doneSignal = CountDownLatch(1)
 
@@ -95,6 +97,11 @@ class ProductImagesService : JobIntentService() {
 
         currentAction = intent.getSerializableExtra(KEY_ACTION) as Action
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
+
+        if (!networkStatus.isConnected()) {
+            handleFailure(remoteProductId)
+            return
+        }
 
         when (currentAction) {
             Action.UPLOAD_IMAGE -> handleUpload(intent, remoteProductId)
@@ -150,20 +157,27 @@ class ProductImagesService : JobIntentService() {
         // build a new image list containing all the product images except the passed one
         val remoteMediaId = intent.getLongExtra(KEY_REMOTE_MEDIA_ID, 0)
         val imageList = ArrayList<WCProductImageModel>()
+        var removedImage: WCProductImageModel? = null
         product.getImages().forEach { image ->
-            if (image.id != remoteMediaId) {
+            if (image.id == remoteMediaId) {
+                removedImage = image
+            } else {
                 imageList.add(image)
             }
         }
-        if (imageList.size == product.getImages().size) {
+        if (removedImage == null) {
             WooLog.w(T.MEDIA, "productImagesService > product image not found")
             handleFailure(remoteProductId)
             return
         }
 
+        // add to the list of removals
         currentRemovals.put(remoteProductId, remoteMediaId)
 
-        // first fire an event that the removal is starting
+        // remove the image from SQLite so it's no longer available to the ui
+        productStore.deleteProductImage(selectedSite.get(), remoteProductId, remoteMediaId)
+
+        // fire an event that the removal is starting
         EventBus.getDefault()
                 .post(OnProductImagesUpdateStartedEvent(Action.REMOVE_IMAGE, remoteProductId))
 
@@ -223,6 +237,11 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
+    private fun dispatchFetchProductAction(remoteProductId: Long) {
+        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductImagesChanged(event: OnProductImagesChanged) {
@@ -254,7 +273,15 @@ class ProductImagesService : JobIntentService() {
     private fun handleFailure(remoteProductId: Long) {
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(currentAction, remoteProductId, isError = true))
         doneSignal.countDown()
-        currentUploads.remove(remoteProductId)
+        if (currentAction == Action.UPLOAD_IMAGE) {
+            currentUploads.remove(remoteProductId)
+        } else if (currentAction == Action.REMOVE_IMAGE) {
+            currentRemovals.delete(remoteProductId)
+            // get the product again since we removed an image from SQLite before making the request
+            if (networkStatus.isConnected()) {
+                dispatchFetchProductAction(remoteProductId)
+            }
+        }
         currentAction = Action.NONE
     }
 }
