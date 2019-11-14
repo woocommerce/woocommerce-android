@@ -255,7 +255,7 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(!filterOrSearchEnabled)
         enableToolbarElevation(filterOrSearchEnabled)
 
-        if (isOrderStatusFilterEnabled() && isActive && !deferInit) {
+        if (isOrderStatusFilterEnabled() && !deferInit) {
             viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
         }
     }
@@ -284,6 +284,9 @@ class OrderListFragment : TopLevelFragment(),
         super.onDestroyView()
     }
 
+    /**
+     * Gets called when moving between TopLevelFragments
+     */
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
@@ -299,8 +302,6 @@ class OrderListFragment : TopLevelFragment(),
 
                 if (isSearching) {
                     clearSearchResults()
-                } else {
-                    viewModel.reloadListFromCache()
                 }
             }
         }
@@ -411,7 +412,6 @@ class OrderListFragment : TopLevelFragment(),
         })
 
         viewModel.start()
-        viewModel.loadList(orderStatusFilter, searchQuery, shouldExcludeFutureOrders())
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
