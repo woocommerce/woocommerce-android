@@ -95,6 +95,20 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
     }
 
+    @Test
+    fun `request to load new list fetches order status options and payment gateways if connected`() = test {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+        viewModel.loadList()
+
+        verify(viewModel.pagedListWrapper, times(1))?.fetchFirstPage()
+        verify(repository, times(1)).fetchOrderStatusOptionsFromApi()
+        verify(repository, times(1)).getCachedOrderStatusOptions()
+        verify(repository, times(1)).fetchPaymentGateways()
+    }
+
     /**
      * Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
      * once fetched, and verify expected methods are called the correct number of
@@ -125,7 +139,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `Request to fetch order status options while offline handled correctly`() = test {
         doReturn(false).whenever(networkStatus).isConnected()
 
-        viewModel.fetchOrdersAndOrderStatusOptions()
+        viewModel.fetchOrdersAndOrderDependencies()
 
         assertNull(viewModel.pagedListWrapper)
         assertEquals(viewModel.showSnackbarMessage.getOrAwaitValue(), R.string.offline_error)
@@ -388,5 +402,35 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertFalse(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.DataShown)
         }
+    }
+
+    @Test
+    fun `Payment gateways are fetched if network connected and variable set when successful`() = test {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+        viewModel.fetchPaymentGateways()
+
+        verify(repository, times(1)).fetchPaymentGateways()
+        assertTrue(viewModel.arePaymentGatewaysFetched)
+    }
+
+    @Test
+    fun `Payment gateways are not fetched if network not connected`() = test {
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        viewModel.fetchPaymentGateways()
+
+        verify(repository, times(0)).fetchPaymentGateways()
+        assertFalse(viewModel.arePaymentGatewaysFetched)
+    }
+
+    @Test
+    fun `Payment gateways are not fetched if already fetched and network connected`() = test {
+        viewModel.arePaymentGatewaysFetched = true
+
+        viewModel.fetchPaymentGateways()
+
+        verify(repository, times(0)).fetchPaymentGateways()
+        assertTrue(viewModel.arePaymentGatewaysFetched)
     }
 }

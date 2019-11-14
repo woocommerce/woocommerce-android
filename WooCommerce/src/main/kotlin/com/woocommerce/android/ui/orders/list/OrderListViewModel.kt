@@ -13,7 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.di.UI_THREAD
-import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -72,6 +72,9 @@ class OrderListViewModel @Inject constructor(
 
     @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var isRefreshPending = true
+
+    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var arePaymentGatewaysFetched = false
 
     protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
@@ -160,18 +163,19 @@ class OrderListViewModel @Inject constructor(
         })
 
         this.pagedListWrapper = pagedListWrapper
-        fetchOrdersAndOrderStatusOptions()
+        fetchOrdersAndOrderDependencies()
     }
 
     /**
      * Refresh the order list with fresh data from the API as well as refresh order status
-     * options if the network is available.
+     * options and payment gateways if the network is available.
      */
-    fun fetchOrdersAndOrderStatusOptions() {
+    fun fetchOrdersAndOrderDependencies() {
         if (networkStatus.isConnected()) {
             launch {
                 pagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
+                fetchPaymentGateways()
             }
         } else {
             isRefreshPending = true
@@ -186,8 +190,22 @@ class OrderListViewModel @Inject constructor(
         launch {
             // Fetch and load order status options
             when (repository.fetchOrderStatusOptionsFromApi()) {
-                RequestResult.SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
+                SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
                 else -> { /* do nothing */ }
+            }
+        }
+    }
+
+    /**
+     * Fetch payment gateways so they are available for order refunds later
+     */
+    fun fetchPaymentGateways() {
+        launch {
+            if (networkStatus.isConnected() && !arePaymentGatewaysFetched) {
+                when (repository.fetchPaymentGateways()) {
+                    SUCCESS -> arePaymentGatewaysFetched = true
+                    else -> { /* do nothing */ }
+                }
             }
         }
     }
@@ -252,7 +270,7 @@ class OrderListViewModel @Inject constructor(
                 isListEmpty = wrapper.isEmpty.value ?: true,
                 hasOrders = repository.hasCachedOrdersForSite(),
                 isError = wrapper.listError.value != null,
-                fetchFirstPage = this::fetchOrdersAndOrderStatusOptions)
+                fetchFirstPage = this::fetchOrdersAndOrderDependencies)
         _emptyViewState.postValue(emptyView)
     }
 

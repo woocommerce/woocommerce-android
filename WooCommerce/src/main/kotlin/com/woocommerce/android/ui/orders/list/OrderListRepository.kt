@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
@@ -13,6 +14,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
@@ -23,6 +25,7 @@ import kotlin.coroutines.resume
 class OrderListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val gatewayStore: WCGatewayStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -31,6 +34,7 @@ class OrderListRepository @Inject constructor(
     }
 
     private var isFetchingOrderStatusOptions = false
+    private var isFetchingPaymentGateways = false
     private var continuationOrderStatus: Continuation<RequestResult>? = null
 
     init {
@@ -69,6 +73,20 @@ class OrderListRepository @Inject constructor(
             } else {
                 emptyMap()
             }
+        }
+    }
+
+    suspend fun fetchPaymentGateways(): RequestResult {
+        return withContext(Dispatchers.IO) {
+            if (!isFetchingPaymentGateways) {
+                isFetchingPaymentGateways = true
+                val result = gatewayStore.fetchAllGateways(selectedSite.get())
+                isFetchingPaymentGateways = false
+                if (result.isError) {
+                    WooLog.e(ORDERS, "${result.error.type.name}: ${result.error.message}")
+                    RequestResult.ERROR
+                } else SUCCESS
+            } else RequestResult.NO_ACTION_NEEDED
         }
     }
 
