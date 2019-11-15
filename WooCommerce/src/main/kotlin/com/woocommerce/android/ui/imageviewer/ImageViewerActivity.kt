@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.imageviewer
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
@@ -98,6 +99,8 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_viewer)
+
+        setResult(Activity.RESULT_OK)
 
         remoteProductId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_PRODUCT_ID)
                 ?: intent.getLongExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, 0L)

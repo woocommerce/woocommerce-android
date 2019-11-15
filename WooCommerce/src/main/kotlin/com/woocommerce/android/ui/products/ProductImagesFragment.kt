@@ -220,7 +220,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_IMAGE_ADDED)
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
-                REQUEST_CODE_IMAGE_VIEWER -> data?.let {
+                REQUEST_CODE_IMAGE_VIEWER -> {
                     viewModel.loadProduct()
                 }
             }
