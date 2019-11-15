@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.model.Product
@@ -92,8 +93,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     private var confirmationDialog: AlertDialog? = null
     private var isConfirmationShowing = false
 
-    private var adapter: ImageViewerAdapter? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -112,20 +111,26 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                 ?: intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
         container.transitionName = transitionName
 
-        productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.let {
-            images = it.getImages()
+        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+        if (product == null) {
+            Snackbar.make(container, R.string.product_detail_fetch_product_error, Snackbar.LENGTH_SHORT)
+                    .show()
+            finishAfterTransition()
+            return
         }
-        // TODO: handle null product
 
         val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
         toolbar.background = ColorDrawable(toolbarColor)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = product.name
 
         // PhotoView doesn't play nice with shared element transitions if we rotate before exiting, so we
         // use this variable to skip the transition if the activity is re-created
         canTransitionOnFinish = savedInstanceState == null
 
+        images = product.getImages()
+        setupViewPager()
         showToolbar(true)
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMATION_SHOWING) == true) {
@@ -248,9 +253,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     private fun setupViewPager() {
-        adapter = ImageViewerAdapter(supportFragmentManager)
-        viewPager.setAdapter(adapter)
-        // TODO viewPager.setPageTransformer(false, WPViewPagerTransformer(TransformType.SLIDE_OVER))
+        viewPager.setAdapter(ImageViewerAdapter(supportFragmentManager))
 
         // determine the position of the original media item so we can page to it immediately
         for (index in images.indices) {

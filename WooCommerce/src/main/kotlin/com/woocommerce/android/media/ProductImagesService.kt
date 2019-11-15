@@ -35,7 +35,7 @@ import javax.inject.Inject
  *      1. Uploads the image to the WP media library
  *      2. When the upload completes, adds the uploaded media to the product
  *
- * For now tbe service only supports uploading a single image, but down the road
+ * For now the service only supports uploading a single image, but down the road
  * we can extend it to support multiple uploads.
  */
 class ProductImagesService : JobIntentService() {
