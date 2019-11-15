@@ -64,6 +64,8 @@ class ReviewListViewModel @AssistedInject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
+
+        start()
     }
 
     override fun onCleared() {
@@ -77,7 +79,7 @@ class ReviewListViewModel @AssistedInject constructor(
      * Fetch and load cached reviews from the database, then fetch fresh reviews
      * from the API.
      */
-    fun start() {
+    private fun start() {
         launch {
             viewState = viewState.copy(isSkeletonShown = true)
 
