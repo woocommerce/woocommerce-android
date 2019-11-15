@@ -73,18 +73,24 @@ object WooAnimUtils {
     }
 
     fun scaleOut(target: View, animDuration: Duration = DEFAULT_DURATION) {
-        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0f)
-        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0f)
-
-        with(ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
-            duration = animDuration.toMillis(target.context)
-            interpolator = AccelerateDecelerateInterpolator()
+        with(getScaleOutAnim(target, animDuration)) {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     target.visibility = View.GONE
                 }
             })
             start()
+        }
+    }
+
+    fun getScaleOutAnim(target: View,  animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
+        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0f)
+        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0f)
+
+        with(ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
+            duration = animDuration.toMillis(target.context)
+            interpolator = AccelerateDecelerateInterpolator()
+            return this
         }
     }
 

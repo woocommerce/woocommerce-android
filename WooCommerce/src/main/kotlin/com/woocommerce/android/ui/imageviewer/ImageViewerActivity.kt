@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.imageviewer
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.AlertDialog
@@ -23,11 +25,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
+import com.woocommerce.android.util.WooAnimUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_image_viewer.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
@@ -83,6 +86,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var remoteProductId = 0L
     private var remoteMediaId = 0L
@@ -90,6 +94,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     private lateinit var transitionName: String
     private lateinit var viewModel: ImageViewerViewModel
+    private lateinit var pagerAdapter: ImageViewerAdapter
 
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
@@ -145,13 +150,16 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     private fun setupObservers(viewModel: ImageViewerViewModel) {
         viewModel.product.observe(this, Observer { product ->
-            // finish if the user removed the only product image
             if (product.images.isEmpty()) {
                 finishAfterTransition()
             } else {
                 supportActionBar?.title = product.name
                 setupViewPager(product.images)
             }
+        })
+
+        viewModel.showSnackbarMessage.observe(this, Observer { msgId ->
+            uiMessageResolver.showSnack(msgId)
         })
     }
 
@@ -213,7 +221,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     override fun onImageLoadError() {
-        Snackbar.make(container, R.string.error_loading_image, Snackbar.LENGTH_SHORT).show()
+        uiMessageResolver.showSnack(R.string.error_loading_image)
     }
 
     /**
@@ -225,13 +233,36 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
-                    didRemoveImage = true
-                    viewModel.removeProductImage(remoteMediaId)
+                    removeProductImage()
                 }
                 .setNegativeButton(R.string.dont_remove) { _, _ ->
                     isConfirmationShowing = false
                 }
                 .show()
+    }
+
+    private fun removeProductImage() {
+        val newImageCount = pagerAdapter.count - 1
+
+        // animate the viewPager out, then remove the image and animate it back in - this gives
+        // the appearance of the removed image being tossed away
+        with(WooAnimUtils.getScaleOutAnim(viewPager)) {
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator?) {
+                    didRemoveImage = true
+                    canTransitionOnFinish = false
+                }
+                override fun onAnimationEnd(animation: Animator) {
+                    viewModel.removeProductImage(remoteMediaId)
+                    // activity will finish if we removed the last image, so only scale back in
+                    // if there are more images
+                    if (newImageCount > 0) {
+                        WooAnimUtils.scaleIn(viewPager)
+                    }
+                }
+            })
+            start()
+        }
     }
 
     private fun showToolbar(show: Boolean) {
@@ -276,15 +307,23 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     private fun setupViewPager(images: List<WCProductImageModel>) {
-        viewPager.adapter = ImageViewerAdapter(supportFragmentManager, images)
+        pagerAdapter = ImageViewerAdapter(supportFragmentManager, images)
+        viewPager.adapter = pagerAdapter
         viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
 
         // determine the position of the original media item so we can page to it immediately
+        var currentPos = -1
         for (index in images.indices) {
             if (remoteMediaId == images[index].id) {
-                viewPager.currentItem = index
+                currentPos = index
                 break
             }
+        }
+        if (currentPos >= 0) {
+            viewPager.currentItem = currentPos
+        } else {
+            // image was removed so reset to the first one
+            remoteMediaId = images[0].id
         }
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
