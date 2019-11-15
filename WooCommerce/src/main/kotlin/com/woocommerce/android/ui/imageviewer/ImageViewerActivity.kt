@@ -142,8 +142,13 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     private fun setupObservers(viewModel: ImageViewerViewModel) {
         viewModel.product.observe(this, Observer { product ->
-            supportActionBar?.title = product.name
-            setupViewPager(product.images)
+            // finish if the user removed the only product image
+            if (product.images.isEmpty()) {
+                finishAfterTransition()
+            } else {
+                supportActionBar?.title = product.name
+                setupViewPager(product.images)
+            }
         })
     }
 
