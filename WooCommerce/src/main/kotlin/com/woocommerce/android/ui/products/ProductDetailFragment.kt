@@ -26,6 +26,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -59,7 +60,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private var productTitle = ""
     private var isVariation = false
-    private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
@@ -88,6 +88,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
+        textAddImage.setDrawableColor(R.color.grey_darken_10)
     }
 
     private fun initializeViewModel() {
@@ -105,6 +106,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         viewModel.productData.observe(this, Observer {
             showProduct(it)
+        })
+
+        viewModel.addProductImage.observe(this, Observer {
+            showProductImages()
         })
 
         viewModel.shareProduct.observe(this, Observer {
@@ -147,7 +152,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
-            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
+            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageGallery.height
         } else {
             skeletonView.hide()
         }
@@ -173,7 +178,20 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         updateActivityTitle()
-        imageGallery.showProductImages(product, this)
+
+        if (product.images.isEmpty() && viewModel.isUploadingProductImage.value == false) {
+            imageGallery.visibility = View.GONE
+            if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+                addImageContainer.visibility = View.VISIBLE
+                addImageContainer.setOnClickListener {
+                    viewModel.onAddImageClicked()
+                }
+            }
+        } else {
+            addImageContainer.visibility = View.GONE
+            imageGallery.visibility = View.VISIBLE
+            imageGallery.showProductImages(product, this)
+        }
 
         isVariation = product.type == ProductType.VARIATION
 
@@ -521,12 +539,16 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
+        showProductImages(imageModel, imageView)
+    }
+
+    private fun showProductImages(imageModel: WCProductImageModel? = null, imageView: View? = null) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
             val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
             findNavController().navigate(action)
-        } else {
+        } else if (imageModel != null) {
             viewModel.productData.value?.product?.let { product ->
                 ImageViewerActivity.showProductImage(
                         this,
