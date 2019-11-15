@@ -5,7 +5,6 @@ import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -18,27 +17,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
 import kotlinx.android.synthetic.main.activity_image_viewer.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
+import org.wordpress.android.fluxc.store.WCProductStore
+import javax.inject.Inject
 
 /**
  * Full-screen product image viewer with pinch-and-zoom
  */
-class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
+class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     companion object {
         const val EXTRA_REMOVE_REMOTE_IMAGE_ID = "remove_remote_media_id"
 
         private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
-        private const val KEY_IMAGE_URL = "image_url"
-        private const val KEY_IMAGE_TITLE = "image_title"
         private const val KEY_IMAGE_REMOTE_PRODUCT_ID = "remote_product_id"
         private const val KEY_TRANSITION_NAME = "transition_name"
         private const val KEY_ENABLE_REMOVE_IMAGE = "enable_remove_image"
@@ -59,14 +58,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             val intent = Intent(context, ImageViewerActivity::class.java).also {
                 it.putExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, productModel.remoteId)
                 it.putExtra(KEY_IMAGE_REMOTE_MEDIA_ID, imageModel.id)
-                it.putExtra(KEY_IMAGE_URL, imageModel.src)
                 it.putExtra(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
-
-                if (imageModel.name.isNotEmpty()) {
-                    it.putExtra(KEY_IMAGE_TITLE, imageModel.name)
-                } else {
-                    it.putExtra(KEY_IMAGE_TITLE, productModel.name)
-                }
             }
 
             // use a shared element transition if a shared element view was passed, otherwise default to fade-in
@@ -83,19 +75,23 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
+    @Inject lateinit var productStore: WCProductStore
+    @Inject lateinit var selectedSite: SelectedSite
+
     private var remoteProductId = 0L
     private var remoteMediaId = 0L
     private var enableRemoveImage = false
 
-    private lateinit var imageUrl: String
-    private lateinit var imageTitle: String
     private lateinit var transitionName: String
+    private lateinit var images: List<WCProductImageModel>
 
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
 
     private var confirmationDialog: AlertDialog? = null
     private var isConfirmationShowing = false
+
+    private var adapter: ImageViewerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,38 +104,28 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         remoteMediaId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_MEDIA_ID)
                 ?: intent.getLongExtra(KEY_IMAGE_REMOTE_MEDIA_ID, 0L)
 
-        imageUrl = savedInstanceState?.getString(KEY_IMAGE_URL)
-                ?: intent.getStringExtra(KEY_IMAGE_URL) ?: intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
-
-        imageTitle = savedInstanceState?.getString(KEY_IMAGE_TITLE)
-                ?: intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
-
         enableRemoveImage = savedInstanceState?.getBoolean(KEY_ENABLE_REMOVE_IMAGE)
                 ?: intent.getBooleanExtra(KEY_ENABLE_REMOVE_IMAGE, false)
 
         transitionName = savedInstanceState?.getString(KEY_TRANSITION_NAME)
                 ?: intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
-        photoView.transitionName = transitionName
+        container.transitionName = transitionName
+
+        productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.let {
+            images = it.getImages()
+        }
+        // TODO: handle null product
 
         val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
         toolbar.background = ColorDrawable(toolbarColor)
         setSupportActionBar(toolbar)
-        supportActionBar?.let {
-            it.title = imageTitle
-            it.setDisplayShowTitleEnabled(imageTitle.isNotEmpty())
-            it.setDisplayHomeAsUpEnabled(true)
-        }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // PhotoView doesn't play nice with shared element transitions if we rotate before exiting, so we
         // use this variable to skip the transition if the activity is re-created
         canTransitionOnFinish = savedInstanceState == null
 
-        loadImage()
         showToolbar(true)
-
-        photoView.setOnPhotoTapListener { view, x, y ->
-            showToolbar(true)
-        }
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMATION_SHOWING) == true) {
             confirmRemoveProductImage()
@@ -150,8 +136,6 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         outState?.let { bundle ->
             bundle.putLong(KEY_IMAGE_REMOTE_PRODUCT_ID, remoteProductId)
             bundle.putLong(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
-            bundle.putString(KEY_IMAGE_URL, imageUrl)
-            bundle.putString(KEY_IMAGE_TITLE, imageTitle)
             bundle.putString(KEY_TRANSITION_NAME, transitionName)
             bundle.putBoolean(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
             bundle.putBoolean(KEY_IS_CONFIRMATION_SHOWING, isConfirmationShowing)
@@ -194,14 +178,10 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
-    private fun loadImage() {
-        showProgress(true)
-
-        GlideApp.with(this)
-                .load(imageUrl)
-                .listener(this)
-                .into(photoView)
+    override fun onImageTapped() {
+        showToolbar(true)
     }
+
 
     /**
      * Confirms that the user meant to remove this image from the product - the actual removal must be
@@ -224,10 +204,6 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                     isConfirmationShowing = false
                 })
                 .show()
-    }
-
-    private fun showProgress(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showToolbar(show: Boolean) {
@@ -271,39 +247,35 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         showToolbar(false)
     }
 
-    /**
-     * Glide failed to load the image, show a snackbar alerting user to the error and finish after it's dismissed
-     */
-    override fun onLoadFailed(
-        e: GlideException?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        isFirstResource: Boolean
-    ): Boolean {
-        showProgress(false)
-        val callback = object : Snackbar.Callback() {
-            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                super.onDismissed(transientBottomBar, event)
-                finish()
+    private fun setupViewPager() {
+        adapter = ImageViewerAdapter(supportFragmentManager)
+        viewPager.setAdapter(adapter)
+        // TODO viewPager.setPageTransformer(false, WPViewPagerTransformer(TransformType.SLIDE_OVER))
+
+        // determine the position of the original media item so we can page to it immediately
+        for (index in images.indices) {
+            if (remoteMediaId == images[index].id) {
+                viewPager.setCurrentItem(index)
+                break
             }
         }
-        Snackbar.make(snack_root, R.string.error_loading_image, Snackbar.LENGTH_SHORT)
-                .addCallback(callback)
-                .show()
-        return false
+
+        viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                showToolbar(true)
+                remoteMediaId = images[position].id
+            }
+        })
     }
 
-    /**
-     * Glide has loaded the image, hide the progress bar and add our photo attacher which enables pinch/zoom
-     */
-    override fun onResourceReady(
-        resource: Drawable?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        dataSource: DataSource?,
-        isFirstResource: Boolean
-    ): Boolean {
-        showProgress(false)
-        return false
+    internal inner class ImageViewerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+        override fun getItem(position: Int): Fragment {
+            val fragment = ImageViewerFragment.newInstance(images[position])
+            return fragment
+        }
+
+        override fun getCount(): Int {
+            return images.size
+        }
     }
 }
