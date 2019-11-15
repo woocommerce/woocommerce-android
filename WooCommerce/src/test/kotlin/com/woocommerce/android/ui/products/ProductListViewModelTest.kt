@@ -13,10 +13,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowSnackbar
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -27,6 +28,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val savedState: SavedStateHandle = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -45,7 +47,8 @@ class ProductListViewModelTest : BaseUnitTest() {
                         savedState,
                         coroutineDispatchers,
                         productRepository,
-                        networkStatus
+                        networkStatus,
+                        resourceProvider
                 )
         )
     }
@@ -72,7 +75,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var message: Int? = null
+        var message: String? = null
         viewModel.event.observeForever { message = (it as ShowSnackbar).message }
 
         verify(productRepository, times(1)).getProductList()

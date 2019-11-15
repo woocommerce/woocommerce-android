@@ -14,12 +14,13 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Exit
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.ShowSnackbar
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions
@@ -39,6 +40,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val repository: ReviewDetailRepository = mock()
     private val savedState: SavedStateHandle = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -51,7 +53,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
 
         viewModel = spy(
-                ReviewDetailViewModel(savedState, coroutineDispatchers, networkStatus, repository))
+                ReviewDetailViewModel(savedState, coroutineDispatchers, networkStatus, repository, resourceProvider))
 
         doReturn(true).whenever(networkStatus).isConnected()
     }
@@ -93,7 +95,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
         }
 
-        var message: Int? = null
+        var message: String? = null
         var markAsRead: Long? = null
         viewModel.event.observeForever {
             when (it) {
@@ -150,7 +152,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         // a reference to it.
         viewModel.start(REVIEW_ID)
 
-        var message: Int? = null
+        var message: String? = null
         var exitCalled = false
         viewModel.event.observeForever {
             when (it) {

@@ -13,11 +13,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -38,6 +39,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
     private val savedState: SavedStateHandle = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -67,7 +69,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         productRepository,
                         networkStatus,
                         currencyFormatter,
-                        wooCommerceStore
+                        wooCommerceStore,
+                        resourceProvider
                 )
         )
         val prodSettings = WCProductSettingsModel(0).apply {
@@ -103,7 +106,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         whenever(productRepository.fetchProduct(productRemoteId)).thenReturn(null)
         whenever(productRepository.getProduct(productRemoteId)).thenReturn(null)
 
-        var message: Int? = null
+        var message: String? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) message = it.message
         }
@@ -120,7 +123,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        var message: Int? = null
+        var message: String? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) message = it.message
         }
