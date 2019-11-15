@@ -175,7 +175,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     override fun finishAfterTransition() {
         // let the calling fragment know the product's images were changed
         if (didRemoveImage) {
-            val data = Intent().also { it.putExtra(KEY_DID_REMOVE_IMAGE, true)}
+            val data = Intent().also { it.putExtra(KEY_DID_REMOVE_IMAGE, true) }
             setResult(Activity.RESULT_OK, data)
         }
 
