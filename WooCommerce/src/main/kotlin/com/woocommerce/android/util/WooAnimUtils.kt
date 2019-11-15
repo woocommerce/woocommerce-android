@@ -83,7 +83,7 @@ object WooAnimUtils {
         }
     }
 
-    fun getScaleOutAnim(target: View,  animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
+    fun getScaleOutAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0f)
 

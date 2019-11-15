@@ -243,6 +243,16 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     private fun removeProductImage() {
         val newImageCount = pagerAdapter.count - 1
+        val currentMediaId = remoteMediaId
+
+        // determine the image to return to when the adapter is reloaded following the image removal
+        val newMediaId = if (newImageCount == 0) {
+            0
+        } else if (viewPager.currentItem > 0) {
+            pagerAdapter.images[viewPager.currentItem - 1].id
+        } else {
+            pagerAdapter.images[viewPager.currentItem + 1].id
+        }
 
         // animate the viewPager out, then remove the image and animate it back in - this gives
         // the appearance of the removed image being tossed away
@@ -253,7 +263,8 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                     canTransitionOnFinish = false
                 }
                 override fun onAnimationEnd(animation: Animator) {
-                    viewModel.removeProductImage(remoteMediaId)
+                    remoteMediaId = newMediaId
+                    viewModel.removeProductImage(currentMediaId)
                     // activity will finish if we removed the last image, so only scale back in
                     // if there are more images
                     if (newImageCount > 0) {
@@ -312,18 +323,11 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
 
         // determine the position of the original media item so we can page to it immediately
-        var currentPos = -1
         for (index in images.indices) {
             if (remoteMediaId == images[index].id) {
-                currentPos = index
+                viewPager.currentItem = index
                 break
             }
-        }
-        if (currentPos >= 0) {
-            viewPager.currentItem = currentPos
-        } else {
-            // image was removed so reset to the first one
-            remoteMediaId = images[0].id
         }
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
