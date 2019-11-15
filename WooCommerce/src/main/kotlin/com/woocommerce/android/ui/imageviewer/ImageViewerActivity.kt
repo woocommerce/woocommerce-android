@@ -208,9 +208,9 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                     setResult(Activity.RESULT_OK, data)
                     finishAfterTransition()
                 }
-                .setNegativeButton(R.string.dont_remove, { _, _ ->
+                .setNegativeButton(R.string.dont_remove) { _, _ ->
                     isConfirmationShowing = false
-                })
+                }
                 .show()
     }
 
@@ -256,13 +256,13 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     private fun setupViewPager(images: List<WCProductImageModel>) {
-        viewPager.setAdapter(ImageViewerAdapter(supportFragmentManager, images))
+        viewPager.adapter = ImageViewerAdapter(supportFragmentManager, images)
         viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
 
         // determine the position of the original media item so we can page to it immediately
         for (index in images.indices) {
             if (remoteMediaId == images[index].id) {
-                viewPager.setCurrentItem(index)
+                viewPager.currentItem = index
                 break
             }
         }
@@ -280,8 +280,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     internal inner class ImageViewerAdapter(fm: FragmentManager, val images: List<WCProductImageModel>) :
             FragmentStatePagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {
-            val fragment = ImageViewerFragment.newInstance(images[position])
-            return fragment
+            return ImageViewerFragment.newInstance(images[position])
         }
 
         override fun getCount(): Int {
