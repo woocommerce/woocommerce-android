@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.reviews.ReviewListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions
@@ -36,7 +35,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
     private val savedState: SavedStateHandle = mock()
-    private val resourceProvider: ResourceProvider = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -46,10 +44,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
-        doReturn(true).whenever(networkStatus).isConnected()
-    }
 
-    private fun createViewModel() {
         viewModel = spy(
                 ReviewListViewModel(
                         savedState,
@@ -57,10 +52,11 @@ class ReviewListViewModelTest : BaseUnitTest() {
                         networkStatus,
                         dispatcher,
                         selectedSite,
-                        reviewListRepository,
-                        resourceProvider
+                        reviewListRepository
                 )
         )
+
+        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     /**
@@ -78,8 +74,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
-        createViewModel()
-
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
         val skeletonShown = mutableListOf<Boolean>()
@@ -93,6 +87,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { hasUnread = it }
         }
+
+        viewModel.start()
 
         verify(reviewListRepository, times(1)).fetchProductReviews(any())
         verify(reviewListRepository, times(2)).getCachedProductReviews()
@@ -106,19 +102,21 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(false).whenever(networkStatus).isConnected()
 
-        createViewModel()
-
-        var message: String? = null
-        viewModel.event.observeForever { if (it is ShowSnackbar) message = it.message }
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
 
         val skeletonShown = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
         }
 
+        viewModel.start()
+
         verify(reviewListRepository, times(0)).fetchProductReviews(any())
         verify(reviewListRepository, times(1)).getCachedProductReviews()
-        Assertions.assertThat(message).isEqualTo(R.string.offline_error)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
     }
 
@@ -128,8 +126,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(false).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(RequestResult.ERROR).whenever(reviewListRepository).fetchProductReviews(any())
-
-        createViewModel()
 
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
@@ -145,15 +141,19 @@ class ReviewListViewModelTest : BaseUnitTest() {
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { hasUnread = it }
         }
 
-        var message: String? = null
-        viewModel.event.observeForever { if (it is ShowSnackbar) message = it.message }
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.start()
 
         verify(reviewListRepository, times(1)).fetchProductReviews(any())
         verify(reviewListRepository, times(1)).getCachedProductReviews()
         Assertions.assertThat(reviewList).isEqualTo(reviews)
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
-        Assertions.assertThat(message).isEqualTo(R.string.review_fetch_error)
         assertFalse(hasUnread)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.review_fetch_error))
     }
 
     @Test
@@ -161,12 +161,12 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
-        createViewModel()
-
         val skeletonShown = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
         }
+
+        viewModel.start()
 
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
     }
@@ -175,8 +175,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
     fun `Shows and hides review list load more progress correctly`() = test {
         doReturn(true).whenever(reviewListRepository).canLoadMore
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
-
-        createViewModel()
 
         val isLoadingMore = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -191,8 +189,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
     fun `Report has unread reviews status correctly`() = test {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
 
-        createViewModel()
-
         var hasUnread = false
         viewModel.viewStateData.observeForever { old, new ->
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { hasUnread = it }
@@ -206,8 +202,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
     fun `Refreshing reviews list handled correctly`() = test {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
-
-        createViewModel()
 
         var hasUnread = false
         val isRefreshing = mutableListOf<Boolean>()
@@ -224,15 +218,14 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Marking all reviews as read while offline handled correctly`() = test {
         doReturn(false).whenever(networkStatus).isConnected()
-        doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
 
-        createViewModel()
-
-        var message: String? = null
-        viewModel.event.observeForever { if (it is ShowSnackbar) message = it.message }
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
 
         viewModel.markAllReviewsAsRead()
-        Assertions.assertThat(message).isEqualTo(R.string.offline_error)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -240,20 +233,18 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).markAllProductReviewsAsRead()
 
-        createViewModel()
-
         val markReadActions = mutableListOf<ActionStatus>()
-        var message: String? = null
+        var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             when (it) {
-                is ShowSnackbar -> message = it.message
+                is ShowSnackbar -> snackbar = it
                 is MarkAllAsRead -> markReadActions.add(it.status)
             }
         }
 
         viewModel.markAllReviewsAsRead()
         Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.SUCCESS)
-        Assertions.assertThat(message).isEqualTo(R.string.wc_mark_all_read_success)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_success))
     }
 
     @Test
@@ -261,19 +252,17 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(RequestResult.ERROR).whenever(reviewListRepository).markAllProductReviewsAsRead()
 
-        createViewModel()
-
         val markReadActions = mutableListOf<ActionStatus>()
-        var message: String? = null
+        var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             when (it) {
-                is ShowSnackbar -> message = it.message
+                is ShowSnackbar -> snackbar = it
                 is MarkAllAsRead -> markReadActions.add(it.status)
             }
         }
 
         viewModel.markAllReviewsAsRead()
         Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
-        Assertions.assertThat(message).isEqualTo(R.string.wc_mark_all_read_error)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
     }
 }

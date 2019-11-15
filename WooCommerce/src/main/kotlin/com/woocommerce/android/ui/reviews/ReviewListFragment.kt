@@ -155,6 +155,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
+        viewModel.start()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

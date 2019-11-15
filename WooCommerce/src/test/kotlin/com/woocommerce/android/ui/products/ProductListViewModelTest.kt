@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -28,7 +27,6 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val savedState: SavedStateHandle = mock()
-    private val resourceProvider: ResourceProvider = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -47,8 +45,7 @@ class ProductListViewModelTest : BaseUnitTest() {
                         savedState,
                         coroutineDispatchers,
                         productRepository,
-                        networkStatus,
-                        resourceProvider
+                        networkStatus
                 )
         )
     }
@@ -75,13 +72,15 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var message: String? = null
-        viewModel.event.observeForever { message = (it as ShowSnackbar).message }
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
 
         verify(productRepository, times(1)).getProductList()
         verify(productRepository, times(0)).fetchProductList()
 
-        assertThat(message).isEqualTo(R.string.offline_error)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
