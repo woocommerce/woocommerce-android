@@ -22,16 +22,16 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.ui.orders.notes.OrderNoteRepository
 import com.woocommerce.android.model.PaymentGateway
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ExitAfterRefund
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbar
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -218,10 +218,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             triggerEvent(
                     ShowSnackbar(
-                            resourceProvider.getString(
-                                    R.string.order_refunds_amount_refund_progress_message,
-                                    formatCurrency(refundByAmountState.enteredAmount)
-                            ),
+                            R.string.order_refunds_amount_refund_progress_message,
+                            listOf(formatCurrency(refundByAmountState.enteredAmount)),
                             undoAction = {
                                 AnalyticsTracker.track(
                                         CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
@@ -269,11 +267,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
                         )
 
-                        triggerEvent(
-                                ShowSnackbar(
-                                        resourceProvider.getString(R.string.order_refunds_amount_refund_error)
-                                )
-                        )
+                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
                     } else {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
@@ -284,18 +278,14 @@ class IssueRefundViewModel @AssistedInject constructor(
                             noteRepository.createOrderNote(order.identifier, reason, true)
                         }
 
-                        triggerEvent(
-                                ShowSnackbar(
-                                        resourceProvider.getString(R.string.order_refunds_amount_refund_successful)
-                                )
-                        )
-                        triggerEvent(ExitAfterRefund)
+                        triggerEvent(ShowSnackbar(string.order_refunds_amount_refund_successful))
+                        triggerEvent(Exit)
                     }
                 }
                 refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
             }
         } else {
-            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
     }
 
@@ -369,11 +359,9 @@ class IssueRefundViewModel @AssistedInject constructor(
     ) : Parcelable
 
     sealed class IssueRefundEvent : Event() {
-        data class ShowSnackbar(val message: String, val undoAction: (() -> Unit)? = null) : IssueRefundEvent()
         data class ShowValidationError(val message: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
         object ShowRefundSummary : IssueRefundEvent()
-        object ExitAfterRefund : IssueRefundEvent()
     }
 
     @AssistedInject.Factory
