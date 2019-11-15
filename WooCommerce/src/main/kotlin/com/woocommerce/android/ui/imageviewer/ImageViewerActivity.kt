@@ -193,7 +193,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     /**
      * Confirms that the user meant to remove this image from the product - the actual removal must be
-     * done in the calling activity
+     * done in the calling fragment
      */
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true

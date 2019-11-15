@@ -34,9 +34,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         }
     }
 
-    private var remoteMediaId = 0L
     private lateinit var imageUrl: String
-    private lateinit var imageTitle: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +77,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     }
 
     /**
-     * Glide failed to load the image, show a snackbar alerting user to the error and finish after it's dismissed
+     * Glide failed to load the image, alert the host activity
      */
     override fun onLoadFailed(
         e: GlideException?,
@@ -93,7 +91,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     }
 
     /**
-     * Glide has loaded the image, hide the progress bar and add our photo attacher which enables pinch/zoom
+     * Glide has loaded the image, hide the progress bar
      */
     override fun onResourceReady(
         resource: Drawable?,
