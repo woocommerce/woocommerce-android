@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.ui.base.BaseFragment
@@ -214,14 +215,24 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_CODE_CHOOSE_PHOTO -> data?.data?.let { imageUri ->
+                    AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_ADDED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                    )
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
                 REQUEST_CODE_CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
+                    AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_ADDED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                    )
+                    AnalyticsTracker.track(Stat.PRODUCT_IMAGE_ADDED)
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
                 REQUEST_CODE_IMAGE_VIEWER -> data?.let { intent ->
                     val remoteMediaId = intent.getLongExtra(ImageViewerActivity.EXTRA_REMOVE_REMOTE_IMAGE_ID, 0)
                     if (remoteMediaId > 0) {
+                        AnalyticsTracker.track(Stat.PRODUCT_IMAGE_REMOVED)
                         viewModel.removeProductMedia(navArgs.remoteProductId, remoteMediaId)
                     }
                 }
