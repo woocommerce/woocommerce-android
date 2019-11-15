@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
