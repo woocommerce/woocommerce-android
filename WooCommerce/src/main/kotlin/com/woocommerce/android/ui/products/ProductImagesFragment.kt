@@ -113,18 +113,9 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
         viewModel.isUploadingProductImage.observe(this, Observer {
             if (it) {
-                imageGallery.addPlaceholder()
+                imageGallery.addUploadPlaceholder()
             } else {
-                imageGallery.removePlaceholder()
-            }
-        })
-
-        viewModel.isRemovingProductImage.observe(this, Observer {
-            val remoteMediaId = viewModel.removingRemoteMediaId
-            if (it) {
-                imageGallery.addPlaceholder(remoteMediaId)
-            } else {
-                imageGallery.removePlaceholder(remoteMediaId)
+                imageGallery.removeUploadPlaceholder()
             }
         })
 

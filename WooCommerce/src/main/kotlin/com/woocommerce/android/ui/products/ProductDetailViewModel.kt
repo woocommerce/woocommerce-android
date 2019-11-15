@@ -7,7 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion.Action
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -211,11 +210,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         setIsUploadingImage(false)
         if (event.isError) {
-            _showSnackbarMessage.value = when (event.action) {
-                Action.UPLOAD_IMAGE -> R.string.product_image_service_error_uploading
-                Action.REMOVE_IMAGE -> R.string.product_image_service_error_removing
-                else -> R.string.error_generic_network
-            }
+            _showSnackbarMessage.value = R.string.product_image_service_error_uploading
         } else {
             loadProduct(remoteProductId)
         }

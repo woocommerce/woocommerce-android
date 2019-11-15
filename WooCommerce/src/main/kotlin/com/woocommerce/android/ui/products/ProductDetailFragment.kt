@@ -122,9 +122,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         viewModel.isUploadingProductImage.observe(this, Observer {
             if (it) {
-                imageGallery.addPlaceholder()
+                imageGallery.addUploadPlaceholder()
             } else {
-                imageGallery.removePlaceholder()
+                imageGallery.removeUploadPlaceholder()
             }
         })
 
