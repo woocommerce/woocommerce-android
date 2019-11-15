@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
@@ -18,18 +17,15 @@ import org.wordpress.android.fluxc.model.WCProductImageModel
 class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
-        private const val KEY_IMAGE_TITLE = "image_title"
-        private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
 
         interface ImageViewerListener {
             fun onImageTapped()
+            fun onImageLoadError()
         }
 
         fun newInstance(imageModel: WCProductImageModel): ImageViewerFragment {
             val args = Bundle().also {
                 it.putString(KEY_IMAGE_URL, imageModel.src)
-                it.putString(KEY_IMAGE_TITLE, imageModel.name)
-                it.putLong(KEY_IMAGE_REMOTE_MEDIA_ID, imageModel.id)
             }
             ImageViewerFragment().also {
                 it.arguments = args
@@ -44,10 +40,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        remoteMediaId = arguments?.getLong(KEY_IMAGE_REMOTE_MEDIA_ID, 0L) ?: 0L
         imageUrl = arguments?.getString(KEY_IMAGE_URL) ?: ""
-        imageTitle = arguments?.getString(KEY_IMAGE_TITLE) ?: ""
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -63,9 +56,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putLong(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
         outState.putString(KEY_IMAGE_URL, imageUrl)
-        outState.putString(KEY_IMAGE_TITLE, imageTitle)
         super.onSaveInstanceState(outState)
     }
 
@@ -97,15 +88,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-        val callback = object : Snackbar.Callback() {
-            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                super.onDismissed(transientBottomBar, event)
-                // TODO: finish()
-            }
-        }
-        Snackbar.make(photoViewContainer, R.string.error_loading_image, Snackbar.LENGTH_SHORT)
-                .addCallback(callback)
-                .show()
+        (activity as? ImageViewerListener)?.onImageLoadError()
         return false
     }
 

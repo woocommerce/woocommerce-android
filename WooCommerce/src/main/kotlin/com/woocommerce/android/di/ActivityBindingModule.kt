@@ -57,8 +57,7 @@ abstract class ActivityBindingModule {
             ReviewDetailModule::class,
             SitePickerModule::class,
             AddOrderShipmentTrackingModule::class,
-            AddOrderTrackingProviderListModule::class,
-            ImageViewerModule::class))
+            AddOrderTrackingProviderListModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
@@ -89,5 +88,5 @@ abstract class ActivityBindingModule {
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(ImageViewerModule::class))
-    abstract fun provideImageViewerActivityInjector(): ImageViewerActivity
+    abstract fun provideImageViewerActivity(): ImageViewerActivity
 }

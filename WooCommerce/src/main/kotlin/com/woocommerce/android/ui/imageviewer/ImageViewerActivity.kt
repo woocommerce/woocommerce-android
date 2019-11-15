@@ -28,6 +28,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_image_viewer.*
+import kotlinx.android.synthetic.main.fragment_image_viewer.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -85,7 +86,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     private var enableRemoveImage = false
 
     private lateinit var transitionName: String
-    private lateinit var images: List<WCProductImageModel>
 
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
@@ -129,8 +129,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         // use this variable to skip the transition if the activity is re-created
         canTransitionOnFinish = savedInstanceState == null
 
-        images = product.getImages()
-        setupViewPager()
+        setupViewPager(product.getImages())
         showToolbar(true)
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMATION_SHOWING) == true) {
@@ -186,6 +185,10 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     override fun onImageTapped() {
         showToolbar(true)
+    }
+
+    override fun onImageLoadError() {
+        Snackbar.make(photoViewContainer, R.string.error_loading_image, Snackbar.LENGTH_SHORT).show()
     }
 
     /**
@@ -252,8 +255,9 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         showToolbar(false)
     }
 
-    private fun setupViewPager() {
-        viewPager.setAdapter(ImageViewerAdapter(supportFragmentManager))
+    private fun setupViewPager(images: List<WCProductImageModel>) {
+        viewPager.setAdapter(ImageViewerAdapter(supportFragmentManager, images))
+        viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
 
         // determine the position of the original media item so we can page to it immediately
         for (index in images.indices) {
@@ -267,13 +271,14 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
             override fun onPageSelected(position: Int) {
                 // don't add an exit transition if the user swiped to another image
                 canTransitionOnFinish = false
-                showToolbar(true)
                 remoteMediaId = images[position].id
+                showToolbar(true)
             }
         })
     }
 
-    internal inner class ImageViewerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+    internal inner class ImageViewerAdapter(fm: FragmentManager, val images: List<WCProductImageModel>) :
+            FragmentStatePagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {
             val fragment = ImageViewerFragment.newInstance(images[position])
             return fragment
