@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.imageviewer
 
-import android.app.Activity
 import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
@@ -19,18 +18,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_image_viewer.*
-import kotlinx.android.synthetic.main.fragment_image_viewer.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
-import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 /**
@@ -38,8 +37,6 @@ import javax.inject.Inject
  */
 class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     companion object {
-        const val EXTRA_REMOVE_REMOTE_IMAGE_ID = "remove_remote_media_id"
-
         private const val KEY_IMAGE_REMOTE_MEDIA_ID = "remote_media_id"
         private const val KEY_IMAGE_REMOTE_PRODUCT_ID = "remote_product_id"
         private const val KEY_TRANSITION_NAME = "transition_name"
@@ -48,6 +45,10 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
+        /**
+         * Shows all images for the passed product in a swipeable viewPager - the viewPager
+         * will automatically position itself to the passed image
+         */
         fun showProductImages(
             fragment: Fragment,
             productModel: Product,
@@ -78,14 +79,14 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         }
     }
 
-    @Inject lateinit var productStore: WCProductStore
-    @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private var remoteProductId = 0L
     private var remoteMediaId = 0L
     private var enableRemoveImage = false
 
     private lateinit var transitionName: String
+    private lateinit var viewModel: ImageViewerViewModel
 
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
@@ -111,30 +112,36 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                 ?: intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
         container.transitionName = transitionName
 
-        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-        if (product == null) {
-            Snackbar.make(container, R.string.product_detail_fetch_product_error, Snackbar.LENGTH_SHORT)
-                    .show()
-            finishAfterTransition()
-            return
-        }
-
         val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
         toolbar.background = ColorDrawable(toolbarColor)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = product.name
 
         // PhotoView doesn't play nice with shared element transitions if we rotate before exiting, so we
         // use this variable to skip the transition if the activity is re-created
         canTransitionOnFinish = savedInstanceState == null
 
-        setupViewPager(product.getImages())
         showToolbar(true)
+
+        initializeViewModel()
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMATION_SHOWING) == true) {
             confirmRemoveProductImage()
         }
+    }
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ImageViewerViewModel::class.java).also {
+            setupObservers(it)
+        }
+        viewModel.start(remoteProductId)
+    }
+
+    private fun setupObservers(viewModel: ImageViewerViewModel) {
+        viewModel.product.observe(this, Observer { product ->
+            supportActionBar?.title = product.name
+            setupViewPager(product.images)
+        })
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -188,12 +195,11 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     override fun onImageLoadError() {
-        Snackbar.make(photoViewContainer, R.string.error_loading_image, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(container, R.string.error_loading_image, Snackbar.LENGTH_SHORT).show()
     }
 
     /**
-     * Confirms that the user meant to remove this image from the product - the actual removal must be
-     * done in the calling fragment
+     * Confirms that the user meant to remove this image from the product
      */
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
@@ -201,12 +207,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
-                    // let the calling fragment know that the user requested to remove this image
-                    val data = Intent().also {
-                        it.putExtra(EXTRA_REMOVE_REMOTE_IMAGE_ID, remoteMediaId)
-                    }
-                    setResult(Activity.RESULT_OK, data)
-                    finishAfterTransition()
+                    viewModel.removeProductImage(remoteMediaId)
                 }
                 .setNegativeButton(R.string.dont_remove) { _, _ ->
                     isConfirmationShowing = false
