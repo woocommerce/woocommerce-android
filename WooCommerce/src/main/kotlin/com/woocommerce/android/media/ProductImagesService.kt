@@ -44,7 +44,7 @@ class ProductImagesService : JobIntentService() {
         const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
 
         private const val STRIP_LOCATION = true
-        private const val TIMEOUT_SECONDS = 60L
+        private const val TIMEOUT_SECONDS = 120L
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
@@ -126,7 +126,7 @@ class ProductImagesService : JobIntentService() {
         val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
-        // wait as long as 60 seconds for the two-step process to complete
+        // wait for the two-step process to complete with a timeout
         try {
             doneSignal.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         } catch (e: InterruptedException) {
