@@ -13,10 +13,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowSnackbar
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -72,13 +72,15 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var message: Int? = null
-        viewModel.event.observeForever { message = (it as ShowSnackbar).message }
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
 
         verify(productRepository, times(1)).getProductList()
         verify(productRepository, times(0)).fetchProductList()
 
-        assertThat(message).isEqualTo(R.string.offline_error)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test

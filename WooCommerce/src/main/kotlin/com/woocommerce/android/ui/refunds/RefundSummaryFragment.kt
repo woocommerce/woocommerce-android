@@ -17,8 +17,8 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ExitAfterRefund
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
@@ -67,7 +67,7 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
                         snackbar.show()
                     }
                 }
-                is ExitAfterRefund -> {
+                is Exit -> {
                     // temporary workaround for activity VM scope
                     viewModel.resetLiveData()
 

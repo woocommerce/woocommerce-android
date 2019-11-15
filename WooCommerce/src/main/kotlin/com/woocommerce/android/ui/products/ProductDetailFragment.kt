@@ -31,9 +31,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.Exit
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
@@ -41,6 +39,8 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
