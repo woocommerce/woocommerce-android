@@ -129,7 +129,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewModel.product.value?.let { product ->
-            ImageViewerActivity.showProductImage(
+            ImageViewerActivity.showProductImages(
                     this,
                     product,
                     imageModel,

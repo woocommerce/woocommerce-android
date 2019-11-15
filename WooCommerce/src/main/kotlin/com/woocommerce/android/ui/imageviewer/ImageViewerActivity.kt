@@ -48,7 +48,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
-        fun showProductImage(
+        fun showProductImages(
             fragment: Fragment,
             productModel: Product,
             imageModel: WCProductImageModel,
@@ -269,10 +269,12 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
+                showToolbar(true)
                 // don't add an exit transition if the user swiped to another image
                 canTransitionOnFinish = false
+                // remember this image id so we can return to it upon rotation, and so
+                // we use the right image if the user requests to remove it
                 remoteMediaId = images[position].id
-                showToolbar(true)
             }
         })
     }
