@@ -20,7 +20,6 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
@@ -31,8 +30,7 @@ class ReviewDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
-    private val repository: ReviewDetailRepository,
-    private val resourceProvider: ResourceProvider
+    private val repository: ReviewDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteReviewId = 0L
 
@@ -63,7 +61,7 @@ class ReviewDetailViewModel @AssistedInject constructor(
             }
         } else {
             // Network is not connected
-            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
     }
 
@@ -108,12 +106,12 @@ class ReviewDetailViewModel @AssistedInject constructor(
                             )
                         }
                     }
-                    ERROR -> triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.wc_load_review_error)))
+                    ERROR -> triggerEvent(ShowSnackbar(R.string.wc_load_review_error))
                 }
             }
         } else {
             // Network is not connected
-            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
     }
 

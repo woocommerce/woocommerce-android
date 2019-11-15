@@ -17,7 +17,6 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
@@ -33,8 +32,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore,
-    private val resourceProvider: ResourceProvider
+    private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
@@ -94,13 +92,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (fetchedProduct != null) {
                 updateProduct(fetchedProduct)
             } else {
-                triggerEvent(ShowSnackbar(
-                        resourceProvider.getString(R.string.product_detail_fetch_product_error)
-                ))
+                triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
                 triggerEvent(Exit)
             }
         } else {
-            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }

@@ -27,7 +27,6 @@ import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.android.parcel.Parcelize
@@ -50,8 +49,7 @@ class ReviewListViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val reviewRepository: ReviewListRepository,
-    private val resourceProvider: ResourceProvider
+    private val reviewRepository: ReviewListRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -141,11 +139,11 @@ class ReviewListViewModel @AssistedInject constructor(
                 when (reviewRepository.markAllProductReviewsAsRead()) {
                     ERROR -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.ERROR))
-                        triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.wc_mark_all_read_error)))
+                        triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_error))
                     }
                     NO_ACTION_NEEDED, SUCCESS -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.SUCCESS))
-                        triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.wc_mark_all_read_success)))
+                        triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_success))
                     }
                 }
             }
@@ -193,7 +191,7 @@ class ReviewListViewModel @AssistedInject constructor(
                 SUCCESS, NO_ACTION_NEEDED -> {
                     viewState = viewState.copy(reviewList = reviewRepository.getCachedProductReviews())
                 }
-                ERROR -> triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.review_fetch_error)))
+                ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             }
 
             checkForUnreadReviews()
@@ -211,7 +209,7 @@ class ReviewListViewModel @AssistedInject constructor(
 
     private fun showOfflineSnack() {
         // Network is not connected
-        triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+        triggerEvent(ShowSnackbar(R.string.offline_error))
     }
 
     @Suppress("unused")
@@ -261,7 +259,7 @@ class ReviewListViewModel @AssistedInject constructor(
         if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
             if (event.isError) {
                 // Show an error in the UI and reload the view
-                triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.wc_moderate_review_error)))
+                triggerEvent(ShowSnackbar(R.string.wc_moderate_review_error))
                 sendReviewModerationUpdate(ActionStatus.ERROR)
             } else {
                 sendReviewModerationUpdate(ActionStatus.SUCCESS)

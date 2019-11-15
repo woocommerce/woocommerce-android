@@ -15,7 +15,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
@@ -28,8 +27,7 @@ class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus,
-    private val resourceProvider: ResourceProvider
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -163,7 +161,7 @@ class ProductListViewModel @AssistedInject constructor(
                     isEmptyViewVisible = viewState.productList?.isEmpty() == true
             )
         } else {
-            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
 
         viewState = viewState.copy(

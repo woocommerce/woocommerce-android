@@ -218,10 +218,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             triggerEvent(
                     ShowSnackbar(
-                            resourceProvider.getString(
-                                    R.string.order_refunds_amount_refund_progress_message,
-                                    formatCurrency(refundByAmountState.enteredAmount)
-                            ),
+                            R.string.order_refunds_amount_refund_progress_message,
+                            listOf(formatCurrency(refundByAmountState.enteredAmount)),
                             undoAction = {
                                 AnalyticsTracker.track(
                                         CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
@@ -269,11 +267,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
                         )
 
-                        triggerEvent(
-                                ShowSnackbar(
-                                        resourceProvider.getString(R.string.order_refunds_amount_refund_error)
-                                )
-                        )
+                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
                     } else {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
@@ -284,18 +278,14 @@ class IssueRefundViewModel @AssistedInject constructor(
                             noteRepository.createOrderNote(order.identifier, reason, true)
                         }
 
-                        triggerEvent(
-                                ShowSnackbar(
-                                        resourceProvider.getString(string.order_refunds_amount_refund_successful)
-                                )
-                        )
+                        triggerEvent(ShowSnackbar(string.order_refunds_amount_refund_successful))
                         triggerEvent(Exit)
                     }
                 }
                 refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
             }
         } else {
-            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
     }
 

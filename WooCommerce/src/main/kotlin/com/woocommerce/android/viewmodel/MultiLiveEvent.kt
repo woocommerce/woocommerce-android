@@ -1,6 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import androidx.annotation.MainThread
+import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -51,7 +52,11 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
     }
 
     abstract class Event(var isHandled: Boolean = false) {
-        data class ShowSnackbar(val message: String, val undoAction: (() -> Unit)? = null) : Event()
+        data class ShowSnackbar(
+            @StringRes val message: Int,
+            val args: List<String> = emptyList(),
+            val undoAction: (() -> Unit)? = null
+        ) : Event()
         object Exit : Event()
     }
 }
