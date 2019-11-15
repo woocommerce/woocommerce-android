@@ -57,7 +57,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loadImage()
-        photoView.setOnPhotoTapListener { view, x, y ->
+        photoView.setOnPhotoTapListener { _, _, _ ->
             (activity as? ImageViewerListener)?.onImageTapped()
         }
     }

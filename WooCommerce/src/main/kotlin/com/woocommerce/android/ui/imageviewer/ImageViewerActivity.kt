@@ -265,6 +265,8 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
+                // don't add an exit transition if the user swiped to another image
+                canTransitionOnFinish = false
                 showToolbar(true)
                 remoteMediaId = images[position].id
             }
