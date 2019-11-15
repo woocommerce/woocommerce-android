@@ -60,6 +60,15 @@ android {
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     flavorDimensions "buildType"
 
     productFlavors {
@@ -92,6 +101,10 @@ android {
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
     }
 }
 
@@ -206,6 +219,9 @@ dependencies {
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    implementation "org.apache.commons:commons-lang3:3.7"
+    implementation "org.apache.commons:commons-text:1.8"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
@@ -232,7 +248,7 @@ android.buildTypes.all { buildType ->
 
     // If Google services file doesn't exist, copy example file.
     if (!file("google-services.json").exists()) {
-        tasks.copyGoogleServicesExampleFile.execute()
+        tasks.copyGoogleServicesExampleFile.copy()
     }
 
     // Print warning message if example Google services file is used.
