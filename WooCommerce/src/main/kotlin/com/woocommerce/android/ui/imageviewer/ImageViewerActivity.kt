@@ -25,6 +25,7 @@ import com.woocommerce.android.R.style
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_image_viewer.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -94,8 +95,8 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     private var adapter: ImageViewerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_image_viewer)
 
         remoteProductId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_PRODUCT_ID)
@@ -181,7 +182,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     override fun onImageTapped() {
         showToolbar(true)
     }
-
 
     /**
      * Confirms that the user meant to remove this image from the product - the actual removal must be

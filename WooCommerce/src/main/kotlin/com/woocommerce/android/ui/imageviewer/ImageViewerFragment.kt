@@ -10,6 +10,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
 import org.wordpress.android.fluxc.model.WCProductImageModel
@@ -45,7 +46,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         super.onCreate(savedInstanceState)
 
         remoteMediaId = arguments?.getLong(KEY_IMAGE_REMOTE_MEDIA_ID, 0L) ?: 0L
-        imageUrl = arguments?.getString(KEY_IMAGE_URL)?: ""
+        imageUrl = arguments?.getString(KEY_IMAGE_URL) ?: ""
         imageTitle = arguments?.getString(KEY_IMAGE_TITLE) ?: ""
     }
 
@@ -66,6 +67,11 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         outState.putString(KEY_IMAGE_URL, imageUrl)
         outState.putString(KEY_IMAGE_TITLE, imageTitle)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     private fun loadImage() {
