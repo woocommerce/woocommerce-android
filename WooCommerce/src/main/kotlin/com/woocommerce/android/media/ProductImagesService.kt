@@ -44,7 +44,7 @@ class ProductImagesService : JobIntentService() {
         const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
 
         private const val STRIP_LOCATION = true
-        private const val TIMEOUT_SECONDS = 60L
+        private const val TIMEOUT_SECONDS = 120L
 
         // array of remoteProductId / localImageUri
         private val currentUploads = LongSparseArray<Uri>()
