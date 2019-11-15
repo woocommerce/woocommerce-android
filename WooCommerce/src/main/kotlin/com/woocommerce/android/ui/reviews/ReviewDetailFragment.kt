@@ -28,12 +28,12 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Exit
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.ShowSnackbar
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection

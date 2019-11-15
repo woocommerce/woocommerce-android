@@ -31,7 +31,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView

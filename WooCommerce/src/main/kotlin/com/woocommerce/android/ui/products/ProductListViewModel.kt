@@ -1,22 +1,21 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowSnackbar
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
@@ -29,7 +28,8 @@ class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -163,7 +163,7 @@ class ProductListViewModel @AssistedInject constructor(
                     isEmptyViewVisible = viewState.productList?.isEmpty() == true
             )
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
         }
 
         viewState = viewState.copy(
@@ -184,10 +184,6 @@ class ProductListViewModel @AssistedInject constructor(
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
-
-    sealed class ProductListEvent : Event() {
-        data class ShowSnackbar(@StringRes val message: Int) : ProductListEvent()
-    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductListViewModel>

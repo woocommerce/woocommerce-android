@@ -50,5 +50,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         super.postValue(value)
     }
 
-    abstract class Event(var isHandled: Boolean = false)
+    abstract class Event(var isHandled: Boolean = false) {
+        data class ShowSnackbar(val message: String, val undoAction: (() -> Unit)? = null) : Event()
+        object Exit : Event()
+    }
 }
