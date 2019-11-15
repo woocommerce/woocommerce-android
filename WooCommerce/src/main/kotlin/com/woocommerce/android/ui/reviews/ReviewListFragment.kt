@@ -31,7 +31,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -154,7 +154,8 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
+        setupObservers()
+        viewModel.start()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -218,16 +219,11 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         super.onDestroyView()
     }
 
-    private fun initializeViewModel() {
-        setupObservers()
-        viewModel.start()
-    }
-
     @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     @SuppressLint("InflateParams")
     private fun setupObservers() {
         viewModel.viewStateData.observe(this) { old, new ->
-            new.reviewList?.takeIfNotEqualTo(old?.reviewList) { showReviewList(it) }
+            new.reviewList?.let { showReviewList(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { showMarkAllReadMenuItem(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
