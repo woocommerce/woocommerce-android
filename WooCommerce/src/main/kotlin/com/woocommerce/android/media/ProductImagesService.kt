@@ -126,7 +126,7 @@ class ProductImagesService : JobIntentService() {
         val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
-        // wait as long as 60 seconds for the two-step process to complete
+        // wait for the two-step process to complete with a timeout
         try {
             doneSignal.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         } catch (e: InterruptedException) {
