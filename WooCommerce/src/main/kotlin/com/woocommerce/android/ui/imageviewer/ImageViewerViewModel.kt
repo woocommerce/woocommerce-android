@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.imageviewer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -56,7 +58,9 @@ class ImageViewerViewModel @Inject constructor(
         if (!checkNetwork()) {
             return
         }
+
         if (repository.removeProductImage(remoteProductId, remoteMediaId)) {
+            AnalyticsTracker.track(Stat.PRODUCT_IMAGE_REMOVED)
             // reload the product to reflect the removed image
             loadProduct()
         } else {

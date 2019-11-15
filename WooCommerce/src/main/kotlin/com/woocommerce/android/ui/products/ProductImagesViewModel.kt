@@ -88,18 +88,6 @@ class ProductImagesViewModel @Inject constructor(
         productImagesServiceWrapper.uploadProductMedia(remoteProductId, localImageUri)
     }
 
-    fun removeProductMedia(remoteProductId: Long, remoteMediaId: Long) {
-        if (!checkNetwork()) {
-            return
-        }
-        if (productRepository.removeProductImage(remoteProductId, remoteMediaId)) {
-            // reload the product to reflect the removed image
-            loadProduct()
-        } else {
-            _showSnackbarMessage.value = R.string.product_image_error_removing
-        }
-    }
-
     private fun checkNetwork(): Boolean {
         if (networkStatus.isConnected()) {
             return true

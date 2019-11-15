@@ -221,11 +221,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
                 REQUEST_CODE_IMAGE_VIEWER -> data?.let { intent ->
-                    val remoteMediaId = intent.getLongExtra(ImageViewerActivity.EXTRA_REMOVE_REMOTE_IMAGE_ID, 0)
-                    if (remoteMediaId > 0) {
-                        AnalyticsTracker.track(Stat.PRODUCT_IMAGE_REMOVED)
-                        viewModel.removeProductMedia(navArgs.remoteProductId, remoteMediaId)
-                    }
+                    viewModel.loadProduct()
                 }
             }
         }
