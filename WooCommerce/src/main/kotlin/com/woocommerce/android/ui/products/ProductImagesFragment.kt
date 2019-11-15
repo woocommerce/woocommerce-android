@@ -220,8 +220,10 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_IMAGE_ADDED)
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
-                REQUEST_CODE_IMAGE_VIEWER -> {
-                    viewModel.loadProduct()
+                REQUEST_CODE_IMAGE_VIEWER -> data?.let { bundle ->
+                    if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
+                        viewModel.loadProduct()
+                    }
                 }
             }
         }
