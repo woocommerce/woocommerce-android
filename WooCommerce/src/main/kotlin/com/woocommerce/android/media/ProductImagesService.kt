@@ -44,9 +44,8 @@ class ProductImagesService : JobIntentService() {
 
         private const val STRIP_LOCATION = true
 
-        // array of remoteProductId / localImageUri
-        // TODO: update this to support multiple uploads for the same product
-        private val currentUploads = LongSparseArray<Uri>()
+        // array of remoteProductId / upload count for that product
+        private val currentUploads = LongSparseArray<Int>()
 
         // posted when the list of images starts uploading
         class OnProductImagesUpdateStartedEvent(
@@ -69,16 +68,7 @@ class ProductImagesService : JobIntentService() {
         fun isBusy() = !currentUploads.isEmpty
 
         fun getUploadCountForProduct(remoteProductId: Long): Int {
-            if (currentUploads.isEmpty) {
-                return 0
-            }
-            var count = 0
-            for (index in 0 until currentUploads.size()) {
-                if (currentUploads.keyAt(index) == remoteProductId) {
-                    count++
-                }
-            }
-            return count
+            return currentUploads.get(remoteProductId, 0)
         }
     }
 
@@ -121,6 +111,9 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
+        // set the upload count for this product
+        currentUploads.put(remoteProductId, localUriList.size)
+
         // post an event that the upload is starting
         val event = OnProductImagesUpdateStartedEvent(remoteProductId)
         EventBus.getDefault().post(event)
@@ -140,7 +133,6 @@ class ProductImagesService : JobIntentService() {
 
             media.postId = remoteProductId
             media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
-            currentUploads.put(remoteProductId, localUri)
 
             // dispatch the upload request
             val site = siteStore.getSiteByLocalId(media.localSiteId)
@@ -223,20 +215,22 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
-    private fun handleSuccess(remoteProductId: Long) {
-        productImageMap.remove(remoteProductId)
-        currentUploads.remove(remoteProductId)
-        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = false))
-        if (currentUploads.isEmpty) {
+    private fun decUploadCount(remoteProductId: Long) {
+        val count = currentUploads.get(remoteProductId, 0)
+        if (count > 0) {
+            currentUploads.put(remoteProductId, count - 1)
             doneSignal.countDown()
         }
     }
 
+    private fun handleSuccess(remoteProductId: Long) {
+        productImageMap.remove(remoteProductId)
+        decUploadCount(remoteProductId)
+        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = false))
+    }
+
     private fun handleFailure(remoteProductId: Long) {
-        currentUploads.remove(remoteProductId)
+        decUploadCount(remoteProductId)
         EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = true))
-        if (currentUploads.isEmpty) {
-            doneSignal.countDown()
-        }
     }
 }
