@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-30 00:54:04+0000
+Translation-Revision-Date: 2019-11-13 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">Il metodo di pagamento non supporta i rimborsi automatici. Completa il rimborso trasferendo manualmente il denaro al cliente.</string>
+    <string name="orderdetail_shipping_notice">Questo ordine sta usando estensioni per calcolare la spedizione. I metodi di spedizione mostrati potrebbero essere incompleti.</string>
+    <string name="orderdetail_shipping_method">Metodo di spedizione</string>
     <string name="button_edit_permissions">Modifica autorizzazioni</string>
     <string name="permission_camera">Fotocamera</string>
     <string name="permission_storage">Archiviazione</string>
@@ -27,7 +30,6 @@ Language: it
     <string name="wc_unapproved">Non approvato</string>
     <string name="review_single_fetch_error">Errore durante il recupero della nuova recensione prodotto</string>
     <string name="review_fetch_error">Errore durante il recupero delle recensioni prodotto</string>
-    <string name="order_refunds_refund_manual_refund_note">Al momento sono supportati soltanto i rimborsi manuali. Completa il rimborso tramite la bacheca del tuo gateway di pagamento o trasferisci manualmente il denaro al cliente.</string>
     <string name="order_refunds_manual_refund_error">Si è verificato un problema con il rimborso. Riprova.</string>
     <string name="order_refunds_manual_refund_successful">Il rimborso è stato emesso correttamente.</string>
     <string name="order_refunds_manual_refund_progress_message">Il rimborso per %s è in fase di elaborazione. Attendi…</string>

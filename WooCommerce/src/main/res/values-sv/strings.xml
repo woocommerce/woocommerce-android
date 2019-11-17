@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-30 00:54:04+0000
+Translation-Revision-Date: 2019-11-13 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">Betalningsmetoden stöder inte automatiska återbetalningar. Slutför återbetalningen genom att överföra pengarna till kunden manuellt.</string>
+    <string name="orderdetail_shipping_notice">Den här beställningen använder tillägg för att beräkna frakten. De fraktmetoder som visas kan vara ofullständiga.</string>
+    <string name="orderdetail_shipping_method">Fraktmetod</string>
     <string name="button_edit_permissions">Redigera behörigheter</string>
     <string name="permission_camera">Kamera</string>
     <string name="permission_storage">Lagring</string>
@@ -27,7 +30,6 @@ Language: sv_SE
     <string name="wc_unapproved">Förkastad</string>
     <string name="review_single_fetch_error">Den nya produktrecensionen kunde inte hämtas</string>
     <string name="review_fetch_error">Produktrecensionerna kunde inte hämtas</string>
-    <string name="order_refunds_refund_manual_refund_note">För närvarande stöds endast manuella återbetalningar. Slutför återbetalningen via instrumentpanelen för din betalningsgateway eller överför pengarna manuellt till kunden.</string>
     <string name="order_refunds_manual_refund_error">Något gick fel med återbetalningen. Var vänlig försök igen.</string>
     <string name="order_refunds_manual_refund_successful">Återbetalningen har skickats.</string>
     <string name="order_refunds_manual_refund_progress_message">Din återbetalning för %s behandlas. Vänligen vänta …</string>

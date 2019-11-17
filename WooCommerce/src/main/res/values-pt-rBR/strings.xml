@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-29 00:54:04+0000
+Translation-Revision-Date: 2019-11-12 00:54:58+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">A forma de pagamento não oferece reembolso automático. Para concluir o reembolso, transfira o dinheiro manualmente para o cliente.</string>
+    <string name="orderdetail_shipping_notice">Este pedido está usando extensões para calcular o envio. Os métodos de envio exibidos podem estar incompletos.</string>
+    <string name="orderdetail_shipping_method">Método de envio</string>
     <string name="button_edit_permissions">Editar permissões</string>
     <string name="permission_camera">Câmera</string>
     <string name="permission_storage">Armazenamento</string>
@@ -27,7 +30,6 @@ Language: pt_BR
     <string name="wc_unapproved">Rejeitado</string>
     <string name="review_single_fetch_error">Erro ao buscar nova avaliação do produto</string>
     <string name="review_fetch_error">Erro ao buscar avaliações do produto</string>
-    <string name="order_refunds_refund_manual_refund_note">No momento, apenas reembolsos manuais são aceitos. Conclua o reembolso pelo painel do seu gateway de pagamento ou transfira manualmente o dinheiro para o cliente.</string>
     <string name="order_refunds_manual_refund_error">Ocorreu um erro no reembolso. Tente novamente.</string>
     <string name="order_refunds_manual_refund_successful">O reembolso foi enviado com sucesso.</string>
     <string name="order_refunds_manual_refund_progress_message">O reembolso para %s está sendo processado. Aguarde…</string>

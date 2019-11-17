@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 00:54:04+0000
+Translation-Revision-Date: 2019-11-15 02:54:49+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">Le moyen de paiement ne prend pas en charge les remboursements automatiques. Procédez au remboursement en exécutant un transfert d\'argent manuel au client.</string>
+    <string name="orderdetail_shipping_notice">Cette commande utilise des extensions pour calculer les frais de livraison. Les modes de livraison indiqués peuvent être incomplets.</string>
+    <string name="orderdetail_shipping_method">Mode de livraison</string>
     <string name="button_edit_permissions">Modifier les autorisations</string>
     <string name="permission_camera">Appareil photo</string>
     <string name="permission_storage">Stockage</string>
@@ -27,7 +30,6 @@ Language: fr
     <string name="wc_unapproved">Désapprouvé</string>
     <string name="review_single_fetch_error">Erreur lors de la récupération du nouvel avis sur le produit</string>
     <string name="review_fetch_error">Erreur lors de la récupération des avis sur le produit</string>
-    <string name="order_refunds_refund_manual_refund_note">Actuellement, seuls les remboursements manuels sont acceptés. Effectuez le remboursement via le tableau de bord de votre passerelle de paiement, ou transférez l\'argent manuellement au client.</string>
     <string name="order_refunds_manual_refund_error">Un problème est survenu lors du remboursement. Veuillez réessayer.</string>
     <string name="order_refunds_manual_refund_successful">Le remboursement a bien été envoyé.</string>
     <string name="order_refunds_manual_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>

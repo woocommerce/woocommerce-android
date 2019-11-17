@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-30 00:54:04+0000
+Translation-Revision-Date: 2019-11-13 00:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">Этот способ оплаты не поддерживает автоматический возврат средств. Верните средства, отправив деньги покупателю вручную.</string>
+    <string name="orderdetail_shipping_notice">В этом заказе используются расширения для расчета суммы доставки. Возможно, показаны не все способы доставки.</string>
+    <string name="orderdetail_shipping_method">Способ доставки</string>
     <string name="button_edit_permissions">Изменить разрешения</string>
     <string name="permission_camera">Камера</string>
     <string name="permission_storage">Хранилище</string>
@@ -27,7 +30,6 @@ Language: ru
     <string name="wc_unapproved">Не одобрен</string>
     <string name="review_single_fetch_error">Ошибка при получении нового отзыва о товаре</string>
     <string name="review_fetch_error">Ошибка при получении отзывов о товарах</string>
-    <string name="order_refunds_refund_manual_refund_note">В настоящее время возвраты выполняются только в ручном режиме. Оформите возврат в консоли вашей платёжной системы или переведите деньги клиенту самостоятельно.</string>
     <string name="order_refunds_manual_refund_error">В процессе возврата что-то пошло не так. Повторите попытку.</string>
     <string name="order_refunds_manual_refund_successful">Средства возвращены заказчику.</string>
     <string name="order_refunds_manual_refund_progress_message">Запрос на возврат средств за %s обрабатывается. Пожалуйста, подождите…</string>

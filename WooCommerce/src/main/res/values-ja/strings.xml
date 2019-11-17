@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 00:54:04+0000
+Translation-Revision-Date: 2019-11-15 00:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">この支払い方法は自動返金をサポートしていません。顧客に手動で送金し、払い戻しを完了してください。</string>
+    <string name="orderdetail_shipping_notice">この注文は配送料の計算に拡張機能を使用しています。配送方法が一部表示されない場合があります。</string>
+    <string name="orderdetail_shipping_method">配送方法</string>
     <string name="button_edit_permissions">権限を編集</string>
     <string name="permission_camera">カメラ</string>
     <string name="permission_storage">ストレージ</string>
@@ -27,7 +30,6 @@ Language: ja_JP
     <string name="wc_unapproved">非承認</string>
     <string name="review_single_fetch_error">新規の商品レビュー取得中にエラーが発生しました</string>
     <string name="review_fetch_error">商品レビュー取得中にエラーが発生しました</string>
-    <string name="order_refunds_refund_manual_refund_note">現在、手動での返金のみに対応しています。決済方法ダッシュボードから返金を完了するか、手動で顧客に送金してください。</string>
     <string name="order_refunds_manual_refund_error">返金処理でエラーが発生しました。もう一度お試しください。</string>
     <string name="order_refunds_manual_refund_successful">返金処理を正常に送信しました。</string>
     <string name="order_refunds_manual_refund_progress_message">%sの返金処理を実行中です。しばらくお待ちください…</string>

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-30 00:54:04+0000
+Translation-Revision-Date: 2019-11-14 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">אמצעי התשלום אינו תומך בהחזרים כספיים אוטומטיים. יש להשלים את ההחזר הכספי על-ידי העברה ידנית ללקוח.</string>
+    <string name="orderdetail_shipping_notice">בהזמנה זו נעשה שימוש בהרחבות לחישוב עלות המשלוח. ייתכן שדרכי המשלוח המוצגות אינן כוללות את כל הדרכים הזמינות.</string>
+    <string name="orderdetail_shipping_method">שיטת משלוח</string>
     <string name="button_edit_permissions">עריכת הרשאות</string>
     <string name="permission_camera">מצלמה</string>
     <string name="permission_storage">אחסון</string>
@@ -27,7 +30,6 @@ Language: he_IL
     <string name="wc_unapproved">לא מאושר</string>
     <string name="review_single_fetch_error">שגיאה בהבאת הביקורת על המוצר החדש</string>
     <string name="review_fetch_error">שגיאה בהבאת הביקורות על המוצר</string>
-    <string name="order_refunds_refund_manual_refund_note">כרגע אנחנו תומכים רק בהחזרים כספיים שמבוצעים באופן ידני. יש להשלים את ההחזר הכספי דרך לוח הבקרה של אמצעי התשלום שלך או להעביר באופן ידני את הכסף ללקוח.</string>
     <string name="order_refunds_manual_refund_error">משהו השתבש בביצוע ההחזר הכספי. יש לנסות שוב.</string>
     <string name="order_refunds_manual_refund_successful">ההחזר הכספי נשלח בהצלחה.</string>
     <string name="order_refunds_manual_refund_progress_message">ההחזר הכספי שלך עבור %s נמצא בטיפול. נא להמתין…</string>

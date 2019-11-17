@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 02:54:04+0000
+Translation-Revision-Date: 2019-11-15 00:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">此付款方式不支援自動退款。若要完成退款，請手動將款項轉帳給客戶。</string>
+    <string name="orderdetail_shipping_notice">此訂單使用擴充功能計算運送資訊。顯示的運送方式可能不完整。</string>
+    <string name="orderdetail_shipping_method">運送方式</string>
     <string name="button_edit_permissions">編輯權限</string>
     <string name="permission_camera">相機</string>
     <string name="permission_storage">儲存空間</string>
@@ -27,7 +30,6 @@ Language: zh_TW
     <string name="wc_unapproved">未核准</string>
     <string name="review_single_fetch_error">擷取新產品評論時發生錯誤</string>
     <string name="review_fetch_error">擷取產品評論時發生錯誤</string>
-    <string name="order_refunds_refund_manual_refund_note">目前只支援手動退款。你可透過付款閘道的儀表板完成退款，或手動轉帳給顧客。</string>
     <string name="order_refunds_manual_refund_error">退款發生錯誤。請再試一次。</string>
     <string name="order_refunds_manual_refund_successful">退款已成功轉出。</string>
     <string name="order_refunds_manual_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
