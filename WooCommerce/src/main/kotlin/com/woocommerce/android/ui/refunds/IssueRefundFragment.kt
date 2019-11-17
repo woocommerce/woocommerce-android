@@ -8,31 +8,31 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
 import kotlinx.android.synthetic.main.fragment_refund_by_amount.*
 import org.wordpress.android.util.ActivityUtils
 
-class IssueRefundFragment : DaggerFragment(), BackPressListener {
+class IssueRefundFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,7 @@ class IssueRefundFragment : DaggerFragment(), BackPressListener {
     }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.commonStateLiveData.observe(this) { old, new ->
+        viewModel.commonStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
 
             if (new.refundType == AMOUNT) {
@@ -76,7 +76,7 @@ class IssueRefundFragment : DaggerFragment(), BackPressListener {
             }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowRefundSummary -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()

@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -15,15 +15,15 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.NumberPickerDialog
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
 import javax.inject.Inject
 
-class RefundByItemsFragment : DaggerFragment() {
+class RefundByItemsFragment : BaseFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
@@ -33,7 +33,7 @@ class RefundByItemsFragment : DaggerFragment() {
         const val REFUND_ITEM_QUANTITY_REQUEST_CODE = 12345
     }
 
-    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -66,7 +66,7 @@ class RefundByItemsFragment : DaggerFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.refundByItemsStateLiveData.observe(this) { old, new ->
+        viewModel.refundByItemsStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 issueRefund_products.adapter = RefundProductListAdapter(
                         currencyFormatter.buildBigDecimalFormatter(new.currency),
@@ -104,7 +104,7 @@ class RefundByItemsFragment : DaggerFragment() {
             }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(this.viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowNumberPicker -> {
                     val args = Bundle()
