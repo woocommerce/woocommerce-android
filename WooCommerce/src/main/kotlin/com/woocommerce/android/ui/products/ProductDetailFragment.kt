@@ -76,11 +76,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
-
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
