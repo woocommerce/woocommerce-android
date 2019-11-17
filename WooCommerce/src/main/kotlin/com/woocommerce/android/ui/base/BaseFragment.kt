@@ -2,17 +2,27 @@ package com.woocommerce.android.ui.base
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.AndroidSupportInjection
+import dagger.android.support.HasSupportFragmentInjector
+import javax.inject.Inject
 
 /**
  * All top level fragments and child fragments should extend this class to provide a consistent method
  * of setting the activity title
  */
-abstract class BaseFragment : androidx.fragment.app.Fragment(), BaseFragmentView {
+abstract class BaseFragment : Fragment(), BaseFragmentView, HasSupportFragmentInjector {
+    @Inject internal lateinit var childFragmentInjector: DispatchingAndroidInjector<Fragment>
+
     companion object {
         private const val KEY_TITLE = "title"
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        AndroidSupportInjection.inject(this)
+
         super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.let {
             activity?.title = it.getString(KEY_TITLE)
@@ -46,5 +56,13 @@ abstract class BaseFragment : androidx.fragment.app.Fragment(), BaseFragmentView
         if (isAdded && !isHidden) {
             activity?.title = getFragmentTitle()
         }
+    }
+
+    override fun getFragmentTitle(): String {
+        return activity?.title?.toString() ?: ""
+    }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
+        return childFragmentInjector
     }
 }
