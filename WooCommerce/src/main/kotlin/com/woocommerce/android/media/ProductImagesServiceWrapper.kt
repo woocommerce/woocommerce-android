@@ -18,7 +18,7 @@ class ProductImagesServiceWrapper
     fun uploadProductMedia(remoteProductId: Long, localMediaUriList: ArrayList<Uri>) {
         val intent = Intent(context, ProductImagesService::class.java).also {
             it.putExtra(ProductImagesService.KEY_REMOTE_PRODUCT_ID, remoteProductId)
-            it.putParcelableArrayListExtra(ProductImagesService.KEY_LOCAL_MEDIA_URI_LIST, localMediaUriList)
+            it.putParcelableArrayListExtra(ProductImagesService.KEY_LOCAL_URI_LIST, localMediaUriList)
         }
         JobIntentService.enqueueWork(
                 context,

@@ -113,12 +113,8 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
             captureProductImage()
         })
 
-        viewModel.isUploadingProductImage.observe(this, Observer {
-            if (it) {
-                imageGallery.addUploadPlaceholder()
-            } else {
-                imageGallery.removeUploadPlaceholder()
-            }
+        viewModel.uploadingImageCount.observe(this, Observer {
+            imageGallery.setPlaceholderCount(it)
         })
 
         viewModel.exit.observe(this, Observer {
@@ -232,7 +228,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                             Stat.PRODUCT_IMAGE_ADDED,
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    viewModel.uploadProductMedia(navArgs.remoteProductId, uriList)
+                    viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
                 }
                 REQUEST_CODE_CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
@@ -240,7 +236,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    viewModel.uploadProductMedia(navArgs.remoteProductId, uriList)
+                    viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
                 }
                 REQUEST_CODE_IMAGE_VIEWER -> data?.let { bundle ->
                     if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {

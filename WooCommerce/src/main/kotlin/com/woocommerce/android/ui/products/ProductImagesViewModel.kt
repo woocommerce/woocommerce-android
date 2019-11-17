@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.ProductImagesService
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -42,8 +43,8 @@ class ProductImagesViewModel @Inject constructor(
     private val _captureProductImage = SingleLiveEvent<Unit>()
     val captureProductImage: LiveData<Unit> = _captureProductImage
 
-    private val _isUploadingProductImage = MutableLiveData<Boolean>()
-    val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
+    private val _uploadingImageCount = MutableLiveData<Int>()
+    val uploadingImageCount: LiveData<Int> = _uploadingImageCount
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -55,9 +56,7 @@ class ProductImagesViewModel @Inject constructor(
     fun start(remoteProductId: Long) {
         this.remoteProductId = remoteProductId
         loadProduct()
-
-        val isUploading = ProductImagesService.isUploadingForProduct(remoteProductId)
-        setIsUploadingImage(isUploading)
+        checkUploadCount()
     }
 
     override fun onCleared() {
@@ -77,7 +76,7 @@ class ProductImagesViewModel @Inject constructor(
         _captureProductImage.call()
     }
 
-    fun uploadProductMedia(remoteProductId: Long, localMediaUriList: ArrayList<Uri>) {
+    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
         if (!checkNetwork()) {
             return
         }
@@ -85,7 +84,7 @@ class ProductImagesViewModel @Inject constructor(
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
         }
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localMediaUriList)
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
     }
 
     private fun checkNetwork(): Boolean {
@@ -96,30 +95,49 @@ class ProductImagesViewModel @Inject constructor(
         return false
     }
 
-    private fun setIsUploadingImage(isUploading: Boolean) {
-        if (isUploading != _isUploadingProductImage.value) {
-            _isUploadingProductImage.value = isUploading
+    private fun checkUploadCount() {
+        val count = ProductImagesService.getUploadCountForProduct(remoteProductId)
+        if (_uploadingImageCount.value != count) {
+            _uploadingImageCount.value = count
         }
     }
 
+    /**
+     * The list of images has started uploaded
+     */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
         if (remoteProductId == event.remoteProductId) {
-            setIsUploadingImage(true)
+            checkUploadCount()
         }
     }
 
+    /**
+     * The list of images has finished uploading
+     */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         if (remoteProductId == event.remoteProductId) {
-            setIsUploadingImage(false)
+            loadProduct()
+            checkUploadCount()
+        }
+    }
+
+    /**
+     * A single image has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImageUploaded) {
+        if (remoteProductId == event.remoteProductId) {
             if (event.isError) {
                 _showSnackbarMessage.value = R.string.product_image_service_error_uploading
             } else {
                 loadProduct()
             }
+            checkUploadCount()
         }
     }
 }

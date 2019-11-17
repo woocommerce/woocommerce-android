@@ -33,8 +33,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     companion object {
         private const val VIEW_TYPE_IMAGE = 0
         private const val VIEW_TYPE_PLACEHOLDER = 1
-
-        private const val UPLOAD_PLACEHOLDER_ID = -1L
         private const val NUM_COLUMNS = 2
     }
 
@@ -110,15 +108,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     /**
-     * Adds a placeholder with a progress bar to indicate images that are uploading
+     * Set the number of upload placeholders to show
      */
-    fun addUploadPlaceholder() {
-        smoothScrollToPosition(0)
-        adapter.addUploadPlaceholder()
-    }
-
-    fun removeUploadPlaceholder() {
-        adapter.removeUploadPlaceholder()
+    fun setPlaceholderCount(count: Int) {
+        adapter.setPlaceholderCount(count)
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
@@ -130,17 +123,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
+        private var placeholderCount = 0
 
         fun showImages(images: List<WCProductImageModel>) {
-            val hasPlaceholder = imageList.size > 0 && isPlaceholder(0)
+            val count = placeholderCount
 
             imageList.clear()
             imageList.addAll(images)
             notifyDataSetChanged()
 
-            if (hasPlaceholder) {
-                addUploadPlaceholder()
-            }
+            setPlaceholderCount(count)
         }
 
         fun isSameImageList(images: List<WCProductImageModel>): Boolean {
@@ -155,25 +147,28 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return true
         }
 
-        fun addUploadPlaceholder() {
-            val hasPlaceholder = imageList.size > 0 && isPlaceholder(0)
-            if (!hasPlaceholder) {
-                imageList.add(0, WCProductImageModel(UPLOAD_PLACEHOLDER_ID))
-                notifyItemInserted(0)
+        fun setPlaceholderCount(count: Int) {
+            if (count == placeholderCount) {
+                return
             }
+
+            // remove existing placeholders
+            for (index in 1..placeholderCount) {
+                imageList.removeAt(index)
+            }
+
+            // add the new ones
+            for (index in 1..count) {
+                // use a negative id so we can check it in isPlaceholder() below
+                val id = -index.toLong()
+                imageList.add(0, WCProductImageModel(id))
+            }
+
+            placeholderCount = count
+            notifyDataSetChanged()
         }
 
-        fun removeUploadPlaceholder(remoteMediaId: Long = UPLOAD_PLACEHOLDER_ID) {
-            for (index in imageList.indices) {
-                if (imageList[index].id == remoteMediaId) {
-                    imageList.removeAt(index)
-                    notifyItemRemoved(index)
-                    break
-                }
-            }
-        }
-
-        fun isPlaceholder(position: Int) = imageList[position].id == UPLOAD_PLACEHOLDER_ID
+        fun isPlaceholder(position: Int) = imageList[position].id < 0
 
         fun getImage(position: Int) = imageList[position]
 

@@ -150,8 +150,6 @@ class ProductListViewModel @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        if (!event.isError) {
-            loadProducts()
-        }
+        loadProducts()
     }
 }

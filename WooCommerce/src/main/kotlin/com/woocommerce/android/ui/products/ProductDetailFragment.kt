@@ -120,12 +120,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.isUploadingProductImage.observe(this, Observer {
-            if (it) {
-                imageGallery.addUploadPlaceholder()
-            } else {
-                imageGallery.removeUploadPlaceholder()
-            }
+        viewModel.uploadingImageCount.observe(this, Observer {
+            imageGallery.setPlaceholderCount(it)
         })
 
         viewModel.exit.observe(this, Observer {
@@ -179,7 +175,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         updateActivityTitle()
 
-        if (product.images.isEmpty() && viewModel.isUploadingProductImage.value == false) {
+        if (product.images.isEmpty() && viewModel.isUploading()) {
             imageGallery.visibility = View.GONE
             if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
                 addImageContainer.visibility = View.VISIBLE

@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -41,26 +40,46 @@ import javax.inject.Inject
 class ProductImagesService : JobIntentService() {
     companion object {
         const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
-        const val KEY_LOCAL_MEDIA_URI_LIST = "key_local_media_uri_list"
+        const val KEY_LOCAL_URI_LIST = "key_local_uri_list"
 
         private const val STRIP_LOCATION = true
-        private const val TIMEOUT_SECONDS = 120L
 
         // array of remoteProductId / localImageUri
+        // TODO: update this to support multiple uploads for the same product
         private val currentUploads = LongSparseArray<Uri>()
 
+        // posted when the list of images starts uploading
         class OnProductImagesUpdateStartedEvent(
-            var remoteProductId: Long
+            val remoteProductId: Long
         )
 
+        // posted when the list of images finishes uploading
         class OnProductImagesUpdateCompletedEvent(
-            var remoteProductId: Long,
+            val remoteProductId: Long
+        )
+
+        // posted when a single image has been uploaded
+        class OnProductImageUploaded(
+            val remoteProductId: Long,
             val isError: Boolean
         )
 
         fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
 
         fun isBusy() = !currentUploads.isEmpty
+
+        fun getUploadCountForProduct(remoteProductId: Long): Int {
+            if (currentUploads.isEmpty) {
+                return 0
+            }
+            var count = 0
+            for (index in 0 until currentUploads.size()) {
+                if (currentUploads.keyAt(index) == remoteProductId) {
+                    count++
+                }
+            }
+            return count
+        }
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -95,12 +114,16 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
-        val localUriList = intent.getParcelableArrayListExtra<Uri>(KEY_LOCAL_MEDIA_URI_LIST)
+        val localUriList = intent.getParcelableArrayListExtra<Uri>(KEY_LOCAL_URI_LIST)
         if (localUriList.isNullOrEmpty()) {
             WooLog.w(T.MEDIA, "productImagesService > null media list")
             handleFailure(remoteProductId)
             return
         }
+
+        // post an event that the upload is starting
+        val event = OnProductImagesUpdateStartedEvent(remoteProductId)
+        EventBus.getDefault().post(event)
 
         localUriList.forEach { localUri ->
             val media = ProductImagesUtils.mediaModelFromLocalUri(
@@ -119,22 +142,20 @@ class ProductImagesService : JobIntentService() {
             media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             currentUploads.put(remoteProductId, localUri)
 
-            // first fire an event that the upload is starting
-            EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
-
             // dispatch the upload request
             val site = siteStore.getSiteByLocalId(media.localSiteId)
             val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-
-            // wait for the two-step process to complete with a timeout
-            try {
-                doneSignal.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            } catch (e: InterruptedException) {
-                WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
-                handleFailure(remoteProductId)
-            }
         }
+
+        // wait for the process to complete
+        try {
+            doneSignal.await()
+        } catch (e: InterruptedException) {
+            WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+        }
+
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -203,15 +224,19 @@ class ProductImagesService : JobIntentService() {
     }
 
     private fun handleSuccess(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = false))
         productImageMap.remove(remoteProductId)
         currentUploads.remove(remoteProductId)
-        doneSignal.countDown()
+        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = false))
+        if (currentUploads.isEmpty) {
+            doneSignal.countDown()
+        }
     }
 
     private fun handleFailure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = true))
         currentUploads.remove(remoteProductId)
-        doneSignal.countDown()
+        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = true))
+        if (currentUploads.isEmpty) {
+            doneSignal.countDown()
+        }
     }
 }
