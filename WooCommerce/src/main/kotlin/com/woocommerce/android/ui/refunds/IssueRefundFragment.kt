@@ -18,7 +18,6 @@ import javax.inject.Inject
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
@@ -28,7 +27,7 @@ import kotlinx.android.synthetic.main.fragment_issue_refund.*
 import kotlinx.android.synthetic.main.fragment_refund_by_amount.*
 import org.wordpress.android.util.ActivityUtils
 
-class IssueRefundFragment : BaseFragment(), BackPressListener {
+class IssueRefundFragment : BaseFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -87,11 +86,6 @@ class IssueRefundFragment : BaseFragment(), BackPressListener {
         })
     }
 
-    override fun onRequestAllowBackPress(): Boolean {
-        // temporary workaround for activity VM scope
-        viewModel.resetLiveData()
-        return true
-    }
 
     @SuppressLint("WrongConstant")
     private class RefundPageAdapter(

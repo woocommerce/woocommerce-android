@@ -68,9 +68,6 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
                     }
                 }
                 is Exit -> {
-                    // temporary workaround for activity VM scope
-                    viewModel.resetLiveData()
-
                     requireActivity().navigateBackWithResult(
                             REFUND_REQUEST_CODE,
                             Bundle(),
