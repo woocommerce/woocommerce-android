@@ -90,23 +90,23 @@ class ProductImagesService : JobIntentService() {
         WooLog.i(T.MEDIA, "productImagesService > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
-        val localUriList = intent.getSerializableExtra(KEY_LOCAL_MEDIA_URI_LIST) as ArrayList<Uri>
-        if (localUriList.isNullOrEmpty()) {
-            WooLog.w(T.MEDIA, "productImagesService > null localMediaUri")
-            handleFailure(remoteProductId)
-            return
-        }
-
         if (!networkStatus.isConnected()) {
             handleFailure(remoteProductId)
             return
         }
 
-        localUriList.forEach { uri ->
+        val localUriList = intent.getParcelableArrayListExtra<Uri>(KEY_LOCAL_MEDIA_URI_LIST)
+        if (localUriList.isNullOrEmpty()) {
+            WooLog.w(T.MEDIA, "productImagesService > null media list")
+            handleFailure(remoteProductId)
+            return
+        }
+
+        localUriList.forEach { localUri ->
             val media = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
                     selectedSite.get().id,
-                    uri,
+                    localUri,
                     mediaStore
             )
             if (media == null) {
@@ -117,7 +117,7 @@ class ProductImagesService : JobIntentService() {
 
             media.postId = remoteProductId
             media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
-            currentUploads.put(remoteProductId, uri)
+            currentUploads.put(remoteProductId, localUri)
 
             // first fire an event that the upload is starting
             EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
