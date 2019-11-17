@@ -77,7 +77,7 @@ class ProductImagesViewModel @Inject constructor(
         _captureProductImage.call()
     }
 
-    fun uploadProductMedia(remoteProductId: Long, localImageUri: Uri) {
+    fun uploadProductMedia(remoteProductId: Long, localMediaUriList: ArrayList<Uri>) {
         if (!checkNetwork()) {
             return
         }
@@ -85,7 +85,7 @@ class ProductImagesViewModel @Inject constructor(
             _showSnackbarMessage.value = R.string.product_image_service_busy
             return
         }
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localImageUri)
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localMediaUriList)
     }
 
     private fun checkNetwork(): Boolean {

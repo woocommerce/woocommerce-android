@@ -90,7 +90,7 @@ class ProductImagesService : JobIntentService() {
         WooLog.i(T.MEDIA, "productImagesService > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
-        val localUriList = intent.getSerializableExtra(KEY_LOCAL_MEDIA_URI_LIST) as List<Uri>
+        val localUriList = intent.getSerializableExtra(KEY_LOCAL_MEDIA_URI_LIST) as ArrayList<Uri>
         if (localUriList.isNullOrEmpty()) {
             WooLog.w(T.MEDIA, "productImagesService > null localMediaUri")
             handleFailure(remoteProductId)
