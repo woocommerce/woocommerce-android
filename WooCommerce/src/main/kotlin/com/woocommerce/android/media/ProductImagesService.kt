@@ -41,7 +41,7 @@ import javax.inject.Inject
 class ProductImagesService : JobIntentService() {
     companion object {
         const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
-        const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
+        const val KEY_LOCAL_MEDIA_URI_LIST = "key_local_media_uri_list"
 
         private const val STRIP_LOCATION = true
         private const val TIMEOUT_SECONDS = 120L
@@ -90,8 +90,8 @@ class ProductImagesService : JobIntentService() {
         WooLog.i(T.MEDIA, "productImagesService > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
-        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
-        if (localMediaUri == null) {
+        val localUriList = intent.getSerializableExtra(KEY_LOCAL_MEDIA_URI_LIST) as List<Uri>
+        if (localUriList.isNullOrEmpty()) {
             WooLog.w(T.MEDIA, "productImagesService > null localMediaUri")
             handleFailure(remoteProductId)
             return
@@ -102,36 +102,38 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
-        val media = ProductImagesUtils.mediaModelFromLocalUri(
-                this,
-                selectedSite.get().id,
-                localMediaUri,
-                mediaStore
-        )
-        if (media == null) {
-            WooLog.w(T.MEDIA, "productImagesService > null media")
-            handleFailure(remoteProductId)
-            return
-        }
+        localUriList.forEach { uri ->
+            val media = ProductImagesUtils.mediaModelFromLocalUri(
+                    this,
+                    selectedSite.get().id,
+                    uri,
+                    mediaStore
+            )
+            if (media == null) {
+                WooLog.w(T.MEDIA, "productImagesService > null media")
+                handleFailure(remoteProductId)
+                return
+            }
 
-        media.postId = remoteProductId
-        media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
-        currentUploads.put(remoteProductId, localMediaUri)
+            media.postId = remoteProductId
+            media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+            currentUploads.put(remoteProductId, uri)
 
-        // first fire an event that the upload is starting
-        EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
+            // first fire an event that the upload is starting
+            EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
 
-        // then dispatch the upload request
-        val site = siteStore.getSiteByLocalId(media.localSiteId)
-        val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
-        dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+            // dispatch the upload request
+            val site = siteStore.getSiteByLocalId(media.localSiteId)
+            val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
+            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
-        // wait for the two-step process to complete with a timeout
-        try {
-            doneSignal.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        } catch (e: InterruptedException) {
-            WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
-            handleFailure(remoteProductId)
+            // wait for the two-step process to complete with a timeout
+            try {
+                doneSignal.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            } catch (e: InterruptedException) {
+                WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+                handleFailure(remoteProductId)
+            }
         }
     }
 
