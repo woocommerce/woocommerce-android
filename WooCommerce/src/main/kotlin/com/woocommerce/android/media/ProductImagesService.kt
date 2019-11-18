@@ -82,6 +82,8 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var networkStatus: NetworkStatus
 
+    private lateinit var notifHandler: ProductImagesNotificationHandler
+
     private val doneSignal = CountDownLatch(1)
 
     override fun onCreate() {
@@ -120,7 +122,14 @@ class ProductImagesService : JobIntentService() {
         val event = OnProductImagesUpdateStartedEvent(remoteProductId)
         EventBus.getDefault().post(event)
 
-        localUriList.forEach loop@{ localUri ->
+        notifHandler = ProductImagesNotificationHandler(this, remoteProductId)
+        val totalUploads = localUriList.size
+
+        for (index in 0 until totalUploads) {
+            // show the upload notification with the correct count
+            notifHandler.update(index + 1, totalUploads)
+
+            val localUri = localUriList[index]
             val media = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
                     selectedSite.get().id,
@@ -130,7 +139,7 @@ class ProductImagesService : JobIntentService() {
             if (media == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure(remoteProductId)
-                return@loop
+                continue
             }
 
             media.postId = remoteProductId
@@ -150,6 +159,8 @@ class ProductImagesService : JobIntentService() {
             WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
         }
 
+        // remove the notification and alert that all uploads have completed
+        notifHandler.remove()
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
     }
 
