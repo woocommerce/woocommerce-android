@@ -1,5 +1,6 @@
 package com.woocommerce.android.media
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -20,8 +21,9 @@ class ProductImagesNotificationHandler(
     }
 
     private val context: Context = service.baseContext.applicationContext
-    private val notificationManager: NotificationManager
     private val notificationId: Int
+    private val notificationManager: NotificationManager
+    private val notificationBuilder: NotificationCompat.Builder
 
     init {
         notificationManager = SystemServiceFactory.get(
@@ -37,7 +39,7 @@ class ProductImagesNotificationHandler(
             context.getString(R.string.product_images_uploading_multi_notif_message)
         }
 
-        val notification = NotificationCompat.Builder(
+        notificationBuilder = NotificationCompat.Builder(
                 context,
                 CHANNEL_ID
         ).also {
@@ -45,11 +47,18 @@ class ProductImagesNotificationHandler(
             it.color = ContextCompat.getColor(context, R.color.grey_50)
             it.setOnlyAlertOnce(true)
             it.setContentTitle(title)
-        }.build()
+            it.setProgress(100, 0, false)
+        }
 
+        val notification = notificationBuilder.build()
         notificationId = (Random()).nextInt()
         service.startForeground(notificationId, notification)
         notificationManager.notify(notificationId, notification)
+    }
+
+    fun setProgress(progress: Int) {
+        notificationBuilder.setProgress(100, progress, false)
+        notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
     /**
