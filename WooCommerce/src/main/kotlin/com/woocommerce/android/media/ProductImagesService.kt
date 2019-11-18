@@ -122,13 +122,10 @@ class ProductImagesService : JobIntentService() {
         val event = OnProductImagesUpdateStartedEvent(remoteProductId)
         EventBus.getDefault().post(event)
 
-        notifHandler = ProductImagesNotificationHandler(this, remoteProductId)
         val totalUploads = localUriList.size
+        notifHandler = ProductImagesNotificationHandler(this, remoteProductId, totalUploads)
 
         for (index in 0 until totalUploads) {
-            // show the upload notification with the correct count
-            notifHandler.update(index + 1, totalUploads)
-
             // create a media model from this local image uri
             val localUri = localUriList[index]
             val media = ProductImagesUtils.mediaModelFromLocalUri(

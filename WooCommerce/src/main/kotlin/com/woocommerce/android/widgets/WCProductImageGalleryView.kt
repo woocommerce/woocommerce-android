@@ -101,10 +101,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
         this.listener = listener
-
-        if (!adapter.isSameImageList(product.images)) {
-            adapter.showImages(product.images)
-        }
+        adapter.showImages(product.images)
     }
 
     /**
@@ -126,6 +123,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private var placeholderCount = 0
 
         fun showImages(images: List<WCProductImageModel>) {
+            if (isSameImageList(images)) {
+                return
+            }
+
             val count = placeholderCount
             placeholderCount = 0
 
@@ -136,7 +137,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             setPlaceholderCount(count)
         }
 
-        fun isSameImageList(images: List<WCProductImageModel>): Boolean {
+        private fun isSameImageList(images: List<WCProductImageModel>): Boolean {
             if (images.size != imageList.size) {
                 return false
             }

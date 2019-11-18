@@ -12,7 +12,8 @@ import java.util.Random
 
 class ProductImagesNotificationHandler(
     val service: ProductImagesService,
-    val remoteProductId: Long
+    val remoteProductId: Long,
+    numUploads: Int
 ) {
     companion object {
         private const val CHANNEL_ID = "image_upload_channel"
@@ -20,7 +21,6 @@ class ProductImagesNotificationHandler(
 
     private val context: Context = service.baseContext.applicationContext
     private val notificationManager: NotificationManager
-    private val notificationBuilder: NotificationCompat.Builder
     private val notificationId: Int
 
     init {
@@ -31,32 +31,25 @@ class ProductImagesNotificationHandler(
 
         createChannel()
 
-        notificationBuilder = NotificationCompat.Builder(
+        val title = if (numUploads == 1) {
+            context.getString(R.string.product_images_uploading_single_notif_message)
+        } else {
+            context.getString(R.string.product_images_uploading_multi_notif_message)
+        }
+
+        val notification = NotificationCompat.Builder(
                 context,
                 CHANNEL_ID
         ).also {
-            it.setContentTitle(context.getString(R.string.app_name))
             it.setSmallIcon(android.R.drawable.stat_sys_upload)
             it.color = ContextCompat.getColor(context, R.color.grey_50)
             it.setOnlyAlertOnce(true)
-        }
+            it.setContentTitle(title)
+        }.build()
 
         notificationId = (Random()).nextInt()
-        service.startForeground(notificationId, notificationBuilder.build())
-    }
-
-    /**
-     * Update the existing notification with the current upload number and total upload count
-     */
-    fun update(currentUpload: Int, totalUploads: Int) {
-        notificationManager.notify(notificationId, notificationBuilder.build())
-
-        val title = if (totalUploads == 1) {
-            context.getString(R.string.product_images_uploading_single_notif_message)
-        } else {
-            context.getString(R.string.product_images_uploading_multi_notif_message, currentUpload, totalUploads)
-        }
-        notificationBuilder.setTicker(title)
+        service.startForeground(notificationId, notification)
+        notificationManager.notify(notificationId, notification)
     }
 
     /**
