@@ -129,7 +129,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewModel.product.value?.let { product ->
-            ImageViewerActivity.showProductImage(
+            ImageViewerActivity.showProductImages(
                     this,
                     product,
                     imageModel,
@@ -220,11 +220,9 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_IMAGE_ADDED)
                     viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
                 }
-                REQUEST_CODE_IMAGE_VIEWER -> data?.let { intent ->
-                    val remoteMediaId = intent.getLongExtra(ImageViewerActivity.EXTRA_REMOVE_REMOTE_IMAGE_ID, 0)
-                    if (remoteMediaId > 0) {
-                        AnalyticsTracker.track(Stat.PRODUCT_IMAGE_REMOVED)
-                        viewModel.removeProductMedia(navArgs.remoteProductId, remoteMediaId)
+                REQUEST_CODE_IMAGE_VIEWER -> data?.let { bundle ->
+                    if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
+                        viewModel.loadProduct()
                     }
                 }
             }

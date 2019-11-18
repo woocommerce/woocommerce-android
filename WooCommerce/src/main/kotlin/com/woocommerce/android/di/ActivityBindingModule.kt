@@ -3,6 +3,8 @@ package com.woocommerce.android.di
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
+import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.imageviewer.ImageViewerModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginNoJetpackModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
@@ -83,4 +85,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(ImageViewerModule::class))
+    abstract fun provideImageViewerActivity(): ImageViewerActivity
 }

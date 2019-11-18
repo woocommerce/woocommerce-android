@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.woocommerce.android.ui.imageviewer.ImageViewerViewModel
 import com.woocommerce.android.ui.login.LoginNoJetpackViewModel
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel
@@ -69,6 +70,11 @@ internal abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(LoginNoJetpackViewModel::class)
     internal abstract fun pluginLoginNoJetpackViewModel(viewModel: LoginNoJetpackViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ImageViewerViewModel::class)
+    internal abstract fun pluginImageViewerViewModel(viewModel: ImageViewerViewModel): ViewModel
 
     @Binds
     internal abstract fun provideViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory

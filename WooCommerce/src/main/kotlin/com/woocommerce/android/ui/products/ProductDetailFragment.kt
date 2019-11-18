@@ -550,7 +550,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             findNavController().navigate(action)
         } else if (imageModel != null) {
             viewModel.productData.value?.product?.let { product ->
-                ImageViewerActivity.showProductImage(
+                ImageViewerActivity.showProductImages(
                         this,
                         product,
                         imageModel,
