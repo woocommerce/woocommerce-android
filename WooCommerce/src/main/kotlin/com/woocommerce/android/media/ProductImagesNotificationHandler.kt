@@ -14,7 +14,7 @@ import java.util.Random
 class ProductImagesNotificationHandler(
     val service: ProductImagesService,
     val remoteProductId: Long,
-    numUploads: Int
+    val maxProgress: Int
 ) {
     companion object {
         private const val CHANNEL_ID = "image_upload_channel"
@@ -33,7 +33,7 @@ class ProductImagesNotificationHandler(
 
         createChannel()
 
-        val title = if (numUploads == 1) {
+        val title = if (maxProgress == 100) {
             context.getString(R.string.product_images_uploading_single_notif_message)
         } else {
             context.getString(R.string.product_images_uploading_multi_notif_message)
@@ -47,7 +47,8 @@ class ProductImagesNotificationHandler(
             it.color = ContextCompat.getColor(context, R.color.grey_50)
             it.setOnlyAlertOnce(true)
             it.setContentTitle(title)
-            it.setProgress(100, 0, false)
+            it.setOngoing(true)
+            it.setProgress(maxProgress, 0, false)
         }
 
         val notification = notificationBuilder.build()
@@ -57,7 +58,7 @@ class ProductImagesNotificationHandler(
     }
 
     fun setProgress(progress: Int) {
-        notificationBuilder.setProgress(100, progress, false)
+        notificationBuilder.setProgress(maxProgress, progress, false)
         notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
