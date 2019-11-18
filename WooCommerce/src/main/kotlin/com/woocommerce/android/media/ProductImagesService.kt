@@ -109,7 +109,7 @@ class ProductImagesService : JobIntentService() {
         val localUriList = intent.getParcelableArrayListExtra<Uri>(KEY_LOCAL_URI_LIST)
         if (localUriList.isNullOrEmpty()) {
             WooLog.w(T.MEDIA, "productImagesService > null media list")
-            handleFailure(remoteProductId)
+            EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
             return
         }
 
