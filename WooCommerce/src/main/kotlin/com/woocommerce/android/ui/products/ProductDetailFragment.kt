@@ -476,6 +476,16 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         return cardView
     }
 
+    /**
+     * Given a map of product properties [properties] and a formatter [propertyValueFormatterId]
+     * returns a String with the property names and corresponding values
+     * Eg:
+     * Regular Price: $20.00
+     * Sale Price: $10.00
+     *      OR
+     * Color: 3 options
+     * Size: 2 options
+     */
     private fun getPropertyValue(
         properties: Map<String, String>,
         @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter
