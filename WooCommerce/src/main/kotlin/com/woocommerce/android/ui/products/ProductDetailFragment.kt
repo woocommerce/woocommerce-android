@@ -200,7 +200,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         addPrimaryCard(productData)
-        addPricingAndInventoryCard(productData)
+
+        // display pricing/inventory card only if product is not a variable product
+        // since pricing, inventory, shipping and SKU for a variable product can differ per variant
+        if (product.type != VARIABLE) {
+            addPricingAndInventoryCard(productData)
+        }
         addPurchaseDetailsCard(productData)
     }
 
@@ -225,6 +230,25 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                     R.string.product_reviews,
                     StringUtils.formatCount(product.ratingCount)
             )?.setRating(product.averageRating)
+        }
+
+        // show product variants only if product type is variable
+        if (product.type == VARIABLE && FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
+            val properties = mutableMapOf<String, String>()
+            for (attribute in product.attributes) {
+                properties[attribute.name] = attribute.options.size.toString()
+            }
+
+            val propertyValue = getPropertyValue(properties, R.string.product_property_variant_formatter)
+            addPropertyView(
+                    DetailCard.Primary,
+                    getString(R.string.product_variants),
+                    propertyValue,
+                    LinearLayout.VERTICAL
+            )?.setClickListener {
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
+                showProductVariations(product.remoteId)
+            }
         }
 
         addLinkView(
@@ -277,24 +301,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
         } else {
             addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
-        }
-
-        // show product variants only if product type is variable
-        if (product.type == VARIABLE) {
-            val group = mutableMapOf<String, String>()
-            for (attribute in product.attributes) {
-                group[attribute.name] = attribute.options.size.toString()
-            }
-
-            val productVariantFormatter = R.string.product_property_variant_formatter
-            if (FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
-                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter) {
-                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
-                    showProductVariations(product.remoteId)
-                }
-            } else {
-                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter)
-            }
         }
     }
 
@@ -392,15 +398,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter,
         propertyGroupClickListener: ((view: View) -> Unit)? = null
     ): WCProductPropertyView? {
-        var propertyValue = ""
-        properties.forEach { property ->
-            if (property.value.isNotEmpty()) {
-                if (propertyValue.isNotEmpty()) {
-                    propertyValue += "\n"
-                }
-                propertyValue += getString(propertyValueFormatterId, property.key, property.value)
-            }
-        }
+        val propertyValue = getPropertyValue(properties, propertyValueFormatterId)
         return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL)?.also {
             it.setClickListener(propertyGroupClickListener)
         }
@@ -483,6 +481,32 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         productDetail_container.addView(cardView)
 
         return cardView
+    }
+
+    /**
+     * Given a map of product properties [properties] and a formatter [propertyValueFormatterId]
+     * returns a String with the property names and corresponding values
+     * Eg:
+     * Regular Price: $20.00
+     * Sale Price: $10.00
+     *      OR
+     * Color: 3 options
+     * Size: 2 options
+     */
+    private fun getPropertyValue(
+        properties: Map<String, String>,
+        @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter
+    ): String {
+        var propertyValue = ""
+        properties.forEach { property ->
+            if (property.value.isNotEmpty()) {
+                if (propertyValue.isNotEmpty()) {
+                    propertyValue += "\n"
+                }
+                propertyValue += getString(propertyValueFormatterId, property.key, property.value)
+            }
+        }
+        return propertyValue
     }
 
     /**
