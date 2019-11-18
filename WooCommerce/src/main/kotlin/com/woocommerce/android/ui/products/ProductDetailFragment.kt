@@ -193,7 +193,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         addPrimaryCard(productData)
-        addPricingAndInventoryCard(productData)
+
+        // display pricing/inventory card only if product is not a variable product
+        // since pricing, inventory, shipping and SKU for a variable product can differ per variant
+        if (product.type != VARIABLE) {
+            addPricingAndInventoryCard(productData)
+        }
         addPurchaseDetailsCard(productData)
     }
 
