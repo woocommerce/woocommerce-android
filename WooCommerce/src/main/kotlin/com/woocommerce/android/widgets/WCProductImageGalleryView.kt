@@ -155,9 +155,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
 
             // remove existing placeholders
-            for (index in 1..placeholderCount) {
-                imageList.removeAt(index)
-            }
+            clearPlaceholders()
 
             // add the new ones
             for (index in 1..count) {
@@ -168,6 +166,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             placeholderCount = count
             notifyDataSetChanged()
+        }
+
+        private fun clearPlaceholders() {
+            while (itemCount > 0 && isPlaceholder(0)) {
+                imageList.removeAt(0)
+            }
+            placeholderCount = 0
         }
 
         fun isPlaceholder(position: Int) = imageList[position].id < 0
