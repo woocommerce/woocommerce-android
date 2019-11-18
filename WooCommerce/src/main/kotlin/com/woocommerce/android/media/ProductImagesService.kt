@@ -82,8 +82,6 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private lateinit var notifHandler: ProductImagesNotificationHandler
-
     private val doneSignal = CountDownLatch(1)
 
     override fun onCreate() {
@@ -123,11 +121,10 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(event)
 
         val totalUploads = localUriList.size
-        notifHandler = ProductImagesNotificationHandler(this, remoteProductId, totalUploads)
+        val notifHandler = ProductImagesNotificationHandler(this, remoteProductId, totalUploads)
 
-        for (index in 0 until totalUploads) {
+        localUriList.forEach loop@{ localUri ->
             // create a media model from this local image uri
-            val localUri = localUriList[index]
             val media = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
                     selectedSite.get().id,
@@ -137,7 +134,7 @@ class ProductImagesService : JobIntentService() {
             if (media == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure(remoteProductId)
-                continue
+                return@loop
             }
 
             media.postId = remoteProductId
