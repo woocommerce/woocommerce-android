@@ -137,8 +137,8 @@ class ProductImagesService : JobIntentService() {
             media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
 
             // dispatch the upload request
-            val site = siteStore.getSiteByLocalId(media.localSiteId)
-            val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
+            WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
+            val payload = UploadMediaPayload(selectedSite.get(), media, STRIP_LOCATION)
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
         }
 
@@ -220,9 +220,12 @@ class ProductImagesService : JobIntentService() {
 
     private fun decUploadCount(remoteProductId: Long) {
         val count = currentUploads.get(remoteProductId, 0)
-        if (count > 0) {
-            currentUploads.put(remoteProductId, count - 1)
+        // we're done if this was the last image to be uploaded, otherwise simply decrement the count
+        if (count == 1) {
+            currentUploads.remove(remoteProductId)
             doneSignal.countDown()
+        } else {
+            currentUploads.put(remoteProductId, count - 1)
         }
     }
 
