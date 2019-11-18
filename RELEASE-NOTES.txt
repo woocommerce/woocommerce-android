@@ -1,3 +1,6 @@
+3.2
+-----
+ 
 3.1
 -----
 * Added a new variants section in the Product detail screen for variable products
