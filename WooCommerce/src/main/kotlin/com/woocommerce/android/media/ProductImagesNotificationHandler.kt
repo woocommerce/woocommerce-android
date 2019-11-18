@@ -35,6 +35,7 @@ class ProductImagesNotificationHandler(
                 context,
                 CHANNEL_ID
         ).also {
+            it.setContentTitle(context.getString(R.string.app_name))
             it.setSmallIcon(android.R.drawable.stat_sys_upload)
             it.color = ContextCompat.getColor(context, R.color.grey_50)
             it.setOnlyAlertOnce(true)
@@ -42,6 +43,27 @@ class ProductImagesNotificationHandler(
 
         notificationId = (Random()).nextInt()
         service.startForeground(notificationId, notificationBuilder.build())
+    }
+
+    /**
+     * Update the existing notification with the current upload number and total upload count
+     */
+    fun update(currentUpload: Int, totalUploads: Int) {
+        notificationManager.notify(notificationId, notificationBuilder.build())
+
+        val title = if (totalUploads == 1) {
+            context.getString(R.string.product_images_uploading_single_notif_message)
+        } else {
+            context.getString(R.string.product_images_uploading_multi_notif_message, currentUpload, totalUploads)
+        }
+        notificationBuilder.setTicker(title)
+    }
+
+    /**
+     * Removes the notification, called after all images have been uploaded
+     */
+    fun remove() {
+        notificationManager.cancel(notificationId)
     }
 
     /**
@@ -58,26 +80,5 @@ class ProductImagesNotificationHandler(
             val channel = NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
-    }
-
-    /**
-     * Update the existing notification with the current upload number and total upload count
-     */
-    fun update(currentUpload: Int, totalUploads: Int) {
-        notificationManager.notify(notificationId, notificationBuilder.build())
-
-        val title = if (totalUploads == 1) {
-            context.getString(R.string.product_images_uploading_single_notif_title)
-        } else {
-            context.getString(R.string.product_images_uploading_multi_notif_title, currentUpload, totalUploads)
-        }
-        notificationBuilder.setContentTitle(title)
-    }
-
-    /**
-     * Removes the notification, called after all images have been uploaded
-     */
-    fun remove() {
-        notificationManager.cancel(notificationId)
     }
 }
