@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.Inject
 
 /**
@@ -43,6 +44,7 @@ class ProductImagesService : JobIntentService() {
         const val KEY_LOCAL_URI_LIST = "key_local_uri_list"
 
         private const val STRIP_LOCATION = true
+        private const val TIMEOUT_PER_UPLOAD = 120L
 
         // array of remoteProductId / upload count for that product
         private val currentUploads = LongSparseArray<Int>()
@@ -118,7 +120,7 @@ class ProductImagesService : JobIntentService() {
         val event = OnProductImagesUpdateStartedEvent(remoteProductId)
         EventBus.getDefault().post(event)
 
-        localUriList.forEach { localUri ->
+        localUriList.forEach loop@{ localUri ->
             val media = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
                     selectedSite.get().id,
@@ -128,7 +130,7 @@ class ProductImagesService : JobIntentService() {
             if (media == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure(remoteProductId)
-                return
+                return@loop
             }
 
             media.postId = remoteProductId
@@ -142,7 +144,8 @@ class ProductImagesService : JobIntentService() {
 
         // wait for the process to complete
         try {
-            doneSignal.await()
+            val timeout = TIMEOUT_PER_UPLOAD * localUriList.size
+            doneSignal.await(timeout, SECONDS)
         } catch (e: InterruptedException) {
             WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
         }
