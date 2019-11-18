@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -14,6 +13,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -32,11 +32,8 @@ class RefundDetailViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val refundStore: WCRefundStore
 ) : ScopedViewModel(savedState, dispatchers) {
-    companion object {
-        private const val REFUND_DETAIL_SAVED_STATE_KEY = "REFUND_DETAIL_SAVED_STATE_KEY"
-    }
-    private val _viewState = savedState.getLiveData<ViewState>(REFUND_DETAIL_SAVED_STATE_KEY)
-    val viewState: LiveData<ViewState> = _viewState
+    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     private lateinit var formatCurrency: (BigDecimal) -> String
 
@@ -56,21 +53,20 @@ class RefundDetailViewModel @AssistedInject constructor(
         else
             "${resourceProvider.getString(R.string.order_refunds_manual_refund)} - ${order.paymentMethodTitle}"
 
-        val refundDetails = ViewState(
-                "${resourceProvider.getString(R.string.order_refunds_refund)} #${refund.id}",
-                formatCurrency(refund.amount),
-                resourceProvider.getString(R.string.order_refunds_refunded_via).format(method),
-                refund.reason
+        viewState = viewState.copy(
+                screenTitle = "${resourceProvider.getString(R.string.order_refunds_refund)} #${refund.id}",
+                refundAmount = formatCurrency(refund.amount),
+                refundMethod = resourceProvider.getString(R.string.order_refunds_refunded_via).format(method),
+                refundReason = refund.reason
         )
-        _viewState.value = refundDetails
     }
 
     @Parcelize
     data class ViewState(
-        val screenTitle: String,
-        val refundAmount: String,
-        val refundMethod: String,
-        val refundReason: String?
+        val screenTitle: String? = null,
+        val refundAmount: String? = null,
+        val refundMethod: String? = null,
+        val refundReason: String? = null
     ) : Parcelable
 
     @AssistedInject.Factory
