@@ -30,13 +30,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.Inject
 
 /**
- * Service which adds a product image via a two-step process:
- *
- *      1. Uploads the image to the WP media library
- *      2. When the upload completes, adds the uploaded media to the product
- *
- * For now the service only supports uploading a single image, but down the road
- * we can extend it to support multiple uploads.
+ * Service which uploads device images to the WP media library and assigns them to a product
  */
 class ProductImagesService : JobIntentService() {
     companion object {
@@ -69,9 +63,7 @@ class ProductImagesService : JobIntentService() {
 
         fun isBusy() = !currentUploads.isEmpty
 
-        fun getUploadCountForProduct(remoteProductId: Long): Int {
-            return currentUploads.get(remoteProductId, 0)
-        }
+        fun getUploadCountForProduct(remoteProductId: Long) = currentUploads.get(remoteProductId, 0)
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -102,14 +94,12 @@ class ProductImagesService : JobIntentService() {
 
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
         if (!networkStatus.isConnected()) {
-            handleFailure(remoteProductId)
             return
         }
 
         val localUriList = intent.getParcelableArrayListExtra<Uri>(KEY_LOCAL_URI_LIST)
         if (localUriList.isNullOrEmpty()) {
             WooLog.w(T.MEDIA, "productImagesService > null media list")
-            handleFailure(remoteProductId)
             return
         }
 
