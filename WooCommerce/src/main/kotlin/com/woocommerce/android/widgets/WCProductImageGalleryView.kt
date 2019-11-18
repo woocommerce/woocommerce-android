@@ -127,6 +127,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         fun showImages(images: List<WCProductImageModel>) {
             val count = placeholderCount
+            placeholderCount = 0
 
             imageList.clear()
             imageList.addAll(images)
