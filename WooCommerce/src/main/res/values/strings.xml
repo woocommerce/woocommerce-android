@@ -426,7 +426,7 @@
         Product images
     -->
     <string name="product_images_title">Photos</string>
-    <string name="product_add_photo">Add photo</string>
+    <string name="product_add_photos">Add photos</string>
     <string name="product_remove_photo">Remove photo</string>
     <string name="product_image_add">Add a product image</string>
     <string name="product_image_error_removing">Error removing product image</string>
