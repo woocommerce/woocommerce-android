@@ -1,6 +1,5 @@
 package com.woocommerce.android.media
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -14,7 +13,7 @@ import java.util.Random
 class ProductImagesNotificationHandler(
     val service: ProductImagesService,
     val remoteProductId: Long,
-    val maxProgress: Int
+    totalUploads: Int
 ) {
     companion object {
         private const val CHANNEL_ID = "image_upload_channel"
@@ -33,7 +32,7 @@ class ProductImagesNotificationHandler(
 
         createChannel()
 
-        val title = if (maxProgress == 100) {
+        val title = if (totalUploads == 1) {
             context.getString(R.string.product_images_uploading_single_notif_message)
         } else {
             context.getString(R.string.product_images_uploading_multi_notif_message)
@@ -43,23 +42,18 @@ class ProductImagesNotificationHandler(
                 context,
                 CHANNEL_ID
         ).also {
-            it.setSmallIcon(android.R.drawable.stat_sys_upload)
             it.color = ContextCompat.getColor(context, R.color.grey_50)
+            it.setSmallIcon(android.R.drawable.stat_sys_upload)
             it.setOnlyAlertOnce(true)
             it.setContentTitle(title)
             it.setOngoing(true)
-            it.setProgress(maxProgress, 0, false)
+            it.setProgress(0, 0, true)
         }
 
         val notification = notificationBuilder.build()
         notificationId = (Random()).nextInt()
         service.startForeground(notificationId, notification)
         notificationManager.notify(notificationId, notification)
-    }
-
-    fun setProgress(progress: Int) {
-        notificationBuilder.setProgress(maxProgress, progress, false)
-        notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
     /**

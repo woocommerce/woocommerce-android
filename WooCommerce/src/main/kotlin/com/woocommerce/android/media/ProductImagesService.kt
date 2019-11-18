@@ -75,8 +75,6 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private val doneSignal = CountDownLatch(1)
-    private var totalProgress: Int = 0
-    private var maxProgress: Int = 100
 
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
@@ -115,10 +113,7 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(event)
 
         val totalUploads = localUriList.size
-        totalProgress = 0
-        maxProgress = 100 * totalUploads
-
-        notifHandler = ProductImagesNotificationHandler(this, remoteProductId, maxProgress)
+        notifHandler = ProductImagesNotificationHandler(this, remoteProductId, totalUploads)
 
         localUriList.forEach loop@{ localUri ->
             // create a media model from this local image uri
@@ -181,10 +176,6 @@ class ProductImagesService : JobIntentService() {
             event.completed -> {
                 dispatchAddMediaAction(event.media)
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
-            } else -> {
-                val progress = (event.progress * 100).toInt()
-                totalProgress += progress
-                notifHandler.setProgress(totalProgress)
             }
         }
     }
