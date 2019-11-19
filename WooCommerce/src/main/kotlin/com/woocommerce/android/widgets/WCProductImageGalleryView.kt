@@ -137,12 +137,34 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             setPlaceholderCount(count)
         }
 
-        fun isSameImageList(images: List<WCProductImageModel>): Boolean {
-            if (images.size != imageList.size) {
+        /**
+         * Returns the list of images without placeholders
+         */
+        private fun getActualImages(): List<WCProductImageModel> {
+            if (placeholderCount == 0) {
+                return imageList
+            }
+            val images = ArrayList<WCProductImageModel>()
+            for (index in imageList.indices) {
+                if (!isPlaceholder(index)) {
+                    images.add(imageList[index])
+                }
+            }
+            return images
+        }
+
+        /**
+         * Returns true if the passed list of images is the same as the adapter's list, taking
+         * placeholders into account
+         */
+        private fun isSameImageList(images: List<WCProductImageModel>): Boolean {
+            val actualImages = getActualImages()
+            if (images.size != actualImages.size) {
                 return false
             }
+
             for (index in images.indices) {
-                if (images[index].id != imageList[index].id) {
+                if (images[index].id != actualImages[index].id) {
                     return false
                 }
             }
