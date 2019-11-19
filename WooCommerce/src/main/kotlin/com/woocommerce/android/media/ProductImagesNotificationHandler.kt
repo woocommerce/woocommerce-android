@@ -10,6 +10,9 @@ import com.woocommerce.android.R
 import org.wordpress.android.util.SystemServiceFactory
 import java.util.Random
 
+/**
+ * Shows the standard uploading arrow animated notification icon to signify that images are being uploaded
+ */
 class ProductImagesNotificationHandler(
     val service: ProductImagesService,
     val remoteProductId: Long,
@@ -22,7 +25,6 @@ class ProductImagesNotificationHandler(
     private val context: Context = service.baseContext.applicationContext
     private val notificationId: Int
     private val notificationManager: NotificationManager
-    private val notificationBuilder: NotificationCompat.Builder
 
     init {
         notificationManager = SystemServiceFactory.get(
@@ -38,7 +40,7 @@ class ProductImagesNotificationHandler(
             context.getString(R.string.product_images_uploading_multi_notif_message)
         }
 
-        notificationBuilder = NotificationCompat.Builder(
+        val notificationBuilder = NotificationCompat.Builder(
                 context,
                 CHANNEL_ID
         ).also {
