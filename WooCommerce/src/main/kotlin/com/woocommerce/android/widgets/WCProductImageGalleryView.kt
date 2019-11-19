@@ -1,5 +1,6 @@
 package com.woocommerce.android.widgets
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -46,8 +47,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private val placeholderWidth: Int
     private val adapter: ImageGalleryAdapter
-    private val request: GlideRequest<Drawable>
     private val layoutInflater: LayoutInflater
+    private val contentResolver: ContentResolver
+
+    private val request: GlideRequest<Drawable>
 
     private lateinit var listener: OnGalleryImageClickListener
 
@@ -71,6 +74,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         itemAnimator = DefaultItemAnimator()
         layoutInflater = LayoutInflater.from(context)
+        contentResolver = context.contentResolver
 
         setHasFixedSize(false)
         setItemViewCacheSize(0)
@@ -254,7 +258,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
             val src = getImage(position).src
             if (getItemViewType(position) == VIEW_TYPE_PLACEHOLDER) {
-                holder.imageView.setImageURI(Uri.parse(src))
+                request.load(Uri.parse(src)).into(holder.imageView)
             } else {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageHeight)
                 request.load(photonUrl).into(holder.imageView)
