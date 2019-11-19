@@ -28,9 +28,9 @@ Language: it
     <string name="review_single_fetch_error">Errore durante il recupero della nuova recensione prodotto</string>
     <string name="review_fetch_error">Errore durante il recupero delle recensioni prodotto</string>
     <string name="order_refunds_refund_manual_refund_note">Al momento sono supportati soltanto i rimborsi manuali. Completa il rimborso tramite la bacheca del tuo gateway di pagamento o trasferisci manualmente il denaro al cliente.</string>
-    <string name="order_refunds_manual_refund_error">Si è verificato un problema con il rimborso. Riprova.</string>
-    <string name="order_refunds_manual_refund_successful">Il rimborso è stato emesso correttamente.</string>
-    <string name="order_refunds_manual_refund_progress_message">Il rimborso per %s è in fase di elaborazione. Attendi…</string>
+    <string name="order_refunds_amount_refund_error">Si è verificato un problema con il rimborso. Riprova.</string>
+    <string name="order_refunds_amount_refund_successful">Il rimborso è stato emesso correttamente.</string>
+    <string name="order_refunds_amount_refund_progress_message">Il rimborso per %s è in fase di elaborazione. Attendi…</string>
     <string name="order_refunds_quote_image_description">Icona preventivo</string>
     <string name="order_refunds_manual_refund">Rimborso manuale</string>
     <string name="order_refunds_refund_details">Dettagli di rimborso</string>

@@ -121,7 +121,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_login, menu)
     }
@@ -136,7 +136,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
         return false
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface

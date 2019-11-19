@@ -1,10 +1,13 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.SMALL
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 
+@Parcelize
 data class ProductReview(
     val remoteId: Long,
     val dateCreated: Date,
@@ -16,7 +19,7 @@ data class ProductReview(
     var status: String,
     var read: Boolean? = null, // Only has a value if it's been set using a matching Notification
     var product: ProductReviewProduct? = null
-)
+) : Parcelable
 
 fun WCProductReviewModel.toAppModel(): ProductReview {
     return ProductReview(

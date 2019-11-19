@@ -28,9 +28,9 @@ Language: zh_TW
     <string name="review_single_fetch_error">擷取新產品評論時發生錯誤</string>
     <string name="review_fetch_error">擷取產品評論時發生錯誤</string>
     <string name="order_refunds_refund_manual_refund_note">目前只支援手動退款。你可透過付款閘道的儀表板完成退款，或手動轉帳給顧客。</string>
-    <string name="order_refunds_manual_refund_error">退款發生錯誤。請再試一次。</string>
-    <string name="order_refunds_manual_refund_successful">退款已成功轉出。</string>
-    <string name="order_refunds_manual_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
+    <string name="order_refunds_amount_refund_error">退款發生錯誤。請再試一次。</string>
+    <string name="order_refunds_amount_refund_successful">退款已成功轉出。</string>
+    <string name="order_refunds_amount_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
     <string name="order_refunds_quote_image_description">報價圖示</string>
     <string name="order_refunds_manual_refund">手動退款</string>
     <string name="order_refunds_refund_details">退款詳細資料</string>

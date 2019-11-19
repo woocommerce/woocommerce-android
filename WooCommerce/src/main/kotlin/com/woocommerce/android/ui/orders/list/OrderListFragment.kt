@@ -17,9 +17,8 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
@@ -37,6 +36,7 @@ import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_main.*
@@ -76,15 +76,12 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    @Inject internal lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject internal lateinit var viewModelFactory: ViewModelFactory
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
     @Inject internal lateinit var selectedSite: SelectedSite
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
-    private val viewModel: OrderListViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), viewModelFactory).get(OrderListViewModel::class.java)
-    }
-
+    private val viewModel: OrderListViewModel by activityViewModels { viewModelFactory }
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
@@ -137,18 +134,18 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_order_list_fragment, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
         orderListMenu = menu
-        searchMenuItem = menu?.findItem(R.id.menu_search)
+        searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
     }
@@ -332,8 +329,8 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()

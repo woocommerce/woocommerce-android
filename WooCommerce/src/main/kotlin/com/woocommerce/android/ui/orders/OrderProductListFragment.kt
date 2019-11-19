@@ -28,7 +28,7 @@ class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
 
     private val navArgs: OrderProductListFragmentArgs by navArgs()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }

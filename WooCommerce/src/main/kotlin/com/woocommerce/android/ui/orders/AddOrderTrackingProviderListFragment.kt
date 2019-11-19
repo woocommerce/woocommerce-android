@@ -65,7 +65,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
     private val skeletonView = SkeletonView()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -173,7 +173,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
     }
 
     override fun showProviderListErrorSnack(@StringRes stringResId: Int) {
-        dialog.window?.let {
+        dialog?.window?.let {
             Snackbar.make(
                     it.findViewById(android.R.id.content),
                     stringResId,

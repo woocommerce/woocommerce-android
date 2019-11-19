@@ -106,13 +106,11 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.let { bundle ->
-            bundle.putString(KEY_IMAGE_URL, imageUrl)
-            bundle.putString(KEY_IMAGE_TITLE, imageTitle)
-            bundle.putString(KEY_TRANSITION_NAME, transitionName)
-            super.onSaveInstanceState(outState)
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(KEY_IMAGE_URL, imageUrl)
+        outState.putString(KEY_IMAGE_TITLE, imageTitle)
+        outState.putString(KEY_TRANSITION_NAME, transitionName)
+        super.onSaveInstanceState(outState)
     }
 
     override fun finishAfterTransition() {

@@ -28,9 +28,9 @@ Language: sv_SE
     <string name="review_single_fetch_error">Den nya produktrecensionen kunde inte hämtas</string>
     <string name="review_fetch_error">Produktrecensionerna kunde inte hämtas</string>
     <string name="order_refunds_refund_manual_refund_note">För närvarande stöds endast manuella återbetalningar. Slutför återbetalningen via instrumentpanelen för din betalningsgateway eller överför pengarna manuellt till kunden.</string>
-    <string name="order_refunds_manual_refund_error">Något gick fel med återbetalningen. Var vänlig försök igen.</string>
-    <string name="order_refunds_manual_refund_successful">Återbetalningen har skickats.</string>
-    <string name="order_refunds_manual_refund_progress_message">Din återbetalning för %s behandlas. Vänligen vänta …</string>
+    <string name="order_refunds_amount_refund_error">Något gick fel med återbetalningen. Var vänlig försök igen.</string>
+    <string name="order_refunds_amount_refund_successful">Återbetalningen har skickats.</string>
+    <string name="order_refunds_amount_refund_progress_message">Din återbetalning för %s behandlas. Vänligen vänta …</string>
     <string name="order_refunds_quote_image_description">Offertikon</string>
     <string name="order_refunds_manual_refund">Manuell återbetalning</string>
     <string name="order_refunds_refund_details">Återbetalningsinformation</string>

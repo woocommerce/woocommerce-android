@@ -6,9 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +18,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -30,10 +30,10 @@ class ProductVariantsFragment : BaseFragment() {
         const val TAG: String = "ProductVariantsFragment"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: ProductVariantsViewModel
+    private val viewModel: ProductVariantsViewModel by viewModels { viewModelFactory }
     private lateinit var productVariantsAdapter: ProductVariantsAdapter
 
     private val skeletonView = SkeletonView()
@@ -49,7 +49,7 @@ class ProductVariantsFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_product_variants, container, false)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -71,10 +71,7 @@ class ProductVariantsFragment : BaseFragment() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductVariantsViewModel::class.java).also {
-            setupObservers(it)
-        }
-
+        setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
     }
 

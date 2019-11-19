@@ -7,7 +7,7 @@ const val REFUNDS_FEATURE = "refunds"
 data class PaymentGateway(
     val title: String = "",
     val description: String = "",
-    val isEnabled: Boolean = true,
+    val isEnabled: Boolean = false,
     val methodTitle: String,
     val methodDescription: String = "",
     val supportsRefunds: Boolean = false

@@ -1,7 +1,9 @@
 package com.woocommerce.android.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineDispatcher
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
@@ -12,15 +14,32 @@ import kotlin.coroutines.CoroutineContext
  *
  * When the ViewModel is destroyed, the coroutine job is cancelled and any running coroutine tied to it is stopped.
  */
-abstract class ScopedViewModel(private val defaultDispatcher: CoroutineDispatcher) : ViewModel(), CoroutineScope {
+abstract class ScopedViewModel(
+    protected val savedState: SavedStateWithArgs,
+    protected val dispatchers: CoroutineDispatchers
+) : ViewModel(), CoroutineScope {
+    private val _event = MultiLiveEvent<Event>()
+    val event: LiveData<Event> = _event
+
     protected var job: Job = Job()
 
     override val coroutineContext: CoroutineContext
-        get() = defaultDispatcher + job
+        get() = dispatchers.main + job
 
     override fun onCleared() {
         super.onCleared()
 
         job.cancel()
+    }
+
+    protected fun triggerEvent(event: Event) {
+        event.isHandled = false
+        _event.value = event
+    }
+
+    // This resets a pending event from being sent
+    // Workaround for the activity ViewModel scope
+    fun resetEvent() {
+        _event.reset()
     }
 }

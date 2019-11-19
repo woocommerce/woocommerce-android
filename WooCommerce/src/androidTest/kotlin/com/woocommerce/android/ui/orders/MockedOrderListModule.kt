@@ -13,13 +13,17 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
+import kotlinx.coroutines.Dispatchers
+import org.mockito.ArgumentMatchers.anyString
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 
