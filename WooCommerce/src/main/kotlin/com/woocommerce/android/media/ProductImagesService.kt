@@ -147,8 +147,16 @@ class ProductImagesService : JobIntentService() {
                 WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
             }
 
-            // remove this uri from the list of uploads for this product and notify that this upload completed
-            currentUploads.get(remoteProductId)?.remove(localUri)
+            // remove this uri from the list of uploads for this product
+            currentUploads.get(remoteProductId)?.let{ oldList ->
+                val newList = ArrayList<Uri>().also {
+                    it.addAll(oldList)
+                    it.remove(localUri)
+                }
+                currentUploads.put(remoteProductId, newList)
+            }
+
+            // notify that this upload completed
             EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = didLastUploadFail))
         }
 

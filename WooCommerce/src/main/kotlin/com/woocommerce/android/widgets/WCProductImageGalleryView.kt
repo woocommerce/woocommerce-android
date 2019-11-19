@@ -254,7 +254,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
             val src = getImage(position).src
             if (getItemViewType(position) == VIEW_TYPE_PLACEHOLDER) {
-                request.load(Uri.parse(src)).into(holder.imageView)
+                request.load(Uri.parse(src)).centerCrop().into(holder.imageView)
             } else {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageHeight)
                 request.load(photonUrl).into(holder.imageView)
