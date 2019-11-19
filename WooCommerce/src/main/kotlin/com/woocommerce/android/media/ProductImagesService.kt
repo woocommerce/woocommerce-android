@@ -40,8 +40,8 @@ class ProductImagesService : JobIntentService() {
         private const val STRIP_LOCATION = true
         private const val TIMEOUT_PER_UPLOAD = 120L
 
-        // array of remoteProductId / upload count for that product
-        private val currentUploads = LongSparseArray<Int>()
+        // array of remoteProductId / uploading image uris for that product
+        private val currentUploads = LongSparseArray<ArrayList<Uri>>()
 
         // posted when the list of images starts uploading
         class OnProductImagesUpdateStartedEvent(
@@ -63,7 +63,9 @@ class ProductImagesService : JobIntentService() {
 
         fun isBusy() = !currentUploads.isEmpty
 
-        fun getUploadCountForProduct(remoteProductId: Long): Int = currentUploads.get(remoteProductId, 0)
+        fun getUploadingImageUrisForProduct(remoteProductId: Long): List<Uri> {
+            return currentUploads.get(remoteProductId) ?: emptyList()
+        }
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -105,8 +107,8 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
-        // set the upload count for this product
-        currentUploads.put(remoteProductId, localUriList.size)
+        // set the uploads for this product
+        currentUploads.put(remoteProductId, localUriList)
 
         // post an event that the upload is starting
         val event = OnProductImagesUpdateStartedEvent(remoteProductId)
@@ -136,18 +138,25 @@ class ProductImagesService : JobIntentService() {
             WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
             val payload = UploadMediaPayload(selectedSite.get(), media, STRIP_LOCATION)
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-        }
 
-        // wait for the process to complete
-        try {
-            val timeout = TIMEOUT_PER_UPLOAD * localUriList.size
-            doneSignal.await(timeout, SECONDS)
-        } catch (e: InterruptedException) {
-            WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+            // wait for the upload to complete
+            try {
+                doneSignal.await(TIMEOUT_PER_UPLOAD, SECONDS)
+            } catch (e: InterruptedException) {
+                WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+            }
+
+            // remove this uri from the list of current uploads
+            currentUploads.get(remoteProductId)?.let { uriList ->
+                if (uriList.remove(localUri)) {
+                    currentUploads.put(remoteProductId, uriList)
+                }
+            }
         }
 
         // remove the notification and alert that all uploads have completed
         notifHandler.remove()
+        currentUploads.remove(remoteProductId)
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
     }
 
@@ -214,27 +223,15 @@ class ProductImagesService : JobIntentService() {
             WooLog.i(T.MEDIA, "productImagesService > product images changed")
             handleSuccess(event.remoteProductId)
         }
-    }
-
-    private fun decUploadCount(remoteProductId: Long) {
-        val count = currentUploads.get(remoteProductId, 0)
-        // we're done if this was the last image to be uploaded, otherwise simply decrement the count
-        if (count == 1) {
-            currentUploads.remove(remoteProductId)
-            doneSignal.countDown()
-        } else {
-            currentUploads.put(remoteProductId, count - 1)
-        }
+        doneSignal.countDown()
     }
 
     private fun handleSuccess(remoteProductId: Long) {
         productImageMap.remove(remoteProductId)
-        decUploadCount(remoteProductId)
         EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = false))
     }
 
     private fun handleFailure(remoteProductId: Long) {
-        decUploadCount(remoteProductId)
         EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = true))
     }
 }

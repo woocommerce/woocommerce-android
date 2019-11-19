@@ -120,8 +120,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.uploadingImageCount.observe(this, Observer {
-            imageGallery.setPlaceholderCount(it)
+        viewModel.uploadingImageUris.observe(this, Observer {
+            imageGallery.setPlaceholderImageUris(it)
         })
 
         viewModel.exit.observe(this, Observer {
