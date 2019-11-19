@@ -8,6 +8,8 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -95,6 +97,29 @@ class ProductImagesViewModel @Inject constructor(
 
     private fun checkUploads() {
         _uploadingImageUris.value = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
+    }
+
+    /**
+     * The list of images has started uploaded
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
+        if (remoteProductId == event.remoteProductId) {
+            checkUploads()
+        }
+    }
+
+    /**
+     * The list of images has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        if (remoteProductId == event.remoteProductId) {
+            loadProduct()
+            checkUploads()
+        }
     }
 
     /**

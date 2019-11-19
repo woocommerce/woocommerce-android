@@ -112,8 +112,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         val placeholders = ArrayList<WCProductImageModel>()
         for (index in imageUriList.indices) {
             // use a negative id so we can check it in isPlaceholder() below
-            val id = -(index - 1).toLong()
+            val id = (-index - 1).toLong()
             placeholders.add(0, WCProductImageModel(id).also {
+                // set the image src to this uri so we can preview it while uploading
                 it.src = imageUriList[index].toString()
             })
         }
@@ -239,9 +240,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 holder.imageView.layoutParams.width = placeholderWidth
+                holder.imageView.alpha = 0.5F
                 holder.uploadProgress.visibility = View.VISIBLE
             } else {
                 holder.imageView.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                holder.imageView.alpha = 1.0F
                 holder.uploadProgress.visibility = View.GONE
             }
 
@@ -249,8 +252,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            if (getItemViewType(position) == VIEW_TYPE_IMAGE) {
-                val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
+            val src = getImage(position).src
+            if (getItemViewType(position) == VIEW_TYPE_PLACEHOLDER) {
+                holder.imageView.setImageURI(Uri.parse(src))
+            } else {
+                val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageHeight)
                 request.load(photonUrl).into(holder.imageView)
             }
         }

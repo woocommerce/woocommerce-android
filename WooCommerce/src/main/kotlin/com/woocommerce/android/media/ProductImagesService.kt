@@ -77,6 +77,7 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private val doneSignal = CountDownLatch(1)
+    private var didLastUploadFail = false
 
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
@@ -127,7 +128,7 @@ class ProductImagesService : JobIntentService() {
             )
             if (media == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
-                handleFailure(remoteProductId)
+                handleFailure()
                 return@loop
             }
 
@@ -146,17 +147,16 @@ class ProductImagesService : JobIntentService() {
                 WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
             }
 
-            // remove this uri from the list of current uploads
-            currentUploads.get(remoteProductId)?.let { uriList ->
-                if (uriList.remove(localUri)) {
-                    currentUploads.put(remoteProductId, uriList)
-                }
-            }
+            // remove this uri from the list of uploads for this product and notify that this upload completed
+            currentUploads.get(remoteProductId)?.remove(localUri)
+            EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = didLastUploadFail))
         }
+
+        currentUploads.remove(remoteProductId)
+        productImageMap.remove(remoteProductId)
 
         // remove the notification and alert that all uploads have completed
         notifHandler.remove()
-        currentUploads.remove(remoteProductId)
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
     }
 
@@ -169,18 +169,17 @@ class ProductImagesService : JobIntentService() {
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMediaUploaded(event: OnMediaUploaded) {
-        val remoteProductId = event.media?.postId ?: 0L
         when {
             event.isError -> {
                 WooLog.w(
                         T.MEDIA,
                         "productImagesService > error uploading media: ${event.error.type}, ${event.error.message}"
                 )
-                handleFailure(remoteProductId)
+                handleFailure()
             }
             event.canceled -> {
                 WooLog.w(T.MEDIA, "productImagesService > upload media cancelled")
-                handleFailure(remoteProductId)
+                handleFailure()
             }
             event.completed -> {
                 dispatchAddMediaAction(event.media)
@@ -197,7 +196,7 @@ class ProductImagesService : JobIntentService() {
         val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
         if (product == null) {
             WooLog.w(T.MEDIA, "productImagesService > product is null")
-            handleFailure(media.postId)
+            handleFailure()
         } else {
             // add the new image as the first (primary) one
             val imageList = ArrayList<WCProductImageModel>().also {
@@ -218,20 +217,20 @@ class ProductImagesService : JobIntentService() {
                     T.MEDIA,
                     "productImagesService > error changing product images: ${event.error.type}, ${event.error.message}"
             )
-            handleFailure(event.remoteProductId)
+            handleFailure()
         } else {
             WooLog.i(T.MEDIA, "productImagesService > product images changed")
-            handleSuccess(event.remoteProductId)
+            handleSuccess()
         }
+    }
+
+    private fun handleSuccess() {
+        didLastUploadFail = false
         doneSignal.countDown()
     }
 
-    private fun handleSuccess(remoteProductId: Long) {
-        productImageMap.remove(remoteProductId)
-        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = false))
-    }
-
-    private fun handleFailure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = true))
+    private fun handleFailure() {
+        didLastUploadFail = true
+        doneSignal.countDown()
     }
 }

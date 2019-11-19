@@ -16,10 +16,9 @@
         tools:layout_height="200dp"
         tools:src="@drawable/ic_product" />
 
-
     <ProgressBar
         android:id="@+id/uploadProgess"
-        style="?android:attr/progressBarStyleSmall"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
