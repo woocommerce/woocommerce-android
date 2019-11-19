@@ -63,7 +63,7 @@ class ProductImagesService : JobIntentService() {
 
         fun isBusy() = !currentUploads.isEmpty
 
-        fun getUploadCountForProduct(remoteProductId: Long) = currentUploads.get(remoteProductId, 0)
+        fun getUploadCountForProduct(remoteProductId: Long): Int = currentUploads.get(remoteProductId, 0)
     }
 
     @Inject lateinit var dispatcher: Dispatcher
