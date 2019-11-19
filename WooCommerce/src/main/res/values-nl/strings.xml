@@ -60,7 +60,6 @@ Language: nl
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="my_store_stats_availability_message">We voeren verbeteringen aan statistieken voor winkels door, via de WooCommerce Admin-plugin</string>
     <string name="my_store_stats_availability_title">Probeer onze verbeterde statistieken</string>
-    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld, want we\nkonden de WooCommerce Admin-plugin niet vinden</string>
     <string name="dashboard_state_no_data">Geen omzet deze periode</string>
     <string name="no_thanks">Nee, liever niet</string>
     <string name="try_it_now">Probeer het nu</string>
