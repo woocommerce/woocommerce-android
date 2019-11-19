@@ -117,6 +117,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 it.src = imageUriList[index].toString()
             })
         }
+        adapter.setPlaceholderImages(placeholders)
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
@@ -189,20 +190,31 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return true
         }
 
-        fun setPlaceholderImages(images: List<WCProductImageModel>) {
+        fun setPlaceholderImages(placeholders: List<WCProductImageModel>) {
             // remove existing placeholders
-            clearPlaceholders()
+           var didChange = clearPlaceholders()
 
             // add the new ones to the top of the list
-            imageList.addAll(0, images)
+            if (placeholders.size > 0) {
+                imageList.addAll(0, placeholders)
+                didChange = true
+            }
 
-            notifyDataSetChanged()
+            if (didChange) {
+                notifyDataSetChanged()
+            }
         }
 
-        private fun clearPlaceholders() {
+        /**
+         * Removes all placeholders, returns true only if any were removed
+         */
+        private fun clearPlaceholders(): Boolean {
+            var result = false
             while (itemCount > 0 && isPlaceholder(0)) {
                 imageList.removeAt(0)
+                result = true
             }
+            return result
         }
 
         fun isPlaceholder(position: Int) = imageList[position].id < 0

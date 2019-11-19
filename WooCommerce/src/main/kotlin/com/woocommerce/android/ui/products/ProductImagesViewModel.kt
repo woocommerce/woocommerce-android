@@ -8,8 +8,6 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -43,8 +41,8 @@ class ProductImagesViewModel @Inject constructor(
     private val _captureProductImage = SingleLiveEvent<Unit>()
     val captureProductImage: LiveData<Unit> = _captureProductImage
 
-    private val _uploadingImageCount = MutableLiveData<Int>()
-    val uploadingImageCount: LiveData<Int> = _uploadingImageCount
+    private val _uploadingImageUris = MutableLiveData<List<Uri>>()
+    val uploadingImageUris: LiveData<List<Uri>> = _uploadingImageUris
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -56,7 +54,7 @@ class ProductImagesViewModel @Inject constructor(
     fun start(remoteProductId: Long) {
         this.remoteProductId = remoteProductId
         loadProduct()
-        checkUploadCount()
+        checkUploads()
     }
 
     override fun onCleared() {
@@ -95,34 +93,8 @@ class ProductImagesViewModel @Inject constructor(
         return false
     }
 
-    private fun checkUploadCount() {
-        val count = ProductImagesService.getUploadCountForProduct(remoteProductId)
-        if (_uploadingImageCount.value != count) {
-            _uploadingImageCount.value = count
-        }
-    }
-
-    /**
-     * The list of images has started uploaded
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        if (remoteProductId == event.remoteProductId) {
-            checkUploadCount()
-        }
-    }
-
-    /**
-     * The list of images has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        if (remoteProductId == event.remoteProductId) {
-            loadProduct()
-            checkUploadCount()
-        }
+    private fun checkUploads() {
+        _uploadingImageUris.value = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
     }
 
     /**
@@ -137,7 +109,7 @@ class ProductImagesViewModel @Inject constructor(
             } else {
                 loadProduct()
             }
-            checkUploadCount()
+            checkUploads()
         }
     }
 }
