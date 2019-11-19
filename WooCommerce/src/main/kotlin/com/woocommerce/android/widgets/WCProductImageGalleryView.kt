@@ -1,6 +1,5 @@
 package com.woocommerce.android.widgets
 
-import android.content.ContentResolver
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -48,8 +47,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private val placeholderWidth: Int
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
-    private val contentResolver: ContentResolver
-
     private val request: GlideRequest<Drawable>
 
     private lateinit var listener: OnGalleryImageClickListener
@@ -74,7 +71,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         itemAnimator = DefaultItemAnimator()
         layoutInflater = LayoutInflater.from(context)
-        contentResolver = context.contentResolver
 
         setHasFixedSize(false)
         setItemViewCacheSize(0)
@@ -197,7 +193,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         fun setPlaceholderImages(placeholders: List<WCProductImageModel>) {
             // remove existing placeholders
-           var didChange = clearPlaceholders()
+            var didChange = clearPlaceholders()
 
             // add the new ones to the top of the list
             if (placeholders.size > 0) {
