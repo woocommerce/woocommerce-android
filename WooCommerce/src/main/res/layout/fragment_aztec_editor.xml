@@ -9,7 +9,7 @@
         android:id="@+id/aztecToolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/aztec_format_bar_height"
-        app:advanced="true"
+        app:advanced="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
