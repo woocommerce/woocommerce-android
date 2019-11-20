@@ -55,6 +55,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="product_variations">Variations</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -72,6 +73,7 @@
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
+    <string name="try_again">Try again</string>
     <!--
         Date/Time Labels
     -->
@@ -99,6 +101,7 @@
     <string name="cant_open_url">Unable to open the link</string>
     <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
     <string name="at_username">\@%s</string>
+    <string name="login_no_jetpack_username">Signed in as \@%1$s\nWrong account? %2$s</string>
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login">Log in</string>
     <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
@@ -118,6 +121,7 @@
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
+    <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_refresh_app">refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce...</string>
@@ -125,13 +129,20 @@
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
     <string name="login_jetpack_view_instructions">View instructions</string>
+    <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
     <string name="login_jetpack_installed_sign_in">Already have Jetpack? %1$s</string>
+    <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
     <string name="login_sign_in">Sign in</string>
     <string name="login_need_help_finding_email">Need help finding the connected email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
     <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
+    <string name="login_discovery_error_title">Connection error</string>
+    <string name="login_discovery_error_options">Here are a few other things you can try:</string>
+    <string name="login_with_wordpress">Sign in with WordPress.com</string>
+    <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
+    <string name="login_discovery_error_option_select">Select an option</string>
     <!--
         Dashboard View
     -->
@@ -167,7 +178,7 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="my_store_stats_reverted_message">We have reverted to the old stats as we\ncouldn\'t find the WooCommerce Admin Plugin</string>
+    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.22 or higher</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for  stores using the WooCommerce Admin plugin</string>
     <!--
@@ -362,10 +373,15 @@
     -->
     <string name="product_image_content_description">Product image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
+    <string name="product_variants_fetch_product_variants_error">Error fetching product variations</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>
     <string name="product_pricing_and_inventory">Pricing and inventory</string>
+    <string name="product_property_default_formatter" translatable="false">%1$s: %2$s</string>
+    <string name="product_property_variant_formatter" translatable="false">%1$s (%2$s options)</string>
+    <string name="product_property_edit">Edit product</string>
     <string name="product_inventory">Inventory</string>
+    <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -496,7 +512,6 @@
     <string name="invalid_verification_code">Invalid verification code</string>
     <string name="send_link">Send link</string>
     <string name="enter_your_password_instead">Enter your password instead</string>
-    <string name="username" content_override="true">WordPress.com username</string>
     <string name="password">Password</string>
     <string name="log_in">Log In</string>
     <string name="login_promo_text_onthego">Publish from the park. Blog from the bus. Comment from the café. WordPress goes where you go.</string>
@@ -517,9 +532,12 @@
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed. Hunt and peck no more!</string>
-    <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>
+    <string name="login_magic_links_sent_label">Email sent! Check your email on this device, and tap the link in the email you receive from WordPress.com</string>
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
+    <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
+    <string name="magic_link_update_error">An error has occurred. Please login to continue</string>
+    <string name="magic_link_fetch_account_error">There was some trouble fetching your account. You can retry now or close and try again later.</string>
     <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
     <string name="enter_wpcom_password_google">To proceed with this Google account, please provide the matching WordPress.com password. This will be asked only once.</string>
     <string name="connect_more">Connect Another Site</string>

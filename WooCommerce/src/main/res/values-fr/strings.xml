@@ -60,7 +60,6 @@ Language: fr
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="my_store_stats_availability_message">Nous déployons des améliorations afin d\'optimiser les statistiques des boutiques via l\'extension d\'administration WooCommerce</string>
     <string name="my_store_stats_availability_title">Essayer nos statistiques améliorées</string>
-    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques car nous\nn\'avons pas pu trouver l\'extension d\'administration WooCommerce</string>
     <string name="dashboard_state_no_data">Pas de revenus durant cette période</string>
     <string name="no_thanks">Non merci</string>
     <string name="try_it_now">Essayer maintenant</string>
@@ -611,7 +610,7 @@ Language: fr
     <string name="magic_link_unavailable_error_message">Actuellement indisponible. Veuillez saisir votre mot de passe</string>
     <string name="login_magic_link_email_requesting">Demande de l’e-mail de connexion</string>
     <string name="login_magic_links_sent_label">Votre lien magique est en route ! Vérifiez votre messagerie sur cet appareil et appuyez sur le lien dans l’e-mail reçu de WordPress.com.</string>
-    <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
+    <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
     <string name="password_incorrect">Il semblerait que ce mot de passe est incorrect. Veuillez vérifier et essayer à nouveau.</string>
     <string name="email_not_registered_wpcom">Hmm, nous ne trouvons pas de compte WordPress.com associé à cette adresse e-mail. Essayez de vous connecter avec le lien ci-après à l\'aide de votre adresse e-mail.</string>
     <string name="requesting_otp">Demande d’un code de vérification par SMS.</string>

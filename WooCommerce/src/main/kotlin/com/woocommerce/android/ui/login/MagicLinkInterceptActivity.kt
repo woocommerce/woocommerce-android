@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.AndroidInjection
 import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
@@ -17,7 +16,7 @@ class MagicLinkInterceptActivity : Activity() {
 
         loginAnalyticsListener.trackLoginMagicLinkOpened()
 
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, LoginActivity::class.java)
         intent.action = getIntent().action
         intent.data = getIntent().data
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or

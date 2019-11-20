@@ -12,6 +12,11 @@
             android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productVariantsFragment"
+            app:destination="@id/productVariantsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/rootFragment"
@@ -174,6 +179,15 @@
             android:defaultValue="0L"/>
         <argument
             android:name="refundId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </fragment>
+    <fragment
+        android:id="@+id/productVariantsFragment"
+        android:name="com.woocommerce.android.ui.products.ProductVariantsFragment"
+        tools:layout="@layout/fragment_product_variants">
+        <argument
+            android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
     </fragment>
