@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
 import kotlinx.android.synthetic.main.fragment_aztec_editor.*
+import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
@@ -42,6 +43,13 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
 
         aztec.visualEditor.fromHtml(navArgs.productDescription)
         aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.productDescription)
+    }
+
+    override fun onDestroy() {
+        activity?.let {
+            ActivityUtils.hideKeyboard(it)
+        }
+        super.onDestroy()
     }
 
     override fun onToolbarCollapseButtonClicked() {
