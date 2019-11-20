@@ -46,6 +46,10 @@ class WCProductPropertyView @JvmOverloads constructor(
         }
     }
 
+    fun setMaxLines(maxLines: Int) {
+        propertyValueText?.maxLines = maxLines
+    }
+
     fun setRating(rating: Float) {
         ensureViewCreated()
 

@@ -29,7 +29,6 @@
         android:layout_marginEnd="@dimen/product_detail_property_margin"
         android:layout_marginStart="@dimen/product_detail_property_margin"
         android:layout_marginTop="@dimen/margin_small"
-        android:maxLines="1"
         android:ellipsize="end"
         android:lineSpacingExtra="2dp"
         android:textColor="@color/wc_grey_medium"

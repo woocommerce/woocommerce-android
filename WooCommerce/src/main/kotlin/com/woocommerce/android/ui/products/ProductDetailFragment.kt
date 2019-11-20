@@ -213,9 +213,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                     R.string.product_description,
                     product.description,
                     LinearLayout.VERTICAL
-            )?.setClickListener {
-                // TODO: add event here to track click
-                showProductDescriptionEditor(product.description)
+            )?.also {
+                it.setMaxLines(1)
+                it.setClickListener {
+                    // TODO: add event here to track click
+                    showProductDescriptionEditor(product.description)
+                }
             }
         }
 
