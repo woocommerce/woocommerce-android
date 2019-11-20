@@ -14,6 +14,7 @@ import java.util.Date
 data class Product(
     val remoteId: Long,
     val name: String,
+    val description: String,
     val type: ProductType,
     val status: ProductStatus?,
     val stockStatus: ProductStockStatus,
@@ -53,6 +54,7 @@ fun WCProductModel.toAppModel(): Product {
     return Product(
         this.remoteProductId,
         this.name,
+        this.description,
         ProductType.fromString(this.type),
         ProductStatus.fromString(this.status),
         ProductStockStatus.fromString(this.stockStatus),

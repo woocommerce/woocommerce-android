@@ -420,6 +420,9 @@
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_description_hint">Start writing…</string>
+    <string name="product_edit_description">Edit description</string>
+    <string name="product_description">Description</string>
     <!--
         Empty list messages
     -->

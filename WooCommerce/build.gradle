@@ -155,6 +155,12 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
+    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:$aztecVersion") {
+        exclude group: "com.android.volley"
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+
     implementation 'com.facebook.shimmer:shimmer:0.3.0'
     implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'

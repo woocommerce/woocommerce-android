@@ -207,6 +207,21 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
+        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            addPropertyView(
+                    DetailCard.Primary,
+                    R.string.product_description,
+                    product.description,
+                    LinearLayout.VERTICAL
+            )?.also {
+                it.setMaxLines(2)
+                it.setClickListener {
+                    // TODO: add event here to track click
+                    showProductDescriptionEditor(product.description)
+                }
+            }
+        }
+
         // we don't show total sales for variations because they're always zero
         if (!isVariation) {
             addPropertyView(
@@ -226,7 +241,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         // show product variants only if product type is variable
-        if (product.type == VARIABLE && FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
+        if (product.type == VARIABLE && FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context)) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
@@ -530,6 +545,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         val action = ProductDetailFragmentDirections
                 .actionProductDetailFragmentToProductVariantsFragment(remoteId)
         findNavController().navigate(action)
+    }
+
+    private fun showProductDescriptionEditor(productDescription: String) {
+        findNavController().navigate(ProductDetailFragmentDirections
+                .actionProductDetailFragmentToAztecEditorFragment(productDescription))
     }
 
     /**

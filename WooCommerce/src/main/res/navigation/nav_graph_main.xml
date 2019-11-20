@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/nav_graph_main"
-            app:startDestination="@id/rootFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/rootFragment">
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
@@ -15,6 +15,11 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productVariantsFragment"
             app:destination="@id/productVariantsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_aztecEditorFragment"
+            app:destination="@id/aztecEditorFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
@@ -190,5 +195,14 @@
             android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
+    </fragment>
+    <fragment
+        android:id="@+id/aztecEditorFragment"
+        android:name="com.woocommerce.android.ui.aztec.AztecEditorFragment"
+        tools:layout="@layout/fragment_aztec_editor">
+        <argument
+            android:name="aztecText"
+            app:argType="string"
+            android:defaultValue='""'/>
     </fragment>
 </navigation>
