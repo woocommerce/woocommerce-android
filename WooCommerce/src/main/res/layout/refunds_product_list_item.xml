@@ -37,6 +37,7 @@
         android:layout_marginStart="@dimen/margin_extra_large"
         android:layout_marginTop="1dp"
         android:includeFontPadding="false"
+        android:textSize="@dimen/text_medium"
         android:maxLines="2"
         android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
         app:layout_constrainedWidth="true"
