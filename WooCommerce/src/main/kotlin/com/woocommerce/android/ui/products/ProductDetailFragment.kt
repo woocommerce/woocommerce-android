@@ -61,7 +61,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private lateinit var viewModel: ProductDetailViewModel
 
     private var productTitle = ""
-    private var productDesc = ""
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
@@ -178,7 +177,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 }
             }
         }
-        productDesc = product.description
 
         updateActivityTitle()
 
@@ -208,7 +206,18 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         val product = productData.product
 
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
-        addPropertyView(DetailCard.Primary, R.string.product_description, productDesc, LinearLayout.VERTICAL)
+
+        if (FeatureFlag.RELEASE_1.isEnabled()) {
+            addPropertyView(
+                    DetailCard.Primary,
+                    R.string.product_description,
+                    product.description,
+                    LinearLayout.VERTICAL
+            )?.setClickListener {
+                // TODO: add event here to track click
+                showProductDescriptionEditor(product.description)
+            }
+        }
 
         // we don't show total sales for variations because they're always zero
         if (!isVariation) {
@@ -229,7 +238,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         // show product variants only if product type is variable
-        if (product.type == VARIABLE && FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
+        if (product.type == VARIABLE && FeatureFlag.TEASER.isEnabled(context)) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
@@ -533,6 +542,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         val action = ProductDetailFragmentDirections
                 .actionProductDetailFragmentToProductVariantsFragment(remoteId)
         findNavController().navigate(action)
+    }
+
+    private fun showProductDescriptionEditor(productDescription: String) {
+        findNavController().navigate(ProductDetailFragmentDirections
+                .actionProductDetailFragmentToAztecEditorFragment(productDescription))
     }
 
     /**
