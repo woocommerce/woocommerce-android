@@ -207,7 +207,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
-        if (FeatureFlag.RELEASE_1.isEnabled()) {
+        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_description,
@@ -241,7 +241,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         // show product variants only if product type is variable
-        if (product.type == VARIABLE && FeatureFlag.TEASER.isEnabled(context)) {
+        if (product.type == VARIABLE && FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context)) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
