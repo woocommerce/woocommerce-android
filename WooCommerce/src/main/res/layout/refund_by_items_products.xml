@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/issueRefund_products"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:paddingStart="@dimen/card_padding_start"
+        android:paddingEnd="@dimen/card_padding_end"
+        tools:itemCount="3"
+        tools:listitem="@layout/refunds_product_list_item"
+        tools:targetApi="lollipop"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/card_padding_start"
+        android:layout_marginEnd="@dimen/card_padding_end"
+        android:layout_marginBottom="@dimen/card_item_padding_intra_double"
+        android:background="@color/list_divider"
+        app:srcCompat="@drawable/list_divider"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/card_padding_start"
+        android:paddingEnd="@dimen/card_padding_end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/issueRefund_lblSubtotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/subtotal"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+        <TextView
+            android:id="@+id/issueRefund_subtotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="$45.00"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/issueRefund_discountSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/card_padding_start"
+        android:paddingEnd="@dimen/card_padding_end"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/issueRefund_lblDiscount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/discount"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+        <TextView
+            android:id="@+id/issueRefund_discountItems"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+            android:layout_marginStart="@dimen/card_item_padding_intra_h"
+            android:layout_weight="1"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
+
+        <TextView
+            android:id="@+id/issueRefund_discountTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="-$4.00"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/card_padding_start"
+        android:paddingEnd="@dimen/card_padding_end"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h">
+
+        <TextView
+            android:id="@+id/issueRefund_lblTaxes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/taxes"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+        <TextView
+            android:id="@+id/issueRefund_taxesTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="$1.00"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/issueRefund_dividerBelowTaxes"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/card_padding_start"
+        android:layout_marginEnd="@dimen/card_padding_end"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:background="@color/list_divider"
+        app:srcCompat="@drawable/list_divider"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_padding_start"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/issueRefund_lblTotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/order_refunds_products_refund"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Woo.Button"
+            android:id="@+id/issueRefund_productsTotalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            tools:text="$49.00" />
+
+    </LinearLayout>
+
+</LinearLayout>
