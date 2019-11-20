@@ -137,19 +137,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         menu?.clear()
-        inflater?.inflate(R.menu.menu_product_detail_fragment, menu)
-        menu?.findItem(R.id.menu_edit_description)?.isVisible = FeatureFlag.UPDATE_PRODUCT_DESC.isEnabled()
+        inflater?.inflate(R.menu.menu_share, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.menu_edit_description -> {
-                // TODO: temp flow to test aztec editor
-                // Once an entry point for edit products have been defined, this will be modified
-                findNavController().navigate(ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToAztecEditorFragment(productDesc))
-                true
-            }
             R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
