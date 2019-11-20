@@ -41,8 +41,8 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
         aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
         aztec.initSourceEditorHistory()
 
-        aztec.visualEditor.fromHtml(navArgs.productDescription)
-        aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.productDescription)
+        aztec.visualEditor.fromHtml(navArgs.aztecText)
+        aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.aztecText)
     }
 
     override fun onDestroy() {
