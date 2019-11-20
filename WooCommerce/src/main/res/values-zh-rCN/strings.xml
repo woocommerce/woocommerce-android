@@ -60,7 +60,6 @@ Language: zh_CN
     <string name="orderdetail_payment_summary_completed">%1$s（通过 %2$s）</string>
     <string name="my_store_stats_availability_message">我们正面向使用了 WooCommerce Admin 插件的商店推出经改进的统计页面</string>
     <string name="my_store_stats_availability_title">试用经改进的统计页面</string>
-    <string name="my_store_stats_reverted_message">由于无法找到 WooCommerce Admin 插件，\n因此已恢复旧版统计页面</string>
     <string name="dashboard_state_no_data">此时间段内没有收入</string>
     <string name="no_thanks">不用了，谢谢</string>
     <string name="try_it_now">立即试用</string>

@@ -34,3 +34,6 @@ wc.sentry.dsn = https://00000000000000000000000000000000@sentry.io/0000000
 
 # The type of in app update FLEXIBLE = 0; IMMEDIATE = 1
 wc.in_app_update_type = 0
+
+# Necessary for gradle 5
+kapt.incremental.apt=false

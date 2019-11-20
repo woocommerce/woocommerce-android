@@ -318,7 +318,7 @@ end
     version=options[:version]
     name="wcandroid-#{version["name"]}.aab"
     apk_name="wcandroid-#{version["name"]}-universal.apk"
-    aab_file="WooCommerce.aab"
+    aab_file="WooCommerce-vanilla-release.aab"
     output_dir="WooCommerce/build/outputs/bundle/"
     build_dir="artifacts/"
 
