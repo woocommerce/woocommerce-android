@@ -142,7 +142,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             imageList.addAll(images)
             notifyDataSetChanged()
 
-            if (placeholders.size > 0) {
+            if (placeholders.isNotEmpty()) {
                 setPlaceholderImages(placeholders)
             }
         }
@@ -196,7 +196,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             var didChange = clearPlaceholders()
 
             // add the new ones to the top of the list
-            if (placeholders.size > 0) {
+            if (placeholders.isNotEmpty()) {
                 imageList.addAll(0, placeholders)
                 didChange = true
             }

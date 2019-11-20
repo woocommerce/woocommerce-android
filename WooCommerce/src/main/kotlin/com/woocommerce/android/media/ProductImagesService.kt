@@ -116,9 +116,12 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(event)
 
         val totalUploads = localUriList.size
-        notifHandler = ProductImagesNotificationHandler(this, remoteProductId, totalUploads)
+        notifHandler = ProductImagesNotificationHandler(this, remoteProductId)
 
-        localUriList.forEach loop@{ localUri ->
+        for (index in 0 until totalUploads) {
+            notifHandler.update(index + 1, totalUploads)
+            val localUri = localUriList[index]
+
             // create a media model from this local image uri
             val media = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
@@ -129,7 +132,7 @@ class ProductImagesService : JobIntentService() {
             if (media == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure()
-                return@loop
+                continue
             }
 
             media.postId = remoteProductId
@@ -192,6 +195,9 @@ class ProductImagesService : JobIntentService() {
             event.completed -> {
                 dispatchAddMediaAction(event.media)
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
+            } else -> {
+                val progress = (event.progress * 100).toInt()
+                notifHandler.setProgress(progress)
             }
         }
     }
