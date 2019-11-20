@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.aztec
 
 import android.os.Bundle
 import android.view.LayoutInflater

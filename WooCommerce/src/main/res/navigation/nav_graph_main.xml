@@ -198,7 +198,7 @@
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
-        android:name="com.woocommerce.android.ui.products.AztecEditorFragment"
+        android:name="com.woocommerce.android.ui.aztec.AztecEditorFragment"
         tools:layout="@layout/fragment_aztec_editor">
         <argument
             android:name="productDescription"
