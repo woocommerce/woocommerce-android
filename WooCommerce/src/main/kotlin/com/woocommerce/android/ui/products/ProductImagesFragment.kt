@@ -25,6 +25,8 @@ import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
@@ -111,12 +113,8 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
             captureProductImage()
         })
 
-        viewModel.isUploadingProductImage.observe(this, Observer {
-            if (it) {
-                imageGallery.addUploadPlaceholder()
-            } else {
-                imageGallery.removeUploadPlaceholder()
-            }
+        viewModel.uploadingImageCount.observe(this, Observer {
+            imageGallery.setPlaceholderCount(it)
         })
 
         viewModel.exit.observe(this, Observer {
@@ -178,8 +176,10 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         // permission and do nothing else - this will be called again if the user then agrees to allow
         // storage permission
         if (requestStoragePermission()) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
+            val intent = Intent(Intent.ACTION_GET_CONTENT).also {
+                it.type = "image/*"
+                it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
             val chooser = Intent.createChooser(intent, null)
             activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
         }
@@ -205,20 +205,38 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                REQUEST_CODE_CHOOSE_PHOTO -> data?.data?.let { imageUri ->
+                REQUEST_CODE_CHOOSE_PHOTO -> data?.let {
+                    val uriList = ArrayList<Uri>()
+                    val clipData = it.clipData
+                    if (clipData != null) {
+                        // handle multiple images
+                        for (i in 0 until clipData.itemCount) {
+                            val uri = clipData.getItemAt(i).uri
+                            uriList.add(uri)
+                        }
+                    } else {
+                        // handle single image
+                        it.data?.let { uri ->
+                            uriList.add(uri)
+                        }
+                    }
+                    if (uriList.isEmpty()) {
+                        WooLog.w(T.MEDIA, "Photo chooser returned empty list")
+                        return
+                    }
                     AnalyticsTracker.track(
                             Stat.PRODUCT_IMAGE_ADDED,
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                    viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
                 }
                 REQUEST_CODE_CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
                             Stat.PRODUCT_IMAGE_ADDED,
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
-                    AnalyticsTracker.track(Stat.PRODUCT_IMAGE_ADDED)
-                    viewModel.uploadProductMedia(navArgs.remoteProductId, imageUri)
+                    val uriList = ArrayList<Uri>().also { it.add(imageUri) }
+                    viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
                 }
                 REQUEST_CODE_IMAGE_VIEWER -> data?.let { bundle ->
                     if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {

@@ -15,10 +15,10 @@ import javax.inject.Singleton
 @Singleton
 class ProductImagesServiceWrapper
 @Inject constructor(private val context: Context) {
-    fun uploadProductMedia(remoteProductId: Long, localMediaUri: Uri) {
+    fun uploadProductMedia(remoteProductId: Long, localMediaUriList: ArrayList<Uri>) {
         val intent = Intent(context, ProductImagesService::class.java).also {
             it.putExtra(ProductImagesService.KEY_REMOTE_PRODUCT_ID, remoteProductId)
-            it.putExtra(ProductImagesService.KEY_LOCAL_MEDIA_URI, localMediaUri)
+            it.putParcelableArrayListExtra(ProductImagesService.KEY_LOCAL_URI_LIST, localMediaUriList)
         }
         JobIntentService.enqueueWork(
                 context,

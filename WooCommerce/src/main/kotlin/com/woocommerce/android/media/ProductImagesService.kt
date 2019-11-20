@@ -26,41 +26,44 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.Inject
 
 /**
- * Service which adds a product image via a two-step process:
- *
- *      1. Uploads the image to the WP media library
- *      2. When the upload completes, adds the uploaded media to the product
- *
- * For now the service only supports uploading a single image, but down the road
- * we can extend it to support multiple uploads.
+ * Service which uploads device images to the WP media library and assigns them to a product
  */
 class ProductImagesService : JobIntentService() {
     companion object {
         const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
-        const val KEY_LOCAL_MEDIA_URI = "key_local_media_uri"
+        const val KEY_LOCAL_URI_LIST = "key_local_uri_list"
 
         private const val STRIP_LOCATION = true
-        private const val TIMEOUT_SECONDS = 120L
+        private const val TIMEOUT_PER_UPLOAD = 120L
 
-        // array of remoteProductId / localImageUri
-        private val currentUploads = LongSparseArray<Uri>()
+        // array of remoteProductId / upload count for that product
+        private val currentUploads = LongSparseArray<Int>()
 
+        // posted when the list of images starts uploading
         class OnProductImagesUpdateStartedEvent(
-            var remoteProductId: Long
+            val remoteProductId: Long
         )
 
+        // posted when the list of images finishes uploading
         class OnProductImagesUpdateCompletedEvent(
-            var remoteProductId: Long,
+            val remoteProductId: Long
+        )
+
+        // posted when a single image has been uploaded
+        class OnProductImageUploaded(
+            val remoteProductId: Long,
             val isError: Boolean
         )
 
         fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
 
         fun isBusy() = !currentUploads.isEmpty
+
+        fun getUploadCountForProduct(remoteProductId: Long): Int = currentUploads.get(remoteProductId, 0)
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -90,49 +93,54 @@ class ProductImagesService : JobIntentService() {
         WooLog.i(T.MEDIA, "productImagesService > onHandleWork")
 
         val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
-        val localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
-        if (localMediaUri == null) {
-            WooLog.w(T.MEDIA, "productImagesService > null localMediaUri")
-            handleFailure(remoteProductId)
-            return
-        }
-
         if (!networkStatus.isConnected()) {
-            handleFailure(remoteProductId)
             return
         }
 
-        val media = ProductImagesUtils.mediaModelFromLocalUri(
-                this,
-                selectedSite.get().id,
-                localMediaUri,
-                mediaStore
-        )
-        if (media == null) {
-            WooLog.w(T.MEDIA, "productImagesService > null media")
-            handleFailure(remoteProductId)
+        val localUriList = intent.getParcelableArrayListExtra<Uri>(KEY_LOCAL_URI_LIST)
+        if (localUriList.isNullOrEmpty()) {
+            WooLog.w(T.MEDIA, "productImagesService > null media list")
             return
         }
 
-        media.postId = remoteProductId
-        media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
-        currentUploads.put(remoteProductId, localMediaUri)
+        // set the upload count for this product
+        currentUploads.put(remoteProductId, localUriList.size)
 
-        // first fire an event that the upload is starting
-        EventBus.getDefault().post(OnProductImagesUpdateStartedEvent(remoteProductId))
+        // post an event that the upload is starting
+        val event = OnProductImagesUpdateStartedEvent(remoteProductId)
+        EventBus.getDefault().post(event)
 
-        // then dispatch the upload request
-        val site = siteStore.getSiteByLocalId(media.localSiteId)
-        val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
-        dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+        localUriList.forEach loop@{ localUri ->
+            val media = ProductImagesUtils.mediaModelFromLocalUri(
+                    this,
+                    selectedSite.get().id,
+                    localUri,
+                    mediaStore
+            )
+            if (media == null) {
+                WooLog.w(T.MEDIA, "productImagesService > null media")
+                handleFailure(remoteProductId)
+                return@loop
+            }
 
-        // wait for the two-step process to complete with a timeout
+            media.postId = remoteProductId
+            media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+
+            // dispatch the upload request
+            WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
+            val payload = UploadMediaPayload(selectedSite.get(), media, STRIP_LOCATION)
+            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+        }
+
+        // wait for the process to complete
         try {
-            doneSignal.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            val timeout = TIMEOUT_PER_UPLOAD * localUriList.size
+            doneSignal.await(timeout, SECONDS)
         } catch (e: InterruptedException) {
             WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
-            handleFailure(remoteProductId)
         }
+
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -200,16 +208,25 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
+    private fun decUploadCount(remoteProductId: Long) {
+        val count = currentUploads.get(remoteProductId, 0)
+        // we're done if this was the last image to be uploaded, otherwise simply decrement the count
+        if (count == 1) {
+            currentUploads.remove(remoteProductId)
+            doneSignal.countDown()
+        } else {
+            currentUploads.put(remoteProductId, count - 1)
+        }
+    }
+
     private fun handleSuccess(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = false))
         productImageMap.remove(remoteProductId)
-        currentUploads.remove(remoteProductId)
-        doneSignal.countDown()
+        decUploadCount(remoteProductId)
+        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = false))
     }
 
     private fun handleFailure(remoteProductId: Long) {
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isError = true))
-        currentUploads.remove(remoteProductId)
-        doneSignal.countDown()
+        decUploadCount(remoteProductId)
+        EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = true))
     }
 }

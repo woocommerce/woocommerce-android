@@ -7,7 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -78,7 +78,7 @@ class ImageViewerViewModel @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+    fun onEventMainThread(event: OnProductImageUploaded) {
         if (remoteProductId == event.remoteProductId) {
             if (event.isError) {
                 _showSnackbarMessage.value = R.string.product_image_error_removing

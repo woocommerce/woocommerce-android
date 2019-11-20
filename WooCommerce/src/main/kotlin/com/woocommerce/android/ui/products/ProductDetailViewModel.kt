@@ -7,7 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -54,8 +54,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _isUploadingProductImage = MutableLiveData<Boolean>()
-    val isUploadingProductImage: LiveData<Boolean> = _isUploadingProductImage
+    private val _uploadingImageCount = SingleLiveEvent<Int>()
+    val uploadingImageCount: LiveData<Int> = _uploadingImageCount
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -77,9 +77,7 @@ class ProductDetailViewModel @Inject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-
-        val isUploading = ProductImagesService.isUploadingForProduct(remoteProductId)
-        setIsUploadingImage(isUploading)
+        checkUploadCount()
     }
 
     fun onShareButtonClicked() {
@@ -140,9 +138,12 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun setIsUploadingImage(isUploading: Boolean) {
-        if (isUploading != _isUploadingProductImage.value) {
-            _isUploadingProductImage.value = isUploading
+    fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
+
+    private fun checkUploadCount() {
+        val count = ProductImagesService.getUploadCountForProduct(remoteProductId)
+        if (_uploadingImageCount.value != count) {
+            _uploadingImageCount.value = count
         }
     }
 
@@ -207,12 +208,12 @@ class ProductDetailViewModel @Inject constructor(
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        setIsUploadingImage(false)
+    fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
             _showSnackbarMessage.value = R.string.product_image_service_error_uploading
         } else {
             loadProduct(remoteProductId)
         }
+        checkUploadCount()
     }
 }
