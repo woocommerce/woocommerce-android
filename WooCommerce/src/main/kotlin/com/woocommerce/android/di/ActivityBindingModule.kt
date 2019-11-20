@@ -61,27 +61,6 @@ abstract class ActivityBindingModule {
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
-    @Module(includes = [
-        IssueRefundFragmentModule::class,
-        RefundByAmountFragmentModule::class,
-        RefundSummaryFragmentModule::class,
-        RefundDetailFragmentModule::class
-    ])
-    object RefundModule
-
-    @Module(includes = [
-        ProductDetailFragmentModule::class,
-        ProductListFragmentModule::class,
-        ProductVariantsFragmentModule::class
-    ])
-    object ProductModule
-
-    @Module(includes = [
-        ReviewDetailFragmentModule::class,
-        ReviewListFragmentModule::class
-    ])
-    object ReviewModule
-
     @ActivityScope
     @ContributesAndroidInjector(modules = [
         LoginFragmentModule::class,
