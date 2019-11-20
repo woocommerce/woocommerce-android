@@ -60,7 +60,6 @@ Language: fr
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="my_store_stats_availability_message">Nous déployons des améliorations afin d\'optimiser les statistiques des boutiques via l\'extension d\'administration WooCommerce</string>
     <string name="my_store_stats_availability_title">Essayer nos statistiques améliorées</string>
-    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques car nous\nn\'avons pas pu trouver l\'extension d\'administration WooCommerce</string>
     <string name="dashboard_state_no_data">Pas de revenus durant cette période</string>
     <string name="no_thanks">Non merci</string>
     <string name="try_it_now">Essayer maintenant</string>

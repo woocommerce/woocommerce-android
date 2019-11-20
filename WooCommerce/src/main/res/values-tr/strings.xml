@@ -60,7 +60,6 @@ Language: tr
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
     <string name="my_store_stats_availability_message">WooCommerce Yönetici eklentisini kullanan mağazalar için istatistiklerde geliştirmeler yapıyoruz</string>
     <string name="my_store_stats_availability_title">Geliştirilmiş istatistiklerimizi deneyin</string>
-    <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük, çünkü\nWooCommerce Yönetici Eklentisi bulunamadı</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>
     <string name="no_thanks">Hayır, teşekkürler</string>
     <string name="try_it_now">Şimdi deneyin</string>
