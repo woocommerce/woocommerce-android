@@ -1,119 +1,119 @@
 <ar>
-2.9:
-* مرحى! ندعم الآن Android 10!
-* شهدت علامة تبويب الطلبات تغييرًا كبيرًا! يشارك البحث والتصفية في عرض فردي يتضمن الأعداد الإجمالية للطلبات حسب حالة الطلب. يتم عرض قائمة الطلبات في علامتي تبويب: المعالجة والكل.
-* شهد عرض تفاصيل الطلب أيضًا بعض اللمسات.
-* يتم أيضًا تضمين العديد من إصلاحات الأخطاء الطفيفة في هذا الإصدار.
+3.0:
+* يدعم التطبيق الآن عمليات استرداد الأموال حسب المبلغ. يتوافر على شاشة تفاصيل الطلب، ويتيح لك إصدار استرداد أموال جزئي أو كامل يدويًا لطلب مدفوع.
+* تُظهر المنتجات ذات الصور المتعددة جميع الصور الآن في المعرض.
+* إصلاح الخطأ: نادرًا ما يؤدي الحفظ أثناء الوجود على شاشة "إضافة ملحوظة الطلب" إلى حدوث عطل. أما الآن، فكلمة "نادرًا" أصبحت "أبدًا".
+* يتضمن عرض تفاصيل الطلب الآن طريقة شحن الطلب.
 </ar>
 <de-DE>
-2.9:
-* Hurra! Wir unterstützen jetzt Android 10!
-* Der Tab „Bestellungen“ wurde komplett überarbeitet! Die Such- und Filteroption sind jetzt auf einer gemeinsamen Ansicht verfügbar, die die Gesamtzahl der Bestellungen nach Bestellstatus enthält. Die Liste der Bestellungen wird auf zwei Tabs angezeigt: „In Bearbeitung“ und „Alle“.
-* Die Ansicht der Bestelldetails wurde ebenfalls in Teilen überarbeitet.
-* Diese Version enthält auch verschiedene kleine Fehlerbehebungen.
+3.0:
+* Die App unterstützt jetzt Rückerstattung nach Betrag. Diese Option findest du auf dem Bildschirm der Bestelldetails, und du kannst manuell eine teilweise oder vollständige Rückerstattung für einen bezahlten Auftrag gewähren.
+* Bei Produkten mit mehreren Bildern werden jetzt alle Bilder in einer Galerie angezeigt.
+* Fehlerkorrektur: Selten führte der Speichervorgang auf dem Bildschirm zum Hinzufügen einer Notiz zum Auftrag zu einem Absturz. Jetzt wurde aus „selten“ nie.
+* Die Ansicht mit den Auftragsdetails beinhaltet jetzt die Versandmethode für den Auftrag.
 </de-DE>
 <es-ES>
-2.9:
-* ¡Hurra! ¡Ya admitimos Android 10!
-* La pestaña de pedidos se ha renovado por completo. La búsqueda y el filtrado comparten la misma vista, que incluye el recuento total de pedidos según su estado. La lista de pedidos se muestra en dos pestañas: Procesando y Todo.
-* También hemos hecho algunos cambios en la vista de detalles del pedido.
-* Esta versión también incluye varias correcciones de errores menores.
+3.0:
+* Ahora la aplicación admite reembolsos por importe. Está disponible en la pantalla de detalles del pedido y te permite emitir manualmente un reembolso parcial o total en un pedido pagado.
+* Los productos con varias imágenes ahora las muestran todas en una galería.
+* Corrección de errores: En raras ocasiones, el guardado en la pantalla "Añadir nota de pedido" provocaba un error. Ahora, "en raras ocasiones" es "nunca".
+* La vista de detalles del pedido ahora incluye el método de envío.
 </es-ES>
 <fr-FR>
-2.9 :
-* Bonne nouvelle ! Nous prenons désormais en charge Android 10 !
-* L'onglet des commandes a été complètement refondu ! La recherche et le filtrage partagent une vue uniquement qui inclut le nombre total de commandes par état des commandes. La liste des commandes apparaît dans deux onglets : Traitement et Toutes.
-*La vue présentant les détails de la commande a également reçu quelques modifications.
-* Cette version inclut également la résolution de plusieurs bugs mineurs.
+3.0 :
+* L'application prend désormais en charge les remboursements par montant. Cette fonctionnalité est disponible sur l'écran des détails de la commande et vous permet d'exécuter manuellement un remboursement partiel ou complet d'une commande payée.
+* Lorsque des produits possèdent plusieurs images, elles sont désormais toutes présentées dans une galerie.
+* Résolution de bug : il arrivait dans de rares cas un échec de l'enregistrement à partir de l'écran « Ajouter une note à la commande ». Désormais, il n'y a plus aucun échec de l'enregistrement.
+* La vue présentant les détails de la commande mentionne désormais le mode de livraison de la commande.
 </fr-FR>
 <iw-IL>
-2.9:
-* הידד! אנחנו כעת תומכים ב-Android 10!
-* לשונית ההזמנה עברה מהפך של ממש! ניתן לראות את החיפוש והמסננים בתצוגה אחת שמציגה את הספירה הכוללת של ההזמנות לפי סטטוס הזמנות. רשימת ההזמנות מוצגת בשתי לשוניות: הזמנות בעיבוד ועל ההזמנות.
-* הוספנו גם כמה שיפורים לתצוגה של פרטי ההזמנה.
-* הוספנו לגרסה הזאת גם כמה תיקוני באגים קטנים.
+3.0:
+* כעת האפליקציה תומכת בהחזרים כספיים לפי סכום. אפשרות זו זמינה במסך הפרטים של ההזמנה. ניתן לבצע ידנית החזר חלקי או מלא עבור הזמנה ששולמה.
+* מוצרים עם תמונות מרובות יוצגו מעכשיו עם כל התמונות בגלריה.
+* תיקוני באגים: לעתים נדירות, שמירה במסך 'הוספת פתק להזמנה' הייתה גורמת לקריסה. עכשיו, זה כבר לא קורה.
+* בתצוגה של פירוט ההזמנה אפשר עכשיו לראות את שיטת המשלוח שנבחרה.
 </iw-IL>
 <id>
-2.9:
-* Horeee! Sekarang kami mendukung Android 10!
-* Perubahan besar-besaran pada tab pesanan! Pencarian dan penyaringan memiliki satu tampilan yang mencakup total jumlah pesanan menurut status pesanan. Daftar pesanan ditampilkan dalam dua tab: Dalam Proses & Semua.
-* Tampilan detail pesanan juga diperbarui.
-* Sejumlah perbaikan bug kecil juga disertakan dalam rilis ini.
+3.0:
+* Aplikasi kini mendukung pengembalian dana menurut jumlah. Tersedia di layar detail pesanan, dan memungkinkan Anda mengeluarkan pengembalian dana sebagian atau penuh secara manual untuk pesanan yang telah dibayar.
+* Produk dengan beberapa gambar kini menampilkan semua gambar di galeri.
+* Perbaikan bug: Jarang, penyimpanan saat di layar “Add Order Note” menyebabkan crash. Kini, “jarang” menjadi “tidak pernah”.
+* Tampilan detail pesanan kini mencakup metode pengiriman pesanan.
 </id>
 <it-IT>
-2.9:
-* Finalmente! Ora supportiamo Android 10!
-* La scheda degli ordini ha subito un restyling estremo. La ricerca e il filtro condividono un'unica visualizzazione, con il conteggio totale degli ordini suddivisi in base allo stato. L'elenco degli ordini viene visualizzato in due schede: In elaborazione e Tutti.
-* Anche la visualizzazione dei dettagli degli ordini ha subito qualche ritocco.
-* In questa versione sono stati anche corretti diversi bug minori.
+3.0:
+* L'app ora supporta i rimborsi per importo. È disponibile sulla schermata di dettaglio dell'ordine e ti consente di emettere un rimborso parziale o completo per un ordine pagato.
+* I prodotti con immagini multiple ora le mostrano tutte in una galleria.
+* Correzione di bug: raramente, il salvataggio sulla schermata per aggiungere una nota dell'ordine causava un arresto anomalo. Ora non accade mai.
+* La vista dei dettagli dell'ordine ora comprende il metodo di spedizione dell'ordine.
 </it-IT>
 <ja-JP>
-2.9:
-* お待たせいたしました。Android 10対応になりました !
-* 注文タブが一新されました !検索とフィルターのビューが1つになり、注文ステータス別に注文の合計数を表示できるようになりました。注文一覧は、「処理中」と「すべて」の2つのタブに表示されます。
-* 注文詳細表示にいくつかの変更が加えられました。
-* このリリースにはマイナーバグの修正もいくつか追加されています。
+3.0:
+* アプリで、金額による払い戻しがサポートされるようになりました。注文詳細の画面で、支払い済みの注文の一部または全額を手動で払い戻すことができます。
+* 画像が複数ある製品で、すべての画像がギャラリーに表示されるようになりました。
+* バグ修正 :まれに「Add Order Note」画面での保存中にクラッシュする問題がありましたが、解決しました。
+* 注文詳細ビューに、注文の配送方法が表示されるようになりました。
 </ja-JP>
 <ko-KR>
-2.9:
-* 축하합니다! 이제 Android 10을 지원합니다!
-* 주문 탭이 새롭게 단장했습니다! 검색 및 필터링은 주문 상태별 총 주문 수가 포함된 단일 보기를 공유합니다. 주문 목록이 두 개의 탭에 표시됩니다. 처리 중 및 모두.
-* 주문 상세 정보 보기도 일부 수정되었습니다.
-*이 릴리스에는 몇 가지 사소한 버그 수정 사항이 포함되어 있습니다.
+3.0:
+* 앱에서 이제 금액별 환불을 지원합니다. 이 기능은 주문 상세 정보 화면에서 사용할 수 있으며 유료 주문에 대해 부분 또는 전액 환불을 수동으로 발행할 수 있습니다.
+* 여러 이미지가 있는 제품은 이제 모든 이미지를 갤러리에 표시합니다.
+* 버그 수정: "주문 메모 추가" 화면에서 저장할 때 충돌이 거의 발생하지 않습니다. 이제 “거의”가 아닌 “전혀” 발생하지 않게 되었습니다.
+* 주문 상세 정보 보기에 이제 주문의 배송 방법이 포함됩니다.
 </ko-KR>
 <nl-NL>
-2.9:
-* Hoera! We ondersteunen nu Android 10!
-* Het tabblad Bestellingen is nu geheel vernieuwd! Je kunt nu op één pagina zoeken en filteren en hierop staat ook het totaalaantal bestellingen per bestelstatus vermeld. De bestellijst wordt nu in twee tabbladen weergegeven: Verwerken en Alles.
-* Het besteloverzicht is ook verbeterd.
-* In deze uitgave zijn ook een paar kleine bugs gerepareerd.
+3.0:
+* De app ondersteunt nu terugbetalingen per bedrag. Deze functie is beschikbaar via het bestelgegevensscherm en hiermee kun je handmatig een gedeeltelijke of volledige terugbetaling voor een betaalde bestelling uitvoeren.
+* Bij producten met meerdere afbeeldingen worden alle afbeeldingen nu in één galerij weergegeven.
+* Bugfix: Opslaan wanneer het scherm 'Bestelopmerking toevoegen' was geopend, leidde heel af en toe tot een crash. 'Heel af en toe' is nu vervangen door 'Nooit'.
+* Het overzicht van bestelgegevens bevat nu ook de verzendmethode.
 </nl-NL>
 <pt-BR>
-2.9:
-* Viva! Agora somos compatíveis com Android 10!
-* A guia de pedidos foi completamente reformada! A pesquisa e os filtros agora têm uma exibição única que inclui uma contagem total de pedidos exibidos por status do pedido. A lista de pedidos é exibida em duas guias: “Processamento” e “Todos”.
-* Os detalhes do pedido também tiveram alguns ajustes.
-* Várias correções de bugs menores também estão incluídas nesta versão.
+3.0:
+* Agora o aplicativo oferece reembolsos por valor. Com essa opção, disponível na tela “Detalhes do pedido”, você emite manualmente reembolsos parciais ou totais para pedidos pagos.
+* Agora produtos com várias imagens as exibem em uma galeria.
+* Correção de bug raro: a tela “Adicionar observação ao pedido” travava durante o salvamento. Não mais.
+* Agora a visualização “Detalhes do pedido” inclui o método de envio.
 </pt-BR>
 <ru-RU>
-Версия 2.9
-* Ура! Добавлена поддержка Android 10.
-* Вкладка заказов полностью переработана. Поиск и фильтры доступны в одном представлении, в котором показано общее количество заказов, рассортированных по статусу. Список заказов отображается на двух вкладках: "В обработке" и "Все".
-* В представление сведений о заказе также внесены изменения.
-* В этом выпуске исправлено несколько незначительных ошибок.
+3.0:
+* Приложение теперь поддерживает возврат средств с учетом суммы. Функция доступна на экране с описанием заказа, и она позволяет вручную выполнить частичный или полный возврат средств по оплаченному заказу.
+* Все изображения продукта теперь показаны в галерее.
+* Исправлена ошибка: в редких случаях сохранение заказа на экране «Добавление примечания к заказу» могло приводить к сбою. Больше этого не случится.
+* Экран с описанием заказа теперь включает информацию о способе доставки.
 </ru-RU>
 <sv-SE>
-2.9:
-* Hurra! Vi stöder nu Android 10!
-* Orderfliken har gjorts om helt och hållet! Sökning och filtrering finns nu i samma vy, som innehåller det totala antalet ordrar sorterade efter orderstatus. Orderlistan visas i två flikar: Behandlas och Alla.
-* Vyn för orderdetaljer har också fräschats upp.
-* Den här versionen innehåller även vissa mindre felkorrigeringar.
+3.0:
+* Appen stöder nu återbetalningar efter belopp. Det finns på din beställningsinformationsskärm och låter dig manuellt utfärda en partiell eller fullständig återbetalning för en betald beställning.
+* Produkter med flera bilder visar nu alla bilder i ett galleri.
+* Buggkorrigering: Sällan kunde en spara-åtgärd från skärmen Lägg till beställningsanteckning leda till en krasch. Nu har sällan blivit aldrig.
+* Beställningsinformationsvyn inkluderar nu beställningens fraktmetod.
 </sv-SE>
 <tr-TR>
-2.9:
-* Tebrikler! Artık Android 10'u destekliyoruz!
-* Siparişler sekmesinin görünümü olağanüstü bir şekilde yenilendi! Arama ve filtreleme işlevlerini, sipariş durumuna göre toplam sipariş sayısını içeren tek bir görünümden kullanabilirsiniz. Sipariş listesi iki sekmede görüntülenir: İşleniyor ve Tümü.
-* Sipariş ayrıntısı görünümünde de bazı düzeltmeler yapıldı.
-* Bu sürümle birlikte birkaç küçük hata da düzeltildi.
+3.0:
+* Uygulama artık tutara göre iade yapılmasını destekliyor. Bu özellik, ayrıntı ekranında bulunur ve ödemesi yapılmış bir sipariş için elle kısmi veya tam iade yapmanıza imkan verir.
+* Artık birden fazla resme sahip ürünlerin tüm resimleri galeride görüntüleniyor.
+* Hata düzeltmesi: “Sipariş Notu Ekle” ekranında yapılan kaydetme işlemi nadiren bir çökmeye yol açıyordu. Bu sorun giderildi.
+* Sipariş ayrıntıları görünümünde artık siparişin sevkiyat yöntemi görüntüleniyor.
 </tr-TR>
 <zh-CN>
-2.9：
-* 太棒了！我们现在支持 Android 10 了！
-* 订单选项卡已经改头换面！搜索和过滤位于同一个视图中，其中包含按订单状态列出的订单总数。订单列表显示在以下两个选项卡中：“正在处理”和“全部”。
-* 订单详细信息视图也进行了一些修改。
-* 此版本中还包含一些小的错误修复。
+3.0：
+* 此应用程序现已支持按金额退款。此功能在“订单详细信息”屏幕中可用，可以让您针对已付款的订单手动发起部分或全额退款。
+* 带有多张图片的产品现已在图库中显示所有图片。
+* 错误修复：在极少数情况下，在“添加订单备注”屏幕上保存内容会导致崩溃。现在，这种情况已不会再发生。
+* 订单详细信息视图现已包括订单配送方式。
 </zh-CN>
 <zh-TW>
-2.9：
-* 太棒了！我們現在對 Android 10 提供支援了！
-* 訂單分頁現在擁有全新風貌！搜尋和篩選共用單一檢視畫面，此畫面包括依訂單狀態顯示的訂單總數。訂單清單顯示在兩個分頁中：「處理中」與「全部」。
-* 我們對訂單詳細資料檢視畫面也做了一些修改。
-* 此版本中也修正了一些小錯誤。
+3.0：
+* 應用程式現在支援依金額退款。你可在訂單詳細資訊畫面使用此功能，並手動為已付款訂單核發部分或全額退款。
+* 包含多張圖片的產品現在會以圖庫的方式顯示所有圖片。
+* 錯誤修正：儘管極為少見，但過去在「新增訂單備註」畫面進行儲存時有可能導致當機。現在這種情況絕對不會再發生了。
+* 訂單詳細資訊檢視畫面現在會顯示訂單運送方式。
 </zh-TW>
 <en-US>
-2.9:
-* Hooray! We now support Android 10!
-* The orders tab has had an extreme makeover! Search and filtering share a single view that includes a total count of orders by order status. The orders list is displayed in two tabs: Processing & All.
-* The order detail view has also received some touchups.
-* Several minor bug fixes are also included in this release.
+3.0:
+* The app now supports refunds by amount. It’s available on the order detail screen, and lets you manually issue a partial or full refund for a paid order.
+* Products with multiple images now show all images in a gallery.
+* Bug fix: Rarely, the saving while on the “Add Order Note” screen would lead to a crash. Now, “rarely” is “never.”
+* The order detail view now includes the order’s shipping method.
 </en-US>

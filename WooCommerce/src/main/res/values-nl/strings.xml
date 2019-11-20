@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-30 00:54:04+0000
+Translation-Revision-Date: 2019-11-13 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">De betaalmethode ondersteunt geen automatische terugbetalingen. Voltooi de terugbetaling door het bedrag handmatig over te maken naar de klant.</string>
+    <string name="orderdetail_shipping_notice">Deze bestelling maakt gebruik van extensies om de verzendkosten te berekenen. De verzendmethoden zijn mogelijk niet volledig.</string>
+    <string name="orderdetail_shipping_method">Verzendmethode</string>
     <string name="button_edit_permissions">Machtigingen bewerken</string>
     <string name="permission_camera">Camera</string>
     <string name="permission_storage">Opslagcapaciteit</string>
@@ -27,7 +30,6 @@ Language: nl
     <string name="wc_unapproved">Afgekeurd</string>
     <string name="review_single_fetch_error">Fout bij ophalen nieuwe productbeoordeling</string>
     <string name="review_fetch_error">Fout bij ophalen productbeoordeling</string>
-    <string name="order_refunds_refund_manual_refund_note">Momenteel worden alleen handmatige restituties ondersteund. Rond de restitutie af via het dashboard van je betalingsgateway of door het geld handmatig over te maken naar de klant.</string>
     <string name="order_refunds_manual_refund_error">Er is iets fout gegaan tijdens de restitutie. Probeer het nog eens.</string>
     <string name="order_refunds_manual_refund_successful">De restitutie is verzonden.</string>
     <string name="order_refunds_manual_refund_progress_message">Je restitutie van %s is in behandeling genomen. Een moment geduld…</string>

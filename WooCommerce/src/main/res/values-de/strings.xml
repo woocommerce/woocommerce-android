@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 00:54:04+0000
+Translation-Revision-Date: 2019-11-13 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">Diese Zahlungsmethode unterstützt keine automatischen Rückerstattungen. Schließe die Rückerstattung ab, indem du das Geld manuell an den Kunden überweist.</string>
+    <string name="orderdetail_shipping_notice">Diese Bestellung nutzt Erweiterungen, um die Versandkosten zu berechnen. Die angezeigten Versandmethoden sind möglicherweise unvollständig.</string>
+    <string name="orderdetail_shipping_method">Versandmethode</string>
     <string name="button_edit_permissions">Rechte bearbeiten</string>
     <string name="permission_camera">Kamera</string>
     <string name="permission_storage">Speicherplatz</string>
@@ -27,7 +30,6 @@ Language: de
     <string name="wc_unapproved">Nicht genehmigt</string>
     <string name="review_single_fetch_error">Fehler beim Abrufen neuer Produktbewertungen</string>
     <string name="review_fetch_error">Fehler beim Abrufen von Produktbewertungen</string>
-    <string name="order_refunds_refund_manual_refund_note">Derzeit werden nur manuelle Rückerstattungen unterstützt. Schließe die Rückerstattung über das Dashboard deines Zahlungs-Gateways ab oder überweise dem Kunden das Geld manuell.</string>
     <string name="order_refunds_manual_refund_error">Bei der Rückerstattung ist ein Fehler aufgetreten. Bitte versuche es erneut.</string>
     <string name="order_refunds_manual_refund_successful">Die Rückerstattung wurde erfolgreich übermittelt.</string>
     <string name="order_refunds_manual_refund_progress_message">Deine Rückerstattung für %s wird verarbeitet. Bitte warten …</string>

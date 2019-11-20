@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 00:54:04+0000
+Translation-Revision-Date: 2019-11-13 00:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="order_refunds_refund_manual_refund_note">Ödeme yöntemi, otomatik iadeyi desteklemiyor. Parayı müşteriye elle aktararak iadeyi tamamlayın.</string>
+    <string name="orderdetail_shipping_notice">Bu sipariş, sevkiyat ücretini hesaplamak için uzantı kullanmaktadır. Gösterilen sevkiyat yöntemleri eksik olabilir.</string>
+    <string name="orderdetail_shipping_method">Sevkiyat yöntemi</string>
     <string name="button_edit_permissions">İzinleri düzenle</string>
     <string name="permission_camera">Kamera</string>
     <string name="permission_storage">Depolama Alanı</string>
@@ -27,7 +30,6 @@ Language: tr
     <string name="wc_unapproved">Onaylanmamış</string>
     <string name="review_single_fetch_error">Yeni ürün incelemesi alınırken hata</string>
     <string name="review_fetch_error">Ürün incelemesi alınırken hata</string>
-    <string name="order_refunds_refund_manual_refund_note">Şu anda yalnızca elle iade desteklenmektedir. Ödeme geçidinizin panosundan veya parayı müşteriye elle aktararak iadeyi tamamlayın.</string>
     <string name="order_refunds_manual_refund_error">Para iadesiyle ilgili bir şeyler yanlış gitti. Lütfen yeniden deneyin.</string>
     <string name="order_refunds_manual_refund_successful">Para iadesi başarıyla bildirildi.</string>
     <string name="order_refunds_manual_refund_progress_message">%s için para iadeniz işleniyor. Lütfen bekleyin…</string>
