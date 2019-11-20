@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/nav_graph_main"
-            app:startDestination="@id/rootFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/rootFragment">
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
@@ -12,6 +12,11 @@
             android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productVariantsFragment"
+            app:destination="@id/productVariantsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
         <action
             android:id="@+id/action_productDetailFragment_to_aztecEditorFragment"
             app:destination="@id/aztecEditorFragment"
@@ -179,6 +184,15 @@
             android:defaultValue="0L"/>
         <argument
             android:name="refundId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </fragment>
+    <fragment
+        android:id="@+id/productVariantsFragment"
+        android:name="com.woocommerce.android.ui.products.ProductVariantsFragment"
+        tools:layout="@layout/fragment_product_variants">
+        <argument
+            android:name="remoteProductId"
             app:argType="long"
             android:defaultValue="0L"/>
     </fragment>

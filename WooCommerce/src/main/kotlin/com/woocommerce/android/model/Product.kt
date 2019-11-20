@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductModel.ProductAttribute
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -45,7 +46,8 @@ data class Product(
     val downloadExpiry: Int,
     val purchaseNote: String,
     val numVariations: Int,
-    val images: List<WCProductImageModel>
+    val images: List<WCProductImageModel>,
+    val attributes: List<ProductAttribute>
 )
 
 fun WCProductModel.toAppModel(): Product {
@@ -84,7 +86,8 @@ fun WCProductModel.toAppModel(): Product {
         this.downloadExpiry,
         this.purchaseNote,
         this.getNumVariations(),
-        this.getImages()
+        this.getImages(),
+        this.getAttributes()
     )
 }
 

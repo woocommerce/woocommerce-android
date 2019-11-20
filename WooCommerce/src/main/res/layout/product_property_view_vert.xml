@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/product_property_vert_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
@@ -56,6 +57,19 @@
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         tools:rating="3"
         tools:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/imgProperty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:background="@drawable/ic_arrow_right_grey"
+        android:contentDescription="@string/product_property_edit"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/divider"
