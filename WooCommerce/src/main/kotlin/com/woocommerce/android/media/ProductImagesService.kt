@@ -151,7 +151,7 @@ class ProductImagesService : JobIntentService() {
             }
 
             // remove this uri from the list of uploads for this product
-            currentUploads.get(remoteProductId)?.let{ oldList ->
+            currentUploads.get(remoteProductId)?.let { oldList ->
                 val newList = ArrayList<Uri>().also {
                     it.addAll(oldList)
                     it.remove(localUri)
