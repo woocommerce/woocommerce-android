@@ -62,7 +62,6 @@ Language: it
     <string name="orderdetail_payment_summary_completed">%1$s tramite %2$s</string>
     <string name="my_store_stats_availability_message">Stiamo distribuendo miglioramenti alle statistiche per i negozi che utilizzano il plugin WooCommerce Admin</string>
     <string name="my_store_stats_availability_title">Prova le nostre statistiche migliorate</string>
-    <string name="my_store_stats_reverted_message">Abbiamo ripristinato le vecchie statistiche perché\nnon siamo riusciti a trovare il plugin WooCommerce Admin</string>
     <string name="dashboard_state_no_data">Nessuna entrata per questo periodo</string>
     <string name="no_thanks">No, grazie</string>
     <string name="try_it_now">Prova ora</string>

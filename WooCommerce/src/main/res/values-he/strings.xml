@@ -62,7 +62,6 @@ Language: he_IL
     <string name="orderdetail_payment_summary_completed">%1$s דרך %2$s</string>
     <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות באמצעות תוסף הניהול של WooCommerce</string>
     <string name="my_store_stats_availability_title">מומלץ לנסות את הנתונים הסטטיסטיים המשופרים</string>
-    <string name="my_store_stats_reverted_message">החזרנו את הנתונים הסטטיסטיים לגרסה הקודמת מאחר שלא הצלחנו\nלמצוא את תוסף הניהול של WooCommerce</string>
     <string name="dashboard_state_no_data">אין רווחים בתקופה זאת</string>
     <string name="no_thanks">לא תודה</string>
     <string name="try_it_now">כדאי לנסות עכשיו</string>

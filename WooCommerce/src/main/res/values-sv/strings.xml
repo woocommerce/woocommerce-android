@@ -62,7 +62,6 @@ Language: sv_SE
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="my_store_stats_availability_message">Vi lanserar förbättrad statistik för butiker med hjälp av adminplugin-programmet WooCommerce</string>
     <string name="my_store_stats_availability_title">Prova vår förbättrade statistik</string>
-    <string name="my_store_stats_reverted_message">Vi har återgått till gammal statistik eftersom vi\ninte kunde hitta adminplugin-programmet WooCommerce</string>
     <string name="dashboard_state_no_data">Inga inkomster denna period</string>
     <string name="no_thanks">Nej tack</string>
     <string name="try_it_now">Prova nu</string>

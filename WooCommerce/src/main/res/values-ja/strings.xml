@@ -62,7 +62,6 @@ Language: ja_JP
     <string name="orderdetail_payment_summary_completed">%2$s により %1$s</string>
     <string name="my_store_stats_availability_message">WooCommerce Admin プラグインでストアに強化された統計機能を提供開始します</string>
     <string name="my_store_stats_availability_title">強化された統計機能をお試しください</string>
-    <string name="my_store_stats_reverted_message">WooCommerce Admin プラグインが見つからないため、\n従来の統計機能に戻しました</string>
     <string name="dashboard_state_no_data">この期間には収益がありません</string>
     <string name="no_thanks">結構です</string>
     <string name="try_it_now">今すぐお試しください</string>

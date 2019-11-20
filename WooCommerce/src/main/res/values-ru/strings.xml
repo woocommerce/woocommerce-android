@@ -62,7 +62,6 @@ Language: ru
     <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
     <string name="my_store_stats_availability_message">Представляем вам улучшенную статистику для магазинов, использующих плагин администратора WooCommerce</string>
     <string name="my_store_stats_availability_title">Оцените улучшенный раздел статистики</string>
-    <string name="my_store_stats_reverted_message">Восстановлен прежний формат статистики, поскольку\nплагин администратора WooCommerce не обнаружен</string>
     <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
     <string name="no_thanks">Нет, спасибо</string>
     <string name="try_it_now">Попробовать</string>
