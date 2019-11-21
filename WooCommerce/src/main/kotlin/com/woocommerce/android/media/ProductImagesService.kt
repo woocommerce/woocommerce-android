@@ -76,7 +76,7 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private val doneSignal = CountDownLatch(1)
+    private var doneSignal: CountDownLatch? = null
     private var didLastUploadFail = false
 
     private lateinit var notifHandler: ProductImagesNotificationHandler
@@ -143,7 +143,8 @@ class ProductImagesService : JobIntentService() {
 
                 // wait for the upload to complete
                 try {
-                    doneSignal.await(TIMEOUT_PER_UPLOAD, SECONDS)
+                    doneSignal = CountDownLatch(1)
+                    doneSignal!!.await(TIMEOUT_PER_UPLOAD, SECONDS)
                 } catch (e: InterruptedException) {
                     WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
                 }
@@ -241,15 +242,11 @@ class ProductImagesService : JobIntentService() {
 
     private fun handleSuccess() {
         didLastUploadFail = false
-        if (doneSignal.count > 0) {
-            doneSignal.countDown()
-        }
+        doneSignal?.countDown()
     }
 
     private fun handleFailure() {
         didLastUploadFail = true
-        if (doneSignal.count > 0) {
-            doneSignal.countDown()
-        }
+        doneSignal?.countDown()
     }
 }
