@@ -52,9 +52,9 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
     }
 
     abstract class Event(var isHandled: Boolean = false) {
-        data class ShowSnackbar(
+        class ShowSnackbar(
             @StringRes val message: Int,
-            val args: List<String> = emptyList(),
+            vararg val args: String = arrayOf(),
             val undoAction: (() -> Unit)? = null,
             val isEndless: Boolean = false
         ) : Event()
