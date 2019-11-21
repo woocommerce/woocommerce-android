@@ -12,6 +12,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.widget.PopupWindow
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -150,8 +151,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
             }
         }
 
-        imageSourcePopup = PopupWindow(requireActivity()).also {
-            it.contentView = contentView
+        imageSourcePopup = PopupWindow(contentView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).also {
             it.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             it.setBackgroundDrawable(null)
             it.isFocusable = true
