@@ -193,9 +193,11 @@ class ProductImagesService : JobIntentService() {
                 handleFailure()
             }
             event.completed -> {
+                // the image uploaded successfully, so assign it to the product
                 dispatchAddMediaAction(event.media)
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
             } else -> {
+                // otherwise this is an upload progress event, so update the notification progress
                 val progress = (event.progress * 100).toInt()
                 notifHandler.setProgress(progress)
             }
@@ -240,11 +242,15 @@ class ProductImagesService : JobIntentService() {
 
     private fun handleSuccess() {
         didLastUploadFail = false
-        doneSignal.countDown()
+        if (doneSignal.count > 0) {
+            doneSignal.countDown()
+        }
     }
 
     private fun handleFailure() {
         didLastUploadFail = true
-        doneSignal.countDown()
+        if (doneSignal.count > 0) {
+            doneSignal.countDown()
+        }
     }
 }
