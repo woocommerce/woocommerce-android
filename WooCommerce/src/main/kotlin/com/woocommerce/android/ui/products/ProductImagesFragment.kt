@@ -30,9 +30,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_product_detail.*
 import kotlinx.android.synthetic.main.fragment_product_images.*
-import kotlinx.android.synthetic.main.fragment_product_images.imageGallery
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import javax.inject.Inject
 
