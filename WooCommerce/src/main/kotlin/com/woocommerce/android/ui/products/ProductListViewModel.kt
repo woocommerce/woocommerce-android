@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
@@ -40,7 +40,7 @@ class ProductListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
 
     init {
-        if (viewState == ViewState()) {
+        if (viewStateLiveData.hasInitialValue) {
             loadProducts()
         }
     }

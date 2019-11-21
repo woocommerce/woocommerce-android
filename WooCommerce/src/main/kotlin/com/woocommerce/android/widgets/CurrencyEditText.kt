@@ -58,12 +58,7 @@ class CurrencyEditText : AppCompatEditText {
         isChangingText = false
     }
 
-    override fun onTextChanged(
-        text: CharSequence?,
-        start: Int,
-        lengthBefore: Int,
-        lengthAfter: Int
-    ) {
+    override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
         if (isInitialized && !isChangingText) {
             isChangingText = true
 

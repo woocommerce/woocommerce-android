@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -27,7 +27,7 @@ import org.greenrobot.eventbus.EventBus
 
 @OpenClassOnDebug
 class ReviewDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val repository: ReviewDetailRepository

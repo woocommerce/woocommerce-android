@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.Transformations
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -11,18 +9,19 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.math.roundToInt
 
-class MockedProductDetailViewModel @AssistedInject constructor(
+final class MockedProductDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
     productRepository: ProductDetailRepository,
     networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    @Assisted arg0: SavedStateHandle
+    @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
         arg0,
         dispatchers,
@@ -32,10 +31,10 @@ class MockedProductDetailViewModel @AssistedInject constructor(
         currencyFormatter,
         wooCommerceStore
 ) {
-    override val productData: LiveData<ViewState>
-        get() = Transformations.map(super.productData) {
-            combineData(it.product, Parameters("$", "oz", "in"))
-        }
+    override val viewStateData: LiveDataDelegate<ViewState> =
+            LiveDataDelegate(arg0, ViewState(), "", onChange = {
+                combineData(it.product!!, Parameters("$", "oz", "in"))
+            })
 
     private fun combineData(product: Product, parameters: Parameters): ViewState {
         val weight = if (product.weight > 0) "${product.weight.roundToInt()}${parameters.weightUnit ?: ""}" else ""

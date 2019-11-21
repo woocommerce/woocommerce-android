@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
@@ -23,7 +22,6 @@ class IssueRefundFragment : DaggerFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
-    private val navArgs: IssueRefundFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -38,16 +36,8 @@ class IssueRefundFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel(savedInstanceState == null)
-    }
-
-    private fun initializeViewModel(isNotBeingRestored: Boolean) {
         initializeViews(viewModel)
         setupObservers(viewModel)
-
-        if (isNotBeingRestored) {
-            viewModel.initialize(navArgs.orderId)
-        }
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {

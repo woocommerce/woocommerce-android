@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -26,7 +26,7 @@ import kotlin.math.roundToInt
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
@@ -37,7 +37,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     fun start(remoteProductId: Long) {
