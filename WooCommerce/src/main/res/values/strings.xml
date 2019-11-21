@@ -435,6 +435,9 @@
     <string name="product_image_capture_failed">Failed to capture image</string>
     <string name="product_image_remove_confirmation">Remove this image from the product?</string>
     <string name="product_images_camera_error">Unable to access camera</string>
+    <string name="product_images_uploading_single_notif_message">Uploading image…</string>
+    <string name="product_images_uploading_multi_notif_message">Uploading images…</string>
+    <string name="product_images_upload_channel_title">Uploads</string>
     <string name="image_source_title">Select an upload method</string>
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>

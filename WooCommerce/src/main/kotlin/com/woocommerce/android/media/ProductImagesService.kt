@@ -76,6 +76,8 @@ class ProductImagesService : JobIntentService() {
 
     private val doneSignal = CountDownLatch(1)
 
+    private lateinit var notifHandler: ProductImagesNotificationHandler
+
     override fun onCreate() {
         WooLog.i(T.MEDIA, "productImagesService > created")
         AndroidInjection.inject(this)
@@ -110,7 +112,11 @@ class ProductImagesService : JobIntentService() {
         val event = OnProductImagesUpdateStartedEvent(remoteProductId)
         EventBus.getDefault().post(event)
 
+        val totalUploads = localUriList.size
+        notifHandler = ProductImagesNotificationHandler(this, remoteProductId, totalUploads)
+
         localUriList.forEach loop@{ localUri ->
+            // create a media model from this local image uri
             val media = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
                     selectedSite.get().id,
@@ -140,6 +146,8 @@ class ProductImagesService : JobIntentService() {
             WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
         }
 
+        // remove the notification and alert that all uploads have completed
+        notifHandler.remove()
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
     }
 
