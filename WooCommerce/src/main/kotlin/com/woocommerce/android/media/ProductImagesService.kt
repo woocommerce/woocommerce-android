@@ -242,11 +242,19 @@ class ProductImagesService : JobIntentService() {
 
     private fun handleSuccess() {
         didLastUploadFail = false
-        doneSignal?.countDown()
+        countDown()
     }
 
     private fun handleFailure() {
         didLastUploadFail = true
-        doneSignal?.countDown()
+        countDown()
+    }
+
+    private fun countDown() {
+        doneSignal?.let {
+            if (it.count > 0) {
+                it.countDown()
+            }
+        }
     }
 }
