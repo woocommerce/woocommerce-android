@@ -28,9 +28,9 @@ Language: de
     <string name="review_single_fetch_error">Fehler beim Abrufen neuer Produktbewertungen</string>
     <string name="review_fetch_error">Fehler beim Abrufen von Produktbewertungen</string>
     <string name="order_refunds_refund_manual_refund_note">Derzeit werden nur manuelle Rückerstattungen unterstützt. Schließe die Rückerstattung über das Dashboard deines Zahlungs-Gateways ab oder überweise dem Kunden das Geld manuell.</string>
-    <string name="order_refunds_manual_refund_error">Bei der Rückerstattung ist ein Fehler aufgetreten. Bitte versuche es erneut.</string>
-    <string name="order_refunds_manual_refund_successful">Die Rückerstattung wurde erfolgreich übermittelt.</string>
-    <string name="order_refunds_manual_refund_progress_message">Deine Rückerstattung für %s wird verarbeitet. Bitte warten …</string>
+    <string name="order_refunds_amount_refund_error">Bei der Rückerstattung ist ein Fehler aufgetreten. Bitte versuche es erneut.</string>
+    <string name="order_refunds_amount_refund_successful">Die Rückerstattung wurde erfolgreich übermittelt.</string>
+    <string name="order_refunds_amount_refund_progress_message">Deine Rückerstattung für %s wird verarbeitet. Bitte warten …</string>
     <string name="order_refunds_quote_image_description">Icon für Rückerstattungsangebot</string>
     <string name="order_refunds_manual_refund">Manuelle Rückerstattung</string>
     <string name="order_refunds_refund_details">Rückerstattungsdetails</string>
@@ -60,7 +60,6 @@ Language: de
     <string name="orderdetail_payment_summary_completed">%1$s per %2$s</string>
     <string name="my_store_stats_availability_message">Wir werden Verbesserungen an den Statistiken für Shops über das WooCommerce Admin-Plugin einführen</string>
     <string name="my_store_stats_availability_title">Teste unsere verbesserten Statistiken</string>
-    <string name="my_store_stats_reverted_message">Wir sund zu den alten Statistiken zurückgekehrt, da wir\ndas WooCommerce Admin-Plugin nicht finden konnten</string>
     <string name="dashboard_state_no_data">Keine Einnahmen in diesem Zeitraum</string>
     <string name="no_thanks">Nein, danke</string>
     <string name="try_it_now">Jetzt ausprobieren</string>

@@ -28,9 +28,9 @@ Language: zh_CN
     <string name="review_single_fetch_error">获取新产品评论时出错</string>
     <string name="review_fetch_error">获取产品评论时出错</string>
     <string name="order_refunds_refund_manual_refund_note">目前只支持手动退款。通过付款网关的控制面板完成退款，或将款项手动转给客户。</string>
-    <string name="order_refunds_manual_refund_error">退款时出错。请重试。</string>
-    <string name="order_refunds_manual_refund_successful">已成功提交退款。</string>
-    <string name="order_refunds_manual_refund_progress_message">您的 %s 退款正在处理。请稍候…</string>
+    <string name="order_refunds_amount_refund_error">退款时出错。请重试。</string>
+    <string name="order_refunds_amount_refund_successful">已成功提交退款。</string>
+    <string name="order_refunds_amount_refund_progress_message">您的 %s 退款正在处理。请稍候…</string>
     <string name="order_refunds_quote_image_description">引用图标</string>
     <string name="order_refunds_manual_refund">手动退款</string>
     <string name="order_refunds_refund_details">退款详细信息</string>
@@ -60,7 +60,6 @@ Language: zh_CN
     <string name="orderdetail_payment_summary_completed">%1$s（通过 %2$s）</string>
     <string name="my_store_stats_availability_message">我们正面向使用了 WooCommerce Admin 插件的商店推出经改进的统计页面</string>
     <string name="my_store_stats_availability_title">试用经改进的统计页面</string>
-    <string name="my_store_stats_reverted_message">由于无法找到 WooCommerce Admin 插件，\n因此已恢复旧版统计页面</string>
     <string name="dashboard_state_no_data">此时间段内没有收入</string>
     <string name="no_thanks">不用了，谢谢</string>
     <string name="try_it_now">立即试用</string>

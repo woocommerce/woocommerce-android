@@ -28,9 +28,9 @@ Language: pt_BR
     <string name="review_single_fetch_error">Erro ao buscar nova avaliação do produto</string>
     <string name="review_fetch_error">Erro ao buscar avaliações do produto</string>
     <string name="order_refunds_refund_manual_refund_note">No momento, apenas reembolsos manuais são aceitos. Conclua o reembolso pelo painel do seu gateway de pagamento ou transfira manualmente o dinheiro para o cliente.</string>
-    <string name="order_refunds_manual_refund_error">Ocorreu um erro no reembolso. Tente novamente.</string>
-    <string name="order_refunds_manual_refund_successful">O reembolso foi enviado com sucesso.</string>
-    <string name="order_refunds_manual_refund_progress_message">O reembolso para %s está sendo processado. Aguarde…</string>
+    <string name="order_refunds_amount_refund_error">Ocorreu um erro no reembolso. Tente novamente.</string>
+    <string name="order_refunds_amount_refund_successful">O reembolso foi enviado com sucesso.</string>
+    <string name="order_refunds_amount_refund_progress_message">O reembolso para %s está sendo processado. Aguarde…</string>
     <string name="order_refunds_quote_image_description">Ícone de aspas</string>
     <string name="order_refunds_manual_refund">Reembolso manual</string>
     <string name="order_refunds_refund_details">Detalhes do reembolso</string>
@@ -60,7 +60,6 @@ Language: pt_BR
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="my_store_stats_availability_message">Estamos aprimorando estatísticas para lojas que usam o plugin WooCommerce Admin</string>
     <string name="my_store_stats_availability_title">Experimente nossas estatísticas aprimoradas</string>
-    <string name="my_store_stats_reverted_message">Retornamos para as estatísticas antigas, já que\nnão encontramos o plugin WooCommerce Admin</string>
     <string name="dashboard_state_no_data">Nenhuma receita para esse período</string>
     <string name="no_thanks">Não, obrigado</string>
     <string name="try_it_now">Experimente já</string>

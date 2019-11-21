@@ -31,7 +31,7 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
         return inflater.inflate(R.layout.fragment_settings_privacy, container, false)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }

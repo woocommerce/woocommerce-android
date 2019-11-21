@@ -25,16 +25,16 @@ class WooUpgradeRequiredDialog : androidx.fragment.app.DialogFragment() {
                 ChromeCustomTabUtils.launchUrl(ctx, URL_UPGRADE_WOOCOMMERCE)
             }
         }
-        view.findViewById<Button>(R.id.upgrade_dismiss)?.setOnClickListener { dialog.dismiss() }
+        view.findViewById<Button>(R.id.upgrade_dismiss)?.setOnClickListener { dialog?.dismiss() }
 
         return view
     }
 
     override fun onResume() {
-        dialog.window?.attributes?.let { params ->
+        dialog?.window?.attributes?.let { params ->
             params.width = WindowManager.LayoutParams.MATCH_PARENT
             params.height = WindowManager.LayoutParams.WRAP_CONTENT
-            dialog.window?.attributes = params
+            dialog?.window?.attributes = params
         }
         super.onResume()
     }

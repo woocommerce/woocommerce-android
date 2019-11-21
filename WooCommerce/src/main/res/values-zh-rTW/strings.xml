@@ -28,9 +28,9 @@ Language: zh_TW
     <string name="review_single_fetch_error">擷取新產品評論時發生錯誤</string>
     <string name="review_fetch_error">擷取產品評論時發生錯誤</string>
     <string name="order_refunds_refund_manual_refund_note">目前只支援手動退款。你可透過付款閘道的儀表板完成退款，或手動轉帳給顧客。</string>
-    <string name="order_refunds_manual_refund_error">退款發生錯誤。請再試一次。</string>
-    <string name="order_refunds_manual_refund_successful">退款已成功轉出。</string>
-    <string name="order_refunds_manual_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
+    <string name="order_refunds_amount_refund_error">退款發生錯誤。請再試一次。</string>
+    <string name="order_refunds_amount_refund_successful">退款已成功轉出。</string>
+    <string name="order_refunds_amount_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
     <string name="order_refunds_quote_image_description">報價圖示</string>
     <string name="order_refunds_manual_refund">手動退款</string>
     <string name="order_refunds_refund_details">退款詳細資料</string>
@@ -60,7 +60,6 @@ Language: zh_TW
     <string name="orderdetail_payment_summary_completed">%1$s，付款方式：%2$s</string>
     <string name="my_store_stats_availability_message">我們即將為使用 WooCommerce 管理員外掛程式的商店推出統計資料改善功能</string>
     <string name="my_store_stats_availability_title">體驗我們改善的統計資料效能</string>
-    <string name="my_store_stats_reverted_message">我們已回復為舊的統計資料，因為我們\n找不到 WooCommerce 管理員外掛程式</string>
     <string name="dashboard_state_no_data">此期間沒有收益</string>
     <string name="no_thanks">不用了，謝謝</string>
     <string name="try_it_now">立即試試</string>

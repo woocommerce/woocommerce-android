@@ -28,9 +28,9 @@ Language: id
     <string name="review_single_fetch_error">Error saat memuat ulasan produk baru</string>
     <string name="review_fetch_error">Error saat memuat ulasan produk</string>
     <string name="order_refunds_refund_manual_refund_note">Saat ini, hanya pengembalian dana manual yang didukung. Lakukan pengembalian dana lewat dasbor gateway pembayaran Anda, atau transfer uangnya secara manual kepada pelanggan.</string>
-    <string name="order_refunds_manual_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
-    <string name="order_refunds_manual_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
-    <string name="order_refunds_manual_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
+    <string name="order_refunds_amount_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
+    <string name="order_refunds_amount_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
+    <string name="order_refunds_amount_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
     <string name="order_refunds_quote_image_description">Ikon kutipan</string>
     <string name="order_refunds_manual_refund">Pengembalian dana manual</string>
     <string name="order_refunds_refund_details">Rincian pengembalian dana</string>
@@ -60,7 +60,6 @@ Language: id
     <string name="orderdetail_payment_summary_completed">%1$s melalui %2$s</string>
     <string name="my_store_stats_availability_message">Kami merilis penyempurnaan untuk statistik toko menggunakan plugin Admin WooCommerce</string>
     <string name="my_store_stats_availability_title">Cobalah statistik yang disempurnakan</string>
-    <string name="my_store_stats_reverted_message">Kami mengembalikan ke statistik lama karena\ntidak dapat menemukan Plugin Admin WooCommerce</string>
     <string name="dashboard_state_no_data">Tidak ada pendapatan dalam periode ini</string>
     <string name="no_thanks">Tidak, terima kasih</string>
     <string name="try_it_now">Coba sekarang</string>

@@ -28,9 +28,9 @@ Language: ru
     <string name="review_single_fetch_error">Ошибка при получении нового отзыва о товаре</string>
     <string name="review_fetch_error">Ошибка при получении отзывов о товарах</string>
     <string name="order_refunds_refund_manual_refund_note">В настоящее время возвраты выполняются только в ручном режиме. Оформите возврат в консоли вашей платёжной системы или переведите деньги клиенту самостоятельно.</string>
-    <string name="order_refunds_manual_refund_error">В процессе возврата что-то пошло не так. Повторите попытку.</string>
-    <string name="order_refunds_manual_refund_successful">Средства возвращены заказчику.</string>
-    <string name="order_refunds_manual_refund_progress_message">Запрос на возврат средств за %s обрабатывается. Пожалуйста, подождите…</string>
+    <string name="order_refunds_amount_refund_error">В процессе возврата что-то пошло не так. Повторите попытку.</string>
+    <string name="order_refunds_amount_refund_successful">Средства возвращены заказчику.</string>
+    <string name="order_refunds_amount_refund_progress_message">Запрос на возврат средств за %s обрабатывается. Пожалуйста, подождите…</string>
     <string name="order_refunds_quote_image_description">Значок кавычки</string>
     <string name="order_refunds_manual_refund">Неавтоматизированный возврат</string>
     <string name="order_refunds_refund_details">Описание возврата платежа</string>
@@ -60,7 +60,6 @@ Language: ru
     <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
     <string name="my_store_stats_availability_message">Представляем вам улучшенную статистику для магазинов, использующих плагин администратора WooCommerce</string>
     <string name="my_store_stats_availability_title">Оцените улучшенный раздел статистики</string>
-    <string name="my_store_stats_reverted_message">Восстановлен прежний формат статистики, поскольку\nплагин администратора WooCommerce не обнаружен</string>
     <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
     <string name="no_thanks">Нет, спасибо</string>
     <string name="try_it_now">Попробовать</string>

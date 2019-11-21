@@ -15,9 +15,8 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -27,22 +26,26 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
@@ -55,10 +58,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         PurchaseDetails
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: ProductDetailViewModel
+    private val viewModel: ProductDetailViewModel by viewModels { viewModelFactory }
 
     private var productTitle = ""
     private var isVariation = false
@@ -73,7 +76,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -95,32 +98,22 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
-            setupObservers(it)
-        }
-
+        setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.isSkeletonShown.observe(this, Observer {
-            showSkeleton(it)
-        })
+        viewModel.viewStateData.observe(this) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.product?.let { showProduct(new) }
+        }
 
-        viewModel.productData.observe(this, Observer {
-            showProduct(it)
-        })
-
-        viewModel.shareProduct.observe(this, Observer {
-            shareProduct(it)
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
-        viewModel.exit.observe(this, Observer {
-            activity?.onBackPressed()
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShareProduct -> shareProduct(event.product)
+                is Exit -> requireActivity().onBackPressed()
+            }
         })
     }
 
@@ -128,19 +121,19 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         super.onActivityCreated(savedInstanceState)
 
         // make image height a percentage of screen height, adjusting for landscape
-        val displayHeight = DisplayUtils.getDisplayPixelHeight(activity!!)
-        val multiplier = if (DisplayUtils.isLandscape(activity!!)) 0.5f else 0.3f
+        val displayHeight = DisplayUtils.getDisplayPixelHeight(requireActivity())
+        val multiplier = if (DisplayUtils.isLandscape(requireActivity())) 0.5f else 0.3f
         imageHeight = (displayHeight * multiplier).toInt()
         imageGallery.layoutParams.height = imageHeight
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        menu?.clear()
-        inflater?.inflate(R.menu.menu_share, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_share, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
@@ -161,10 +154,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun getFragmentTitle() = productTitle
 
-    private fun showProduct(productData: ProductWithParameters) {
+    private fun showProduct(productData: ViewState) {
         if (!isAdded) return
 
-        val product = productData.product
+        val product = requireNotNull(productData.product)
         productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, product.name)
             GROUPED -> getString(R.string.product_name_grouped, product.name)
@@ -188,17 +181,22 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
                 frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toString(activity!!)
+                textStatusBadge.text = status.toString(requireActivity())
             }
         }
 
         addPrimaryCard(productData)
-        addPricingAndInventoryCard(productData)
+
+        // display pricing/inventory card only if product is not a variable product
+        // since pricing, inventory, shipping and SKU for a variable product can differ per variant
+        if (product.type != VARIABLE) {
+            addPricingAndInventoryCard(productData)
+        }
         addPurchaseDetailsCard(productData)
     }
 
-    private fun addPrimaryCard(productData: ProductWithParameters) {
-        val product = productData.product
+    private fun addPrimaryCard(productData: ViewState) {
+        val product = requireNotNull(productData.product)
 
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
@@ -220,6 +218,25 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             )?.setRating(product.averageRating)
         }
 
+        // show product variants only if product type is variable
+        if (product.type == VARIABLE && FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
+            val properties = mutableMapOf<String, String>()
+            for (attribute in product.attributes) {
+                properties[attribute.name] = attribute.options.size.toString()
+            }
+
+            val propertyValue = getPropertyValue(properties, R.string.product_property_variant_formatter)
+            addPropertyView(
+                    DetailCard.Primary,
+                    getString(R.string.product_variants),
+                    propertyValue,
+                    LinearLayout.VERTICAL
+            )?.setClickListener {
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
+                showProductVariations(product.remoteId)
+            }
+        }
+
         addLinkView(
                 DetailCard.Primary,
                 R.string.product_view_in_store,
@@ -234,8 +251,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         )
     }
 
-    private fun addPricingAndInventoryCard(productData: ProductWithParameters) {
-        val product = productData.product
+    private fun addPricingAndInventoryCard(productData: ViewState) {
+        val product = requireNotNull(productData.product)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
         val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
@@ -245,15 +262,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice != null) {
                 val group = mapOf(
-                        Pair(getString(R.string.product_regular_price), productData.regularPriceWithCurrency),
-                        Pair(getString(R.string.product_sale_price), productData.salePriceWithCurrency)
+                    getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency),
+                    getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
                 addPropertyView(
                         pricingCard,
                         R.string.product_price,
-                        productData.priceWithCurrency,
+                        requireNotNull(productData.priceWithCurrency),
                         LinearLayout.VERTICAL
                 )
             }
@@ -271,32 +288,14 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         } else {
             addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
         }
-
-        // show product variants only if product type is variable
-        if (product.type == VARIABLE) {
-            val group = mutableMapOf<String, String>()
-            for (attribute in product.attributes) {
-                group[attribute.name] = attribute.options.size.toString()
-            }
-
-            val productVariantFormatter = R.string.product_property_variant_formatter
-            if (FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
-                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter) {
-                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
-                    showProductVariations(product.remoteId)
-                }
-            } else {
-                addPropertyGroup(pricingCard, R.string.product_variants, group, productVariantFormatter)
-            }
-        }
     }
 
-    private fun addPurchaseDetailsCard(productData: ProductWithParameters) {
-        val product = productData.product
+    private fun addPurchaseDetailsCard(productData: ViewState) {
+        val product = requireNotNull(productData.product)
 
         val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), productData.weightWithUnits),
-                Pair(getString(R.string.product_size), productData.sizeWithUnits),
+                Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
                 Pair(getString(R.string.product_shipping_class), product.shippingClass)
         )
         addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
@@ -365,7 +364,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
-            propertyView = WCProductPropertyView(activity!!)
+            propertyView = WCProductPropertyView(requireActivity())
             propertyView.tag = propertyTag
             container.addView(propertyView)
         }
@@ -385,15 +384,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter,
         propertyGroupClickListener: ((view: View) -> Unit)? = null
     ): WCProductPropertyView? {
-        var propertyValue = ""
-        properties.forEach { property ->
-            if (property.value.isNotEmpty()) {
-                if (propertyValue.isNotEmpty()) {
-                    propertyValue += "\n"
-                }
-                propertyValue += getString(propertyValueFormatterId, property.key, property.value)
-            }
-        }
+        val propertyValue = getPropertyValue(properties, propertyValueFormatterId)
         return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL)?.also {
             it.setClickListener(propertyGroupClickListener)
         }
@@ -418,7 +409,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         var linkView = container.findViewWithTag<WCProductPropertyLinkView>(linkViewTag)
 
         if (linkView == null) {
-            linkView = WCProductPropertyLinkView(activity!!)
+            linkView = WCProductPropertyLinkView(requireActivity())
             linkView.tag = linkViewTag
             container.addView(linkView)
         }
@@ -440,7 +431,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         var readMoreView = container.findViewWithTag<WCProductPropertyReadMoreView>(readMoreTag)
 
         if (readMoreView == null) {
-            readMoreView = WCProductPropertyReadMoreView(activity!!)
+            readMoreView = WCProductPropertyReadMoreView(requireActivity())
             readMoreView.tag = readMoreTag
             container.addView(readMoreView)
         }
@@ -459,10 +450,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         // add a divider above the card if this isn't the first card
         if (card != DetailCard.Primary) {
-            addCardDividerView(activity!!)
+            addCardDividerView(requireActivity())
         }
 
-        val cardView = WCProductPropertyCardView(activity!!)
+        val cardView = WCProductPropertyCardView(requireActivity())
         cardView.tag = cardTag
 
         val cardViewCaption: String? = when (card) {
@@ -476,6 +467,32 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         productDetail_container.addView(cardView)
 
         return cardView
+    }
+
+    /**
+     * Given a map of product properties [properties] and a formatter [propertyValueFormatterId]
+     * returns a String with the property names and corresponding values
+     * Eg:
+     * Regular Price: $20.00
+     * Sale Price: $10.00
+     *      OR
+     * Color: 3 options
+     * Size: 2 options
+     */
+    private fun getPropertyValue(
+        properties: Map<String, String>,
+        @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter
+    ): String {
+        var propertyValue = ""
+        properties.forEach { property ->
+            if (property.value.isNotEmpty()) {
+                if (propertyValue.isNotEmpty()) {
+                    propertyValue += "\n"
+                }
+                propertyValue += getString(propertyValueFormatterId, property.key, property.value)
+            }
+        }
+        return propertyValue
     }
 
     /**
@@ -527,11 +544,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    override fun onGalleryImageClicked(image: WCProductImageModel, imageView: View) {
+    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         ImageViewerActivity.show(
                 requireActivity(),
-                image.src,
+                image.source,
                 title = productTitle,
                 sharedElement = imageView
         )
@@ -543,7 +560,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun requestStoragePermission(): Boolean {
         if (!isAdded) {
             return false
-        } else if (WooPermissionUtils.hasStoragePermission(activity!!)) {
+        } else if (WooPermissionUtils.hasStoragePermission(requireActivity())) {
             return true
         }
 
@@ -562,8 +579,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             return false
         }
 
-        val hasStorage = WooPermissionUtils.hasStoragePermission(activity!!)
-        val hasCamera = WooPermissionUtils.hasCameraPermission(activity!!)
+        val hasStorage = WooPermissionUtils.hasStoragePermission(requireActivity())
+        val hasCamera = WooPermissionUtils.hasCameraPermission(requireActivity())
         if (hasStorage && hasCamera) {
             return true
         }
@@ -591,7 +608,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         val allGranted = WooPermissionUtils.setPermissionListAsked(
-                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied = true
+                requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
         )
 
         if (allGranted) {
