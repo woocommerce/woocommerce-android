@@ -28,9 +28,9 @@ Language: nl
     <string name="review_single_fetch_error">Fout bij ophalen nieuwe productbeoordeling</string>
     <string name="review_fetch_error">Fout bij ophalen productbeoordeling</string>
     <string name="order_refunds_refund_manual_refund_note">Momenteel worden alleen handmatige restituties ondersteund. Rond de restitutie af via het dashboard van je betalingsgateway of door het geld handmatig over te maken naar de klant.</string>
-    <string name="order_refunds_manual_refund_error">Er is iets fout gegaan tijdens de restitutie. Probeer het nog eens.</string>
-    <string name="order_refunds_manual_refund_successful">De restitutie is verzonden.</string>
-    <string name="order_refunds_manual_refund_progress_message">Je restitutie van %s is in behandeling genomen. Een moment geduld…</string>
+    <string name="order_refunds_amount_refund_error">Er is iets fout gegaan tijdens de restitutie. Probeer het nog eens.</string>
+    <string name="order_refunds_amount_refund_successful">De restitutie is verzonden.</string>
+    <string name="order_refunds_amount_refund_progress_message">Je restitutie van %s is in behandeling genomen. Een moment geduld…</string>
     <string name="order_refunds_quote_image_description">Pictogram offerte</string>
     <string name="order_refunds_manual_refund">Handmatige restitutie</string>
     <string name="order_refunds_refund_details">Restitutiedetails</string>

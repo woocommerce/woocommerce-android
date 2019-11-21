@@ -12,8 +12,9 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Unconfined
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -53,6 +54,7 @@ class OrderDetailPresenterTest {
     private val notificationStore: NotificationStore = mock()
     private val refundStore: WCRefundStore = mock()
 
+    private val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
     private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
@@ -62,6 +64,7 @@ class OrderDetailPresenterTest {
     fun setup() {
         presenter = spy(
                 OrderDetailPresenter(
+                        coroutineDispatchers,
                         dispatcher,
                         orderStore,
                         refundStore,
@@ -69,9 +72,7 @@ class OrderDetailPresenterTest {
                         selectedSite,
                         uiMessageResolver,
                         networkStatus,
-                        notificationStore,
-                        Dispatchers.Unconfined,
-                        Dispatchers.Unconfined
+                        notificationStore
                 )
         )
         // Use a dummy selected site

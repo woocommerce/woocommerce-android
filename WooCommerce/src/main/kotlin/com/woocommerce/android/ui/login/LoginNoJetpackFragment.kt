@@ -13,9 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -23,6 +22,7 @@ import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_no_jetpack.*
@@ -84,9 +84,9 @@ class LoginNoJetpackFragment : Fragment() {
      * */
     private var mCheckJetpackAvailability: Boolean = false
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private lateinit var viewModel: LoginNoJetpackViewModel
+    private val viewModel: LoginNoJetpackViewModel by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -184,7 +184,7 @@ class LoginNoJetpackFragment : Fragment() {
         initializeViewModel()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
@@ -206,8 +206,6 @@ class LoginNoJetpackFragment : Fragment() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(LoginNoJetpackViewModel::class.java)
         setupObservers()
     }
 

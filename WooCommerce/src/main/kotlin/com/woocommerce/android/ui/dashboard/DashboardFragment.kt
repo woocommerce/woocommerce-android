@@ -55,7 +55,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
     private var isStatsRefreshed: Boolean = false
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }

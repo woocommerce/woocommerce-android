@@ -12,6 +12,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.assertFalse
@@ -41,6 +42,8 @@ class OrderListPresenterTest {
     private val networkStatus: NetworkStatus = mock()
     private val gatewayStore: WCGatewayStore = mock()
 
+    private val coroutineDispatchers = CoroutineDispatchers(
+            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val orders = OrderTestUtils.generateOrders()
     private val noOrders = emptyList<WCOrderModel>()
     private lateinit var presenter: OrderListPresenter
@@ -48,12 +51,12 @@ class OrderListPresenterTest {
     @Before
     fun setup() {
         presenter = spy(OrderListPresenter(
+                coroutineDispatchers,
                 dispatcher,
                 orderStore,
                 selectedSite,
                 networkStatus,
-                gatewayStore,
-                Dispatchers.Unconfined)
+                gatewayStore)
         )
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
