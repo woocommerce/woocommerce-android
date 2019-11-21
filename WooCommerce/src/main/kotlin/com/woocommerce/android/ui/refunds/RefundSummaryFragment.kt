@@ -52,11 +52,11 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
             when (event) {
                 is ShowSnackbar -> {
                     if (event.undoAction == null) {
-                        uiMessageResolver.showSnack(event.message)
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
                     } else {
                         val snackbar = uiMessageResolver.getUndoSnack(
                                 event.message,
-                                "",
+                                *event.args,
                                 actionListener = View.OnClickListener { event.undoAction.invoke() }
                         )
                         snackbar.addCallback(object : Snackbar.Callback() {

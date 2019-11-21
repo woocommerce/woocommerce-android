@@ -21,18 +21,9 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
 import com.woocommerce.android.ui.refunds.RefundsModule
-import com.woocommerce.android.ui.refunds.RefundsModule.IssueRefundFragmentModule
-import com.woocommerce.android.ui.refunds.RefundsModule.RefundByAmountFragmentModule
-import com.woocommerce.android.ui.refunds.RefundsModule.RefundDetailFragmentModule
-import com.woocommerce.android.ui.refunds.RefundsModule.RefundSummaryFragmentModule
 import com.woocommerce.android.ui.reviews.ReviewsModule
-import com.woocommerce.android.ui.reviews.ReviewsModule.ReviewDetailFragmentModule
-import com.woocommerce.android.ui.reviews.ReviewsModule.ReviewListFragmentModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
@@ -60,27 +51,6 @@ abstract class ActivityBindingModule {
             AddOrderTrackingProviderListModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
-
-    @Module(includes = [
-        IssueRefundFragmentModule::class,
-        RefundByAmountFragmentModule::class,
-        RefundSummaryFragmentModule::class,
-        RefundDetailFragmentModule::class
-    ])
-    object RefundModule
-
-    @Module(includes = [
-        ProductDetailFragmentModule::class,
-        ProductListFragmentModule::class,
-        ProductVariantsFragmentModule::class
-    ])
-    object ProductModule
-
-    @Module(includes = [
-        ReviewDetailFragmentModule::class,
-        ReviewListFragmentModule::class
-    ])
-    object ReviewModule
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [

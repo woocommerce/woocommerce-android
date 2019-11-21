@@ -233,7 +233,7 @@ class IssueRefundViewModel @AssistedInject constructor(
             triggerEvent(
                     ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
-                            listOf(formatCurrency(refundByAmountState.enteredAmount)),
+                            arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
                             undoAction = {
                                 AnalyticsTracker.track(
                                         CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
@@ -253,7 +253,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                 val wasRefundCanceled = waitForCancellation()
                 triggerEvent(ShowSnackbar(
                         R.string.order_refunds_amount_refund_progress_message,
-                        listOf(formatCurrency(refundByAmountState.enteredAmount)),
+                        arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
                         isEndless = true)
                 )
 
