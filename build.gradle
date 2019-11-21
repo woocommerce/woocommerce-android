@@ -110,6 +110,7 @@ ext {
     coroutinesVersion = '1.2.2'
     archComponentsVersion = '2.1.0'
     assertjVersion = '3.11.1'
+    assistedInjectVersion = '0.3.3'
 }
 
 tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks
