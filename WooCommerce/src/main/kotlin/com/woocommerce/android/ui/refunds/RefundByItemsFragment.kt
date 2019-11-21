@@ -11,6 +11,8 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -21,6 +23,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.NumberPickerDialog
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
+import kotlinx.android.synthetic.main.refund_by_items_products.*
 import javax.inject.Inject
 
 class RefundByItemsFragment : BaseFragment() {
@@ -63,6 +66,10 @@ class RefundByItemsFragment : BaseFragment() {
         issueRefund_btnNextFromItems.setOnClickListener {
             viewModel.onNextButtonTappedFromItems()
         }
+
+        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
+        }
     }
 
     private fun setupObservers() {
@@ -85,7 +92,7 @@ class RefundByItemsFragment : BaseFragment() {
                 issueRefund_selectedItems.text = selectedItemsHeader
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                issueRefund_total.text = it
+                issueRefund_productsTotalButton.text = it
             }
             new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
                 if (isVisible) {
@@ -102,6 +109,13 @@ class RefundByItemsFragment : BaseFragment() {
             new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
                 issueRefund_subtotal.text = it
             }
+            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
+                if (isVisible) {
+                    issueRefund_shippingSection.expand()
+                } else {
+                    issueRefund_shippingSection.collapse()
+                }
+            }
         }
 
         viewModel.event.observe(this.viewLifecycleOwner, Observer { event ->
@@ -116,7 +130,7 @@ class RefundByItemsFragment : BaseFragment() {
                         it.toString()
                     })
                     dialog.setTargetFragment(this, REFUND_ITEM_QUANTITY_REQUEST_CODE)
-                    dialog.show(requireFragmentManager(), "item-picker")
+                    dialog.show(parentFragmentManager, "item-picker")
                 }
                 else -> event.isHandled = false
             }
