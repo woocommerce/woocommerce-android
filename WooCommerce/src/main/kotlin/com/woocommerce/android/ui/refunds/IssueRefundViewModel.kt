@@ -94,14 +94,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         initRefundSummaryState()
     }
 
-    // temporary workaround for the activity ViewModel scope
-    fun resetLiveData() {
-        resetEvent()
-        commonStateLiveData.reset()
-        refundByAmountStateLiveData.reset()
-        refundSummaryStateLiveData.reset()
-    }
-
     private fun loadOrder(orderId: Long): Order =
         requireNotNull(orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel())
 
