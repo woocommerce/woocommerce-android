@@ -32,12 +32,18 @@ class BetaFeaturesFragment : Fragment() {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
 
-        switchStatsV4UI.isChecked = AppPrefs.isV4StatsUIEnabled()
-        switchStatsV4UI.setOnCheckedChangeListener { _, isChecked ->
-            AnalyticsTracker.track(
-                    SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED, mapOf(
-                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchStatsV4UI.isChecked)))
-            settingsListener.onV4StatsOptionChanged(isChecked)
+        // display the Stats section only if the wc-admin is installed/active on a site
+        if (AppPrefs.isUsingV4Api()) {
+            switchStatsV4UI.visibility = View.VISIBLE
+            switchStatsV4UI.isChecked = AppPrefs.isV4StatsUIEnabled()
+            switchStatsV4UI.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(
+                        SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED, mapOf(
+                        AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchStatsV4UI.isChecked)))
+                settingsListener.onV4StatsOptionChanged(isChecked)
+            }
+        } else {
+            switchStatsV4UI.visibility = View.GONE
         }
     }
 
