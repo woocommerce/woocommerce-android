@@ -1,21 +1,28 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.os.Bundle
+import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
+import androidx.savedstate.SavedStateRegistryOwner
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
-import com.woocommerce.android.di.ActivityScope
-import com.woocommerce.android.helpers.TEST_DISPATCHER
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.orders.list.MockedOrderListViewModel
-import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.woocommerce.android.viewmodel.ViewModelKey
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
+import dagger.multibindings.IntoMap
+import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -42,7 +49,6 @@ abstract class MockedOrderListModule {
 
         @UseExperimental(InternalCoroutinesApi::class)
         @JvmStatic
-        @ActivityScope
         @Provides
         fun provideOrderListViewModel(
             site: SelectedSite,
@@ -54,22 +60,35 @@ abstract class MockedOrderListModule {
                     mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock()))
             val gatewayStore = mock<WCGatewayStore>()
             val repository = spy(OrderListRepository(mockDispatcher, orderStore, gatewayStore, site))
+            val mockSavedState: SavedStateWithArgs = mock()
+            val testDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
 
             return spy(MockedOrderListViewModel(
-                    mainDispatcher = TEST_DISPATCHER,
-                    bgDispatcher = TEST_DISPATCHER,
+                    dispatchers = testDispatchers,
                     repository = repository,
                     orderStore = orderStore,
                     listStore = listStore,
                     networkStatus = networkStatus,
                     dispatcher = mockDispatcher,
-                    selectedSite = site
+                    selectedSite = site,
+                    arg0 = mockSavedState
             )).apply {
                 this.testOrderData = orders
             }
         }
+
+        @JvmStatic
+        @Provides
+        fun provideDefaultArgs(): Bundle? {
+            return null
+        }
     }
 
-    @ContributesAndroidInjector
-    abstract fun orderListFragment(): OrderListFragment
+    @Binds
+    @IntoMap
+    @ViewModelKey(MockedOrderListViewModel::class)
+    abstract fun bindFactory(factory: MockedOrderListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    abstract fun bindSavedStateRegistryOwner(activity: MainActivity): SavedStateRegistryOwner
 }

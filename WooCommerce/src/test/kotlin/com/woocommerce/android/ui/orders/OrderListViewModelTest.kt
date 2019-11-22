@@ -17,11 +17,12 @@ import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.TEST_DISPATCHER
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
@@ -46,6 +47,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val repository: OrderListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val dispatchers: CoroutineDispatchers = mock()
+    private val savedStateArgs: SavedStateWithArgs = mock()
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
@@ -66,8 +69,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         )).doReturn(pagedListWrapper)
 
         viewModel = OrderListViewModel(
-                mainDispatcher = TEST_DISPATCHER,
-                bgDispatcher = TEST_DISPATCHER,
+                savedState = savedStateArgs,
+                dispatchers = dispatchers,
                 repository = repository,
                 orderStore = orderStore,
                 listStore = listStore,
