@@ -57,7 +57,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.fragmentManager = fm
         this.listener = listener
 
-        if (FeatureFlag.PRODUCT_LIST.isEnabled()) {
+        if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) {
             detectLabelVisibilityMode()
             menu.findItem(R.id.products)?.isVisible = true
         } else {
