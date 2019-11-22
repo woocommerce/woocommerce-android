@@ -22,7 +22,7 @@ sealed class OrderListEmptyUiState : Parcelable {
      * Use this to hide the empty view when there is data available to view.
      */
     @Parcelize
-    data class DataShown(val emptyViewVisible: Boolean = false) : OrderListEmptyUiState()
+    object DataShown : OrderListEmptyUiState()
 
     /**
      * The view to display while data is loading. This is the view that should be visible
@@ -66,7 +66,7 @@ fun createEmptyUiState(
             isLoadingData -> {
                 // don't show intermediate screen when loading search results
                 if (orderListType == SEARCH) {
-                    OrderListEmptyUiState.DataShown()
+                    OrderListEmptyUiState.DataShown
                 } else {
                     OrderListEmptyUiState.Loading()
                 }
@@ -80,7 +80,7 @@ fun createEmptyUiState(
             }
         }
     } else {
-        OrderListEmptyUiState.DataShown()
+        OrderListEmptyUiState.DataShown
     }
 }
 
