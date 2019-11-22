@@ -45,8 +45,8 @@ class ProductImagesViewModel @AssistedInject constructor(
     private val _captureProductImage = SingleLiveEvent<Unit>()
     val captureProductImage: LiveData<Unit> = _captureProductImage
 
-    private val _uploadingImageCount = MutableLiveData<Int>()
-    val uploadingImageCount: LiveData<Int> = _uploadingImageCount
+    private val _uploadingImageUris = MutableLiveData<List<Uri>>()
+    val uploadingImageUris: LiveData<List<Uri>> = _uploadingImageUris
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -58,7 +58,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     fun start(remoteProductId: Long) {
         this.remoteProductId = remoteProductId
         loadProduct()
-        checkUploadCount()
+        checkUploads()
     }
 
     override fun onCleared() {
@@ -97,11 +97,8 @@ class ProductImagesViewModel @AssistedInject constructor(
         return false
     }
 
-    private fun checkUploadCount() {
-        val count = ProductImagesService.getUploadCountForProduct(remoteProductId)
-        if (_uploadingImageCount.value != count) {
-            _uploadingImageCount.value = count
-        }
+    private fun checkUploads() {
+        _uploadingImageUris.value = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
     }
 
     /**
@@ -111,7 +108,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
         if (remoteProductId == event.remoteProductId) {
-            checkUploadCount()
+            checkUploads()
         }
     }
 
@@ -123,7 +120,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         if (remoteProductId == event.remoteProductId) {
             loadProduct()
-            checkUploadCount()
+            checkUploads()
         }
     }
 
@@ -139,7 +136,7 @@ class ProductImagesViewModel @AssistedInject constructor(
             } else {
                 loadProduct()
             }
-            checkUploadCount()
+            checkUploads()
         }
     }
 

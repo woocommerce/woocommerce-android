@@ -106,7 +106,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         viewModel.viewStateData.observe(this) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.product?.let { showProduct(new) }
-            new.uploadingImageCount?.takeIfNotEqualTo(old?.uploadingImageCount) { imageGallery.setPlaceholderCount(it) }
+            new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
+                imageGallery.setPlaceholderImageUris(it)
+            }
         }
 
         viewModel.event.observe(this, Observer { event ->

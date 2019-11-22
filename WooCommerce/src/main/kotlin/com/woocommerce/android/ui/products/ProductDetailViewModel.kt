@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
@@ -55,7 +56,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        checkUploadCount()
+        checkUploads()
     }
 
     fun onShareButtonClicked() {
@@ -129,9 +130,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
 
-    private fun checkUploadCount() {
-        val count = ProductImagesService.getUploadCountForProduct(remoteProductId)
-        viewState = viewState.copy(uploadingImageCount = count)
+    private fun checkUploads() {
+        val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
+        viewState = viewState.copy(uploadingImageUris = uris)
     }
 
     private fun updateProduct(product: Product) {
@@ -186,7 +187,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         } else {
             loadProduct(remoteProductId)
         }
-        checkUploadCount()
+        checkUploads()
     }
 
     sealed class ProductDetailEvent : Event() {
@@ -211,7 +212,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isSkeletonShown: Boolean? = null,
-        val uploadingImageCount: Int? = null
+        val uploadingImageUris: List<Uri>? = null
     ) : Parcelable
 
     @AssistedInject.Factory
