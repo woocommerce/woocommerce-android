@@ -43,7 +43,7 @@
                 android:paddingEnd="@dimen/card_padding_end"
                 android:paddingBottom="@dimen/default_padding"
                 android:text="@string/product_wip_message"
-                android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
+                android:textAppearance="@style/Woo.TextAppearance.Medium.Black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
