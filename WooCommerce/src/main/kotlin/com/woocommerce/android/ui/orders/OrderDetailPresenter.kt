@@ -10,8 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.BG_THREAD
-import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
@@ -21,10 +19,10 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -65,10 +63,10 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
-import javax.inject.Named
 
 @OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
+    private val dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val refundStore: WCRefundStore,
@@ -76,9 +74,7 @@ class OrderDetailPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
-    private val notificationStore: NotificationStore,
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher
+    private val notificationStore: NotificationStore
 ) : OrderDetailContract.Presenter {
     companion object {
         private val TAG: String = OrderDetailPresenter::class.java.simpleName
@@ -140,7 +136,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun refreshOrderAfterDelay(refreshDelay: Long) {
-        GlobalScope.launch(backgroundDispatcher) {
+        GlobalScope.launch(dispatchers.computation) {
             delay(refreshDelay)
             refreshOrderDetail(false)
         }
@@ -155,9 +151,9 @@ class OrderDetailPresenter @Inject constructor(
         }
 
         if (networkStatus.isConnected()) {
-            GlobalScope.launch(backgroundDispatcher) {
+            GlobalScope.launch(dispatchers.io) {
                 val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
-                withContext(mainDispatcher) {
+                withContext(dispatchers.main) {
                     if (!requestResult.isError) {
                         requestResult.model?.let { freshRefunds ->
                             orderView?.showOrderRefunds(freshRefunds.reversed())

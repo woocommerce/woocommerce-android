@@ -12,10 +12,12 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Unconfined
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
@@ -104,8 +106,10 @@ abstract class MockedOrderDetailModule {
                     Dispatchers.Unconfined,
                     RefundMapper()
             )
+            val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
 
             val mockedOrderDetailPresenter = spy(OrderDetailPresenter(
+                    coroutineDispatchers,
                     mockDispatcher,
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
                     refundStore,
@@ -119,9 +123,7 @@ abstract class MockedOrderDetailModule {
                     NotificationStore(
                             mock(), mockContext,
                             NotificationRestClient(mockContext, mockDispatcher, mock(), mock(), mock()),
-                            NotificationSqlUtils(FormattableContentMapper(Gson()))),
-                    Dispatchers.Unconfined,
-                    Dispatchers.Unconfined
+                            NotificationSqlUtils(FormattableContentMapper(Gson())))
             ))
 
             /*
