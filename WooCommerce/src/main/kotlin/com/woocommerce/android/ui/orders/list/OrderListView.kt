@@ -123,7 +123,7 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
     }
 
     fun updateEmptyViewForState(state: OrderListEmptyUiState) {
-        when(state) {
+        when (state) {
             is DataShown -> { hideEmptyView() }
             is EmptyList -> { showEmptyView(state.title, state.imgResId) }
             is Loading -> { showEmptyView(state.title) }

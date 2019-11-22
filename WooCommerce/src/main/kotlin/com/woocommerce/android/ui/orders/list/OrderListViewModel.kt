@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
@@ -24,9 +25,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -71,14 +74,8 @@ class OrderListViewModel @AssistedInject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, lifecycle)
     }
 
-    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var isStarted = false
-
-    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var isRefreshPending = true
-
-    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var arePaymentGatewaysFetched = false
+    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
@@ -110,14 +107,6 @@ class OrderListViewModel @AssistedInject constructor(
 
     init {
         lifecycleRegistry.markState(Lifecycle.State.CREATED)
-    }
-
-    fun start() {
-        if (isStarted) {
-            return
-        }
-
-        isStarted = true
         lifecycleRegistry.markState(Lifecycle.State.STARTED)
 
         EventBus.getDefault().register(this)
@@ -176,10 +165,12 @@ class OrderListViewModel @AssistedInject constructor(
             launch {
                 pagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
-                fetchPaymentGateways()
+                if (!viewState.arePaymentGatewaysFetched) {
+                    fetchPaymentGateways()
+                }
             }
         } else {
-            isRefreshPending = true
+            viewState.copy(isRefreshPending = true)
             showOfflineSnack()
         }
     }
@@ -202,9 +193,9 @@ class OrderListViewModel @AssistedInject constructor(
      */
     fun fetchPaymentGateways() {
         launch {
-            if (networkStatus.isConnected() && !arePaymentGatewaysFetched) {
+            if (networkStatus.isConnected()) {
                 when (repository.fetchPaymentGateways()) {
-                    SUCCESS -> arePaymentGatewaysFetched = true
+                    SUCCESS -> viewState.copy(arePaymentGatewaysFetched = true)
                     else -> { /* do nothing */ }
                 }
             }
@@ -322,7 +313,7 @@ class OrderListViewModel @AssistedInject constructor(
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
-            if (isRefreshPending) {
+            if (viewState.isRefreshPending) {
                 pagedListWrapper?.fetchFirstPage()
             }
         } else {
@@ -345,6 +336,12 @@ class OrderListViewModel @AssistedInject constructor(
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
     }
+
+    @Parcelize
+    data class ViewState(
+        val isRefreshPending: Boolean = false,
+        val arePaymentGatewaysFetched: Boolean = false
+    ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<OrderListViewModel>

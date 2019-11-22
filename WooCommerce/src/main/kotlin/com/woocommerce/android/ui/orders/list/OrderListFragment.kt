@@ -373,6 +373,14 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun initializeViewModel() {
+        // populate views with any existing viewModel data
+        viewModel.orderStatusOptions.value?.let { options ->
+            // So the order status can be matched to the appropriate label
+            order_list_view.setOrderStatusOptions(options)
+
+            updateOrderStatusList(options)
+        }
+
         // setup observers
         viewModel.isFetchingFirstPage.observe(this, Observer {
             orderRefreshLayout?.isRefreshing = it == true
@@ -407,8 +415,6 @@ class OrderListFragment : TopLevelFragment(),
         viewModel.emptyViewState.observe(this, Observer {
             it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
         })
-
-        viewModel.start()
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
