@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -7,44 +8,44 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.orders.list.OrderListType.ALL
 import com.woocommerce.android.ui.orders.list.OrderListType.PROCESSING
 import com.woocommerce.android.ui.orders.list.OrderListType.SEARCH
+import kotlinx.android.parcel.Parcelize
+import java.io.Serializable
 
-sealed class OrderListEmptyUiState(
-    val title: UiString? = null,
-    @DrawableRes val imgResId: Int? = null,
-    val buttonText: UiString? = null,
-    val onButtonClick: (() -> Unit)? = null,
-    val emptyViewVisible: Boolean = true
-) {
+sealed class OrderListEmptyUiState : Parcelable {
     /**
      * Base class for displaying "empty" list results.
      */
-    class EmptyList(title: UiString, imgResId: Int?) : OrderListEmptyUiState(title, imgResId)
+    @Parcelize
+    data class EmptyList(val title: UiString, val imgResId: Int?) : OrderListEmptyUiState()
 
     /**
      * Use this to hide the empty view when there is data available to view.
      */
-    object DataShown : OrderListEmptyUiState(emptyViewVisible = false)
+    @Parcelize
+    data class DataShown(val emptyViewVisible: Boolean = false) : OrderListEmptyUiState()
 
     /**
      * The view to display while data is loading. This is the view that should be visible
      * while orders are being fetched. The next step from here would either be to handle no orders,
      * or to display the orders fetched.
      */
-    object Loading : OrderListEmptyUiState(title = UiStringRes(R.string.orderlist_fetching))
+    @Parcelize
+    data class Loading(val title: UiString = UiStringRes(R.string.orderlist_fetching)) : OrderListEmptyUiState()
 
     /**
      * There was an error fetching orders. Display an error message along with a button
      * to "Retry".
      */
-    class ErrorWithRetry(
-        title: UiString,
-        buttonText: UiString? = null,
-        onButtonClick: (() -> Unit)? = null
-    ) : OrderListEmptyUiState(
-            title = title,
-            imgResId = R.drawable.ic_woo_error_state,
-            buttonText = buttonText,
-            onButtonClick = onButtonClick)
+    @Parcelize
+    data class ErrorWithRetry(
+        val title: UiString,
+        val buttonText: UiString? = null,
+        val onClickFunc: Serializable? = null,
+        @DrawableRes val imgResId: Int = R.drawable.ic_woo_error_state
+    ) : OrderListEmptyUiState() {
+        @Suppress("UNCHECKED_CAST")
+        fun onButtonClick() = onClickFunc as? () -> Unit
+    }
 }
 
 /**
@@ -65,9 +66,9 @@ fun createEmptyUiState(
             isLoadingData -> {
                 // don't show intermediate screen when loading search results
                 if (orderListType == SEARCH) {
-                    OrderListEmptyUiState.DataShown
+                    OrderListEmptyUiState.DataShown()
                 } else {
-                    OrderListEmptyUiState.Loading
+                    OrderListEmptyUiState.Loading()
                 }
             }
             else -> {
@@ -79,7 +80,7 @@ fun createEmptyUiState(
             }
         }
     } else {
-        OrderListEmptyUiState.DataShown
+        OrderListEmptyUiState.DataShown()
     }
 }
 
@@ -95,7 +96,7 @@ private fun createErrorListUiState(
     } else {
         UiStringRes(R.string.error_generic_network)
     }
-    return OrderListEmptyUiState.ErrorWithRetry(errorText, UiStringRes(R.string.retry), fetchFirstPage)
+    return OrderListEmptyUiState.ErrorWithRetry(errorText, UiStringRes(R.string.retry), fetchFirstPage as Serializable)
 }
 
 /**

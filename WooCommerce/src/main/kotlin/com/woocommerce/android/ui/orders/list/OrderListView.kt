@@ -4,13 +4,17 @@ import android.content.Context
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.DataShown
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.EmptyList
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.ErrorWithRetry
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.Loading
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooAnimUtils
@@ -119,28 +123,30 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
     }
 
     fun updateEmptyViewForState(state: OrderListEmptyUiState) {
-        empty_view?.let { emptyView ->
-            if (state.emptyViewVisible) {
-                UiHelpers.setTextOrHide(emptyView.title, state.title)
-                UiHelpers.setImageOrHide(emptyView.image, state.imgResId)
-                setupButtonOrHide(emptyView.button, state.buttonText, state.onButtonClick)
-                if (emptyView.visibility == View.GONE) {
-                    WooAnimUtils.fadeIn(emptyView, Duration.MEDIUM)
-                }
-            } else {
-                hideEmptyView()
+        when(state) {
+            is DataShown -> { hideEmptyView() }
+            is EmptyList -> { showEmptyView(state.title, state.imgResId) }
+            is Loading -> { showEmptyView(state.title) }
+            is ErrorWithRetry -> {
+                showEmptyView(state.title, state.imgResId, state.buttonText, state.onButtonClick())
             }
         }
     }
 
-    private fun setupButtonOrHide(
-        buttonView: Button,
-        text: UiString?,
-        onButtonClick: (() -> Unit)?
+    private fun showEmptyView(
+        title: UiString? = null,
+        @DrawableRes imgResId: Int? = null,
+        buttonText: UiString? = null,
+        onButtonClick: (() -> Unit)? = null
     ) {
-        UiHelpers.setTextOrHide(buttonView, text)
-        buttonView.setOnClickListener { onButtonClick?.invoke() }
+        empty_view?.let { emptyView ->
+            UiHelpers.setTextOrHide(emptyView.title, title)
+            UiHelpers.setImageOrHide(emptyView.image, imgResId)
+            UiHelpers.setTextOrHide(emptyView.button, buttonText)
+            emptyView.button.setOnClickListener { onButtonClick?.invoke() }
+            if (emptyView.visibility == View.GONE) {
+                WooAnimUtils.fadeIn(emptyView, Duration.MEDIUM)
+            }
+        }
     }
-
-    fun isEmptyViewVisible() = empty_view.visibility == View.VISIBLE
 }
