@@ -136,7 +136,7 @@ class OrderListViewModel @AssistedInject constructor(
 
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
-        pagedListWrapper?.let { clearLiveDataSources(it) }
+        clearLiveDataSources(pagedListWrapper)
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 
         listenToEmptyViewStateLiveData(pagedListWrapper)
@@ -235,8 +235,8 @@ class OrderListViewModel @AssistedInject constructor(
                         isFetchingFirstPage.value == false)
     }
 
-    private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>) {
-        with(pagedListWrapper) {
+    private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {
+        pagedListWrapper?.apply {
             _pagedListData.removeSource(data)
             _emptyViewState.removeSource(pagedListData)
             _emptyViewState.removeSource(isEmpty)
@@ -286,6 +286,7 @@ class OrderListViewModel @AssistedInject constructor(
 
     override fun onCleared() {
         lifecycleRegistry.markState(Lifecycle.State.DESTROYED)
+        clearLiveDataSources(pagedListWrapper)
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
         repository.onCleanup()
