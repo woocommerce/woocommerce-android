@@ -140,7 +140,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     /**
      * Test for proper handling of a request to fetch orders and order status options
      * when the device is offline. This scenario should result in an "offline" snackbar
-     * message being emitted via [OrderListViewModel.showSnackbarMessage] and the
+     * message being emitted via a [com.woocommerce.android.viewmodel.MultiLiveEvent.Event] and the
      * [OrderListViewModel.isRefreshPending] variable set to true to trigger another
      * attempt once the device comes back online.
      */
