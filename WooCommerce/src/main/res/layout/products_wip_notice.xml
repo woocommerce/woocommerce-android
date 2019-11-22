@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="9dp"
             android:paddingStart="@dimen/card_padding_start"
-            android:paddingTop="@dimen/default_padding"
             android:paddingEnd="0dp"
             android:paddingBottom="@dimen/default_padding"
             android:visibility="gone"

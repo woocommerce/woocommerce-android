@@ -12,10 +12,20 @@
         android:clickable="true"
         android:focusable="true">
 
+        <!-- Products work in progress notice card -->
+        <com.woocommerce.android.ui.products.ProductsWIPNoticeCard
+            android:id="@+id/products_wip_card"
+            style="@style/Woo.Stats.Card.Expandable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:visibility="visible"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/productsRecycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/products_wip_card"/>
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"

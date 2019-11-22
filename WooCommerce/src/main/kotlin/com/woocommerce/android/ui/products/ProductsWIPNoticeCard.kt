@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
-import kotlinx.android.synthetic.main.my_store_stats_availability_notice.view.*
 import kotlinx.android.synthetic.main.products_wip_notice.view.*
 
 class ProductsWIPNoticeCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -18,9 +17,9 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(ctx: Context, attrs: Attri
     fun initView() {
         products_wip_viewMore.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                WooAnimUtils.fadeIn(my_store_availability_morePanel)
+                WooAnimUtils.fadeIn(products_wip_morePanel)
             } else {
-                WooAnimUtils.fadeOut(my_store_availability_morePanel)
+                WooAnimUtils.fadeOut(products_wip_morePanel)
             }
         }
     }
