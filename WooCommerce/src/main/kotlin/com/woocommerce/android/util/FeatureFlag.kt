@@ -17,7 +17,7 @@ enum class FeatureFlag {
             PRODUCT_LIST -> BuildConfig.DEBUG
             PRODUCT_VARIANTS -> BuildConfig.DEBUG
             REFUNDS -> BuildConfig.DEBUG
-            PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG
+            PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG && false
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
