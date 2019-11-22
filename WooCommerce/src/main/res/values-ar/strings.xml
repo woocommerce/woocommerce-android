@@ -28,9 +28,9 @@ Language: ar
     <string name="review_single_fetch_error">حدث خطأ في أثناء إحضار مراجعة المنتج الجديدة</string>
     <string name="review_fetch_error">حدث خطأ في أثناء إحضار مراجعات المنتج</string>
     <string name="order_refunds_refund_manual_refund_note">لا تدعم إلا عمليات استرداد الأموال اليدوية حاليًا. أكمل عملية استرداد الأموال من خلال لوحة التحكم في بوابة الدفع الخاصة بك، أو انقل الأموال يدويًا إلى العميل.</string>
-    <string name="order_refunds_manual_refund_error">حدث خطأ ما في عملية استرداد الأموال. يُرجى المحاولة مرة أخرى.</string>
-    <string name="order_refunds_manual_refund_successful">تم إرسال عملية استرداد الأموال بنجاح.</string>
-    <string name="order_refunds_manual_refund_progress_message">تجري معالجة عملية استرداد الأموال الخاصة بك لـ %s. يُرجى الانتظار…</string>
+    <string name="order_refunds_amount_refund_error">حدث خطأ ما في عملية استرداد الأموال. يُرجى المحاولة مرة أخرى.</string>
+    <string name="order_refunds_amount_refund_successful">تم إرسال عملية استرداد الأموال بنجاح.</string>
+    <string name="order_refunds_amount_refund_progress_message">تجري معالجة عملية استرداد الأموال الخاصة بك لـ %s. يُرجى الانتظار…</string>
     <string name="order_refunds_quote_image_description">أيقونة الاقتباس</string>
     <string name="order_refunds_manual_refund">عملية استرداد الأموال اليدوية</string>
     <string name="order_refunds_refund_details">تفاصيل استرداد الأموال</string>

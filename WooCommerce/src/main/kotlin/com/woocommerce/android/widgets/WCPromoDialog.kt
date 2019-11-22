@@ -72,7 +72,7 @@ class WCPromoDialog : androidx.fragment.app.DialogFragment() {
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_Promo
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         checkOrientation()
     }

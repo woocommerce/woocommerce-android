@@ -18,9 +18,10 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
+import kotlinx.android.synthetic.main.product_list_item.view.productImage
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
+import java.util.Date
 
 /**
  * Custom recycler which displays all images for a product
@@ -37,7 +38,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View)
+        fun onGalleryImageClicked(image: Product.Image, imageView: View)
     }
 
     private var imageHeight = 0
@@ -119,10 +120,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
-        private val imageList = ArrayList<WCProductImageModel>()
+        private val imageList = ArrayList<Product.Image>()
         private var placeholderCount = 0
 
-        fun showImages(images: List<WCProductImageModel>) {
+        fun showImages(images: List<Product.Image>) {
             if (isSameImageList(images)) {
                 return
             }
@@ -140,11 +141,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         /**
          * Returns the list of images without placeholders
          */
-        private fun getActualImages(): List<WCProductImageModel> {
+        private fun getActualImages(): List<Product.Image> {
             if (placeholderCount == 0) {
                 return imageList
             }
-            val images = ArrayList<WCProductImageModel>()
+            val images = ArrayList<Product.Image>()
             for (index in imageList.indices) {
                 if (!isPlaceholder(index)) {
                     images.add(imageList[index])
@@ -157,7 +158,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
          * Returns true if the passed list of images is the same as the adapter's list, taking
          * placeholders into account
          */
-        private fun isSameImageList(images: List<WCProductImageModel>): Boolean {
+        private fun isSameImageList(images: List<Product.Image>): Boolean {
             val actualImages = getActualImages()
             if (images.size != actualImages.size) {
                 return false
@@ -183,7 +184,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             for (index in 1..count) {
                 // use a negative id so we can check it in isPlaceholder() below
                 val id = -index.toLong()
-                imageList.add(0, WCProductImageModel(id))
+                imageList.add(0, Product.Image(id, "", "", Date()))
             }
 
             placeholderCount = count
@@ -230,7 +231,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
             if (getItemViewType(position) == VIEW_TYPE_IMAGE) {
-                val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
+                val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).source, 0, imageHeight)
                 request.load(photonUrl).into(holder.imageView)
             }
         }

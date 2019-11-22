@@ -10,8 +10,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -26,12 +28,16 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
     private val productRemoteId = 1L
     private lateinit var viewModel: ProductVariantsViewModel
     private val productVariants = ProductTestUtils.generateProductVariantList(productRemoteId)
+    private val savedState: SavedStateWithArgs = mock()
+    private val coroutineDispatchers = CoroutineDispatchers(
+            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
 
     @Before
     fun setup() {
         viewModel = spy(
                 ProductVariantsViewModel(
-                        Dispatchers.Unconfined,
+                        savedState,
+                        coroutineDispatchers,
                         productVariantsRepository,
                         networkStatus,
                         currencyFormatter

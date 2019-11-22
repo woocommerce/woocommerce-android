@@ -52,12 +52,8 @@ class ImageViewerRepository @Inject constructor(
         }
 
         // build a new image list containing all the product images except the passed one
-        val imageList = ArrayList<WCProductImageModel>()
-        product.images.forEach { image ->
-            if (image.id != remoteMediaId) {
-                imageList.add(image)
-            }
-        }
+        val imageList = product.images.filter { it.id != remoteMediaId }.map { WCProductImageModel(it.id) }
+
         if (product.images.size == imageList.size) {
             WooLog.w(T.MEDIA, "removeProductImage > product image not found")
             return false

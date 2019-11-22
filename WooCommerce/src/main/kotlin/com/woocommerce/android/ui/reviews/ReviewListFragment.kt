@@ -11,9 +11,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -21,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -30,6 +30,9 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
@@ -51,12 +54,13 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         fun newInstance() = ReviewListFragment()
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
 
-    private lateinit var viewModel: ReviewListViewModel
     private lateinit var reviewsAdapter: ReviewListAdapter
+
+    private val viewModel: ReviewListViewModel by viewModels { viewModelFactory }
 
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
@@ -150,22 +154,23 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
+        setupObservers()
+        viewModel.start()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_reviews_list_fragment, menu)
-        menuMarkAllRead = menu?.findItem(R.id.menu_mark_all_read)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_reviews_list_fragment, menu)
+        menuMarkAllRead = menu.findItem(R.id.menu_mark_all_read)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         viewModel.checkForUnreadReviews()
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_mark_all_read -> {
                 AnalyticsTracker.track(Stat.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
                 viewModel.markAllReviewsAsRead()
@@ -175,7 +180,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -214,60 +219,47 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         super.onDestroyView()
     }
 
-    private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ReviewListViewModel::class.java)
-        setupObservers()
-        viewModel.start()
-    }
-
     @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     @SuppressLint("InflateParams")
     private fun setupObservers() {
-        viewModel.reviewList.observe(this, Observer {
-            showReviewList(it)
-        })
+        viewModel.viewStateData.observe(this) { old, new ->
+            new.reviewList?.let { showReviewList(it) }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { showMarkAllReadMenuItem(it) }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
+                if (isActive)
+                    notifsRefreshLayout.isRefreshing = it
+            }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+        }
 
-        viewModel.isSkeletonShown.observe(this, Observer {
-            showSkeleton(it)
-        })
-
-        viewModel.hasUnreadReviews.observe(this, Observer {
-            showMarkAllReadMenuItem(it)
-        })
-
-        viewModel.isRefreshing.observe(this, Observer {
-            if (isActive) notifsRefreshLayout.isRefreshing = it
-        })
-
-        viewModel.isLoadingMore.observe(this, Observer {
-            showLoadMoreProgress(it)
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
-        viewModel.isMarkingAllAsRead.observe(this, Observer {
-            when (it) {
-                ActionStatus.SUBMITTED -> {
-                    menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
-                }
-                ActionStatus.SUCCESS -> {
-                    menuMarkAllRead?.actionView = null
-                    showMarkAllReadMenuItem(show = false)
-
-                    // Remove all active notifications from the system bar
-                    context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
-                }
-                ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
-                else -> {}
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
             }
         })
 
         viewModel.moderateProductReview.observe(this, Observer {
             it?.let { request -> handleReviewModerationRequest(request) }
         })
+    }
+
+    private fun handleMarkAllAsReadEvent(status: ActionStatus) {
+        when (status) {
+            ActionStatus.SUBMITTED -> {
+                menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
+            }
+            ActionStatus.SUCCESS -> {
+                menuMarkAllRead?.actionView = null
+                showMarkAllReadMenuItem(show = false)
+
+                // Remove all active notifications from the system bar
+                context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
+            }
+            ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
+            else -> {}
+        }
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {

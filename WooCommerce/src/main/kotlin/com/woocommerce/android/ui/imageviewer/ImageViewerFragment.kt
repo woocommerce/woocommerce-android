@@ -11,8 +11,8 @@ import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
 
 class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
     companion object {
@@ -23,9 +23,9 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
             fun onImageLoadError()
         }
 
-        fun newInstance(imageModel: WCProductImageModel): ImageViewerFragment {
+        fun newInstance(imageModel: Product.Image): ImageViewerFragment {
             val args = Bundle().also {
-                it.putString(KEY_IMAGE_URL, imageModel.src)
+                it.putString(KEY_IMAGE_URL, imageModel.source)
             }
             ImageViewerFragment().also {
                 it.arguments = args

@@ -28,9 +28,9 @@ Language: he_IL
     <string name="review_single_fetch_error">שגיאה בהבאת הביקורת על המוצר החדש</string>
     <string name="review_fetch_error">שגיאה בהבאת הביקורות על המוצר</string>
     <string name="order_refunds_refund_manual_refund_note">כרגע אנחנו תומכים רק בהחזרים כספיים שמבוצעים באופן ידני. יש להשלים את ההחזר הכספי דרך לוח הבקרה של אמצעי התשלום שלך או להעביר באופן ידני את הכסף ללקוח.</string>
-    <string name="order_refunds_manual_refund_error">משהו השתבש בביצוע ההחזר הכספי. יש לנסות שוב.</string>
-    <string name="order_refunds_manual_refund_successful">ההחזר הכספי נשלח בהצלחה.</string>
-    <string name="order_refunds_manual_refund_progress_message">ההחזר הכספי שלך עבור %s נמצא בטיפול. נא להמתין…</string>
+    <string name="order_refunds_amount_refund_error">משהו השתבש בביצוע ההחזר הכספי. יש לנסות שוב.</string>
+    <string name="order_refunds_amount_refund_successful">ההחזר הכספי נשלח בהצלחה.</string>
+    <string name="order_refunds_amount_refund_progress_message">ההחזר הכספי שלך עבור %s נמצא בטיפול. נא להמתין…</string>
     <string name="order_refunds_quote_image_description">סמל ציטוט</string>
     <string name="order_refunds_manual_refund">החזר כספי ידני</string>
     <string name="order_refunds_refund_details">פרטי ההחזר הכספי</string>

@@ -29,7 +29,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
         return inflater.inflate(R.layout.fragment_login_prologue, container, false)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         if (activity is PrologueFinishedListener) {

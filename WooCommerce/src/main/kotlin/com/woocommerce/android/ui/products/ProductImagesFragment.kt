@@ -13,25 +13,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.media.ProductImagesUtils
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_images.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import javax.inject.Inject
 
 class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
@@ -43,10 +43,10 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: ProductImagesViewModel
+    private val viewModel: ProductImagesViewModel by viewModels { viewModelFactory }
     private lateinit var imageSourcePopup: PopupWindow
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
@@ -60,7 +60,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         return inflater.inflate(R.layout.fragment_product_images, container, false)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -90,9 +90,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductImagesViewModel::class.java).also {
-            setupObservers(it)
-        }
+        setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
     }
 
@@ -124,13 +122,13 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
-    override fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View) {
+    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewModel.product.value?.let { product ->
             ImageViewerActivity.showProductImages(
                     this,
                     product,
-                    imageModel,
+                    image,
                     sharedElement = imageView,
                     enableRemoveImage = true,
                     requestCode = REQUEST_CODE_IMAGE_VIEWER

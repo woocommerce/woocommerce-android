@@ -1,40 +1,42 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import kotlinx.coroutines.CoroutineDispatcher
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import javax.inject.Inject
-import javax.inject.Named
 import kotlin.math.roundToInt
 
-class MockedProductDetailViewModel @Inject constructor(
-    @Named(UI_THREAD) mainDispatcher: CoroutineDispatcher,
+final class MockedProductDetailViewModel @AssistedInject constructor(
+    dispatchers: CoroutineDispatchers,
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
     productRepository: ProductDetailRepository,
     networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
-        mainDispatcher,
-        wooCommerceStore,
+        arg0,
+        dispatchers,
         selectedSite,
         productRepository,
         networkStatus,
-        currencyFormatter
+        currencyFormatter,
+        wooCommerceStore
 ) {
-    override val productData: LiveData<ProductWithParameters>
-        get() = Transformations.map(super.productData) {
-            combineData(it.product, Parameters("$", "oz", "in"))
-        }
+    override val viewStateData: LiveDataDelegate<ViewState> =
+            LiveDataDelegate(arg0, ViewState(), "", onChange = {
+                combineData(it.product!!, Parameters("$", "oz", "in"))
+            })
 
-    private fun combineData(product: Product, parameters: Parameters): ProductWithParameters {
+    private fun combineData(product: Product, parameters: Parameters): ViewState {
         val weight = if (product.weight > 0) "${product.weight.roundToInt()}${parameters.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
@@ -49,7 +51,7 @@ class MockedProductDetailViewModel @Inject constructor(
             ""
         }.trim()
 
-        return ProductWithParameters(
+        return ViewState(
                 product,
                 weight,
                 size,
@@ -64,4 +66,7 @@ class MockedProductDetailViewModel @Inject constructor(
             currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
         } ?: amount.toString()
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<MockedProductDetailViewModel>
 }
