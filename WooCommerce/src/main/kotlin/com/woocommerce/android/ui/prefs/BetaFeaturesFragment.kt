@@ -45,6 +45,11 @@ class BetaFeaturesFragment : Fragment() {
         } else {
             switchStatsV4UI.visibility = View.GONE
         }
+
+        switchProductsTeaser.isChecked = AppPrefs.isProductsTeaserEnabled()
+        switchStatsV4UI.setOnCheckedChangeListener { _, isChecked ->
+            // TODO: add analytics event here
+        }
     }
 
     override fun onResume() {

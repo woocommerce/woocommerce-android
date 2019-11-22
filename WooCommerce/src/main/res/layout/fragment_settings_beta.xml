@@ -22,4 +22,18 @@
         android:visibility="gone"
         tools:visibility="visible"/>
 
+    <com.woocommerce.android.widgets.WCToggleSingleOptionView
+        android:id="@+id/switchProductsTeaser"
+        style="@style/Woo.Settings.Label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:switchSummary="@string/settings_enable_product_teaser_message"
+        app:switchSummaryTextColor="@color/wc_grey_medium"
+        app:switchTopPadding="@dimen/default_padding"
+        app:switchTitle="@string/settings_enable_product_teaser_title"
+        android:background="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchStatsV4UI"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
