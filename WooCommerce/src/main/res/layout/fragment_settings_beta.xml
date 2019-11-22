@@ -23,7 +23,7 @@
         tools:visibility="visible"/>
 
     <com.woocommerce.android.widgets.WCToggleSingleOptionView
-        android:id="@+id/switchProductsTeaser"
+        android:id="@+id/switchProductsUI"
         style="@style/Woo.Settings.Label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

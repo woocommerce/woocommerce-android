@@ -9,6 +9,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import kotlinx.android.synthetic.main.fragment_settings_beta.*
@@ -46,9 +47,11 @@ class BetaFeaturesFragment : Fragment() {
             switchStatsV4UI.visibility = View.GONE
         }
 
-        switchProductsTeaser.isChecked = AppPrefs.isProductsTeaserEnabled()
-        switchProductsTeaser.setOnCheckedChangeListener { _, isChecked ->
-            // TODO: add analytics event here
+        switchProductsUI.isChecked = AppPrefs.isProductsTeaserEnabled()
+        switchProductsUI.setOnCheckedChangeListener { _, isChecked ->
+            AnalyticsTracker.track(
+                    SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED, mapOf(
+                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchProductsUI.isChecked)))
             settingsListener.onProductTeaserOptionChanged(isChecked)
         }
     }
