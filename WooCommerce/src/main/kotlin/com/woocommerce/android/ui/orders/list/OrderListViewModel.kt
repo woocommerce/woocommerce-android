@@ -9,20 +9,22 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.BG_THREAD
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -40,23 +42,21 @@ import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import java.util.Locale
-import javax.inject.Inject
-import javax.inject.Named
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
 @OpenClassOnDebug
-class OrderListViewModel @Inject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    @Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
+class OrderListViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateWithArgs,
+    dispatchers: CoroutineDispatchers,
     protected val repository: OrderListRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite
-) : ScopedViewModel(mainDispatcher), LifecycleOwner {
+) : ScopedViewModel(savedState, dispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -100,8 +100,8 @@ class OrderListViewModel @Inject constructor(
         ThrottleLiveData<OrderListEmptyUiState>(
                 offset = EMPTY_VIEW_THROTTLE,
                 coroutineScope = this,
-                mainDispatcher = mainDispatcher,
-                backgroundDispatcher = bgDispatcher)
+                mainDispatcher = dispatchers.main,
+                backgroundDispatcher = dispatchers.computation)
     }
     val emptyViewState: LiveData<OrderListEmptyUiState> = _emptyViewState
 
@@ -341,4 +341,7 @@ class OrderListViewModel @Inject constructor(
             pagedListWrapper?.fetchFirstPage()
         }
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<OrderListViewModel>
 }

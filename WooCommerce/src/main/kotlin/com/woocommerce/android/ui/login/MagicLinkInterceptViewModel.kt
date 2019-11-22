@@ -8,7 +8,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED

@@ -15,8 +15,8 @@ import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
-import com.woocommerce.android.ui.orders.list.OrderListModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
+import com.woocommerce.android.ui.orders.OrdersModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
@@ -38,10 +38,10 @@ abstract class ActivityBindingModule {
             MainModule::class,
             DashboardModule::class,
             MyStoreModule::class,
-            OrderListModule::class,
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
+            OrdersModule::class,
             RefundsModule::class,
             ProductsModule::class,
             ReviewsModule::class,
