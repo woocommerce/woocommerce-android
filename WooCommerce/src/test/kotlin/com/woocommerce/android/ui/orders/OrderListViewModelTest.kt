@@ -17,12 +17,14 @@ import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.woocommerce.android.viewmodel.TEST_DISPATCHER
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
@@ -47,7 +49,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val repository: OrderListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
-    private val dispatchers: CoroutineDispatchers = mock()
+    private val coroutineDispatchers = CoroutineDispatchers(
+            TEST_DISPATCHER,
+            TEST_DISPATCHER,
+            TEST_DISPATCHER
+    )
     private val savedStateArgs: SavedStateWithArgs = mock()
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
@@ -70,7 +76,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel = OrderListViewModel(
                 savedState = savedStateArgs,
-                dispatchers = dispatchers,
+                dispatchers = coroutineDispatchers,
                 repository = repository,
                 orderStore = orderStore,
                 listStore = listStore,
@@ -145,8 +151,11 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.fetchOrdersAndOrderDependencies()
 
         assertNull(viewModel.pagedListWrapper)
-        assertEquals(viewModel.showSnackbarMessage.getOrAwaitValue(), R.string.offline_error)
-        assertTrue(viewModel.isRefreshPending)
+        viewModel.event.getOrAwaitValue().let { event ->
+            assertTrue(event is ShowErrorSnack)
+            assertEquals(event.messageRes, R.string.offline_error)
+            assertTrue(viewModel.isRefreshPending)
+        }
     }
 
     /**
@@ -177,7 +186,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertTrue(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
             assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_filter))
             assertEquals(emptyView.imgResId, R.drawable.ic_hourglass_empty)
@@ -213,7 +221,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertTrue(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
             assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_processing))
             assertEquals(emptyView.imgResId, R.drawable.ic_hourglass_empty)
@@ -248,7 +255,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertTrue(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
             assertEquals(emptyView.title, UiStringRes(string.orders_processed_empty_message))
             assertEquals(emptyView.imgResId, R.drawable.ic_gridicons_checkmark)
@@ -281,7 +287,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertTrue(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
             assertEquals(emptyView.title, UiStringRes(string.orderlist_error_fetch_generic))
             assertEquals(emptyView.buttonText, UiStringRes(string.retry))
@@ -315,7 +320,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertTrue(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
             assertEquals(emptyView.title, UiStringRes(string.error_generic_network))
             assertEquals(emptyView.buttonText, UiStringRes(string.retry))
@@ -345,7 +349,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertTrue(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
             assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_search))
             assertEquals(emptyView.imgResId, null)
@@ -374,7 +377,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertTrue(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.Loading)
         }
     }
@@ -402,7 +404,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
-            assertFalse(emptyView.emptyViewVisible)
             assertTrue(emptyView is OrderListEmptyUiState.DataShown)
         }
     }
