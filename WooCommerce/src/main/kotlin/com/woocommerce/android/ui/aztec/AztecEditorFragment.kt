@@ -8,6 +8,7 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.GlideImageLoader
 import kotlinx.android.synthetic.main.fragment_aztec_editor.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
@@ -39,6 +40,8 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
         (activity as? MainActivity)?.hideBottomNav()
 
         aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
+                .setImageGetter(GlideImageLoader(requireContext()))
+
         aztec.initSourceEditorHistory()
 
         aztec.visualEditor.fromHtml(navArgs.aztecText)
