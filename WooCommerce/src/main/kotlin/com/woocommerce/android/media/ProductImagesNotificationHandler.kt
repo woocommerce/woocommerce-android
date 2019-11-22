@@ -15,8 +15,7 @@ import java.util.Random
  */
 class ProductImagesNotificationHandler(
     val service: ProductImagesService,
-    val remoteProductId: Long,
-    totalUploads: Int
+    val remoteProductId: Long
 ) {
     companion object {
         private const val CHANNEL_ID = "image_upload_channel"
@@ -25,6 +24,7 @@ class ProductImagesNotificationHandler(
     private val context: Context = service.baseContext.applicationContext
     private val notificationId: Int
     private val notificationManager: NotificationManager
+    private val notificationBuilder: NotificationCompat.Builder
 
     init {
         notificationManager = SystemServiceFactory.get(
@@ -34,20 +34,13 @@ class ProductImagesNotificationHandler(
 
         createChannel()
 
-        val title = if (totalUploads == 1) {
-            context.getString(R.string.product_images_uploading_single_notif_message)
-        } else {
-            context.getString(R.string.product_images_uploading_multi_notif_message)
-        }
-
-        val notificationBuilder = NotificationCompat.Builder(
+        notificationBuilder = NotificationCompat.Builder(
                 context,
                 CHANNEL_ID
         ).also {
             it.color = ContextCompat.getColor(context, R.color.grey_50)
             it.setSmallIcon(android.R.drawable.stat_sys_upload)
             it.setOnlyAlertOnce(true)
-            it.setContentTitle(title)
             it.setOngoing(true)
             it.setProgress(0, 0, true)
         }
@@ -56,6 +49,22 @@ class ProductImagesNotificationHandler(
         notificationId = (Random()).nextInt()
         service.startForeground(notificationId, notification)
         notificationManager.notify(notificationId, notification)
+    }
+
+    fun setProgress(progress: Int) {
+        notificationBuilder.setProgress(100, progress, false)
+        notificationManager.notify(notificationId, notificationBuilder.build())
+    }
+
+    fun update(currentUpload: Int, totalUploads: Int) {
+        val title = if (totalUploads == 1) {
+            context.getString(R.string.product_images_uploading_single_notif_message)
+        } else {
+            context.getString(R.string.product_images_uploading_multi_notif_message, currentUpload, totalUploads)
+        }
+
+        notificationBuilder.setContentTitle(title)
+        notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
     /**

@@ -2,6 +2,7 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -45,8 +46,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private val placeholderWidth: Int
     private val adapter: ImageGalleryAdapter
-    private val request: GlideRequest<Drawable>
     private val layoutInflater: LayoutInflater
+    private val request: GlideRequest<Drawable>
 
     private lateinit var listener: OnGalleryImageClickListener
 
@@ -105,10 +106,19 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     /**
-     * Set the number of upload placeholders to show
+     * Show upload placeholders for the passed local image Uris
      */
-    fun setPlaceholderCount(count: Int) {
-        adapter.setPlaceholderCount(count)
+    fun setPlaceholderImageUris(imageUriList: List<Uri>) {
+        val placeholders = ArrayList<WCProductImageModel>()
+        for (index in imageUriList.indices) {
+            // use a negative id so we can check it in isPlaceholder() below
+            val id = (-index - 1).toLong()
+            placeholders.add(0, WCProductImageModel(id).also {
+                // set the image src to this uri so we can preview it while uploading
+                it.src = imageUriList[index].toString()
+            })
+        }
+        adapter.setPlaceholderImages(placeholders)
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
@@ -120,33 +130,43 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = ArrayList<WCProductImageModel>()
-        private var placeholderCount = 0
 
         fun showImages(images: List<WCProductImageModel>) {
             if (isSameImageList(images)) {
                 return
             }
 
-            val count = placeholderCount
-            placeholderCount = 0
+            val placeholders = getPlaceholderImages()
 
             imageList.clear()
             imageList.addAll(images)
             notifyDataSetChanged()
 
-            setPlaceholderCount(count)
+            if (placeholders.isNotEmpty()) {
+                setPlaceholderImages(placeholders)
+            }
         }
 
         /**
          * Returns the list of images without placeholders
          */
         private fun getActualImages(): List<WCProductImageModel> {
-            if (placeholderCount == 0) {
-                return imageList
-            }
             val images = ArrayList<WCProductImageModel>()
             for (index in imageList.indices) {
                 if (!isPlaceholder(index)) {
+                    images.add(imageList[index])
+                }
+            }
+            return images
+        }
+
+        /**
+         * Returns the list of placeholder images
+         */
+        private fun getPlaceholderImages(): List<WCProductImageModel> {
+            val images = ArrayList<WCProductImageModel>()
+            for (index in imageList.indices) {
+                if (isPlaceholder(index)) {
                     images.add(imageList[index])
                 }
             }
@@ -171,30 +191,31 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return true
         }
 
-        fun setPlaceholderCount(count: Int) {
-            if (count == placeholderCount) {
-                return
-            }
-
+        fun setPlaceholderImages(placeholders: List<WCProductImageModel>) {
             // remove existing placeholders
-            clearPlaceholders()
+            var didChange = clearPlaceholders()
 
-            // add the new ones
-            for (index in 1..count) {
-                // use a negative id so we can check it in isPlaceholder() below
-                val id = -index.toLong()
-                imageList.add(0, WCProductImageModel(id))
+            // add the new ones to the top of the list
+            if (placeholders.isNotEmpty()) {
+                imageList.addAll(0, placeholders)
+                didChange = true
             }
 
-            placeholderCount = count
-            notifyDataSetChanged()
+            if (didChange) {
+                notifyDataSetChanged()
+            }
         }
 
-        private fun clearPlaceholders() {
+        /**
+         * Removes all placeholders, returns true only if any were removed
+         */
+        private fun clearPlaceholders(): Boolean {
+            var result = false
             while (itemCount > 0 && isPlaceholder(0)) {
                 imageList.removeAt(0)
+                result = true
             }
-            placeholderCount = 0
+            return result
         }
 
         fun isPlaceholder(position: Int) = imageList[position].id < 0
@@ -218,10 +239,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             )
 
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
-                holder.imageView.layoutParams.width = placeholderWidth
+                holder.imageView.alpha = 0.5F
                 holder.uploadProgress.visibility = View.VISIBLE
             } else {
-                holder.imageView.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                holder.imageView.alpha = 1.0F
                 holder.uploadProgress.visibility = View.GONE
             }
 
@@ -229,8 +250,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            if (getItemViewType(position) == VIEW_TYPE_IMAGE) {
-                val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
+            val src = getImage(position).src
+            if (getItemViewType(position) == VIEW_TYPE_PLACEHOLDER) {
+                request.load(Uri.parse(src)).into(holder.imageView)
+            } else {
+                val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageHeight)
                 request.load(photonUrl).into(holder.imageView)
             }
         }

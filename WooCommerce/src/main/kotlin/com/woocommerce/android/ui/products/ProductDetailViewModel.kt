@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -54,8 +55,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _uploadingImageCount = SingleLiveEvent<Int>()
-    val uploadingImageCount: LiveData<Int> = _uploadingImageCount
+    private val _uploadingImageUris = MutableLiveData<List<Uri>>()
+    val uploadingImageUris: LiveData<List<Uri>> = _uploadingImageUris
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
@@ -77,7 +78,7 @@ class ProductDetailViewModel @Inject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        checkUploadCount()
+        checkUploads()
     }
 
     fun onShareButtonClicked() {
@@ -140,11 +141,8 @@ class ProductDetailViewModel @Inject constructor(
 
     fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
 
-    private fun checkUploadCount() {
-        val count = ProductImagesService.getUploadCountForProduct(remoteProductId)
-        if (_uploadingImageCount.value != count) {
-            _uploadingImageCount.value = count
-        }
+    private fun checkUploads() {
+        _uploadingImageUris.value = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -214,6 +212,6 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             loadProduct(remoteProductId)
         }
-        checkUploadCount()
+        checkUploads()
     }
 }
