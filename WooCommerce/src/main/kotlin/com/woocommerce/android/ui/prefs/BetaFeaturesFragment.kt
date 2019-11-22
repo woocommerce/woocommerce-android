@@ -47,8 +47,9 @@ class BetaFeaturesFragment : Fragment() {
         }
 
         switchProductsTeaser.isChecked = AppPrefs.isProductsTeaserEnabled()
-        switchStatsV4UI.setOnCheckedChangeListener { _, isChecked ->
+        switchProductsTeaser.setOnCheckedChangeListener { _, isChecked ->
             // TODO: add analytics event here
+            settingsListener.onProductTeaserOptionChanged(isChecked)
         }
     }
 

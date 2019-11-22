@@ -414,6 +414,11 @@ class MainActivity : AppUpgradeActivity(),
                 if (resultCode == AppSettingsActivity.RESULT_CODE_V4_STATS_OPTIONS_CHANGED) {
                     replaceStatsFragment()
                 }
+
+                // update the bottom navigation view to display/hide product
+                if (resultCode == AppSettingsActivity.RESULT_CODE_PRODUCT_TEASER_OPTION_CHANGED) {
+                    bottomNavView.refreshProductsTab()
+                }
                 return
             }
         }

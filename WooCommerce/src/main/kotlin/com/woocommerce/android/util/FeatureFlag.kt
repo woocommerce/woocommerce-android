@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 
 /**
@@ -12,7 +13,7 @@ enum class FeatureFlag {
     REFUNDS;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
-            PRODUCT_RELEASE_TEASER -> BuildConfig.DEBUG
+            PRODUCT_RELEASE_TEASER -> AppPrefs.isProductsTeaserEnabled()
             REFUNDS -> BuildConfig.DEBUG
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)

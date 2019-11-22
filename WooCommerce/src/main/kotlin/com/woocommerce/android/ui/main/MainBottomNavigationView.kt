@@ -57,12 +57,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.fragmentManager = fm
         this.listener = listener
 
-        if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) {
-            detectLabelVisibilityMode()
-            menu.findItem(R.id.products)?.isVisible = true
-        } else {
-            menu.findItem(R.id.products)?.isVisible = false
-        }
+        refreshProductsTab()
 
         navAdapter = NavAdapter()
         addTopDivider()
@@ -84,6 +79,15 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         // Default to the dashboard position
         active(DASHBOARD.position)
+    }
+
+    fun refreshProductsTab() {
+        if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) {
+            detectLabelVisibilityMode()
+            menu.findItem(R.id.products)?.isVisible = true
+        } else {
+            menu.findItem(R.id.products)?.isVisible = false
+        }
     }
 
     /**
