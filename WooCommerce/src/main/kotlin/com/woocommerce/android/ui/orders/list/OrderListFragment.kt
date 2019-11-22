@@ -96,7 +96,6 @@ class OrderListFragment : TopLevelFragment(),
     private var isSearching: Boolean
         private set(value) { viewModel.isSearching = value }
         get() = viewModel.isSearching
-    var isRefreshing: Boolean = false
 
     private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
@@ -232,7 +231,6 @@ class OrderListFragment : TopLevelFragment(),
                     // then load orders with the calculated filter.
                     AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
-                    isRefreshing = true
                     viewModel.loadList(
                             statusFilter = orderStatusFilter,
                             excludeFutureOrders = shouldExcludeFutureOrders())
@@ -453,8 +451,6 @@ class OrderListFragment : TopLevelFragment(),
                     Stat.ORDERS_LIST_FILTER,
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
 
-            isRefreshing = true
-
             // Display the filtered list view
             displayFilteredList()
 
@@ -583,7 +579,6 @@ class OrderListFragment : TopLevelFragment(),
         if (isSearching) {
             searchQuery = ""
             isSearching = false
-            isRefreshing = true
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
