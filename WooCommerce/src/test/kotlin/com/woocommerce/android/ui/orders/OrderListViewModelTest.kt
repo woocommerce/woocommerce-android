@@ -76,7 +76,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel = OrderListViewModel(
                 savedState = savedStateArgs,
-                dispatchers = coroutineDispatchers,
+                coroutineDispatchers = coroutineDispatchers,
                 repository = repository,
                 orderStore = orderStore,
                 listStore = listStore,

@@ -54,14 +54,14 @@ typealias PagedOrdersList = PagedList<OrderListItemUIType>
 @OpenClassOnDebug
 class OrderListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+    coroutineDispatchers: CoroutineDispatchers,
     protected val repository: OrderListRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite
-) : ScopedViewModel(savedState, dispatchers), LifecycleOwner {
+) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -96,8 +96,8 @@ class OrderListViewModel @AssistedInject constructor(
         ThrottleLiveData<OrderListEmptyUiState>(
                 offset = EMPTY_VIEW_THROTTLE,
                 coroutineScope = this,
-                mainDispatcher = dispatchers.main,
-                backgroundDispatcher = dispatchers.computation)
+                mainDispatcher = coroutineDispatchers.main,
+                backgroundDispatcher = coroutineDispatchers.computation)
     }
     val emptyViewState: LiveData<OrderListEmptyUiState> = _emptyViewState
 
