@@ -10,12 +10,6 @@ import com.woocommerce.android.ui.login.MagicLinkInterceptFragmentModule
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
-import com.woocommerce.android.ui.orders.notes.AddOrderNoteModule
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
-import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
-import com.woocommerce.android.ui.orders.OrderDetailModule
-import com.woocommerce.android.ui.orders.OrderFulfillmentModule
-import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.orders.OrdersModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
@@ -38,17 +32,11 @@ abstract class ActivityBindingModule {
             MainModule::class,
             DashboardModule::class,
             MyStoreModule::class,
-            OrderDetailModule::class,
-            OrderProductListModule::class,
-            OrderFulfillmentModule::class,
             OrdersModule::class,
             RefundsModule::class,
             ProductsModule::class,
             ReviewsModule::class,
-            AddOrderNoteModule::class,
-            SitePickerModule::class,
-            AddOrderShipmentTrackingModule::class,
-            AddOrderTrackingProviderListModule::class
+            SitePickerModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
