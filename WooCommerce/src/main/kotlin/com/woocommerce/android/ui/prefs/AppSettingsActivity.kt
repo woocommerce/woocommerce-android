@@ -37,7 +37,7 @@ class AppSettingsActivity : AppCompatActivity(),
         private const val KEY_V4_STATS_OPTION_CHANGED = "key_v4_stats_option_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
         const val RESULT_CODE_V4_STATS_OPTIONS_CHANGED = 2
-        const val RESULT_CODE_PRODUCT_TEASER_OPTION_CHANGED = 3
+        const val RESULT_CODE_PRODUCTS_FEATURE_OPTION_CHANGED = 3
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
@@ -47,7 +47,7 @@ class AppSettingsActivity : AppCompatActivity(),
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
     private var v4StatsOptionChanged = false
-    private var isProductTeaserOptionChanged = false
+    private var isProductsFeatureOptionChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -71,8 +71,8 @@ class AppSettingsActivity : AppCompatActivity(),
             setResult(RESULT_CODE_V4_STATS_OPTIONS_CHANGED)
         }
 
-        if (isProductTeaserOptionChanged) {
-            setResult(RESULT_CODE_PRODUCT_TEASER_OPTION_CHANGED)
+        if (isProductsFeatureOptionChanged) {
+            setResult(RESULT_CODE_PRODUCTS_FEATURE_OPTION_CHANGED)
         }
     }
 
@@ -136,12 +136,12 @@ class AppSettingsActivity : AppCompatActivity(),
         }
     }
 
-    override fun onProductTeaserOptionChanged(enabled: Boolean) {
-        val isProductTeaserEnabled = AppPrefs.isProductsTeaserEnabled()
-        if (isProductTeaserEnabled != enabled) {
-            isProductTeaserOptionChanged = enabled
-            AppPrefs.setIsProductsTeaserEnabled(enabled)
-            setResult(RESULT_CODE_PRODUCT_TEASER_OPTION_CHANGED)
+    override fun onProductsFeatureOptionChanged(enabled: Boolean) {
+        val isProductsFeatureEnabled = AppPrefs.isProductsFeatureEnabled()
+        if (isProductsFeatureEnabled != enabled) {
+            isProductsFeatureOptionChanged = enabled
+            AppPrefs.setIsProductsFeatureEnabled(enabled)
+            setResult(RESULT_CODE_PRODUCTS_FEATURE_OPTION_CHANGED)
         }
     }
 

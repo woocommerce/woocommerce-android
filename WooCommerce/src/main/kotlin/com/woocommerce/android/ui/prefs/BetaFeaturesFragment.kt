@@ -47,12 +47,12 @@ class BetaFeaturesFragment : Fragment() {
             switchStatsV4UI.visibility = View.GONE
         }
 
-        switchProductsUI.isChecked = AppPrefs.isProductsTeaserEnabled()
+        switchProductsUI.isChecked = AppPrefs.isProductsFeatureEnabled()
         switchProductsUI.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                     SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED, mapOf(
                     AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchProductsUI.isChecked)))
-            settingsListener.onProductTeaserOptionChanged(isChecked)
+            settingsListener.onProductsFeatureOptionChanged(isChecked)
         }
     }
 

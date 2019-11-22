@@ -52,7 +52,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         fun onRequestLogout()
         fun onSiteChanged()
         fun onV4StatsOptionChanged(enabled: Boolean)
-        fun onProductTeaserOptionChanged(enabled: Boolean)
+        fun onProductsFeatureOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
