@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.StringUtils
@@ -396,8 +397,11 @@ class OrderListFragment : TopLevelFragment(),
             updatePagedListData(it)
         })
 
-        viewModel.showSnackbarMessage.observe(this, Observer { msg ->
-            msg?.let { uiMessageResolver.showSnack(it) }
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowErrorSnack -> { uiMessageResolver.showSnack(event.messageRes) }
+                else -> event.isHandled = false
+            }
         })
 
         viewModel.emptyViewState.observe(this, Observer {
