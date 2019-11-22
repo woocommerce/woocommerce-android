@@ -678,4 +678,8 @@
         <item name="android:paddingBottom">@dimen/margin_large</item>
     </style>
 
+    <style name="Woo.Products.WIP.CardExtenderButton" parent="Woo.Stats.Availability.CardExtenderButton">
+        <item name="android:drawableStart">@drawable/ic_gridicons_tools</item>
+    </style>
+
 </resources>

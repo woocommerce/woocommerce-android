@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- VIEW MORE Button -->
+        <ToggleButton
+            android:id="@+id/products_wip_viewMore"
+            style="@style/Woo.Products.WIP.CardExtenderButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textOff="@string/product_wip_title"
+            android:textOn="@string/product_wip_title" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/products_wip_morePanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="9dp"
+            android:paddingStart="@dimen/card_padding_start"
+            android:paddingTop="@dimen/default_padding"
+            android:paddingEnd="0dp"
+            android:paddingBottom="@dimen/default_padding"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <!-- Message -->
+            <TextView
+                android:id="@+id/products_wip_message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_extra_large"
+                android:gravity="start"
+                android:lineSpacingExtra="4sp"
+                android:paddingStart="@dimen/card_padding_start"
+                android:paddingEnd="@dimen/card_padding_end"
+                android:paddingBottom="@dimen/default_padding"
+                android:text="@string/product_wip_message"
+                android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</merge>
+
