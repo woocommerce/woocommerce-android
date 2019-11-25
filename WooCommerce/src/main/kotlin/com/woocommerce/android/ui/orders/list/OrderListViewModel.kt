@@ -75,7 +75,9 @@ class OrderListViewModel @AssistedInject constructor(
     }
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
-    private var viewState by viewStateData
+
+    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var viewState by viewStateData
 
     protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
@@ -162,15 +164,13 @@ class OrderListViewModel @AssistedInject constructor(
      */
     fun fetchOrdersAndOrderDependencies() {
         if (networkStatus.isConnected()) {
-            launch {
+            launch(dispatchers.main) {
                 pagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
-                if (!viewState.arePaymentGatewaysFetched) {
-                    fetchPaymentGateways()
-                }
+                fetchPaymentGateways()
             }
         } else {
-            viewState.copy(isRefreshPending = true)
+            viewState = viewState.copy(isRefreshPending = true)
             showOfflineSnack()
         }
     }
@@ -179,7 +179,7 @@ class OrderListViewModel @AssistedInject constructor(
      * Refresh the order count by order status list with fresh data from the API
      */
     fun fetchOrderStatusOptions() {
-        launch {
+        launch(dispatchers.main) {
             // Fetch and load order status options
             when (repository.fetchOrderStatusOptionsFromApi()) {
                 SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
@@ -191,12 +191,14 @@ class OrderListViewModel @AssistedInject constructor(
     /**
      * Fetch payment gateways so they are available for order refunds later
      */
-    fun fetchPaymentGateways() {
-        launch {
-            if (networkStatus.isConnected()) {
-                when (repository.fetchPaymentGateways()) {
-                    SUCCESS -> viewState.copy(arePaymentGatewaysFetched = true)
-                    else -> { /* do nothing */ }
+    suspend fun fetchPaymentGateways() {
+        if (networkStatus.isConnected() && !viewState.arePaymentGatewaysFetched) {
+            when (repository.fetchPaymentGateways()) {
+                SUCCESS -> {
+                    viewState = viewState.copy(arePaymentGatewaysFetched = true)
+                }
+                else -> {
+                    /* do nothing */
                 }
             }
         }
