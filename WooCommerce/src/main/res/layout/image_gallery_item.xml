@@ -20,9 +20,7 @@
         android:id="@+id/addImageContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_margin="16dp"
         android:background="@drawable/ripple_grey_framed"
         android:visibility="gone"
         tools:visibility="visible">
@@ -36,8 +34,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:contentDescription="@string/product_add_image_content_description"
-            android:drawableTint="@color/grey_darken_10"
-            android:src="@drawable/ic_gridicons_add_image" />
+            android:src="@drawable/ic_gridicons_add_image"
+            android:tint="@color/grey_darken_10" />
     </FrameLayout>
 
     <ProgressBar

@@ -284,10 +284,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         val addImageContainer: ViewGroup = view.addImageContainer
         init {
             imageView.layoutParams.height = imageHeight
-
             addImageContainer.layoutParams.width = addImageCellWidth
             addImageContainer.layoutParams.height = imageHeight
-
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, imageView)
             }
