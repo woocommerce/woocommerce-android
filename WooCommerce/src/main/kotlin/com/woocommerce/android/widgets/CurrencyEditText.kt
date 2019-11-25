@@ -34,13 +34,13 @@ class CurrencyEditText : AppCompatEditText {
         this.isCursorVisible = false
     }
 
-    fun initView(
-        currency: String,
-        decimals: Int,
-        currencyFormatter: CurrencyFormatter
-    ) {
+    fun initView(currency: String, decimals: Int, currencyFormatter: CurrencyFormatter) {
         this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(currency)
         this.decimals = decimals
+
+        value.value?.let {
+            setValue(it)
+        }
     }
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
@@ -56,6 +56,7 @@ class CurrencyEditText : AppCompatEditText {
     fun setValue(value: BigDecimal) {
         isChangingText = true
         setText(formatCurrency(value))
+        _value.value = value
         isChangingText = false
     }
 
