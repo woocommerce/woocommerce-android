@@ -1,5 +1,6 @@
 package com.woocommerce.android.model
 
+import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductStockStatus
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
@@ -21,7 +22,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
         this.remoteProductId,
         this.remoteVariationId,
         this.imageUrl,
-        this.price.toBigDecimalOrNull(),
+        this.price.toBigDecimalOrNull()?.roundError(),
         ProductStockStatus.fromString(this.stockStatus),
         this.stockQuantity,
         getAttributeOptionName(this.getProductVariantOptions())
