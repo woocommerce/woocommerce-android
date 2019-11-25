@@ -18,10 +18,12 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
 import kotlinx.android.synthetic.main.refund_by_items_products.*
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class RefundByItemsFragment : BaseFragment() {
@@ -63,6 +65,10 @@ class RefundByItemsFragment : BaseFragment() {
         issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onRefundItemsShippingSwitchChanged(isChecked)
         }
+
+        issueRefund_productsTotalButton.setOnClickListener {
+            viewModel.onProductRefundAmountTapped()
+        }
     }
 
     private fun setupObservers() {
@@ -79,10 +85,12 @@ class RefundByItemsFragment : BaseFragment() {
                 adapter.update(list)
 
                 val selectedItems = list.sumBy { it.quantity }
-                issueRefund_btnNextFromItems.isEnabled = selectedItems > 0
 
                 val selectedItemsHeader = getString(R.string.order_refunds_items_selected, selectedItems)
                 issueRefund_selectedItems.text = selectedItemsHeader
+            }
+            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
+                issueRefund_btnNextFromItems.isEnabled = it
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
                 issueRefund_productsTotalButton.text = it
@@ -119,6 +127,16 @@ class RefundByItemsFragment : BaseFragment() {
                             event.refundItem.product.productId,
                             event.refundItem.product.quantity.toInt(),
                             event.refundItem.quantity
+                    )
+                    findNavController().navigate(action)
+                }
+                is ShowRefundAmountDialog -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
+                            getString(R.string.order_refunds_products_refund),
+                            event.maxRefund,
+                            event.refundAmount,
+                            BigDecimal.ZERO,
+                            event.message
                     )
                     findNavController().navigate(action)
                 }

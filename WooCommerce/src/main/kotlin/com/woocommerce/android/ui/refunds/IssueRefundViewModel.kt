@@ -21,6 +21,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.util.max
 import com.woocommerce.android.ui.orders.notes.OrderNoteRepository
 import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationSt
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
@@ -80,11 +82,13 @@ class IssueRefundViewModel @AssistedInject constructor(
     final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState(), onChange = {
         updateRefundTotal(it.enteredAmount)
     })
+    final val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData
     private var refundByItemsState by refundByItemsStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
+    private var productsRefundState by productsRefundLiveData
     private var refundContinuation: Continuation<Boolean>? = null
 
     private val order: Order
@@ -143,6 +147,16 @@ class IssueRefundViewModel @AssistedInject constructor(
                     discountCodes = order.discountCodes,
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
                     isShippingRefundVisible = false
+            )
+        }
+
+        if (productsRefundLiveData.hasInitialValue) {
+            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+                    ?: DEFAULT_DECIMAL_PRECISION
+
+            productsRefundState = productsRefundState.copy(
+                    currency = order.currency,
+                    decimals = decimals
             )
         }
     }
@@ -338,6 +352,22 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
+    fun onProductRefundAmountTapped() {
+        triggerEvent(ShowRefundAmountDialog(
+                refundByItemsState.productsRefund,
+                maxRefund,
+                resourceProvider.getString(R.string.order_refunds_available_for_refund, formatCurrency(maxRefund))
+        ))
+    }
+
+    fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
+        refundByItemsState = refundByItemsState.copy(
+                productsRefund = newAmount,
+                formattedProductsRefund = formatCurrency(newAmount),
+                isNextButtonEnabled = newAmount > BigDecimal.ZERO
+        )
+    }
+
     fun onRefundQuantityChanged(productId: Long, quantity: Int) {
         val items = refundByItemsState.items?.toMutableList()?.apply {
             val index = this.indexOfFirst { it.product.productId == productId }
@@ -352,7 +382,10 @@ class IssueRefundViewModel @AssistedInject constructor(
             val singleItemTax = item.product.totalTax.divide(item.product.quantity.toBigDecimal(), HALF_UP)
             taxes += item.quantity.toBigDecimal().times(singleItemTax)
         }
-        val productsRefund = subtotal + taxes
+        val productsRefund = max(
+                subtotal + taxes - order.refundTotal,
+                BigDecimal.ZERO
+        )
 
         refundByItemsState = refundByItemsState.copy(
                 items = items,
@@ -362,7 +395,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                 discount = order.discountTotal,
                 formattedDiscount = "-${formatCurrency(order.discountTotal)}",
                 discountCodes = order.discountCodes,
-                subtotal = formatCurrency(subtotal)
+                subtotal = formatCurrency(subtotal),
+                isNextButtonEnabled = productsRefund > BigDecimal.ZERO
         )
     }
 
@@ -437,6 +471,12 @@ class IssueRefundViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @Parcelize
+    data class ProductsRefundViewState(
+        val currency: String? = null,
+        val decimals: Int = DEFAULT_DECIMAL_PRECISION
+    ) : Parcelable
+
+    @Parcelize
     data class RefundByItemsViewState(
         val currency: String? = null,
         val items: List<RefundListItem>? = null,
@@ -455,14 +495,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         val isShippingRefundVisible: Boolean? = null
     ) : Parcelable {
         val totalRefund: BigDecimal
-            get() {
-                val refund = productsRefund + shippingRefund - discount
-                return if (refund > BigDecimal.ZERO) {
-                    refund
-                } else {
-                    BigDecimal.ZERO
-                }
-            }
+            get() = max(productsRefund + shippingRefund, BigDecimal.ZERO)
 
         val isDiscountVisible: Boolean
             get() = discount > BigDecimal.ZERO
@@ -488,6 +521,11 @@ class IssueRefundViewModel @AssistedInject constructor(
     sealed class IssueRefundEvent : Event() {
         data class ShowValidationError(val message: String) : IssueRefundEvent()
         data class ShowNumberPicker(val refundItem: RefundListItem) : IssueRefundEvent()
+        data class ShowRefundAmountDialog(
+            val refundAmount: BigDecimal,
+            val maxRefund: BigDecimal,
+            val message: String
+        ) : IssueRefundEvent()
         data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
     }
