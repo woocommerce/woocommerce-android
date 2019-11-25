@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import kotlinx.android.synthetic.main.product_list_item.view.productImage
 import org.wordpress.android.util.DisplayUtils
@@ -35,17 +36,21 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     companion object {
         private const val VIEW_TYPE_IMAGE = 0
         private const val VIEW_TYPE_PLACEHOLDER = 1
+        private const val VIEW_TYPE_ADD_IMAGE = 2
         private const val NUM_COLUMNS = 2
+        private const val ADD_IMAGE_ITEM_ID = Long.MAX_VALUE
     }
 
     interface OnGalleryImageClickListener {
         fun onGalleryImageClicked(image: Product.Image, imageView: View)
+        fun onGalleryAddImageClicked()
     }
 
     private var imageHeight = 0
     private var isGridView = false
+    private var showAddImageIcon = false
 
-    private val placeholderWidth: Int
+    private val addImageCellWidth: Int
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
     private val request: GlideRequest<Drawable>
@@ -57,12 +62,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
             try {
                 isGridView = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isGridView, false)
+                if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(context)) {
+                    showAddImageIcon = attrArray.getBoolean(
+                            R.styleable.WCProductImageGalleryView_showAddImageIcon,
+                            false
+                    )
+                }
             } finally {
                 attrArray.recycle()
             }
         }
 
-        placeholderWidth = DisplayUtils.getDisplayPixelWidth(context) / NUM_COLUMNS
+        addImageCellWidth = DisplayUtils.getDisplayPixelWidth(context) / NUM_COLUMNS
 
         layoutManager = if (isGridView) {
             GridLayoutManager(context, NUM_COLUMNS)
@@ -121,9 +132,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
-        if (!adapter.isPlaceholder(position)) {
+        val viewType = adapter.getItemViewType(position)
+        if (viewType == VIEW_TYPE_IMAGE) {
             imageView.transitionName = "shared_element$position"
             listener.onGalleryImageClicked(adapter.getImage(position), imageView)
+        } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
+            listener.onGalleryAddImageClicked()
         }
     }
 
@@ -139,6 +153,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             imageList.clear()
             imageList.addAll(images)
+
+            // restore the "Add image" icon (never shown when list is empty)
+            if (showAddImageIcon && imageList.size > 0) {
+                imageList.add(Product.Image(
+                        id = ADD_IMAGE_ITEM_ID,
+                        name = "",
+                        source = "",
+                        dateCreated = Date()))
+            }
+
             notifyDataSetChanged()
 
             if (placeholders.isNotEmpty()) {
@@ -147,10 +171,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         /**
-         * Returns the list of images without placeholders
+         * Returns the list of images without placeholders or the "add image" icon
          */
         private fun getActualImages(): List<Product.Image> {
-            return imageList.filterIndexed { index, _ -> !isPlaceholder(index) }
+            return imageList.filterIndexed { index, _ -> getItemViewType(index) == VIEW_TYPE_IMAGE }
         }
 
         /**
@@ -215,6 +239,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         override fun getItemViewType(position: Int): Int {
             return when {
+                showAddImageIcon && imageList[position].id == ADD_IMAGE_ITEM_ID -> VIEW_TYPE_ADD_IMAGE
                 isPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
                 else -> VIEW_TYPE_IMAGE
             }
@@ -228,9 +253,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 holder.imageView.alpha = 0.5F
                 holder.uploadProgress.visibility = View.VISIBLE
+                holder.addImageContainer.visibility = View.GONE
+            } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
+                holder.uploadProgress.visibility = View.GONE
+                holder.addImageContainer.visibility = View.VISIBLE
             } else {
                 holder.imageView.alpha = 1.0F
                 holder.uploadProgress.visibility = View.GONE
+                holder.addImageContainer.visibility = View.GONE
             }
 
             return holder
@@ -238,9 +268,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
             val src = getImage(position).source
-            if (getItemViewType(position) == VIEW_TYPE_PLACEHOLDER) {
+            val viewType = getItemViewType(position)
+            if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 request.load(Uri.parse(src)).into(holder.imageView)
-            } else {
+            } else if (viewType == VIEW_TYPE_IMAGE) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageHeight)
                 request.load(photonUrl).into(holder.imageView)
             }
@@ -250,8 +281,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.productImage
         val uploadProgress: ProgressBar = view.uploadProgess
+        val addImageContainer: ViewGroup = view.addImageContainer
         init {
             imageView.layoutParams.height = imageHeight
+
+            addImageContainer.layoutParams.width = addImageCellWidth
+            addImageContainer.layoutParams.height = imageHeight
+
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, imageView)
             }

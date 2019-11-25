@@ -556,6 +556,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         viewModel.onImageGalleryClicked(image)
     }
 
+    override fun onGalleryAddImageClicked() {
+        showImageChooser()
+    }
+
     private fun showProductImages(product: Product, imageModel: Product.Image? = null) {
         if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
             showImageChooser()

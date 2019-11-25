@@ -38,7 +38,8 @@
                     android:layout_height="@dimen/product_image_gallery_image_height"
                     android:layout_gravity="center_horizontal"
                     android:background="@color/white"
-                    app:isGridView="false" />
+                    app:isGridView="false"
+                    app:showAddImageIcon="true" />
 
                 <FrameLayout
                     android:id="@+id/addImageContainer"
