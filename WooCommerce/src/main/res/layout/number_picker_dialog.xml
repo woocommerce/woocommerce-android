@@ -11,7 +11,7 @@
         android:layout_marginTop="18dp"
         android:layout_marginBottom="8dp"
         android:duplicateParentState="true"
-        android:textAppearance="@style/Woo.TextAppearance.Title"
+        android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"/>
 
@@ -21,10 +21,5 @@
         android:layout_height="wrap_content"
         android:duplicateParentState="true"
         android:theme="@style/NumberPickerTheme"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/list_divider" />
 
 </LinearLayout>

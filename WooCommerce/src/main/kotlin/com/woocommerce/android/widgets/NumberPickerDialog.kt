@@ -25,16 +25,6 @@ open class NumberPickerDialog : DialogFragment(), DialogInterface.OnClickListene
 
         private const val DEFAULT_MIN_VALUE = 0
         private const val DEFAULT_MAX_VALUE = 99
-
-        fun createInstance(
-            args: Bundle,
-            format: Formatter
-        ) : NumberPickerDialog {
-            val dialog = NumberPickerDialog()
-            dialog.setNumberFormat(format)
-            dialog.arguments = args
-            return dialog
-        }
     }
 
     private lateinit var headerText: TextView
