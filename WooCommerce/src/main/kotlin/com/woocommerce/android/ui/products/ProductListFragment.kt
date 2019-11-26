@@ -305,8 +305,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         productAdapter.setProductList(products)
         listState?.let {
             productsRecycler.layoutManager?.onRestoreInstanceState(it)
+            listState = null
         }
-
         showProductWIPNoticeCard(true)
     }
 
