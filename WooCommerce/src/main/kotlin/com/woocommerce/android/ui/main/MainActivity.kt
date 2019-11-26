@@ -754,11 +754,15 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onFragmentScrollUp() {
-        showBottomNav()
+        hideBottomNav()
     }
 
     override fun onFragmentScrollDown() {
         hideBottomNav()
+    }
+
+    override fun onFragmentScrollIdle() {
+        showBottomNav()
     }
 
     override fun hideBottomNav() {

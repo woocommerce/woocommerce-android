@@ -3,6 +3,7 @@ package com.woocommerce.android.extensions
 interface FragmentScrollListener {
     fun onFragmentScrollUp()
     fun onFragmentScrollDown()
+    fun onFragmentScrollIdle()
 }
 
 fun androidx.fragment.app.Fragment.onScrollUp() {
@@ -11,4 +12,8 @@ fun androidx.fragment.app.Fragment.onScrollUp() {
 
 fun androidx.fragment.app.Fragment.onScrollDown() {
     (activity as? FragmentScrollListener)?.onFragmentScrollDown()
+}
+
+fun androidx.fragment.app.Fragment.onScrollIdle() {
+    (activity as? FragmentScrollListener)?.onFragmentScrollIdle()
 }
