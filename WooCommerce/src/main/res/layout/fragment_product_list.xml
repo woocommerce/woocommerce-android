@@ -33,6 +33,7 @@
                 android:id="@+id/productsRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/card_bgColor"
                 android:layout_below="@+id/products_wip_card" />
 
             <com.woocommerce.android.widgets.WCEmptyView
