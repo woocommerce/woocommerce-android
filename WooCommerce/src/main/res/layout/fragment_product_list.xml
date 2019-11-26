@@ -9,6 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/default_window_background"
         android:clickable="true"
         android:focusable="true">
 
@@ -18,19 +19,21 @@
             style="@style/Woo.Stats.Card.Expandable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:visibility="visible"
-            android:visibility="gone"/>
+            android:layout_marginBottom="@dimen/margin_large"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/productsRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/products_wip_card"/>
+            android:layout_below="@+id/products_wip_card" />
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/products_wip_card"
             android:visibility="gone" />
 
         <ProgressBar
