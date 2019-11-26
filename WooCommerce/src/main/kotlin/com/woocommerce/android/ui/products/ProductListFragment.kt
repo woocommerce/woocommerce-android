@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -41,6 +42,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
+        const val KEY_LIST_STATE = "list-state"
         fun newInstance() = ProductListFragment()
     }
 
@@ -48,6 +50,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var productAdapter: ProductListAdapter
+    private var listState: Parcelable? = null
 
     private val viewModel: ProductListViewModel by viewModels { viewModelFactory }
 
@@ -69,6 +72,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
+
+        listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
         productAdapter = ProductListAdapter(activity, this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
@@ -96,6 +101,11 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(KEY_LIST_STATE, productsRecycler.layoutManager?.onSaveInstanceState())
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {
@@ -292,6 +302,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private fun showProductList(products: List<Product>) {
         productAdapter.setProductList(products)
+        listState?.let {
+            productsRecycler.layoutManager?.onRestoreInstanceState(it)
+        }
     }
 
     override fun onProductClick(remoteProductId: Long) {
