@@ -262,6 +262,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             reviewsAdapter.setReviews(reviews)
             listState?.let {
                 reviewsList.layoutManager?.onRestoreInstanceState(listState)
+                listState = null
             }
             showEmptyView(reviews.isEmpty())
         } else {
