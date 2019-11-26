@@ -263,7 +263,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             listState?.let {
                 reviewsList.layoutManager?.onRestoreInstanceState(listState)
             }
-            
             showEmptyView(reviews.isEmpty())
         } else {
             newDataAvailable = true
