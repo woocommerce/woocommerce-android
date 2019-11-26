@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_H
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -52,6 +53,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         fun onRequestLogout()
         fun onSiteChanged()
         fun onV4StatsOptionChanged(enabled: Boolean)
+        fun onProductsFeatureOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -103,16 +105,14 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
         }
 
-        // display the Beta features section only if the wc-admin is installed/active on a site
-        if (AppPrefs.isUsingV4Api()) {
-            betaFeaturesContainer.visibility = View.VISIBLE
+        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+            switchImageOptimizaton.visibility = View.VISIBLE
+            switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
+            switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->
+                AppPrefs.setImageOptimizationEnabled(isChecked)
+            }
         } else {
-            betaFeaturesContainer.visibility = View.GONE
-        }
-
-        switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
-        switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->
-            AppPrefs.setImageOptimizationEnabled(isChecked)
+            switchImageOptimizaton.visibility = View.GONE
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
