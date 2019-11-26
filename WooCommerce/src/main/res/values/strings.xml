@@ -423,6 +423,8 @@
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_wip_title">Work in progress!</string>
+    <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch &#x1f680;</string>
     <!--
         Product images
     -->

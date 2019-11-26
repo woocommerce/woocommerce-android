@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -16,6 +17,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
@@ -36,6 +38,9 @@ class ProductListViewModel @AssistedInject constructor(
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
+
+    private val _productList = MutableLiveData<List<Product>>()
+    val productList: LiveData<List<Product>> = _productList
 
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
@@ -64,7 +69,9 @@ class ProductListViewModel @AssistedInject constructor(
         } else {
             launch {
                 searchJob?.cancelAndJoin()
-                viewState = viewState.copy(productList = emptyList(), isEmptyViewVisible = false)
+
+                _productList.value = emptyList()
+                viewState = viewState.copy(isEmptyViewVisible = false)
             }
         }
     }
@@ -75,7 +82,8 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun onSearchOpened() {
-        viewState = viewState.copy(isSearchActive = true, productList = emptyList())
+        _productList.value = emptyList()
+        viewState = viewState.copy(isSearchActive = true)
     }
 
     fun onSearchClosed() {
@@ -128,10 +136,10 @@ class ProductListViewModel @AssistedInject constructor(
                     // if this is the initial load, first get the products from the db and if there are any show
                     // them immediately, otherwise make sure the skeleton shows
                     val productsInDb = productRepository.getProductList()
-                    viewState = if (productsInDb.isEmpty()) {
-                        viewState.copy(isSkeletonShown = true)
+                    if (productsInDb.isEmpty()) {
+                        viewState = viewState.copy(isSkeletonShown = true)
                     } else {
-                        viewState.copy(productList = productsInDb)
+                        _productList.value = productsInDb
                     }
                 }
 
@@ -148,15 +156,15 @@ class ProductListViewModel @AssistedInject constructor(
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
-                viewState = viewState.copy(productList = productRepository.fetchProductList(loadMore))
+                _productList.value = productRepository.fetchProductList(loadMore)
             } else {
                 val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
                 // make sure the search query hasn't changed while the fetch was processing
                 if (searchQuery == productRepository.lastSearchQuery) {
-                    viewState = if (loadMore) {
-                        viewState.copy(productList = viewState.productList.orEmpty() + fetchedProducts)
+                    if (loadMore) {
+                        _productList.value = _productList.value.orEmpty() + fetchedProducts
                     } else {
-                        viewState.copy(productList = fetchedProducts)
+                        _productList.value = fetchedProducts
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
@@ -164,7 +172,7 @@ class ProductListViewModel @AssistedInject constructor(
             }
             viewState = viewState.copy(
                     canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = viewState.productList?.isEmpty() == true
+                    isEmptyViewVisible = _productList.value?.isEmpty() == true
             )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
@@ -185,7 +193,6 @@ class ProductListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val productList: List<Product>? = null,
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
