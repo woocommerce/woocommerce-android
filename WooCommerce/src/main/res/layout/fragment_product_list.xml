@@ -6,45 +6,52 @@
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.products.ProductListFragment">
 
-    <RelativeLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_window_background"
-        android:clickable="true"
-        android:focusable="true">
+        android:fillViewport="true">
 
-        <!-- Products work in progress notice card -->
-        <com.woocommerce.android.ui.products.ProductsWIPNoticeCard
-            android:id="@+id/products_wip_card"
-            style="@style/Woo.Stats.Card.Expandable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_large"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/productsRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/products_wip_card" />
-
-        <com.woocommerce.android.widgets.WCEmptyView
-            android:id="@+id/empty_view"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/products_wip_card"
-            android:visibility="gone" />
+            android:background="@color/default_window_background"
+            android:clickable="true"
+            android:focusable="true">
 
-        <ProgressBar
-            android:id="@+id/loadMoreProgress"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/margin_large"
-            android:visibility="gone"
-            tools:visibility="visible" />
-    </RelativeLayout>
+            <!-- Products work in progress notice card -->
+            <com.woocommerce.android.ui.products.ProductsWIPNoticeCard
+                android:id="@+id/products_wip_card"
+                style="@style/Woo.Stats.Card.Expandable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_large"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/productsRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/products_wip_card" />
+
+            <com.woocommerce.android.widgets.WCEmptyView
+                android:id="@+id/empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/products_wip_card"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/loadMoreProgress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/margin_large"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
