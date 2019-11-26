@@ -31,8 +31,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:contentDescription="@string/product_add_image_content_description"
-            android:src="@drawable/ic_gridicons_add_image"
-            android:tint="@color/grey_darken_10" />
+            android:src="@drawable/ic_gridicons_add_image" />
     </FrameLayout>
 
     <ProgressBar
