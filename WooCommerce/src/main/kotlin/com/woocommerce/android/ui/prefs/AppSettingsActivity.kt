@@ -34,10 +34,10 @@ class AppSettingsActivity : AppCompatActivity(),
         HasSupportFragmentInjector {
     companion object {
         private const val KEY_SITE_CHANGED = "key_site_changed"
-        private const val KEY_V4_STATS_OPTION_CHANGED = "key_v4_stats_option_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
-        const val RESULT_CODE_V4_STATS_OPTIONS_CHANGED = 2
-        const val RESULT_CODE_PRODUCTS_FEATURE_OPTION_CHANGED = 3
+        const val RESULT_CODE_BETA_OPTIONS_CHANGED = 2
+        const val KEY_V4_STATS_OPTION_CHANGED = "key_v4_stats_option_changed"
+        const val KEY_PRODUCTS_OPTION_CHANGED = "key_products_option_changed"
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
@@ -62,17 +62,14 @@ class AppSettingsActivity : AppCompatActivity(),
         savedInstanceState?.let {
             siteChanged = it.getBoolean(KEY_SITE_CHANGED)
             v4StatsOptionChanged = it.getBoolean(KEY_V4_STATS_OPTION_CHANGED)
+            isProductsFeatureOptionChanged = it.getBoolean(KEY_PRODUCTS_OPTION_CHANGED)
         } ?: AppPrefs.isV4StatsUIEnabled()
 
         if (siteChanged) {
             setResult(RESULT_CODE_SITE_CHANGED)
         }
-        if (v4StatsOptionChanged) {
-            setResult(RESULT_CODE_V4_STATS_OPTIONS_CHANGED)
-        }
-
-        if (isProductsFeatureOptionChanged) {
-            setResult(RESULT_CODE_PRODUCTS_FEATURE_OPTION_CHANGED)
+        if (v4StatsOptionChanged || isProductsFeatureOptionChanged) {
+            setBetaOptionResult()
         }
     }
 
@@ -89,6 +86,7 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
         outState.putBoolean(KEY_V4_STATS_OPTION_CHANGED, v4StatsOptionChanged)
+        outState.putBoolean(KEY_PRODUCTS_OPTION_CHANGED, isProductsFeatureOptionChanged)
         super.onSaveInstanceState(outState)
     }
 
@@ -130,18 +128,18 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onV4StatsOptionChanged(enabled: Boolean) {
         val isV4StatsEnabled = AppPrefs.isV4StatsUIEnabled()
         if (isV4StatsEnabled != enabled) {
-            v4StatsOptionChanged = enabled
+            v4StatsOptionChanged = true
             AppPrefs.setIsV4StatsUIEnabled(enabled)
-            setResult(RESULT_CODE_V4_STATS_OPTIONS_CHANGED)
+            setBetaOptionResult()
         }
     }
 
     override fun onProductsFeatureOptionChanged(enabled: Boolean) {
         val isProductsFeatureEnabled = AppPrefs.isProductsFeatureEnabled()
         if (isProductsFeatureEnabled != enabled) {
-            isProductsFeatureOptionChanged = enabled
+            isProductsFeatureOptionChanged = true
             AppPrefs.setIsProductsFeatureEnabled(enabled)
-            setResult(RESULT_CODE_PRODUCTS_FEATURE_OPTION_CHANGED)
+            setBetaOptionResult()
         }
     }
 
@@ -187,5 +185,11 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun clearNotificationPreferences() {
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
+    }
+
+    private fun setBetaOptionResult() {
+        intent.putExtra(KEY_V4_STATS_OPTION_CHANGED, v4StatsOptionChanged)
+        intent.putExtra(KEY_PRODUCTS_OPTION_CHANGED, isProductsFeatureOptionChanged)
+        setResult(RESULT_CODE_BETA_OPTIONS_CHANGED, intent)
     }
 }
