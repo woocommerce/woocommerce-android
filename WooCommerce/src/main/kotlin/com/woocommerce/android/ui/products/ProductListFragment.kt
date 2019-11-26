@@ -91,7 +91,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     ContextCompat.getColor(activity, R.color.colorAccent),
                     ContextCompat.getColor(activity, R.color.colorPrimaryDark)
             )
-            scrollUpChild = productsRecycler
+            scrollUpChild = scroll_view
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }
@@ -290,6 +290,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
+            showProductWIPNoticeCard(false)
             skeletonView.show(productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
@@ -304,6 +305,17 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         productAdapter.setProductList(products)
         listState?.let {
             productsRecycler.layoutManager?.onRestoreInstanceState(it)
+        }
+
+        showProductWIPNoticeCard(true)
+    }
+
+    private fun showProductWIPNoticeCard(show: Boolean) {
+        if (show) {
+            products_wip_card.visibility = View.VISIBLE
+            products_wip_card.initView()
+        } else {
+            products_wip_card.visibility = View.GONE
         }
     }
 
