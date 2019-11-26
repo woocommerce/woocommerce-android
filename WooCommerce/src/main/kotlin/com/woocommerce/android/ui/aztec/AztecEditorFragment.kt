@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.aztec
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.GlideImageLoader
 import kotlinx.android.synthetic.main.fragment_aztec_editor.*
 import org.wordpress.android.util.ActivityUtils
@@ -19,16 +21,20 @@ import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
-class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
+class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
         const val AZTEC_EDITOR_REQUEST_CODE = 3001
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
+        private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
     private lateinit var aztec: Aztec
 
     private val navArgs: AztecEditorFragmentArgs by navArgs()
+
+    private var isConfirmingDiscard = false
+    private var shouldShowDiscardDialog = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +70,8 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
             R.id.menu_done -> {
                 // TODO: add event for click here
                 val bundle = Bundle()
-                bundle.putString(ARG_AZTEC_EDITOR_TEXT, aztec.visualEditor.text.toString())
+                bundle.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
+                shouldShowDiscardDialog = false
                 requireActivity().navigateBackWithResult(
                         AZTEC_EDITOR_REQUEST_CODE,
                         bundle,
@@ -77,11 +84,43 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onDestroy() {
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
         super.onDestroy()
+    }
+
+    /**
+     * Prevent back press in the main activity if the user made changes so we can confirm the discard
+     */
+    override fun onRequestAllowBackPress(): Boolean {
+        return if (getEditorText().isNotEmpty() && shouldShowDiscardDialog) {
+            confirmDiscard()
+            false
+        } else {
+            true
+        }
+    }
+
+    private fun confirmDiscard() {
+        isConfirmingDiscard = true
+        AlertDialog.Builder(activity)
+                .setMessage(R.string.aztec_confirm_discard)
+                .setCancelable(true)
+                .setPositiveButton(R.string.discard) { _, _ ->
+                    shouldShowDiscardDialog = false
+                    activity?.onBackPressed()
+                }
+                .setNegativeButton(R.string.cancel) { _, _ ->
+                    isConfirmingDiscard = false
+                }
+                .show()
     }
 
     override fun onToolbarCollapseButtonClicked() {
@@ -111,5 +150,6 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
     override fun onToolbarMediaButtonClicked(): Boolean {
         return false
     }
-}
 
+    private fun getEditorText() = aztec.visualEditor.text.toString()
+}
