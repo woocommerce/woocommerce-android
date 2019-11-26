@@ -54,7 +54,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         "CZK20.00",
         "CZK10.00",
         "CZK30.00",
-        false
+        false,
+        emptyList()
     )
 
     @Before
