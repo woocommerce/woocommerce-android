@@ -1,19 +1,26 @@
 package com.woocommerce.android.ui.products
 
+import android.os.Bundle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.di.ActivityScope
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.ViewModelKey
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
-import kotlinx.coroutines.Dispatchers
+import dagger.multibindings.IntoMap
+import kotlinx.coroutines.Dispatchers.Unconfined
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -28,24 +35,26 @@ internal abstract class MockedProductDetailModule {
         }
 
         @JvmStatic
-        @ActivityScope
         @Provides
         fun provideProductDetailViewModel(
             currencyFormatter: CurrencyFormatter,
             networkStatus: NetworkStatus,
             wcStore: WooCommerceStore,
             site: SelectedSite
-        ): ProductDetailViewModel {
+        ): MockedProductDetailViewModel {
             val mockProductRepository = mock<ProductDetailRepository>()
+            val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
+            val savedState: SavedStateWithArgs = mock()
 
             val mockedProductDetailViewModel = spy(
                     MockedProductDetailViewModel(
-                            Dispatchers.Main,
+                            coroutineDispatchers,
                             wcStore,
                             site,
                             mockProductRepository,
                             networkStatus,
-                            currencyFormatter
+                            currencyFormatter,
+                            savedState
                     )
             )
 
@@ -54,8 +63,19 @@ internal abstract class MockedProductDetailModule {
 
             return mockedProductDetailViewModel
         }
+
+        @JvmStatic
+        @Provides
+        fun provideDefaultArgs(): Bundle? {
+            return null
+        }
     }
 
-    @ContributesAndroidInjector
-    abstract fun productDetailfragment(): ProductDetailFragment
+    @Binds
+    @IntoMap
+    @ViewModelKey(MockedProductDetailViewModel::class)
+    abstract fun bindFactory(factory: MockedProductDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    abstract fun bindSavedStateRegistryOwner(fragment: ProductDetailFragment): SavedStateRegistryOwner
 }

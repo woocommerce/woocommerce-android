@@ -4,25 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_issue_refund.*
 
 class IssueRefundFragment : DaggerFragment() {
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: IssueRefundViewModel
-
-    private val navArgs: IssueRefundFragmentArgs by navArgs()
+    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -37,39 +36,30 @@ class IssueRefundFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
-    }
-
-    private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java)
-                .also {
-                    initializeViews(it)
-                    setupObservers(it)
-                }
-
-        viewModel.start(navArgs.orderId)
+        initializeViews(viewModel)
+        setupObservers(viewModel)
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
         issueRefund_btnNext.setOnClickListener {
-            viewModel.onRefundEntered()
+            viewModel.onNextButtonTapped()
         }
     }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.resetEvents()
+        viewModel.commonStateLiveData.observe(this) { old, new ->
+            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) { issueRefund_btnNext.isEnabled = it }
+            new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
+        }
 
-        viewModel.screenTitle.observe(this, Observer {
-            activity?.title = it
-        })
-
-        viewModel.isNextButtonEnabled.observe(this, Observer {
-            issueRefund_btnNext.isEnabled = it
-        })
-
-        viewModel.showRefundSummary.observe(this, Observer {
-            val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
-            findNavController().navigate(action)
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowRefundSummary -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
+                    findNavController().navigate(action)
+                }
+                else -> event.isHandled = false
+            }
         })
     }
 }

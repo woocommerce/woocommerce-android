@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.products
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -13,22 +15,22 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import javax.inject.Inject
-import javax.inject.Named
 
 @OpenClassOnDebug
-class ProductImagesViewModel @Inject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+class ProductImagesViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateWithArgs,
+    dispatchers: CoroutineDispatchers,
     private val productRepository: ProductImagesRepository,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val networkStatus: NetworkStatus
-) : ScopedViewModel(mainDispatcher) {
+) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
 
     private val _product = MutableLiveData<Product>()
@@ -137,4 +139,7 @@ class ProductImagesViewModel @Inject constructor(
             checkUploads()
         }
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ProductImagesViewModel>
 }

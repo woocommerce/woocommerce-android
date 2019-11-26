@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.activity.viewModels
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
@@ -22,8 +23,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
@@ -31,9 +30,9 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_image_viewer.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import javax.inject.Inject
 
 /**
@@ -58,7 +57,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         fun showProductImages(
             fragment: Fragment,
             productModel: Product,
-            imageModel: WCProductImageModel,
+            imageModel: Product.Image,
             sharedElement: View? = null,
             enableRemoveImage: Boolean = false,
             requestCode: Int = 0
@@ -85,7 +84,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         }
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var remoteProductId = 0L
@@ -93,7 +92,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     private var enableRemoveImage = false
 
     private lateinit var transitionName: String
-    private lateinit var viewModel: ImageViewerViewModel
+    private val viewModel: ImageViewerViewModel by viewModels { viewModelFactory }
     private lateinit var pagerAdapter: ImageViewerAdapter
 
     private val fadeOutToolbarHandler = Handler()
@@ -142,9 +141,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ImageViewerViewModel::class.java).also {
-            setupObservers(it)
-        }
+        setupObservers(viewModel)
         viewModel.start(remoteProductId)
     }
 
@@ -163,8 +160,8 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         })
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.let { bundle ->
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.let { bundle ->
             bundle.putLong(KEY_IMAGE_REMOTE_PRODUCT_ID, remoteProductId)
             bundle.putLong(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
             bundle.putString(KEY_TRANSITION_NAME, transitionName)
@@ -317,7 +314,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         showToolbar(false)
     }
 
-    private fun setupViewPager(images: List<WCProductImageModel>) {
+    private fun setupViewPager(images: List<Product.Image>) {
         pagerAdapter = ImageViewerAdapter(supportFragmentManager, images)
         viewPager.adapter = pagerAdapter
         viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
@@ -342,7 +339,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         })
     }
 
-    internal inner class ImageViewerAdapter(fm: FragmentManager, val images: List<WCProductImageModel>) :
+    internal inner class ImageViewerAdapter(fm: FragmentManager, val images: List<Product.Image>) :
             FragmentStatePagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {
             return ImageViewerFragment.newInstance(images[position])

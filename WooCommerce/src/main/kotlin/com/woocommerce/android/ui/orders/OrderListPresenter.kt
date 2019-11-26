@@ -4,14 +4,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
-import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
@@ -35,17 +34,16 @@ import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
-import javax.inject.Named
 
 @OpenClassOnDebug
 @ActivityScope
 class OrderListPresenter @Inject constructor(
+    private val dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
-    private val gatewayStore: WCGatewayStore,
-    @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher
+    private val gatewayStore: WCGatewayStore
 ) : OrderListContract.Presenter {
     companion object {
         private val TAG: String = OrderListPresenter::class.java.simpleName
@@ -308,7 +306,7 @@ class OrderListPresenter @Inject constructor(
 
             val currentOrders = removeFutureOrders(orders)
             if (currentOrders.count() > 0) {
-                GlobalScope.launch(backgroundDispatcher) {
+                GlobalScope.launch(dispatchers.io) {
                     // load shipment tracking providers list only if order list is fetched and displayed.
                     // for some reason, orderId is required to fetch shipment tracking providers
                     // so passing the first order in the order list

@@ -10,15 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.ProductImageMap
@@ -28,9 +28,13 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
@@ -42,11 +46,11 @@ import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : BaseFragment() {
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
 
-    private lateinit var viewModel: ReviewDetailViewModel
+    private val viewModel: ReviewDetailViewModel by viewModels { viewModelFactory }
 
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
@@ -62,7 +66,7 @@ class ReviewDetailFragment : BaseFragment() {
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -105,38 +109,26 @@ class ReviewDetailFragment : BaseFragment() {
     override fun getFragmentTitle() = getString(R.string.wc_review_title)
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ReviewDetailViewModel::class.java).also {
-            setupObservers(it)
-        }
-
+        setupObservers(viewModel)
         viewModel.start(navArgs.remoteReviewId)
     }
 
     private fun setupObservers(viewModel: ReviewDetailViewModel) {
-        viewModel.productReview.observe(this, Observer {
-            setReview(it)
-        })
+        viewModel.viewStateData.observe(this) { old, new ->
+            new.productReview?.takeIfNotEqualTo(old?.productReview) { setReview(it) }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+        }
 
-        viewModel.isSkeletonShown.observe(this, Observer {
-            showSkeleton(it)
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
-        viewModel.refreshProductImage.observe(this, Observer {
-            refreshProductImage(it)
-        })
-
-        viewModel.exit.observe(this, Observer {
-            exitDetailView()
-        })
-
-        viewModel.markAsRead.observe(this, Observer { remoteNoteId ->
-            // Remove all active notifications from the system bar
-            context?.let {
-                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(it, remoteNoteId.toString())
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MarkNotificationAsRead -> {
+                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
+                            requireContext(),
+                            event.remoteNoteId.toString()
+                    )
+                }
+                is Exit -> exitDetailView()
             }
         })
     }

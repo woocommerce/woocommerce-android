@@ -1,78 +1,56 @@
 package com.woocommerce.android.ui.products
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import android.os.Parcelable
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import javax.inject.Inject
-import javax.inject.Named
 import kotlin.math.roundToInt
 
 @OpenClassOnDebug
-class ProductDetailViewModel @Inject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val wooCommerceStore: WooCommerceStore,
+class ProductDetailViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateWithArgs,
+    dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter
-) : ScopedViewModel(mainDispatcher) {
+    private val currencyFormatter: CurrencyFormatter,
+    private val wooCommerceStore: WooCommerceStore
+) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
+    private var parameters: Parameters? = null
 
-    private val product = MutableLiveData<Product>()
-    private val parameters = MutableLiveData<Parameters>()
-
-    private val _productData = MediatorLiveData<ProductWithParameters>()
-    val productData: LiveData<ProductWithParameters> = _productData
-
-    private val _isSkeletonShown = MutableLiveData<Boolean>()
-    val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
-
-    private val _addProductImage = SingleLiveEvent<Unit>()
-    val addProductImage: LiveData<Unit> = _addProductImage
-
-    private val _shareProduct = SingleLiveEvent<Product>()
-    val shareProduct: LiveData<Product> = _shareProduct
-
-    private val _showSnackbarMessage = SingleLiveEvent<Int>()
-    val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
-
-    private val _uploadingImageUris = MutableLiveData<List<Uri>>()
-    val uploadingImageUris: LiveData<List<Uri>> = _uploadingImageUris
-
-    private val _exit = SingleLiveEvent<Unit>()
-    val exit: LiveData<Unit> = _exit
+    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     init {
-        _productData.addSource(product) { prod ->
-            parameters.value?.let { params ->
-                _productData.value = combineData(prod, params)
-            }
-        }
-        _productData.addSource(parameters) { params ->
-            product.value?.let { prod ->
-                _productData.value = combineData(prod, params)
-            }
-        }
-
         EventBus.getDefault().register(this)
     }
 
@@ -82,11 +60,21 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onShareButtonClicked() {
-        _shareProduct.value = product.value
+        viewState.product?.let {
+            triggerEvent(ShareProduct(it))
+        }
+    }
+
+    fun onImageGalleryClicked(image: Product.Image) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        viewState.product?.let {
+            triggerEvent(ShowImages(it, image))
+        }
     }
 
     fun onAddImageClicked() {
-        _addProductImage.call()
+        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        triggerEvent(ShowImageChooser)
     }
 
     override fun onCleared() {
@@ -104,15 +92,15 @@ class ProductDetailViewModel @Inject constructor(
         launch {
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
-                product.value = productInDb
+                updateProduct(productInDb)
                 if (shouldFetch) {
                     fetchProduct(remoteProductId)
                 }
             } else {
-                _isSkeletonShown.value = true
+                viewState = viewState.copy(isSkeletonShown = true)
                 fetchProduct(remoteProductId)
             }
-            _isSkeletonShown.value = false
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
@@ -121,43 +109,39 @@ class ProductDetailViewModel @Inject constructor(
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
-        parameters.value = Parameters(currencyCode, weightUnit, dimensionUnit)
+
+        parameters = Parameters(currencyCode, weightUnit, dimensionUnit)
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
-                product.value = fetchedProduct
+                updateProduct(fetchedProduct)
             } else {
-                _showSnackbarMessage.value = R.string.product_detail_fetch_product_error
-                _exit.call()
+                triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
+                triggerEvent(Exit)
             }
         } else {
-            _showSnackbarMessage.value = R.string.offline_error
-            _isSkeletonShown.value = false
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
     fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
 
     private fun checkUploads() {
-        _uploadingImageUris.value = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
+        val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
+        viewState = viewState.copy(uploadingImageUris = uris)
     }
 
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
-        } ?: amount.toString()
-    }
-
-    private fun combineData(product: Product, parameters: Parameters): ProductWithParameters {
-        val weight = if (product.weight > 0) "${format(product.weight)}${parameters.weightUnit ?: ""}" else ""
+    private fun updateProduct(product: Product) {
+        val weight = if (product.weight > 0) "${format(product.weight)}${parameters?.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
         val hasWidth = product.width > 0
         val hasHeight = product.height > 0
-        val unit = parameters.dimensionUnit ?: ""
+        val unit = parameters?.dimensionUnit ?: ""
         val size = if (hasLength && hasWidth && hasHeight) {
             "${format(product.length)} x ${format(product.width)} x ${format(product.height)} $unit"
         } else if (hasWidth && hasHeight) {
@@ -166,14 +150,20 @@ class ProductDetailViewModel @Inject constructor(
             ""
         }.trim()
 
-        return ProductWithParameters(
-                product,
-                weight,
-                size,
-                formatCurrency(product.price, parameters.currencyCode),
-                formatCurrency(product.salePrice, parameters.currencyCode),
-                formatCurrency(product.regularPrice, parameters.currencyCode)
+        viewState = viewState.copy(
+                product = product,
+                weightWithUnits = weight,
+                sizeWithUnits = size,
+                priceWithCurrency = formatCurrency(product.price, parameters?.currencyCode),
+                salePriceWithCurrency = formatCurrency(product.salePrice, parameters?.currencyCode),
+                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters?.currencyCode)
         )
+    }
+
+    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
+        return currencyCode?.let {
+            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
+        } ?: amount.toString()
     }
 
     private fun format(number: Float): String {
@@ -185,21 +175,6 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    data class Parameters(
-        val currencyCode: String?,
-        val weightUnit: String?,
-        val dimensionUnit: String?
-    )
-
-    data class ProductWithParameters(
-        val product: Product,
-        val weightWithUnits: String,
-        val sizeWithUnits: String,
-        val priceWithCurrency: String,
-        val salePriceWithCurrency: String,
-        val regularPriceWithCurrency: String
-    )
-
     /**
      * This event may happen if the user uploads or removes an image from the images fragment and returns
      * to the detail fragment before the request completes
@@ -208,10 +183,38 @@ class ProductDetailViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
-            _showSnackbarMessage.value = R.string.product_image_service_error_uploading
+            triggerEvent(ShowSnackbar(R.string.product_image_service_error_uploading))
         } else {
             loadProduct(remoteProductId)
         }
         checkUploads()
     }
+
+    sealed class ProductDetailEvent : Event() {
+        data class ShareProduct(val product: Product) : ProductDetailEvent()
+        data class ShowImages(val product: Product, val image: Product.Image) : ProductDetailEvent()
+        object ShowImageChooser : ProductDetailEvent()
+    }
+
+    @Parcelize
+    data class Parameters(
+        val currencyCode: String?,
+        val weightUnit: String?,
+        val dimensionUnit: String?
+    ) : Parcelable
+
+    @Parcelize
+    data class ViewState(
+        val product: Product? = null,
+        val weightWithUnits: String? = null,
+        val sizeWithUnits: String? = null,
+        val priceWithCurrency: String? = null,
+        val salePriceWithCurrency: String? = null,
+        val regularPriceWithCurrency: String? = null,
+        val isSkeletonShown: Boolean? = null,
+        val uploadingImageUris: List<Uri>? = null
+    ) : Parcelable
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }

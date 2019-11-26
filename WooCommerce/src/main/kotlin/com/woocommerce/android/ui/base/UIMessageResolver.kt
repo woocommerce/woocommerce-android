@@ -105,7 +105,7 @@ interface UIMessageResolver {
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
-                snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), Snackbar.LENGTH_LONG)
+            snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), Snackbar.LENGTH_LONG)
 
     /**
      * Display a snackbar with the provided message.

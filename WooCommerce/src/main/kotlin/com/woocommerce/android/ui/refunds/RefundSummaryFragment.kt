@@ -1,31 +1,34 @@
 package com.woocommerce.android.ui.refunds
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
 class RefundSummaryFragment : DaggerFragment(), BackPressListener {
-    companion object {
-        const val REFUND_SUCCESS_KEY = "refund-success-key"
-    }
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -44,73 +47,69 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     }
 
     private fun initializeViewModel() {
-        ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java).also {
-            initializeViews(it)
-            setupObservers(it)
-        }
+        initializeViews()
+        setupObservers()
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.showSnackbarMessageWithUndo.observe(this, Observer { message ->
-            uiMessageResolver.getUndoSnack(message, "", actionListener = View.OnClickListener {
-                viewModel.onUndoTapped()
-            }).also {
-                it.addCallback(object : Snackbar.Callback() {
-                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                        viewModel.onProceedWithRefund()
+    private fun setupObservers() {
+        viewModel.event.observe(this, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> {
+                    if (event.undoAction == null) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        val snackbar = uiMessageResolver.getUndoSnack(
+                                event.message,
+                                *event.args,
+                                actionListener = View.OnClickListener { event.undoAction.invoke() }
+                        )
+                        snackbar.addCallback(object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                viewModel.onProceedWithRefund()
+                            }
+                        })
+                        snackbar.show()
                     }
-                })
-                it.show()
+                }
+                is Exit -> {
+                    requireActivity().navigateBackWithResult(
+                            REFUND_REQUEST_CODE,
+                            Bundle(),
+                            R.id.nav_host_fragment_main,
+                            R.id.orderDetailFragment
+                    )
+                }
+                else -> event.isHandled = false
             }
         })
 
-        viewModel.showSnackbarMessage.observe(this, Observer { message ->
-            uiMessageResolver.showSnack(message)
-        })
-
-        viewModel.isSummaryFormEnabled.observe(this, Observer {
-            refundSummary_btnRefund.isEnabled = it
-            refundSummary_reason.isEnabled = it
-        })
-
-        viewModel.formattedRefundAmount.observe(this, Observer {
-            refundSummary_refundAmount.text = it
-        })
-
-        viewModel.previousRefunds.observe(this, Observer {
-            refundSummary_previouslyRefunded.text = it
-        })
-
-        viewModel.refundMethod.observe(this, Observer {
-            refundSummary_method.text = it
-        })
-
-        viewModel.isManualRefundDescriptionVisible.observe(this, Observer { visible ->
-            refundSummary_methodDescription.visibility = if (visible) View.VISIBLE else View.GONE
-        })
-
-        viewModel.exitAfterRefund.observe(this, Observer {
-            val bundle = Bundle()
-            bundle.putBoolean(REFUND_SUCCESS_KEY, it)
-
-            requireActivity().navigateBackWithResult(
-                    REFUND_REQUEST_CODE,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.orderDetailFragment
-            )
-        })
+        viewModel.refundSummaryStateLiveData.observe(this) { old, new ->
+            new.isFormEnabled?.takeIfNotEqualTo(old?.isFormEnabled) {
+                refundSummary_btnRefund.isEnabled = new.isFormEnabled
+                refundSummary_reason.isEnabled = new.isFormEnabled
+            }
+            new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) { refundSummary_refundAmount.text = it }
+            new.previouslyRefunded?.takeIfNotEqualTo(old?.previouslyRefunded) {
+                refundSummary_previouslyRefunded.text = it
+            }
+            new.refundMethod?.takeIfNotEqualTo(old?.refundMethod) { refundSummary_method.text = it }
+            new.isMethodDescriptionVisible?.takeIfNotEqualTo(old?.isMethodDescriptionVisible) { visible ->
+                if (visible)
+                    refundSummary_methodDescription.show()
+                else
+                    refundSummary_methodDescription.hide()
+            }
+        }
     }
 
-    private fun initializeViews(viewModel: IssueRefundViewModel) {
+    private fun initializeViews() {
         refundSummary_btnRefund.setOnClickListener {
             viewModel.onRefundConfirmed(refundSummary_reason.text.toString())
         }
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        findNavController().popBackStack(R.id.orderDetailFragment, false)
+        findNavController().popBackStack()
         return false
     }
 }

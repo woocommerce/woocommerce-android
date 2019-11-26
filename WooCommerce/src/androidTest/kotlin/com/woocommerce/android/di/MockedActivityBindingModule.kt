@@ -16,9 +16,9 @@ import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
-import com.woocommerce.android.ui.products.MockedProductDetailModule
-import com.woocommerce.android.ui.reviews.MockedReviewDetailModule
-import com.woocommerce.android.ui.reviews.MockedReviewListModule
+import com.woocommerce.android.ui.products.MockedProductDetailFragmentModule
+import com.woocommerce.android.ui.reviews.MockedReviewDetailFragmentModule
+import com.woocommerce.android.ui.reviews.MockedReviewListFragmentModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import com.woocommerce.android.ui.stats.MockedDashboardModule
@@ -38,14 +38,22 @@ abstract class MockedActivityBindingModule {
             MockedOrderDetailModule::class,
             MockedOrderProductListModule::class,
             MockedOrderFulfillmentModule::class,
-            ThreadModule::class,
-            MockedProductDetailModule::class,
             MockedAddOrderShipmentTrackingModule::class,
             MockedAddOrderTrackingProviderListModule::class,
-            MockedReviewListModule::class,
-            MockedReviewDetailModule::class,
-            MockedViewModelModule::class))
+            MockedProductModule::class,
+            MockedReviewModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
+
+    @Module(includes = [
+        MockedProductDetailFragmentModule::class
+    ])
+    object MockedProductModule
+
+    @Module(includes = [
+        MockedReviewListFragmentModule::class,
+        MockedReviewDetailFragmentModule::class
+    ])
+    object MockedReviewModule
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(LoginFragmentModule::class))

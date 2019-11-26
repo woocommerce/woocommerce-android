@@ -1,61 +1,53 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.os.Parcelable
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import javax.inject.Inject
-import javax.inject.Named
 
 @OpenClassOnDebug
-class ProductListViewModel @Inject constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+class ProductListViewModel @AssistedInject constructor(
+    @Assisted savedState: SavedStateWithArgs,
+    dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
-) : ScopedViewModel(mainDispatcher) {
+) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
 
-    private var canLoadMore = true
-    private var isLoadingProducts = false
-
-    val productList = MutableLiveData<List<Product>>()
-
-    private val _isSkeletonShown = MutableLiveData<Boolean>()
-    val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
-
-    private val _showSnackbarMessage = SingleLiveEvent<Int>()
-    val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
-
-    private val _isLoadingMore = MutableLiveData<Boolean>()
-    val isLoadingMore: LiveData<Boolean> = _isLoadingMore
-
-    private val _isRefreshing = MutableLiveData<Boolean>()
-    val isRefreshing: LiveData<Boolean> = _isRefreshing
+    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateLiveData
 
     private var searchJob: Job? = null
+    private var loadJob: Job? = null
 
     init {
         EventBus.getDefault().register(this)
-    }
-
-    fun start(searchQuery: String? = null) {
-        loadProducts(searchQuery = searchQuery)
+        if (viewStateLiveData.hasInitialValue) {
+            loadProducts()
+        }
     }
 
     override fun onCleared() {
@@ -64,87 +56,125 @@ class ProductListViewModel @Inject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    fun loadProducts(searchQuery: String? = null, loadMore: Boolean = false) {
+    fun onSearchQueryChanged(query: String) {
+        viewState = viewState.copy(query = query, isEmptyViewVisible = false)
+
+        if (query.length > 2) {
+            onSearchRequested()
+        } else {
+            launch {
+                searchJob?.cancelAndJoin()
+                viewState = viewState.copy(productList = emptyList(), isEmptyViewVisible = false)
+            }
+        }
+    }
+
+    fun onRefreshRequested() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
+        refreshProducts()
+    }
+
+    fun onSearchOpened() {
+        viewState = viewState.copy(isSearchActive = true, productList = emptyList())
+    }
+
+    fun onSearchClosed() {
+        launch {
+            searchJob?.cancelAndJoin()
+            viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+            loadProducts()
+        }
+    }
+
+    fun onLoadMoreRequested() {
+        loadProducts(loadMore = true)
+    }
+
+    fun onSearchRequested() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
+                mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
+        )
+        loadProducts()
+    }
+
+    final fun loadProducts(loadMore: Boolean = false) {
         if (loadMore && !productRepository.canLoadMoreProducts) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
             return
         }
 
-        if (searchQuery.isNullOrBlank()) {
-            if (isLoadingProducts) {
-                WooLog.d(WooLog.T.PRODUCTS, "already loading products")
-                return
-            }
-
-            launch {
-                isLoadingProducts = true
-                _isLoadingMore.value = loadMore
-
-                if (!loadMore) {
-                    // if this is the initial load, first get the products from the db and if there are any show
-                    // them immediately, otherwise make sure the skeleton shows
-                    val productsInDb = productRepository.getProductList()
-                    if (productsInDb.isEmpty()) {
-                        _isSkeletonShown.value = true
-                    } else {
-                        productList.value = productsInDb
-                    }
-                }
-
-                fetchProductList(loadMore = loadMore)
-            }
-        } else {
+        if (viewState.isSearchActive == true) {
             // cancel any existing search, then start a new one after a brief delay so we don't actually perform
             // the fetch until the user stops typing
             searchJob?.cancel()
             searchJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
-                isLoadingProducts = true
-                _isLoadingMore.value = loadMore
-                _isSkeletonShown.value = !loadMore
-                fetchProductList(searchQuery, loadMore)
+                viewState = viewState.copy(
+                        isLoadingMore = loadMore,
+                        isSkeletonShown = !loadMore
+                )
+                fetchProductList(viewState.query, loadMore)
+            }
+        } else {
+            if (searchJob?.isActive == true || loadJob?.isActive == true) {
+                WooLog.d(WooLog.T.PRODUCTS, "already loading products")
+                return
+            }
+
+            loadJob = launch {
+                viewState = viewState.copy(isLoadingMore = loadMore)
+
+                if (!loadMore) {
+                    // if this is the initial load, first get the products from the db and if there are any show
+                    // them immediately, otherwise make sure the skeleton shows
+                    val productsInDb = productRepository.getProductList()
+                    viewState = if (productsInDb.isEmpty()) {
+                        viewState.copy(isSkeletonShown = true)
+                    } else {
+                        viewState.copy(productList = productsInDb)
+                    }
+                }
+
+                fetchProductList(loadMore = loadMore)
             }
         }
     }
 
-    fun refreshProducts(searchQuery: String? = null) {
-        _isRefreshing.value = true
-        loadProducts(searchQuery = searchQuery)
+    fun refreshProducts() {
+        viewState = viewState.copy(isRefreshing = true)
+        loadProducts()
     }
 
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
-                productList.value = productRepository.fetchProductList(loadMore)
+                viewState = viewState.copy(productList = productRepository.fetchProductList(loadMore))
             } else {
                 val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
                 // make sure the search query hasn't changed while the fetch was processing
                 if (searchQuery == productRepository.lastSearchQuery) {
-                    if (loadMore) {
-                        addProducts(fetchedProducts)
+                    viewState = if (loadMore) {
+                        viewState.copy(productList = viewState.productList.orEmpty() + fetchedProducts)
                     } else {
-                        productList.value = fetchedProducts
+                        viewState.copy(productList = fetchedProducts)
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                 }
             }
-            canLoadMore = productRepository.canLoadMoreProducts
+            viewState = viewState.copy(
+                    canLoadMore = productRepository.canLoadMoreProducts,
+                    isEmptyViewVisible = viewState.productList?.isEmpty() == true
+            )
         } else {
-            _showSnackbarMessage.value = R.string.offline_error
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
 
-        _isSkeletonShown.value = false
-        _isLoadingMore.value = false
-        _isRefreshing.value = false
-        isLoadingProducts = false
-    }
-
-    /**
-     * Adds the passed list of products to the current list
-     */
-    private fun addProducts(products: List<Product>) {
-        productList.value = productList.value.orEmpty() + products
+        viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingMore = false,
+                isRefreshing = false
+        )
     }
 
     @Suppress("unused")
@@ -152,4 +182,19 @@ class ProductListViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         loadProducts()
     }
+
+    @Parcelize
+    data class ViewState(
+        val productList: List<Product>? = null,
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingMore: Boolean? = null,
+        val canLoadMore: Boolean? = null,
+        val isRefreshing: Boolean? = null,
+        val query: String? = null,
+        val isSearchActive: Boolean? = null,
+        val isEmptyViewVisible: Boolean? = null
+    ) : Parcelable
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ProductListViewModel>
 }

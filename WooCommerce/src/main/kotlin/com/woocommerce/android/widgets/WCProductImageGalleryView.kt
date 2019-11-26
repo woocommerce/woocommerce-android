@@ -19,9 +19,10 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
+import kotlinx.android.synthetic.main.product_list_item.view.productImage
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
+import java.util.Date
 
 /**
  * Custom recycler which displays all images for a product
@@ -38,7 +39,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(imageModel: WCProductImageModel, imageView: View)
+        fun onGalleryImageClicked(image: Product.Image, imageView: View)
     }
 
     private var imageHeight = 0
@@ -109,14 +110,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
      * Show upload placeholders for the passed local image Uris
      */
     fun setPlaceholderImageUris(imageUriList: List<Uri>) {
-        val placeholders = ArrayList<WCProductImageModel>()
+        val placeholders = ArrayList<Product.Image>()
         for (index in imageUriList.indices) {
             // use a negative id so we can check it in isPlaceholder() below
             val id = (-index - 1).toLong()
-            placeholders.add(0, WCProductImageModel(id).also {
-                // set the image src to this uri so we can preview it while uploading
-                it.src = imageUriList[index].toString()
-            })
+            // set the image src to this uri so we can preview it while uploading
+            placeholders.add(0, Product.Image(id, "", imageUriList[index].toString(), Date()))
         }
         adapter.setPlaceholderImages(placeholders)
     }
@@ -129,9 +128,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
-        private val imageList = ArrayList<WCProductImageModel>()
+        private val imageList = mutableListOf<Product.Image>()
 
-        fun showImages(images: List<WCProductImageModel>) {
+        fun showImages(images: List<Product.Image>) {
             if (isSameImageList(images)) {
                 return
             }
@@ -150,34 +149,22 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         /**
          * Returns the list of images without placeholders
          */
-        private fun getActualImages(): List<WCProductImageModel> {
-            val images = ArrayList<WCProductImageModel>()
-            for (index in imageList.indices) {
-                if (!isPlaceholder(index)) {
-                    images.add(imageList[index])
-                }
-            }
-            return images
+        private fun getActualImages(): List<Product.Image> {
+            return imageList.filterIndexed { index, _ -> !isPlaceholder(index) }
         }
 
         /**
          * Returns the list of placeholder images
          */
-        private fun getPlaceholderImages(): List<WCProductImageModel> {
-            val images = ArrayList<WCProductImageModel>()
-            for (index in imageList.indices) {
-                if (isPlaceholder(index)) {
-                    images.add(imageList[index])
-                }
-            }
-            return images
+        private fun getPlaceholderImages(): List<Product.Image> {
+            return imageList.filterIndexed { index, _ -> isPlaceholder(index) }
         }
 
         /**
          * Returns true if the passed list of images is the same as the adapter's list, taking
          * placeholders into account
          */
-        private fun isSameImageList(images: List<WCProductImageModel>): Boolean {
+        private fun isSameImageList(images: List<Product.Image>): Boolean {
             val actualImages = getActualImages()
             if (images.size != actualImages.size) {
                 return false
@@ -191,7 +178,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return true
         }
 
-        fun setPlaceholderImages(placeholders: List<WCProductImageModel>) {
+        fun setPlaceholderImages(placeholders: List<Product.Image>) {
             // remove existing placeholders
             var didChange = clearPlaceholders()
 
@@ -250,7 +237,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val src = getImage(position).src
+            val src = getImage(position).source
             if (getItemViewType(position) == VIEW_TYPE_PLACEHOLDER) {
                 request.load(Uri.parse(src)).into(holder.imageView)
             } else {

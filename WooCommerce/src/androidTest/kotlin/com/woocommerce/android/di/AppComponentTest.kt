@@ -16,6 +16,8 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [
         AndroidInjectionModule::class,
+        ThreadModule::class,
+        MockedViewModelAssistedFactoriesModule::class,
         ApplicationModule::class,
         AppConfigModule::class,
         ReleaseBaseModule::class,
