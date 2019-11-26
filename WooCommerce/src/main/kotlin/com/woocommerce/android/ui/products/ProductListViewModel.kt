@@ -50,6 +50,9 @@ class ProductListViewModel @AssistedInject constructor(
 
     init {
         EventBus.getDefault().register(this)
+        if (viewStateLiveData.hasInitialValue) {
+            loadProducts()
+        }
     }
 
     override fun onCleared() {
