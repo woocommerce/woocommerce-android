@@ -20,7 +20,6 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.FragmentScrollListener
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
@@ -69,7 +68,6 @@ import javax.inject.Inject
 class MainActivity : AppUpgradeActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
-        FragmentScrollListener,
         MainNavigationRouter,
         MainBottomNavigationView.MainNavigationListener,
         NavController.OnDestinationChangedListener,
@@ -751,18 +749,6 @@ class MainActivity : AppUpgradeActivity(),
 
     private fun checkConnection() {
         updateOfflineStatusBar(NetworkUtils.isNetworkAvailable(this))
-    }
-
-    override fun onFragmentScrollUp() {
-        hideBottomNav()
-    }
-
-    override fun onFragmentScrollDown() {
-        hideBottomNav()
-    }
-
-    override fun onFragmentScrollIdle() {
-        showBottomNav()
     }
 
     override fun hideBottomNav() {

@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.CurrencyFormatter
@@ -47,15 +46,6 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy > 0) {
-                        listener.onFragmentScrollDown()
-                    } else if (dy < 0) {
-                        listener.onFragmentScrollUp()
-                    }
-                }
-            })
         }
     }
 
