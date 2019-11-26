@@ -232,10 +232,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     private fun setupObservers(viewModel: ProductListViewModel) {
-        viewModel.viewStateLiveData.observe(this) { old, new ->
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
-            new.productList?.takeIfNotEqualTo(old?.productList) { showProductList(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
@@ -256,7 +255,11 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.productList.observe(viewLifecycleOwner, Observer {
+            showProductList(it)
+        })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
