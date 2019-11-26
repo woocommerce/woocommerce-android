@@ -6,8 +6,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.helpers.mockPagedList
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.wordpress.android.fluxc.Dispatcher
@@ -42,8 +44,8 @@ class MockedOrderListViewModel @AssistedInject constructor(
     /**
      * Set the data that will be emitted during tests before the UI calls [loadList]
      */
-    var testOrderData: PagedOrdersList? = null
-    var testOrderStatusData: Map<String, WCOrderStatusModel>? = null
+    var testOrderData: PagedOrdersList? = mockPagedList(WcOrderTestUtils.generateOrderListUIItems())
+    var testOrderStatusData: Map<String, WCOrderStatusModel>? = WcOrderTestUtils.generateOrderStatusOptions()
 
     override fun loadList(
         statusFilter: String?,

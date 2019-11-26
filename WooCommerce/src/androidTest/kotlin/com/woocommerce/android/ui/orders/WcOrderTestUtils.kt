@@ -50,8 +50,6 @@ object WcOrderTestUtils {
 
         val h1 = SectionHeader(GROUP_TODAY)
 
-        val l1 = LoadingItem(RemoteId(7))
-
         val om1 = OrderListItemUI(
                 remoteOrderId = RemoteId(1),
                 orderNumber = "100",
@@ -60,6 +58,8 @@ object WcOrderTestUtils {
                 status = "processing",
                 dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTime()),
                 currencyCode = "USD")
+
+        val l1 = LoadingItem(RemoteId(7))
 
         val om2 = OrderListItemUI(
                 remoteOrderId = RemoteId(2),
@@ -120,8 +120,8 @@ object WcOrderTestUtils {
                 currencyCode = "USD")
 
         result.add(h1)
-        result.add(l1)
         result.add(om1)
+        result.add(l1)
         result.add(om2)
         result.add(h2)
         result.add(om3)
