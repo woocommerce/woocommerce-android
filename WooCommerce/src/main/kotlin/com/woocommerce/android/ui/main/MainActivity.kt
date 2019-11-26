@@ -219,7 +219,7 @@ class MainActivity : AppUpgradeActivity(),
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.also {
-            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, BottomNavigationPosition.DASHBOARD.id)
+            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
 
             val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
@@ -410,9 +410,9 @@ class MainActivity : AppUpgradeActivity(),
                     restart()
                 }
 
-                // update the stats fragment based on the user's preferences
-                if (resultCode == AppSettingsActivity.RESULT_CODE_V4_STATS_OPTIONS_CHANGED) {
-                    replaceStatsFragment()
+                // beta features have changed. Restart activity for changes to take effect
+                if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
+                    restart()
                 }
                 return
             }
@@ -714,7 +714,7 @@ class MainActivity : AppUpgradeActivity(),
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS
 
-        val navPos = BottomNavigationPosition.REVIEWS.position
+        val navPos = REVIEWS.position
         bottom_nav.active(navPos)
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
@@ -726,7 +726,7 @@ class MainActivity : AppUpgradeActivity(),
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
         bottomNavView.currentPosition = ORDERS
 
-        val navPos = BottomNavigationPosition.ORDERS.position
+        val navPos = ORDERS.position
         bottom_nav.active(navPos)
 
         if (markComplete) {

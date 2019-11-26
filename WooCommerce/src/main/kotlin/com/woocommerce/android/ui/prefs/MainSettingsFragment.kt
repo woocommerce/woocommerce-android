@@ -52,6 +52,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         fun onRequestLogout()
         fun onSiteChanged()
         fun onV4StatsOptionChanged(enabled: Boolean)
+        fun onProductsFeatureOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -101,13 +102,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
             setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
-        }
-
-        // display the Beta features section only if the wc-admin is installed/active on a site
-        if (AppPrefs.isUsingV4Api()) {
-            betaFeaturesContainer.visibility = View.VISIBLE
-        } else {
-            betaFeaturesContainer.visibility = View.GONE
         }
 
         switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()

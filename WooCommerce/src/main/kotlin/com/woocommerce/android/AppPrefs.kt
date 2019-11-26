@@ -35,6 +35,7 @@ object AppPrefs {
         SHOULD_DISPLAY_V4_STATS_AVAILABILITY_BANNER,
         SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
         IS_V4_STATS_UI_ENABLED,
+        IS_PRODUCTS_FEATURE_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED
@@ -129,6 +130,14 @@ object AppPrefs {
 
     fun setIsV4StatsUIEnabled(isV4StatsUIEnabled: Boolean) =
             setBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, isV4StatsUIEnabled)
+
+    /**
+     * Flag to check products features are enabled
+     */
+    fun isProductsFeatureEnabled() = getBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, false)
+
+    fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
+            setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
 
     /**
      * Flag to check if the user has already chosen to try out or dismissed the new stats.
