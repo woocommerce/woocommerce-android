@@ -88,7 +88,7 @@ class OrderListViewModel @AssistedInject constructor(
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
-    private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
+    protected val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
 
     private val _isEmpty = MediatorLiveData<Boolean>()

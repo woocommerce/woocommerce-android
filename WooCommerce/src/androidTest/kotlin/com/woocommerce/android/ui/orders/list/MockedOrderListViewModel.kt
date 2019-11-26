@@ -6,13 +6,12 @@ import com.nhaarman.mockitokotlin2.mock
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.helpers.mockPagedList
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 
@@ -43,17 +42,16 @@ class MockedOrderListViewModel @AssistedInject constructor(
     /**
      * Set the data that will be emitted during tests before the UI calls [loadList]
      */
-    var testOrderData: PagedOrdersList? = mockPagedList(WcOrderTestUtils.generateOrderListUIItems())
-
-    override fun start() {
-        // DO NOTHING
-    }
+    var testOrderData: PagedOrdersList? = null
+    var testOrderStatusData: Map<String, WCOrderStatusModel>? = null
 
     override fun loadList(
         statusFilter: String?,
         searchQuery: String?,
         excludeFutureOrders: Boolean
     ) {
+        println("AMANDA-TEST > MockedOrderListViewModel.loadList > ")
+        _orderStatusOptions.value = testOrderStatusData
         _pagedListData.value = testOrderData
     }
 
