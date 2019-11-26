@@ -138,7 +138,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     override fun onGalleryAddImageClicked() {
-        // ignore - we don't show the "Add image" in the gallery view here
+        // ignore - we don't show the "Add image" icon in the gallery view here
     }
 
     private fun createImageSourcePopup() {

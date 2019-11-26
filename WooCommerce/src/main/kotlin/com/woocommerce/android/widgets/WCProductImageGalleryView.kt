@@ -250,17 +250,21 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     layoutInflater.inflate(R.layout.image_gallery_item, parent, false)
             )
 
-            if (viewType == VIEW_TYPE_PLACEHOLDER) {
-                holder.imageView.alpha = 0.5F
-                holder.uploadProgress.visibility = View.VISIBLE
-                holder.addImageContainer.visibility = View.GONE
-            } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
-                holder.uploadProgress.visibility = View.GONE
-                holder.addImageContainer.visibility = View.VISIBLE
-            } else {
-                holder.imageView.alpha = 1.0F
-                holder.uploadProgress.visibility = View.GONE
-                holder.addImageContainer.visibility = View.GONE
+            when (viewType) {
+                VIEW_TYPE_PLACEHOLDER -> {
+                    holder.imageView.alpha = 0.5F
+                    holder.uploadProgress.visibility = View.VISIBLE
+                    holder.addImageContainer.visibility = View.GONE
+                }
+                VIEW_TYPE_ADD_IMAGE -> {
+                    holder.uploadProgress.visibility = View.GONE
+                    holder.addImageContainer.visibility = View.VISIBLE
+                }
+                else -> {
+                    holder.imageView.alpha = 1.0F
+                    holder.uploadProgress.visibility = View.GONE
+                    holder.addImageContainer.visibility = View.GONE
+                }
             }
 
             return holder
