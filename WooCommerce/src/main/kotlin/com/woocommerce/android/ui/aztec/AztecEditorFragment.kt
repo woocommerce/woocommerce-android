@@ -2,10 +2,14 @@ package com.woocommerce.android.ui.aztec
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.GlideImageLoader
@@ -18,6 +22,8 @@ import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
+        const val AZTEC_EDITOR_REQUEST_CODE = 3001
+        const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
     }
 
     private lateinit var aztec: Aztec
@@ -46,6 +52,29 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
 
         aztec.visualEditor.fromHtml(navArgs.aztecText)
         aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.aztecText)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                // TODO: add event for click here
+                val bundle = Bundle()
+                bundle.putString(ARG_AZTEC_EDITOR_TEXT, aztec.visualEditor.text.toString())
+                requireActivity().navigateBackWithResult(
+                        AZTEC_EDITOR_REQUEST_CODE,
+                        bundle,
+                        R.id.nav_host_fragment_main,
+                        R.id.productDetailFragment
+                )
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onDestroy() {
@@ -83,3 +112,4 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
         return false
     }
 }
+
