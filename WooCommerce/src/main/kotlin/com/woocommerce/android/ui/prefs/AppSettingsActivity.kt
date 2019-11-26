@@ -36,8 +36,7 @@ class AppSettingsActivity : AppCompatActivity(),
         private const val KEY_SITE_CHANGED = "key_site_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
         const val RESULT_CODE_BETA_OPTIONS_CHANGED = 2
-        const val KEY_V4_STATS_OPTION_CHANGED = "key_v4_stats_option_changed"
-        const val KEY_PRODUCTS_OPTION_CHANGED = "key_products_option_changed"
+        const val KEY_BETA_OPTION_CHANGED = "key_beta_option_changed"
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
@@ -46,8 +45,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
-    private var v4StatsOptionChanged = false
-    private var isProductsFeatureOptionChanged = false
+    private var isBetaOptionChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -61,15 +59,14 @@ class AppSettingsActivity : AppCompatActivity(),
 
         savedInstanceState?.let {
             siteChanged = it.getBoolean(KEY_SITE_CHANGED)
-            v4StatsOptionChanged = it.getBoolean(KEY_V4_STATS_OPTION_CHANGED)
-            isProductsFeatureOptionChanged = it.getBoolean(KEY_PRODUCTS_OPTION_CHANGED)
-        } ?: AppPrefs.isV4StatsUIEnabled()
+            isBetaOptionChanged = it.getBoolean(KEY_BETA_OPTION_CHANGED)
+        }
 
         if (siteChanged) {
             setResult(RESULT_CODE_SITE_CHANGED)
         }
-        if (v4StatsOptionChanged || isProductsFeatureOptionChanged) {
-            setBetaOptionResult()
+        if (isBetaOptionChanged) {
+            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }
 
@@ -85,8 +82,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
-        outState.putBoolean(KEY_V4_STATS_OPTION_CHANGED, v4StatsOptionChanged)
-        outState.putBoolean(KEY_PRODUCTS_OPTION_CHANGED, isProductsFeatureOptionChanged)
+        outState.putBoolean(KEY_BETA_OPTION_CHANGED, isBetaOptionChanged)
         super.onSaveInstanceState(outState)
     }
 
@@ -128,18 +124,18 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onV4StatsOptionChanged(enabled: Boolean) {
         val isV4StatsEnabled = AppPrefs.isV4StatsUIEnabled()
         if (isV4StatsEnabled != enabled) {
-            v4StatsOptionChanged = true
+            isBetaOptionChanged = true
             AppPrefs.setIsV4StatsUIEnabled(enabled)
-            setBetaOptionResult()
+            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }
 
     override fun onProductsFeatureOptionChanged(enabled: Boolean) {
         val isProductsFeatureEnabled = AppPrefs.isProductsFeatureEnabled()
         if (isProductsFeatureEnabled != enabled) {
-            isProductsFeatureOptionChanged = true
+            isBetaOptionChanged = true
             AppPrefs.setIsProductsFeatureEnabled(enabled)
-            setBetaOptionResult()
+            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }
 
@@ -185,11 +181,5 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun clearNotificationPreferences() {
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
-    }
-
-    private fun setBetaOptionResult() {
-        intent.putExtra(KEY_V4_STATS_OPTION_CHANGED, v4StatsOptionChanged)
-        intent.putExtra(KEY_PRODUCTS_OPTION_CHANGED, isProductsFeatureOptionChanged)
-        setResult(RESULT_CODE_BETA_OPTIONS_CHANGED, intent)
     }
 }

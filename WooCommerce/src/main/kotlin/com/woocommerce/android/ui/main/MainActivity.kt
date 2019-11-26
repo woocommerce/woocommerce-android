@@ -411,16 +411,9 @@ class MainActivity : AppUpgradeActivity(),
                     restart()
                 }
 
+                // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
-                    // update the stats fragment based on the user's preferences
-                    if (data.getBoolean(AppSettingsActivity.KEY_V4_STATS_OPTION_CHANGED)) {
-                        replaceStatsFragment()
-                    }
-
-                    // update the bottom navigation view to display/hide product
-                    if (data.getBoolean(AppSettingsActivity.KEY_PRODUCTS_OPTION_CHANGED)) {
-                        bottomNavView.refreshProductsTab()
-                    }
+                    restart()
                 }
                 return
             }
