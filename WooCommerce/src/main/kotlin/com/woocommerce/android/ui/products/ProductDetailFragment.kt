@@ -135,7 +135,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.menu_update, menu)
+        inflater.inflate(R.menu.menu_product_detail_fragment, menu)
         publishMenuItem = menu.findItem(R.id.menu_update)
     }
 
@@ -144,6 +144,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
+                true
+            }
+
+            R.id.menu_update -> {
+                // TODO: add tracking event for click action
+                viewModel.onUpdateButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -50,6 +50,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onUpdateButtonClicked() {
+        // TODO: update product to backend
+    }
+
     fun updateProductDraft(description: String?) {
         description?.let {
             viewState.product?.description = it
