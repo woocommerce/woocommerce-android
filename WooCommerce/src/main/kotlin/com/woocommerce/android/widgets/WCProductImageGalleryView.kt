@@ -95,7 +95,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
         setRecyclerListener { holder ->
-            glideRequests.clear((holder as ImageViewHolder).imageView)
+            glideRequests.clear((holder as ImageViewHolder).productImageView)
         }
 
         // create a reusable Glide request for all images
@@ -252,7 +252,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             when (viewType) {
                 VIEW_TYPE_PLACEHOLDER -> {
-                    holder.imageView.alpha = 0.5F
+                    holder.productImageView.alpha = 0.5F
                     holder.uploadProgress.visibility = View.VISIBLE
                     holder.addImageContainer.visibility = View.GONE
                 }
@@ -261,7 +261,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     holder.addImageContainer.visibility = View.VISIBLE
                 }
                 else -> {
-                    holder.imageView.alpha = 1.0F
+                    holder.productImageView.alpha = 1.0F
                     holder.uploadProgress.visibility = View.GONE
                     holder.addImageContainer.visibility = View.GONE
                 }
@@ -274,24 +274,25 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val src = getImage(position).source
             val viewType = getItemViewType(position)
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
-                request.load(Uri.parse(src)).into(holder.imageView)
+                request.load(Uri.parse(src)).into(holder.productImageView)
             } else if (viewType == VIEW_TYPE_IMAGE) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageHeight)
-                request.load(photonUrl).into(holder.imageView)
+                request.load(photonUrl).into(holder.productImageView)
             }
         }
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: ImageView = view.productImage
+        val productImageView: ImageView = view.productImage
+        val productImageFrame: ViewGroup = view.productImageFrame
         val uploadProgress: ProgressBar = view.uploadProgess
         val addImageContainer: ViewGroup = view.addImageContainer
         init {
-            imageView.layoutParams.height = imageHeight
+            productImageFrame.layoutParams.height = imageHeight
             addImageContainer.layoutParams.width = addImageCellWidth
             addImageContainer.layoutParams.height = imageHeight
             itemView.setOnClickListener {
-                onImageClicked(adapterPosition, imageView)
+                onImageClicked(adapterPosition, productImageView)
             }
         }
     }
