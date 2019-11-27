@@ -4,25 +4,18 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <FrameLayout
-        android:id="@+id/productImageFrame"
+    <com.woocommerce.android.widgets.BorderedImageView
+        android:id="@+id/productImage"
         android:layout_width="156dp"
         android:layout_height="156dp"
+        android:layout_gravity="center"
         android:layout_marginStart="@dimen/margin_extra_large"
         android:layout_marginTop="@dimen/margin_extra_large"
         android:layout_marginBottom="@dimen/margin_extra_large"
-        android:background="@drawable/picture_frame">
-
-        <ImageView
-            android:layout_margin="1dp"
-            android:id="@+id/productImage"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/product_image_content_description"
-            tools:src="@drawable/ic_product" />
-    </FrameLayout>
+        android:adjustViewBounds="false"
+        android:contentDescription="@string/product_image_content_description"
+        android:padding="2dp"
+        tools:src="@drawable/ic_product" />
 
     <FrameLayout
         android:id="@+id/addImageContainer"

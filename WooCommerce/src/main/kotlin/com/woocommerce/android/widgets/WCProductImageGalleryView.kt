@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
@@ -20,8 +19,6 @@ import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
-import kotlinx.android.synthetic.main.product_list_item.view.productImage
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 import java.util.Date
 
@@ -46,7 +43,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun onGalleryAddImageClicked() { }
     }
 
-    private var imageContainerHeight = 0
     private var imageHeight = 0
     private var isGridView = false
     private var showAddImageIcon = false
@@ -73,8 +69,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 attrArray.recycle()
             }
         }
-
-        addImageCellWidth = DisplayUtils.getDisplayPixelWidth(context) / NUM_COLUMNS
 
         layoutManager = if (isGridView) {
             GridLayoutManager(context, NUM_COLUMNS)
@@ -106,13 +100,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
 
-        imageContainerHeight = if (isGridView) {
+        imageHeight = if (isGridView) {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height_grid)
         } else {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height)
         }
 
-        imageHeight = imageContainerHeight - DisplayUtils.dpToPx(context, 2)
+        addImageCellWidth = imageHeight
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
@@ -255,15 +249,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             when (viewType) {
                 VIEW_TYPE_PLACEHOLDER -> {
+                    holder.productImageView.visibility = View.VISIBLE
                     holder.productImageView.alpha = 0.5F
                     holder.uploadProgress.visibility = View.VISIBLE
                     holder.addImageContainer.visibility = View.GONE
                 }
                 VIEW_TYPE_ADD_IMAGE -> {
+                    holder.productImageView.visibility = View.GONE
                     holder.uploadProgress.visibility = View.GONE
                     holder.addImageContainer.visibility = View.VISIBLE
                 }
                 else -> {
+                    holder.productImageView.visibility = View.VISIBLE
                     holder.productImageView.alpha = 1.0F
                     holder.uploadProgress.visibility = View.GONE
                     holder.addImageContainer.visibility = View.GONE
@@ -286,14 +283,15 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val productImageView: ImageView = view.productImage
-        val productImageFrame: ViewGroup = view.productImageFrame
+        val productImageView: BorderedImageView = view.productImage
         val uploadProgress: ProgressBar = view.uploadProgess
         val addImageContainer: ViewGroup = view.addImageContainer
+
         init {
-            productImageFrame.layoutParams.height = imageContainerHeight
+            productImageView.layoutParams.height = imageHeight
             addImageContainer.layoutParams.width = addImageCellWidth
-            addImageContainer.layoutParams.height = imageContainerHeight
+            addImageContainer.layoutParams.height = imageHeight
+
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, productImageView)
             }
