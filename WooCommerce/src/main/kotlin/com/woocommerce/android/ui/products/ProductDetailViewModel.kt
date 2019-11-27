@@ -72,7 +72,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         launch {
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
-                updateProduct(productInDb)
+                updateProductState(productInDb)
                 if (shouldFetch) {
                     fetchProduct(remoteProductId)
                 }
@@ -97,7 +97,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
-                updateProduct(fetchedProduct)
+                updateProductState(fetchedProduct)
             } else {
                 triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
                 triggerEvent(Exit)
@@ -108,7 +108,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateProduct(product: Product) {
+    private fun updateProductState(product: Product) {
         val weight = if (product.weight > 0) "${format(product.weight)}${parameters?.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
