@@ -175,7 +175,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.viewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start(productRemoteId)
-        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(productData?.isProductUpdated).isNull()
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)

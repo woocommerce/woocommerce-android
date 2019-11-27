@@ -45,6 +45,7 @@ import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
@@ -72,6 +73,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private val skeletonView = SkeletonView()
 
     private var publishMenuItem: MenuItem? = null
+
+    private var progressDialog: CustomProgressDialog? = null
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
@@ -110,7 +113,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.viewStateData.observe(this) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            showUpdateProductAction(new.isProductUpdated)
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.product?.let { showProduct(new) }
         }
 
@@ -166,7 +170,25 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     }
 
     private fun showUpdateProductAction(show: Boolean) {
-        publishMenuItem?.isVisible = show
+        view?.post { publishMenuItem?.isVisible = show }
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                    getString(R.string.product_update_dialog_title),
+                    getString(R.string.product_update_dialog_message)
+            ).also { it.show(requireFragmentManager(), CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     override fun getFragmentTitle() = productTitle

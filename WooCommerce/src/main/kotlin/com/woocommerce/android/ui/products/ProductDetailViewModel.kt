@@ -51,7 +51,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onUpdateButtonClicked() {
-        // TODO: update product to backend
+        viewState.product?.let {
+            viewState = viewState.copy(isProgressDialogShown = true)
+        }
     }
 
     fun updateProductDraft(description: String?) {
@@ -179,7 +181,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isSkeletonShown: Boolean? = null,
-        val isProductUpdated: Boolean = false,
+        val isProgressDialogShown: Boolean? = null,
+        val isProductUpdated: Boolean? = null,
         var storedProduct: Product? = null
     ) : Parcelable
 

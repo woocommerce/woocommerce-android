@@ -426,6 +426,8 @@
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
     <string name="aztec_confirm_discard">Do you want to sace your changes?</string>
+    <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_update_dialog_message">Please wait…</string>
     <!--
         Empty list messages
     -->
