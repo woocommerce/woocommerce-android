@@ -71,6 +71,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
+    private var publishMenuItem: MenuItem? = null
+
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -108,6 +110,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.viewStateData.observe(this) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            showUpdateProductAction(new.isProductUpdated)
             new.product?.let { showProduct(new) }
         }
 
@@ -132,7 +135,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.menu_share, menu)
+        inflater.inflate(R.menu.menu_update, menu)
+        publishMenuItem = menu.findItem(R.id.menu_update)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -153,6 +157,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun showUpdateProductAction(show: Boolean) {
+        publishMenuItem?.isVisible = show
     }
 
     override fun getFragmentTitle() = productTitle
@@ -279,8 +287,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice != null) {
-                val group = mapOf(
-                        getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency),
+                val group = mapOf(getString(R.string.product_regular_price)
+                        to requireNotNull(productData.regularPriceWithCurrency),
                         getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)

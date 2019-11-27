@@ -51,7 +51,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun updateProductDraft(description: String?) {
-        description?.let { viewState.product?.description = it }
+        description?.let {
+            viewState.product?.description = it
+            viewState = viewState.copy(isProductUpdated = true)
+        }
     }
 
     override fun onCleared() {
@@ -172,6 +175,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isSkeletonShown: Boolean? = null,
+        val isProductUpdated: Boolean = false,
         var storedProduct: Product? = null
     ) : Parcelable
 

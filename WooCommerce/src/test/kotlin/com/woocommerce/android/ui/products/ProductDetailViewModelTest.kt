@@ -53,7 +53,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         "CZK10.00",
         "CZK30.00",
         false,
-        product
+        storedProduct = product
     )
 
     @Before
@@ -165,5 +165,22 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start(productRemoteId)
         assertThat(productData?.product?.description).isEqualTo(updatedDescription)
+    }
+
+    @Test
+    fun `Displays update menu action if product is edited`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start(productRemoteId)
+        assertThat(productData?.isProductUpdated).isFalse()
+
+        val updatedDescription = "Updated product description"
+        viewModel.updateProductDraft(updatedDescription)
+
+        viewModel.start(productRemoteId)
+        assertThat(productData?.isProductUpdated).isTrue()
     }
 }
