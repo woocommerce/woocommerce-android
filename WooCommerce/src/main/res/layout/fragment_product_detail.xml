@@ -58,9 +58,9 @@
                         android:drawablePadding="@dimen/margin_medium"
                         android:gravity="center"
                         android:text="@string/product_image_add"
-                        android:textColor="@color/grey_darken_10"
+                        android:textColor="@color/wc_grey_mid"
                         android:textSize="@dimen/text_medium"
-                        tools:drawableTint="@color/grey_darken_10" />
+                        tools:drawableTint="@color/wc_grey_mid" />
                 </FrameLayout>
 
                 <FrameLayout
