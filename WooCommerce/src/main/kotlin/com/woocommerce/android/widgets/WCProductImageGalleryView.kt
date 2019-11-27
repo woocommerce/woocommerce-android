@@ -47,7 +47,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private var isGridView = false
     private var showAddImageIcon = false
 
-    private val addImageCellWidth: Int
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
     private val request: GlideRequest<Drawable>
@@ -105,8 +104,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         } else {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height)
         }
-
-        addImageCellWidth = imageHeight
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
@@ -288,11 +285,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         val addImageContainer: ViewGroup = view.addImageContainer
 
         init {
-            productImageView.adjustViewBounds = isGridView
             productImageView.layoutParams.height = imageHeight
-
             addImageContainer.layoutParams.height = imageHeight
-            addImageContainer.layoutParams.width = addImageCellWidth
+            addImageContainer.layoutParams.width = imageHeight
+
+            // add space between items in grid view
+            if (isGridView) {
+                val margin = context.resources.getDimensionPixelSize(R.dimen.margin_medium)
+                with(productImageView.layoutParams as MarginLayoutParams) {
+                    this.topMargin = margin
+                    this.bottomMargin = margin
+                }
+            }
 
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, productImageView)

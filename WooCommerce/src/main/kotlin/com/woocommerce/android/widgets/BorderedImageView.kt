@@ -13,10 +13,10 @@ import com.woocommerce.android.R
  */
 class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : AppCompatImageView(ctx, attrs) {
     private val borderPaint: Paint
-    private val padding = context.resources.getDimensionPixelSize(R.dimen.image_border_size).toFloat()
+    private val borderSize = context.resources.getDimensionPixelSize(R.dimen.image_border_size).toFloat()
 
     init {
-        val strokeWidth = padding
+        val strokeWidth = borderSize
         val color = ContextCompat.getColor(context, R.color.list_divider)
 
         borderPaint = Paint().also {
@@ -29,6 +29,6 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawRect(padding, padding, width - padding, height - padding, borderPaint)
+        canvas.drawRect(borderSize, borderSize, width - borderSize, height - borderSize, borderPaint)
     }
 }
