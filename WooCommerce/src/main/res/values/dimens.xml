@@ -174,4 +174,9 @@
     <dimen name="card_level_button_width">32dp</dimen>
     <dimen name="card_level_button_height">32dp</dimen>
     <dimen name="card_level_button_padding">6dp</dimen>
+
+    <!--
+        Misc
+    -->
+    <dimen name="image_border_size">1dp</dimen>
 </resources>

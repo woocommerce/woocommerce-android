@@ -9,20 +9,24 @@
         android:layout_width="156dp"
         android:layout_height="156dp"
         android:layout_gravity="center"
-        android:layout_marginStart="@dimen/margin_extra_large"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:layout_marginBottom="@dimen/margin_extra_large"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_medium"
         android:adjustViewBounds="false"
         android:contentDescription="@string/product_image_content_description"
-        android:padding="2dp"
+        android:padding="@dimen/image_border_size"
         tools:src="@drawable/ic_product" />
 
     <FrameLayout
         android:id="@+id/addImageContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="16dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_extra_large"
+        android:layout_marginEnd="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/margin_extra_large"
         android:background="@drawable/ripple_grey_framed"
+        android:padding="@dimen/image_border_size"
         android:visibility="gone"
         tools:visibility="visible">
 
