@@ -137,10 +137,6 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    override fun onGalleryAddImageClicked() {
-        // ignore - we don't show the "Add image" icon in the gallery view here
-    }
-
     private fun createImageSourcePopup() {
         val inflater = requireActivity().layoutInflater
         val contentView = inflater.inflate(R.layout.image_source_popup, imageGallery, false)

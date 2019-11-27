@@ -43,7 +43,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     interface OnGalleryImageClickListener {
         fun onGalleryImageClicked(image: Product.Image, imageView: View)
-        fun onGalleryAddImageClicked()
+        fun onGalleryAddImageClicked() { }
     }
 
     private var imageHeight = 0
