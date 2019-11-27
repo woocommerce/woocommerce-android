@@ -13,7 +13,7 @@ import com.woocommerce.android.R
  * Used to display a custom progress dialog. The progress dialog is deprecated in Android so adding a custom
  * class temporarily when updating a product.
  */
-class CustomProgressDialog: DialogFragment() {
+class CustomProgressDialog : DialogFragment() {
     companion object {
         const val TAG: String = "CustomProgressDialog"
 
