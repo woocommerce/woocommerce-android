@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.reviews
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
@@ -137,11 +136,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 viewModel.forceRefreshReviews()
             }
         }
-
-        listState?.let {
-            reviewsList.layoutManager?.onRestoreInstanceState(listState)
-            listState = null
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -212,11 +206,8 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         super.onDestroyView()
     }
 
-    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-    @SuppressLint("InflateParams")
     private fun setupObservers() {
-        viewModel.viewStateData.observe(this) { old, new ->
-            new.reviewList?.let { showReviewList(it) }
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { showMarkAllReadMenuItem(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
@@ -226,15 +217,19 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
             }
         })
 
-        viewModel.moderateProductReview.observe(this, Observer {
+        viewModel.moderateProductReview.observe(viewLifecycleOwner, Observer {
             it?.let { request -> handleReviewModerationRequest(request) }
+        })
+
+        viewModel.reviewList.observe(viewLifecycleOwner, Observer {
+            showReviewList(it)
         })
     }
 
@@ -258,6 +253,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private fun showReviewList(reviews: List<ProductReview>) {
         if (isActive) {
             reviewsAdapter.setReviews(reviews)
+            listState?.let {
+                reviewsList.layoutManager?.onRestoreInstanceState(listState)
+                listState = null
+            }
             showEmptyView(reviews.isEmpty())
         } else {
             newDataAvailable = true
