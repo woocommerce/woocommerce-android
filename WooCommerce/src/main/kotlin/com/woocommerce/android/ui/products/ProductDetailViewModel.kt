@@ -50,6 +50,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun updateProductDraft(description: String?) {
+        description?.let { viewState.product?.description = it }
+    }
+
     override fun onCleared() {
         super.onCleared()
 
@@ -117,13 +121,20 @@ class ProductDetailViewModel @AssistedInject constructor(
         }.trim()
 
         viewState = viewState.copy(
-                product = product,
+                product = combineData(storedProduct = product),
                 weightWithUnits = weight,
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(product.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(product.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters?.currencyCode)
+                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters?.currencyCode),
+                storedProduct = product
         )
+    }
+
+    private fun combineData(storedProduct: Product): Product {
+        return viewState.product?.let {
+            storedProduct.copy(description = it.description)
+        } ?: storedProduct
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -160,7 +171,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val priceWithCurrency: String? = null,
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean? = null,
+        var storedProduct: Product? = null
     ) : Parcelable
 
     @AssistedInject.Factory

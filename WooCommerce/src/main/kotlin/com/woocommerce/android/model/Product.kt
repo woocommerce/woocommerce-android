@@ -15,7 +15,7 @@ import java.util.Date
 data class Product(
     val remoteId: Long,
     val name: String,
-    val description: String,
+    var description: String,
     val type: ProductType,
     val status: ProductStatus?,
     val stockStatus: ProductStockStatus,
