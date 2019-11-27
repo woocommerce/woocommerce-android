@@ -5,19 +5,17 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.transition.Fade
-import android.view.Gravity
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
-import android.widget.PopupWindow
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.R.style
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
@@ -48,7 +46,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductImagesViewModel by viewModels { viewModelFactory }
-    private lateinit var imageSourcePopup: PopupWindow
+    private var imageSourceDialog: AlertDialog? = null
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private var capturedPhotoUri: Uri? = null
@@ -73,7 +71,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onPause() {
         super.onPause()
-        dismissImageSourcePopup()
+        imageSourceDialog?.dismiss()
     }
 
     override fun onResume() {
@@ -84,9 +82,8 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
-        createImageSourcePopup()
         addImageButton.setOnClickListener {
-            showImageSourcePopup()
+            showImageSourceDialog()
         }
     }
 
@@ -137,36 +134,21 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         }
     }
 
-    private fun createImageSourcePopup() {
+    private fun showImageSourceDialog() {
         val inflater = requireActivity().layoutInflater
-        val contentView = inflater.inflate(R.layout.image_source_popup, imageGallery, false)
+        val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
                 .also {
-            it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
-                viewModel.onChooseImageClicked()
-            }
-            it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
-                viewModel.onCaptureImageClicked()
-            }
-        }
+                    it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
+                        viewModel.onChooseImageClicked()
+                    }
+                    it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
+                        viewModel.onCaptureImageClicked()
+                    }
+                }
 
-        imageSourcePopup = PopupWindow(contentView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).also {
-            it.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-            it.setBackgroundDrawable(null)
-            it.isFocusable = true
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                it.enterTransition = Fade()
-                it.exitTransition = Fade()
-            }
-        }
-    }
-
-    private fun showImageSourcePopup() {
-        imageSourcePopup.showAtLocation(addImageButton, Gravity.CENTER, 0, 0)
-    }
-
-    private fun dismissImageSourcePopup() {
-        imageSourcePopup.dismiss()
+        imageSourceDialog = AlertDialog.Builder(ContextThemeWrapper(activity, style.Woo_Dialog))
+                .setView(contentView)
+                .show()
     }
 
     private fun chooseProductImage() {

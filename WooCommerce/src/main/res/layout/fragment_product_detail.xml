@@ -45,7 +45,7 @@
                     android:id="@+id/addImageContainer"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/product_image_gallery_image_height"
-                    android:background="@drawable/ripple_grey"
+                    android:background="@drawable/ripple_grey_framed"
                     android:visibility="gone"
                     tools:visibility="visible">
 
@@ -59,8 +59,7 @@
                         android:gravity="center"
                         android:text="@string/product_image_add"
                         android:textColor="@color/wc_grey_mid"
-                        android:textSize="@dimen/text_medium"
-                        tools:drawableTint="@color/wc_grey_mid" />
+                        android:textSize="@dimen/text_medium" />
                 </FrameLayout>
 
                 <FrameLayout
