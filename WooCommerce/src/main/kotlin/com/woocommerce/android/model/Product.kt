@@ -67,6 +67,13 @@ data class Product(
     ) : Parcelable
 }
 
+fun Product.toDataModel(): WCProductModel {
+    return WCProductModel().also {
+        it.remoteProductId = remoteId
+        it.description = description
+    }
+}
+
 fun WCProductModel.toAppModel(): Product {
     return Product(
         this.remoteProductId,

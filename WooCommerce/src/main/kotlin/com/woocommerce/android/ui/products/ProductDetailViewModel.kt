@@ -53,6 +53,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onUpdateButtonClicked() {
         viewState.product?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
+            launch { updateProduct(it) }
         }
     }
 
@@ -111,6 +112,22 @@ class ProductDetailViewModel @AssistedInject constructor(
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
             viewState = viewState.copy(isSkeletonShown = false)
+        }
+    }
+
+    private suspend fun updateProduct(product: Product) {
+        if (networkStatus.isConnected()) {
+            if (productRepository.updateProduct(product)) {
+                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_success))
+                viewState = viewState.copy(isProgressDialogShown = false, isProductUpdated = false, product = null)
+                loadProduct(remoteProductId)
+            } else {
+                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+                viewState = viewState.copy(isProgressDialogShown = false)
+            }
+        } else {
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            viewState = viewState.copy(isProgressDialogShown = false)
         }
     }
 
