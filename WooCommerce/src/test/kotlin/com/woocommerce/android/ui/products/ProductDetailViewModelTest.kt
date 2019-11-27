@@ -52,7 +52,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         "CZK20.00",
         "CZK10.00",
         "CZK30.00",
-        false
+        false,
+        product
     )
 
     @Before
@@ -145,5 +146,24 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start(productRemoteId)
 
         assertThat(isSkeletonShown).containsExactly(true, false)
+    }
+
+    @Test
+    fun `Displays the updated product detail view correctly`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> productData = new }
+
+        assertThat(productData).isEqualTo(ViewState())
+
+        viewModel.start(productRemoteId)
+        assertThat(productData).isEqualTo(productWithParameters)
+
+        val updatedDescription = "Updated product description"
+        viewModel.updateProductDraft(updatedDescription)
+
+        viewModel.start(productRemoteId)
+        assertThat(productData?.product?.description).isEqualTo(updatedDescription)
     }
 }
