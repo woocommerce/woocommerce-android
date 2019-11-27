@@ -46,6 +46,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun onGalleryAddImageClicked() { }
     }
 
+    private var imageContainerHeight = 0
     private var imageHeight = 0
     private var isGridView = false
     private var showAddImageIcon = false
@@ -105,11 +106,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
 
-        imageHeight = if (isGridView) {
+        imageContainerHeight = if (isGridView) {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height_grid)
         } else {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height)
         }
+
+        imageHeight = imageContainerHeight - DisplayUtils.dpToPx(context, 2)
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
@@ -288,9 +291,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         val uploadProgress: ProgressBar = view.uploadProgess
         val addImageContainer: ViewGroup = view.addImageContainer
         init {
-            productImageFrame.layoutParams.height = imageHeight
+            productImageFrame.layoutParams.height = imageContainerHeight
             addImageContainer.layoutParams.width = addImageCellWidth
-            addImageContainer.layoutParams.height = imageHeight
+            addImageContainer.layoutParams.height = imageContainerHeight
             itemView.setOnClickListener {
                 onImageClicked(adapterPosition, productImageView)
             }
