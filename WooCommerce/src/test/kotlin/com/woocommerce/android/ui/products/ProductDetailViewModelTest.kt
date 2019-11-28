@@ -183,4 +183,89 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start(productRemoteId)
         assertThat(productData?.isProductUpdated).isTrue()
     }
+
+    @Test
+    fun `Displays progress dialog when product is edited`() = test {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(false).whenever(productRepository).updateProduct(any())
+
+        val isProgressDialogShown = ArrayList<Boolean>()
+        viewModel.viewStateData.observeForever { old, new ->
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                isProgressDialogShown.add(it)
+            } }
+
+        viewModel.start(productRemoteId)
+        viewModel.onUpdateButtonClicked()
+
+        assertThat(isProgressDialogShown).containsExactly(true, false)
+    }
+
+    @Test
+    fun `Do not update product when not connected`() = test {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        var productData: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start(productRemoteId)
+        viewModel.onUpdateButtonClicked()
+
+        verify(productRepository, times(0)).updateProduct(any())
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(productData?.isProgressDialogShown).isFalse()
+    }
+
+    @Test
+    fun `Display error message on update product error`() = test {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(false).whenever(productRepository).updateProduct(any())
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        var productData: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start(productRemoteId)
+        viewModel.onUpdateButtonClicked()
+
+        verify(productRepository, times(1)).updateProduct(any())
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
+        assertThat(productData?.isProgressDialogShown).isFalse()
+    }
+
+    @Test
+    fun `Display success message on update product success`() = test {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(true).whenever(productRepository).updateProduct(any())
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        var productData: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start(productRemoteId)
+        viewModel.onUpdateButtonClicked()
+
+        verify(productRepository, times(1)).updateProduct(any())
+        verify(productRepository, times(2)).getProduct(productRemoteId)
+        verify(productRepository, times(1)).fetchProduct(any())
+
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_success))
+        assertThat(productData?.isProgressDialogShown).isFalse()
+        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(productData?.product).isEqualTo(product)
+    }
 }
