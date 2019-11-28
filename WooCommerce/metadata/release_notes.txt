@@ -1,4 +1,1 @@
-* The app now supports refunds by amount. It’s available on the order detail screen, and lets you manually issue a partial or full refund for a paid order.
-* Products with multiple images now show all images in a gallery.
-* Bug fix: Rarely, the saving while on the “Add Order Note” screen would lead to a crash. Now, “rarely” is “never.”
-* The order detail view now includes the order’s shipping method.
+- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.

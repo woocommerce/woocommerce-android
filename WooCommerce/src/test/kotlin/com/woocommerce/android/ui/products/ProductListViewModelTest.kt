@@ -51,17 +51,15 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product list view correctly`() {
-        doReturn(productList).whenever(productRepository).getProductList()
+    fun `Displays the product list view correctly`() = test {
+        doReturn(productList).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
         val products = ArrayList<Product>()
-        viewModel.viewStateLiveData.observeForever { old, new ->
-            if (old?.productList != new.productList)
-                new.productList?.let { products.addAll(it) } }
-
-        viewModel.loadProducts()
+        viewModel.productList.observeForever {
+            it?.let { products.addAll(it) }
+        }
 
         assertThat(products).isEqualTo(productList)
     }

@@ -109,6 +109,11 @@
         <item name="android:textSize">@dimen/text_medium</item>
     </style>
 
+    <style name="Woo.TextAppearance.Medium.Black">
+        <item name="android:textColor">@color/black_85</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
     <style name="Woo.TextAppearance.Medium.Grey">
         <item name="android:textColor">@color/wc_grey_medium</item>
     </style>
@@ -710,6 +715,12 @@
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:paddingTop">@dimen/margin_large</item>
         <item name="android:paddingBottom">@dimen/margin_large</item>
+    </style>
+
+    <style name="Woo.Products.WIP.CardExtenderButton" parent="Woo.Stats.Availability.CardExtenderButton">
+        <item name="android:drawableStart">@drawable/ic_gridicons_tools</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/black_85</item>
     </style>
 
 </resources>
