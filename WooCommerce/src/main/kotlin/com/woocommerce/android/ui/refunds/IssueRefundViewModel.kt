@@ -352,13 +352,14 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
-    fun onProductRefundAmountTapped() {
-        triggerEvent(ShowRefundAmountDialog(
-                refundByItemsState.productsRefund,
-                maxRefund,
-                resourceProvider.getString(R.string.order_refunds_available_for_refund, formatCurrency(maxRefund))
-        ))
-    }
+    // to be used in the future
+//    fun onProductRefundAmountTapped() {
+//        triggerEvent(ShowRefundAmountDialog(
+//                refundByItemsState.productsRefund,
+//                maxRefund,
+//                resourceProvider.getString(R.string.order_refunds_available_for_refund, formatCurrency(maxRefund))
+//        ))
+//    }
 
     fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
         refundByItemsState = refundByItemsState.copy(
@@ -521,13 +522,15 @@ class IssueRefundViewModel @AssistedInject constructor(
     sealed class IssueRefundEvent : Event() {
         data class ShowValidationError(val message: String) : IssueRefundEvent()
         data class ShowNumberPicker(val refundItem: RefundListItem) : IssueRefundEvent()
-        data class ShowRefundAmountDialog(
-            val refundAmount: BigDecimal,
-            val maxRefund: BigDecimal,
-            val message: String
-        ) : IssueRefundEvent()
         data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
+
+        // to be used in the future
+//        data class ShowRefundAmountDialog(
+//            val refundAmount: BigDecimal,
+//            val maxRefund: BigDecimal,
+//            val message: String
+//        ) : IssueRefundEvent()
     }
 
     @AssistedInject.Factory
