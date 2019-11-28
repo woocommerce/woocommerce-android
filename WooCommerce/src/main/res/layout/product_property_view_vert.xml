@@ -15,7 +15,7 @@
 
         android:layout_marginStart="@dimen/product_detail_property_margin"
         android:layout_marginTop="@dimen/product_detail_property_margin"
-        android:textColor="@color/wc_grey_dark"
+        android:textColor="@color/wc_black_darker"
         android:textSize="@dimen/text_large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +31,7 @@
         android:layout_marginTop="@dimen/margin_small"
         android:ellipsize="end"
         android:lineSpacingExtra="2dp"
-        android:textColor="@color/wc_grey_medium"
+        android:textColor="@color/wc_black_lighter"
         android:textSize="@dimen/text_medium"
         android:layout_gravity="start"
         android:textAlignment="viewStart"
