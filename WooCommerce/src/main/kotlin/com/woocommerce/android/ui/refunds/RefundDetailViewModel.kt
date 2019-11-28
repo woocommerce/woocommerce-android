@@ -41,7 +41,7 @@ class RefundDetailViewModel @AssistedInject constructor(
         orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))
                 ?.toAppModel()?.let { order ->
             formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-            refundStore.getRefund(selectedSite.get(), orderId, refundId)?.let { refund ->
+            refundStore.getRefund(selectedSite.get(), orderId, refundId)?.toAppModel()?.let { refund ->
                 displayRefundDetails(refund, order)
             }
         }
