@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -74,6 +76,9 @@ class IssueRefundViewModel @AssistedInject constructor(
         private const val REFUND_METHOD_MANUAL = "manual"
     }
 
+    private val _refundItems = MutableLiveData<List<RefundListItem>>()
+    val refundItems: LiveData<List<RefundListItem>> = _refundItems
+
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = {
@@ -120,7 +125,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private fun initRefundByAmountState(order: Order) {
+    private fun initRefundByAmountState() {
         if (refundByAmountStateLiveData.hasInitialValue) {
             val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                     ?: DEFAULT_DECIMAL_PRECISION
@@ -136,11 +141,10 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
-    private fun initRefundByItemsState(order: Order) {
+    private fun initRefundByItemsState() {
         if (refundByItemsStateLiveData.hasInitialValue) {
             refundByItemsState = refundByItemsState.copy(
                     currency = order.currency,
-                    items = order.items.map { RefundListItem(it) },
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
                     formattedDiscount = formatCurrency(BigDecimal.ZERO),
@@ -148,6 +152,9 @@ class IssueRefundViewModel @AssistedInject constructor(
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
                     isShippingRefundVisible = false
             )
+
+            val items = order.items.map { RefundListItem(it, maxQuantities[it.productId] ?: 0) }
+            updateRefundItems(items)
         }
 
         if (productsRefundLiveData.hasInitialValue) {
@@ -346,7 +353,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundQuantityTapped(productId: Long) {
-        val refundItem = refundByItemsState.items?.firstOrNull { it.product.productId == productId }
+        val refundItem = _refundItems.value?.firstOrNull { it.product.productId == productId }
         if (refundItem != null) {
             triggerEvent(ShowNumberPicker(refundItem))
         }
@@ -414,6 +421,18 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
         commonState = commonState.copy(refundType = type)
         updateRefundTotal(refundAmount)
+    }
+
+    private fun updateRefundItems(items: List<RefundListItem>) {
+        _refundItems.value = items.filter { it.maxQuantity > 0 }
+
+        val selectedItems = items.sumBy { it.quantity }
+        refundByItemsState = refundByItemsState.copy(
+                selectedItemsHeader = resourceProvider.getString(
+                    R.string.order_refunds_items_selected,
+                    selectedItems
+                )
+        )
     }
 
     private suspend fun waitForCancellation(): Boolean {
