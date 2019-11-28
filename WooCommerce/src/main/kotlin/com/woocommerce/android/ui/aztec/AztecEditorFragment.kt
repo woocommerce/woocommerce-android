@@ -38,6 +38,8 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     private var shouldShowDiscardDialog = true
     private var isHtmlEditorEnabled: Boolean = false
 
+    private var discardDialog: AlertDialog? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,6 +62,12 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
         aztec.visualEditor.fromHtml(navArgs.aztecText)
         aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.aztecText)
+
+        savedInstanceState?.let { state ->
+            if (state.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
+                confirmDiscard()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -95,6 +103,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
+        discardDialog?.dismiss()
         super.onDestroy()
     }
 
@@ -112,7 +121,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     private fun confirmDiscard() {
         isConfirmingDiscard = true
-        AlertDialog.Builder(activity)
+        discardDialog = AlertDialog.Builder(activity)
                 .setMessage(R.string.aztec_confirm_discard)
                 .setCancelable(true)
                 .setPositiveButton(R.string.discard) { _, _ ->
