@@ -18,6 +18,7 @@ import com.woocommerce.android.util.GlideImageLoader
 import kotlinx.android.synthetic.main.fragment_aztec_editor.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
+import org.wordpress.aztec.AztecText.EditorHasChanges.NO_CHANGES
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
@@ -100,7 +101,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
      * Prevent back press in the main activity if the user made changes so we can confirm the discard
      */
     override fun onRequestAllowBackPress(): Boolean {
-        return if (getEditorText().isNotEmpty() && shouldShowDiscardDialog) {
+        return if (editorHasChanges() && shouldShowDiscardDialog) {
             confirmDiscard()
             false
         } else {
@@ -152,4 +153,6 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     }
 
     private fun getEditorText() = aztec.visualEditor.text.toString()
+
+    private fun editorHasChanges() = aztec.visualEditor.hasChanges() != NO_CHANGES
 }
