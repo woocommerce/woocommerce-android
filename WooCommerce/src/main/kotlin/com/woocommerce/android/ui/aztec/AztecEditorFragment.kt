@@ -36,6 +36,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     private var isConfirmingDiscard = false
     private var shouldShowDiscardDialog = true
+    private var isHtmlEditorEnabled: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -142,6 +143,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     override fun onToolbarHtmlButtonClicked() {
         aztec.toolbar.toggleEditorMode()
+        isHtmlEditorEnabled = !isHtmlEditorEnabled
     }
 
     override fun onToolbarListButtonClicked() {
@@ -152,7 +154,20 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         return false
     }
 
-    private fun getEditorText() = aztec.sourceEditor?.getPureHtml(false)
+    private fun getEditorText(): String? {
+        return if (isHtmlEditorEnabled) {
+            aztec.sourceEditor?.getPureHtml(false)
+        } else {
+            aztec.visualEditor.toHtml()
+        }
+    }
 
-    private fun editorHasChanges() = aztec.visualEditor.hasChanges() != NO_CHANGES
+    private fun editorHasChanges(): Boolean {
+        val hasChanges = if (isHtmlEditorEnabled) {
+            aztec.sourceEditor?.hasChanges()
+        } else {
+            aztec.visualEditor.hasChanges()
+        }
+        return hasChanges != NO_CHANGES
+    }
 }
