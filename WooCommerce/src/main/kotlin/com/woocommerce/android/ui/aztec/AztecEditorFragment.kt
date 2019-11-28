@@ -152,7 +152,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         return false
     }
 
-    private fun getEditorText() = aztec.visualEditor.text.toString()
+    private fun getEditorText() = aztec.sourceEditor?.getPureHtml(false)
 
     private fun editorHasChanges() = aztec.visualEditor.hasChanges() != NO_CHANGES
 }
