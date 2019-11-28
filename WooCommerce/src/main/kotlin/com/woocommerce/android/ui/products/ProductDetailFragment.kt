@@ -240,10 +240,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
         if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            val description = if (product.description.isEmpty()) {
+                getString(R.string.product_description_empty)
+            } else {
+                product.description
+            }
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_description,
-                    product.description,
+                    description,
                     LinearLayout.VERTICAL
             )?.also {
                 it.setMaxLines(2)
