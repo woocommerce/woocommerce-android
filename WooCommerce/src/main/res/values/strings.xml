@@ -420,6 +420,8 @@
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_wip_title">Work in progress!</string>
+    <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch &#x1f680;</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
@@ -444,7 +446,9 @@
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
+    <string name="settings_enable_product_teaser_title">Products</string>
     <string name="settings_enable_v4_stats_message">Try the new stats available with the\nWooCommerce admin plugin</string>
+    <string name="settings_enable_product_teaser_message">Test out the new products section as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
