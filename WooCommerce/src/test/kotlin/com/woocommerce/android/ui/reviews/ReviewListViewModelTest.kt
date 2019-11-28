@@ -77,13 +77,13 @@ class ReviewListViewModelTest : BaseUnitTest() {
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
         val skeletonShown = mutableListOf<Boolean>()
+        viewModel.reviewList.observeForever {
+            // We know this will be called twice because the request to fetch the reviews
+            // from the API will also result in passing results from db to the UI.
+            reviewList.clear()
+            reviewList.addAll(it)
+        }
         viewModel.viewStateData.observeForever { old, new ->
-            new.reviewList?.takeIfNotEqualTo(old?.reviewList) {
-                // We know this will be called twice because the request to fetch the reviews
-                // from the API will also result in passing results from db to the UI.
-                reviewList.clear()
-                reviewList.addAll(it)
-            }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { hasUnread = it }
         }
@@ -130,13 +130,13 @@ class ReviewListViewModelTest : BaseUnitTest() {
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
         val skeletonShown = mutableListOf<Boolean>()
+        viewModel.reviewList.observeForever {
+            // We know this will be called twice because the request to fetch the reviews
+            // from the API will also result in passing results from db to the UI.
+            reviewList.clear()
+            reviewList.addAll(it)
+        }
         viewModel.viewStateData.observeForever { old, new ->
-            new.reviewList?.takeIfNotEqualTo(old?.reviewList) {
-                // We know this will be called twice because the request to fetch the reviews
-                // from the API will also result in passing results from db to the UI.
-                reviewList.clear()
-                reviewList.addAll(it)
-            }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { hasUnread = it }
         }
