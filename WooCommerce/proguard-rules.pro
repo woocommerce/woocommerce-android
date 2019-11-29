@@ -63,3 +63,7 @@
 -keep class retrofit2.** { *; }
 -keep class uk.co.senab.photoview.** { *; }
 ###### Zendesk - end
+
+###### Glide - begin
+-keep class com.bumptech.glide.GeneratedAppGlideModuleImpl { *; }
+###### Glide - end
