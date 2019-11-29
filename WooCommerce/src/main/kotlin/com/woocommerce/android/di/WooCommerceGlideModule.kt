@@ -5,18 +5,23 @@ import com.android.volley.RequestQueue
 import com.bumptech.glide.Glide
 import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.Registry
+import com.bumptech.glide.annotation.Excludes
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.integration.volley.VolleyUrlLoader
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
 import com.woocommerce.android.WooCommerce
+import org.wordpress.aztec.glideloader.GlideLoaderModule
 import java.io.InputStream
 import javax.inject.Inject
 import javax.inject.Named
 
 /**
  * Custom [AppGlideModule] that replaces Glide's default [RequestQueue] with FluxC's.
+ * Exclude [GlideLoaderModule] since that is used for implementing video thumbnails in Aztec and
+ * not currently used in Woo
  */
+@Excludes(GlideLoaderModule::class)
 @GlideModule
 class WooCommerceGlideModule : AppGlideModule() {
     @field:[Inject Named("custom-ssl")] internal lateinit var requestQueue: RequestQueue

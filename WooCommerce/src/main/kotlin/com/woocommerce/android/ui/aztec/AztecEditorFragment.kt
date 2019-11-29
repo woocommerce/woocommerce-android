@@ -20,6 +20,7 @@ import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText.EditorHasChanges.NO_CHANGES
 import org.wordpress.aztec.ITextFormat
+import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
 class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener {
