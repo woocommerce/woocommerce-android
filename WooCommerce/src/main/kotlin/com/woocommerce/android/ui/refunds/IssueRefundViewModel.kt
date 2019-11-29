@@ -404,7 +404,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
         updateRefundItems(newItems)
 
-        val productsRefund = min(max(subtotal + taxes - order.refundTotal, BigDecimal.ZERO), maxRefund)
+        val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), maxRefund)
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = productsRefund,
                 formattedProductsRefund = formatCurrency(productsRefund),
