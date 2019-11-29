@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import kotlinx.android.parcel.Parcelize
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
@@ -83,7 +84,14 @@ class RefundProductListAdapter(
         val product: Order.Item,
         val maxQuantity: Int,
         val quantity: Int = 0
-    ) : Parcelable
+    ) : Parcelable {
+        fun toDataModel(): WCRefundItem {
+            return WCRefundItem(
+                    product.productId,
+                    quantity.toFloat()
+            )
+        }
+    }
 
     class OrderItemDiffCallback(
         private val oldList: List<RefundListItem>,

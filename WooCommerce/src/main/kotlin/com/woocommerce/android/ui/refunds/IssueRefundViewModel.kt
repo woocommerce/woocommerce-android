@@ -261,7 +261,7 @@ class IssueRefundViewModel @AssistedInject constructor(
             triggerEvent(
                     ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
-                            arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
+                            arrayOf(formatCurrency(commonState.refundTotal)),
                             undoAction = {
                                 AnalyticsTracker.track(
                                         CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
@@ -290,11 +290,10 @@ class IssueRefundViewModel @AssistedInject constructor(
                             REFUND_CREATE, mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
-                                    (refundByAmountState.enteredAmount isEqualTo maxRefund).toString(),
+                                    (commonState.refundTotal isEqualTo maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
                             AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
-                            AnalyticsTracker.KEY_REFUND_AMOUNT to
-                                    refundByAmountState.enteredAmount.toString()
+                            AnalyticsTracker.KEY_REFUND_AMOUNT to commonState.refundTotal.toString()
                     ))
 
                     val resultCall = async(dispatchers.io) {
@@ -303,18 +302,18 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 refundStore.createItemsRefund(
                                         selectedSite.get(),
                                         order.remoteId,
-                                        refundByAmountState.enteredAmount,
+                                        commonState.refundTotal,
                                         reason,
                                         true,
                                         gateway.supportsRefunds,
-                                        emptyList()//refundByItemsState.items
+                                        refundItems.value?.map { it.toDataModel() } ?: emptyList()
                                 )
                             }
                             AMOUNT -> {
                                 refundStore.createAmountRefund(
                                         selectedSite.get(),
                                         order.remoteId,
-                                        refundByAmountState.enteredAmount,
+                                        commonState.refundTotal,
                                         reason,
                                         gateway.supportsRefunds
                                 )
