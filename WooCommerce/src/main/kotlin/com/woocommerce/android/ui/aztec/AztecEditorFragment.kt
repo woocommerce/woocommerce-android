@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.fragment_aztec_editor.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.ITextFormat
+import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
 class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
@@ -39,6 +40,8 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener {
         (activity as? MainActivity)?.hideBottomNav()
 
         aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
+                .setImageGetter(GlideImageLoader(requireContext()))
+
         aztec.initSourceEditorHistory()
 
         aztec.visualEditor.fromHtml(navArgs.aztecText)
