@@ -1,5 +1,0 @@
-2.9:
-* Finalmente! Ora supportiamo Android 10!
-* La scheda degli ordini ha subito un restyling estremo. La ricerca e il filtro condividono un'unica visualizzazione, con il conteggio totale degli ordini suddivisi in base allo stato. L'elenco degli ordini viene visualizzato in due schede: In elaborazione e Tutti.
-* Anche la visualizzazione dei dettagli degli ordini ha subito qualche ritocco.
-* In questa versione sono stati anche corretti diversi bug minori.
