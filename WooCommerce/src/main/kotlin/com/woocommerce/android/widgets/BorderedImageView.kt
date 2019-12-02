@@ -11,18 +11,19 @@ import com.woocommerce.android.R
 /**
  * ImageView with a built-in border so we can avoid adding a parent ViewGroup to provide the border
  */
-class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : AppCompatImageView(ctx, attrs) {
+class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : AppCompatImageView(
+        ctx,
+        attrs
+) {
     private val borderPaint: Paint
     private val borderSize = context.resources.getDimensionPixelSize(R.dimen.image_border_size).toFloat()
 
     init {
-        val color = ContextCompat.getColor(context, R.color.list_divider)
-
         borderPaint = Paint().also { paint ->
-            paint.setAntiAlias(true)
-            paint.setStyle(Paint.Style.STROKE)
-            paint.setColor(color)
-            paint.setStrokeWidth(borderSize)
+            paint.isAntiAlias = true
+            paint.style = Paint.Style.STROKE
+            paint.color = ContextCompat.getColor(context, R.color.list_divider)
+            paint.strokeWidth = borderSize
         }
     }
 

@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
@@ -286,6 +287,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         init {
             productImageView.layoutParams.height = imageSize
+            productImageView.layoutParams.width = if (isGridView) imageSize else WRAP_CONTENT
+
             addImageContainer.layoutParams.height = imageSize
             addImageContainer.layoutParams.width = imageSize
 
