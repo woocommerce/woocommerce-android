@@ -16,14 +16,13 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
     private val borderSize = context.resources.getDimensionPixelSize(R.dimen.image_border_size).toFloat()
 
     init {
-        val strokeWidth = borderSize
         val color = ContextCompat.getColor(context, R.color.list_divider)
 
-        borderPaint = Paint().also {
-            it.setAntiAlias(true)
-            it.setStyle(Paint.Style.STROKE)
-            it.setColor(color)
-            it.setStrokeWidth(strokeWidth)
+        borderPaint = Paint().also { paint ->
+            paint.setAntiAlias(true)
+            paint.setStyle(Paint.Style.STROKE)
+            paint.setColor(color)
+            paint.setStrokeWidth(borderSize)
         }
     }
 

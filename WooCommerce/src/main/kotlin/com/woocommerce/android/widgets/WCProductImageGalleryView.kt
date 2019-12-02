@@ -43,7 +43,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun onGalleryAddImageClicked() { }
     }
 
-    private var imageHeight = 0
+    private var imageSize = 0
     private var isGridView = false
     private var showAddImageIcon = false
 
@@ -99,7 +99,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
 
-        imageHeight = if (isGridView) {
+        imageSize = if (isGridView) {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height_grid)
         } else {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height)
@@ -273,7 +273,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 request.load(Uri.parse(src)).into(holder.productImageView)
             } else if (viewType == VIEW_TYPE_IMAGE) {
-                val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageHeight)
+                val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageSize)
                 request.load(photonUrl).into(holder.productImageView)
             }
         }
@@ -285,9 +285,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         val addImageContainer: ViewGroup = view.addImageContainer
 
         init {
-            productImageView.layoutParams.height = imageHeight
-            addImageContainer.layoutParams.height = imageHeight
-            addImageContainer.layoutParams.width = imageHeight
+            productImageView.layoutParams.height = imageSize
+            addImageContainer.layoutParams.height = imageSize
+            addImageContainer.layoutParams.width = imageSize
 
             // add space between items in grid view
             if (isGridView) {
