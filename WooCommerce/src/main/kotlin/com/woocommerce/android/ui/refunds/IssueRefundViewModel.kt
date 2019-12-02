@@ -189,7 +189,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private fun showRefundSummary() {
-        refundSummaryStateLiveData.reset()
         refundSummaryState = refundSummaryState.copy(
                 isFormEnabled = true,
                 previouslyRefunded = formatCurrency(order.refundTotal),

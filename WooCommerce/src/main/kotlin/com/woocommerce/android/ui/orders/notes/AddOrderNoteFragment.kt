@@ -55,11 +55,6 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         return inflater.inflate(R.layout.fragment_add_order_note, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
