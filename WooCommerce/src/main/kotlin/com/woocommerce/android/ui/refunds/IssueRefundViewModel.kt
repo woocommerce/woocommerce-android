@@ -102,24 +102,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         initRefundSummaryState()
     }
 
-    // temporary workaround for the activity ViewModel scope
-    fun resetLiveData() {
-        resetEvent()
-
-        commonState = CommonViewState()
-        refundByItemsState = RefundByItemsViewState()
-        refundSummaryState = RefundSummaryViewState()
-
-        initRefundByAmountState(order)
-        initRefundByItemsState(order)
-        initRefundSummaryState()
-
-        commonStateLiveData.reset()
-        refundByAmountStateLiveData.reset()
-        refundByItemsStateLiveData.reset()
-        refundSummaryStateLiveData.reset()
-    }
-
     private fun loadOrder(orderId: Long): Order =
         requireNotNull(orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel())
 
@@ -241,7 +223,7 @@ class IssueRefundViewModel @AssistedInject constructor(
             triggerEvent(
                     ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
-                            listOf(formatCurrency(refundByAmountState.enteredAmount)),
+                            arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
                             undoAction = {
                                 AnalyticsTracker.track(
                                         CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
@@ -261,7 +243,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                 val wasRefundCanceled = waitForCancellation()
                 triggerEvent(ShowSnackbar(
                         R.string.order_refunds_amount_refund_progress_message,
-                        listOf(formatCurrency(refundByAmountState.enteredAmount)),
+                        arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
                         isEndless = true)
                 )
 

@@ -82,25 +82,6 @@ interface UIMessageResolver {
     /**
      * Create and return a snackbar displaying the provided message and a RETRY button.
      *
-     * @param [message] The message string
-     * @param [stringArgs] Optional. One or more format argument stringArgs
-     * @param [actionListener] Listener to handle the undo button click event
-     */
-    fun getUndoSnack(
-        message: String,
-        stringArgs: List<String> = listOf(),
-        actionListener: View.OnClickListener
-    ): Snackbar {
-        return getSnackbarWithAction(
-                snackbarRoot,
-                String.format(message, stringArgs),
-                snackbarRoot.context.getString(R.string.undo),
-                actionListener)
-    }
-
-    /**
-     * Create and return a snackbar displaying the provided message and a RETRY button.
-     *
      * @param [stringResId] The string resource id of the base message
      * @param [stringArgs] Optional. One or more format argument stringArgs
      * @param [actionListener] Listener to handle the retry button click event
@@ -124,7 +105,7 @@ interface UIMessageResolver {
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
-                snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), Snackbar.LENGTH_LONG)
+            snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), Snackbar.LENGTH_LONG)
 
     /**
      * Display a snackbar with the provided message.

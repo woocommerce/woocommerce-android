@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
     ProductDetailFragmentModule::class,
-    ProductListFragmentModule::class
+    ProductListFragmentModule::class,
+    ProductVariantsFragmentModule::class
 ])
 object ProductsModule {
     @Module
