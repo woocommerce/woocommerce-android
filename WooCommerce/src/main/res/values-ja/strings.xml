@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 00:54:04+0000
+Translation-Revision-Date: 2019-11-28 00:54:11+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">アカウントの取得時に問題が発生しました。今すぐ再試行するか、閉じてから後で再試行できます。</string>
+    <string name="magic_link_update_error">エラーが発生しました。ログインして続行してください</string>
+    <string name="login_magic_link_token_updating">サイトに接続しています…</string>
+    <string name="product_variants">バリアント</string>
+    <string name="product_property_edit">商品を編集</string>
+    <string name="product_variants_fetch_product_variants_error">商品バリエーションを取得する際にエラーが発生しました</string>
+    <string name="my_store_stats_reverted_message">従来の統計に戻しました。ベータ統計を使用するには、バージョン0.22以上の WooCommerce Admin プラグインを有効化してください</string>
+    <string name="login_discovery_error_option_select">オプションを選択してください</string>
+    <string name="login_troubleshooting_tips">トラブルシューティングのヒントを参照してください</string>
+    <string name="login_with_wordpress">WordPress.com アカウントでログイン</string>
+    <string name="login_discovery_error_options">次のいくつかの方法をお試しください。</string>
+    <string name="login_discovery_error_title">接続エラー</string>
+    <string name="login_jetpack_not_found">Jetpack が見つかりません。もう一度お試しください</string>
+    <string name="login_jetpack_view_setup_instructions">セットアップ手順を表示</string>
+    <string name="login_no_jetpack">%1$s にこのアプリを使用するには、Jetpack プラグインを設定し、WordPress.com アカウントと連携する必要があります。</string>
+    <string name="login_no_jetpack_username">\@%1$s としてログインしました\nアカウントが間違っていますか ?%2$s</string>
+    <string name="try_again">もう一度試す</string>
+    <string name="product_variations">バリエーション</string>
+    <string name="order_refunds_refund_manual_refund_note">この支払い方法は自動返金をサポートしていません。顧客に手動で送金し、払い戻しを完了してください。</string>
+    <string name="orderdetail_shipping_notice">この注文は配送料の計算に拡張機能を使用しています。配送方法が一部表示されない場合があります。</string>
+    <string name="orderdetail_shipping_method">配送方法</string>
     <string name="button_edit_permissions">権限を編集</string>
     <string name="permission_camera">カメラ</string>
     <string name="permission_storage">ストレージ</string>
@@ -27,7 +48,6 @@ Language: ja_JP
     <string name="wc_unapproved">非承認</string>
     <string name="review_single_fetch_error">新規の商品レビュー取得中にエラーが発生しました</string>
     <string name="review_fetch_error">商品レビュー取得中にエラーが発生しました</string>
-    <string name="order_refunds_refund_manual_refund_note">現在、手動での返金のみに対応しています。決済方法ダッシュボードから返金を完了するか、手動で顧客に送金してください。</string>
     <string name="order_refunds_manual_refund_error">返金処理でエラーが発生しました。もう一度お試しください。</string>
     <string name="order_refunds_manual_refund_successful">返金処理を正常に送信しました。</string>
     <string name="order_refunds_manual_refund_progress_message">%sの返金処理を実行中です。しばらくお待ちください…</string>
@@ -440,7 +460,6 @@ Language: ja_JP
     <string name="promo_btn_got_it">了解</string>
     <string name="tooltip_site_switcher">タップするとストアの切り替えができます</string>
     <string name="site_picker_title">ストアを選択</string>
-    <string name="username">WordPress.com のユーザー名</string>
     <string name="settings_signout">ログアウト</string>
     <string name="orderstatus_select_status">注文ステータスを変更</string>
     <string name="order_status_changed_to">注文ステータスを %s に変更しました</string>
@@ -610,7 +629,7 @@ Language: ja_JP
     <string name="enter_wpcom_password">WordPress.com パスワードを入力してください。</string>
     <string name="magic_link_unavailable_error_message">現在ご利用いただけません。パスワードを入力してください</string>
     <string name="login_magic_link_email_requesting">ログインメールのリクエスト</string>
-    <string name="login_magic_links_sent_label">マジックリンクがもうすぐ送られてきます。このデバイスでメールをチェックして、WordPress.com から届いたメールにあるリンクをタップしてください。</string>
+    <string name="login_magic_links_sent_label">メールが送信されました。このデバイスでメールをチェックして、WordPress.com から届いたメールにあるリンクをタップしてください。</string>
     <string name="login_magic_links_label">パスワードなしですぐにログインできるマジックリンクのメールをお送りします。面倒な入力は不要です !</string>
     <string name="password_incorrect">このパスワードは間違っているようです。入力した情報をもう一度確認してから、やり直してください。</string>
     <string name="email_not_registered_wpcom">このメールアドレスに連携されている WordPress.com アカウントが見つかりません。以下のリンクから、サイトアドレスを使用してログインしてください。</string>

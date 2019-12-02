@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 00:54:04+0000
+Translation-Revision-Date: 2019-11-27 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">Une erreur s\'est produite lors de la récupération de votre compte. Vous pouvez recommencer maintenant ou fermer et réessayer ultérieurement.</string>
+    <string name="magic_link_update_error">Une erreur inconnue est survenue. Veuillez vous connecter pour continuer.</string>
+    <string name="login_magic_link_token_updating">Connexion à votre site en cours…</string>
+    <string name="product_variants">Variantes</string>
+    <string name="product_property_edit">Modifier le produit</string>
+    <string name="product_variants_fetch_product_variants_error">Erreur lors de la récupération des variations du produit</string>
+    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques. Pour utiliser les statistiques en version bêta, veuillez activer l\'extension d\'administration WooCommerce version 0.22 ou ultérieure.</string>
+    <string name="login_discovery_error_option_select">Sélectionner une option</string>
+    <string name="login_troubleshooting_tips">Lire les astuces de résolution de problème</string>
+    <string name="login_with_wordpress">Se connecter avec WordPress.com</string>
+    <string name="login_discovery_error_options">Voici quelques autres astuces que vous pouvez tester :</string>
+    <string name="login_discovery_error_title">Erreur de connexion</string>
+    <string name="login_jetpack_not_found">Jetpack introuvable. Veuillez réessayer.</string>
+    <string name="login_jetpack_view_setup_instructions">Afficher les instructions de configuration</string>
+    <string name="login_no_jetpack">Pour utiliser cette application pour %1$s, vous devez installer et connecter l\'extension Jetpack à un compte WordPress.com.</string>
+    <string name="login_no_jetpack_username">Connecté en tant que @%1$s\nErreur de compte ? %2$s</string>
+    <string name="try_again">Réessayer</string>
+    <string name="product_variations">Variations</string>
+    <string name="order_refunds_refund_manual_refund_note">Le moyen de paiement ne prend pas en charge les remboursements automatiques. Procédez au remboursement en exécutant un transfert d\'argent manuel au client.</string>
+    <string name="orderdetail_shipping_notice">Cette commande utilise des extensions pour calculer les frais de livraison. Les modes de livraison indiqués peuvent être incomplets.</string>
+    <string name="orderdetail_shipping_method">Mode de livraison</string>
     <string name="button_edit_permissions">Modifier les autorisations</string>
     <string name="permission_camera">Appareil photo</string>
     <string name="permission_storage">Stockage</string>
@@ -27,7 +48,6 @@ Language: fr
     <string name="wc_unapproved">Désapprouvé</string>
     <string name="review_single_fetch_error">Erreur lors de la récupération du nouvel avis sur le produit</string>
     <string name="review_fetch_error">Erreur lors de la récupération des avis sur le produit</string>
-    <string name="order_refunds_refund_manual_refund_note">Actuellement, seuls les remboursements manuels sont acceptés. Effectuez le remboursement via le tableau de bord de votre passerelle de paiement, ou transférez l\'argent manuellement au client.</string>
     <string name="order_refunds_manual_refund_error">Un problème est survenu lors du remboursement. Veuillez réessayer.</string>
     <string name="order_refunds_manual_refund_successful">Le remboursement a bien été envoyé.</string>
     <string name="order_refunds_manual_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>
@@ -440,7 +460,6 @@ Language: fr
     <string name="promo_btn_got_it">Compris</string>
     <string name="tooltip_site_switcher">Appuyer pour passer d\'une boutique à l\'autre</string>
     <string name="site_picker_title">Sélectionner la boutique</string>
-    <string name="username">Nom d\'utilisateur WordPress.com</string>
     <string name="settings_signout">Se déconnecter</string>
     <string name="orderstatus_select_status">Modifier l\'état des commandes</string>
     <string name="order_status_changed_to">État des commandes basculé sur %s</string>
@@ -609,8 +628,8 @@ Language: fr
     <string name="enter_wpcom_password">Saisissez votre mot de passe WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">Actuellement indisponible. Veuillez saisir votre mot de passe</string>
     <string name="login_magic_link_email_requesting">Demande de l’e-mail de connexion</string>
-    <string name="login_magic_links_sent_label">Votre lien magique est en route ! Vérifiez votre messagerie sur cet appareil et appuyez sur le lien dans l’e-mail reçu de WordPress.com.</string>
-    <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
+    <string name="login_magic_links_sent_label">E-mail envoyé. Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l\'e-mail que vous recevez de WordPress.com.</string>
+    <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
     <string name="password_incorrect">Il semblerait que ce mot de passe est incorrect. Veuillez vérifier et essayer à nouveau.</string>
     <string name="email_not_registered_wpcom">Hmm, nous ne trouvons pas de compte WordPress.com associé à cette adresse e-mail. Essayez de vous connecter avec le lien ci-après à l\'aide de votre adresse e-mail.</string>
     <string name="requesting_otp">Demande d’un code de vérification par SMS.</string>
