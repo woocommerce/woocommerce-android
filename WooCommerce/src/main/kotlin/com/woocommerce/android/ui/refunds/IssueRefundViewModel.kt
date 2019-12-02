@@ -422,7 +422,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundTabChanged(type: RefundType) {
-        val refundAmount = when (type){
+        val refundAmount = when (type) {
             ITEMS -> refundByItemsState.totalRefund
             AMOUNT -> refundByAmountState.enteredAmount
         }

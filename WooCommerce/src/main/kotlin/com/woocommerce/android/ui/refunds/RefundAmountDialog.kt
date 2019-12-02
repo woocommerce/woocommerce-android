@@ -1,13 +1,8 @@
 package com.woocommerce.android.ui.refunds
 
-import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -18,7 +13,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.currency_amount_dialog.*
 import java.math.BigDecimal
 import javax.inject.Inject
 
