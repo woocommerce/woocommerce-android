@@ -34,6 +34,7 @@ object AppPrefs {
         SHOULD_DISPLAY_V4_STATS_AVAILABILITY_BANNER,
         SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
         IS_V4_STATS_UI_ENABLED,
+        IS_PRODUCTS_FEATURE_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION
     }
@@ -129,6 +130,14 @@ object AppPrefs {
             setBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, isV4StatsUIEnabled)
 
     /**
+     * Flag to check products features are enabled
+     */
+    fun isProductsFeatureEnabled() = getBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, false)
+
+    fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
+            setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
+
+    /**
      * Flag to check if the user has already chosen to try out or dismissed the new stats.
      * The [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
      * will no longer be displayed if this flag returns false
@@ -215,8 +224,8 @@ object AppPrefs {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
     }
 
-    fun setLoginUserBypassedJetpackRequired() {
-        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, true)
+    fun setLoginUserBypassedJetpackRequired(bypassedLogin: Boolean = true) {
+        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, bypassedLogin)
     }
 
     fun getLoginUserBypassedJetpackRequired() =

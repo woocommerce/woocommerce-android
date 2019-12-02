@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -15,12 +14,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Exit
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.ShowSnackbar
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
@@ -28,7 +27,7 @@ import org.greenrobot.eventbus.EventBus
 
 @OpenClassOnDebug
 class ReviewDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val repository: ReviewDetailRepository
@@ -138,9 +137,7 @@ class ReviewDetailViewModel @AssistedInject constructor(
     ) : Parcelable
 
     sealed class ReviewDetailEvent : Event() {
-        data class ShowSnackbar(@StringRes val message: Int) : ReviewDetailEvent()
         data class MarkNotificationAsRead(val remoteNoteId: Long) : ReviewDetailEvent()
-        object Exit : ReviewDetailEvent()
     }
 
     @AssistedInject.Factory

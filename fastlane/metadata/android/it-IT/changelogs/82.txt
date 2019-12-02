@@ -1,4 +1,0 @@
-2.8:
-* Nella ricerca nell'elenco degli ordini mancava un cursore. Ora lo abbiamo aggiunto.
-* La schermata dei dettagli dell'ordine aggiornata mostra anche un elenco dei rimborsi emessi.
-* La scheda "Recensioni" ora mostra tutte le recensioni prodotto del negozio.

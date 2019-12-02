@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.widget.NestedScrollView
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
@@ -19,8 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
-import com.woocommerce.android.extensions.onScrollDown
-import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
@@ -156,10 +153,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 }
             }
         }
-
-        scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-            if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -231,10 +224,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             )
 
             // check if product is a virtual product. If it is, hide only the shipping details card
+            val isVirtualProduct = presenter.isVirtualProduct(order)
             orderDetail_customerInfo.initView(
                     order = order,
                     shippingOnly = false,
-                    billingOnly = presenter.isVirtualProduct(order))
+                    billingOnly = isVirtualProduct)
+
+            showOrderShippingNotice(isVirtualProduct, order)
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(
@@ -253,6 +249,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         // hide the shipping details if products in an order is virtual
         val hideShipping = presenter.isVirtualProduct(order)
         orderDetail_customerInfo.initShippingSection(order, hideShipping)
+        showOrderShippingNotice(hideShipping, order)
     }
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
@@ -663,5 +660,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                             listener = this)
                     .also { it.show(requireFragmentManager(), OrderStatusSelectorDialog.TAG) }
         }
+    }
+
+    /**
+     * Hide the shipping method warning if order contains only virtual products
+     * or if the order contains only one shipping method
+     * */
+    private fun showOrderShippingNotice(isVirtualProduct: Boolean, order: WCOrderModel) {
+        val hideShippingMethodNotice = isVirtualProduct || !order.isMultiShippingLinesAvailable()
+        orderDetail_shippingMethodNotice.visibility = if (hideShippingMethodNotice) View.GONE else View.VISIBLE
     }
 }

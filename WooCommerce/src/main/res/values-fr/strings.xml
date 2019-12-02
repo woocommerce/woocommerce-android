@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-16 00:55:23+0000
+Translation-Revision-Date: 2019-10-31 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="button_edit_permissions">Modifier les autorisations</string>
+    <string name="permission_camera">Appareil photo</string>
+    <string name="permission_storage">Stockage</string>
+    <string name="permissions_denied_message">Il semblerait que vous ayez désactivé les autorisations obligatoires pour cette fonctionnalité.&lt;br/>&lt;br/>Pour modifier cela, changez vos autorisations et veillez à ce que l\'autorisation &lt;strong>%s&lt;/strong> soit activée.</string>
+    <string name="permissions_denied_title">Autorisations</string>
+    <string name="orders_processed_empty_message">Toutes les commandes ont été traitées</string>
+    <string name="orders_empty_message_with_processing">Plus aucune commande à traiter</string>
+    <string name="orderdetail_note_system">Système</string>
+    <string name="orderlist_search_hint">Rechercher des commandes</string>
+    <string name="unknown">Inconnu</string>
+    <string name="button_not_now">Pas maintenant</string>
     <string name="product_search_hint">Recherche produits</string>
     <string name="product_list_empty_search">Aucun produit correspondant</string>
     <string name="product_list_empty">Aucun produit pour le moment</string>
@@ -49,7 +60,6 @@ Language: fr
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="my_store_stats_availability_message">Nous déployons des améliorations afin d\'optimiser les statistiques des boutiques via l\'extension d\'administration WooCommerce</string>
     <string name="my_store_stats_availability_title">Essayer nos statistiques améliorées</string>
-    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques car nous\nn\'avons pas pu trouver l\'extension d\'administration WooCommerce</string>
     <string name="dashboard_state_no_data">Pas de revenus durant cette période</string>
     <string name="no_thanks">Non merci</string>
     <string name="try_it_now">Essayer maintenant</string>
@@ -443,7 +453,7 @@ Language: fr
     <string name="app_rating_title">Vous appréciez Woo ?</string>
     <string name="settings_selected_store">Boutique sélectionnée</string>
     <string name="orders_empty_message_with_search">Aucune commande correspondante</string>
-    <string name="orders_empty_message_with_filter">Aucune commande</string>
+    <string name="orders_empty_message_with_filter">Plus de commandes</string>
     <string name="waiting_for_customers_contentdesc">En attente de l\'image des clients</string>
     <string name="waiting_for_customers">En attente des clients</string>
     <string name="share_store_dialog_title">Partager l\'URL de votre boutique</string>
@@ -482,8 +492,7 @@ Language: fr
     <string name="back">Retour</string>
     <string name="notification_channel_review_title">Alertes d’avis sur le produit</string>
     <string name="notification_channel_order_title">Alertes de nouvelle commande</string>
-    <string name="orderdetail_note_system">État du système</string>
-    <string name="orderdetail_note_public">Note au client</string>
+    <string name="orderdetail_note_public">Vers le client</string>
     <string name="login_verifying_site">Vérification du site…</string>
     <string name="button_update_instructions">Mettre à jour les instructions</string>
     <string name="search">Recherche</string>
@@ -601,7 +610,7 @@ Language: fr
     <string name="magic_link_unavailable_error_message">Actuellement indisponible. Veuillez saisir votre mot de passe</string>
     <string name="login_magic_link_email_requesting">Demande de l’e-mail de connexion</string>
     <string name="login_magic_links_sent_label">Votre lien magique est en route ! Vérifiez votre messagerie sur cet appareil et appuyez sur le lien dans l’e-mail reçu de WordPress.com.</string>
-    <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
+    <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
     <string name="password_incorrect">Il semblerait que ce mot de passe est incorrect. Veuillez vérifier et essayer à nouveau.</string>
     <string name="email_not_registered_wpcom">Hmm, nous ne trouvons pas de compte WordPress.com associé à cette adresse e-mail. Essayez de vous connecter avec le lien ci-après à l\'aide de votre adresse e-mail.</string>
     <string name="requesting_otp">Demande d’un code de vérification par SMS.</string>
@@ -666,7 +675,7 @@ Language: fr
     <string name="orderdetail_payment_cleared">Paiement supprimé</string>
     <string name="orderdetail_order_fulfillment">Exécuter la commande n° %s</string>
     <string name="orderdetail_order_notes">Notes de commande</string>
-    <string name="orderdetail_note_private">Note privée</string>
+    <string name="orderdetail_note_private">Privé</string>
     <string name="orderdetail_note_hint">Rédiger une note de commande</string>
     <string name="orderdetail_customer_image_contentdesc">Image de profil du client</string>
     <string name="orderdetail_customer_provided_note">Note fournie par le client</string>
@@ -771,4 +780,8 @@ Language: fr
     <string name="all">Toutes</string>
     <string name="notification_channel_general_title">Général</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>En cours</item>
+        <item>Toutes les commandes</item>
+    </string-array>
 </resources>

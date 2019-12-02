@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -21,16 +21,16 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.ui.orders.notes.OrderNoteRepository
 import com.woocommerce.android.model.PaymentGateway
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ExitAfterRefund
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowSnackbar
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -46,18 +46,15 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-const val ORDER_ID_KEY = "ORDER_ID_KEY"
-const val ENTERED_AMOUNT_KEY = "ENTERED_AMOUNT_KEY"
-
 @OpenClassOnDebug
 class IssueRefundViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
+    currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,
     private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
     private val noteRepository: OrderNoteRepository,
     private val gatewayStore: WCGatewayStore,
@@ -71,113 +68,80 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
-    final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
+    final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState()) {
+        updateScreenTitle()
+    }
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
-
-    private lateinit var order: Order
-    private lateinit var maxRefund: BigDecimal
-    private lateinit var formatCurrency: (BigDecimal) -> String
-    private lateinit var gateway: PaymentGateway
-
     private var refundContinuation: Continuation<Boolean>? = null
 
-    final var enteredAmount: BigDecimal = BigDecimal.ZERO
-        private set(value) {
-            field = value
-            updateCommonState(value)
-            savedState[ENTERED_AMOUNT_KEY] = value
-        }
+    private val order: Order
+    private val maxRefund: BigDecimal
+    private val formatCurrency: (BigDecimal) -> String
+    private val gateway: PaymentGateway
+    private val arguments: RefundsArgs by savedState.navArgs()
 
     init {
-        savedState.get<Long>(ORDER_ID_KEY)?.let { orderId ->
-            initialize(orderId)
-        }
+        order = loadOrder(arguments.orderId)
+        formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+        maxRefund = order.total - order.refundTotal
+        gateway = loadPaymentGateway()
+
+        initRefundByAmountState(order)
+        initRefundSummaryState()
     }
 
-    fun initialize(orderId: Long) {
-        if (this.isNotInitialized()) {
-            val order = loadOrder(orderId)
-            if (order != null) {
-                this.order = order
-                this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-                this.maxRefund = order.total - order.refundTotal
-                this.enteredAmount = savedState[ENTERED_AMOUNT_KEY] ?: BigDecimal.ZERO
-                this.gateway = loadPaymentGateway()
+    private fun loadOrder(orderId: Long): Order =
+        requireNotNull(orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel())
 
-                updateRefundByAmountState(order)
-                updateRefundSummaryState()
-
-                savedState[ORDER_ID_KEY] = orderId
-            }
-        } else {
-            // If the ViewModel is already initialized it means it's being reused and we need to reset it.
-            // This logic can be removed once the scope is properly attached to the nav graph
-            val order = loadOrder(orderId)
-            if (order != null) {
-                this.order = order
-                enteredAmount = BigDecimal.ZERO
-                maxRefund = order.total - order.refundTotal
-
-                resetLiveData()
-                updateRefundByAmountState(order)
-                updateRefundSummaryState()
-            }
-        }
-    }
-
-    // Temporary workaround for the activity ViewModel scope
-    private fun resetLiveData() {
-        resetEvent()
-        commonStateLiveData.reset()
-        refundByAmountStateLiveData.reset()
-        refundSummaryStateLiveData.reset()
-    }
-
-    private fun isNotInitialized(): Boolean = !this::order.isInitialized
-
-    private fun loadOrder(orderId: Long): Order? =
-            orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()
-
-    private fun updateRefundByAmountState(order: Order) {
-        val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
-
-        refundByAmountState = refundByAmountState.copy(
-                currency = order.currency,
-                decimals = decimals,
-                availableForRefund = resourceProvider.getString(R.string.order_refunds_available_for_refund,
-                        formatCurrency(maxRefund))
-        )
-    }
-
-    private fun updateCommonState(amount: BigDecimal) {
+    private fun updateScreenTitle() {
         commonState = commonState.copy(
                 screenTitle = resourceProvider.getString(
-                        R.string.order_refunds_title_with_amount, formatCurrency(amount)
+                        R.string.order_refunds_title_with_amount, formatCurrency(refundByAmountState.enteredAmount)
                 )
         )
     }
 
-    private fun updateRefundSummaryState() {
-        val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
-        val paymentTitle: String
-        val isManualRefund: Boolean
-        if (gateway.isEnabled) {
-            paymentTitle = if (gateway.supportsRefunds) gateway.title else "$manualRefundMethod via ${gateway.title}"
-            isManualRefund = !gateway.supportsRefunds
-        } else {
-            paymentTitle = gateway.title
-            isManualRefund = true
-        }
+    private fun initRefundByAmountState(order: Order) {
+        if (refundByAmountStateLiveData.hasInitialValue) {
+            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+                    ?: DEFAULT_DECIMAL_PRECISION
 
-        refundSummaryState = refundSummaryState.copy(
-                refundMethod = paymentTitle,
-                isMethodDescriptionVisible = isManualRefund
-        )
+            refundByAmountState = refundByAmountState.copy(
+                    currency = order.currency,
+                    decimals = decimals,
+                    availableForRefund = resourceProvider.getString(
+                            R.string.order_refunds_available_for_refund,
+                            formatCurrency(maxRefund)
+                    )
+            )
+        }
+    }
+
+    private fun initRefundSummaryState() {
+        if (refundSummaryStateLiveData.hasInitialValue) {
+            val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
+            val paymentTitle: String
+            val isManualRefund: Boolean
+            if (gateway.isEnabled) {
+                paymentTitle = if (gateway.supportsRefunds)
+                    gateway.title
+                else
+                    "$manualRefundMethod via ${gateway.title}"
+                isManualRefund = !gateway.supportsRefunds
+            } else {
+                paymentTitle = gateway.title
+                isManualRefund = true
+            }
+
+            refundSummaryState = refundSummaryState.copy(
+                    refundMethod = paymentTitle,
+                    isMethodDescriptionVisible = isManualRefund
+            )
+        }
     }
 
     private fun loadPaymentGateway(): PaymentGateway {
@@ -191,10 +155,11 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     fun onNextButtonTapped() {
         if (isInputValid()) {
+            refundSummaryStateLiveData.reset()
             refundSummaryState = refundSummaryState.copy(
                     isFormEnabled = true,
                     previouslyRefunded = formatCurrency(order.refundTotal),
-                    refundAmount = formatCurrency(enteredAmount)
+                    refundAmount = formatCurrency(refundByAmountState.enteredAmount)
             )
 
             AnalyticsTracker.track(
@@ -210,8 +175,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onManualRefundAmountChanged(amount: BigDecimal) {
-        if (enteredAmount != amount) {
-            enteredAmount = amount
+        if (refundByAmountState.enteredAmount != amount) {
+            refundByAmountState = refundByAmountState.copy(enteredAmount = amount)
             showValidationState()
         }
     }
@@ -224,10 +189,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             triggerEvent(
                     ShowSnackbar(
-                            resourceProvider.getString(
-                                    R.string.order_refunds_amount_refund_progress_message,
-                                    formatCurrency(enteredAmount)
-                            ),
+                            R.string.order_refunds_amount_refund_progress_message,
+                            arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
                             undoAction = {
                                 AnalyticsTracker.track(
                                         CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
@@ -245,20 +208,28 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                 // pause here until the snackbar is dismissed to allow for undo action
                 val wasRefundCanceled = waitForCancellation()
+                triggerEvent(ShowSnackbar(
+                        R.string.order_refunds_amount_refund_progress_message,
+                        arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
+                        isEndless = true)
+                )
+
                 if (!wasRefundCanceled) {
                     AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
-                            AnalyticsTracker.KEY_REFUND_IS_FULL to (enteredAmount isEqualTo maxRefund).toString(),
+                            AnalyticsTracker.KEY_REFUND_IS_FULL to
+                                    (refundByAmountState.enteredAmount isEqualTo maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_TYPE to REFUND_TYPE_AMOUNT,
                             AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
-                            AnalyticsTracker.KEY_REFUND_AMOUNT to enteredAmount.toString()
+                            AnalyticsTracker.KEY_REFUND_AMOUNT to
+                                    refundByAmountState.enteredAmount.toString()
                     ))
 
-                    val resultCall = async(dispatchers.main) {
+                    val resultCall = async(dispatchers.io) {
                         return@async refundStore.createRefund(
                                 selectedSite.get(),
                                 order.remoteId,
-                                enteredAmount,
+                                refundByAmountState.enteredAmount,
                                 reason,
                                 gateway.supportsRefunds
                         )
@@ -273,11 +244,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
                         )
 
-                        triggerEvent(
-                                ShowSnackbar(
-                                        resourceProvider.getString(R.string.order_refunds_amount_refund_error)
-                                )
-                        )
+                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
                     } else {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
@@ -288,18 +255,14 @@ class IssueRefundViewModel @AssistedInject constructor(
                             noteRepository.createOrderNote(order.identifier, reason, true)
                         }
 
-                        triggerEvent(
-                                ShowSnackbar(
-                                        resourceProvider.getString(R.string.order_refunds_amount_refund_successful)
-                                )
-                        )
-                        triggerEvent(ExitAfterRefund)
+                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
+                        triggerEvent(Exit)
                     }
                 }
                 refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
             }
         } else {
-            triggerEvent(ShowSnackbar(resourceProvider.getString(R.string.offline_error)))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
     }
 
@@ -317,8 +280,8 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     private fun validateInput(): InputValidationState {
         return when {
-            enteredAmount > maxRefund -> return TOO_HIGH
-            enteredAmount isEqualTo BigDecimal.ZERO -> TOO_LOW
+            refundByAmountState.enteredAmount > maxRefund -> return TOO_HIGH
+            refundByAmountState.enteredAmount isEqualTo BigDecimal.ZERO -> TOO_LOW
             else -> VALID
         }
     }
@@ -352,7 +315,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     data class RefundByAmountViewState(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val availableForRefund: String? = null
+        val availableForRefund: String? = null,
+        val enteredAmount: BigDecimal = BigDecimal.ZERO
     ) : Parcelable
 
     @Parcelize
@@ -372,11 +336,9 @@ class IssueRefundViewModel @AssistedInject constructor(
     ) : Parcelable
 
     sealed class IssueRefundEvent : Event() {
-        data class ShowSnackbar(val message: String, val undoAction: (() -> Unit)? = null) : IssueRefundEvent()
         data class ShowValidationError(val message: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
         object ShowRefundSummary : IssueRefundEvent()
-        object ExitAfterRefund : IssueRefundEvent()
     }
 
     @AssistedInject.Factory

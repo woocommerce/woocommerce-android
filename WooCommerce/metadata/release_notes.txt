@@ -1,4 +1,1 @@
-* Hooray! We now support Android 10!
-* The orders tab has had an extreme makeover! Search and filtering share a single view that includes a total count of orders by order status. The orders list is displayed in two tabs: Processing & All.
-* The order detail view has also received some touchups.
-* Several minor bug fixes are also included in this release.
+- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.

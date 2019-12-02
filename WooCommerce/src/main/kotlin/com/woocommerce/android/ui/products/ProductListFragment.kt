@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -26,7 +27,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
-import com.woocommerce.android.ui.products.ProductListViewModel.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
@@ -41,8 +42,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        private const val KEY_SEARCH_ACTIVE = "search_active"
-        private const val KEY_SEARCH_QUERY = "search_query"
+        const val KEY_LIST_STATE = "list-state"
         fun newInstance() = ProductListFragment()
     }
 
@@ -50,6 +50,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var productAdapter: ProductListAdapter
+    private var listState: Parcelable? = null
 
     private val viewModel: ProductListViewModel by viewModels { viewModelFactory }
 
@@ -57,16 +58,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private var isSearchActive: Boolean = false
-    private var searchQuery: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        savedInstanceState?.let { bundle ->
-            isSearchActive = bundle.getBoolean(KEY_SEARCH_ACTIVE)
-            searchQuery = bundle.getString(KEY_SEARCH_QUERY)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,6 +72,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
+
+        listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
         productAdapter = ProductListAdapter(activity, this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
@@ -98,23 +91,21 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     ContextCompat.getColor(activity, R.color.colorAccent),
                     ContextCompat.getColor(activity, R.color.colorPrimaryDark)
             )
-            scrollUpChild = productsRecycler
+            scrollUpChild = scroll_view
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
-                viewModel.refreshProducts(searchQuery)
+                viewModel.onRefreshRequested()
             }
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(KEY_SEARCH_ACTIVE, isSearchActive)
-        outState.putString(KEY_SEARCH_QUERY, searchQuery)
     }
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(KEY_LIST_STATE, productsRecycler.layoutManager?.onSaveInstanceState())
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {
@@ -132,7 +123,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
+        setupObservers(viewModel)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -179,11 +170,12 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         searchMenuItem?.let { menuItem ->
             if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
 
+            val isSearchActive = viewModel.viewStateLiveData.liveData.value?.isSearchActive == true
             if (menuItem.isActionViewExpanded != isSearchActive) {
                 disableSearchListeners()
                 if (isSearchActive) {
                     menuItem.expandActionView()
-                    searchView?.setQuery(searchQuery, false)
+                    searchView?.setQuery(viewModel.viewStateLiveData.liveData.value?.query, false)
                 } else {
                     menuItem.collapseActionView()
                 }
@@ -211,14 +203,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         }
     }
 
-    private fun clearSearchResults() {
-        if (isSearchActive) {
-            isSearchActive = false
-            searchQuery = null
-            disableSearchListeners()
-            updateActivityTitle()
-            searchMenuItem?.collapseActionView()
-        }
+    private fun closeSearchView() {
+        disableSearchListeners()
+        updateActivityTitle()
+        searchMenuItem?.collapseActionView()
     }
 
     private fun disableSearchListeners() {
@@ -232,55 +220,56 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        submitSearch(query)
+        viewModel.onSearchRequested()
         org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
         return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        if (newText.length > 2) {
-            submitSearch(newText)
-        } else {
-            productAdapter.clearAdapterData()
-        }
-        showEmptyView(false)
+        viewModel.onSearchQueryChanged(newText)
         return true
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-        productAdapter.clearAdapterData()
-        isSearchActive = true
+        viewModel.onSearchOpened()
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-        clearSearchResults()
-        viewModel.loadProducts()
+        viewModel.onSearchClosed()
+        closeSearchView()
         return true
     }
 
-    private fun submitSearch(query: String) {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
-                mapOf(AnalyticsTracker.KEY_SEARCH to query)
-        )
-        viewModel.loadProducts(searchQuery = query)
-        searchQuery = query
-    }
-
-    private fun initializeViewModel() {
-        setupObservers(viewModel)
-        viewModel.start(searchQuery)
-    }
-
     private fun setupObservers(viewModel: ProductListViewModel) {
-        viewModel.viewStateLiveData.observe(this) { old, new ->
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
-            new.productList?.takeIfNotEqualTo(old?.productList) { showProductList(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
+            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
+                if (isEmptyViewVisible) {
+                    val message: Int
+                    val showImage: Boolean
+                    if (new.isSearchActive == true) {
+                        message = R.string.product_list_empty_search
+                        showImage = false
+                    } else {
+                        message = R.string.product_list_empty
+                        showImage = !DisplayUtils.isLandscape(activity)
+                    }
+
+                    empty_view.show(message, showImage)
+                } else {
+                    empty_view.hide()
+                }
+            }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.productList.observe(viewLifecycleOwner, Observer {
+            showProductList(it)
+        })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
@@ -291,7 +280,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun refreshFragmentState() {
         if (isActive) {
-            viewModel.refreshProducts(searchQuery)
+            viewModel.refreshProducts()
         }
     }
 
@@ -301,6 +290,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
+            showProductWIPNoticeCard(false)
             skeletonView.show(productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
@@ -311,22 +301,22 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun showEmptyView(show: Boolean) {
-        if (show) {
-            if (isSearchActive) {
-                empty_view.show(R.string.product_list_empty_search, false)
-            } else {
-                val showImage = !DisplayUtils.isLandscape(activity)
-                empty_view.show(R.string.product_list_empty, showImage)
-            }
-        } else {
-            empty_view.hide()
-        }
-    }
-
     private fun showProductList(products: List<Product>) {
         productAdapter.setProductList(products)
-        showEmptyView(products.isEmpty())
+        listState?.let {
+            productsRecycler.layoutManager?.onRestoreInstanceState(it)
+            listState = null
+        }
+        showProductWIPNoticeCard(true)
+    }
+
+    private fun showProductWIPNoticeCard(show: Boolean) {
+        if (show) {
+            products_wip_card.visibility = View.VISIBLE
+            products_wip_card.initView()
+        } else {
+            products_wip_card.visibility = View.GONE
+        }
     }
 
     override fun onProductClick(remoteProductId: Long) {
@@ -336,6 +326,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     override fun onRequestLoadMore() {
-        viewModel.loadProducts(loadMore = true, searchQuery = searchQuery)
+        viewModel.onLoadMoreRequested()
     }
 }

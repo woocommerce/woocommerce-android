@@ -17,8 +17,8 @@ abstract class IssueRefundModule {
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(): Bundle? {
-            return null
+        fun provideDefaultArgs(fragment: IssueRefundFragment): Bundle? {
+            return fragment.arguments
         }
     }
 

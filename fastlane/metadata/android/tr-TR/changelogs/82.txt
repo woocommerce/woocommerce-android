@@ -1,4 +1,0 @@
-2.8:
-* Sipariş listesi aramasında imleç yoktu. Artık var!
-* Güncellenen sipariş ayrıntıları ekranı, düzenlediğiniz para iadelerinin listesini de gösterir.
-* “İncelemeler” sekmesi, artık mağazanın tüm ürün incelemelerini görüntüler.

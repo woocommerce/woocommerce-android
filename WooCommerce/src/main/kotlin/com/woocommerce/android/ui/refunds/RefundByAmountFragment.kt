@@ -51,7 +51,9 @@ class RefundByAmountFragment : DaggerFragment() {
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 issueRefund_refundAmount.initView(new.currency, new.decimals, currencyFormatter)
             }
-            issueRefund_refundAmount.setValue(viewModel.enteredAmount)
+            new.enteredAmount.takeIfNotEqualTo(old?.enteredAmount) {
+                issueRefund_refundAmount.setValue(new.enteredAmount)
+            }
         }
 
         viewModel.event.observe(this, Observer { event ->

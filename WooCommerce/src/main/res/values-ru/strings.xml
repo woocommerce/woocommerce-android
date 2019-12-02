@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-16 00:55:06+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="button_edit_permissions">Изменить разрешения</string>
+    <string name="permission_camera">Камера</string>
+    <string name="permission_storage">Хранилище</string>
+    <string name="permissions_denied_message">Кажется, вы отключили разрешения, которые нужны для этой функции.&lt;br/>&lt;br/>Чтобы это изменить, отредактируйте разрешения и убедитесь, что параметр &lt;strong>%s&lt;/strong> включён.</string>
+    <string name="permissions_denied_title">Разрешения</string>
+    <string name="orders_processed_empty_message">Все заказы обработаны</string>
+    <string name="orders_empty_message_with_processing">Нет заказов для обработки</string>
+    <string name="orderdetail_note_system">Архитектура</string>
+    <string name="orderlist_search_hint">Поиск по заказам</string>
+    <string name="unknown">Неизвестный заголовок</string>
+    <string name="button_not_now">Не сейчас</string>
     <string name="product_search_hint">Поиск по товарам</string>
     <string name="product_list_empty_search">Нет соответствующих товаров</string>
     <string name="product_list_empty">В этом списке пока нет товаров</string>
@@ -49,7 +60,6 @@ Language: ru
     <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
     <string name="my_store_stats_availability_message">Представляем вам улучшенную статистику для магазинов, использующих плагин администратора WooCommerce</string>
     <string name="my_store_stats_availability_title">Оцените улучшенный раздел статистики</string>
-    <string name="my_store_stats_reverted_message">Восстановлен прежний формат статистики, поскольку\nплагин администратора WooCommerce не обнаружен</string>
     <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
     <string name="no_thanks">Нет, спасибо</string>
     <string name="try_it_now">Попробовать</string>
@@ -443,7 +453,7 @@ Language: ru
     <string name="app_rating_title">Нравится Woo?</string>
     <string name="settings_selected_store">Выбранный магазин</string>
     <string name="orders_empty_message_with_search">Нет похожих заказов</string>
-    <string name="orders_empty_message_with_filter">Заказов нет</string>
+    <string name="orders_empty_message_with_filter">Нет заказов</string>
     <string name="waiting_for_customers_contentdesc">Ожидание изображения от клиента</string>
     <string name="waiting_for_customers">Ожидание клиентов</string>
     <string name="share_store_dialog_title">Поделитесь URL-адресом своего магазина</string>
@@ -483,8 +493,7 @@ Language: ru
     <string name="back">Назад</string>
     <string name="notification_channel_review_title">Оповещения об обзоре товаров</string>
     <string name="notification_channel_order_title">Оповещения о новом заказе</string>
-    <string name="orderdetail_note_system">Состояние системы</string>
-    <string name="orderdetail_note_public">Примечание для клиента</string>
+    <string name="orderdetail_note_public">Заказчику</string>
     <string name="login_verifying_site">Проверка сайта…</string>
     <string name="button_update_instructions">Инструкции по обновлению</string>
     <string name="search">Поиск</string>
@@ -667,7 +676,7 @@ Language: ru
     <string name="orderdetail_payment_cleared">Платёж погашен</string>
     <string name="orderdetail_order_fulfillment">Выполнить заказ №%s</string>
     <string name="orderdetail_order_notes">Примечания к заказу</string>
-    <string name="orderdetail_note_private">Конфиденциальное примечание</string>
+    <string name="orderdetail_note_private">Личный</string>
     <string name="orderdetail_note_hint">Составить примечание к заказу</string>
     <string name="orderdetail_customer_image_contentdesc">Изображение профиля клиента</string>
     <string name="orderdetail_customer_provided_note">Примечание клиента</string>
@@ -772,4 +781,8 @@ Language: ru
     <string name="all">Все</string>
     <string name="notification_channel_general_title">Общее</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>В обработке</item>
+        <item>Все заказы</item>
+    </string-array>
 </resources>

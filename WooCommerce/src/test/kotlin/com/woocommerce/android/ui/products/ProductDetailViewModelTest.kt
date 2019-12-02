@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -13,11 +13,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -37,7 +37,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
-    private val savedState: SavedStateHandle = mock()
+    private val savedState: SavedStateWithArgs = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -89,7 +89,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
         var productData: ViewState? = null
-        viewModel.viewStateData.observeForever { old, new -> productData = new }
+        viewModel.viewStateData.observeForever { _, new -> productData = new }
 
         assertThat(productData).isEqualTo(ViewState())
 
@@ -103,16 +103,16 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         whenever(productRepository.fetchProduct(productRemoteId)).thenReturn(null)
         whenever(productRepository.getProduct(productRemoteId)).thenReturn(null)
 
-        var message: Int? = null
+        var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) message = it.message
+            if (it is ShowSnackbar) snackbar = it
         }
 
         viewModel.start(productRemoteId)
 
         verify(productRepository, times(1)).fetchProduct(productRemoteId)
 
-        assertThat(message).isEqualTo(R.string.product_detail_fetch_product_error)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_fetch_product_error))
     }
 
     @Test
@@ -120,9 +120,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        var message: Int? = null
+        var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) message = it.message
+            if (it is ShowSnackbar) snackbar = it
         }
 
         viewModel.start(productRemoteId)
@@ -130,7 +130,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(1)).getProduct(productRemoteId)
         verify(productRepository, times(0)).fetchProduct(any())
 
-        assertThat(message).isEqualTo(R.string.offline_error)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test

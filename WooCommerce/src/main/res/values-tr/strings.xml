@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-18 00:54:56+0000
+Translation-Revision-Date: 2019-10-31 00:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="button_edit_permissions">İzinleri düzenle</string>
+    <string name="permission_camera">Kamera</string>
+    <string name="permission_storage">Depolama Alanı</string>
+    <string name="permissions_denied_message">Görünen o ki bu özellik için gerekli izinleri kapatmışsınız.&lt;br/>&lt;br/>Bunu değiştirmek için izinlerinizi düzenleyin ve &lt;strong>%s&lt;/strong> izninin etkin olduğundan emin olun.</string>
+    <string name="permissions_denied_title">İzinler</string>
+    <string name="orders_processed_empty_message">Tüm siparişler işlendi</string>
+    <string name="orders_empty_message_with_processing">Henüz işlenecek sipariş yok</string>
+    <string name="orderdetail_note_system">Sistem</string>
+    <string name="orderlist_search_hint">Siparişleri ara</string>
+    <string name="unknown">Bilinmeyen</string>
+    <string name="button_not_now">Şimdi değil</string>
     <string name="product_search_hint">Ürünleri ara</string>
     <string name="product_list_empty_search">Eşleşen ürün yok</string>
     <string name="product_list_empty">Henüz ürün yok</string>
@@ -49,7 +60,6 @@ Language: tr
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
     <string name="my_store_stats_availability_message">WooCommerce Yönetici eklentisini kullanan mağazalar için istatistiklerde geliştirmeler yapıyoruz</string>
     <string name="my_store_stats_availability_title">Geliştirilmiş istatistiklerimizi deneyin</string>
-    <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük, çünkü\nWooCommerce Yönetici Eklentisi bulunamadı</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>
     <string name="no_thanks">Hayır, teşekkürler</string>
     <string name="try_it_now">Şimdi deneyin</string>
@@ -443,7 +453,7 @@ Language: tr
     <string name="app_rating_title">Woo kullanmaktan keyif aldınız mı?</string>
     <string name="settings_selected_store">Seçili mağaza</string>
     <string name="orders_empty_message_with_search">Eşleşen sipariş yok</string>
-    <string name="orders_empty_message_with_filter">Sipariş yok</string>
+    <string name="orders_empty_message_with_filter">Henüz sipariş yok</string>
     <string name="waiting_for_customers_contentdesc">Müşteri görseli bekleniyor</string>
     <string name="waiting_for_customers">Müşteriler bekleniyor</string>
     <string name="share_store_dialog_title">Mağazanızın URL\'sini paylaşın</string>
@@ -483,8 +493,7 @@ Language: tr
     <string name="back">Geri</string>
     <string name="notification_channel_review_title">Ürün incelemesi uyarıları</string>
     <string name="notification_channel_order_title">Yeni sipariş uyarıları</string>
-    <string name="orderdetail_note_system">Sistem durumu</string>
-    <string name="orderdetail_note_public">Müşteriye not</string>
+    <string name="orderdetail_note_public">Müşteriye</string>
     <string name="login_verifying_site">Site doğrulanıyor…</string>
     <string name="button_update_instructions">Güncelleme yönergeleri</string>
     <string name="search">Ara</string>
@@ -667,7 +676,7 @@ Language: tr
     <string name="orderdetail_payment_cleared">Ödeme Tamamlandı</string>
     <string name="orderdetail_order_fulfillment">%s Numaralı Siparişi Yerine Getirin</string>
     <string name="orderdetail_order_notes">Sipariş Notları</string>
-    <string name="orderdetail_note_private">Özel Not</string>
+    <string name="orderdetail_note_private">Özel</string>
     <string name="orderdetail_note_hint">Sipariş notu oluşturun</string>
     <string name="orderdetail_customer_image_contentdesc">Müşteri profil görseli</string>
     <string name="orderdetail_customer_provided_note">Müşterinin Verdiği Not</string>
@@ -772,4 +781,8 @@ Language: tr
     <string name="all">Tümü</string>
     <string name="notification_channel_general_title">Genel</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>İşlemde</item>
+        <item>Tüm Siparişler</item>
+    </string-array>
 </resources>
