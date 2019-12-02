@@ -87,8 +87,10 @@ class RefundProductListAdapter(
     ) : Parcelable {
         fun toDataModel(): WCRefundItem {
             return WCRefundItem(
-                    product.productId,
-                    quantity.toFloat()
+                    product.itemId,
+                    quantity,
+                    quantity.toBigDecimal().times(product.price),
+                    product.totalTax.divide(product.quantity.toBigDecimal()).times(quantity.toBigDecimal())
             )
         }
     }

@@ -302,7 +302,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 refundStore.createItemsRefund(
                                         selectedSite.get(),
                                         order.remoteId,
-                                        commonState.refundTotal,
                                         reason,
                                         true,
                                         gateway.supportsRefunds,

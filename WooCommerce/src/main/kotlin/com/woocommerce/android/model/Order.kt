@@ -43,6 +43,7 @@ data class Order(
 ) : Parcelable {
     @Parcelize
     data class Item(
+        val itemId: Long,
         val productId: Long,
         val name: String,
         val price: BigDecimal,
@@ -127,16 +128,16 @@ fun WCOrderModel.toAppModel(): Order {
             getLineItemList()
                     .filter { it.productId != null }
                     .map {
-                        Item(
-                                it.productId!!,
-                                it.name ?: "",
-                                it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.sku ?: "",
-                                it.quantity?.toInt() ?: 0,
-                                it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.variationId ?: 0
+                        Item(it.id!!,
+                            it.productId!!,
+                            it.name ?: "",
+                            it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                            it.sku ?: "",
+                            it.quantity?.toInt() ?: 0,
+                            it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                            it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                            it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                            it.variationId ?: 0
                         )
                     }
     )

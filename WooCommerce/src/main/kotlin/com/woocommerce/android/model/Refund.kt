@@ -20,7 +20,7 @@ data class Refund(
     data class Item(
         val productId: Long,
         val quantity: Int,
-        val itemId: Long = 0,
+        val id: Long = 0,
         val name: String = "",
         val variationId: Long = 0,
         val subtotal: BigDecimal = BigDecimal.ZERO,
@@ -44,15 +44,15 @@ fun WCRefundModel.toAppModel(): Refund {
 
 fun WCRefundItem.toAppModel(): Refund.Item {
     return Refund.Item(
-            productId,
-            -quantity.toInt(), // WCRefundItem.quantity is NEGATIVE
+            productId ?: -1,
+            -quantity, // WCRefundItem.quantity is NEGATIVE
             itemId,
-            name,
-            variationId,
+            name ?: "",
+            variationId ?: -1,
             -subtotal, // WCRefundItem.subtotal is NEGATIVE
-            -total, // WCRefundItem.total is NEGATIVE
+            -(total ?: BigDecimal.ZERO), // WCRefundItem.total is NEGATIVE
             -totalTax, // WCRefundItem.totalTax is NEGATIVE
-            sku,
-            price
+            sku ?: "",
+            price ?: BigDecimal.ZERO
     )
 }
