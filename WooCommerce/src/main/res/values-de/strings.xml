@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-13 00:54:04+0000
+Translation-Revision-Date: 2019-11-27 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">Es gab Probleme beim Abrufen deines Kontos. Du kannst es jetzt oder es schließen und später erneut versuchen.</string>
+    <string name="magic_link_update_error">Es ist ein Fehler aufgetreten. Melde dich an, umfortzufahren</string>
+    <string name="login_magic_link_token_updating">Verbindung mit deiner Website wird hergestellt…</string>
+    <string name="product_variants">Varianten</string>
+    <string name="product_property_edit">Produkt bearbeiten</string>
+    <string name="product_variants_fetch_product_variants_error">Fehler beim Abrufen von Produktvarianten</string>
+    <string name="my_store_stats_reverted_message">Wir sind zu den alten Statistiken zurückgekehrt. Um die Beta-Statistiken zu verwenden, aktiviere das WooCommerce Admin-Plugin mit Version 0.22 oder höher</string>
+    <string name="login_discovery_error_option_select">Eine Option auswählen</string>
+    <string name="login_troubleshooting_tips">Tipps zur Fehlerbehebung lesen</string>
+    <string name="login_with_wordpress">Mit WordPress.com anmelden</string>
+    <string name="login_discovery_error_options">Du kannst auch einige andere Dinge ausprobieren:</string>
+    <string name="login_discovery_error_title">Verbindungsfehler</string>
+    <string name="login_jetpack_not_found">Jetpack nicht gefunden. Versuche es bitte noch einmal</string>
+    <string name="login_jetpack_view_setup_instructions">Einrichtungsanweisungen anzeigen</string>
+    <string name="login_no_jetpack">Um diese App für %1$s zu verwenden, muss das Jetpack-Plugin eingerichtet und mit einem WordPress.com-Konto verbunden sein</string>
+    <string name="login_no_jetpack_username">Angemeldet als @%1$s\nFalsches Konto? %2$s</string>
+    <string name="try_again">Erneut versuchen</string>
+    <string name="product_variations">Variationen</string>
     <string name="order_refunds_refund_manual_refund_note">Diese Zahlungsmethode unterstützt keine automatischen Rückerstattungen. Schließe die Rückerstattung ab, indem du das Geld manuell an den Kunden überweist.</string>
     <string name="orderdetail_shipping_notice">Diese Bestellung nutzt Erweiterungen, um die Versandkosten zu berechnen. Die angezeigten Versandmethoden sind möglicherweise unvollständig.</string>
     <string name="orderdetail_shipping_method">Versandmethode</string>
@@ -442,7 +460,6 @@ Language: de
     <string name="promo_btn_got_it">Alles klar</string>
     <string name="tooltip_site_switcher">Hier tippen, um zwischen Shops zu wechseln</string>
     <string name="site_picker_title">Shop auswählen</string>
-    <string name="username">WordPress.com-Benutzername</string>
     <string name="settings_signout">Abmelden</string>
     <string name="orderstatus_select_status">Auftragsstatus ändern</string>
     <string name="order_status_changed_to">Auftragsstatus zu %s geändert</string>
@@ -612,7 +629,7 @@ Language: de
     <string name="enter_wpcom_password">Gib dein WordPress.com-Passwort ein.</string>
     <string name="magic_link_unavailable_error_message">Zur Zeit nicht verfügbar. Bitte gib dein Passwort ein</string>
     <string name="login_magic_link_email_requesting">Anmelde-E-Mail wird angefordert</string>
-    <string name="login_magic_links_sent_label">Dein magischer Link ist unterwegs! Überprüfe deine E-Mails auf diesem Gerät und tippe auf den Link in der E-Mail, die du von WordPress.com erhältst.</string>
+    <string name="login_magic_links_sent_label">E-Mail wurde gesendet! Überprüfe deine E-Mails auf diesem Gerät und tippe auf den Link in der E-Mail, die du von WordPress.com erhältst.</string>
     <string name="login_magic_links_label">Wir senden dir per E-Mail einen magischen Link, mit dem du sofort angemeldet wirst, ohne dass du ein Passwort eingeben musst. Kein Zweifingersystem mehr!</string>
     <string name="password_incorrect">Dieses Passwort ist anscheinend falsch. Prüfe bitte deine Angaben und versuche es erneut.</string>
     <string name="email_not_registered_wpcom">Hmm, wir können kein WordPress.com-Konto finden, das mit dieser E-Mail-Adresse verknüpft ist. Versuche, dich über den unten stehenden Link mit deiner Website-Adresse anzumelden.</string>
