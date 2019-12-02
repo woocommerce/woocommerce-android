@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.refunds
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.R
 import dagger.Module

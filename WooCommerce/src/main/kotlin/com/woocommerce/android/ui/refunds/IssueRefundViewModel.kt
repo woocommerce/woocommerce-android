@@ -279,7 +279,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                                         reason,
                                         true,
                                         gateway.supportsRefunds,
-                                        emptyList()//refundByItemsState.items
+                                        emptyList()
                                 )
                             }
                             AMOUNT -> {
@@ -373,7 +373,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundTabChanged(type: RefundType) {
-        val refundAmount = when (type){
+        val refundAmount = when (type) {
             ITEMS -> refundByItemsState.totalRefund
             AMOUNT -> refundByAmountState.enteredAmount
         }
