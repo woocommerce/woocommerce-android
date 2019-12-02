@@ -42,4 +42,10 @@
         <attr name="showAddImageIcon" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="BorderedImageView">
+        <attr name="borderColor" format="color" />
+        <attr name="borderSize" format="dimension" />
+        <attr name="borderRadius" format="float" />
+    </declare-styleable>
+
 </resources>
