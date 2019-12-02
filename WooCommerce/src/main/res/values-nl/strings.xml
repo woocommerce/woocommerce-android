@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-13 00:54:04+0000
+Translation-Revision-Date: 2019-11-28 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">Er is een probleem opgetreden bij het ophalen van je account. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
+    <string name="magic_link_update_error">Er is een fout opgetreden. Log in om door te gaan</string>
+    <string name="login_magic_link_token_updating">Je site wordt gekoppeld …</string>
+    <string name="product_variants">Varianten</string>
+    <string name="product_property_edit">Product bewerken</string>
+    <string name="product_variants_fetch_product_variants_error">Fout bij ophalen productvariaties</string>
+    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld. Om de bèta-statistieken te kunnen gebruiken, moet je de WooCommerce Admin-plugin met versie 0.22 of hoger activeren</string>
+    <string name="login_discovery_error_option_select">Selecteer een optie</string>
+    <string name="login_troubleshooting_tips">Bekijk onze tips voor probleemoplossing</string>
+    <string name="login_with_wordpress">Aanmelden via WordPress.com</string>
+    <string name="login_discovery_error_options">Je kunt ook de volgende oplossingen proberen:</string>
+    <string name="login_discovery_error_title">Verbindingsfout</string>
+    <string name="login_jetpack_not_found">Jetpack niet gevonden. Probeer het nog eens</string>
+    <string name="login_jetpack_view_setup_instructions">Bekijk de configuratie-instructies</string>
+    <string name="login_no_jetpack">Om deze app te gebruiken voor %1$s, moet de Jetpack-plugin ingesteld zijn en gekoppeld zijn aan een WordPress.com-account.</string>
+    <string name="login_no_jetpack_username">Aangemeld als @%1$s\nVerkeerde account? %2$s</string>
+    <string name="try_again">Opnieuw proberen</string>
+    <string name="product_variations">Variaties</string>
     <string name="order_refunds_refund_manual_refund_note">De betaalmethode ondersteunt geen automatische terugbetalingen. Voltooi de terugbetaling door het bedrag handmatig over te maken naar de klant.</string>
     <string name="orderdetail_shipping_notice">Deze bestelling maakt gebruik van extensies om de verzendkosten te berekenen. De verzendmethoden zijn mogelijk niet volledig.</string>
     <string name="orderdetail_shipping_method">Verzendmethode</string>
@@ -442,7 +460,6 @@ Language: nl
     <string name="promo_btn_got_it">Duidelijk</string>
     <string name="tooltip_site_switcher">Tik om tussen winkels te schakelen</string>
     <string name="site_picker_title">Kies winkel</string>
-    <string name="username">Gebruikersnaam voor WordPress.com</string>
     <string name="settings_signout">Uitloggen</string>
     <string name="orderstatus_select_status">Bestelstatus wijzigen</string>
     <string name="order_status_changed_to">Bestelstatus gewijzigd naar %s</string>
@@ -612,7 +629,7 @@ Language: nl
     <string name="enter_wpcom_password">Voer je WordPress.com wachtwoord in.</string>
     <string name="magic_link_unavailable_error_message">Momenteel niet beschikbaar. Voer je wachtwoord in</string>
     <string name="login_magic_link_email_requesting">E-mail voor inloggen aangevraagd</string>
-    <string name="login_magic_links_sent_label">Je magische link is onderweg! Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt.</string>
+    <string name="login_magic_links_sent_label">E-mail verzonden! Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt</string>
     <string name="login_magic_links_label">We sturen je een e-mail met een magische link waarmee je onmiddellijk kunt inloggen, zonder wachtwoord. Nooit meer moeite doen!</string>
     <string name="password_incorrect">Het lijkt erop alsof dit wachtwoord onjuist is. Controleer je gegevens en probeer het nogmaals.</string>
     <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres. Probeer de link hieronder om in te loggen met je site-adres.</string>

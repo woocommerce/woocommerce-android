@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-13 00:54:04+0000
+Translation-Revision-Date: 2019-11-27 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">Det uppstod ett fel när ditt konto skulle hämtas. Du kan försöka igen nu eller stänga och försöka igen senare.</string>
+    <string name="magic_link_update_error">Ett fel har uppstått. Logga in för att fortsätta</string>
+    <string name="login_magic_link_token_updating">Ansluter till din webbplats …</string>
+    <string name="product_variants">Varianter</string>
+    <string name="product_property_edit">Redigera produkt</string>
+    <string name="product_variants_fetch_product_variants_error">Ett fel uppstod när produktvarianterna skulle hämtas</string>
+    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.22 eller senare</string>
+    <string name="login_discovery_error_option_select">Välj ett alternativ</string>
+    <string name="login_troubleshooting_tips">Läs våra felsökningstips</string>
+    <string name="login_with_wordpress">Logga in med WordPress.com</string>
+    <string name="login_discovery_error_options">Här är några andra saker du kan prova:</string>
+    <string name="login_discovery_error_title">Kommunikationsfel</string>
+    <string name="login_jetpack_not_found">Jetpack hittades inte. Vänligen försök igen</string>
+    <string name="login_jetpack_view_setup_instructions">Visa konfigurationsinstruktioner</string>
+    <string name="login_no_jetpack">För att använda den här appen för %1$s behöver du installera Jetpack-tillägget och ansluta det till ett WordPress.com-konto</string>
+    <string name="login_no_jetpack_username">Inloggad som @%1$s\nFel konto? %2$s</string>
+    <string name="try_again">Försök igen</string>
+    <string name="product_variations">Varianter</string>
     <string name="order_refunds_refund_manual_refund_note">Betalningsmetoden stöder inte automatiska återbetalningar. Slutför återbetalningen genom att överföra pengarna till kunden manuellt.</string>
     <string name="orderdetail_shipping_notice">Den här beställningen använder tillägg för att beräkna frakten. De fraktmetoder som visas kan vara ofullständiga.</string>
     <string name="orderdetail_shipping_method">Fraktmetod</string>
@@ -442,7 +460,6 @@ Language: sv_SE
     <string name="promo_btn_got_it">Klart</string>
     <string name="tooltip_site_switcher">Peka för att byta butiker</string>
     <string name="site_picker_title">Välj affär</string>
-    <string name="username">WordPress.com-användarnamn</string>
     <string name="settings_signout">Logga ut</string>
     <string name="orderstatus_select_status">Ändra orderstatus</string>
     <string name="order_status_changed_to">Orderstatus ändrad till %s</string>
@@ -612,7 +629,7 @@ Language: sv_SE
     <string name="enter_wpcom_password">Skriv in ditt lösenord för WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">Inte tillgänglig för närvarande. Ange ditt lösenord</string>
     <string name="login_magic_link_email_requesting">Begär e-postadress för inloggning</string>
-    <string name="login_magic_links_sent_label">Din magiska länk är på väg! Kolla e-posten på din enhet och knacka på länken i e-postmeddelandet du just fick från WordPress.com</string>
+    <string name="login_magic_links_sent_label">E-postmeddelande skickat! Kolla e-posten på din enhet och tryck på länken i det e-postmeddelande som du får från WordPress.com</string>
     <string name="login_magic_links_label">Vi skickar en magisk länk som låter dig logga in direkt, utan något lösenord. Slut på pekfingervalsandet!</string>
     <string name="password_incorrect">Det verkar som om ditt lösenord inte stämmer. Dubbelkolla dina uppgifer och försök igen.</string>
     <string name="email_not_registered_wpcom">Hmm, vi kan inte hitta något konto på WordPress.com som är kopplat till denna e-postadress. Prova länken nedan för att logga in med din webbsideadress.</string>

@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-13 00:54:04+0000
+Translation-Revision-Date: 2019-11-27 00:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">При загрузке вашей учетной записи произошла ошибка. Повторите попытку сейчас или закройте и попробуйте позже.</string>
+    <string name="magic_link_update_error">Произошла ошибка. Войдите, чтобы продолжить.</string>
+    <string name="login_magic_link_token_updating">Подключение к сайту…</string>
+    <string name="product_variants">Варианты</string>
+    <string name="product_property_edit">Изменить продукт</string>
+    <string name="product_variants_fetch_product_variants_error">Ошибка при получении вариантов продукта</string>
+    <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин администратора WooCommerce 0.22 или более поздней версии.</string>
+    <string name="login_discovery_error_option_select">Выберите вариант.</string>
+    <string name="login_troubleshooting_tips">Просмотрите советы по устранению неполадок</string>
+    <string name="login_with_wordpress">Войти с помощью WordPress.com</string>
+    <string name="login_discovery_error_options">Можно также сделать следующее:</string>
+    <string name="login_discovery_error_title">Ошибка подключения</string>
+    <string name="login_jetpack_not_found">Jetpack не найден. Попробуйте еще раз</string>
+    <string name="login_jetpack_view_setup_instructions">Открыть инструкции по настройке</string>
+    <string name="login_no_jetpack">Чтобы использовать это приложение для %1$s, нужно настроить плагин Jetpack и подключить его к учетной записи WordPress.com</string>
+    <string name="login_no_jetpack_username">Выполнен вход от имени @%1$s\nНе та учетная запись? %2$s</string>
+    <string name="try_again">Повторить попытку</string>
+    <string name="product_variations">Варианты</string>
     <string name="order_refunds_refund_manual_refund_note">Этот способ оплаты не поддерживает автоматический возврат средств. Верните средства, отправив деньги покупателю вручную.</string>
     <string name="orderdetail_shipping_notice">В этом заказе используются расширения для расчета суммы доставки. Возможно, показаны не все способы доставки.</string>
     <string name="orderdetail_shipping_method">Способ доставки</string>
@@ -442,7 +460,6 @@ Language: ru
     <string name="promo_btn_got_it">Понятно</string>
     <string name="tooltip_site_switcher">Нажмите, чтобы переключиться между магазинами</string>
     <string name="site_picker_title">Выбрать магазин</string>
-    <string name="username">Имя пользователя WordPress.com</string>
     <string name="settings_signout">Выйти</string>
     <string name="orderstatus_select_status">Изменить статус заказа</string>
     <string name="order_status_changed_to">Статус заказа изменен на %s</string>
@@ -612,7 +629,7 @@ Language: ru
     <string name="enter_wpcom_password">Введите свой пароль на WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">В настоящий момент ссылка недоступна. Введите пароль</string>
     <string name="login_magic_link_email_requesting">Выполняется запрос электронного письма со ссылкой для входа</string>
-    <string name="login_magic_links_sent_label">Ваша волшебная ссылка уже в пути! Проверьте почту с этого устройства и нажмите ссылку в письме от WordPress.com.</string>
+    <string name="login_magic_links_sent_label">Письмо отправлено! Проверьте почту на этом устройстве и нажмите ссылку в письме от WordPress.com</string>
     <string name="login_magic_links_label">Мы отправим вам волшебную ссылку, по которой вы сможете сразу войти в систему без пароля. Не нужно больше тыкать по клавиатуре!</string>
     <string name="password_incorrect">Похоже, пароль введён неправильно. Проверьте правильность введенных данных и повторите попытку.</string>
     <string name="email_not_registered_wpcom">Хм, мы не можем найти учетную запись WordPress.com по указанному email адресу. Попробуйте войти по ссылке ниже указав адрес сайта.</string>

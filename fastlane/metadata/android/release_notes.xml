@@ -1,119 +1,60 @@
-<ar>
-3.0:
-* يدعم التطبيق الآن عمليات استرداد الأموال حسب المبلغ. يتوافر على شاشة تفاصيل الطلب، ويتيح لك إصدار استرداد أموال جزئي أو كامل يدويًا لطلب مدفوع.
-* تُظهر المنتجات ذات الصور المتعددة جميع الصور الآن في المعرض.
-* إصلاح الخطأ: نادرًا ما يؤدي الحفظ أثناء الوجود على شاشة "إضافة ملحوظة الطلب" إلى حدوث عطل. أما الآن، فكلمة "نادرًا" أصبحت "أبدًا".
-* يتضمن عرض تفاصيل الطلب الآن طريقة شحن الطلب.
-</ar>
 <de-DE>
-3.0:
-* Die App unterstützt jetzt Rückerstattung nach Betrag. Diese Option findest du auf dem Bildschirm der Bestelldetails, und du kannst manuell eine teilweise oder vollständige Rückerstattung für einen bezahlten Auftrag gewähren.
-* Bei Produkten mit mehreren Bildern werden jetzt alle Bilder in einer Galerie angezeigt.
-* Fehlerkorrektur: Selten führte der Speichervorgang auf dem Bildschirm zum Hinzufügen einer Notiz zum Auftrag zu einem Absturz. Jetzt wurde aus „selten“ nie.
-* Die Ansicht mit den Auftragsdetails beinhaltet jetzt die Versandmethode für den Auftrag.
+3.1:
+- Du kannst dich nicht mehr an deine Anmeldedaten von WordPress.com erinnern? Kein Problem! Wir haben eine neue Option hinzugefügt, mit der Benutzer sich mit ihren Website-Anmeldedaten anmelden können. Wenn diese Anmeldedaten funktionieren, ruft die App die Informationen des verknüpften WordPress.com-Kontos ab und ermöglicht dem Benutzer, die Anmeldung über einen magischen Link abzuschließen.
 </de-DE>
 <es-ES>
-3.0:
-* Ahora la aplicación admite reembolsos por importe. Está disponible en la pantalla de detalles del pedido y te permite emitir manualmente un reembolso parcial o total en un pedido pagado.
-* Los productos con varias imágenes ahora las muestran todas en una galería.
-* Corrección de errores: En raras ocasiones, el guardado en la pantalla "Añadir nota de pedido" provocaba un error. Ahora, "en raras ocasiones" es "nunca".
-* La vista de detalles del pedido ahora incluye el método de envío.
+3.1:
+- ¿Has olvidado tus credenciales de WordPress.com? ¡No hay problema! Hemos añadido una nueva opción que permite a los usuarios acceder con las credenciales de su sitio. Si las credenciales funcionan, la aplicación obtendrá la información de la cuenta de WordPress.com conectada y permitirá a los usuarios completar el proceso de acceso con un enlace mágico.
 </es-ES>
 <fr-FR>
-3.0 :
-* L'application prend désormais en charge les remboursements par montant. Cette fonctionnalité est disponible sur l'écran des détails de la commande et vous permet d'exécuter manuellement un remboursement partiel ou complet d'une commande payée.
-* Lorsque des produits possèdent plusieurs images, elles sont désormais toutes présentées dans une galerie.
-* Résolution de bug : il arrivait dans de rares cas un échec de l'enregistrement à partir de l'écran « Ajouter une note à la commande ». Désormais, il n'y a plus aucun échec de l'enregistrement.
-* La vue présentant les détails de la commande mentionne désormais le mode de livraison de la commande.
+3.1 :
+- Vous avez oublié vos identifiants WordPress.com ? Pas de problème. Nous avons ajouté une nouvelle option qui permet à l'utilisateur de se connecter avec les identifiants de son site. Si ces identifiants fonctionnent, l'application récupère les informations du compte WordPress.com connecté et autorise l'utilisateur à terminer la procédure de connexion à l'aide d'un lien magique.
 </fr-FR>
 <iw-IL>
-3.0:
-* כעת האפליקציה תומכת בהחזרים כספיים לפי סכום. אפשרות זו זמינה במסך הפרטים של ההזמנה. ניתן לבצע ידנית החזר חלקי או מלא עבור הזמנה ששולמה.
-* מוצרים עם תמונות מרובות יוצגו מעכשיו עם כל התמונות בגלריה.
-* תיקוני באגים: לעתים נדירות, שמירה במסך 'הוספת פתק להזמנה' הייתה גורמת לקריסה. עכשיו, זה כבר לא קורה.
-* בתצוגה של פירוט ההזמנה אפשר עכשיו לראות את שיטת המשלוח שנבחרה.
+3.1:
+- אין לך מושג מהם פרטי הכניסה שלך ל-WordPress.com? אין בעיה! הוספנו אפשרויות חדשות שמאפשרות למשתמש להתחבר באמצעות פרטי הכניסה שלו לאתר. אם פרטי הכניסה האלה יעבדו, היישום יביא את המידע של החשבון המקושר ב-WordPress.com ויאפשר למשתמש להשלים את תהליך הכניסה באמצעות הקישור הישיר.
 </iw-IL>
 <id>
-3.0:
-* Aplikasi kini mendukung pengembalian dana menurut jumlah. Tersedia di layar detail pesanan, dan memungkinkan Anda mengeluarkan pengembalian dana sebagian atau penuh secara manual untuk pesanan yang telah dibayar.
-* Produk dengan beberapa gambar kini menampilkan semua gambar di galeri.
-* Perbaikan bug: Jarang, penyimpanan saat di layar “Add Order Note” menyebabkan crash. Kini, “jarang” menjadi “tidak pernah”.
-* Tampilan detail pesanan kini mencakup metode pengiriman pesanan.
+3.1.
+- Tidak dapat mengingat kredensial WordPress.com Anda? Tidak masalah! Kami telah menambahkan pilihan baru yang memungkinkan pengguna login menggunakan kredensial situs mereka. Jika kredensial ini berfungsi, aplikasi akan mengambil informasi akun WordPress.com yang tersambung dan memungkinkan pengguna menyelesaikan proses login menggunakan tautan ajaib.
 </id>
-<it-IT>
-3.0:
-* L'app ora supporta i rimborsi per importo. È disponibile sulla schermata di dettaglio dell'ordine e ti consente di emettere un rimborso parziale o completo per un ordine pagato.
-* I prodotti con immagini multiple ora le mostrano tutte in una galleria.
-* Correzione di bug: raramente, il salvataggio sulla schermata per aggiungere una nota dell'ordine causava un arresto anomalo. Ora non accade mai.
-* La vista dei dettagli dell'ordine ora comprende il metodo di spedizione dell'ordine.
-</it-IT>
 <ja-JP>
-3.0:
-* アプリで、金額による払い戻しがサポートされるようになりました。注文詳細の画面で、支払い済みの注文の一部または全額を手動で払い戻すことができます。
-* 画像が複数ある製品で、すべての画像がギャラリーに表示されるようになりました。
-* バグ修正 :まれに「Add Order Note」画面での保存中にクラッシュする問題がありましたが、解決しました。
-* 注文詳細ビューに、注文の配送方法が表示されるようになりました。
+3.1:
+- WordPress.com のログイン情報をお忘れですか ?ご心配ありません。サイトのログイン情報を使用してログインできる新しいオプションが追加されました。これらのログイン情報が機能する場合、連携済みの WordPress.com アカウント情報がアプリで取得され、ユーザーはマジックリンクを使用してログインプロセスを完了できます。
 </ja-JP>
 <ko-KR>
-3.0:
-* 앱에서 이제 금액별 환불을 지원합니다. 이 기능은 주문 상세 정보 화면에서 사용할 수 있으며 유료 주문에 대해 부분 또는 전액 환불을 수동으로 발행할 수 있습니다.
-* 여러 이미지가 있는 제품은 이제 모든 이미지를 갤러리에 표시합니다.
-* 버그 수정: "주문 메모 추가" 화면에서 저장할 때 충돌이 거의 발생하지 않습니다. 이제 “거의”가 아닌 “전혀” 발생하지 않게 되었습니다.
-* 주문 상세 정보 보기에 이제 주문의 배송 방법이 포함됩니다.
+3.1:
+- 워드프레스닷컴 자격 증명이 기억나지 않으세요? 걱정하지 마세요! 사용자가 사이트 자격 증명을 사용하여 로그인할 수 있는 새로운 옵션이 추가되었습니다. 이러한 자격 증명이 작동하면 앱이 연결된 워드프레스닷컴 계정 정보를 가져오므로 사용자가 매직 링크를 사용하여 로그인 프로세스를 완료할 수 있습니다.
 </ko-KR>
 <nl-NL>
-3.0:
-* De app ondersteunt nu terugbetalingen per bedrag. Deze functie is beschikbaar via het bestelgegevensscherm en hiermee kun je handmatig een gedeeltelijke of volledige terugbetaling voor een betaalde bestelling uitvoeren.
-* Bij producten met meerdere afbeeldingen worden alle afbeeldingen nu in één galerij weergegeven.
-* Bugfix: Opslaan wanneer het scherm 'Bestelopmerking toevoegen' was geopend, leidde heel af en toe tot een crash. 'Heel af en toe' is nu vervangen door 'Nooit'.
-* Het overzicht van bestelgegevens bevat nu ook de verzendmethode.
+3.1:
+- Ben je je WordPress.com-inloggegevens vergeten? Geen probleem! We hebben een nieuwe optie toegevoegd waarmee een gebruiker in kan loggen door middel van site-inloggegevens. Als deze inloggegevens werken, haalt de app de gegevens van het verbonden WordPress.com-account op en kan de gebruiker het inlogproces afronden via een magische link.
 </nl-NL>
 <pt-BR>
-3.0:
-* Agora o aplicativo oferece reembolsos por valor. Com essa opção, disponível na tela “Detalhes do pedido”, você emite manualmente reembolsos parciais ou totais para pedidos pagos.
-* Agora produtos com várias imagens as exibem em uma galeria.
-* Correção de bug raro: a tela “Adicionar observação ao pedido” travava durante o salvamento. Não mais.
-* Agora a visualização “Detalhes do pedido” inclui o método de envio.
+3.1:
+- Não se lembra das suas credenciais do WordPress.com? Sem problema! Adicionamos uma nova opção que permite ao usuário fazer login usando as credenciais do site. Se essas credenciais funcionarem, o aplicativo buscará as informações da conta do WordPress.com conectada e permitirá que o usuário conclua o processo de login usando um link mágico.
 </pt-BR>
 <ru-RU>
-3.0:
-* Приложение теперь поддерживает возврат средств с учетом суммы. Функция доступна на экране с описанием заказа, и она позволяет вручную выполнить частичный или полный возврат средств по оплаченному заказу.
-* Все изображения продукта теперь показаны в галерее.
-* Исправлена ошибка: в редких случаях сохранение заказа на экране «Добавление примечания к заказу» могло приводить к сбою. Больше этого не случится.
-* Экран с описанием заказа теперь включает информацию о способе доставки.
+3.1:
+— Не можете вспомнить учетные данные WordPress.com? Нет проблем! Благодаря новой функции входить можно с помощью учетных данных сайта. Если учетные данные действительны, приложение получит информацию об учетной записи WordPress.com и пользователь сможет войти с помощью ссылки.
 </ru-RU>
 <sv-SE>
-3.0:
-* Appen stöder nu återbetalningar efter belopp. Det finns på din beställningsinformationsskärm och låter dig manuellt utfärda en partiell eller fullständig återbetalning för en betald beställning.
-* Produkter med flera bilder visar nu alla bilder i ett galleri.
-* Buggkorrigering: Sällan kunde en spara-åtgärd från skärmen Lägg till beställningsanteckning leda till en krasch. Nu har sällan blivit aldrig.
-* Beställningsinformationsvyn inkluderar nu beställningens fraktmetod.
+3.1:
+- Kommer du inte ihåg dina användaruppgifter för WordPress.com? Inga problem! Vi har lagt till ett nytt alternativ som gör det möjligt för en användare att logga in med användaruppgifterna för sin webbplats. Om dessa användaruppgifter fungerar, hämtar appen informationen för det anslutna WordPress.com-kontot och låter användaren slutföra inloggningsprocessen med en magisk länk.
 </sv-SE>
 <tr-TR>
-3.0:
-* Uygulama artık tutara göre iade yapılmasını destekliyor. Bu özellik, ayrıntı ekranında bulunur ve ödemesi yapılmış bir sipariş için elle kısmi veya tam iade yapmanıza imkan verir.
-* Artık birden fazla resme sahip ürünlerin tüm resimleri galeride görüntüleniyor.
-* Hata düzeltmesi: “Sipariş Notu Ekle” ekranında yapılan kaydetme işlemi nadiren bir çökmeye yol açıyordu. Bu sorun giderildi.
-* Sipariş ayrıntıları görünümünde artık siparişin sevkiyat yöntemi görüntüleniyor.
+3.1:
+- WordPress.com kimlik bilgilerinizi hatırlamıyor musunuz? Sorun değil! Bir kullanıcının site kimlik bilgilerini kullanarak giriş yapmasını sağlayan yeni bir seçenek ekledik. Bu kimlik bilgileri işe yararsa, uygulama bağlı WordPress.com hesap bilgilerini alır ve kullanıcının özel bir bağlantı kullanarak giriş yapma işlemini tamamlamasına izin verir.
 </tr-TR>
 <zh-CN>
-3.0：
-* 此应用程序现已支持按金额退款。此功能在“订单详细信息”屏幕中可用，可以让您针对已付款的订单手动发起部分或全额退款。
-* 带有多张图片的产品现已在图库中显示所有图片。
-* 错误修复：在极少数情况下，在“添加订单备注”屏幕上保存内容会导致崩溃。现在，这种情况已不会再发生。
-* 订单详细信息视图现已包括订单配送方式。
+3.1：
+- 忘记了您的 WordPress.com 凭据？没问题！我们添加了一个允许用户使用其站点凭据登录的新选项。如果这些凭据有效，则该应用程序将获取已关联的 WordPress.com 帐户信息，并允许用户使用免密登录链接完成登录过程。
 </zh-CN>
 <zh-TW>
-3.0：
-* 應用程式現在支援依金額退款。你可在訂單詳細資訊畫面使用此功能，並手動為已付款訂單核發部分或全額退款。
-* 包含多張圖片的產品現在會以圖庫的方式顯示所有圖片。
-* 錯誤修正：儘管極為少見，但過去在「新增訂單備註」畫面進行儲存時有可能導致當機。現在這種情況絕對不會再發生了。
-* 訂單詳細資訊檢視畫面現在會顯示訂單運送方式。
+3.1：
+- 記不住 WordPress.com 憑證嗎？沒問題！我們已新增讓使用者能夠以網站憑證登入的選項。若使用網站憑證成功登入，應用程式會擷取連結的 WordPress.com 帳號資料，並允許使用者透過神奇連結完成登入程序。
 </zh-TW>
 <en-US>
-3.0:
-* The app now supports refunds by amount. It’s available on the order detail screen, and lets you manually issue a partial or full refund for a paid order.
-* Products with multiple images now show all images in a gallery.
-* Bug fix: Rarely, the saving while on the “Add Order Note” screen would lead to a crash. Now, “rarely” is “never.”
-* The order detail view now includes the order’s shipping method.
+3.1:
+- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.
 </en-US>
