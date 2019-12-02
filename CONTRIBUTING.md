@@ -1,6 +1,6 @@
 # How to Contribute
 
-We have a very small team of dedicated developers on this project, so keeping the project manageable and stable limits our ability to accept new contributors. We are not seeking new contributers at this time, but some small contributions are welcome.
+We have a very small team of dedicated developers on this project, so keeping the project manageable and stable limits our ability to accept new contributors. We are not seeking new contributors at this time, but some small contributions are welcome.
 
 If you’ve found a security problem, please follow our bug bounty program.
 
@@ -23,7 +23,7 @@ Interested in using the upcoming versions of WooCommerce for Android? Do you lov
 
 ## Submitting Code Changes
 
-Please keep in mind that WooCommerce for Android is still in its infancy and current team of developers is very small so our time is limited when it comes to answering questions in GitHub.
+Please keep in mind that WooCommerce for Android is still in its infancy and the current team of developers is very small so our time is limited when it comes to answering questions in GitHub.
 
  If you're just getting started and want to familiarize yourself with the app’s code, we suggest looking at [these issues](https://github.com/woocommerce/woocommerce-android/labels/good%20first%20issue) with the **good first issue** label. But if you’d like to tackle something different, you're more than welcome to visit the [Issues](https://github.com/woocommerce/woocommerce-android/issues) page and pick an item that interests you.
 
