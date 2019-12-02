@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-30 00:54:04+0000
+Translation-Revision-Date: 2019-11-27 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">No se ha podido obtener tu cuenta. Puedes intentarlo de nuevo ahora o cerrar e intentarlo más tarde.</string>
+    <string name="magic_link_update_error">Se ha producido un error. Accede para continuar</string>
+    <string name="login_magic_link_token_updating">Conectando con tu sitio…</string>
+    <string name="product_variants">Variantes</string>
+    <string name="product_property_edit">Editar producto</string>
+    <string name="product_variants_fetch_product_variants_error">Error al obtener las reseñas de los productos</string>
+    <string name="my_store_stats_reverted_message">Hemos cambiado a las antiguas estadísticas. Para usar las estadísticas beta, activa el plugin Administración de WooCommerce con la versión 0.22 o una posterior</string>
+    <string name="login_discovery_error_option_select">Elige una opción</string>
+    <string name="login_troubleshooting_tips">Lee nuestros consejos de solución de problemas</string>
+    <string name="login_with_wordpress">Inicia sesión con WordPress.com</string>
+    <string name="login_discovery_error_options">A continuación te indicamos otras cosas que puedes probar:</string>
+    <string name="login_discovery_error_title">Error de conexión</string>
+    <string name="login_jetpack_not_found">No se ha encontrado Jetpack. Inténtalo de nuevo.</string>
+    <string name="login_jetpack_view_setup_instructions">Ver instrucciones de configuración</string>
+    <string name="login_no_jetpack">Si quieres usar esta aplicación para %1$s, deberás tener el plugin de Jetpack configurado y conectado a una cuenta de WordPress.com.</string>
+    <string name="login_no_jetpack_username">Has iniciado sesión como @%1$s\n¿La cuenta es incorrecta? %2$s</string>
+    <string name="try_again">Inténtalo de nuevo</string>
+    <string name="product_variations">Variaciones</string>
+    <string name="order_refunds_refund_manual_refund_note">El método de pago no admite reembolsos automáticos. Para realizar el reembolso, transfiere manualmente el dinero al cliente.</string>
+    <string name="orderdetail_shipping_notice">Este pedido utiliza extensiones para calcular los envíos. Es posible que los métodos de envío que se muestran no estén completos.</string>
+    <string name="orderdetail_shipping_method">Método de envío</string>
     <string name="button_edit_permissions">Editar permisos</string>
     <string name="permission_camera">Cámara</string>
     <string name="permission_storage">Almacenamiento</string>
@@ -27,10 +48,9 @@ Language: es
     <string name="wc_unapproved">Rechazada</string>
     <string name="review_single_fetch_error">No se ha podido obtener la reseña del producto</string>
     <string name="review_fetch_error">No se han podido obtener las reseñas de los productos</string>
-    <string name="order_refunds_refund_manual_refund_note">Actualmente, solo se admiten los reembolsos manuales. Realiza el reembolso a través del escritorio de tu pasarela de pago o transfiere manualmente el dinero al cliente.</string>
-    <string name="order_refunds_amount_refund_error">No se ha podido realizar el reembolso. Inténtalo de nuevo.</string>
-    <string name="order_refunds_amount_refund_successful">Se ha enviado el reembolso.</string>
-    <string name="order_refunds_amount_refund_progress_message">Tu reembolso de %s se está procesando. Por favor, espera…</string>
+    <string name="order_refunds_manual_refund_error">No se ha podido realizar el reembolso. Inténtalo de nuevo.</string>
+    <string name="order_refunds_manual_refund_successful">Se ha enviado el reembolso.</string>
+    <string name="order_refunds_manual_refund_progress_message">Tu reembolso de %s se está procesando. Por favor, espera…</string>
     <string name="order_refunds_quote_image_description">Icono de comilla</string>
     <string name="order_refunds_manual_refund">Reembolso manual</string>
     <string name="order_refunds_refund_details">Información del reembolso</string>
@@ -440,7 +460,6 @@ Language: es
     <string name="promo_btn_got_it">De acuerdo</string>
     <string name="tooltip_site_switcher">Toca para cambiar de tienda</string>
     <string name="site_picker_title">Elige una tienda</string>
-    <string name="username">Nombre de usuario de WordPress.com</string>
     <string name="settings_signout">Salir</string>
     <string name="orderstatus_select_status">Cambiar estado del pedido</string>
     <string name="order_status_changed_to">Se ha cambiado el estado del pedido a %s</string>
@@ -610,7 +629,7 @@ Language: es
     <string name="enter_wpcom_password">Introduce tu contraseña de WordPress.com</string>
     <string name="magic_link_unavailable_error_message">Actualmente no disponible. Por favor, introduce tu contraseña</string>
     <string name="login_magic_link_email_requesting">Solicitando el correo electrónico de acceso</string>
-    <string name="login_magic_links_sent_label">¡Tu enlace mágico está en camino! Revisa tu correo electrónico en este dispositivo y pulsa el enlace que hay en el correo electrónico que has recibido de WordPress.com.</string>
+    <string name="login_magic_links_sent_label">Se ha enviado el correo electrónico. Consulta tu correo electrónico en este dispositivo y pulsa el enlace que hay en el mensaje que has recibido de WordPress.com.</string>
     <string name="login_magic_links_label">Te enviaremos por correo electrónico un enlace mágico que te conectará al instante, sin tener que introducir contraseña. ¡Caza y no picotees más!</string>
     <string name="password_incorrect">Parece que esta contraseña es incorrecta. Por favor, vuelve a comprobar tu información e inténtalo de nuevo.</string>
     <string name="email_not_registered_wpcom">Umm, no encontramos una cuenta WordPress.com conectada a esta dirección de correo. Prueba con el enlace de abajo para acceder usando la dirección de tu sitio.</string>
