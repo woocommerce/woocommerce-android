@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-16 00:55:06+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="button_edit_permissions">Modifica autorizzazioni</string>
+    <string name="permission_camera">Fotocamera</string>
+    <string name="permission_storage">Archiviazione</string>
+    <string name="permissions_denied_message">Sembra che tu abbia disattivato le autorizzazioni necessarie per questa funzionalità.&lt;br/>&lt;br/>Per cambiare, modifica le tue autorizzazioni e assicurati che sia attivo &lt;strong>%s&lt;/strong>.</string>
+    <string name="permissions_denied_title">Autorizzazioni</string>
+    <string name="orders_processed_empty_message">Tutti gli ordini sono stati elaborati</string>
+    <string name="orders_empty_message_with_processing">Nessun ordine ancora da elaborare</string>
+    <string name="orderdetail_note_system">Sistema</string>
+    <string name="orderlist_search_hint">Cerca ordini</string>
+    <string name="unknown">Sconosciuto</string>
+    <string name="button_not_now">Non ora</string>
     <string name="product_search_hint">Cerca prodotti</string>
     <string name="product_list_empty_search">Nessun prodotto corrispondente</string>
     <string name="product_list_empty">Ancora nessun prodotto</string>
@@ -49,7 +60,6 @@ Language: it
     <string name="orderdetail_payment_summary_completed">%1$s tramite %2$s</string>
     <string name="my_store_stats_availability_message">Stiamo distribuendo miglioramenti alle statistiche per i negozi che utilizzano il plugin WooCommerce Admin</string>
     <string name="my_store_stats_availability_title">Prova le nostre statistiche migliorate</string>
-    <string name="my_store_stats_reverted_message">Abbiamo ripristinato le vecchie statistiche perché\nnon siamo riusciti a trovare il plugin WooCommerce Admin</string>
     <string name="dashboard_state_no_data">Nessuna entrata per questo periodo</string>
     <string name="no_thanks">No, grazie</string>
     <string name="try_it_now">Prova ora</string>
@@ -443,7 +453,7 @@ Language: it
     <string name="app_rating_title">Ti piace Woo?</string>
     <string name="settings_selected_store">Negozio selezionato</string>
     <string name="orders_empty_message_with_search">Nessun ordine corrispondente</string>
-    <string name="orders_empty_message_with_filter">Nessun ordine</string>
+    <string name="orders_empty_message_with_filter">Ancora nessun ordine</string>
     <string name="waiting_for_customers_contentdesc">In attesa delle immagini dei clienti</string>
     <string name="waiting_for_customers">In attesa dei clienti</string>
     <string name="share_store_dialog_title">Condividi URL del negozio</string>
@@ -483,8 +493,7 @@ Language: it
     <string name="back">Indietro</string>
     <string name="notification_channel_review_title">Avvisi delle recensioni del prodotto</string>
     <string name="notification_channel_order_title">Avvisi dei nuovi ordini</string>
-    <string name="orderdetail_note_system">Stato di sistema</string>
-    <string name="orderdetail_note_public">Nota per il cliente</string>
+    <string name="orderdetail_note_public">Al cliente</string>
     <string name="login_verifying_site">Verifica del sito in corso…</string>
     <string name="button_update_instructions">Aggiorna istruzioni</string>
     <string name="search">Ricerca</string>
@@ -667,7 +676,7 @@ Language: it
     <string name="orderdetail_payment_cleared">Pagamento cancellato</string>
     <string name="orderdetail_order_fulfillment">Evadi ordine n. %s</string>
     <string name="orderdetail_order_notes">Note ordine</string>
-    <string name="orderdetail_note_private">Nota privata</string>
+    <string name="orderdetail_note_private">Privato</string>
     <string name="orderdetail_note_hint">Scrivi una nota dell\'ordine</string>
     <string name="orderdetail_customer_image_contentdesc">Immagine profilo personalizzata</string>
     <string name="orderdetail_customer_provided_note">Nota fornita dai clienti</string>
@@ -772,4 +781,8 @@ Language: it
     <string name="all">Tutto</string>
     <string name="notification_channel_general_title">Generale</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>In elaborazione</item>
+        <item>Tutti gli ordini</item>
+    </string-array>
 </resources>

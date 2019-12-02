@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -14,12 +14,13 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Exit
+import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.ShowSnackbar
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions
@@ -38,7 +39,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
     private val networkStatus: NetworkStatus = mock()
     private val repository: ReviewDetailRepository = mock()
-    private val savedState: SavedStateHandle = mock()
+    private val savedState: SavedStateWithArgs = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -51,7 +52,12 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
 
         viewModel = spy(
-                ReviewDetailViewModel(savedState, coroutineDispatchers, networkStatus, repository))
+                ReviewDetailViewModel(
+                        savedState,
+                        coroutineDispatchers,
+                        networkStatus,
+                        repository
+                ))
 
         doReturn(true).whenever(networkStatus).isConnected()
     }
@@ -60,6 +66,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     fun `Load the product review detail correctly`() = test {
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
+        doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
 
         val skeletonShown = mutableListOf<Boolean>()
         var productReview: ProductReview? = null
@@ -93,12 +100,12 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
         }
 
-        var message: Int? = null
+        var snackbar: ShowSnackbar? = null
         var markAsRead: Long? = null
         viewModel.event.observeForever {
             when (it) {
                 is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
-                is ShowSnackbar -> message = it.message
+                is ShowSnackbar -> snackbar = it
             }
         }
 
@@ -108,7 +115,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         assertEquals(NOTIF_ID, markAsRead)
         Assertions.assertThat(productReview).isEqualTo(review)
         verify(repository, times(1)).markNotificationAsRead(any())
-        Assertions.assertThat(message).isEqualTo(R.string.wc_load_review_error)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
     }
 
     /**
@@ -119,6 +126,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     fun `Handle successful review moderation correctly`() = test {
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(review).whenever(repository).getCachedProductReview(any())
+        doReturn(SUCCESS).whenever(repository).fetchProductReview(any())
 
         // first we must load the product review so the viewmodel will have
         // a reference to it.
@@ -150,17 +158,17 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         // a reference to it.
         viewModel.start(REVIEW_ID)
 
-        var message: Int? = null
+        var snackbar: ShowSnackbar? = null
         var exitCalled = false
         viewModel.event.observeForever {
             when (it) {
                 is Exit -> exitCalled = true
-                is ShowSnackbar -> message = it.message
+                is ShowSnackbar -> snackbar = it
             }
         }
 
         viewModel.moderateReview(SPAM)
         assertFalse(exitCalled)
-        Assertions.assertThat(message).isEqualTo(R.string.offline_error)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 }

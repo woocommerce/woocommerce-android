@@ -4,7 +4,9 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginNoJetpackFragmentModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
+import com.woocommerce.android.ui.login.MagicLinkInterceptFragmentModule
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
@@ -19,14 +21,9 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
-import com.woocommerce.android.ui.products.ProductDetailFragmentModule
-import com.woocommerce.android.ui.products.ProductListFragmentModule
-import com.woocommerce.android.ui.refunds.IssueRefundFragmentModule
-import com.woocommerce.android.ui.refunds.RefundByAmountFragmentModule
-import com.woocommerce.android.ui.refunds.RefundDetailFragmentModule
-import com.woocommerce.android.ui.refunds.RefundSummaryFragmentModule
-import com.woocommerce.android.ui.reviews.ReviewDetailFragmentModule
-import com.woocommerce.android.ui.reviews.ReviewListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule
+import com.woocommerce.android.ui.refunds.RefundsModule
+import com.woocommerce.android.ui.reviews.ReviewsModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
@@ -45,9 +42,9 @@ abstract class ActivityBindingModule {
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
-            RefundModule::class,
-            ProductModule::class,
-            ReviewModule::class,
+            RefundsModule::class,
+            ProductsModule::class,
+            ReviewsModule::class,
             AddOrderNoteModule::class,
             SitePickerModule::class,
             AddOrderShipmentTrackingModule::class,
@@ -55,28 +52,11 @@ abstract class ActivityBindingModule {
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
-    @Module(includes = [
-        IssueRefundFragmentModule::class,
-        RefundByAmountFragmentModule::class,
-        RefundSummaryFragmentModule::class,
-        RefundDetailFragmentModule::class
-    ])
-    object RefundModule
-
-    @Module(includes = [
-        ProductDetailFragmentModule::class,
-        ProductListFragmentModule::class
-    ])
-    object ProductModule
-
-    @Module(includes = [
-        ReviewDetailFragmentModule::class,
-        ReviewListFragmentModule::class
-    ])
-    object ReviewModule
-
     @ActivityScope
-    @ContributesAndroidInjector(modules = [LoginFragmentModule::class])
+    @ContributesAndroidInjector(modules = [
+        LoginFragmentModule::class,
+        MagicLinkInterceptFragmentModule::class,
+        LoginNoJetpackFragmentModule::class])
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope

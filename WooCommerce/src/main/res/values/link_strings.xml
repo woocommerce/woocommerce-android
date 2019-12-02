@@ -4,4 +4,5 @@
     <string name="app_feature_request_link" translatable="false">http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283</string>
     <string name="settings_hiring_link" translatable="false">https://automattic.com/work-with-us</string>
     <string name="stats_woocommerce_admin_plugin_link" translatable="false">https://wordpress.org/plugins/woocommerce-admin</string>
+    <string name="jetpack_troubleshooting_link" translatable="false">https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/</string>
 </resources>

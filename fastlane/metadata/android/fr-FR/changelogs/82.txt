@@ -1,4 +1,0 @@
-2.8 :
-* La liste des commandes ne comportait pas de curseur. Elle en comporte désormais un !
-* Le nouvel écran des détails de la commande comporte également une liste des remboursements que vous avez effectués.
-* L'onglet « Avis » affiche désormais tous les avis sur les produits correspondant à la boutique.

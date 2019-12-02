@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-16 00:55:07+0000
+Translation-Revision-Date: 2019-10-30 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="button_edit_permissions">编辑权限</string>
+    <string name="permission_camera">照相机</string>
+    <string name="permission_storage">存储</string>
+    <string name="permissions_denied_message">您似乎关闭了此功能所需的权限。&lt;br/>&lt;br/>要对此进行更改，请编辑您的权限并确保已启用&lt;strong>%s&lt;/strong>。</string>
+    <string name="permissions_denied_title">权限</string>
+    <string name="orders_processed_empty_message">所有订单均已处理完毕</string>
+    <string name="orders_empty_message_with_processing">没有要处理的订单</string>
+    <string name="orderdetail_note_system">系统</string>
+    <string name="orderlist_search_hint">搜索订单</string>
+    <string name="unknown">未知</string>
+    <string name="button_not_now">现在不行</string>
     <string name="product_search_hint">搜索产品</string>
     <string name="product_list_empty_search">没有匹配的产品</string>
     <string name="product_list_empty">尚无产品</string>
@@ -49,7 +60,6 @@ Language: zh_CN
     <string name="orderdetail_payment_summary_completed">%1$s（通过 %2$s）</string>
     <string name="my_store_stats_availability_message">我们正面向使用了 WooCommerce Admin 插件的商店推出经改进的统计页面</string>
     <string name="my_store_stats_availability_title">试用经改进的统计页面</string>
-    <string name="my_store_stats_reverted_message">由于无法找到 WooCommerce Admin 插件，\n因此已恢复旧版统计页面</string>
     <string name="dashboard_state_no_data">此时间段内没有收入</string>
     <string name="no_thanks">不用了，谢谢</string>
     <string name="try_it_now">立即试用</string>
@@ -443,7 +453,7 @@ Language: zh_CN
     <string name="app_rating_title">喜欢 Woo？</string>
     <string name="settings_selected_store">已选商店</string>
     <string name="orders_empty_message_with_search">没有匹配的订单</string>
-    <string name="orders_empty_message_with_filter">无订单</string>
+    <string name="orders_empty_message_with_filter">没有订单</string>
     <string name="waiting_for_customers_contentdesc">等待客户图片</string>
     <string name="waiting_for_customers">等待客户</string>
     <string name="share_store_dialog_title">共享您商店的 URL</string>
@@ -483,8 +493,7 @@ Language: zh_CN
     <string name="back">返回</string>
     <string name="notification_channel_review_title">产品评论提醒</string>
     <string name="notification_channel_order_title">新订单提醒</string>
-    <string name="orderdetail_note_system">系统状态</string>
-    <string name="orderdetail_note_public">给客户的备注</string>
+    <string name="orderdetail_note_public">致客户</string>
     <string name="login_verifying_site">正在验证站点…</string>
     <string name="button_update_instructions">更新说明</string>
     <string name="search">搜索</string>
@@ -667,7 +676,7 @@ Language: zh_CN
     <string name="orderdetail_payment_cleared">已付款</string>
     <string name="orderdetail_order_fulfillment">完成订单号 %s</string>
     <string name="orderdetail_order_notes">订单备注</string>
-    <string name="orderdetail_note_private">私人备注</string>
+    <string name="orderdetail_note_private">私人</string>
     <string name="orderdetail_note_hint">撰写订单备注</string>
     <string name="orderdetail_customer_image_contentdesc">客户个人资料图片</string>
     <string name="orderdetail_customer_provided_note">客户提供的备注</string>
@@ -772,4 +781,8 @@ Language: zh_CN
     <string name="all">全部</string>
     <string name="notification_channel_general_title">常规</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="order_list_tabs">
+        <item>正在处理</item>
+        <item>所有订单</item>
+    </string-array>
 </resources>

@@ -7,6 +7,4 @@ interface OrderListListener {
     fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
     fun refreshOrderStatusOptions()
     fun openOrderDetail(wcOrderModel: WCOrderModel)
-    fun onFragmentScrollDown()
-    fun onFragmentScrollUp()
 }

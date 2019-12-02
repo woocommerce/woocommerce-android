@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -11,13 +10,13 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.Exit
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowSnackbar
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
@@ -27,7 +26,7 @@ import kotlin.math.roundToInt
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateHandle,
+    @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
@@ -38,7 +37,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     fun start(remoteProductId: Long) {
@@ -143,9 +142,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     sealed class ProductDetailEvent : Event() {
-        data class ShowSnackbar(@StringRes val message: Int) : ProductDetailEvent()
         data class ShareProduct(val product: Product) : ProductDetailEvent()
-        object Exit : ProductDetailEvent()
     }
 
     @Parcelize
