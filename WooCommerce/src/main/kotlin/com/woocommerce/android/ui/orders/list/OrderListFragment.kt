@@ -182,6 +182,10 @@ class OrderListFragment : TopLevelFragment(),
         super.onViewCreated(view, savedInstanceState)
 
         initializeViewModel()
+
+        if (isOrderStatusFilterEnabled()) {
+            viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
+        }
     }
 
     override fun onResume() {
@@ -247,10 +251,6 @@ class OrderListFragment : TopLevelFragment(),
         val filterOrSearchEnabled = isFilterEnabled || isSearching
         showTabs(!filterOrSearchEnabled)
         enableToolbarElevation(filterOrSearchEnabled)
-
-        if (isOrderStatusFilterEnabled()) {
-            viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
-        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
