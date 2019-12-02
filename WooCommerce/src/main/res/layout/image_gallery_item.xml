@@ -23,7 +23,6 @@
         android:layout_marginStart="@dimen/margin_medium"
         android:layout_marginEnd="@dimen/margin_medium"
         android:background="@drawable/ripple_grey_framed"
-        android:padding="@dimen/image_border_size"
         android:visibility="gone"
         tools:visibility="visible">
 

@@ -34,8 +34,6 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
             }
         }
 
-        
-
         borderPaint = Paint().also { paint ->
             paint.isAntiAlias = true
             paint.style = Paint.Style.STROKE
@@ -47,9 +45,9 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawRoundRect(
-                0f, // left
-                0f, // top
-                width.toFloat(), // right
+                0f,          // left
+                0f,          // top
+                width.toFloat(),  // right
                 height.toFloat(), // bottom
                 borderRadius,
                 borderRadius,
