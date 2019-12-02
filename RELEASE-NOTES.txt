@@ -2,6 +2,7 @@
 -----
 * Added a new option in the Settings page for users to opt in or out of our new Products tab.
 * Added a new variants section in the Product detail screen for variable products
+* The bottom navigation bar no longer disappears when scrolling
  
 3.1
 -----
