@@ -13,7 +13,6 @@
         android:layout_marginEnd="@dimen/margin_medium"
         android:adjustViewBounds="true"
         android:contentDescription="@string/product_image_content_description"
-        android:padding="@dimen/image_border_size"
         tools:src="@drawable/ic_product" />
 
     <FrameLayout
