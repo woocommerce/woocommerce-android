@@ -62,7 +62,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
