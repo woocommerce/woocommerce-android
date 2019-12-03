@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-10-31 00:54:04+0000
+Translation-Revision-Date: 2019-11-27 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="magic_link_fetch_account_error">Ada masalah saat mengambil akun Anda. Anda dapat mencoba lagi sekarang atau menutupnya dan mencoba lagi nanti.</string>
+    <string name="magic_link_update_error">Terjadi error. Harap login untuk melanjutkan</string>
+    <string name="login_magic_link_token_updating">Menyambungkan ke situs Anda…</string>
+    <string name="product_variants">Varian</string>
+    <string name="product_property_edit">Sunting produk</string>
+    <string name="product_variants_fetch_product_variants_error">Terjadi error saat mengambil variasi produk</string>
+    <string name="my_store_stats_reverted_message">Kami telah mengembalikan ke statistik lama. Untuk menggunakan statistik beta, harap aktifkan plugin Admin WooCommerce Admin dengan versi 0.22 atau yang lebih tinggi</string>
+    <string name="login_discovery_error_option_select">Tentukan pilihan</string>
+    <string name="login_troubleshooting_tips">Baca tips pemecahan masalah kami</string>
+    <string name="login_with_wordpress">Masuk dengan WordPress.com</string>
+    <string name="login_discovery_error_options">Berikut beberapa hal lain yang dapat Anda coba:</string>
+    <string name="login_discovery_error_title">Koneksi error</string>
+    <string name="login_jetpack_not_found">Jetpack tidak ditemukan. Harap coba lagi</string>
+    <string name="login_jetpack_view_setup_instructions">Lihat petunjuk penyiapan</string>
+    <string name="login_no_jetpack">Agar dapat menggunakan aplikasi ini untuk %1$s Anda memerlukan penyiapan plugin Jetpack dan terhubung dengan akun WordPress.com</string>
+    <string name="login_no_jetpack_username">Masuk sebagai @%1$s\nAkun salah? %2$s</string>
+    <string name="try_again">Coba lagi</string>
+    <string name="product_variations">Variasi</string>
+    <string name="order_refunds_refund_manual_refund_note">Metode pembayaran tidak mendukung pengembalian dana otomatis. Selesaikan pengembalian dana dengan mentransfer uang kepada pelanggan secara manual.</string>
+    <string name="orderdetail_shipping_notice">Pesanan ini menggunakan ekstensi untuk menghitung pengiriman. Metode pengiriman yang ditunjukkan mungkin tidak lengkap.</string>
+    <string name="orderdetail_shipping_method">Metode pengiriman</string>
     <string name="button_edit_permissions">Sunting izin</string>
     <string name="permission_camera">Kamera</string>
     <string name="permission_storage">Penyimpanan</string>
@@ -27,10 +48,9 @@ Language: id
     <string name="wc_unapproved">Tidak disetujui</string>
     <string name="review_single_fetch_error">Error saat memuat ulasan produk baru</string>
     <string name="review_fetch_error">Error saat memuat ulasan produk</string>
-    <string name="order_refunds_refund_manual_refund_note">Saat ini, hanya pengembalian dana manual yang didukung. Lakukan pengembalian dana lewat dasbor gateway pembayaran Anda, atau transfer uangnya secara manual kepada pelanggan.</string>
-    <string name="order_refunds_amount_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
-    <string name="order_refunds_amount_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
-    <string name="order_refunds_amount_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
+    <string name="order_refunds_manual_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
+    <string name="order_refunds_manual_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
+    <string name="order_refunds_manual_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
     <string name="order_refunds_quote_image_description">Ikon kutipan</string>
     <string name="order_refunds_manual_refund">Pengembalian dana manual</string>
     <string name="order_refunds_refund_details">Rincian pengembalian dana</string>
@@ -440,7 +460,6 @@ Language: id
     <string name="promo_btn_got_it">Saya mengerti</string>
     <string name="tooltip_site_switcher">Ketuk untuk beralih toko</string>
     <string name="site_picker_title">Pilih toko</string>
-    <string name="username">Nama pengguna WordPress.com</string>
     <string name="settings_signout">Logout</string>
     <string name="orderstatus_select_status">Ubah status pesanan</string>
     <string name="order_status_changed_to">Status pesanan diubah menjadi %s</string>
@@ -610,7 +629,7 @@ Language: id
     <string name="enter_wpcom_password">Masukkan kata sandi WordPress.com Anda.</string>
     <string name="magic_link_unavailable_error_message">Saat ini tidak tersedia. Masukkan kata sandi Anda</string>
     <string name="login_magic_link_email_requesting">Meminta email login</string>
-    <string name="login_magic_links_sent_label">Tautan ajaib Anda segera tiba! Periksa email Anda di perangkat ini, dan ketuk tautan dalam email yang Anda terima dari WordPress.com</string>
+    <string name="login_magic_links_sent_label">Email terkirim! Periksa email Anda di perangkat ini, dan ketuk tautan dalam email yang Anda terima dari WordPress.com</string>
     <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan ajaib yang bisa Anda gunakan untuk login dalam sekejap, tanpa kata sandi. Tak perlu lagi repot mengetik!</string>
     <string name="password_incorrect">Sepertinya kata sandi ini salah. Periksa lagi informasi Anda dan coba lagi.</string>
     <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini. Coba tautan di bawah ini untuk login menggunakan alamat situs Anda.</string>

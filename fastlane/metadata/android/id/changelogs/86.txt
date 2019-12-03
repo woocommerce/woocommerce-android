@@ -1,5 +1,0 @@
-2.9:
-* Horeee! Sekarang kami mendukung Android 10!
-* Perubahan besar-besaran pada tab pesanan! Pencarian dan penyaringan memiliki satu tampilan yang mencakup total jumlah pesanan menurut status pesanan. Daftar pesanan ditampilkan dalam dua tab: Dalam Proses & Semua.
-* Tampilan detail pesanan juga diperbarui.
-* Sejumlah perbaikan bug kecil juga disertakan dalam rilis ini.

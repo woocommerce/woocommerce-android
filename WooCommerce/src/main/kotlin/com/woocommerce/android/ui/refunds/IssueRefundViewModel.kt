@@ -259,19 +259,8 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                     val resultCall = async(dispatchers.io) {
                         return@async when (commonState.refundType) {
-                            ITEMS -> {
-                                refundStore.createItemsRefund(
-                                        selectedSite.get(),
-                                        order.remoteId,
-                                        refundByAmountState.enteredAmount,
-                                        reason,
-                                        true,
-                                        gateway.supportsRefunds,
-                                        emptyList()
-                                )
-                            }
-                            AMOUNT -> {
-                                refundStore.createAmountRefund(
+                            ITEMS, AMOUNT -> {
+                                refundStore.createRefund(
                                         selectedSite.get(),
                                         order.remoteId,
                                         refundByAmountState.enteredAmount,
