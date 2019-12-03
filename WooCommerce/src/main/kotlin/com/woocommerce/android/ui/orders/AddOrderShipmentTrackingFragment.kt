@@ -60,7 +60,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         retainInstance = true
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -129,7 +129,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
                             listener = this,
                             selectedProviderText = addTracking_editCarrier.text.toString(),
                             orderIdentifier = orderId)
-                    .also { it.show(fragmentManager, AddOrderTrackingProviderListFragment.TAG) }
+                    .also { it.show(requireFragmentManager(), AddOrderTrackingProviderListFragment.TAG) }
         }
     }
 
@@ -157,14 +157,14 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
     /**
      * Reusing the same menu used for adding order notes
      */
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        menu?.clear()
-        inflater?.inflate(R.menu.menu_add, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_add, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_add -> {
                 if (addTracking_editCarrier.text.toString().isEmpty()) {
                     addTracking_editCarrier.isFocusableInTouchMode = true

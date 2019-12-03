@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.widget.NestedScrollView
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
@@ -19,8 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
-import com.woocommerce.android.extensions.onScrollDown
-import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
@@ -32,7 +29,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView.OrderDetailNoteListener
-import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -83,7 +79,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     private val navArgs: OrderDetailFragmentArgs by navArgs()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -156,10 +152,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     }
                 }
             }
-        }
-
-        scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-            if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
         }
     }
 
@@ -645,10 +637,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
             REFUND_REQUEST_CODE -> {
-                val refundWasSuccessful = result.getBoolean(RefundSummaryFragment.REFUND_SUCCESS_KEY, false)
-                if (refundWasSuccessful) {
-                    presenter.refreshOrderAfterDelay(REFUNDS_REFRESH_DELAY)
-                }
+                presenter.refreshOrderAfterDelay(REFUNDS_REFRESH_DELAY)
             }
         }
     }
@@ -669,7 +658,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                             orderStatus,
                             false,
                             listener = this)
-                    .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
+                    .also { it.show(requireFragmentManager(), OrderStatusSelectorDialog.TAG) }
         }
     }
 

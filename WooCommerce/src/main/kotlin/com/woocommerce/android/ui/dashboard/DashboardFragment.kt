@@ -6,14 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.widget.NestedScrollView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.onScrollDown
-import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -21,8 +20,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -55,7 +52,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
     private var isStatsRefreshed: Boolean = false
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -115,15 +112,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
-
-        scroll_view.setOnScrollChangeListener {
-            v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
-            if (scrollY > oldScrollY) {
-                onScrollDown()
-            } else if (scrollY < oldScrollY) {
-                onScrollUp()
-            }
-        }
 
         if (isActive && !deferInit) {
             isStatsRefreshed = true

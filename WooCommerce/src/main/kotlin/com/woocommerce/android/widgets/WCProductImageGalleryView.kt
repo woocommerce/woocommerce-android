@@ -18,7 +18,6 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.product_list_item.view.*
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.util.PhotonUtils
 
 /**
@@ -30,7 +29,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
     interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(image: WCProductImageModel, imageView: View)
+        fun onGalleryImageClicked(image: Product.Image, imageView: View)
     }
 
     private var imageHeight = 0
@@ -87,9 +86,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private inner class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>() {
-        private val imageList = ArrayList<WCProductImageModel>()
+        private val imageList = ArrayList<Product.Image>()
 
-        fun showImages(images: List<WCProductImageModel>) {
+        fun showImages(images: List<Product.Image>) {
             fun isSameImageList(): Boolean {
                 if (images.size != imageList.size) {
                     return false
@@ -126,7 +125,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).src, 0, imageHeight)
+            val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).source, 0, imageHeight)
             request.load(photonUrl).into(holder.imageView)
         }
     }

@@ -9,6 +9,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import kotlinx.android.synthetic.main.fragment_settings_beta.*
@@ -32,12 +33,26 @@ class BetaFeaturesFragment : Fragment() {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
 
-        switchStatsV4UI.isChecked = AppPrefs.isV4StatsUIEnabled()
-        switchStatsV4UI.setOnCheckedChangeListener { _, isChecked ->
+        // display the Stats section only if the wc-admin is installed/active on a site
+        if (AppPrefs.isUsingV4Api()) {
+            switchStatsV4UI.visibility = View.VISIBLE
+            switchStatsV4UI.isChecked = AppPrefs.isV4StatsUIEnabled()
+            switchStatsV4UI.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(
+                        SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED, mapOf(
+                        AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchStatsV4UI.isChecked)))
+                settingsListener.onV4StatsOptionChanged(isChecked)
+            }
+        } else {
+            switchStatsV4UI.visibility = View.GONE
+        }
+
+        switchProductsUI.isChecked = AppPrefs.isProductsFeatureEnabled()
+        switchProductsUI.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
-                    SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED, mapOf(
-                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchStatsV4UI.isChecked)))
-            settingsListener.onV4StatsOptionChanged(isChecked)
+                    SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED, mapOf(
+                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchProductsUI.isChecked)))
+            settingsListener.onProductsFeatureOptionChanged(isChecked)
         }
     }
 

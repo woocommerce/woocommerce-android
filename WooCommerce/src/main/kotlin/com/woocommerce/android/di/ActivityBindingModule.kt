@@ -4,9 +4,9 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.LoginNoJetpackModule
+import com.woocommerce.android.ui.login.LoginNoJetpackFragmentModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
-import com.woocommerce.android.ui.login.MagicLinkInterceptModule
+import com.woocommerce.android.ui.login.MagicLinkInterceptFragmentModule
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
@@ -21,12 +21,9 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
-import com.woocommerce.android.ui.products.ProductDetailModule
-import com.woocommerce.android.ui.products.ProductListModule
-import com.woocommerce.android.ui.products.ProductVariantsModule
+import com.woocommerce.android.ui.products.ProductsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
-import com.woocommerce.android.ui.reviews.ReviewDetailModule
-import com.woocommerce.android.ui.reviews.ReviewListModule
+import com.woocommerce.android.ui.reviews.ReviewsModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
@@ -36,7 +33,8 @@ import org.wordpress.android.login.di.LoginFragmentModule
 @Module
 abstract class ActivityBindingModule {
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(
+    @ContributesAndroidInjector(
+            modules = [
             MainModule::class,
             DashboardModule::class,
             MyStoreModule::class,
@@ -45,22 +43,20 @@ abstract class ActivityBindingModule {
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
             RefundsModule::class,
+            ProductsModule::class,
+            ReviewsModule::class,
             AddOrderNoteModule::class,
-            ProductDetailModule::class,
-            ProductListModule::class,
-            ProductVariantsModule::class,
-            ReviewListModule::class,
-            ReviewDetailModule::class,
             SitePickerModule::class,
             AddOrderShipmentTrackingModule::class,
-            AddOrderTrackingProviderListModule::class))
+            AddOrderTrackingProviderListModule::class
+    ])
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [
         LoginFragmentModule::class,
-        MagicLinkInterceptModule::class,
-        LoginNoJetpackModule::class])
+        MagicLinkInterceptFragmentModule::class,
+        LoginNoJetpackFragmentModule::class])
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope
@@ -68,17 +64,18 @@ abstract class ActivityBindingModule {
     abstract fun provideMagicLinkInterceptActivityInjector(): MagicLinkInterceptActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(
-            AppSettingsModule::class,
-            MainSettingsModule::class,
-            PrivacySettingsModule::class))
+    @ContributesAndroidInjector(modules = [
+        AppSettingsModule::class,
+        MainSettingsModule::class,
+        PrivacySettingsModule::class
+    ])
     abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(HelpModule::class))
+    @ContributesAndroidInjector(modules = [HelpModule::class])
     abstract fun provideHelpActivity(): HelpActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
+    @ContributesAndroidInjector(modules = [SitePickerModule::class])
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
 }

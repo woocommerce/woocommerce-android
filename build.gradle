@@ -85,7 +85,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '8c05cd4576232ab80d0fad93797708f1afc14690'
+    fluxCVersion = '1.5.4'
     daggerVersion = '2.22.1'
     glideVersion = '4.9.0'
     testRunnerVersion = '1.0.1'
@@ -98,7 +98,7 @@ ext {
     eventBusVersion = '3.1.1'
     googlePlayCoreVersion = '1.6.1'
     coroutinesVersion = '1.2.2'
-    archComponentsVersion = '2.0.0'
+    archComponentsVersion = '2.1.0'
     assertjVersion = '3.11.1'
 }
 
