@@ -10,8 +10,6 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -104,7 +102,6 @@ class RefundByItemsFragment : BaseFragment() {
             new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
                 issueRefund_selectedItems.text = it
             }
-            
             // temporarily hidden
 //            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
 //                if (isVisible) {
