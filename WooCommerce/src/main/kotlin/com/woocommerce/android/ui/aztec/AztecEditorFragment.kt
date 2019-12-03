@@ -29,6 +29,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
         const val ARG_AZTEC_HAS_CHANGES = "editor-has-changes"
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        private const val FIELD_IS_HTML_EDITOR_ENABLED = "is_html_editor_enabled"
     }
 
     private lateinit var aztec: Aztec
@@ -65,6 +66,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.aztecText)
 
         savedInstanceState?.let { state ->
+            isHtmlEditorEnabled = state.getBoolean(FIELD_IS_HTML_EDITOR_ENABLED)
             if (state.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
                 confirmDiscard()
             }
@@ -90,6 +92,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
+        outState.putBoolean(FIELD_IS_HTML_EDITOR_ENABLED, isHtmlEditorEnabled)
         super.onSaveInstanceState(outState)
     }
 
