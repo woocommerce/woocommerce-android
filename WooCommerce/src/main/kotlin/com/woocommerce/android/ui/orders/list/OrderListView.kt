@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.DataShown
@@ -52,15 +51,6 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy > 0) {
-                        listener.onFragmentScrollDown()
-                    } else if (dy < 0) {
-                        listener.onFragmentScrollUp()
-                    }
-                }
-            })
         }
     }
 

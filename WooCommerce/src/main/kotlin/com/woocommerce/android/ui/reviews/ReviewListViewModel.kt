@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -57,6 +58,9 @@ class ReviewListViewModel @AssistedInject constructor(
     private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest>()
     val moderateProductReview: LiveData<ProductReviewModerationRequest> = _moderateProductReview
 
+    private val _reviewList = MutableLiveData<List<ProductReview>>()
+    val reviewList: LiveData<List<ProductReview>> = _reviewList
+
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
@@ -83,10 +87,8 @@ class ReviewListViewModel @AssistedInject constructor(
             // Initial load. Get and show reviewList from the db if any
             val reviewsInDb = reviewRepository.getCachedProductReviews()
             if (reviewsInDb.isNotEmpty()) {
-                viewState = viewState.copy(
-                        isSkeletonShown = false,
-                        reviewList = reviewsInDb
-                )
+                _reviewList.value = reviewsInDb
+                viewState = viewState.copy(isSkeletonShown = false)
             }
             fetchReviewList(loadMore = false)
         }
@@ -98,9 +100,7 @@ class ReviewListViewModel @AssistedInject constructor(
      */
     fun reloadReviewsFromCache() {
         launch {
-            viewState = viewState.copy(
-                    reviewList = reviewRepository.getCachedProductReviews()
-            )
+            _reviewList.value = reviewRepository.getCachedProductReviews()
         }
     }
 
@@ -187,9 +187,9 @@ class ReviewListViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             when (reviewRepository.fetchProductReviews(loadMore)) {
                 SUCCESS, NO_ACTION_NEEDED -> {
-                    viewState = viewState.copy(reviewList = reviewRepository.getCachedProductReviews())
+                    _reviewList.value = reviewRepository.getCachedProductReviews()
                 }
-                ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             }
 
             checkForUnreadReviews()
@@ -267,7 +267,6 @@ class ReviewListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val reviewList: List<ProductReview>? = null,
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
