@@ -126,6 +126,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         toolbar.background = ColorDrawable(toolbarColor)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = null
 
         // PhotoView doesn't play nice with shared element transitions if we rotate before exiting, so we
         // use this variable to skip the transition if the activity is re-created
@@ -150,7 +151,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
             if (product.images.isEmpty()) {
                 finishAfterTransition()
             } else {
-                supportActionBar?.title = product.name
                 setupViewPager(product.images)
             }
         })
