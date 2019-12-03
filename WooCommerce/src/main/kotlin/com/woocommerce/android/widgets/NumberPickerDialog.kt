@@ -101,9 +101,6 @@ class NumberPickerDialog : DialogFragment(),
     }
 
     override fun onDismiss(dialog: DialogInterface) {
-        // TODO: android.app.Fragment  is deprecated since Android P.
-        // Needs to be replaced with android.support.v4.app.Fragment
-        // See https://developer.android.com/reference/android/app/Fragment
         val target = targetFragment
         target?.onActivityResult(targetRequestCode, Activity.RESULT_OK, resultIntent)
 
