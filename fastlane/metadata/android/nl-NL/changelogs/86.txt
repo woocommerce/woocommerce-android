@@ -1,5 +1,0 @@
-2.9:
-* Hoera! We ondersteunen nu Android 10!
-* Het tabblad Bestellingen is nu geheel vernieuwd! Je kunt nu op één pagina zoeken en filteren en hierop staat ook het totaalaantal bestellingen per bestelstatus vermeld. De bestellijst wordt nu in twee tabbladen weergegeven: Verwerken en Alles.
-* Het besteloverzicht is ook verbeterd.
-* In deze uitgave zijn ook een paar kleine bugs gerepareerd.
