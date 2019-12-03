@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 
@@ -32,7 +33,7 @@ class WCProductPropertyView @JvmOverloads constructor(
         if (detail.isNullOrEmpty()) {
             propertyValueText?.visibility = View.GONE
         } else {
-            propertyValueText?.text = detail
+            propertyValueText?.text = HtmlCompat.fromHtml(detail, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
     }
 

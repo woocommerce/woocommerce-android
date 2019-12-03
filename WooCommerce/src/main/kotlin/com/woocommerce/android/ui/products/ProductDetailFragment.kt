@@ -429,8 +429,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             container.addView(propertyView)
         }
 
-        // some details, such as product description, contain html which needs to be stripped here
-        propertyView.show(orientation, propertyName, HtmlUtils.fastStripHtml(propertyValue).trim())
+        propertyView.show(orientation, propertyName, propertyValue)
         return propertyView
     }
 
