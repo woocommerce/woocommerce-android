@@ -421,7 +421,7 @@
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_wip_title">Work in progress!</string>
-    <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch &#x1f680;</string>
+    <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch 🚀</string>
     <!--
         Empty list messages
     -->
@@ -536,7 +536,7 @@
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed. Hunt and peck no more!</string>
-    <string name="login_magic_links_sent_label">Email sent! Check your email on this device, and tap the link in the email you receive from WordPress.com</string>
+    <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
     <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
@@ -968,4 +968,13 @@
     <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
+    <string name="send_verification_email">Send verification email</string>
+    <string name="username">Username</string>
+    <string name="enter_credentials_for_site">Log in with your %1$s site credentials</string>
+    <string name="enter_site_credentials_instead">Log in with site credentials.</string>
+    <string name="login_site_credentials_magic_link_label">Almost there! We just need to verify your Jetpack connected email address &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_xmlrpc">We were unable to access the &lt;b&gt;XMLRPC file&lt;/b&gt; on your site. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
 </resources>
