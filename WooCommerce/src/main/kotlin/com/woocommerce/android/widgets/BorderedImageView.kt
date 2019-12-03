@@ -36,7 +36,7 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
         }
 
         borderPaint = Paint().also { paint ->
-            paint.isAntiAlias = true
+            paint.isAntiAlias = false
             paint.style = Paint.Style.STROKE
             paint.color = borderColor
             paint.strokeWidth = borderSize

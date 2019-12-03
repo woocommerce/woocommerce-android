@@ -9,6 +9,7 @@
             <stroke
                 android:width="@dimen/image_border_size"
                 android:color="@color/list_divider" />
+            <corners android:radius="@dimen/image_border_radius" />
         </shape>
     </item>
 
