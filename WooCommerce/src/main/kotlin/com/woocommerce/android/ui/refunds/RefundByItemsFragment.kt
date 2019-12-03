@@ -101,13 +101,18 @@ class RefundByItemsFragment : BaseFragment() {
             new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
                 issueRefund_subtotal.text = it
             }
-            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
-                if (isVisible) {
-                    issueRefund_shippingSection.expand()
-                } else {
-                    issueRefund_shippingSection.collapse()
-                }
+            new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
+                issueRefund_selectedItems.text = it
             }
+            
+            // temporarily hidden
+//            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
+//                if (isVisible) {
+//                    issueRefund_shippingSection.expand()
+//                } else {
+//                    issueRefund_shippingSection.collapse()
+//                }
+//            }
         }
 
         viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
