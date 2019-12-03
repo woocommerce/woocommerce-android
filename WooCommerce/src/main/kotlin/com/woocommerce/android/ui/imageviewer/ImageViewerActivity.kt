@@ -232,7 +232,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                 .setPositiveButton(R.string.remove) { _, _ ->
                     removeProductImage()
                 }
-                .setNegativeButton(R.string.dont_remove) { _, _ ->
+                .setNegativeButton(R.string.cancel) { _, _ ->
                     isConfirmationShowing = false
                 }
                 .show()

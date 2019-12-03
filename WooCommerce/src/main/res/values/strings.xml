@@ -74,7 +74,6 @@
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
     <string name="remove">Remove</string>
-    <string name="dont_remove">Don\'t remove</string>
     <string name="try_again">Try again</string>
     <!--
         Date/Time Labels
@@ -436,7 +435,7 @@
     <string name="product_image_service_error_uploading">Error uploading product image</string>
     <string name="product_image_service_busy">Please wait for the current operation to complete</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
-    <string name="product_image_remove_confirmation">Remove this image from the product?</string>
+    <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>
     <string name="product_images_camera_error">Unable to access camera</string>
     <string name="product_images_uploading_single_notif_message">Uploading image…</string>
     <string name="product_images_uploading_multi_notif_message">Uploading images…%d of %d</string>
