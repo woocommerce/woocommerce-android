@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.DialogInterface
 import android.os.Parcelable
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
@@ -16,6 +17,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -54,6 +56,25 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.product?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
+        }
+    }
+
+    fun onBackButtonClicked(): Boolean {
+        return if (viewState.isProductUpdated == true && viewState.shouldShowDiscardDialog) {
+            viewState = viewState.copy(shouldShowDiscardDialog = false)
+            triggerEvent(ShowDiscardDialog(
+                    R.string.product_detail_update_product_discard,
+                    R.string.discard, R.string.cancel,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    },
+                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState = viewState.copy(shouldShowDiscardDialog = true)
+                    }
+            ))
+            false
+        } else {
+            true
         }
     }
 
@@ -200,6 +221,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
         val isProductUpdated: Boolean? = null,
+        val shouldShowDiscardDialog: Boolean = true,
         var storedProduct: Product? = null
     ) : Parcelable
 

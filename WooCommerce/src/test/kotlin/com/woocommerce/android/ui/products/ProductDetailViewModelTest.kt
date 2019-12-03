@@ -268,4 +268,23 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(productData?.isProductUpdated).isFalse()
         assertThat(productData?.product).isEqualTo(product)
     }
+
+    @Test
+    fun `Displays discard dialog if product is edited and back button is pressed`() = test {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        val shouldShowDiscard = ArrayList<Boolean>()
+        viewModel.viewStateData.observeForever { old, new ->
+            new.shouldShowDiscardDialog.takeIfNotEqualTo(old?.shouldShowDiscardDialog) {
+                shouldShowDiscard.add(it)
+            } }
+
+        viewModel.start(productRemoteId)
+
+        val updatedDescription = "Updated product description"
+        viewModel.updateProductDraft(updatedDescription)
+        viewModel.onBackButtonClicked()
+
+        assertThat(shouldShowDiscard).containsExactly(true, false)
+    }
 }

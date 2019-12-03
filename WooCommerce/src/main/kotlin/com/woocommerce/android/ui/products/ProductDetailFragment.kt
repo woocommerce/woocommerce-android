@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.products
 
 import android.Manifest.permission
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -34,6 +36,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDIT
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
@@ -44,6 +47,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -55,7 +59,8 @@ import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
-class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, NavigationResult {
+class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, NavigationResult,
+        BackPressListener {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -124,6 +129,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShareProduct -> shareProduct(event.product)
                 is Exit -> requireActivity().onBackPressed()
+                is ShowDiscardDialog -> showDiscardDialog(
+                        event.message,
+                        event.positiveBtnText,
+                        event.negativeBtnText,
+                        event.positiveBtnAction,
+                        event.negativeBtnAction
+                )
             }
         })
     }
@@ -161,6 +173,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked()
+    }
+
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
@@ -190,6 +206,25 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
+    }
+
+    /**
+     * Method to display discard changes dialog. This can eventually be moved to a separate class
+     * that can be reused by multiple fragments
+     */
+    private fun showDiscardDialog(
+        @StringRes messageId: Int,
+        @StringRes posBtnTextId: Int,
+        @StringRes negBtnTextId: Int,
+        posBtnAction: (OnClickListener)? = null,
+        negBtnAction: (OnClickListener)? = null
+    ) {
+        AlertDialog.Builder(activity)
+                .setMessage(getString(messageId))
+                .setCancelable(true)
+                .setPositiveButton(posBtnTextId, posBtnAction)
+                .setNegativeButton(negBtnTextId, negBtnAction)
+                .show()
     }
 
     override fun getFragmentTitle() = productTitle
