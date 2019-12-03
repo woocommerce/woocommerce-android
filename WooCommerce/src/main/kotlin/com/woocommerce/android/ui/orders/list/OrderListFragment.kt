@@ -684,10 +684,10 @@ class OrderListFragment : TopLevelFragment(),
         isFilterEnabled = true
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
-                .plus(orderStatusFilter?.let { filter ->
+                .plus(orderStatusFilter.let { filter ->
                     val orderStatusLabel = getOrderStatusOptions()[filter]?.label
                     getString(R.string.orderlist_filtered, orderStatusLabel)
-                } ?: "")
+                })
 
         searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
             it.setHintTextColor(Color.WHITE)
