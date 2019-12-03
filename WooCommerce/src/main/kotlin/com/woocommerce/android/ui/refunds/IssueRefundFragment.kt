@@ -86,7 +86,6 @@ class IssueRefundFragment : BaseFragment() {
         })
     }
 
-
     @SuppressLint("WrongConstant")
     private class RefundPageAdapter(
         fragmentManager: FragmentManager

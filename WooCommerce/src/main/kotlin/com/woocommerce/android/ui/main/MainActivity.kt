@@ -20,7 +20,6 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.FragmentScrollListener
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
@@ -63,14 +62,12 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class MainActivity : AppUpgradeActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
-        FragmentScrollListener,
         MainNavigationRouter,
         MainBottomNavigationView.MainNavigationListener,
         NavController.OnDestinationChangedListener,
@@ -220,7 +217,7 @@ class MainActivity : AppUpgradeActivity(),
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.also {
-            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, BottomNavigationPosition.DASHBOARD.id)
+            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
 
             val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
@@ -425,9 +422,9 @@ class MainActivity : AppUpgradeActivity(),
                     restart()
                 }
 
-                // update the stats fragment based on the user's preferences
-                if (resultCode == AppSettingsActivity.RESULT_CODE_V4_STATS_OPTIONS_CHANGED) {
-                    replaceStatsFragment()
+                // beta features have changed. Restart activity for changes to take effect
+                if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
+                    restart()
                 }
                 return
             }
@@ -729,7 +726,7 @@ class MainActivity : AppUpgradeActivity(),
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS
 
-        val navPos = BottomNavigationPosition.REVIEWS.position
+        val navPos = REVIEWS.position
         bottom_nav.active(navPos)
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
@@ -741,7 +738,7 @@ class MainActivity : AppUpgradeActivity(),
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
         bottomNavView.currentPosition = ORDERS
 
-        val navPos = BottomNavigationPosition.ORDERS.position
+        val navPos = ORDERS.position
         bottom_nav.active(navPos)
 
         if (markComplete) {
@@ -766,14 +763,6 @@ class MainActivity : AppUpgradeActivity(),
 
     private fun checkConnection() {
         updateOfflineStatusBar(NetworkUtils.isNetworkAvailable(this))
-    }
-
-    override fun onFragmentScrollUp() {
-        showBottomNav()
-    }
-
-    override fun onFragmentScrollDown() {
-        hideBottomNav()
     }
 
     override fun hideBottomNav() {
