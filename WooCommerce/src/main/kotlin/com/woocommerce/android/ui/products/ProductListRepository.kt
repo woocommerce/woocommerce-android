@@ -84,9 +84,10 @@ final class ProductListRepository @Inject constructor(
 
     /**
      * Submits a fetch request to get a page of products for the current site matching the passed
-     * query and returns only that page of products
+     * query and returns only that page of products - note that this returns null if the search
+     * is interrupted (which means the user submitted another search while this was running)
      */
-    suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product> {
+    suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
         if (isLoadingProducts) {
             return emptyList()
         }
@@ -110,7 +111,7 @@ final class ProductListRepository @Inject constructor(
             return products ?: emptyList()
         } catch (e: CancellationException) {
             WooLog.e(WooLog.T.PRODUCTS, "CancellationException while searching products", e)
-            return emptyList()
+            return null
         }
     }
 

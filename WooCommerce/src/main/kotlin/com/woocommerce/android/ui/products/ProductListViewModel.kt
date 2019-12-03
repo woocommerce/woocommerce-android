@@ -158,22 +158,24 @@ class ProductListViewModel @AssistedInject constructor(
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
             } else {
-                val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
-                // make sure the search query hasn't changed while the fetch was processing
-                if (searchQuery == productRepository.lastSearchQuery) {
-                    if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + fetchedProducts
+                productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+                    // make sure the search query hasn't changed while the fetch was processing
+                    if (searchQuery == productRepository.lastSearchQuery) {
+                        if (loadMore) {
+                            _productList.value = _productList.value.orEmpty() + fetchedProducts
+                        } else {
+                            _productList.value = fetchedProducts
+                        }
                     } else {
-                        _productList.value = fetchedProducts
+                        WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                     }
-                } else {
-                    WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
+
+                    viewState = viewState.copy(
+                            canLoadMore = productRepository.canLoadMoreProducts,
+                            isEmptyViewVisible = _productList.value?.isEmpty() == true
+                    )
                 }
             }
-            viewState = viewState.copy(
-                    canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = _productList.value?.isEmpty() == true
-            )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
         }
