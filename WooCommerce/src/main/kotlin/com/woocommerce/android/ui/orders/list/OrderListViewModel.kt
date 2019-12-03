@@ -51,6 +51,7 @@ import java.util.Locale
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
+@Suppress("LeakingThis")
 @OpenClassOnDebug
 class OrderListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -67,17 +68,14 @@ class OrderListViewModel @AssistedInject constructor(
     }
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    internal var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, lifecycle)
     }
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
-
-    @get:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var viewState by viewStateData
+    internal var viewState by viewStateData
 
     protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
@@ -108,8 +106,8 @@ class OrderListViewModel @AssistedInject constructor(
     var orderStatusFilter = ""
 
     init {
-        lifecycleRegistry.markState(Lifecycle.State.CREATED)
-        lifecycleRegistry.markState(Lifecycle.State.STARTED)
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         EventBus.getDefault().register(this)
         dispatcher.register(this)
@@ -277,7 +275,7 @@ class OrderListViewModel @AssistedInject constructor(
     }
 
     override fun onCleared() {
-        lifecycleRegistry.markState(Lifecycle.State.DESTROYED)
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         clearLiveDataSources(pagedListWrapper)
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
