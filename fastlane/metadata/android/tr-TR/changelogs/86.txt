@@ -1,5 +1,0 @@
-2.9:
-* Tebrikler! Artık Android 10'u destekliyoruz!
-* Siparişler sekmesinin görünümü olağanüstü bir şekilde yenilendi! Arama ve filtreleme işlevlerini, sipariş durumuna göre toplam sipariş sayısını içeren tek bir görünümden kullanabilirsiniz. Sipariş listesi iki sekmede görüntülenir: İşleniyor ve Tümü.
-* Sipariş ayrıntısı görünümünde de bazı düzeltmeler yapıldı.
-* Bu sürümle birlikte birkaç küçük hata da düzeltildi.

@@ -1,5 +1,0 @@
-2.9:
-* Hurra! Vi stöder nu Android 10!
-* Orderfliken har gjorts om helt och hållet! Sökning och filtrering finns nu i samma vy, som innehåller det totala antalet ordrar sorterade efter orderstatus. Orderlistan visas i två flikar: Behandlas och Alla.
-* Vyn för orderdetaljer har också fräschats upp.
-* Den här versionen innehåller även vissa mindre felkorrigeringar.
