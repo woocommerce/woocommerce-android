@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -283,8 +284,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             }
             addPropertyView(
                     DetailCard.Primary,
-                    R.string.product_description,
-                    description,
+                    getString(R.string.product_description),
+                    SpannableString(HtmlUtils.fromHtml(description)),
                     LinearLayout.VERTICAL
             )?.also {
                 it.setMaxLines(2)
@@ -445,6 +446,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         card: DetailCard,
         propertyName: String,
         propertyValue: String,
+        orientation: Int = LinearLayout.HORIZONTAL
+    ): WCProductPropertyView? {
+        return addPropertyView(card, propertyName, SpannableString(propertyValue), orientation)
+    }
+
+    private fun addPropertyView(
+        card: DetailCard,
+        propertyName: String,
+        propertyValue: SpannableString,
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
         if (propertyValue.isBlank()) return null
