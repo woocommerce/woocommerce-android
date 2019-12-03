@@ -48,6 +48,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -300,8 +302,19 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                     val resultCall = async(dispatchers.io) {
                         return@async when (commonState.refundType) {
-                            ITEMS, AMOUNT -> {
-                                refundStore.createRefund(
+                            ITEMS -> {
+                                refundStore.createItemsRefund(
+                                        selectedSite.get(),
+                                        order.remoteId,
+                                        refundByAmountState.enteredAmount,
+                                        reason,
+                                        true,
+                                        gateway.supportsRefunds,
+                                        emptyList()
+                                )
+                            }
+                            AMOUNT -> {
+                                refundStore.createAmountRefund(
                                         selectedSite.get(),
                                         order.remoteId,
                                         refundByAmountState.enteredAmount,
