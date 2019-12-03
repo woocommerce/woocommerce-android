@@ -44,7 +44,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
-import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
@@ -214,7 +213,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         // show product variants only if product type is variable
-        if (product.type == VARIABLE && FeatureFlag.PRODUCT_VARIANTS.isEnabled(context)) {
+        if (product.type == VARIABLE && FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context)) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()

@@ -29,7 +29,7 @@ open class NumberPickerDialog : DialogFragment(), DialogInterface.OnClickListene
         fun createInstance(
             args: Bundle,
             format: Formatter
-        ) : NumberPickerDialog {
+        ): NumberPickerDialog {
             val dialog = NumberPickerDialog()
             dialog.setNumberFormat(format)
             dialog.arguments = args

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +20,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
-import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_variants.*
 import javax.inject.Inject
 
