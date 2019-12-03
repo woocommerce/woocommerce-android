@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
@@ -50,7 +52,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
-    private val request: GlideRequest<Drawable>
+
+    private val glideRequest: GlideRequest<Drawable>
+    private val glideTransform: RequestOptions
 
     private lateinit var listener: OnGalleryImageClickListener
 
@@ -94,11 +98,15 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         // create a reusable Glide request for all images
-        request = glideRequests
+        glideRequest = glideRequests
                 .asDrawable()
                 .error(R.drawable.ic_product)
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
+
+        // create a reusable Glide rounded corner transformation for all images
+        val borderRadius = context.resources.getDimensionPixelSize(R.dimen.image_border_radius)
+        glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
         imageSize = if (isGridView) {
             context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height_grid)
@@ -272,10 +280,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val src = getImage(position).source
             val viewType = getItemViewType(position)
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
-                request.load(Uri.parse(src)).into(holder.productImageView)
+                glideRequest.load(Uri.parse(src)).apply(glideTransform).into(holder.productImageView)
             } else if (viewType == VIEW_TYPE_IMAGE) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageSize)
-                request.load(photonUrl).into(holder.productImageView)
+                glideRequest.load(photonUrl).apply(glideTransform).into(holder.productImageView)
             }
         }
     }

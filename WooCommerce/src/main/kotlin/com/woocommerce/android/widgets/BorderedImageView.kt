@@ -7,10 +7,11 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
-import org.wordpress.android.util.DisplayUtils
 
 /**
- * ImageView with a built-in border so we can avoid adding a parent ViewGroup to provide the border
+ * ImageView with a built-in border so we can avoid adding a parent ViewGroup to provide the border. Note that
+ * this is designed to be used with a Glide image request that applies a rounded corner transformation matching
+ * the border radius used here.
  */
 class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : AppCompatImageView(
         ctx,
@@ -19,7 +20,7 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
     private val borderPaint: Paint
 
     private var borderSize = context.resources.getDimensionPixelSize(R.dimen.image_border_size).toFloat()
-    private var borderRadius = DisplayUtils.dpToPx(context, 2).toFloat()
+    private var borderRadius = context.resources.getDimensionPixelSize(R.dimen.image_border_radius).toFloat()
     private var borderColor = ContextCompat.getColor(context, R.color.list_divider)
 
     init {

@@ -179,4 +179,5 @@
         Misc
     -->
     <dimen name="image_border_size">1dp</dimen>
+    <dimen name="image_border_radius">2dp</dimen>
 </resources>
