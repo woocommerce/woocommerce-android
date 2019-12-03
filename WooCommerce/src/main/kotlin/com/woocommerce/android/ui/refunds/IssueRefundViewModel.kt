@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationSt
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
