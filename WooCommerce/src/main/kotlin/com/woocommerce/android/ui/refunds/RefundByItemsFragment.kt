@@ -16,10 +16,12 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
 import kotlinx.android.synthetic.main.refund_by_items_products.*
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class RefundByItemsFragment : BaseFragment() {
@@ -62,10 +64,9 @@ class RefundByItemsFragment : BaseFragment() {
             viewModel.onRefundItemsShippingSwitchChanged(isChecked)
         }
 
-        // to be used in the future
-//        issueRefund_productsTotalButton.setOnClickListener {
-//            viewModel.onProductRefundAmountTapped()
-//        }
+        issueRefund_productsTotalButton.setOnClickListener {
+            viewModel.onProductRefundAmountTapped()
+        }
     }
 
     private fun setupObservers() {
@@ -81,7 +82,7 @@ class RefundByItemsFragment : BaseFragment() {
                 issueRefund_btnNextFromItems.isEnabled = it
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                issueRefund_productsTotal.text = it
+                issueRefund_productsTotalButton.text = it
             }
             new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
                 if (isVisible) {
@@ -101,8 +102,7 @@ class RefundByItemsFragment : BaseFragment() {
             new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
                 issueRefund_selectedItems.text = it
             }
-
-            // to be used in the future
+            // temporarily hidden
 //            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
 //                if (isVisible) {
 //                    issueRefund_shippingSection.expand()
@@ -128,17 +128,16 @@ class RefundByItemsFragment : BaseFragment() {
                     )
                     findNavController().navigate(action)
                 }
-                // to be used in the future
-//                is ShowRefundAmountDialog -> {
-//                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
-//                            getString(R.string.order_refunds_products_refund),
-//                            event.maxRefund,
-//                            event.refundAmount,
-//                            BigDecimal.ZERO,
-//                            event.message
-//                    )
-//                    findNavController().navigate(action)
-//                }
+                is ShowRefundAmountDialog -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
+                            getString(R.string.order_refunds_products_refund),
+                            event.maxRefund,
+                            event.refundAmount,
+                            BigDecimal.ZERO,
+                            event.message
+                    )
+                    findNavController().navigate(action)
+                }
                 else -> event.isHandled = false
             }
         })

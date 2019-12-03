@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.AppRatingDialog
+import kotlinx.android.synthetic.main.fragment_add_shipment_tracking.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import java.util.Calendar

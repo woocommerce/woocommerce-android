@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.reviews
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
@@ -18,16 +17,14 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.onScrollDown
-import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.model.ActionStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
@@ -40,7 +37,6 @@ import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListen
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_reviews_list.*
-import kotlinx.android.synthetic.main.fragment_reviews_list.reviewsList
 import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
 import java.util.Locale
 import javax.inject.Inject
@@ -112,11 +108,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy > 0) {
-                        onScrollDown()
-                    } else if (dy < 0) {
-                        onScrollUp()
-                    }
+                    // noop
                 }
 
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -143,11 +135,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 AnalyticsTracker.track(Stat.REVIEWS_LIST_PULLED_TO_REFRESH)
                 viewModel.forceRefreshReviews()
             }
-        }
-
-        listState?.let {
-            reviewsList.layoutManager?.onRestoreInstanceState(listState)
-            listState = null
         }
     }
 
@@ -219,11 +206,8 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         super.onDestroyView()
     }
 
-    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-    @SuppressLint("InflateParams")
     private fun setupObservers() {
-        viewModel.viewStateData.observe(this) { old, new ->
-            new.reviewList?.let { showReviewList(it) }
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { showMarkAllReadMenuItem(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
@@ -233,15 +217,19 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
             }
         })
 
-        viewModel.moderateProductReview.observe(this, Observer {
+        viewModel.moderateProductReview.observe(viewLifecycleOwner, Observer {
             it?.let { request -> handleReviewModerationRequest(request) }
+        })
+
+        viewModel.reviewList.observe(viewLifecycleOwner, Observer {
+            showReviewList(it)
         })
     }
 
@@ -265,6 +253,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private fun showReviewList(reviews: List<ProductReview>) {
         if (isActive) {
             reviewsAdapter.setReviews(reviews)
+            listState?.let {
+                reviewsList.layoutManager?.onRestoreInstanceState(listState)
+                listState = null
+            }
             showEmptyView(reviews.isEmpty())
         } else {
             newDataAvailable = true
