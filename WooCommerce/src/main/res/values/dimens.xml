@@ -165,8 +165,7 @@
     <dimen name="product_icon_sz">40dp</dimen>
     <dimen name="product_detail_card_divider_height">16dp</dimen>
     <dimen name="product_detail_property_margin">@dimen/settings_padding</dimen>
-    <dimen name="product_image_gallery_image_height">128dp</dimen>
-    <dimen name="product_image_gallery_image_height_grid">156dp</dimen>
+    <dimen name="product_image_gallery_image_size">128dp</dimen>
 
     <!--
         Shipment Trackings

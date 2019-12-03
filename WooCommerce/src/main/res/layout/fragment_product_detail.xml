@@ -35,7 +35,7 @@
                 <com.woocommerce.android.widgets.WCProductImageGalleryView
                     android:id="@+id/imageGallery"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/product_image_gallery_image_height"
+                    android:layout_height="@dimen/product_image_gallery_image_size"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/margin_extra_large"
                     android:layout_marginBottom="@dimen/margin_extra_large"
@@ -46,7 +46,7 @@
                 <FrameLayout
                     android:id="@+id/addImageContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/product_image_gallery_image_height"
+                    android:layout_height="@dimen/product_image_gallery_image_size"
                     android:background="@drawable/ripple_grey_framed"
                     android:visibility="gone"
                     tools:visibility="visible">

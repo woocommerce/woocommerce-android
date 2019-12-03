@@ -22,6 +22,7 @@ import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 import java.util.Date
 
@@ -109,9 +110,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
         imageSize = if (isGridView) {
-            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height_grid)
+            val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
+            val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+            (screenWidth / 2) - (margin * 2)
         } else {
-            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_height)
+            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_size)
         }
     }
 
