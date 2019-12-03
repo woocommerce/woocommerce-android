@@ -1,119 +1,60 @@
-<ar>
-2.9:
-* مرحى! ندعم الآن Android 10!
-* شهدت علامة تبويب الطلبات تغييرًا كبيرًا! يشارك البحث والتصفية في عرض فردي يتضمن الأعداد الإجمالية للطلبات حسب حالة الطلب. يتم عرض قائمة الطلبات في علامتي تبويب: المعالجة والكل.
-* شهد عرض تفاصيل الطلب أيضًا بعض اللمسات.
-* يتم أيضًا تضمين العديد من إصلاحات الأخطاء الطفيفة في هذا الإصدار.
-</ar>
 <de-DE>
-2.9:
-* Hurra! Wir unterstützen jetzt Android 10!
-* Der Tab „Bestellungen“ wurde komplett überarbeitet! Die Such- und Filteroption sind jetzt auf einer gemeinsamen Ansicht verfügbar, die die Gesamtzahl der Bestellungen nach Bestellstatus enthält. Die Liste der Bestellungen wird auf zwei Tabs angezeigt: „In Bearbeitung“ und „Alle“.
-* Die Ansicht der Bestelldetails wurde ebenfalls in Teilen überarbeitet.
-* Diese Version enthält auch verschiedene kleine Fehlerbehebungen.
+3.1:
+- Du kannst dich nicht mehr an deine Anmeldedaten von WordPress.com erinnern? Kein Problem! Wir haben eine neue Option hinzugefügt, mit der Benutzer sich mit ihren Website-Anmeldedaten anmelden können. Wenn diese Anmeldedaten funktionieren, ruft die App die Informationen des verknüpften WordPress.com-Kontos ab und ermöglicht dem Benutzer, die Anmeldung über einen magischen Link abzuschließen.
 </de-DE>
 <es-ES>
-2.9:
-* ¡Hurra! ¡Ya admitimos Android 10!
-* La pestaña de pedidos se ha renovado por completo. La búsqueda y el filtrado comparten la misma vista, que incluye el recuento total de pedidos según su estado. La lista de pedidos se muestra en dos pestañas: Procesando y Todo.
-* También hemos hecho algunos cambios en la vista de detalles del pedido.
-* Esta versión también incluye varias correcciones de errores menores.
+3.1:
+- ¿Has olvidado tus credenciales de WordPress.com? ¡No hay problema! Hemos añadido una nueva opción que permite a los usuarios acceder con las credenciales de su sitio. Si las credenciales funcionan, la aplicación obtendrá la información de la cuenta de WordPress.com conectada y permitirá a los usuarios completar el proceso de acceso con un enlace mágico.
 </es-ES>
 <fr-FR>
-2.9 :
-* Bonne nouvelle ! Nous prenons désormais en charge Android 10 !
-* L'onglet des commandes a été complètement refondu ! La recherche et le filtrage partagent une vue uniquement qui inclut le nombre total de commandes par état des commandes. La liste des commandes apparaît dans deux onglets : Traitement et Toutes.
-*La vue présentant les détails de la commande a également reçu quelques modifications.
-* Cette version inclut également la résolution de plusieurs bugs mineurs.
+3.1 :
+- Vous avez oublié vos identifiants WordPress.com ? Pas de problème. Nous avons ajouté une nouvelle option qui permet à l'utilisateur de se connecter avec les identifiants de son site. Si ces identifiants fonctionnent, l'application récupère les informations du compte WordPress.com connecté et autorise l'utilisateur à terminer la procédure de connexion à l'aide d'un lien magique.
 </fr-FR>
 <iw-IL>
-2.9:
-* הידד! אנחנו כעת תומכים ב-Android 10!
-* לשונית ההזמנה עברה מהפך של ממש! ניתן לראות את החיפוש והמסננים בתצוגה אחת שמציגה את הספירה הכוללת של ההזמנות לפי סטטוס הזמנות. רשימת ההזמנות מוצגת בשתי לשוניות: הזמנות בעיבוד ועל ההזמנות.
-* הוספנו גם כמה שיפורים לתצוגה של פרטי ההזמנה.
-* הוספנו לגרסה הזאת גם כמה תיקוני באגים קטנים.
+3.1:
+- אין לך מושג מהם פרטי הכניסה שלך ל-WordPress.com? אין בעיה! הוספנו אפשרויות חדשות שמאפשרות למשתמש להתחבר באמצעות פרטי הכניסה שלו לאתר. אם פרטי הכניסה האלה יעבדו, היישום יביא את המידע של החשבון המקושר ב-WordPress.com ויאפשר למשתמש להשלים את תהליך הכניסה באמצעות הקישור הישיר.
 </iw-IL>
 <id>
-2.9:
-* Horeee! Sekarang kami mendukung Android 10!
-* Perubahan besar-besaran pada tab pesanan! Pencarian dan penyaringan memiliki satu tampilan yang mencakup total jumlah pesanan menurut status pesanan. Daftar pesanan ditampilkan dalam dua tab: Dalam Proses & Semua.
-* Tampilan detail pesanan juga diperbarui.
-* Sejumlah perbaikan bug kecil juga disertakan dalam rilis ini.
+3.1.
+- Tidak dapat mengingat kredensial WordPress.com Anda? Tidak masalah! Kami telah menambahkan pilihan baru yang memungkinkan pengguna login menggunakan kredensial situs mereka. Jika kredensial ini berfungsi, aplikasi akan mengambil informasi akun WordPress.com yang tersambung dan memungkinkan pengguna menyelesaikan proses login menggunakan tautan ajaib.
 </id>
-<it-IT>
-2.9:
-* Finalmente! Ora supportiamo Android 10!
-* La scheda degli ordini ha subito un restyling estremo. La ricerca e il filtro condividono un'unica visualizzazione, con il conteggio totale degli ordini suddivisi in base allo stato. L'elenco degli ordini viene visualizzato in due schede: In elaborazione e Tutti.
-* Anche la visualizzazione dei dettagli degli ordini ha subito qualche ritocco.
-* In questa versione sono stati anche corretti diversi bug minori.
-</it-IT>
 <ja-JP>
-2.9:
-* お待たせいたしました。Android 10対応になりました !
-* 注文タブが一新されました !検索とフィルターのビューが1つになり、注文ステータス別に注文の合計数を表示できるようになりました。注文一覧は、「処理中」と「すべて」の2つのタブに表示されます。
-* 注文詳細表示にいくつかの変更が加えられました。
-* このリリースにはマイナーバグの修正もいくつか追加されています。
+3.1:
+- WordPress.com のログイン情報をお忘れですか ?ご心配ありません。サイトのログイン情報を使用してログインできる新しいオプションが追加されました。これらのログイン情報が機能する場合、連携済みの WordPress.com アカウント情報がアプリで取得され、ユーザーはマジックリンクを使用してログインプロセスを完了できます。
 </ja-JP>
 <ko-KR>
-2.9:
-* 축하합니다! 이제 Android 10을 지원합니다!
-* 주문 탭이 새롭게 단장했습니다! 검색 및 필터링은 주문 상태별 총 주문 수가 포함된 단일 보기를 공유합니다. 주문 목록이 두 개의 탭에 표시됩니다. 처리 중 및 모두.
-* 주문 상세 정보 보기도 일부 수정되었습니다.
-*이 릴리스에는 몇 가지 사소한 버그 수정 사항이 포함되어 있습니다.
+3.1:
+- 워드프레스닷컴 자격 증명이 기억나지 않으세요? 걱정하지 마세요! 사용자가 사이트 자격 증명을 사용하여 로그인할 수 있는 새로운 옵션이 추가되었습니다. 이러한 자격 증명이 작동하면 앱이 연결된 워드프레스닷컴 계정 정보를 가져오므로 사용자가 매직 링크를 사용하여 로그인 프로세스를 완료할 수 있습니다.
 </ko-KR>
 <nl-NL>
-2.9:
-* Hoera! We ondersteunen nu Android 10!
-* Het tabblad Bestellingen is nu geheel vernieuwd! Je kunt nu op één pagina zoeken en filteren en hierop staat ook het totaalaantal bestellingen per bestelstatus vermeld. De bestellijst wordt nu in twee tabbladen weergegeven: Verwerken en Alles.
-* Het besteloverzicht is ook verbeterd.
-* In deze uitgave zijn ook een paar kleine bugs gerepareerd.
+3.1:
+- Ben je je WordPress.com-inloggegevens vergeten? Geen probleem! We hebben een nieuwe optie toegevoegd waarmee een gebruiker in kan loggen door middel van site-inloggegevens. Als deze inloggegevens werken, haalt de app de gegevens van het verbonden WordPress.com-account op en kan de gebruiker het inlogproces afronden via een magische link.
 </nl-NL>
 <pt-BR>
-2.9:
-* Viva! Agora somos compatíveis com Android 10!
-* A guia de pedidos foi completamente reformada! A pesquisa e os filtros agora têm uma exibição única que inclui uma contagem total de pedidos exibidos por status do pedido. A lista de pedidos é exibida em duas guias: “Processamento” e “Todos”.
-* Os detalhes do pedido também tiveram alguns ajustes.
-* Várias correções de bugs menores também estão incluídas nesta versão.
+3.1:
+- Não se lembra das suas credenciais do WordPress.com? Sem problema! Adicionamos uma nova opção que permite ao usuário fazer login usando as credenciais do site. Se essas credenciais funcionarem, o aplicativo buscará as informações da conta do WordPress.com conectada e permitirá que o usuário conclua o processo de login usando um link mágico.
 </pt-BR>
 <ru-RU>
-Версия 2.9
-* Ура! Добавлена поддержка Android 10.
-* Вкладка заказов полностью переработана. Поиск и фильтры доступны в одном представлении, в котором показано общее количество заказов, рассортированных по статусу. Список заказов отображается на двух вкладках: "В обработке" и "Все".
-* В представление сведений о заказе также внесены изменения.
-* В этом выпуске исправлено несколько незначительных ошибок.
+3.1:
+— Не можете вспомнить учетные данные WordPress.com? Нет проблем! Благодаря новой функции входить можно с помощью учетных данных сайта. Если учетные данные действительны, приложение получит информацию об учетной записи WordPress.com и пользователь сможет войти с помощью ссылки.
 </ru-RU>
 <sv-SE>
-2.9:
-* Hurra! Vi stöder nu Android 10!
-* Orderfliken har gjorts om helt och hållet! Sökning och filtrering finns nu i samma vy, som innehåller det totala antalet ordrar sorterade efter orderstatus. Orderlistan visas i två flikar: Behandlas och Alla.
-* Vyn för orderdetaljer har också fräschats upp.
-* Den här versionen innehåller även vissa mindre felkorrigeringar.
+3.1:
+- Kommer du inte ihåg dina användaruppgifter för WordPress.com? Inga problem! Vi har lagt till ett nytt alternativ som gör det möjligt för en användare att logga in med användaruppgifterna för sin webbplats. Om dessa användaruppgifter fungerar, hämtar appen informationen för det anslutna WordPress.com-kontot och låter användaren slutföra inloggningsprocessen med en magisk länk.
 </sv-SE>
 <tr-TR>
-2.9:
-* Tebrikler! Artık Android 10'u destekliyoruz!
-* Siparişler sekmesinin görünümü olağanüstü bir şekilde yenilendi! Arama ve filtreleme işlevlerini, sipariş durumuna göre toplam sipariş sayısını içeren tek bir görünümden kullanabilirsiniz. Sipariş listesi iki sekmede görüntülenir: İşleniyor ve Tümü.
-* Sipariş ayrıntısı görünümünde de bazı düzeltmeler yapıldı.
-* Bu sürümle birlikte birkaç küçük hata da düzeltildi.
+3.1:
+- WordPress.com kimlik bilgilerinizi hatırlamıyor musunuz? Sorun değil! Bir kullanıcının site kimlik bilgilerini kullanarak giriş yapmasını sağlayan yeni bir seçenek ekledik. Bu kimlik bilgileri işe yararsa, uygulama bağlı WordPress.com hesap bilgilerini alır ve kullanıcının özel bir bağlantı kullanarak giriş yapma işlemini tamamlamasına izin verir.
 </tr-TR>
 <zh-CN>
-2.9：
-* 太棒了！我们现在支持 Android 10 了！
-* 订单选项卡已经改头换面！搜索和过滤位于同一个视图中，其中包含按订单状态列出的订单总数。订单列表显示在以下两个选项卡中：“正在处理”和“全部”。
-* 订单详细信息视图也进行了一些修改。
-* 此版本中还包含一些小的错误修复。
+3.1：
+- 忘记了您的 WordPress.com 凭据？没问题！我们添加了一个允许用户使用其站点凭据登录的新选项。如果这些凭据有效，则该应用程序将获取已关联的 WordPress.com 帐户信息，并允许用户使用免密登录链接完成登录过程。
 </zh-CN>
 <zh-TW>
-2.9：
-* 太棒了！我們現在對 Android 10 提供支援了！
-* 訂單分頁現在擁有全新風貌！搜尋和篩選共用單一檢視畫面，此畫面包括依訂單狀態顯示的訂單總數。訂單清單顯示在兩個分頁中：「處理中」與「全部」。
-* 我們對訂單詳細資料檢視畫面也做了一些修改。
-* 此版本中也修正了一些小錯誤。
+3.1：
+- 記不住 WordPress.com 憑證嗎？沒問題！我們已新增讓使用者能夠以網站憑證登入的選項。若使用網站憑證成功登入，應用程式會擷取連結的 WordPress.com 帳號資料，並允許使用者透過神奇連結完成登入程序。
 </zh-TW>
 <en-US>
-2.9:
-* Hooray! We now support Android 10!
-* The orders tab has had an extreme makeover! Search and filtering share a single view that includes a total count of orders by order status. The orders list is displayed in two tabs: Processing & All.
-* The order detail view has also received some touchups.
-* Several minor bug fixes are also included in this release.
+3.1:
+- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.
 </en-US>
