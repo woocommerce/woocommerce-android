@@ -196,11 +196,15 @@ class OrderListFragment : TopLevelFragment(),
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        // Get the english version to use for setting the tab tag.
+        val englishTabArray = StringUtils
+                .getStringArrayByLocale(requireContext(), R.array.order_list_tabs, "en")
+
         resources.getStringArray(R.array.order_list_tabs).toList()
                 .forEachIndexed { index, title ->
                     val tab = tab_layout.newTab().apply {
                         text = title
-                        tag = title
+                        tag = englishTabArray?.get(index) ?: title
                     }
                     tab_layout.addTab(tab)
 
