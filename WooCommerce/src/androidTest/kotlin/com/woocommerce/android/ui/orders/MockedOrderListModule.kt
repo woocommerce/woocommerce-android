@@ -2,11 +2,15 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import androidx.savedstate.SavedStateRegistryOwner
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -15,6 +19,7 @@ import com.woocommerce.android.ui.orders.list.MockedOrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ViewModelKey
@@ -23,7 +28,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import kotlinx.coroutines.Dispatchers.Unconfined
-import kotlinx.coroutines.InternalCoroutinesApi
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
@@ -35,19 +39,18 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 abstract class MockedOrderListModule {
     @Module
     companion object {
-        private var orders: PagedList<OrderListItemUIType>? = null
-        private var orderStatusOptions: Map<String, WCOrderStatusModel>? = null
+        private var testOrders: PagedList<OrderListItemUIType>? = null
+        private var testOrderStatusOptions: Map<String, WCOrderStatusModel>? = null
         private val mockDispatcher = mock<Dispatcher>()
 
         fun setMockedOrders(ordersList: PagedList<OrderListItemUIType>) {
-            this.orders = ordersList
+            this.testOrders = ordersList
         }
 
         fun setMockedOrderStatusList(orderStatusOptions: Map<String, WCOrderStatusModel>) {
-            this.orderStatusOptions = orderStatusOptions
+            this.testOrderStatusOptions = orderStatusOptions
         }
 
-        @UseExperimental(InternalCoroutinesApi::class)
         @JvmStatic
         @Provides
         fun provideOrderListViewModel(
@@ -59,11 +62,12 @@ abstract class MockedOrderListModule {
             val orderStore = WCOrderStore(
                     mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock()))
             val gatewayStore = mock<WCGatewayStore>()
-            val repository = spy(OrderListRepository(mockDispatcher, orderStore, gatewayStore, site))
-            val mockSavedState: SavedStateWithArgs = mock()
             val testDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
+            val repository = spy(OrderListRepository(mockDispatcher, testDispatchers, orderStore, gatewayStore, site))
+            val mockSavedState: SavedStateWithArgs = mock()
+            doReturn(MutableLiveData(ViewState())).whenever(mockSavedState).getLiveData<ViewState>(any(), any())
 
-            return spy(MockedOrderListViewModel(
+            val viewModel = spy(MockedOrderListViewModel(
                     dispatchers = testDispatchers,
                     repository = repository,
                     orderStore = orderStore,
@@ -72,9 +76,11 @@ abstract class MockedOrderListModule {
                     dispatcher = mockDispatcher,
                     selectedSite = site,
                     arg0 = mockSavedState
-            )).apply {
-                this.testOrderData = orders
-            }
+            ))
+            viewModel.testOrderData = this.testOrders
+            viewModel.testOrderStatusData = this.testOrderStatusOptions
+
+            return viewModel
         }
 
         @JvmStatic
@@ -86,7 +92,7 @@ abstract class MockedOrderListModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(MockedOrderListViewModel::class)
+    @ViewModelKey(OrderListViewModel::class)
     abstract fun bindFactory(factory: MockedOrderListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds

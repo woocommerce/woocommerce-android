@@ -66,24 +66,26 @@ class OrderListItemTest : TestBase() {
 
     @Test
     fun verifyOrderListItemPopulatedSuccessfully() {
+        val orderPos = 1
+
         // verify if the first order item order number matches: 100
-        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(2, R.id.orderNum))
-                .check(matches(withText(getAsOrderItem(2).orderNumber)))
+        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(orderPos, R.id.orderNum))
+                .check(matches(withText(getAsOrderItem(orderPos).orderNumber)))
 
         // verify if the first order item order name matches the first item on the
-        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(2, R.id.orderName))
-                .check(matches(withText(getAsOrderItem(2).orderName)))
+        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(orderPos, R.id.orderName))
+                .check(matches(withText(getAsOrderItem(orderPos).orderName)))
 
         // verify if the first order item order total matches: $15.33
-        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(2, R.id.orderTotal))
+        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(orderPos, R.id.orderTotal))
                 .check(matches(withText("$14.53")))
     }
 
     @Test
     fun verifyOrderListItemEmptyNameHandledCorrectly() {
         // verify if the first order item order name is displayed empty
-        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(2, R.id.orderName))
-                .check(matches(withText(getAsOrderItem(2).orderName)))
+        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(1, R.id.orderName))
+                .check(matches(withText(getAsOrderItem(1).orderName)))
     }
 
     @Test
@@ -118,7 +120,7 @@ class OrderListItemTest : TestBase() {
         )
 
         // verify if the first order item order total matches: $14.53
-        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(2, R.id.orderTotal))
+        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(1, R.id.orderTotal))
                 .check(matches(withText("$14.53")))
 
         // verify if the first order item order total matches: ca$14.53
@@ -133,9 +135,8 @@ class OrderListItemTest : TestBase() {
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(6, R.id.orderTotal))
                 .check(matches(withText("₹14.53")))
 
-        // scroll to the end of the recyclerview first to avoid
-        //  No views in hierarchy found matching: RecyclerView with id:
-        // com.woocommerce.android:id/ordersList at position: 9
+        // scroll to the end of the RecyclerView first to avoid the "no matching
+        // views in hierarchy" error.
         onView(withId(R.id.ordersList))
                 .perform(scrollToPosition<RecyclerView.ViewHolder>(9))
 
@@ -161,7 +162,7 @@ class OrderListItemTest : TestBase() {
         )
 
         // PROCESSING: Check if order status label name, label text color, label background color
-        val processingStatusPosition = 2
+        val processingStatusPosition = 1
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(processingStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
@@ -196,9 +197,8 @@ class OrderListItemTest : TestBase() {
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(completedStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_completed_bg)))
 
-        // scroll to the end of the recyclerview first to avoid
-        //  No views in hierarchy found matching: RecyclerView with id:
-        // com.woocommerce.android:id/ordersList at position: 6
+        // scroll to the end of the RecyclerView first to avoid the "no matching
+        // views in hierarchy" error.
         onView(withId(R.id.ordersList)).perform(scrollToPosition<RecyclerView.ViewHolder>(9))
 
         // CANCELLED: Check if order status label name, label text color, label background color
@@ -242,7 +242,7 @@ class OrderListItemTest : TestBase() {
 
     @Test
     fun verifyLoadingItemHandledCorrectly() {
-        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(1, R.id.orderListLoading))
+        onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(2, R.id.orderListLoading))
                 .check(matches(isDisplayed()))
     }
 

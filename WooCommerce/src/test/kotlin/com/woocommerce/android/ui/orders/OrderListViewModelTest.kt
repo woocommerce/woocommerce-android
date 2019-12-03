@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.lifecycle.MutableLiveData
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
@@ -8,6 +10,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
@@ -18,6 +21,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
@@ -62,7 +66,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
 
     @Before
-    fun setup() {
+    fun setup() = test {
         whenever(pagedListWrapper.listError).doReturn(mock())
         whenever(pagedListWrapper.isEmpty).doReturn(mock())
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(mock())
@@ -73,10 +77,12 @@ class OrderListViewModelTest : BaseUnitTest() {
                 dataSource = any(),
                 lifecycle = any()
         )).doReturn(pagedListWrapper)
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(MutableLiveData(ViewState())).whenever(savedStateArgs).getLiveData<ViewState>(any(), any())
 
         viewModel = OrderListViewModel(
                 savedState = savedStateArgs,
-                dispatchers = coroutineDispatchers,
+                coroutineDispatchers = coroutineDispatchers,
                 repository = repository,
                 orderStore = orderStore,
                 listStore = listStore,
@@ -89,18 +95,13 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     /**
-     * Test order status options are fetched and state-related variables are
-     * properly set when [OrderListViewModel.start] is called.
+     * Test cached order status options are fetched from the db when the
+     * ViewModel is initialized. Since the ViewModel is initialized during the
+     * [setup] method, there is nothing to do but verify everything here.
      */
     @Test
-    fun `Order status options fetched and emitted on start`() = test {
-        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-
-        // calling this method should populate order status options from cache
-        viewModel.start()
-
+    fun `Cached order status options fetched and emitted on init`() = test {
         verify(repository, times(1)).getCachedOrderStatusOptions()
-        assertTrue(viewModel.isStarted)
         assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
     }
 
@@ -110,6 +111,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
+        clearInvocations(repository)
         viewModel.loadList()
 
         verify(viewModel.pagedListWrapper, times(1))?.fetchFirstPage()
@@ -126,14 +128,14 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Request to fetch order status options emits options`() = test {
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
         viewModel.loadList()
 
         assertNotNull(viewModel.pagedListWrapper)
         verify(viewModel.pagedListWrapper, times(1))?.fetchFirstPage()
         verify(repository, times(1)).fetchOrderStatusOptionsFromApi()
-        verify(repository, times(1)).getCachedOrderStatusOptions()
+        verify(repository, times(2)).getCachedOrderStatusOptions()
         assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
     }
 
@@ -141,7 +143,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * Test for proper handling of a request to fetch orders and order status options
      * when the device is offline. This scenario should result in an "offline" snackbar
      * message being emitted via a [com.woocommerce.android.viewmodel.MultiLiveEvent.Event] and the
-     * [OrderListViewModel.isRefreshPending] variable set to true to trigger another
+     * [OrderListViewModel.viewStateData.isRefreshPending] variable set to true to trigger another
      * attempt once the device comes back online.
      */
     @Test
@@ -154,8 +156,15 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.event.getOrAwaitValue().let { event ->
             assertTrue(event is ShowErrorSnack)
             assertEquals(event.messageRes, R.string.offline_error)
-            assertTrue(viewModel.isRefreshPending)
         }
+
+        var isRefreshPending = false
+        viewModel.viewStateData.observeForever { old, new ->
+            new.isRefreshPending.takeIfNotEqualTo(old?.isRefreshPending) {
+                isRefreshPending = it
+            }
+        }
+        assertTrue(isRefreshPending)
     }
 
     /**
@@ -415,7 +424,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.fetchPaymentGateways()
 
         verify(repository, times(1)).fetchPaymentGateways()
-        assertTrue(viewModel.arePaymentGatewaysFetched)
+        assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
     }
 
     @Test
@@ -425,16 +434,22 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.fetchPaymentGateways()
 
         verify(repository, times(0)).fetchPaymentGateways()
-        assertFalse(viewModel.arePaymentGatewaysFetched)
+        assertFalse(viewModel.viewState.arePaymentGatewaysFetched)
     }
 
     @Test
     fun `Payment gateways are not fetched if already fetched and network connected`() = test {
-        viewModel.arePaymentGatewaysFetched = true
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
+        // Fetch the first time around
         viewModel.fetchPaymentGateways()
+        verify(repository, times(1)).fetchPaymentGateways()
+        assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
+        clearInvocations(repository)
 
+        // Try to fetch a second time
+        viewModel.fetchPaymentGateways()
         verify(repository, times(0)).fetchPaymentGateways()
-        assertTrue(viewModel.arePaymentGatewaysFetched)
+        assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
     }
 }

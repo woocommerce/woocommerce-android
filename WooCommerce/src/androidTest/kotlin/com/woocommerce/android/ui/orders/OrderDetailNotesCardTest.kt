@@ -54,9 +54,9 @@ class OrderDetailNotesCardTest : TestBase() {
         onView(withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // check if order notes list count is 3
+        // check if order notes list count is 6 (3 notes, 3 headers)
         val recyclerView = activityTestRule.activity.findViewById(R.id.notesList_notes) as RecyclerView
-        assertSame(3, recyclerView.adapter?.itemCount)
+        assertSame(6, recyclerView.adapter?.itemCount)
     }
 
     @Test
@@ -72,7 +72,7 @@ class OrderDetailNotesCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // verify that first note date displayed matches this format: April 5, 2019 at 10:42 PM
-        onView(withId(R.id.notesList_notes)).perform(scrollTo())
+        onView(withId(R.id.orderDetail_noteList)).perform(scrollTo())
         onView(WCMatchers.withRecyclerView(R.id.notesList_notes).atPositionOnView(0, R.id.orderNote_header))
                 .check(matches(withText(DateUtils
                         .getFriendlyLongDateAtTimeString(appContext, mockOrderNotesList[0].dateCreated).capitalize()

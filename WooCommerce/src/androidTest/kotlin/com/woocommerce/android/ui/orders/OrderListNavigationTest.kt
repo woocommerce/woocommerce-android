@@ -57,7 +57,7 @@ class OrderListNavigationTest : TestBase() {
 
         // click on the first order in the list and check if redirected to order detail
         onView(withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // Ensure that the toolbar title displays "Order #" + order number
         onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(

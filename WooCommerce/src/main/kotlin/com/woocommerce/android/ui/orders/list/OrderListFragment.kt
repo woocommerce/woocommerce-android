@@ -96,7 +96,6 @@ class OrderListFragment : TopLevelFragment(),
     private var isSearching: Boolean
         private set(value) { viewModel.isSearching = value }
         get() = viewModel.isSearching
-    var isRefreshing: Boolean = false
 
     private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
@@ -193,11 +192,15 @@ class OrderListFragment : TopLevelFragment(),
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        // Get the english version to use for setting the tab tag.
+        val englishTabArray = StringUtils
+                .getStringArrayByLocale(requireContext(), R.array.order_list_tabs, "en")
+
         resources.getStringArray(R.array.order_list_tabs).toList()
                 .forEachIndexed { index, title ->
                     val tab = tab_layout.newTab().apply {
                         text = title
-                        tag = title
+                        tag = englishTabArray?.get(index) ?: title
                     }
                     tab_layout.addTab(tab)
 
@@ -232,7 +235,6 @@ class OrderListFragment : TopLevelFragment(),
                     // then load orders with the calculated filter.
                     AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
-                    isRefreshing = true
                     viewModel.loadList(
                             statusFilter = orderStatusFilter,
                             excludeFutureOrders = shouldExcludeFutureOrders())
@@ -373,6 +375,14 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun initializeViewModel() {
+        // populate views with any existing viewModel data
+        viewModel.orderStatusOptions.value?.let { options ->
+            // So the order status can be matched to the appropriate label
+            order_list_view.setOrderStatusOptions(options)
+
+            updateOrderStatusList(options)
+        }
+
         // setup observers
         viewModel.isFetchingFirstPage.observe(this, Observer {
             orderRefreshLayout?.isRefreshing = it == true
@@ -407,8 +417,6 @@ class OrderListFragment : TopLevelFragment(),
         viewModel.emptyViewState.observe(this, Observer {
             it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
         })
-
-        viewModel.start()
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
@@ -446,8 +454,6 @@ class OrderListFragment : TopLevelFragment(),
             AnalyticsTracker.track(
                     Stat.ORDERS_LIST_FILTER,
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
-
-            isRefreshing = true
 
             // Display the filtered list view
             displayFilteredList()
@@ -577,7 +583,6 @@ class OrderListFragment : TopLevelFragment(),
         if (isSearching) {
             searchQuery = ""
             isSearching = false
-            isRefreshing = true
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
