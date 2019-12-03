@@ -55,7 +55,7 @@ private fun addLinkListener(strBuilder: SpannableStringBuilder, span: ClickableS
 }
 
 /**
- * Programmatically set the drawable tint (in xml android:drawableTint isn't supported until API 23)
+ * Programmatically set the drawable tint (android:drawableTint isn't supported in xml until API 23)
  */
 fun TextView.setDrawableColor(@ColorRes colorRes: Int) {
     compoundDrawables.filterNotNull().forEach {
