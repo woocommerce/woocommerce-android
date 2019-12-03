@@ -365,6 +365,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
+    // will be used in the future
     fun onProductRefundAmountTapped() {
         triggerEvent(ShowRefundAmountDialog(
                 refundByItemsState.productsRefund,
@@ -558,12 +559,12 @@ class IssueRefundViewModel @AssistedInject constructor(
     sealed class IssueRefundEvent : Event() {
         data class ShowValidationError(val message: String) : IssueRefundEvent()
         data class ShowNumberPicker(val refundItem: RefundListItem) : IssueRefundEvent()
+        data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
         data class ShowRefundAmountDialog(
             val refundAmount: BigDecimal,
             val maxRefund: BigDecimal,
             val message: String
         ) : IssueRefundEvent()
-        data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
     }
 

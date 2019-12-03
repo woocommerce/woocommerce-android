@@ -64,9 +64,10 @@ class RefundByItemsFragment : BaseFragment() {
             viewModel.onRefundItemsShippingSwitchChanged(isChecked)
         }
 
-        issueRefund_productsTotalButton.setOnClickListener {
-            viewModel.onProductRefundAmountTapped()
-        }
+        // will be used in the future
+//        issueRefund_productsTotalButton.setOnClickListener {
+//            viewModel.onProductRefundAmountTapped()
+//        }
     }
 
     private fun setupObservers() {
@@ -82,7 +83,7 @@ class RefundByItemsFragment : BaseFragment() {
                 issueRefund_btnNextFromItems.isEnabled = it
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                issueRefund_productsTotalButton.text = it
+                issueRefund_productsTotal.text = it
             }
             new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
                 if (isVisible) {

@@ -128,6 +128,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/card_padding_start"
+        android:layout_marginEnd="@dimen/card_padding_end"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:layout_marginBottom="@dimen/card_padding_bottom"
         android:orientation="horizontal">
 
         <TextView
@@ -139,13 +142,21 @@
             android:textAlignment="viewStart"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/Woo.Button"
-            android:id="@+id/issueRefund_productsTotalButton"
+        <!-- Will be used in later releases -->
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            style="@style/Woo.Button"-->
+<!--            android:id="@+id/issueRefund_productsTotalButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textAllCaps="false"-->
+<!--            tools:text="$49.00" />-->
+
+        <TextView
+            android:id="@+id/issueRefund_productsTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAllCaps="false"
-            tools:text="$49.00" />
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
+            tools:text="$1.00"/>
 
     </LinearLayout>
 
