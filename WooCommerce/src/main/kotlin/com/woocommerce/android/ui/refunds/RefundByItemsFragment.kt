@@ -77,15 +77,6 @@ class RefundByItemsFragment : BaseFragment() {
                         imageMap
                 )
             }
-            new.items?.takeIfNotEqualTo(old?.items) { list ->
-                val adapter = issueRefund_products.adapter as RefundProductListAdapter
-                adapter.update(list)
-
-                val selectedItems = list.sumBy { it.quantity }
-
-                val selectedItemsHeader = getString(R.string.order_refunds_items_selected, selectedItems)
-                issueRefund_selectedItems.text = selectedItemsHeader
-            }
             new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
                 issueRefund_btnNextFromItems.isEnabled = it
             }
@@ -120,6 +111,11 @@ class RefundByItemsFragment : BaseFragment() {
 //                }
 //            }
         }
+
+        viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
+            val adapter = issueRefund_products.adapter as RefundProductListAdapter
+            adapter.update(list)
+        })
 
         viewModel.event.observe(this.viewLifecycleOwner, Observer { event ->
             when (event) {

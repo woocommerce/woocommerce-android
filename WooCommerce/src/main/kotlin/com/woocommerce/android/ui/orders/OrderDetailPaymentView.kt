@@ -122,6 +122,18 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
 
         paymentInfo_refunds.show()
         paymentInfo_refundTotalSection.hide()
+
+        var availableRefundQuantity = order.items.sumBy { it.quantity }
+        refunds.flatMap { it.items }.groupBy { it.productId }.forEach { productRefunds ->
+            val refundedCount = productRefunds.value.sumBy { it.quantity }
+            availableRefundQuantity -= refundedCount
+        }
+
+        if (availableRefundQuantity > 0) {
+            paymentInfo_issueRefundButtonSection.show()
+        } else {
+            paymentInfo_issueRefundButtonSection.hide()
+        }
     }
 
     fun showRefundTotal(refundTotal: BigDecimal) {
