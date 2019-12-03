@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.base.BaseFragment
@@ -611,7 +612,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
             AZTEC_EDITOR_REQUEST_CODE -> {
-                viewModel.updateProductDraft(result.getString(ARG_AZTEC_EDITOR_TEXT))
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.updateProductDraft(result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
             }
         }
     }

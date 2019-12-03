@@ -27,6 +27,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         const val TAG: String = "AztecEditorFragment"
         const val AZTEC_EDITOR_REQUEST_CODE = 3001
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
+        const val ARG_AZTEC_HAS_CHANGES = "editor-has-changes"
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
@@ -79,15 +80,8 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         return when (item.itemId) {
             R.id.menu_done -> {
                 // TODO: add event for click here
-                val bundle = Bundle()
-                bundle.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
                 shouldShowDiscardDialog = false
-                requireActivity().navigateBackWithResult(
-                        AZTEC_EDITOR_REQUEST_CODE,
-                        bundle,
-                        R.id.nav_host_fragment_main,
-                        R.id.productDetailFragment
-                )
+                navigateBackWithResult(editorHasChanges())
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -124,12 +118,13 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         discardDialog = AlertDialog.Builder(activity)
                 .setMessage(R.string.aztec_confirm_discard)
                 .setCancelable(true)
-                .setPositiveButton(R.string.discard) { _, _ ->
+                .setPositiveButton(R.string.save) { _, _ ->
                     shouldShowDiscardDialog = false
-                    activity?.onBackPressed()
+                    navigateBackWithResult(true)
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+                .setNegativeButton(R.string.discard_changes) { _, _ ->
                     isConfirmingDiscard = false
+                    navigateBackWithResult(false)
                 }
                 .show()
     }
@@ -178,5 +173,17 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
             aztec.visualEditor.hasChanges()
         }
         return hasChanges != NO_CHANGES
+    }
+
+    private fun navigateBackWithResult(hasChanges: Boolean) {
+        val bundle = Bundle()
+        bundle.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
+        bundle.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
+        requireActivity().navigateBackWithResult(
+                AZTEC_EDITOR_REQUEST_CODE,
+                bundle,
+                R.id.nav_host_fragment_main,
+                R.id.productDetailFragment
+        )
     }
 }

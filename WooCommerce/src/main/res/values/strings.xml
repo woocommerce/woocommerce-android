@@ -76,6 +76,8 @@
     <string name="unknown">Unknown</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
+    <string name="save">Save</string>
+    <string name="discard_changes">Discard changes</string>
     <!--
         Date/Time Labels
     -->
