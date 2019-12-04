@@ -8,9 +8,13 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_TAB_CHANGED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
@@ -363,6 +367,11 @@ class IssueRefundViewModel @AssistedInject constructor(
         if (refundItem != null) {
             triggerEvent(ShowNumberPicker(refundItem))
         }
+
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
+                mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
+        )
     }
 
     // will be used in the future
@@ -372,6 +381,11 @@ class IssueRefundViewModel @AssistedInject constructor(
                 maxRefund,
                 resourceProvider.getString(R.string.order_refunds_available_for_refund, formatCurrency(maxRefund))
         ))
+
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
+                mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
+        )
     }
 
     fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
@@ -420,6 +434,11 @@ class IssueRefundViewModel @AssistedInject constructor(
         _refundItems.value?.forEach {
             onRefundQuantityChanged(it.product.productId, it.maxQuantity)
         }
+
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
+        )
     }
 
     fun onRefundTabChanged(type: RefundType) {
@@ -429,6 +448,14 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
         commonState = commonState.copy(refundType = type)
         updateRefundTotal(refundAmount)
+
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_TAB_CHANGED,
+                mapOf(
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
+                        AnalyticsTracker.KEY_TYPE to type.name
+                )
+        )
     }
 
     private fun updateRefundItems(items: List<RefundListItem>) {
