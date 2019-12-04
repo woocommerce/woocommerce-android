@@ -27,6 +27,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -166,7 +167,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             }
 
             R.id.menu_update -> {
-                // TODO: add tracking event for click action
+                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 viewModel.onUpdateButtonClicked()
                 true
             }
@@ -290,7 +291,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             )?.also {
                 it.setMaxLines(2)
                 it.setClickListener {
-                    // TODO: add event here to track click
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED)
                     showProductDescriptionEditor(product.description)
                 }
             }
