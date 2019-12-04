@@ -344,7 +344,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                         ))
 
                         if (reason.isNotBlank()) {
-                            noteRepository.createOrderNote(order.identifier, reason, true)
+                            noteRepository.createOrderNote(order.identifier, reason, false)
                         }
 
                         triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
