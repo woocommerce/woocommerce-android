@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT"/>
 
     <!-- Dangerous permissions, access must be requested at runtime -->
     <uses-permission android:name="android.permission.CAMERA" />
