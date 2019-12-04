@@ -99,7 +99,10 @@ class ProductDetailRepository @Inject constructor(
     fun onProductUpdated(event: OnProductUpdated) {
         if (event.causeOfChange == UPDATED_PRODUCT) {
             if (event.isError) {
-                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_ERROR)
+                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_ERROR, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
                 continuationUpdateProduct?.resume(false)
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_SUCCESS)
