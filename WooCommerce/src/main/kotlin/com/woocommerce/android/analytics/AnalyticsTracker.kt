@@ -264,6 +264,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_UPDATE_SUCCESS,
         PRODUCT_DETAIL_UPDATE_ERROR,
 
+        // -- Aztec editor
+        AZTEC_EDITOR_DONE_BUTTON_TAPPED,
+
         // -- Product variants
         PRODUCT_VARIANTS_PULLED_TO_REFRESH,
         PRODUCT_VARIANTS_LOADED,
