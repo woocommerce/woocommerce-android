@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_IMAGE_OPTIMIZATION_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
@@ -109,6 +110,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             switchImageOptimizaton.visibility = View.VISIBLE
             switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
             switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(SETTINGS_IMAGE_OPTIMIZATION_TOGGLED)
                 AppPrefs.setImageOptimizationEnabled(isChecked)
             }
         } else {
