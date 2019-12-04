@@ -17,16 +17,14 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.onScrollDown
-import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.model.ActionStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
@@ -39,7 +37,6 @@ import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListen
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_reviews_list.*
-import kotlinx.android.synthetic.main.fragment_reviews_list.reviewsList
 import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
 import java.util.Locale
 import javax.inject.Inject
@@ -111,11 +108,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy > 0) {
-                        onScrollDown()
-                    } else if (dy < 0) {
-                        onScrollUp()
-                    }
+                    // noop
                 }
 
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
