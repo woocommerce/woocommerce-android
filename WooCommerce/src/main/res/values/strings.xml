@@ -73,6 +73,7 @@
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
+    <string name="remove">Remove</string>
     <string name="try_again">Try again</string>
     <!--
         Date/Time Labels
@@ -372,6 +373,7 @@
         Products
     -->
     <string name="product_image_content_description">Product image</string>
+    <string name="product_add_image_content_description">Add image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_variants_fetch_product_variants_error">Error fetching product variations</string>
     <string name="product_name">Title</string>
@@ -423,6 +425,25 @@
     <string name="product_wip_title">Work in progress!</string>
     <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch 🚀</string>
     <!--
+        Product images
+    -->
+    <string name="product_images_title">Photos</string>
+    <string name="product_add_photos">Add photos</string>
+    <string name="product_remove_photo">Remove photo</string>
+    <string name="product_image_add">Add a product image</string>
+    <string name="product_image_error_removing">Error removing product image</string>
+    <string name="product_image_service_error_uploading">Error uploading product image</string>
+    <string name="product_image_service_busy">Please wait for the current operation to complete</string>
+    <string name="product_image_capture_failed">Failed to capture image</string>
+    <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>
+    <string name="product_images_camera_error">Unable to access camera</string>
+    <string name="product_images_uploading_single_notif_message">Uploading image…</string>
+    <string name="product_images_uploading_multi_notif_message">Uploading images…%d of %d</string>
+    <string name="product_images_upload_channel_title">Uploads</string>
+    <string name="image_source_title">Select an upload method</string>
+    <string name="image_source_device_chooser">Choose from device</string>
+    <string name="image_source_device_camera">Take a photo</string>
+    <!--
         Empty list messages
     -->
     <string name="waiting_for_customers">Waiting for customers</string>
@@ -462,6 +483,8 @@
     <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
     <string name="settings_notifs_reviews">Product reviews</string>
     <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
+    <string name="settings_image_optimization_title">Image optimization</string>
+    <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
