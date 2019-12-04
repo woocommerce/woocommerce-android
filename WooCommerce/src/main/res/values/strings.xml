@@ -435,7 +435,6 @@
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
-    <string name="product_detail_update_product_discard">Discard changes?</string>
     <!--
         Empty list messages
     -->
