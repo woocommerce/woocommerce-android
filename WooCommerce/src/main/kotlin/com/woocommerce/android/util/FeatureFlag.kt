@@ -16,7 +16,7 @@ enum class FeatureFlag {
         return when (this) {
             PRODUCT_RELEASE_TEASER -> AppPrefs.isProductsFeatureEnabled()
             REFUNDS -> BuildConfig.DEBUG
-            PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG
+            PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG && AppPrefs.isProductsFeatureEnabled()
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
