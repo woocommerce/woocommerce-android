@@ -5,15 +5,21 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LO
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
+import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -29,6 +35,7 @@ class ProductDetailRepository @Inject constructor(
     }
 
     private var continuation: Continuation<Boolean>? = null
+    private var continuationUpdateProduct: Continuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -50,6 +57,25 @@ class ProductDetailRepository @Inject constructor(
         return getProduct(remoteProductId)
     }
 
+    /**
+     * Fires the request to update the product
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun updateProduct(updatedProduct: Product): Boolean {
+        return try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationUpdateProduct = it
+
+                val payload = WCProductStore.UpdateProductPayload(selectedSite.get(), updatedProduct.toDataModel())
+                dispatcher.dispatch(WCProductActionBuilder.newUpdateProductAction(payload))
+            } ?: false // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(PRODUCTS, "Exception encountered while updating product", e)
+            false
+        }
+    }
+
     fun getProduct(remoteProductId: Long): Product? =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.toAppModel()
 
@@ -63,6 +89,20 @@ class ProductDetailRepository @Inject constructor(
                 AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
                 continuation?.resume(true)
             }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductUpdated(event: OnProductUpdated) {
+        if (event.causeOfChange == UPDATED_PRODUCT) {
+            // TODO: add event to track success/error
+            if (event.isError) {
+                continuationUpdateProduct?.resume(false)
+            } else {
+                continuationUpdateProduct?.resume(true)
+            }
+            continuationUpdateProduct = null
         }
     }
 }

@@ -25,7 +25,7 @@ class WCProductPropertyView @JvmOverloads constructor(
     private var propertyValueText: TextView? = null
     private var ratingBar: RatingBar? = null
 
-    fun show(orientation: Int, caption: String, detail: String?) {
+    fun show(orientation: Int, caption: String, detail: CharSequence?) {
         ensureViewCreated(orientation)
 
         propertyNameText?.text = caption

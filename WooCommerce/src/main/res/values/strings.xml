@@ -63,6 +63,7 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="done">Done</string>
     <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
     <string name="dismiss">Dismiss</string>
@@ -74,6 +75,9 @@
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
     <string name="try_again">Try again</string>
+    <string name="update">Update</string>
+    <string name="save">Save</string>
+    <string name="discard_changes">Discard changes</string>
     <!--
         Date/Time Labels
     -->
@@ -425,6 +429,12 @@
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
+    <string name="product_description_empty">Describe your product</string>
+    <string name="aztec_confirm_discard">Do you want to save your changes?</string>
+    <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_update_dialog_message">Please wait…</string>
+    <string name="product_detail_update_product_error">Error updating product</string>
+    <string name="product_detail_update_product_success">Product updated</string>
     <!--
         Empty list messages
     -->

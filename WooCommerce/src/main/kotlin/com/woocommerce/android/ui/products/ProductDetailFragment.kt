@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import android.Manifest.permission
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -28,9 +31,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.aztec.AztecEditorFragment
+import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
@@ -40,8 +48,10 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
@@ -50,7 +60,8 @@ import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
-class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
+class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, NavigationResult,
+        BackPressListener {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -67,6 +78,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
+
+    private var publishMenuItem: MenuItem? = null
+
+    private var progressDialog: CustomProgressDialog? = null
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
@@ -105,6 +120,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.viewStateData.observe(this) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.product?.let { showProduct(new) }
         }
 
@@ -113,6 +130,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShareProduct -> shareProduct(event.product)
                 is Exit -> requireActivity().onBackPressed()
+                is ShowDiscardDialog -> showDiscardDialog(
+                        event.message,
+                        event.positiveBtnText,
+                        event.negativeBtnText,
+                        event.positiveBtnAction,
+                        event.negativeBtnAction
+                )
             }
         })
     }
@@ -129,7 +153,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.menu_share, menu)
+        inflater.inflate(R.menu.menu_product_detail_fragment, menu)
+        publishMenuItem = menu.findItem(R.id.menu_update)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -139,8 +164,18 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 viewModel.onShareButtonClicked()
                 true
             }
+
+            R.id.menu_update -> {
+                // TODO: add tracking event for click action
+                viewModel.onUpdateButtonClicked()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked()
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -150,6 +185,47 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun showUpdateProductAction(show: Boolean) {
+        view?.post { publishMenuItem?.isVisible = show }
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                    getString(R.string.product_update_dialog_title),
+                    getString(R.string.product_update_dialog_message)
+            ).also { it.show(requireFragmentManager(), CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
+    }
+
+    /**
+     * Method to display discard changes dialog. This can eventually be moved to a separate class
+     * that can be reused by multiple fragments
+     */
+    private fun showDiscardDialog(
+        @StringRes messageId: Int,
+        @StringRes posBtnTextId: Int,
+        @StringRes negBtnTextId: Int,
+        posBtnAction: (OnClickListener)? = null,
+        negBtnAction: (OnClickListener)? = null
+    ) {
+        AlertDialog.Builder(activity)
+                .setMessage(getString(messageId))
+                .setCancelable(true)
+                .setPositiveButton(posBtnTextId, posBtnAction)
+                .setNegativeButton(negBtnTextId, negBtnAction)
+                .show()
     }
 
     override fun getFragmentTitle() = productTitle
@@ -201,10 +277,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
         if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            val description = if (product.description.isEmpty()) {
+                getString(R.string.product_description_empty)
+            } else {
+                product.description
+            }
             addPropertyView(
                     DetailCard.Primary,
-                    R.string.product_description,
-                    product.description,
+                    getString(R.string.product_description),
+                    SpannableString(HtmlUtils.fromHtml(description)),
                     LinearLayout.VERTICAL
             )?.also {
                 it.setMaxLines(2)
@@ -276,9 +357,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice != null) {
-                val group = mapOf(
-                    getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency),
-                    getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
+                val group = mapOf(getString(R.string.product_regular_price)
+                        to requireNotNull(productData.regularPriceWithCurrency),
+                        getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
@@ -367,6 +448,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         propertyValue: String,
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
+        return addPropertyView(card, propertyName, SpannableString(propertyValue), orientation)
+    }
+
+    private fun addPropertyView(
+        card: DetailCard,
+        propertyName: String,
+        propertyValue: SpannableString,
+        orientation: Int = LinearLayout.HORIZONTAL
+    ): WCProductPropertyView? {
         if (propertyValue.isBlank()) return null
 
         // locate the card, add it if it doesn't exist yet
@@ -384,8 +474,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             container.addView(propertyView)
         }
 
-        // some details, such as product description, contain html which needs to be stripped here
-        propertyView.show(orientation, propertyName, HtmlUtils.fastStripHtml(propertyValue).trim())
+        propertyView.show(orientation, propertyName, propertyValue)
         return propertyView
     }
 
@@ -561,6 +650,16 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             getString(status.stringResource)
         } else {
             status.value
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            AZTEC_EDITOR_REQUEST_CODE -> {
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.updateProductDraft(result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+            }
         }
     }
 
