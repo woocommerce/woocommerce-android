@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.WooLog
@@ -36,7 +37,8 @@ object AppPrefs {
         IS_V4_STATS_UI_ENABLED,
         IS_PRODUCTS_FEATURE_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
-        SELECTED_ORDER_LIST_TAB_POSITION
+        SELECTED_ORDER_LIST_TAB_POSITION,
+        IMAGE_OPTIMIZE_ENABLED
     }
 
     /**
@@ -255,6 +257,12 @@ object AppPrefs {
      * @return True if the saved position is not the default -1, else false
      */
     fun hasSelectedOrderListTabPosition() = getSelectedOrderListTabPosition() > -1
+
+    fun getImageOptimizationEnabled() = getBoolean(IMAGE_OPTIMIZE_ENABLED, true)
+
+    fun setImageOptimizationEnabled(enabled: Boolean) {
+        setBoolean(IMAGE_OPTIMIZE_ENABLED, enabled)
+    }
 
     /**
      * Remove all user-related preferences.

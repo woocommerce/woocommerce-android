@@ -165,6 +165,7 @@
     <dimen name="product_icon_sz">40dp</dimen>
     <dimen name="product_detail_card_divider_height">16dp</dimen>
     <dimen name="product_detail_property_margin">@dimen/settings_padding</dimen>
+    <dimen name="product_image_gallery_image_size">128dp</dimen>
 
     <!--
         Shipment Trackings
@@ -177,4 +178,10 @@
         Dialogs
     -->
     <dimen name="alert_dialog_max_width">300dp</dimen>
+
+    <!--
+        Misc
+    -->
+    <dimen name="image_border_size">1dp</dimen>
+    <dimen name="image_border_radius">2dp</dimen>
 </resources>

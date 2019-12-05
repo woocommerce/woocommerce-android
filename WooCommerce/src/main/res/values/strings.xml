@@ -73,6 +73,7 @@
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
+    <string name="remove">Remove</string>
     <string name="try_again">Try again</string>
     <!--
         Date/Time Labels
@@ -373,6 +374,7 @@
         Products
     -->
     <string name="product_image_content_description">Product image</string>
+    <string name="product_add_image_content_description">Add image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_variants_fetch_product_variants_error">Error fetching product variations</string>
     <string name="product_name">Title</string>
@@ -422,7 +424,26 @@
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_wip_title">Work in progress!</string>
-    <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch &#x1f680;</string>
+    <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch 🚀</string>
+    <!--
+        Product images
+    -->
+    <string name="product_images_title">Photos</string>
+    <string name="product_add_photos">Add photos</string>
+    <string name="product_remove_photo">Remove photo</string>
+    <string name="product_image_add">Add a product image</string>
+    <string name="product_image_error_removing">Error removing product image</string>
+    <string name="product_image_service_error_uploading">Error uploading product image</string>
+    <string name="product_image_service_busy">Please wait for the current operation to complete</string>
+    <string name="product_image_capture_failed">Failed to capture image</string>
+    <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>
+    <string name="product_images_camera_error">Unable to access camera</string>
+    <string name="product_images_uploading_single_notif_message">Uploading image…</string>
+    <string name="product_images_uploading_multi_notif_message">Uploading images…%d of %d</string>
+    <string name="product_images_upload_channel_title">Uploads</string>
+    <string name="image_source_title">Select an upload method</string>
+    <string name="image_source_device_chooser">Choose from device</string>
+    <string name="image_source_device_camera">Take a photo</string>
     <!--
         Empty list messages
     -->
@@ -463,6 +484,8 @@
     <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
     <string name="settings_notifs_reviews">Product reviews</string>
     <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
+    <string name="settings_image_optimization_title">Image optimization</string>
+    <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
@@ -537,7 +560,7 @@
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed. Hunt and peck no more!</string>
-    <string name="login_magic_links_sent_label">Email sent! Check your email on this device, and tap the link in the email you receive from WordPress.com</string>
+    <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
     <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
@@ -969,4 +992,13 @@
     <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
+    <string name="send_verification_email">Send verification email</string>
+    <string name="username">Username</string>
+    <string name="enter_credentials_for_site">Log in with your %1$s site credentials</string>
+    <string name="enter_site_credentials_instead">Log in with site credentials.</string>
+    <string name="login_site_credentials_magic_link_label">Almost there! We just need to verify your Jetpack connected email address &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_xmlrpc">We were unable to access the &lt;b&gt;XMLRPC file&lt;/b&gt; on your site. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
 </resources>

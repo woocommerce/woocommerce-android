@@ -2,23 +2,29 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.widget.ImageView
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
-import com.woocommerce.android.R.layout
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
-import kotlinx.android.synthetic.main.product_list_item.view.*
+import com.woocommerce.android.util.FeatureFlag
+import kotlinx.android.synthetic.main.image_gallery_item.view.*
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
+import java.util.Date
 
 /**
  * Custom recycler which displays all images for a product
@@ -28,26 +34,60 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
-    interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(image: Product.Image, imageView: View)
+    companion object {
+        private const val VIEW_TYPE_IMAGE = 0
+        private const val VIEW_TYPE_PLACEHOLDER = 1
+        private const val VIEW_TYPE_ADD_IMAGE = 2
+        private const val NUM_COLUMNS = 2
+        private const val ADD_IMAGE_ITEM_ID = Long.MAX_VALUE
     }
 
-    private var imageHeight = 0
+    interface OnGalleryImageClickListener {
+        fun onGalleryImageClicked(image: Product.Image, imageView: View)
+        fun onGalleryAddImageClicked() { }
+    }
+
+    private var imageSize = 0
+    private var isGridView = false
+    private var showAddImageIcon = false
+
     private val adapter: ImageGalleryAdapter
-    private val request: GlideRequest<Drawable>
     private val layoutInflater: LayoutInflater
+
+    private val glideRequest: GlideRequest<Drawable>
+    private val glideTransform: RequestOptions
 
     private lateinit var listener: OnGalleryImageClickListener
 
     init {
-        layoutInflater = LayoutInflater.from(context)
-        layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
+        attrs?.let {
+            val attrArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
+            try {
+                isGridView = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isGridView, false)
+                if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(context)) {
+                    showAddImageIcon = attrArray.getBoolean(
+                            R.styleable.WCProductImageGalleryView_showAddImageIcon,
+                            false
+                    )
+                }
+            } finally {
+                attrArray.recycle()
+            }
+        }
+
+        layoutManager = if (isGridView) {
+            GridLayoutManager(context, NUM_COLUMNS)
+        } else {
+            LinearLayoutManager(context, HORIZONTAL, false)
+        }
+
         itemAnimator = DefaultItemAnimator()
+        layoutInflater = LayoutInflater.from(context)
 
         setHasFixedSize(false)
         setItemViewCacheSize(0)
 
-        adapter = ImageGalleryAdapter(context).also {
+        adapter = ImageGalleryAdapter().also {
             it.setHasStableIds(true)
             setAdapter(it)
         }
@@ -55,86 +95,225 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
         setRecyclerListener { holder ->
-            glideRequests.clear((holder as ImageViewHolder).imageView)
+            glideRequests.clear((holder as ImageViewHolder).productImageView)
         }
 
         // create a reusable Glide request for all images
-        request = glideRequests
+        glideRequest = glideRequests
                 .asDrawable()
                 .error(R.drawable.ic_product)
                 .placeholder(R.drawable.product_detail_image_background)
                 .transition(DrawableTransitionOptions.withCrossFade())
 
-        // make images fit the entire height of the view
-        viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
-                imageHeight = this@WCProductImageGalleryView.height
-            }
-        })
+        // create a reusable Glide rounded corner transformation for all images
+        val borderRadius = context.resources.getDimensionPixelSize(R.dimen.image_border_radius)
+        glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
+
+        imageSize = if (isGridView) {
+            val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
+            val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+            (screenWidth / 2) - (margin * 2)
+        } else {
+            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_size)
+        }
     }
 
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
         this.listener = listener
-        this.visibility = if (product.images.isNotEmpty()) View.VISIBLE else View.GONE
         adapter.showImages(product.images)
     }
 
-    private fun onImageClicked(position: Int, imageView: View) {
-        imageView.transitionName = "shared_element$position"
-        listener.onGalleryImageClicked(adapter.getImage(position), imageView)
+    /**
+     * Show upload placeholders for the passed local image Uris
+     */
+    fun setPlaceholderImageUris(imageUriList: List<Uri>) {
+        val placeholders = ArrayList<Product.Image>()
+        for (index in imageUriList.indices) {
+            // use a negative id so we can check it in isPlaceholder() below
+            val id = (-index - 1).toLong()
+            // set the image src to this uri so we can preview it while uploading
+            placeholders.add(0, Product.Image(id, "", imageUriList[index].toString(), Date()))
+        }
+        adapter.setPlaceholderImages(placeholders)
     }
 
-    private inner class ImageGalleryAdapter(private val context: Context) : RecyclerView.Adapter<ImageViewHolder>() {
-        private val imageList = ArrayList<Product.Image>()
+    private fun onImageClicked(position: Int, imageView: View) {
+        val viewType = adapter.getItemViewType(position)
+        if (viewType == VIEW_TYPE_IMAGE) {
+            imageView.transitionName = "shared_element$position"
+            listener.onGalleryImageClicked(adapter.getImage(position), imageView)
+        } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
+            listener.onGalleryAddImageClicked()
+        }
+    }
+
+    private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
+        private val imageList = mutableListOf<Product.Image>()
 
         fun showImages(images: List<Product.Image>) {
-            fun isSameImageList(): Boolean {
-                if (images.size != imageList.size) {
-                    return false
-                }
-                for (index in images.indices) {
-                    if (images[index].id != imageList[index].id) {
-                        return false
-                    }
-                }
-                return true
+            if (isSameImageList(images)) {
+                return
             }
 
-            if (!isSameImageList()) {
-                imageList.clear()
-                imageList.addAll(images)
+            val placeholders = getPlaceholderImages()
+
+            imageList.clear()
+            imageList.addAll(images)
+
+            // restore the "Add image" icon (never shown when list is empty)
+            if (showAddImageIcon && imageList.size > 0) {
+                imageList.add(Product.Image(
+                        id = ADD_IMAGE_ITEM_ID,
+                        name = "",
+                        source = "",
+                        dateCreated = Date()))
+            }
+
+            notifyDataSetChanged()
+
+            if (placeholders.isNotEmpty()) {
+                setPlaceholderImages(placeholders)
+            }
+        }
+
+        /**
+         * Returns the list of images without placeholders or the "add image" icon
+         */
+        private fun getActualImages(): List<Product.Image> {
+            return imageList.filterIndexed { index, _ -> getItemViewType(index) == VIEW_TYPE_IMAGE }
+        }
+
+        /**
+         * Returns the list of placeholder images
+         */
+        private fun getPlaceholderImages(): List<Product.Image> {
+            return imageList.filterIndexed { index, _ -> isPlaceholder(index) }
+        }
+
+        /**
+         * Returns true if the passed list of images is the same as the adapter's list, taking
+         * placeholders into account
+         */
+        private fun isSameImageList(images: List<Product.Image>): Boolean {
+            val actualImages = getActualImages()
+            if (images.size != actualImages.size) {
+                return false
+            }
+
+            for (index in images.indices) {
+                if (images[index].id != actualImages[index].id) {
+                    return false
+                }
+            }
+            return true
+        }
+
+        fun setPlaceholderImages(placeholders: List<Product.Image>) {
+            // remove existing placeholders
+            var didChange = clearPlaceholders()
+
+            // add the new ones to the top of the list
+            if (placeholders.isNotEmpty()) {
+                imageList.addAll(0, placeholders)
+                didChange = true
+            }
+
+            if (didChange) {
                 notifyDataSetChanged()
             }
         }
 
-        fun getImage(position: Int) = adapter.imageList[position]
+        /**
+         * Removes all placeholders, returns true only if any were removed
+         */
+        private fun clearPlaceholders(): Boolean {
+            var result = false
+            while (itemCount > 0 && isPlaceholder(0)) {
+                imageList.removeAt(0)
+                result = true
+            }
+            return result
+        }
+
+        fun isPlaceholder(position: Int) = imageList[position].id < 0
+
+        fun getImage(position: Int) = imageList[position]
 
         override fun getItemCount() = imageList.size
 
         override fun getItemId(position: Int): Long = imageList[position].id
 
+        override fun getItemViewType(position: Int): Int {
+            return when {
+                showAddImageIcon && imageList[position].id == ADD_IMAGE_ITEM_ID -> VIEW_TYPE_ADD_IMAGE
+                isPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
+                else -> VIEW_TYPE_IMAGE
+            }
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-            return ImageViewHolder(
-                    layoutInflater.inflate(
-                            layout.image_gallery_item,
-                            parent,
-                            false
-                    )
+            val holder = ImageViewHolder(
+                    layoutInflater.inflate(R.layout.image_gallery_item, parent, false)
             )
+
+            when (viewType) {
+                VIEW_TYPE_PLACEHOLDER -> {
+                    holder.productImageView.visibility = View.VISIBLE
+                    holder.productImageView.alpha = 0.5F
+                    holder.uploadProgress.visibility = View.VISIBLE
+                    holder.addImageContainer.visibility = View.GONE
+                }
+                VIEW_TYPE_ADD_IMAGE -> {
+                    holder.productImageView.visibility = View.GONE
+                    holder.uploadProgress.visibility = View.GONE
+                    holder.addImageContainer.visibility = View.VISIBLE
+                }
+                else -> {
+                    holder.productImageView.visibility = View.VISIBLE
+                    holder.productImageView.alpha = 1.0F
+                    holder.uploadProgress.visibility = View.GONE
+                    holder.addImageContainer.visibility = View.GONE
+                }
+            }
+
+            return holder
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val photonUrl = PhotonUtils.getPhotonImageUrl(getImage(position).source, 0, imageHeight)
-            request.load(photonUrl).into(holder.imageView)
+            val src = getImage(position).source
+            val viewType = getItemViewType(position)
+            if (viewType == VIEW_TYPE_PLACEHOLDER) {
+                glideRequest.load(Uri.parse(src)).apply(glideTransform).into(holder.productImageView)
+            } else if (viewType == VIEW_TYPE_IMAGE) {
+                val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageSize)
+                glideRequest.load(photonUrl).apply(glideTransform).into(holder.productImageView)
+            }
         }
     }
 
     private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: ImageView = view.productImage
+        val productImageView: BorderedImageView = view.productImage
+        val uploadProgress: ProgressBar = view.uploadProgess
+        val addImageContainer: ViewGroup = view.addImageContainer
+
         init {
+            productImageView.layoutParams.height = imageSize
+            productImageView.layoutParams.width = if (isGridView) imageSize else WRAP_CONTENT
+
+            addImageContainer.layoutParams.height = imageSize
+            addImageContainer.layoutParams.width = imageSize
+
+            // add space between items in grid view
+            if (isGridView) {
+                val margin = context.resources.getDimensionPixelSize(R.dimen.margin_medium)
+                with(productImageView.layoutParams as MarginLayoutParams) {
+                    this.topMargin = margin
+                    this.bottomMargin = margin
+                }
+            }
+
             itemView.setOnClickListener {
-                onImageClicked(adapterPosition, imageView)
+                onImageClicked(adapterPosition, productImageView)
             }
         }
     }

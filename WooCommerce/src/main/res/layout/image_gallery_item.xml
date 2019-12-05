@@ -1,14 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/productImage"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_marginTop="16dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginBottom="16dp"
-    android:adjustViewBounds="true"
-    android:background="@drawable/picture_frame"
-    android:contentDescription="@string/product_image_content_description"
-    android:padding="1dp"
-    tools:src="@drawable/ic_product" />
+    android:layout_height="wrap_content">
+
+    <com.woocommerce.android.widgets.BorderedImageView
+        android:id="@+id/productImage"
+        android:layout_width="wrap_content"
+        android:layout_height="156dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/product_image_content_description"
+        tools:layout_width="156dp"
+        tools:src="@drawable/ic_product" />
+
+    <FrameLayout
+        android:id="@+id/addImageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/margin_extra_large"
+        android:layout_marginEnd="@dimen/margin_extra_large"
+        android:background="@drawable/ripple_grey_framed"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/addImageIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:contentDescription="@string/product_add_image_content_description"
+            android:src="@drawable/ic_gridicons_add_image" />
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/uploadProgess"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible" />
+</FrameLayout>

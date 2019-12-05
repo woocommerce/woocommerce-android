@@ -1,3 +1,6 @@
+3.3
+-----
+ 
 3.2
 -----
 * Added a new option in the Settings page for users to opt in or out of our new Products tab.

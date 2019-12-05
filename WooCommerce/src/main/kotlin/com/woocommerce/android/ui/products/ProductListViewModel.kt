@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -11,18 +10,23 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
@@ -45,7 +49,8 @@ class ProductListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
 
     init {
-        if (_productList.value == null) {
+        EventBus.getDefault().register(this)
+        if (viewStateLiveData.hasInitialValue) {
             loadProducts()
         }
     }
@@ -53,6 +58,7 @@ class ProductListViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
+        EventBus.getDefault().unregister(this)
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -177,6 +183,12 @@ class ProductListViewModel @AssistedInject constructor(
                 isLoadingMore = false,
                 isRefreshing = false
         )
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        loadProducts()
     }
 
     @Parcelize

@@ -37,6 +37,18 @@
         <attr name="switchTopPadding" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="WCProductImageGalleryView">
+        <attr name="isGridView" format="boolean" />
+        <attr name="showAddImageIcon" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="BorderedImageView">
+        <attr name="borderColor" format="color" />
+        <attr name="borderSize" format="dimension" />
+        <attr name="borderRadius" format="float" />
+    </declare-styleable>
+
+
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
         <attr name="aevButton" format="string"/>
