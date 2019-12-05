@@ -75,8 +75,8 @@ class OrderListViewModel @AssistedInject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher)
     }
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
-    internal var viewState by viewStateData
+    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    internal var viewState by viewStateLiveData
 
     protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
