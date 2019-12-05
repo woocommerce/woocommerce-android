@@ -50,7 +50,7 @@ class ProductListViewModel @AssistedInject constructor(
 
     init {
         EventBus.getDefault().register(this)
-        if (viewStateLiveData.hasInitialValue || _productList.value == null) {
+        if (_productList.value == null) {
             loadProducts()
         }
     }
