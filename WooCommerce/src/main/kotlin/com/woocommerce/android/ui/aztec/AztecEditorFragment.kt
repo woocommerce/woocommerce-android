@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -81,7 +83,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                // TODO: add event for click here
+                AnalyticsTracker.track(AZTEC_EDITOR_DONE_BUTTON_TAPPED)
                 shouldShowDiscardDialog = false
                 navigateBackWithResult(editorHasChanges())
                 true
@@ -94,6 +96,11 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         outState.putBoolean(FIELD_IS_HTML_EDITOR_ENABLED, isHtmlEditorEnabled)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onDestroy() {

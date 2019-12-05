@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LOADED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
@@ -96,10 +98,14 @@ class ProductDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductUpdated(event: OnProductUpdated) {
         if (event.causeOfChange == UPDATED_PRODUCT) {
-            // TODO: add event to track success/error
             if (event.isError) {
+                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_ERROR, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
                 continuationUpdateProduct?.resume(false)
             } else {
+                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_SUCCESS)
                 continuationUpdateProduct?.resume(true)
             }
             continuationUpdateProduct = null
