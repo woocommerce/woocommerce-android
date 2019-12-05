@@ -25,6 +25,7 @@ class MockedOrderListViewModel @AssistedInject constructor(
     networkStatus: NetworkStatus,
     dispatcher: Dispatcher,
     selectedSite: SelectedSite,
+    fetcher: OrderFetcher,
     @Assisted arg0: SavedStateWithArgs
 ) : OrderListViewModel(
         arg0,
@@ -34,7 +35,8 @@ class MockedOrderListViewModel @AssistedInject constructor(
         listStore,
         networkStatus,
         dispatcher,
-        selectedSite
+        selectedSite,
+        fetcher
 ) {
     override fun getLifecycle(): Lifecycle = mock()
 

@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
@@ -28,5 +27,5 @@ internal abstract class OrderListModule {
     abstract fun bindFactory(factory: OrderListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
-    abstract fun bindSavedStateRegistryOwner(activity: MainActivity): SavedStateRegistryOwner
+    abstract fun bindSavedStateRegistryOwner(fragment: OrderListFragment): SavedStateRegistryOwner
 }

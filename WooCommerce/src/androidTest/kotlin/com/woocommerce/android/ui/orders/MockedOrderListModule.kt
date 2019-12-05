@@ -14,8 +14,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.orders.list.MockedOrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderFetcher
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
@@ -65,6 +66,7 @@ abstract class MockedOrderListModule {
             val testDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
             val repository = spy(OrderListRepository(mockDispatcher, testDispatchers, orderStore, gatewayStore, site))
             val mockSavedState: SavedStateWithArgs = mock()
+            val orderFetcher: OrderFetcher = mock()
             doReturn(MutableLiveData(ViewState())).whenever(mockSavedState).getLiveData<ViewState>(any(), any())
 
             val viewModel = spy(MockedOrderListViewModel(
@@ -75,6 +77,7 @@ abstract class MockedOrderListModule {
                     networkStatus = networkStatus,
                     dispatcher = mockDispatcher,
                     selectedSite = site,
+                    fetcher = orderFetcher,
                     arg0 = mockSavedState
             ))
             viewModel.testOrderData = this.testOrders
@@ -96,5 +99,5 @@ abstract class MockedOrderListModule {
     abstract fun bindFactory(factory: MockedOrderListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
-    abstract fun bindSavedStateRegistryOwner(activity: MainActivity): SavedStateRegistryOwner
+    abstract fun bindSavedStateRegistryOwner(fragment: OrderListFragment): SavedStateRegistryOwner
 }

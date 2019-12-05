@@ -17,7 +17,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.google.android.material.tabs.TabLayout
@@ -80,7 +80,7 @@ class OrderListFragment : TopLevelFragment(),
     @Inject internal lateinit var selectedSite: SelectedSite
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
-    private val viewModel: OrderListViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: OrderListViewModel by viewModels { viewModelFactory }
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
