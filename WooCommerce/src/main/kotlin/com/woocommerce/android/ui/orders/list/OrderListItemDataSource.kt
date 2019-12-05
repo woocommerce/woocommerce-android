@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.TimeGroup.GROUP_FUTURE
 import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_MONTH
@@ -33,13 +32,11 @@ import java.util.Date
  * in FluxC to get a better understanding of how this works with the underlying internal list management code.
  */
 class OrderListItemDataSource(
-    val dispatcher: Dispatcher,
-    val orderStore: WCOrderStore,
-    val networkStatus: NetworkStatus,
-    lifecycle: Lifecycle
+    private val dispatcher: Dispatcher,
+    private val orderStore: WCOrderStore,
+    private val networkStatus: NetworkStatus,
+    private val fetcher: OrderFetcher
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
-    private val fetcher = OrderFetcher(lifecycle, dispatcher)
-
     override fun getItemsAndFetchIfNecessary(
         listDescriptor: WCOrderListDescriptor,
         itemIdentifiers: List<OrderListItemIdentifier>

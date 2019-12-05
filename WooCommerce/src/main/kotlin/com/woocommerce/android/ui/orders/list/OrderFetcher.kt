@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -17,19 +14,16 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * This Singleton is a light-weight, lifecycle-aware class that provides methods for ensuring that orders
- * matching a provided list of [RemoteId]'s exist in the local DB. If they do not exist, or if they have been
- * modified since last saved to the DB, FluxC will pull down fresh versions from the API and save them to the DB.
- * Once all orders have been successfully fetched, any `PagedList` views observing this specific type of
- * data will update automatically.
+ * This Singleton is a light-weight class that provides methods for ensuring that orders matching a provided list
+ * of [RemoteId]'s exist in the local DB. If they do not exist, or if they have been modified since last saved to
+ * the DB, FluxC will pull down fresh versions from the API and save them to the DB. Once all orders have been
+ * successfully fetched, any [androidx.paging.PagedList] views observing this specific type of data will update
+ * automatically.
  */
 @Singleton
-class OrderFetcher @Inject constructor(
-    private val lifecycle: Lifecycle,
-    private val dispatcher: Dispatcher
-) : LifecycleObserver {
+class OrderFetcher @Inject constructor(private val dispatcher: Dispatcher) {
     companion object {
-        private const val TAG = "OrderListPresenterNew"
+        private const val TAG = "OrderFetcher"
     }
 
     /**
@@ -40,17 +34,6 @@ class OrderFetcher @Inject constructor(
 
     init {
         dispatcher.register(this)
-        lifecycle.addObserver(this)
-    }
-
-    /**
-     * Handles the [Lifecycle.Event.ON_DESTROY] event to cleanup the registration for
-     * dispatcher and removing the observer for lifecycle.
-     */
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onDestroy() {
-        lifecycle.removeObserver(this)
-        dispatcher.unregister(this)
     }
 
     /**

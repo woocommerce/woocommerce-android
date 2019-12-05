@@ -61,7 +61,8 @@ class OrderListViewModel @AssistedInject constructor(
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val fetcher: OrderFetcher
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -71,7 +72,7 @@ class OrderListViewModel @AssistedInject constructor(
     internal var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
-        OrderListItemDataSource(dispatcher, orderStore, networkStatus, lifecycle)
+        OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher)
     }
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
