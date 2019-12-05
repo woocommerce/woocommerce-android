@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCPromoTooltip
@@ -110,7 +111,10 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             switchImageOptimizaton.visibility = View.VISIBLE
             switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
             switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->
-                AnalyticsTracker.track(SETTINGS_IMAGE_OPTIMIZATION_TOGGLED)
+                AnalyticsTracker.track(
+                        SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
+                        mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
+                )
                 AppPrefs.setImageOptimizationEnabled(isChecked)
             }
         } else {
