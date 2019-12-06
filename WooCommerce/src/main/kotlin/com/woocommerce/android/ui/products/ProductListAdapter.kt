@@ -154,7 +154,7 @@ class ProductListAdapter(
             if (products.size != productList.size) {
                 return false
             }
-            for (index in 0 until products.size) {
+            for (index in products.indices) {
                 val oldItem = productList[index]
                 val newItem = products[index]
                 if (!oldItem.isSameProduct(newItem)) {
