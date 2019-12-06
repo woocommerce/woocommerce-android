@@ -27,6 +27,8 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
@@ -121,7 +123,7 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore
                 )
-                fetchProductList(viewState.query, loadMore)
+                searchProductList(viewState.query!!, loadMore)
             }
         } else {
             if (searchJob?.isActive == true || loadJob?.isActive == true) {
@@ -153,31 +155,39 @@ class ProductListViewModel @AssistedInject constructor(
         loadProducts()
     }
 
-    private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
+    private fun fetchProductList(loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            if (searchQuery.isNullOrEmpty()) {
-                _productList.value = productRepository.fetchProductList(loadMore)
-            } else {
-                productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
-                    // make sure the search query hasn't changed while the fetch was processing
-                    if (searchQuery == productRepository.lastSearchQuery) {
-                        if (loadMore) {
-                            _productList.value = _productList.value.orEmpty() + fetchedProducts
-                        } else {
-                            _productList.value = fetchedProducts
-                        }
-                    } else {
-                        WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
-                    }
-
-                    viewState = viewState.copy(
-                            canLoadMore = productRepository.canLoadMoreProducts,
-                            isEmptyViewVisible = _productList.value?.isEmpty() == true
-                    )
-                }
-            }
+            productRepository.fetchProductList(loadMore)
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
+        }
+    }
+
+    private suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false) {
+        productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+            // make sure the search query hasn't changed while the fetch was processing
+            if (searchQuery == productRepository.lastSearchQuery) {
+                if (loadMore) {
+                    _productList.value = _productList.value.orEmpty() + fetchedProducts
+                } else {
+                    _productList.value = fetchedProducts
+                }
+            } else {
+                WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
+            }
+
+            viewState = viewState.copy(
+                    canLoadMore = productRepository.canLoadMoreProducts,
+                    isEmptyViewVisible = _productList.value?.isEmpty() == true
+            )
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onProductChanged(event: OnProductChanged) {
+        if (event.causeOfChange == FETCH_PRODUCTS && !event.isError) {
+            _productList.value = productRepository.getProductList()
         }
 
         viewState = viewState.copy(

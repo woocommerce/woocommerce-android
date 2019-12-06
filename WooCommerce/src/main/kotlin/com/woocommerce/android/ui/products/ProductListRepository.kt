@@ -31,14 +31,12 @@ final class ProductListRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
+        private const val PRODUCT_PAGE_SIZE = 5 // TODO WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
-    private var loadContinuation: Continuation<Boolean>? = null
     private var searchContinuation: Continuation<List<Product>>? = null
     private var offset = 0
-    private var isLoadingProducts = false
 
     final var canLoadMoreProducts = true
         private set
@@ -55,31 +53,19 @@ final class ProductListRepository @Inject constructor(
     }
 
     /**
-     * Submits a fetch request to get a page of products for the current site and returns the full
-     * list of products from the database
+     * Submits a fetch request to get a page of products for the current site
      */
-    suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
-        if (!isLoadingProducts) {
-            try {
-                suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                    offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
-                    loadContinuation = it
-                    isLoadingProducts = true
-                    lastSearchQuery = null
-                    val payload = WCProductStore.FetchProductsPayload(
-                            selectedSite.get(),
-                            PRODUCT_PAGE_SIZE,
-                            offset,
-                            PRODUCT_SORTING
-                    )
-                    dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
-                }
-            } catch (e: CancellationException) {
-                WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching products", e)
-            }
-        }
+    fun fetchProductList(loadMore: Boolean = false) {
+        lastSearchQuery = null
+        offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
 
-        return getProductList()
+        val payload = WCProductStore.FetchProductsPayload(
+                selectedSite.get(),
+                PRODUCT_PAGE_SIZE,
+                offset,
+                PRODUCT_SORTING
+        )
+        dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
     }
 
     /**
@@ -89,15 +75,10 @@ final class ProductListRepository @Inject constructor(
      * if products are currently being loaded
      */
     suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
-        if (isLoadingProducts) {
-            return null
-        }
-
         try {
             val products = suspendCoroutineWithTimeout<List<Product>>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 searchContinuation = it
-                isLoadingProducts = true
                 lastSearchQuery = searchQuery
                 val payload = WCProductStore.SearchProductsPayload(
                         selectedSite.get(),
@@ -128,9 +109,7 @@ final class ProductListRepository @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCTS) {
-            isLoadingProducts = false
             if (event.isError) {
-                loadContinuation?.resume(false)
                 AnalyticsTracker.track(
                         PRODUCT_LIST_LOAD_ERROR,
                         this.javaClass.simpleName,
@@ -140,16 +119,13 @@ final class ProductListRepository @Inject constructor(
             } else {
                 canLoadMoreProducts = event.canLoadMore
                 AnalyticsTracker.track(PRODUCT_LIST_LOADED)
-                loadContinuation?.resume(true)
             }
-            loadContinuation = null
         }
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductsSearched(event: OnProductsSearched) {
-        isLoadingProducts = false
         if (event.isError) {
             searchContinuation?.resume(emptyList())
         } else {
