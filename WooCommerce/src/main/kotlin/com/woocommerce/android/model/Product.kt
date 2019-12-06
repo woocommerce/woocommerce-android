@@ -64,7 +64,7 @@ data class Product(
         val options: List<String>,
         val isVisible: Boolean
     ) : Parcelable
-    
+
     fun isSameProduct(product: Product): Boolean {
         return remoteId == product.remoteId &&
                 stockQuantity == product.stockQuantity &&
