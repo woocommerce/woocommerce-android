@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -125,11 +126,7 @@ class ProductListViewModel @AssistedInject constructor(
             }
         } else {
             // if a fetch is already active, wait for it to finish before we start another one
-            if (loadJob?.isActive == true) {
-                launch {
-                    loadJob?.join()
-                }
-            }
+            waitForExistingLoad()
 
             loadJob = launch {
                 viewState = viewState.copy(isLoadingMore = loadMore)
@@ -146,6 +143,21 @@ class ProductListViewModel @AssistedInject constructor(
                 }
 
                 fetchProductList(loadMore = loadMore)
+            }
+        }
+    }
+
+    /**
+     * If products are already being fetched, wait for the existing job to finish
+     */
+    private fun waitForExistingLoad() {
+        if (loadJob?.isActive == true) {
+            launch {
+                try {
+                    loadJob?.join()
+                } catch (e: CancellationException) {
+                    WooLog.d(WooLog.T.PRODUCTS, "CancellationException while waiting for existing fetch")
+                }
             }
         }
     }

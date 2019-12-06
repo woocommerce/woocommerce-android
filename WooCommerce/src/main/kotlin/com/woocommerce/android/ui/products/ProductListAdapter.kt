@@ -8,8 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -151,21 +149,6 @@ class ProductListAdapter(
         }
     }
 
-    private class ProductItemDiffUtil(val items: List<Product>, val result: List<Product>) : Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                items[oldItemPosition].remoteId == result[newItemPosition].remoteId
-
-        override fun getOldListSize(): Int = items.size
-
-        override fun getNewListSize(): Int = result.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = items[oldItemPosition]
-            val newItem = result[newItemPosition]
-            return oldItem.isSameProduct(newItem)
-        }
-    }
-
     fun setProductList(products: List<Product>) {
         fun isSameList(): Boolean {
             if (products.size != productList.size) {
@@ -185,10 +168,9 @@ class ProductListAdapter(
             return
         }
 
-        val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
         productList.clear()
         productList.addAll(products)
-        diffResult.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 
     class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {

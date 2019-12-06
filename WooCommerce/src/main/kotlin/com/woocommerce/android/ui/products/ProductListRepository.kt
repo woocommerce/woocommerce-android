@@ -33,7 +33,7 @@ final class ProductListRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val PRODUCT_PAGE_SIZE = 3 // TODO WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
+        private const val PRODUCT_PAGE_SIZE = 5 // todo WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
@@ -74,7 +74,7 @@ final class ProductListRepository @Inject constructor(
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
         } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching products", e)
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching products")
         }
 
         return getProductList()
@@ -106,7 +106,7 @@ final class ProductListRepository @Inject constructor(
 
             return products ?: emptyList()
         } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while searching products", e)
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while searching products")
             return null
         }
     }
