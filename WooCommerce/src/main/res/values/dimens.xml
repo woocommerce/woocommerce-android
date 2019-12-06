@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="min_tap_target">48dp</dimen>
 
     <!--
@@ -179,4 +179,11 @@
     -->
     <dimen name="image_border_size">1dp</dimen>
     <dimen name="image_border_radius">2dp</dimen>
+
+    <!--
+        Overide the bottom nav's text size - these are the same as default and are simply here
+        so we can access them at runtime (they're a private resource otherwise)
+    -->
+    <dimen name="design_bottom_navigation_text_size" tools:override="true">12sp</dimen>
+    <dimen name="design_bottom_navigation_active_text_size" tools:override="true">14sp</dimen>
 </resources>

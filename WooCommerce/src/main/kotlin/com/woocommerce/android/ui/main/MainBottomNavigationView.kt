@@ -119,30 +119,42 @@ class MainBottomNavigationView @JvmOverloads constructor(
         // get the menu view
         val menuView = getChildAt(0) as BottomNavigationMenuView
 
+        val textSizeNormal = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_text_size).toFloat()
+        val textSizeActive = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_active_text_size).toFloat()
+
         // iterate through the menu items
         for (index in 0 until menuView.childCount) {
             val child = menuView.getChildAt(index)
-            // find the textView showing the caption and add a layout listener to it so we can detect how many
-            // lines of text there are after layout
-            child.findViewById<TextView>(R.id.smallLabel)?.addOnLayoutChangeListener(object : OnLayoutChangeListener {
-                override fun onLayoutChange(
-                    view: View,
-                    left: Int,
-                    top: Int,
-                    right: Int,
-                    bottom: Int,
-                    oldLeft: Int,
-                    oldTop: Int,
-                    oldRight: Int,
-                    oldBottom: Int
-                ) {
-                    view.removeOnLayoutChangeListener(this)
-                    // if there are multiple lines, revert to showing labels for just the active tab
-                    if ((view as TextView).lineCount > 1) {
-                        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+            // find the textView showing the caption
+            child.findViewById<TextView>(R.id.smallLabel)?.let { textView ->
+                // set text size to active size so we can measure it as active (active is 2sp larger than normal)
+                textView.textSize = textSizeActive
+
+                // add a layout listener to it so we can detect how many lines of text there are after layout
+                textView.addOnLayoutChangeListener(object : OnLayoutChangeListener {
+                    override fun onLayoutChange(
+                        view: View,
+                        left: Int,
+                        top: Int,
+                        right: Int,
+                        bottom: Int,
+                        oldLeft: Int,
+                        oldTop: Int,
+                        oldRight: Int,
+                        oldBottom: Int
+                    ) {
+                        view.removeOnLayoutChangeListener(this)
+
+                        // if there are multiple lines, revert to showing labels for just the active tab
+                        if ((view as TextView).lineCount > 1) {
+                            labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+                        }
+
+                        // restore normal text size
+                        view.textSize = textSizeNormal
                     }
-                }
-            })
+                })
+            }
         }
     }
 
