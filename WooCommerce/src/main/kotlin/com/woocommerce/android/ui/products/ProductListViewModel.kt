@@ -124,9 +124,11 @@ class ProductListViewModel @AssistedInject constructor(
                 fetchProductList(viewState.query, loadMore)
             }
         } else {
-            if (searchJob?.isActive == true || loadJob?.isActive == true) {
-                WooLog.d(WooLog.T.PRODUCTS, "already loading products")
-                return
+            // if a fetch is already active, wait for it to finish before we start another one
+            if (loadJob?.isActive == true) {
+                launch {
+                    loadJob?.join()
+                }
             }
 
             loadJob = launch {
