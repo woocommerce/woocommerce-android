@@ -8,7 +8,9 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -31,11 +33,12 @@ final class ProductListRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val PRODUCT_PAGE_SIZE = 5 // TODO WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
+        private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
-    private var searchContinuation: Continuation<List<Product>>? = null
+    private var loadContinuation: Continuation<Boolean>? = null
+    private var searchContinuation: CancellableContinuation<List<Product>>? = null
     private var offset = 0
 
     final var canLoadMoreProducts = true
@@ -53,30 +56,41 @@ final class ProductListRepository @Inject constructor(
     }
 
     /**
-     * Submits a fetch request to get a page of products for the current site
+     * Submits a fetch request to get a page of products for the current site and returns the full
+     * list of products from the database
      */
-    fun fetchProductList(loadMore: Boolean = false) {
-        lastSearchQuery = null
-        offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
+    suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
+        try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
+                loadContinuation = it
+                lastSearchQuery = null
+                val payload = WCProductStore.FetchProductsPayload(
+                        selectedSite.get(),
+                        PRODUCT_PAGE_SIZE,
+                        offset,
+                        PRODUCT_SORTING
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching products", e)
+        }
 
-        val payload = WCProductStore.FetchProductsPayload(
-                selectedSite.get(),
-                PRODUCT_PAGE_SIZE,
-                offset,
-                PRODUCT_SORTING
-        )
-        dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
+        return getProductList()
     }
 
     /**
      * Submits a fetch request to get a page of products for the current site matching the passed
      * query and returns only that page of products - note that this returns null if the search
-     * is interrupted (which means the user submitted another search while this was running) or
-     * if products are currently being loaded
+     * is interrupted (which means the user submitted another search while this was running)
      */
     suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
+        // cancel any existing search
+        searchContinuation?.cancel()
+
         try {
-            val products = suspendCoroutineWithTimeout<List<Product>>(ACTION_TIMEOUT) {
+            val products = suspendCancellableCoroutineWithTimeout<List<Product>>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 searchContinuation = it
                 lastSearchQuery = searchQuery
@@ -110,6 +124,7 @@ final class ProductListRepository @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCTS) {
             if (event.isError) {
+                loadContinuation?.resume(false)
                 AnalyticsTracker.track(
                         PRODUCT_LIST_LOAD_ERROR,
                         this.javaClass.simpleName,
@@ -119,7 +134,9 @@ final class ProductListRepository @Inject constructor(
             } else {
                 canLoadMoreProducts = event.canLoadMore
                 AnalyticsTracker.track(PRODUCT_LIST_LOADED)
+                loadContinuation?.resume(true)
             }
+            loadContinuation = null
         }
     }
 
