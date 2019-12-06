@@ -85,13 +85,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
         active(DASHBOARD.position)
     }
 
-    fun refreshProductsTab() {
-        if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) {
-            detectLabelVisibilityMode()
-            menu.findItem(R.id.products)?.isVisible = true
-        } else {
-            menu.findItem(R.id.products)?.isVisible = false
-        }
+    private fun refreshProductsTab() {
+        menu.findItem(R.id.products)?.isVisible = FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()
+        detectLabelVisibilityMode()
     }
 
     /**
@@ -122,8 +118,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
         labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
 
         val displayWidth = DisplayUtils.getDisplayPixelWidth(context)
+        val numCells = if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) menu.size() else menu.size() - 1
         val cellMargin = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_margin)
-        val cellWidth = (displayWidth / menu.size()) - (cellMargin * 3)
+        val cellWidth = (displayWidth / numCells) - (cellMargin * 3)
 
         // create a paint object whose text size matches the bottom navigation active text size - note that
         // we have to use the active size since it's 2sp larger than inactive
