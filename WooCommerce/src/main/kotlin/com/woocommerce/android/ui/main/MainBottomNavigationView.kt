@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.main
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Paint
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -24,6 +27,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import org.wordpress.android.util.DisplayUtils
 
 class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
@@ -112,50 +116,45 @@ class MainBottomNavigationView @JvmOverloads constructor(
      * more than three tabs are showing, but we only want to do this if we know it won't cause any of the
      * tabs to wrap to more than one line.
      */
+    @SuppressLint("PrivateResource")
     private fun detectLabelVisibilityMode() {
         // default to showing labels for all tabs
         labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
 
-        // get the menu view
-        val menuView = getChildAt(0) as BottomNavigationMenuView
+        val displayWidth = DisplayUtils.getDisplayPixelWidth(context)
+        val cellMargin = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_margin)
+        val cellWidth = (displayWidth / menu.size()) - (cellMargin * 3)
 
-        val textSizeNormal = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_text_size).toFloat()
-        val textSizeActive = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_active_text_size).toFloat()
-
-        // iterate through the menu items
-        for (index in 0 until menuView.childCount) {
-            val child = menuView.getChildAt(index)
-            // find the textView showing the caption
-            child.findViewById<TextView>(R.id.smallLabel)?.let { textView ->
-                // set text size to active size so we can measure it as active (active is 2sp larger than normal)
-                textView.textSize = textSizeActive
-
-                // add a layout listener to it so we can detect how many lines of text there are after layout
-                textView.addOnLayoutChangeListener(object : OnLayoutChangeListener {
-                    override fun onLayoutChange(
-                        view: View,
-                        left: Int,
-                        top: Int,
-                        right: Int,
-                        bottom: Int,
-                        oldLeft: Int,
-                        oldTop: Int,
-                        oldRight: Int,
-                        oldBottom: Int
-                    ) {
-                        view.removeOnLayoutChangeListener(this)
-
-                        // if there are multiple lines, revert to showing labels for just the active tab
-                        if ((view as TextView).lineCount > 1) {
-                            labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
-                        }
-
-                        // restore normal text size
-                        view.textSize = textSizeNormal
-                    }
-                })
-            }
+        // create a paint object whose text size matches the bottom navigation active text size - note that
+        // we have to use the active size since it's 2sp larger than inactive
+        val textPaint = Paint().also { paint ->
+            paint.textSize = resources.getDimension(R.dimen.design_bottom_navigation_active_text_size)
         }
+
+        addOnLayoutChangeListener(object : OnLayoutChangeListener {
+            override fun onLayoutChange(
+                view: View,
+                left: Int,
+                top: Int,
+                right: Int,
+                bottom: Int,
+                oldLeft: Int,
+                oldTop: Int,
+                oldRight: Int,
+                oldBottom: Int
+            ) {
+                view.removeOnLayoutChangeListener(this)
+
+                for (index in 0 until menu.size()) {
+                    val bounds = Rect()
+                    val title = menu.getItem(index).title.toString()
+                    textPaint.getTextBounds(title, 0, title.length, bounds)
+                    if (bounds.width() > cellWidth) {
+                        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+                    }
+                }
+            }
+        })
     }
 
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
