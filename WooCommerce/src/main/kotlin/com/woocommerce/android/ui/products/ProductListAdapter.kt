@@ -162,18 +162,29 @@ class ProductListAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = items[oldItemPosition]
             val newItem = result[newItemPosition]
-            return oldItem.stockQuantity == newItem.stockQuantity &&
-                    oldItem.stockStatus == newItem.stockStatus &&
-                    oldItem.status == newItem.status &&
-                    oldItem.manageStock == newItem.manageStock &&
-                    oldItem.type == newItem.type &&
-                    oldItem.numVariations == newItem.numVariations &&
-                    oldItem.name == newItem.name &&
-                    oldItem.images == newItem.images
+            return oldItem.isSameProduct(newItem)
         }
     }
 
     fun setProductList(products: List<Product>) {
+        fun isSameList(): Boolean {
+            if (products.size != productList.size) {
+                return false
+            }
+            for (index in 0 until products.size) {
+                val oldItem = productList[index]
+                val newItem = products[index]
+                if (!oldItem.isSameProduct(newItem)) {
+                    return false
+                }
+            }
+            return true
+        }
+
+        if (isSameList()) {
+            return
+        }
+
         val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
         productList.clear()
         productList.addAll(products)

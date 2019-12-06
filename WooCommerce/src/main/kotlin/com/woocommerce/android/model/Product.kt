@@ -64,6 +64,18 @@ data class Product(
         val options: List<String>,
         val isVisible: Boolean
     ) : Parcelable
+    
+    fun isSameProduct(product: Product): Boolean {
+        return remoteId == product.remoteId &&
+                stockQuantity == product.stockQuantity &&
+                stockStatus == product.stockStatus &&
+                status == product.status &&
+                manageStock == product.manageStock &&
+                type == product.type &&
+                numVariations == product.numVariations &&
+                name == product.name &&
+                images == product.images
+    }
 }
 
 fun WCProductModel.toAppModel(): Product {
