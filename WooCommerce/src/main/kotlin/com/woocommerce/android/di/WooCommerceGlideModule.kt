@@ -16,8 +16,11 @@ import com.bumptech.glide.module.AppGlideModule
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
+import java.text.NumberFormat
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -42,20 +45,29 @@ class WooCommerceGlideModule : AppGlideModule() {
     /**
      * Reduces the size of the disk cache if Android tells us our cache quota is smaller than Glide's
      * default cache size. Note that this only affects devices running API 26 or later since earlier
-     *  APIs don't support getCacheQuotaBytes().
+     * APIs don't support getCacheQuotaBytes().
      */
     private fun initGlideCache(context: Context, builder: GlideBuilder) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val appContext = context.applicationContext
-            val storageManager = appContext.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+            val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
             try {
-                val uuid = storageManager.getUuidForPath(appContext.getCacheDir())
-                val quota = storageManager.getCacheQuotaBytes(uuid)
-                if (quota > 0 && quota < DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE) {
-                    val cacheFactory = InternalCacheDiskCacheFactory(appContext, quota)
-                    builder.setDiskCache(cacheFactory)
-                    val diff = DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE - quota
-                    WooLog.d(T.UTILS, "Reduced size of image disk cache by $diff bytes")
+                // can't do this on the main thread - docs for getCacheQuoteBytes() state:
+                //     "This method may take several seconds to complete, so it
+                //      should only be called from a worker thread."
+                GlobalScope.launch {
+                    val uuid = storageManager.getUuidForPath(context.getCacheDir())
+                    val quota = storageManager.getCacheQuotaBytes(uuid)
+
+                    if (quota > 0 && quota < DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE) {
+                        val cacheFactory = InternalCacheDiskCacheFactory(context, quota)
+                        builder.setDiskCache(cacheFactory)
+
+                        val quotaStr = NumberFormat.getInstance().format(quota / 1024) + "MB"
+                        val diffStr = NumberFormat.getInstance().format(
+                                (DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE - quota) / 1024
+                        ) + "MB"
+                        WooLog.d(T.UTILS, "Reduced image disk cache to $quotaStr ($diffStr smaller)")
+                    }
                 }
             } catch (e: IOException) {
                 WooLog.e(T.UTILS, "Unable to change image cache size", e)
