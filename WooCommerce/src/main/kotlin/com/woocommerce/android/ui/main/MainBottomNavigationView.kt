@@ -28,6 +28,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import org.wordpress.android.util.DisplayUtils
+import kotlin.math.min
 
 class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
@@ -117,21 +118,29 @@ class MainBottomNavigationView @JvmOverloads constructor(
         // default to showing labels for all tabs
         labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
 
+        var numVisibleItems = 0
+        for (index in 0 until menu.size()) {
+            if (menu.getItem(index).isVisible) {
+                numVisibleItems++
+            }
+        }
+
+        // determine the width of a navbar item
         val displayWidth = DisplayUtils.getDisplayPixelWidth(context)
-        val numItems = if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) menu.size() else menu.size() - 1
         val itemMargin = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_margin)
         val itemMaxWidth = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_item_max_width)
-        val itemWidth = Math.min(itemMaxWidth, (displayWidth / numItems) - (itemMargin * 3))
+        val itemWidth = min(itemMaxWidth, (displayWidth / numVisibleItems) - (itemMargin * 3))
 
         // create a paint object whose text size matches the bottom navigation active text size - note that
         // we have to use the active size since it's 2sp larger than inactive
-        val textPaint = Paint().also { paint ->
-            paint.textSize = resources.getDimension(R.dimen.design_bottom_navigation_active_text_size)
+        val textPaint = Paint().also {
+            it.textSize = resources.getDimension(R.dimen.design_bottom_navigation_active_text_size)
         }
 
-        // iterate through the menu items and determine whether they can all fit their space
+        // iterate through the menu items and determine whether they can all fit their space - if any of them
+        // can't, we revert to LABEL_VISIBILITY_AUTO
+        val bounds = Rect()
         for (index in 0 until menu.size()) {
-            val bounds = Rect()
             val title = menu.getItem(index).title.toString()
             textPaint.getTextBounds(title, 0, title.length, bounds)
             if (bounds.width() > itemWidth) {
