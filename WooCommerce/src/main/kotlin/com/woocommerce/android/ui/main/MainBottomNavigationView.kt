@@ -118,9 +118,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
         labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
 
         val displayWidth = DisplayUtils.getDisplayPixelWidth(context)
-        val numCells = if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) menu.size() else menu.size() - 1
-        val cellMargin = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_margin)
-        val cellWidth = (displayWidth / numCells) - (cellMargin * 3)
+        val numItems = if (FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()) menu.size() else menu.size() - 1
+        val itemMargin = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_margin)
+        val itemMaxWidth = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_item_max_width)
+        val itemWidth = Math.min(itemMaxWidth, (displayWidth / numItems) - (itemMargin * 3))
 
         // create a paint object whose text size matches the bottom navigation active text size - note that
         // we have to use the active size since it's 2sp larger than inactive
@@ -128,30 +129,16 @@ class MainBottomNavigationView @JvmOverloads constructor(
             paint.textSize = resources.getDimension(R.dimen.design_bottom_navigation_active_text_size)
         }
 
-        addOnLayoutChangeListener(object : OnLayoutChangeListener {
-            override fun onLayoutChange(
-                view: View,
-                left: Int,
-                top: Int,
-                right: Int,
-                bottom: Int,
-                oldLeft: Int,
-                oldTop: Int,
-                oldRight: Int,
-                oldBottom: Int
-            ) {
-                view.removeOnLayoutChangeListener(this)
-
-                for (index in 0 until menu.size()) {
-                    val bounds = Rect()
-                    val title = menu.getItem(index).title.toString()
-                    textPaint.getTextBounds(title, 0, title.length, bounds)
-                    if (bounds.width() > cellWidth) {
-                        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
-                    }
-                }
+        // iterate through the menu items and determine whether they can all fit their space
+        for (index in 0 until menu.size()) {
+            val bounds = Rect()
+            val title = menu.getItem(index).title.toString()
+            textPaint.getTextBounds(title, 0, title.length, bounds)
+            if (bounds.width() > itemWidth) {
+                labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+                break
             }
-        })
+        }
     }
 
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
