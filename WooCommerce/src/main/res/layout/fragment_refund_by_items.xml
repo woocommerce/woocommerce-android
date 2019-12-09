@@ -84,13 +84,13 @@
                     android:layout_weight="1"
                     android:text="@string/subtotal"
                     android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance"/>
 
                 <TextView
                     android:id="@+id/issueRefund_subtotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance"
                     tools:text="$45.00"/>
 
             </LinearLayout>
@@ -111,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/discount"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance"/>
 
                 <TextView
                     android:id="@+id/issueRefund_discountItems"
@@ -121,14 +121,14 @@
                     android:layout_marginStart="@dimen/card_item_padding_intra_h"
                     android:layout_weight="1"
                     android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance"
                     tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
 
                 <TextView
                     android:id="@+id/issueRefund_discountTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance"
                     tools:text="-$4.00"/>
             </LinearLayout>
 
@@ -147,13 +147,13 @@
                     android:layout_weight="1"
                     android:text="@string/taxes"
                     android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance"/>
 
                 <TextView
                     android:id="@+id/issueRefund_taxesTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance"
                     tools:text="$1.00"/>
 
             </LinearLayout>
@@ -181,7 +181,7 @@
                     android:layout_weight="1"
                     android:text="@string/order_refunds_products_refund"
                     android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
+                    android:textAppearance="@style/Woo.Refunds.TextAppearance.Bold"/>
 
                 <androidx.appcompat.widget.AppCompatButton
                     style="@style/Woo.Button"
