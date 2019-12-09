@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -25,7 +26,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -37,7 +37,6 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class ProductListFragment : TopLevelFragment(), OnProductClickListener,
-        OnLoadMoreListener,
         OnQueryTextListener,
         OnActionExpandListener {
     companion object {
@@ -75,8 +74,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
-        productAdapter = ProductListAdapter(activity, this, this)
-        productsRecycler.layoutManager = LinearLayoutManager(activity)
+        productAdapter = ProductListAdapter(activity, this)
+        val layoutManager = LinearLayoutManager(activity)
+        productsRecycler.layoutManager = layoutManager
         productsRecycler.adapter = productAdapter
         productsRecycler.addItemDecoration(
                 AlignedDividerDecoration(
@@ -84,6 +84,23 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                         DividerItemDecoration.VERTICAL, R.id.productName, clipToMargin = false
                 )
         )
+
+        // load more when user scrolls to the end
+        productsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(
+                recyclerView: RecyclerView,
+                dx: Int, dy: Int
+            ) {
+                super.onScrolled(recyclerView, dx, dy)
+                val totalItemCount = productAdapter.itemCount
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                if (totalItemCount > 0 &&
+                        lastVisibleItem > -1 &&
+                        lastVisibleItem == totalItemCount - 1) {
+                    viewModel.onLoadMoreRequested()
+                }
+            }
+        })
 
         productsRefreshLayout?.apply {
             setColorSchemeColors(
@@ -327,9 +344,5 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
-    }
-
-    override fun onRequestLoadMore() {
-        viewModel.onLoadMoreRequested()
     }
 }

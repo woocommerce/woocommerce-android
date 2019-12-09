@@ -26,8 +26,7 @@ import org.wordpress.android.util.PhotonUtils
 
 class ProductListAdapter(
     private val context: Context,
-    private val clickListener: OnProductClickListener,
-    private val loadMoreListener: OnLoadMoreListener
+    private val clickListener: OnProductClickListener
 ) : RecyclerView.Adapter<ProductViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
     private val productList = ArrayList<Product>()
@@ -37,10 +36,6 @@ class ProductListAdapter(
 
     interface OnProductClickListener {
         fun onProductClick(remoteProductId: Long)
-    }
-
-    interface OnLoadMoreListener {
-        fun onRequestLoadMore()
     }
 
     init {
@@ -142,10 +137,6 @@ class ProductListAdapter(
         holder.itemView.setOnClickListener {
             AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)
             clickListener.onProductClick(product.remoteId)
-        }
-
-        if (position == itemCount - 1) {
-            loadMoreListener.onRequestLoadMore()
         }
     }
 
