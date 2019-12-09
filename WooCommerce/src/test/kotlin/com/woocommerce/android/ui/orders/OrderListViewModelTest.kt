@@ -214,7 +214,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `Request to fetch order status options while offline handled correctly`() = test {
         doReturn(false).whenever(networkStatus).isConnected()
 
-        viewModel.fetchOrderDependencies()
+        viewModel.fetchOrdersAndOrderDependencies()
 
         assertNull(viewModel.activePagedListWrapper)
         assertNull(viewModel.allPagedListWrapper)

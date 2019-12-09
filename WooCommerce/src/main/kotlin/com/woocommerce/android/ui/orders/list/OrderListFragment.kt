@@ -626,7 +626,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun refreshOrders() {
-        viewModel.fetchOrderDependencies()
+        viewModel.fetchOrdersAndOrderDependencies()
     }
 
     private fun disableSearchListeners() {
