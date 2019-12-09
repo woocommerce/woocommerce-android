@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.media.ProductImagesServiceModule
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import dagger.BindsInstance
@@ -32,12 +33,13 @@ import javax.inject.Singleton
         LoginServiceModule::class,
         NetworkStatusModule::class,
         CurrencyModule::class,
+        ProductImagesServiceModule::class,
         ThreadModule::class,
         SupportModule::class])
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {
         @BindsInstance
-        override fun application(application: Application): AppComponentDebug.Builder
+        override fun application(application: Application): Builder
     }
 }
