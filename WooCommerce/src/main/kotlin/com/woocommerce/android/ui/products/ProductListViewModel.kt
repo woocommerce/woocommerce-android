@@ -62,6 +62,8 @@ class ProductListViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
+    fun isSearching(): Boolean = viewState.isSearchActive == true
+
     fun onSearchQueryChanged(query: String) {
         viewState = viewState.copy(query = query, isEmptyViewVisible = false)
 
@@ -112,7 +114,7 @@ class ProductListViewModel @AssistedInject constructor(
             return
         }
 
-        if (viewState.isSearchActive == true) {
+        if (isSearching()) {
             // cancel any existing search, then start a new one after a brief delay so we don't actually perform
             // the fetch until the user stops typing
             searchJob?.cancel()
