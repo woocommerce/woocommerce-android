@@ -139,7 +139,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
 
-        // reload product list if a search isn't active  in case a product was changed in the detail fragment
         if (!viewModel.isSearching()) {
             viewModel.loadProducts()
         }
