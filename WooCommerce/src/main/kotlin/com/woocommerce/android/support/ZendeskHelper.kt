@@ -42,6 +42,7 @@ import kotlin.concurrent.schedule
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
+private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
 class ZendeskHelper(
     private val context: Context,
@@ -390,7 +391,7 @@ private fun buildZendeskCustomFields(
             CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
             CustomField(TicketFieldIds.currentSite, currentSiteInformation),
             CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-            CustomField(TicketFieldIds.logs, WooLog.toString()),
+            CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
             CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
             CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
             CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
