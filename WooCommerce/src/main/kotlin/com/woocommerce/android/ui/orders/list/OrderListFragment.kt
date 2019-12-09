@@ -167,8 +167,6 @@ class OrderListFragment : TopLevelFragment(),
                 scrollUpChild = order_list_view.ordersList
                 setOnRefreshListener {
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
-
-                    orderRefreshLayout.isRefreshing = false
                     refreshOrders()
                 }
             }
