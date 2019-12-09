@@ -303,9 +303,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundQuantityTapped(productId: Long) {
-        val refundItem = refundByItemsState.items?.firstOrNull { it.product.productId == productId }
-        if (refundItem != null) {
-            triggerEvent(ShowNumberPicker(refundItem))
+        refundByItemsState.items?.firstOrNull { it.product.productId == productId }?.let {
+            triggerEvent(ShowNumberPicker(it))
         }
     }
 
