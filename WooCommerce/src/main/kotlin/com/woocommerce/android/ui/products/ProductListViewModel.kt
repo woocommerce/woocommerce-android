@@ -62,7 +62,9 @@ class ProductListViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    fun isSearching(): Boolean = viewState.isSearchActive == true
+    fun isSearching() = viewState.isSearchActive == true
+
+    private fun isLoadingMore() = viewState.isLoadingMore == true
 
     fun onSearchQueryChanged(query: String) {
         viewState = viewState.copy(query = query, isEmptyViewVisible = false)
@@ -111,6 +113,11 @@ class ProductListViewModel @AssistedInject constructor(
     final fun loadProducts(loadMore: Boolean = false) {
         if (loadMore && !productRepository.canLoadMoreProducts) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
+            return
+        }
+
+        if (loadMore && isLoadingMore()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading more products")
             return
         }
 
