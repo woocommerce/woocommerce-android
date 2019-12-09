@@ -10,8 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_window_background"
-        android:fillViewport="true">
+        android:background="@color/default_window_background">
 
         <!-- Products work in progress notice card -->
         <com.woocommerce.android.ui.products.ProductsWIPNoticeCard
