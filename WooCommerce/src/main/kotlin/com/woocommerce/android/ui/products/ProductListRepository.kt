@@ -9,7 +9,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
@@ -22,7 +21,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
@@ -37,7 +35,7 @@ final class ProductListRepository @Inject constructor(
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
-    private var loadContinuation: Continuation<Boolean>? = null
+    private var loadContinuation: CancellableContinuation<Boolean>? = null
     private var searchContinuation: CancellableContinuation<List<Product>>? = null
     private var offset = 0
 
@@ -61,7 +59,7 @@ final class ProductListRepository @Inject constructor(
      */
     suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
         try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 loadContinuation = it
                 lastSearchQuery = null
@@ -86,7 +84,8 @@ final class ProductListRepository @Inject constructor(
      * is interrupted (which means the user submitted another search while this was running)
      */
     suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
-        // cancel any existing search
+        // cancel any existing load or search
+        loadContinuation?.cancel()
         searchContinuation?.cancel()
 
         try {
