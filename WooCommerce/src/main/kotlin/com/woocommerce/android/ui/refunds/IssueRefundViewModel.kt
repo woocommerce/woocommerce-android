@@ -177,10 +177,26 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onNextButtonTappedFromItems() {
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                        AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                )
+        )
+
         showRefundSummary()
     }
 
     fun onNextButtonTappedFromAmounts() {
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                        AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                )
+        )
+
         if (isInputValid()) {
             showRefundSummary()
         } else {
@@ -193,14 +209,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                 isFormEnabled = true,
                 previouslyRefunded = formatCurrency(order.refundTotal),
                 refundAmount = formatCurrency(commonState.refundTotal)
-        )
-
-        AnalyticsTracker.track(
-                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
-                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId
-                )
         )
 
         triggerEvent(ShowRefundSummary(commonState.refundType))
