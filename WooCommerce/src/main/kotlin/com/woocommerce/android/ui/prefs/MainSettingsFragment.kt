@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_IMAGE_OPTIMIZATION_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
@@ -28,7 +29,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -102,6 +105,20 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
             setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
+        }
+
+        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+            switchImageOptimizaton.visibility = View.VISIBLE
+            switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
+            switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(
+                        SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
+                        mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
+                )
+                AppPrefs.setImageOptimizationEnabled(isChecked)
+            }
+        } else {
+            switchImageOptimizaton.visibility = View.GONE
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings

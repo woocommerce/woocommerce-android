@@ -128,6 +128,20 @@
             style="@style/Woo.Settings.Divider"/>
 
         <!--
+            Image Optimization
+        -->
+        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+            android:id="@+id/switchImageOptimizaton"
+            style="@style/Woo.Settings.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:switchSummary="@string/settings_image_optimization_message"
+            app:switchTitle="@string/settings_image_optimization_title"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <!--
             Beta Features
         -->
         <LinearLayout

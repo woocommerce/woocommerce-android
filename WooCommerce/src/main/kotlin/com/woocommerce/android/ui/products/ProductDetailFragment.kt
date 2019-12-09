@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.Manifest.permission
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -22,7 +21,6 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
@@ -32,13 +30,14 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -46,8 +45,8 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
@@ -65,13 +64,12 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private var productTitle = ""
     private var isVariation = false
-    private var imageHeight = 0
     private val skeletonView = SkeletonView()
+    private var clickedImage = WeakReference<View>(null)
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
@@ -101,25 +99,20 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         viewModel.viewStateData.observe(this) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.product?.let { showProduct(new) }
+            new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
+                imageGallery.setPlaceholderImageUris(it)
+            }
         }
 
         viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowImages -> showProductImages(event.product, event.image)
+                is ShowImageChooser -> showImageChooser()
                 is ShareProduct -> shareProduct(event.product)
                 is Exit -> requireActivity().onBackPressed()
             }
         })
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        // make image height a percentage of screen height, adjusting for landscape
-        val displayHeight = DisplayUtils.getDisplayPixelHeight(requireActivity())
-        val multiplier = if (DisplayUtils.isLandscape(requireActivity())) 0.5f else 0.3f
-        imageHeight = (displayHeight * multiplier).toInt()
-        imageGallery.layoutParams.height = imageHeight
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -141,7 +134,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
-            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
+            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageGallery.height
         } else {
             skeletonView.hide()
         }
@@ -168,7 +161,19 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
         updateActivityTitle()
 
-        imageGallery.showProductImages(product, this)
+        if (product.images.isEmpty() && !viewModel.isUploading()) {
+            imageGallery.visibility = View.GONE
+            if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+                addImageContainer.visibility = View.VISIBLE
+                addImageContainer.setOnClickListener {
+                    viewModel.onAddImageClicked()
+                }
+            }
+        } else {
+            addImageContainer.visibility = View.GONE
+            imageGallery.visibility = View.VISIBLE
+            imageGallery.showProductImages(product, this)
+        }
 
         isVariation = product.type == ProductType.VARIATION
 
@@ -540,81 +545,30 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        ImageViewerActivity.show(
-                requireActivity(),
-                image.source,
-                title = productTitle,
-                sharedElement = imageView
-        )
+        clickedImage = WeakReference(imageView)
+        viewModel.onImageGalleryClicked(image)
     }
 
-    /**
-     * Requests storage permission, returns true only if permission is already available
-     */
-    private fun requestStoragePermission(): Boolean {
-        if (!isAdded) {
-            return false
-        } else if (WooPermissionUtils.hasStoragePermission(requireActivity())) {
-            return true
-        }
-
-        val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE)
-        requestPermissions(permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE)
-        return false
+    override fun onGalleryAddImageClicked() {
+        showImageChooser()
     }
 
-    /**
-     * Requests camera & storage permissions, returns true only if permissions are already
-     * available. Note that we need to ask for both permissions because we also need storage
-     * permission to store media from the camera.
-     */
-    private fun requestCameraPermission(): Boolean {
-        if (!isAdded) {
-            return false
+    private fun showProductImages(product: Product, imageModel: Product.Image? = null) {
+        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+            showImageChooser()
+        } else if (imageModel != null) {
+            ImageViewerActivity.showProductImages(
+                    this,
+                    product,
+                    imageModel,
+                    sharedElement = clickedImage.get()
+            )
         }
-
-        val hasStorage = WooPermissionUtils.hasStoragePermission(requireActivity())
-        val hasCamera = WooPermissionUtils.hasCameraPermission(requireActivity())
-        if (hasStorage && hasCamera) {
-            return true
-        }
-
-        val permissions = when {
-            hasStorage -> arrayOf(permission.CAMERA)
-            hasCamera -> arrayOf(permission.WRITE_EXTERNAL_STORAGE)
-            else -> arrayOf(permission.CAMERA, permission.WRITE_EXTERNAL_STORAGE)
-        }
-
-        requestPermissions(
-                permissions,
-                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
-        )
-        return false
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (!isAdded) {
-            return
-        }
-
-        val allGranted = WooPermissionUtils.setPermissionListAsked(
-                requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
-        )
-
-        if (allGranted) {
-            when (requestCode) {
-                WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
-                    // TODO chooseProductImage()
-                }
-                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
-                    // TODO captureProduceImage()
-                }
-            }
-        }
+    private fun showImageChooser() {
+        val action = ProductDetailFragmentDirections
+                .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
+        findNavController().navigate(action)
     }
 }

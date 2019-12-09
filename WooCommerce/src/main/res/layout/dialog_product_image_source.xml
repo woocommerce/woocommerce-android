@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="@dimen/margin_medium">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_large"
+        android:text="@string/image_source_title"
+        android:textSize="@dimen/text_medium" />
+
+    <TextView
+        android:id="@+id/textChooser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_image"
+        android:drawablePadding="32dp"
+        android:padding="@dimen/margin_large"
+        android:text="@string/image_source_device_chooser"
+        android:textSize="@dimen/text_large" />
+
+    <TextView
+        android:id="@+id/textCamera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_camera"
+        android:drawablePadding="32dp"
+        android:padding="@dimen/margin_large"
+        android:text="@string/image_source_device_camera"
+        android:textSize="@dimen/text_large" />
+</LinearLayout>
