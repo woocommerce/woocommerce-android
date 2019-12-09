@@ -551,6 +551,7 @@ class OrderListFragment : TopLevelFragment(),
             clearSearchResults()
             searchMenuItem?.isVisible = true
         }
+        loadListForActiveTab()
         return true
     }
 
@@ -561,13 +562,11 @@ class OrderListFragment : TopLevelFragment(),
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
-            loadListForActiveTab()
         }
     }
 
     private fun loadListForActiveTab() {
         orderStatusFilter = getOrderStatusFilterForActiveTab()
-        getOrderStatusFilterForActiveTab()
         when (tab_layout.selectedTabPosition) {
             TAB_INDEX_PROCESSING -> viewModel.loadProcessingList()
             TAB_INDEX_ALL -> viewModel.loadAllList()
