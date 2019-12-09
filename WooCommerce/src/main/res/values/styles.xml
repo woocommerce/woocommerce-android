@@ -438,6 +438,11 @@
     <style name="Woo.Refunds.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
 
     <style name="Woo.Refunds.TabLayout" parent="Woo.OrderList.TabLayout" />
+
+    <style name="Woo.Refunds.Button" parent="Woo.Button">
+        <item name="android:textAlignment">viewEnd</item>
+    </style>
+
     <!--
         Settings Styles
     -->
