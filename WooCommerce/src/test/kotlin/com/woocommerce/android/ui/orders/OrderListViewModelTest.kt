@@ -15,6 +15,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.list.OrderFetcher
 import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
@@ -64,6 +65,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
+    private val orderFetcher: OrderFetcher = mock()
 
     @Before
     fun setup() = test {
@@ -88,7 +90,8 @@ class OrderListViewModelTest : BaseUnitTest() {
                 listStore = listStore,
                 networkStatus = networkStatus,
                 dispatcher = dispatcher,
-                selectedSite = selectedSite)
+                selectedSite = selectedSite,
+                fetcher = orderFetcher)
 
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
@@ -112,12 +115,76 @@ class OrderListViewModelTest : BaseUnitTest() {
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
         clearInvocations(repository)
-        viewModel.loadList()
+        viewModel.loadAllList()
 
-        verify(viewModel.pagedListWrapper, times(1))?.fetchFirstPage()
+        verify(viewModel.allPagedListWrapper, times(1))?.fetchFirstPage()
         verify(repository, times(1)).fetchOrderStatusOptionsFromApi()
         verify(repository, times(1)).getCachedOrderStatusOptions()
         verify(repository, times(1)).fetchPaymentGateways()
+    }
+
+    @Test
+    fun `load orders for ALL tab on first run activates list wrapper and fetches first page`() = test {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+        viewModel.loadAllList()
+
+        assertNotNull(viewModel.allPagedListWrapper)
+        assertNotNull(viewModel.activePagedListWrapper)
+        verify(viewModel.allPagedListWrapper, times(1))?.fetchFirstPage()
+        verify(viewModel.allPagedListWrapper, times(0))?.invalidateData()
+        assertEquals(viewModel.allPagedListWrapper, viewModel.activePagedListWrapper)
+    }
+
+    @Test
+    fun `load orders for ALL tab after initial run does not fetch first page`() = test {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+        viewModel.loadAllList()
+        clearInvocations(viewModel.allPagedListWrapper)
+        viewModel.loadAllList()
+
+        assertNotNull(viewModel.allPagedListWrapper)
+        assertNotNull(viewModel.activePagedListWrapper)
+        verify(viewModel.allPagedListWrapper, times(0))?.fetchFirstPage()
+        verify(viewModel.allPagedListWrapper, times(1))?.invalidateData()
+        assertEquals(viewModel.allPagedListWrapper, viewModel.activePagedListWrapper)
+    }
+
+    @Test
+    fun `load orders for PROCESSING tab on first run activates list wrapper and fetches first page`() = test {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+        viewModel.loadProcessingList()
+
+        assertNotNull(viewModel.processingPagedListWrapper)
+        assertNotNull(viewModel.activePagedListWrapper)
+        verify(viewModel.processingPagedListWrapper, times(1))?.fetchFirstPage()
+        verify(viewModel.processingPagedListWrapper, times(0))?.invalidateData()
+        assertEquals(viewModel.processingPagedListWrapper, viewModel.activePagedListWrapper)
+    }
+
+    @Test
+    fun `load orders for PROCESSING tab after initial run does not fetch first page`() = test {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+        viewModel.loadProcessingList()
+        clearInvocations(viewModel.processingPagedListWrapper)
+        viewModel.loadProcessingList()
+
+        assertNotNull(viewModel.processingPagedListWrapper)
+        assertNotNull(viewModel.activePagedListWrapper)
+        verify(viewModel.processingPagedListWrapper, times(0))?.fetchFirstPage()
+        verify(viewModel.processingPagedListWrapper, times(1))?.invalidateData()
+        assertEquals(viewModel.processingPagedListWrapper, viewModel.activePagedListWrapper)
     }
 
     /**
@@ -128,12 +195,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Request to fetch order status options emits options`() = test {
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
-        viewModel.loadList()
+        viewModel.fetchOrderStatusOptions()
 
-        assertNotNull(viewModel.pagedListWrapper)
-        verify(viewModel.pagedListWrapper, times(1))?.fetchFirstPage()
         verify(repository, times(1)).fetchOrderStatusOptionsFromApi()
         verify(repository, times(2)).getCachedOrderStatusOptions()
         assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
@@ -152,7 +216,8 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.fetchOrdersAndOrderDependencies()
 
-        assertNull(viewModel.pagedListWrapper)
+        assertNull(viewModel.activePagedListWrapper)
+        assertNull(viewModel.allPagedListWrapper)
         viewModel.event.getOrAwaitValue().let { event ->
             assertTrue(event is ShowErrorSnack)
             assertEquals(event.messageRes, R.string.offline_error)

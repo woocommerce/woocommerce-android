@@ -44,17 +44,22 @@ class MockedOrderListViewModel @AssistedInject constructor(
         get() = mock()
 
     /**
-     * Set the data that will be emitted during tests before the UI calls [loadList]
+     * Set the data that will be emitted during tests before the UI calls attempts to load lists
      */
     var testOrderData: PagedOrdersList? = mockPagedList(WcOrderTestUtils.generateOrderListUIItems())
     var testOrderStatusData: Map<String, WCOrderStatusModel>? = WcOrderTestUtils.generateOrderStatusOptions()
 
-    override fun loadList(
-        statusFilter: String?,
-        searchQuery: String?,
-        excludeFutureOrders: Boolean
-    ) {
-        println("AMANDA-TEST > MockedOrderListViewModel.loadList > ")
+    override fun loadAllList() {
+        _orderStatusOptions.value = testOrderStatusData
+        _pagedListData.value = testOrderData
+    }
+
+    override fun loadProcessingList() {
+        _orderStatusOptions.value = testOrderStatusData
+        _pagedListData.value = testOrderData
+    }
+
+    override fun submitSearchOrFilter(statusFilter: String?, searchQuery: String?) {
         _orderStatusOptions.value = testOrderStatusData
         _pagedListData.value = testOrderData
     }

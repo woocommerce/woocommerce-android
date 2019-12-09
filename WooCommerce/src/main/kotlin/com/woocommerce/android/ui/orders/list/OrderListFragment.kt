@@ -233,9 +233,7 @@ class OrderListFragment : TopLevelFragment(),
                     // then load orders with the calculated filter.
                     AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
-                    viewModel.loadList(
-                            statusFilter = orderStatusFilter,
-                            excludeFutureOrders = shouldExcludeFutureOrders())
+                    loadListForActiveTab()
                 }
             }
 
@@ -250,8 +248,10 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(!filterOrSearchEnabled)
         enableToolbarElevation(filterOrSearchEnabled)
 
-        if (isOrderStatusFilterEnabled()) {
-            viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
+        if (isFilterEnabled) {
+            viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
+        } else if (!isSearching) {
+            loadListForActiveTab()
         }
     }
 
@@ -458,10 +458,7 @@ class OrderListFragment : TopLevelFragment(),
 
             // Load the filtered list
             order_list_view.clearAdapterData()
-            viewModel.loadList(
-                    statusFilter = orderStatus,
-                    excludeFutureOrders = shouldExcludeFutureOrders()
-            )
+            viewModel.submitSearchOrFilter(statusFilter = orderStatus)
 
             updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
@@ -515,16 +512,6 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    /**
-     * Future orders are orders that have a created date that is in the future. This can be
-     * caused by the user manually changing the date of the order to a date in the future or
-     * a plugin saved an order with a date in the future (ex. Deposits plugin).
-     *
-     * We show future orders in all scenarios except in the "All" orders tab.
-     */
-    private fun shouldExcludeFutureOrders() =
-            !isSearching && !isFilterEnabled && tab_layout.selectedTabPosition == TAB_INDEX_ALL
-
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
         handleNewSearchRequest(query)
@@ -576,9 +563,16 @@ class OrderListFragment : TopLevelFragment(),
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
+            loadListForActiveTab()
+        }
+    }
 
-            orderStatusFilter = getOrderStatusFilterForActiveTab()
-            viewModel.loadList(orderStatusFilter, excludeFutureOrders = shouldExcludeFutureOrders())
+    private fun loadListForActiveTab() {
+        orderStatusFilter = getOrderStatusFilterForActiveTab()
+        getOrderStatusFilterForActiveTab()
+        when (tab_layout.selectedTabPosition) {
+            TAB_INDEX_PROCESSING -> viewModel.loadProcessingList()
+            TAB_INDEX_ALL -> viewModel.loadAllList()
         }
     }
 
@@ -614,7 +608,7 @@ class OrderListFragment : TopLevelFragment(),
      * view state.
      */
     private fun submitSearchQuery(query: String) {
-        viewModel.loadList(searchQuery = query, excludeFutureOrders = shouldExcludeFutureOrders())
+        viewModel.submitSearchOrFilter(searchQuery = query)
     }
 
     private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching

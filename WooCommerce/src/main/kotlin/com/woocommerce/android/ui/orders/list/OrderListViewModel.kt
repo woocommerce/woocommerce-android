@@ -69,7 +69,9 @@ class OrderListViewModel @AssistedInject constructor(
     }
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    internal var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    internal var allPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    internal var processingPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher)
@@ -120,51 +122,58 @@ class OrderListViewModel @AssistedInject constructor(
         }
     }
 
-    fun loadList(statusFilter: String? = null, searchQuery: String? = null, excludeFutureOrders: Boolean = false) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery, excludeFutureOrders)
-
-        // Clear any of the data sources assigned to the current wrapper, then
-        // create a new one.
-        clearLiveDataSources(pagedListWrapper)
-        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-
-        listenToEmptyViewStateLiveData(pagedListWrapper)
-
-        _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
-            pagedList?.let {
-                if (isSearchResultDeliverable(pagedListWrapper)) {
-                    _pagedListData.value = it
-                }
-            }
-        }
-        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) {
-            _isFetchingFirstPage.value = it
-        }
-        _isLoadingMore.addSource(pagedListWrapper.isLoadingMore) {
-            _isLoadingMore.value = it
-        }
-        _isEmpty.addSource(pagedListWrapper.isEmpty) {
-            _isEmpty.value = it
+    /**
+     * Loads orders for the "ALL" tab.
+     */
+    fun loadAllList() {
+        var isFirstInit = false
+        if (allPagedListWrapper == null) {
+            val listDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = true)
+            allPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+            isFirstInit = true
         }
 
-        pagedListWrapper.listError.observe(this, Observer {
-            it?.let {
-                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-            }
-        })
-
-        this.pagedListWrapper = pagedListWrapper
-        fetchOrdersAndOrderDependencies()
+        activatePagedListWrapper(allPagedListWrapper!!, isFirstInit)
     }
 
     /**
-     * Refresh the order list with fresh data from the API as well as refresh order status
+     * Loads orders for the "PROCESSING" tab.
+     */
+    fun loadProcessingList() {
+        var isFirstInit = false
+        if (processingPagedListWrapper == null) {
+            val listDescriptor = WCOrderListDescriptor(
+                    site = selectedSite.get(),
+                    statusFilter = CoreOrderStatus.PROCESSING.value,
+                    excludeFutureOrders = false)
+            processingPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+            isFirstInit = true
+        }
+
+        activatePagedListWrapper(processingPagedListWrapper!!, isFirstInit)
+    }
+
+    /**
+     * Creates and activates a new list with the search and filter params provided. This should only be used
+     * by the search component portion of the order list view.
+     *
+     * NOTE: Although technically the "PROCESSING" tab is a filtered list, it should not use this method. The
+     * processing list will always use the same [processingPagedListWrapper].
+     */
+    fun submitSearchOrFilter(statusFilter: String? = null, searchQuery: String? = null) {
+        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
+        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    /**
+     * Refresh the active order list with fresh data from the API as well as refresh order status
      * options and payment gateways if the network is available.
      */
     fun fetchOrdersAndOrderDependencies() {
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
-                pagedListWrapper?.fetchFirstPage()
+                activePagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
@@ -210,20 +219,53 @@ class OrderListViewModel @AssistedInject constructor(
      * need to hit the API again.
      */
     fun reloadListFromCache() {
-        pagedListWrapper?.invalidateData()
+        activePagedListWrapper?.invalidateData()
     }
 
     /**
-     * Used to filter out dataset changes that might trigger an empty view when performing a search.
-     *
-     * @return True if the user is either not currently in search mode, or if they are there is already data
-     * available so the view can safely be updated.
+     * Activates the provided list by first removing the LiveData sources for the active list,
+     * then creating new LiveData sources for the provided [pagedListWrapper] and setting it as
+     * the active list. If [isFirstInit] is true, then this [pagedListWrapper] is freshly created
+     * so we'll need to call `fetchOrdersAndOrderDependencies` to initialize it.
      */
-    private fun isSearchResultDeliverable(pagedListWrapper: PagedListWrapper<OrderListItemUIType>): Boolean {
-        return !isSearching ||
-                (isSearching &&
-                        pagedListWrapper.isFetchingFirstPage.value != null &&
-                        isFetchingFirstPage.value == false)
+    private fun activatePagedListWrapper(
+        pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
+        isFirstInit: Boolean = false
+    ) {
+        // Clear any of the data sources assigned to the current wrapper, then
+        // create a new one.
+        clearLiveDataSources(this.activePagedListWrapper)
+
+        listenToEmptyViewStateLiveData(pagedListWrapper)
+
+        _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
+            pagedList?.let {
+                _pagedListData.value = it
+            }
+        }
+        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) {
+            _isFetchingFirstPage.value = it
+        }
+        _isEmpty.addSource(pagedListWrapper.isEmpty) {
+            _isEmpty.value = it
+        }
+        _isLoadingMore.addSource(pagedListWrapper.isLoadingMore) {
+            _isLoadingMore.value = it
+        }
+
+        pagedListWrapper.listError.observe(this, Observer {
+            it?.let {
+                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+            }
+        })
+
+        this.activePagedListWrapper = pagedListWrapper
+
+        if (isFirstInit) {
+            fetchOrdersAndOrderDependencies()
+        } else {
+            pagedListWrapper.invalidateData()
+        }
     }
 
     private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {
@@ -233,6 +275,7 @@ class OrderListViewModel @AssistedInject constructor(
             _emptyViewState.removeSource(isEmpty)
             _emptyViewState.removeSource(listError)
             _emptyViewState.removeSource(isFetchingFirstPage)
+            _isEmpty.removeSource(isEmpty)
             _isFetchingFirstPage.removeSource(isFetchingFirstPage)
             _isLoadingMore.removeSource(isLoadingMore)
         }
@@ -277,7 +320,7 @@ class OrderListViewModel @AssistedInject constructor(
 
     override fun onCleared() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-        clearLiveDataSources(pagedListWrapper)
+        clearLiveDataSources(activePagedListWrapper)
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
         repository.onCleanup()
@@ -292,7 +335,7 @@ class OrderListViewModel @AssistedInject constructor(
                 // A notification was received by the device and the details have been fetched from the API.
                 // Refresh the orders list in case that notification was a new order notification.
                 if (!event.isError) {
-                    pagedListWrapper?.invalidateData()
+                    activePagedListWrapper?.invalidateData()
                 }
             }
             else -> {}
@@ -304,7 +347,7 @@ class OrderListViewModel @AssistedInject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
             // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> pagedListWrapper?.fetchFirstPage()
+            UPDATE_ORDER_STATUS -> activePagedListWrapper?.fetchFirstPage()
             else -> {}
         }
     }
@@ -315,13 +358,21 @@ class OrderListViewModel @AssistedInject constructor(
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             if (viewState.isRefreshPending) {
-                pagedListWrapper?.fetchFirstPage()
+                if (isSearching) {
+                    activePagedListWrapper?.fetchFirstPage()
+                }
+                allPagedListWrapper?.fetchFirstPage()
+                processingPagedListWrapper?.fetchFirstPage()
             }
         } else {
             // Invalidate the list data so that orders that have not
             // yet been downloaded (the "loading" items) can be removed
             // from the current list view.
-            pagedListWrapper?.invalidateData()
+            if (isSearching) {
+                activePagedListWrapper?.invalidateData()
+            }
+            allPagedListWrapper?.invalidateData()
+            processingPagedListWrapper?.invalidateData()
         }
     }
 
@@ -330,7 +381,11 @@ class OrderListViewModel @AssistedInject constructor(
     fun onEventMainThread(event: NotificationReceivedEvent) {
         // a new order notification came in so refresh the active order list
         if (event.channel == NEW_ORDER) {
-            pagedListWrapper?.fetchFirstPage()
+            if (isSearching) {
+                activePagedListWrapper?.fetchFirstPage()
+            }
+            allPagedListWrapper?.fetchFirstPage()
+            processingPagedListWrapper?.fetchFirstPage()
         }
     }
 
