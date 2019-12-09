@@ -91,7 +91,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     ContextCompat.getColor(activity, R.color.colorAccent),
                     ContextCompat.getColor(activity, R.color.colorPrimaryDark)
             )
-            scrollUpChild = scroll_view
+            scrollUpChild = productsRecycler
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }
