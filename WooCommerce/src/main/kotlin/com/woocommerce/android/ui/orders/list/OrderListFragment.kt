@@ -405,7 +405,10 @@ class OrderListFragment : TopLevelFragment(),
 
         viewModel.event.observe(this, Observer { event ->
             when (event) {
-                is ShowErrorSnack -> { uiMessageResolver.showSnack(event.messageRes) }
+                is ShowErrorSnack -> {
+                    uiMessageResolver.showSnack(event.messageRes)
+                    orderRefreshLayout?.isRefreshing = false
+                }
                 else -> event.isHandled = false
             }
         })
