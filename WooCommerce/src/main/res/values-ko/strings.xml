@@ -9,7 +9,6 @@ Language: ko_KR
     <string name="magic_link_fetch_account_error">계정을 가져오는 중에 문제가 발생했습니다. 지금 다시 시도하거나 닫고 나중에 다시 시도할 수 있습니다.</string>
     <string name="magic_link_update_error">오류가 발생했습니다. 계속하려면 로그인하세요.</string>
     <string name="login_magic_link_token_updating">사이트에 연결하는 중…</string>
-    <string name="product_variants">변형</string>
     <string name="product_property_edit">제품 편집</string>
     <string name="product_variants_fetch_product_variants_error">제품 변경을 가져오는 중에 오류 발생</string>
     <string name="my_store_stats_reverted_message">이전 통계로 되돌렸습니다. 베타 통계를 사용하려면 버전 0.22 이상으로 WooCommerce Admin 플러그인을 활성화하세요.</string>
