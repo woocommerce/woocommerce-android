@@ -55,7 +55,7 @@ class WooCommerceGlideModule : AppGlideModule() {
                 //     "This method may take several seconds to complete, so it
                 //      should only be called from a worker thread."
                 GlobalScope.launch {
-                    val uuid = storageManager.getUuidForPath(context.getCacheDir())
+                    val uuid = storageManager.getUuidForPath(context.cacheDir)
                     val quota = storageManager.getCacheQuotaBytes(uuid)
 
                     if (quota > 0 && quota < DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE) {
