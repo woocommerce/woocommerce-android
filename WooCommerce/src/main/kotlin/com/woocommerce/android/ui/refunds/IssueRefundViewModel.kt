@@ -248,13 +248,13 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                 // pause here until the snackbar is dismissed to allow for undo action
                 val wasRefundCanceled = waitForCancellation()
-                triggerEvent(ShowSnackbar(
-                        R.string.order_refunds_amount_refund_progress_message,
-                        arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
-                        isEndless = true)
-                )
-
                 if (!wasRefundCanceled) {
+                    triggerEvent(ShowSnackbar(
+                            R.string.order_refunds_amount_refund_confirmation_message,
+                            arrayOf(formatCurrency(refundByAmountState.enteredAmount))
+                        )
+                    )
+
                     AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
