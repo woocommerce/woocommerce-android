@@ -31,7 +31,7 @@ final class ProductListRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
+        private const val PRODUCT_PAGE_SIZE = 5 // TODO WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
