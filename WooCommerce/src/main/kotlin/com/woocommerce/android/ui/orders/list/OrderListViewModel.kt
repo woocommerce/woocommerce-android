@@ -167,10 +167,9 @@ class OrderListViewModel @AssistedInject constructor(
     }
 
     /**
-     * Refresh the active order list with fresh data from the API as well as refresh order status
-     * options and payment gateways if the network is available.
+     * Refresh order status options and payment gateways if the network is available.
      */
-    fun fetchOrdersAndOrderDependencies() {
+    fun fetchOrderDependencies() {
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
@@ -262,7 +261,7 @@ class OrderListViewModel @AssistedInject constructor(
         this.activePagedListWrapper = pagedListWrapper
 
         if (isFirstInit) {
-            fetchOrdersAndOrderDependencies()
+            fetchOrderDependencies()
         } else {
             pagedListWrapper.invalidateData()
         }
@@ -306,7 +305,7 @@ class OrderListViewModel @AssistedInject constructor(
                 isListEmpty = wrapper.isEmpty.value ?: true,
                 hasOrders = repository.hasCachedOrdersForSite(),
                 isError = wrapper.listError.value != null,
-                fetchFirstPage = this::fetchOrdersAndOrderDependencies)
+                fetchFirstPage = this::fetchOrderDependencies)
         _emptyViewState.postValue(emptyView)
     }
 
