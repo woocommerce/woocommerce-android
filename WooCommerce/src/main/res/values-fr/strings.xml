@@ -9,7 +9,6 @@ Language: fr
     <string name="magic_link_fetch_account_error">Une erreur s\'est produite lors de la récupération de votre compte. Vous pouvez recommencer maintenant ou fermer et réessayer ultérieurement.</string>
     <string name="magic_link_update_error">Une erreur inconnue est survenue. Veuillez vous connecter pour continuer.</string>
     <string name="login_magic_link_token_updating">Connexion à votre site en cours…</string>
-    <string name="product_variants">Variantes</string>
     <string name="product_property_edit">Modifier le produit</string>
     <string name="product_variants_fetch_product_variants_error">Erreur lors de la récupération des variations du produit</string>
     <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques. Pour utiliser les statistiques en version bêta, veuillez activer l\'extension d\'administration WooCommerce version 0.22 ou ultérieure.</string>
