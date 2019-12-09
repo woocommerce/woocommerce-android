@@ -108,7 +108,7 @@ class RefundByItemsFragment : BaseFragment() {
             when (event) {
                 is ShowNumberPicker -> {
                     val args = Bundle()
-                    args.putString(NumberPickerDialog.TITLE_KEY, "Items")
+                    args.putString(NumberPickerDialog.TITLE_KEY, getString(R.string.order_refunds_select_quantity))
                     args.putLong(PRODUCT_ID_KEY, event.refundItem.product.productId)
                     args.putInt(NumberPickerDialog.MAX_VALUE_KEY, event.refundItem.product.quantity.toInt())
                     args.putInt(NumberPickerDialog.CUR_VALUE_KEY, event.refundItem.quantity)
@@ -116,7 +116,7 @@ class RefundByItemsFragment : BaseFragment() {
                         it.toString()
                     })
                     dialog.setTargetFragment(this, REFUND_ITEM_QUANTITY_REQUEST_CODE)
-                    dialog.show(requireFragmentManager(), "item-picker")
+                    dialog.show(parentFragmentManager, "item-picker")
                 }
                 else -> event.isHandled = false
             }
