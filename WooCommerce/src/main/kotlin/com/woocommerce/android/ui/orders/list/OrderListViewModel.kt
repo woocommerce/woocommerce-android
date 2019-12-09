@@ -120,37 +120,49 @@ class OrderListViewModel @AssistedInject constructor(
             // value in many different places in the order list view.
             _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
         }
+
+        initializeListsForMainTabs()
+    }
+
+    /**
+     * Create and prefetch the two main order lists to prevent them getting out of
+     * sync when the device goes offline.
+     */
+    private fun initializeListsForMainTabs() {
+        // "ALL" tab
+        val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = true)
+        allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle).also { it.fetchFirstPage() }
+
+        // "PROCESSING" tab
+        val processingDescriptor = WCOrderListDescriptor(
+                site = selectedSite.get(),
+                statusFilter = CoreOrderStatus.PROCESSING.value,
+                excludeFutureOrders = false)
+        processingPagedListWrapper =
+                listStore.getList(processingDescriptor, dataSource, lifecycle).also { it.fetchFirstPage() }
+
+        // Fetch order dependencies such as order status list and payment gateways
+        fetchOrdersAndOrderDependencies()
     }
 
     /**
      * Loads orders for the "ALL" tab.
      */
     fun loadAllList() {
-        var isFirstInit = false
-        if (allPagedListWrapper == null) {
-            val listDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = true)
-            allPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-            isFirstInit = true
+        requireNotNull(allPagedListWrapper) {
+            "allPagedListWrapper must be initialized in the init block"
         }
-
-        activatePagedListWrapper(allPagedListWrapper!!, isFirstInit)
+        activatePagedListWrapper(allPagedListWrapper!!)
     }
 
     /**
      * Loads orders for the "PROCESSING" tab.
      */
     fun loadProcessingList() {
-        var isFirstInit = false
-        if (processingPagedListWrapper == null) {
-            val listDescriptor = WCOrderListDescriptor(
-                    site = selectedSite.get(),
-                    statusFilter = CoreOrderStatus.PROCESSING.value,
-                    excludeFutureOrders = false)
-            processingPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-            isFirstInit = true
+        requireNotNull(processingPagedListWrapper) {
+            "processingPagedListWrapper must be initialized in the init block"
         }
-
-        activatePagedListWrapper(processingPagedListWrapper!!, isFirstInit)
+        activatePagedListWrapper(processingPagedListWrapper!!)
     }
 
     /**
