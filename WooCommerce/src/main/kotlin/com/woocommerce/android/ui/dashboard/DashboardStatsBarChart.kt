@@ -71,7 +71,8 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
                             Math.abs(event.getX().toInt() - startTouchPoint.x),
                             Math.abs(event.getY().toInt() - startTouchPoint.y)
                     )
-                    // swallow the event if this is a horizontal scrub
+                    // swallow the event if this is a horizontal scrub, which we determine by
+                    // checking if the vertical motion is less than the horizontal motion
                     if (movement.y < movement.x) {
                         // see https://github.com/PhilJay/MPAndroidChart/issues/925
                         parent.requestDisallowInterceptTouchEvent(true)
@@ -79,6 +80,9 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
                         return true
                     }
                 }
+                // according to the docs, we must make sure to reset the intercept setting
+                // when the user ends this event
+                MotionEvent.ACTION_CANCEL,
                 MotionEvent.ACTION_UP -> {
                     parent.requestDisallowInterceptTouchEvent(false)
                 }
