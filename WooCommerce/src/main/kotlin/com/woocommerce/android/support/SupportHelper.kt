@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
@@ -42,8 +43,9 @@ class SupportHelper {
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
                 .create()
+        ActivityUtils.disableAutofillIfNecessary(dialog)
         dialog.setOnShowListener {
-            val button = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+            val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener { _ ->
                 val newEmail = emailEditText.text.toString()
                 val newName = nameEditText.text.toString()

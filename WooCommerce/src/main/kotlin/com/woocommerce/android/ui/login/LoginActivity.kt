@@ -6,8 +6,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.automattic.android.tracks.CrashLogging.CrashLogging
 import androidx.fragment.app.Fragment
+import com.automattic.android.tracks.CrashLogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -63,6 +63,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
+        ActivityUtils.disableAutofillIfNecessary(this)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)

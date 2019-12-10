@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -8,8 +9,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.view.View
 import android.view.WindowManager
 import androidx.annotation.ColorRes
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.T
@@ -81,6 +84,29 @@ object ActivityUtils {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.statusBarColor = ContextCompat.getColor(activity, colorRes)
+        }
+    }
+
+    /**
+     * Disables autofill on Oreo since it can cause crashes on API 26 & 27 - must be called in the
+     * activity's onCreate() - note that this also impacts any fragments hosted by the activity
+     * but it does not impact dialogs displayed from the activity or its fragments
+     * https://developer.android.com/guide/topics/text/autofill-optimize#autofill_causes_apps_to_crash_on_android_80_81
+     */
+    @SuppressLint("NewApi")
+    fun disableAutofillIfNecessary(activity: Activity) {
+        if (VERSION.SDK_INT == VERSION_CODES.O || VERSION.SDK_INT == VERSION_CODES.O_MR1) {
+           activity.window.decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        }
+    }
+
+    /**
+     * Same as the above but for dialogs - must be called after the dialog builder's create()
+     */
+    @SuppressLint("NewApi")
+    fun disableAutofillIfNecessary(dialog: AlertDialog) {
+        if (VERSION.SDK_INT == VERSION_CODES.O || VERSION.SDK_INT == VERSION_CODES.O_MR1) {
+            dialog.window?.decorView?.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
         }
     }
 }
