@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
@@ -35,10 +36,6 @@ import javax.inject.Inject
 
 class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     companion object {
-        private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
-        private const val REQUEST_CODE_CAPTURE_PHOTO = REQUEST_CODE_CHOOSE_PHOTO + 1
-        private const val REQUEST_CODE_IMAGE_VIEWER = REQUEST_CODE_CAPTURE_PHOTO + 1
-
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
 
@@ -128,8 +125,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     product,
                     image,
                     sharedElement = imageView,
-                    enableRemoveImage = true,
-                    requestCode = REQUEST_CODE_IMAGE_VIEWER
+                    enableRemoveImage = true
             )
         }
     }
@@ -161,7 +157,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                 it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
             val chooser = Intent.createChooser(intent, null)
-            activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
+            activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)
         }
     }
 
@@ -173,10 +169,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                 return
             }
             capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
-            requireActivity().startActivityFromFragment(
-                    this, intent,
-                    REQUEST_CODE_CAPTURE_PHOTO
-            )
+            requireActivity().startActivityFromFragment(this, intent, RequestCodes.CAPTURE_PHOTO)
         }
     }
 
@@ -185,7 +178,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                REQUEST_CODE_CHOOSE_PHOTO -> data?.let {
+                RequestCodes.CHOOSE_PHOTO -> data?.let {
                     val uriList = ArrayList<Uri>()
                     val clipData = it.clipData
                     if (clipData != null) {
@@ -210,7 +203,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     )
                     viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
                 }
-                REQUEST_CODE_CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
+                RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
                             Stat.PRODUCT_IMAGE_ADDED,
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
@@ -218,7 +211,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
                     viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
                 }
-                REQUEST_CODE_IMAGE_VIEWER -> data?.let { bundle ->
+                RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
                     if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
                         viewModel.loadProduct()
                     }
@@ -238,7 +231,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE)
-        requestPermissions(permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE)
+        requestPermissions(permissions, RequestCodes.STORAGE_PERMISSION)
         return false
     }
 
@@ -266,7 +259,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
         requestPermissions(
                 permissions,
-                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
+                RequestCodes.CAMERA_PERMISSION
         )
         return false
     }
@@ -286,10 +279,10 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
         if (allGranted) {
             when (requestCode) {
-                WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
+                RequestCodes.STORAGE_PERMISSION -> {
                     chooseProductImage()
                 }
-                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
+                RequestCodes.CAMERA_PERMISSION -> {
                     captureProductImage()
                 }
             }
