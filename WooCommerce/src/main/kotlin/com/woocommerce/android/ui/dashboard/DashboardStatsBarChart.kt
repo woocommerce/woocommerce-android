@@ -17,8 +17,6 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
         context,
         attrs
 ) {
-    private var offsetX = 0
-    private var offsetY = 0
     private val startTouchPoint = Point(0, 0)
 
     // Overriding this method from the Chart.java: line 719
@@ -62,8 +60,6 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
         if (data != null) {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    offsetX = 0
-                    offsetY = 0
                     startTouchPoint.x = event.x.toInt()
                     startTouchPoint.y = event.y.toInt()
                 }
