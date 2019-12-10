@@ -26,6 +26,7 @@ import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
@@ -59,8 +60,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
             productModel: Product,
             imageModel: Product.Image,
             sharedElement: View? = null,
-            enableRemoveImage: Boolean = false,
-            requestCode: Int = 0
+            enableRemoveImage: Boolean = false
         ) {
             val context = fragment.requireActivity()
 
@@ -80,7 +80,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                     R.anim.activity_fade_out
             )
 
-            fragment.startActivityForResult(intent, requestCode, options.toBundle())
+            fragment.startActivityForResult(intent, RequestCodes.PRODUCT_IMAGE_VIEWER, options.toBundle())
         }
     }
 
