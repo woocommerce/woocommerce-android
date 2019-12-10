@@ -2,6 +2,7 @@
 -----
 * In rare situations, the labels on the bottom navigation bar could be cut off
 * Fixed a rare crash when updating a product variant in wp-admin and refreshing the same in the app.
+* Fixed potential crash on Android Oreo after clicking on an email address field
  
 3.2
 -----
