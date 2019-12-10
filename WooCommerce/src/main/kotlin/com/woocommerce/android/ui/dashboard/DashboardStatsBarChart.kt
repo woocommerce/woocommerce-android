@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarEntry
+import kotlin.math.abs
 
 /**
  * Creating a custom BarChart to fix this issue:
@@ -63,13 +64,13 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
                 MotionEvent.ACTION_DOWN -> {
                     offsetX = 0
                     offsetY = 0
-                    startTouchPoint.x = event.getX().toInt()
-                    startTouchPoint.y = event.getY().toInt()
+                    startTouchPoint.x = event.x.toInt()
+                    startTouchPoint.y = event.y.toInt()
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val movement = Point(
-                            Math.abs(event.getX().toInt() - startTouchPoint.x),
-                            Math.abs(event.getY().toInt() - startTouchPoint.y)
+                            abs(event.x.toInt() - startTouchPoint.x),
+                            abs(event.y.toInt() - startTouchPoint.y)
                     )
                     // swallow the event if this is a horizontal scrub, which we determine by
                     // checking if the vertical motion is less than the horizontal motion
