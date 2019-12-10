@@ -2,10 +2,11 @@ package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Point
 import android.util.AttributeSet
+import android.view.MotionEvent
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarEntry
-import android.view.MotionEvent
 
 /**
  * Creating a custom BarChart to fix this issue:
@@ -15,6 +16,10 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
         context,
         attrs
 ) {
+    private var offsetX = 0
+    private var offsetY = 0
+    private val startTouchPoint = Point(0, 0)
+
     // Overriding this method from the Chart.java: line 719
     override fun drawMarkers(canvas: Canvas?) {
         // if there is no marker view or drawing marker is disabled
@@ -49,13 +54,37 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
     }
 
     /**
-     * Method added to prevent the chart's parent view i.e ScrollView
-     * from intercepting the touch events during the scrubbing interaction.
-     * Solution implemented from here: https://github.com/PhilJay/MPAndroidChart/issues/925
+     * Method added to prevent the chart's parent view (i.e ScrollView) from
+     * intercepting the touch events during a horizontal scrubbing interaction
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        parent.requestDisallowInterceptTouchEvent(data != null)
-        super.onTouchEvent(event)
-        return data != null
+        if (data != null) {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    offsetX = 0
+                    offsetY = 0
+                    startTouchPoint.x = event.getX().toInt()
+                    startTouchPoint.y = event.getY().toInt()
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val movement = Point(
+                            Math.abs(event.getX().toInt() - startTouchPoint.x),
+                            Math.abs(event.getY().toInt() - startTouchPoint.y)
+                    )
+                    // swallow the event if this is a horizontal scrub
+                    if (movement.y < movement.x) {
+                        // see https://github.com/PhilJay/MPAndroidChart/issues/925
+                        parent.requestDisallowInterceptTouchEvent(true)
+                        super.onTouchEvent(event)
+                        return true
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    parent.requestDisallowInterceptTouchEvent(false)
+                }
+            }
+        }
+
+        return super.onTouchEvent(event)
     }
 }
