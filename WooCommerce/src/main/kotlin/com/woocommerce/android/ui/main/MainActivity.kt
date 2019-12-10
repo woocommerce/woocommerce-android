@@ -56,7 +56,7 @@ import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
+import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -67,7 +67,7 @@ import javax.inject.Inject
 
 class MainActivity : AppUpgradeActivity(),
         MainContract.View,
-        HasSupportFragmentInjector,
+        HasAndroidInjector,
         MainNavigationRouter,
         MainBottomNavigationView.MainNavigationListener,
         NavController.OnDestinationChangedListener,
@@ -101,7 +101,7 @@ class MainActivity : AppUpgradeActivity(),
         fun onNavigationResult(requestCode: Int, result: Bundle)
     }
 
-    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
@@ -390,7 +390,7 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
