@@ -18,6 +18,7 @@ import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
@@ -73,9 +74,6 @@ class MainActivity : AppUpgradeActivity(),
         NavController.OnDestinationChangedListener,
         WCPromoDialog.PromoDialogListener {
     companion object {
-        private const val REQUEST_CODE_ADD_ACCOUNT = 100
-        private const val REQUEST_CODE_SETTINGS = 200
-
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
 
@@ -395,13 +393,13 @@ class MainActivity : AppUpgradeActivity(),
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_CODE_ADD_ACCOUNT -> {
+            RequestCodes.ADD_ACCOUNT -> {
                 if (resultCode == Activity.RESULT_OK) {
                     // TODO Launch next screen
                 }
                 return
             }
-            REQUEST_CODE_SETTINGS -> {
+            RequestCodes.SETTINGS -> {
                 // restart the activity if the user returned from settings and they switched sites
                 if (resultCode == AppSettingsActivity.RESULT_CODE_SITE_CHANGED) {
                     presenter.selectedSiteChanged(selectedSite.get())
@@ -427,7 +425,7 @@ class MainActivity : AppUpgradeActivity(),
         selectedSite.reset()
         val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
-        startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
+        startActivityForResult(intent, RequestCodes.ADD_ACCOUNT)
         finish()
     }
 
@@ -441,7 +439,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun showSettingsScreen() {
         val intent = Intent(this, AppSettingsActivity::class.java)
-        startActivityForResult(intent, REQUEST_CODE_SETTINGS)
+        startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
     override fun showHelpAndSupport() {
