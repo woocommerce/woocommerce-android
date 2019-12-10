@@ -231,7 +231,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE)
-        requestPermissions(permissions, WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE)
+        requestPermissions(permissions, RequestCodes.STORAGE_PERMISSION)
         return false
     }
 
@@ -259,7 +259,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
         requestPermissions(
                 permissions,
-                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE
+                RequestCodes.CAMERA_PERMISSION
         )
         return false
     }
@@ -279,10 +279,10 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
         if (allGranted) {
             when (requestCode) {
-                WooPermissionUtils.STORAGE_PERMISSION_REQUEST_CODE -> {
+                RequestCodes.STORAGE_PERMISSION -> {
                     chooseProductImage()
                 }
-                WooPermissionUtils.CAMERA_PERMISSION_REQUEST_CODE -> {
+                RequestCodes.CAMERA_PERMISSION -> {
                     captureProductImage()
                 }
             }
