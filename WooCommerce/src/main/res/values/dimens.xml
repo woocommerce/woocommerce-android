@@ -36,6 +36,7 @@
         Default Card
     -->
     <dimen name="card_padding_start">16dp</dimen>
+    <dimen name="card_button_padding">12dp</dimen>
     <dimen name="card_padding_start_tablet">24dp</dimen>
 
     <dimen name="card_padding_end">16dp</dimen>
@@ -165,6 +166,7 @@
     <dimen name="product_icon_sz">40dp</dimen>
     <dimen name="product_detail_card_divider_height">16dp</dimen>
     <dimen name="product_detail_property_margin">@dimen/settings_padding</dimen>
+    <dimen name="product_image_gallery_image_size">128dp</dimen>
 
     <!--
         Shipment Trackings
@@ -172,4 +174,10 @@
     <dimen name="card_level_button_width">32dp</dimen>
     <dimen name="card_level_button_height">32dp</dimen>
     <dimen name="card_level_button_padding">6dp</dimen>
+
+    <!--
+        Misc
+    -->
+    <dimen name="image_border_size">1dp</dimen>
+    <dimen name="image_border_radius">2dp</dimen>
 </resources>

@@ -85,7 +85,7 @@ class RefundByItemsFragment : BaseFragment() {
                 issueRefund_selectedItems.text = selectedItemsHeader
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                issueRefund_productsTotalButton.text = it
+                issueRefund_productsTotal.text = it
             }
             new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
                 if (isVisible) {
@@ -115,7 +115,7 @@ class RefundByItemsFragment : BaseFragment() {
             when (event) {
                 is ShowNumberPicker -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
-                            getString(R.string.order_refunds_refund_quantity),
+                            getString(R.string.order_refunds_select_quantity),
                             event.refundItem.product.productId,
                             event.refundItem.product.quantity.toInt(),
                             event.refundItem.quantity

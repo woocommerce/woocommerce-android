@@ -180,10 +180,26 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onNextButtonTappedFromItems() {
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                        AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                )
+        )
+
         showRefundSummary()
     }
 
     fun onNextButtonTappedFromAmounts() {
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                        AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                )
+        )
+
         if (isInputValid()) {
             showRefundSummary()
         } else {
@@ -204,14 +220,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                 isFormEnabled = true,
                 previouslyRefunded = formatCurrency(order.refundTotal),
                 refundAmount = formatCurrency(commonState.refundTotal)
-        )
-
-        AnalyticsTracker.track(
-                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
-                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId
-                )
         )
 
         triggerEvent(ShowRefundSummary(commonState.refundType))
@@ -251,15 +259,14 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                 // pause here until the snackbar is dismissed to allow for undo action
                 val wasRefundCanceled = waitForCancellation()
-                triggerEvent(ShowSnackbar(
-                        R.string.order_refunds_amount_refund_progress_message,
-                        arrayOf(formatCurrency(refundByAmountState.enteredAmount)),
-                        isEndless = true)
-                )
-
                 if (!wasRefundCanceled) {
-                    AnalyticsTracker.track(
-                            REFUND_CREATE, mapOf(
+                    triggerEvent(ShowSnackbar(
+                            R.string.order_refunds_amount_refund_confirmation_message,
+                            arrayOf(formatCurrency(refundByAmountState.enteredAmount))
+                        )
+                    )
+
+                    AnalyticsTracker.track(REFUND_CREATE, mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
                                     (refundByAmountState.enteredAmount isEqualTo maxRefund).toString(),
@@ -275,7 +282,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 refundStore.createItemsRefund(
                                         selectedSite.get(),
                                         order.remoteId,
-                                        refundByAmountState.enteredAmount,
                                         reason,
                                         true,
                                         gateway.supportsRefunds,
@@ -332,9 +338,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundQuantityTapped(productId: Long) {
-        val refundItem = refundByItemsState.items?.firstOrNull { it.product.productId == productId }
-        if (refundItem != null) {
-            triggerEvent(ShowNumberPicker(refundItem))
+        refundByItemsState.items?.firstOrNull { it.product.productId == productId }?.let {
+            triggerEvent(ShowNumberPicker(it))
         }
     }
 

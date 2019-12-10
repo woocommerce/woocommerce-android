@@ -84,7 +84,7 @@
                 android:layout_marginTop="@dimen/card_item_padding_intra_double"
                 android:background="@color/list_divider"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingDescription"
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingIconFrame"
                 app:srcCompat="@drawable/list_divider" />
 
             <LinearLayout
