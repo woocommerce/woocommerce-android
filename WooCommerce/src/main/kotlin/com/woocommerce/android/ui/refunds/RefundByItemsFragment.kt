@@ -111,7 +111,7 @@ class RefundByItemsFragment : BaseFragment() {
             }
         }
 
-        viewModel.event.observe(this.viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowNumberPicker -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
