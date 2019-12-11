@@ -88,7 +88,7 @@ class RefundByItemsFragment : BaseFragment() {
                 issueRefund_total.text = it
             }
             new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
-                if (isVisible) {
+                if (isVisible == true) {
                     issueRefund_discountTotal.text = new.formattedDiscount
                     issueRefund_discountItems.text = new.discountCodes
                     issueRefund_discountSection.show()

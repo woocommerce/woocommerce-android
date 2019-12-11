@@ -138,7 +138,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
                     formattedDiscount = formatCurrency(BigDecimal.ZERO),
-                    discountCodes = order.discountCodes,
+                    isDiscountVisible = order.discountTotal > BigDecimal.ZERO,
+                    discountCodes = "(${order.discountCodes})",
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO)
             )
         }
@@ -339,7 +340,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                 taxes = formatCurrency(taxes),
                 discount = order.discountTotal,
                 formattedDiscount = "-${formatCurrency(order.discountTotal)}",
-                discountCodes = order.discountCodes,
+                isDiscountVisible = order.discountTotal > BigDecimal.ZERO,
+                discountCodes = "(${order.discountCodes})",
                 subtotal = formatCurrency(subtotal)
         )
     }
@@ -424,6 +426,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         val discount: BigDecimal = BigDecimal.ZERO,
         val formattedDiscount: String? = null,
         val discountCodes: String? = null,
+        val isDiscountVisible: Boolean? = null,
         val subtotal: String? = null,
         val taxes: String? = null,
         val shippingRefund: BigDecimal = BigDecimal.ZERO,
@@ -440,9 +443,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                     BigDecimal.ZERO
                 }
             }
-
-        val isDiscountVisible: Boolean
-            get() = discount > BigDecimal.ZERO
     }
 
     @Parcelize
