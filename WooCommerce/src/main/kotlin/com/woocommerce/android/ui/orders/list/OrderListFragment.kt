@@ -380,17 +380,17 @@ class OrderListFragment : TopLevelFragment(),
         }
 
         // setup observers
-        viewModel.isFetchingFirstPage.observe(this, Observer {
+        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer {
             orderRefreshLayout?.isRefreshing = it == true
         })
 
-        viewModel.isLoadingMore.observe(this, Observer {
+        viewModel.isLoadingMore.observe(viewLifecycleOwner, Observer {
             it?.let { isLoadingMore ->
                 order_list_view.setLoadingMoreIndicator(active = isLoadingMore)
             }
         })
 
-        viewModel.orderStatusOptions.observe(this, Observer {
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner, Observer {
             it?.let { options ->
                 // So the order status can be matched to the appropriate label
                 order_list_view.setOrderStatusOptions(options)
@@ -399,18 +399,18 @@ class OrderListFragment : TopLevelFragment(),
             }
         })
 
-        viewModel.pagedListData.observe(this, Observer {
+        viewModel.pagedListData.observe(viewLifecycleOwner, Observer {
             updatePagedListData(it)
         })
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowErrorSnack -> { uiMessageResolver.showSnack(event.messageRes) }
                 else -> event.isHandled = false
             }
         })
 
-        viewModel.emptyViewState.observe(this, Observer {
+        viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
             it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
         })
     }
