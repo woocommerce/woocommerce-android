@@ -87,15 +87,6 @@ class RefundByItemsFragment : BaseFragment() {
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
                 issueRefund_total.text = it
             }
-            new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
-                if (isVisible == true) {
-                    issueRefund_discountTotal.text = new.formattedDiscount
-                    issueRefund_discountItems.text = new.discountCodes
-                    issueRefund_discountSection.show()
-                } else {
-                    issueRefund_discountSection.hide()
-                }
-            }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 issueRefund_taxesTotal.text = it
             }

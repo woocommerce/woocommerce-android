@@ -91,50 +91,6 @@
                 app:layout_constraintTop_toTopOf="@id/issueRefund_lblSubtotal"
                 tools:text="$45.00" />
 
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/issueRefund_discountSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:constraint_referenced_ids="issueRefund_lblDiscount,issueRefund_discountItems,issueRefund_discountTotal"/>
-
-            <TextView
-                android:id="@+id/issueRefund_lblDiscount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/card_padding_start"
-                android:layout_marginTop="@dimen/card_item_padding_intra_h"
-                android:text="@string/discount"
-                android:textAppearance="@style/Woo.Refunds.TextAppearance"
-                app:layout_constraintEnd_toStartOf="@+id/issueRefund_discountItems"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/issueRefund_lblSubtotal" />
-
-            <TextView
-                android:id="@+id/issueRefund_discountItems"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textAlignment="viewStart"
-                android:layout_marginStart="@dimen/card_item_padding_intra_h"
-                android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-                android:textAppearance="@style/Woo.Refunds.TextAppearance"
-                app:layout_constraintEnd_toStartOf="@+id/issueRefund_discountTotal"
-                app:layout_constraintStart_toEndOf="@+id/issueRefund_lblDiscount"
-                app:layout_constraintTop_toTopOf="@+id/issueRefund_lblDiscount"
-                tools:text="(sale4theday, firstTime, anyothertime, blah)" />
-
-            <TextView
-                android:id="@+id/issueRefund_discountTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/card_padding_end"
-                android:textAppearance="@style/Woo.Refunds.TextAppearance"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/issueRefund_discountItems"
-                app:layout_constraintTop_toTopOf="@+id/issueRefund_lblDiscount"
-                tools:text="-$4.00" />
-
             <TextView
                 android:id="@+id/issueRefund_lblTaxes"
                 android:layout_width="0dp"
@@ -146,7 +102,7 @@
                 android:layout_marginTop="@dimen/card_item_padding_intra_h"
                 android:textAppearance="@style/Woo.Refunds.TextAppearance"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/issueRefund_discountTotal" />
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
 
             <TextView
                 android:id="@+id/issueRefund_taxesTotal"

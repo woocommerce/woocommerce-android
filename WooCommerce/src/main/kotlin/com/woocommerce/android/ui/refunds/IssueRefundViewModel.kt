@@ -137,9 +137,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                     items = order.items.map { RefundListItem(it) },
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
-                    formattedDiscount = formatCurrency(BigDecimal.ZERO),
-                    isDiscountVisible = order.discountTotal > BigDecimal.ZERO,
-                    discountCodes = "(${order.discountCodes})",
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO)
             )
         }
@@ -338,10 +335,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                 productsRefund = productsRefund,
                 formattedProductsRefund = formatCurrency(productsRefund),
                 taxes = formatCurrency(taxes),
-                discount = order.discountTotal,
-                formattedDiscount = "-${formatCurrency(order.discountTotal)}",
-                isDiscountVisible = order.discountTotal > BigDecimal.ZERO,
-                discountCodes = "(${order.discountCodes})",
                 subtotal = formatCurrency(subtotal)
         )
     }
@@ -423,10 +416,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         val isNextButtonEnabled: Boolean? = null,
         val productsRefund: BigDecimal = BigDecimal.ZERO,
         val formattedProductsRefund: String? = null,
-        val discount: BigDecimal = BigDecimal.ZERO,
-        val formattedDiscount: String? = null,
-        val discountCodes: String? = null,
-        val isDiscountVisible: Boolean? = null,
         val subtotal: String? = null,
         val taxes: String? = null,
         val shippingRefund: BigDecimal = BigDecimal.ZERO,
@@ -436,7 +425,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     ) : Parcelable {
         val totalRefund: BigDecimal
             get() {
-                val refund = productsRefund + shippingRefund - discount
+                val refund = productsRefund + shippingRefund
                 return if (refund > BigDecimal.ZERO) {
                     refund
                 } else {
