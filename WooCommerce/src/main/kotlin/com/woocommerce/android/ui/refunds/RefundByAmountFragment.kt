@@ -70,7 +70,7 @@ class RefundByAmountFragment : BaseFragment() {
             }
         })
 
-        issueRefund_refundAmount.value.observe(this, Observer {
+        issueRefund_refundAmount.value.observe(viewLifecycleOwner, Observer {
             viewModel.onManualRefundAmountChanged(it)
         })
     }

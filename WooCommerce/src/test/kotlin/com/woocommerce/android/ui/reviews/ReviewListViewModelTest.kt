@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead

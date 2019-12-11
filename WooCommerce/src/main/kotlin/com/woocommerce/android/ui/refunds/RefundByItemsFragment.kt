@@ -12,8 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -85,16 +83,7 @@ class RefundByItemsFragment : BaseFragment() {
                 issueRefund_selectedItems.text = selectedItemsHeader
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                issueRefund_productsTotalButton.text = it
-            }
-            new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
-                if (isVisible) {
-                    issueRefund_discountTotal.text = new.formattedDiscount
-                    issueRefund_discountItems.text = new.discountCodes
-                    issueRefund_discountSection.show()
-                } else {
-                    issueRefund_discountSection.hide()
-                }
+                issueRefund_productsTotal.text = it
             }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 issueRefund_taxesTotal.text = it
@@ -111,11 +100,11 @@ class RefundByItemsFragment : BaseFragment() {
             }
         }
 
-        viewModel.event.observe(this.viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowNumberPicker -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
-                            getString(R.string.order_refunds_refund_quantity),
+                            getString(R.string.order_refunds_select_quantity),
                             event.refundItem.product.productId,
                             event.refundItem.product.quantity.toInt(),
                             event.refundItem.quantity

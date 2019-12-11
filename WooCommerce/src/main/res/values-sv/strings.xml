@@ -9,7 +9,6 @@ Language: sv_SE
     <string name="magic_link_fetch_account_error">Det uppstod ett fel när ditt konto skulle hämtas. Du kan försöka igen nu eller stänga och försöka igen senare.</string>
     <string name="magic_link_update_error">Ett fel har uppstått. Logga in för att fortsätta</string>
     <string name="login_magic_link_token_updating">Ansluter till din webbplats …</string>
-    <string name="product_variants">Varianter</string>
     <string name="product_property_edit">Redigera produkt</string>
     <string name="product_variants_fetch_product_variants_error">Ett fel uppstod när produktvarianterna skulle hämtas</string>
     <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.22 eller senare</string>

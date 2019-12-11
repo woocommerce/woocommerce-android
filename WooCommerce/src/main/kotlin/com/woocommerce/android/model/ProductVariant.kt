@@ -14,7 +14,8 @@ data class ProductVariant(
     val stockStatus: ProductStockStatus,
     val stockQuantity: Int,
     val optionName: String,
-    var priceWithCurrency: String? = null
+    var priceWithCurrency: String? = null,
+    val purchasable: Boolean
 )
 
 fun WCProductVariationModel.toAppModel(): ProductVariant {
@@ -25,7 +26,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
         this.price.toBigDecimalOrNull()?.roundError(),
         ProductStockStatus.fromString(this.stockStatus),
         this.stockQuantity,
-        getAttributeOptionName(this.getProductVariantOptions())
+        getAttributeOptionName(this.getProductVariantOptions()),
+        purchasable = this.purchasable
     )
 }
 

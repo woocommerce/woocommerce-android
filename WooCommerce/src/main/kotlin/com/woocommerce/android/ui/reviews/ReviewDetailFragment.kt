@@ -108,12 +108,12 @@ class ReviewDetailFragment : BaseFragment() {
     }
 
     private fun setupObservers(viewModel: ReviewDetailViewModel) {
-        viewModel.viewStateData.observe(this) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productReview?.takeIfNotEqualTo(old?.productReview) { setReview(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MarkNotificationAsRead -> {

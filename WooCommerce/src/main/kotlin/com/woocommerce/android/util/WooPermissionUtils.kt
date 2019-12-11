@@ -19,9 +19,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import java.util.HashMap
 
 object WooPermissionUtils {
-    const val STORAGE_PERMISSION_REQUEST_CODE = 10
-    const val CAMERA_PERMISSION_REQUEST_CODE = 20
-
     /**
      * called by the onRequestPermissionsResult() of various activities and fragments - tracks
      * the permission results, remembers that the permissions have been asked for, and optionally

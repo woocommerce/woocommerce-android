@@ -1,15 +1,21 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
 import android.text.Html
 import android.util.Patterns
 import androidx.annotation.StringRes
+import com.woocommerce.android.util.WooLog.T.UTILS
 import org.wordpress.android.fluxc.model.SiteModel
 import java.io.IOException
+import java.util.Locale
+import kotlin.math.abs
 
+@Suppress("unused")
 object StringUtils {
+    const val EMPTY = ""
     private const val ONE_MILLION = 1000000
     private const val ONE_THOUSAND = 1000
 
@@ -72,7 +78,7 @@ object StringUtils {
      *  formatCount(2000000) - > 2m
      */
     fun formatCount(number: Int): String {
-        val absNumber = Math.abs(number)
+        val absNumber = abs(number)
         return when {
             absNumber >= ONE_MILLION -> (number / ONE_MILLION).toString() + "m"
             absNumber >= ONE_THOUSAND -> (number / ONE_THOUSAND).toString() + "k"
@@ -108,7 +114,7 @@ object StringUtils {
                 return context.getString(resourceId)
             }
         } catch (e: NotFoundException) {
-            WooLog.d(WooLog.T.UTILS, "Unable to find a valid country name for country code: $storeCountry")
+            WooLog.d(UTILS, "Unable to find a valid country name for country code: $storeCountry")
         }
         return null
     }
@@ -135,4 +141,42 @@ object StringUtils {
      */
     fun getRawTextFromHtml(htmlStr: String) =
             Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
+
+    /**
+     * Returns a string for the specified locale.
+     *
+     * @param context The active context
+     * @param id The id of the string (ex. R.string.my_string)
+     * @param locale The two-character locale to fetch the string for (ex. "en")
+     * @return A string matching the [id] for the [locale] requested, or null if none found
+     */
+    fun getStringByLocale(context: Context, id: Int, locale: String): String? {
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(Locale(locale))
+        return try {
+            context.createConfigurationContext(configuration).resources.getString(id)
+        } catch (e: NotFoundException) {
+            WooLog.w(UTILS, "No resource found for id $id in locale $locale")
+            null
+        }
+    }
+
+    /**
+     * Returns a string array for the specified locale.
+     *
+     * @param context The active context
+     * @param id The id of the string (ex. R.string.my_string)
+     * @param locale The two-character locale to fetch the string for (ex. "en")
+     * @return A list of strings matching the [id] for the [locale] requested, or null if none found
+     */
+    fun getStringArrayByLocale(context: Context, id: Int, locale: String): List<String>? {
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(Locale(locale))
+        return try {
+            context.createConfigurationContext(configuration).resources.getStringArray(id).asList()
+        } catch (e: NotFoundException) {
+            WooLog.w(UTILS, "No string array resource found for id $id in locale $locale")
+            null
+        }
+    }
 }
