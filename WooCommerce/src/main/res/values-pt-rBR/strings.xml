@@ -9,7 +9,6 @@ Language: pt_BR
     <string name="magic_link_fetch_account_error">Ocorreu um problema ao recuperar sua conta. É possível tentar novamente agora ou fechar e tentar novamente mais tarde.</string>
     <string name="magic_link_update_error">Ocorreu um erro. Faça login para continuar</string>
     <string name="login_magic_link_token_updating">Conectando ao seu site…</string>
-    <string name="product_variants">Variantes</string>
     <string name="product_property_edit">Editar produto</string>
     <string name="product_variants_fetch_product_variants_error">Erro ao buscar variantes do produto</string>
     <string name="my_store_stats_reverted_message">Retornamos para as estatísticas antigas. Para usar as estatísticas beta, ative o plugin WooCommerce Admin com a versão 0.22 ou superior</string>

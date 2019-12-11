@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
@@ -45,8 +46,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
         private const val SETTING_NOTIFS_REVIEWS = "notifications_reviews"
         private const val SETTING_NOTIFS_TONE = "notifications_tone"
-
-        private const val SITE_PICKER_REQUEST_CODE = 1000
     }
 
     @Inject lateinit var presenter: MainSettingsContract.Presenter
@@ -182,7 +181,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         if (presenter.hasMultipleStores()) {
             primaryStoreView.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
-                SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
+                SitePickerActivity.showSitePickerForResult(this)
             }
 
             // advertise the site switcher if we haven't already
@@ -202,7 +201,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         // if we're returning from the site picker, make sure the new store is shown and the activity
         // knows it has changed
-        if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == RequestCodes.SITE_PICKER && resultCode == Activity.RESULT_OK) {
             updateStoreViews()
             settingsListener.onSiteChanged()
         }

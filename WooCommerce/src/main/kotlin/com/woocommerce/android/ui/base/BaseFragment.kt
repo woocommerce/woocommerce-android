@@ -5,16 +5,16 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
-import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
 /**
  * All top level fragments and child fragments should extend this class to provide a consistent method
  * of setting the activity title
  */
-abstract class BaseFragment : Fragment(), BaseFragmentView, HasSupportFragmentInjector {
-    @Inject internal lateinit var childFragmentInjector: DispatchingAndroidInjector<Fragment>
+abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     companion object {
         private const val KEY_TITLE = "title"
@@ -62,7 +62,7 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasSupportFragmentIn
         return activity?.title?.toString() ?: ""
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
-        return childFragmentInjector
+    override fun androidInjector(): AndroidInjector<Any> {
+        return androidInjector
     }
 }
