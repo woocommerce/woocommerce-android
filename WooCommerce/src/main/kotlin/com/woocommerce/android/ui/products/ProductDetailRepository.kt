@@ -6,8 +6,10 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -39,11 +41,16 @@ class ProductDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
-        suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-            continuation = it
+        try {
+            continuation?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuation = it
 
-            val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching single product")
         }
 
         continuation = null
@@ -57,13 +64,11 @@ class ProductDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
-            if (continuation?.isActive == true) {
-                if (event.isError) {
-                    continuation?.resume(false)
-                } else {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                    continuation?.resume(true)
-                }
+            if (event.isError) {
+                continuation?.resume(false)
+            } else {
+                AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
+                continuation?.resume(true)
             }
         }
     }
