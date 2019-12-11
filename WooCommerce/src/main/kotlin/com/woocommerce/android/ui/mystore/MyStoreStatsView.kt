@@ -330,7 +330,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val grossRevenue = revenueStatsModel?.getTotal()?.grossRevenue ?: 0.0
+        val grossRevenue = revenueStatsModel?.getTotal()?.totalSales ?: 0.0
         val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
 
         val orderCount = revenueStatsModel?.getTotal()?.ordersCount ?: 0
@@ -339,7 +339,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.grossRevenue?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.totalSales?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return
