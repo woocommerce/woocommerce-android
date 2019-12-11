@@ -35,7 +35,7 @@
                     tools:text="5 items selected" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/issueRefund_selectAllButton"
+                    android:id="@+id/issueRefund_selectButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/Woo.Button"

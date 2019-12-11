@@ -79,7 +79,10 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private val _refundItems = MutableLiveData<List<RefundListItem>>()
-    val refundItems: LiveData<List<RefundListItem>> = _refundItems
+    final val refundItems: LiveData<List<RefundListItem>> = _refundItems
+
+    private val areAllItemsSelected: Boolean
+        get() = refundItems.value?.all { it.quantity == it.maxQuantity } ?: false
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
@@ -405,6 +408,11 @@ class IssueRefundViewModel @AssistedInject constructor(
         updateRefundItems(newItems)
 
         val productsRefund = min(max(subtotal + taxes - order.refundTotal, BigDecimal.ZERO), maxRefund)
+        val selectButtonTitle = if (areAllItemsSelected)
+                resourceProvider.getString(R.string.order_refunds_items_select_none)
+            else
+                resourceProvider.getString(R.string.order_refunds_items_select_all)
+
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = productsRefund,
                 formattedProductsRefund = formatCurrency(productsRefund),
@@ -413,13 +421,20 @@ class IssueRefundViewModel @AssistedInject constructor(
                 formattedDiscount = "-${formatCurrency(order.discountTotal)}",
                 discountCodes = order.discountCodes,
                 subtotal = formatCurrency(subtotal),
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO
+                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
+                selectButtonTitle = selectButtonTitle
         )
     }
 
-    fun onSelectAllButtonTapped() {
-        _refundItems.value?.forEach {
-            onRefundQuantityChanged(it.product.productId, it.maxQuantity)
+    fun onSelectButtonTapped() {
+        if (areAllItemsSelected) {
+            _refundItems.value?.forEach {
+                onRefundQuantityChanged(it.product.productId, 0)
+            }
+        } else {
+            _refundItems.value?.forEach {
+                onRefundQuantityChanged(it.product.productId, it.maxQuantity)
+            }
         }
     }
 
@@ -531,7 +546,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         val shippingSubtotal: String? = null,
         val shippingTaxes: String? = null,
         val isShippingRefundVisible: Boolean? = null,
-        val selectedItemsHeader: String? = null
+        val selectedItemsHeader: String? = null,
+        val selectButtonTitle: String? = null
     ) : Parcelable {
         val totalRefund: BigDecimal
             get() = max(productsRefund + shippingRefund, BigDecimal.ZERO)

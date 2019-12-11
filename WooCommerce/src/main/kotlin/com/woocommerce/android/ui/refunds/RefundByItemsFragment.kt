@@ -52,8 +52,8 @@ class RefundByItemsFragment : BaseFragment() {
         issueRefund_products.layoutManager = LinearLayoutManager(context)
         issueRefund_products.setHasFixedSize(true)
 
-        issueRefund_selectAllButton.setOnClickListener {
-            viewModel.onSelectAllButtonTapped()
+        issueRefund_selectButton.setOnClickListener {
+            viewModel.onSelectButtonTapped()
         }
 
         issueRefund_btnNextFromItems.setOnClickListener {
@@ -101,6 +101,9 @@ class RefundByItemsFragment : BaseFragment() {
             }
             new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
                 issueRefund_selectedItems.text = it
+            }
+            new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
+                issueRefund_selectButton.text = it
             }
             // temporarily hidden
 //            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
