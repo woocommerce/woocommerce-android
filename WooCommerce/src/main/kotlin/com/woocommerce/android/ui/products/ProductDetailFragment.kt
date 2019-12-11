@@ -227,7 +227,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             val propertyValue = getPropertyValue(properties, R.string.product_property_variant_formatter)
             addPropertyView(
                     DetailCard.Primary,
-                    getString(R.string.product_variants),
+                    getString(R.string.product_variations),
                     propertyValue,
                     LinearLayout.VERTICAL
             )?.setClickListener {

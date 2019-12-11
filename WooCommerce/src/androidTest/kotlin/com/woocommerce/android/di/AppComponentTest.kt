@@ -31,7 +31,8 @@ import javax.inject.Singleton
         LoginServiceModule::class,
         MockedNetworkStatusModule::class,
         MockedCurrencyModule::class,
-        SupportModule::class])
+        SupportModule::class,
+        OrderFetcherModule::class])
 interface AppComponentTest : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

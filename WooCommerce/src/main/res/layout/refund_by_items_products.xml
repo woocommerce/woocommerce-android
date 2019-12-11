@@ -57,58 +57,18 @@
         app:layout_constraintTop_toTopOf="@id/issueRefund_lblSubtotal"
         tools:text="$45.00" />
 
-    <LinearLayout
-        android:id="@+id/issueRefund_discountSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_lblSubtotal"
-        tools:visibility="visible">
-
-        <TextView
-            android:id="@+id/issueRefund_lblDiscount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/discount"
-            android:textAppearance="@style/Woo.Refunds.TextAppearance" />
-
-        <TextView
-            android:id="@+id/issueRefund_discountItems"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_item_padding_intra_h"
-            android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-            android:layout_weight="1"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/Woo.Refunds.TextAppearance"
-            tools:text="(sale4theday, firstTime, anyothertime, blah)" />
-
-        <TextView
-            android:id="@+id/issueRefund_discountTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.Refunds.TextAppearance"
-            tools:text="-$4.00" />
-
-    </LinearLayout>
-
     <TextView
         android:id="@+id/issueRefund_lblTaxes"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:layout_weight="1"
         android:text="@string/taxes"
         android:textAlignment="viewStart"
+        android:layout_marginStart="@dimen/card_padding_start"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:textAppearance="@style/Woo.Refunds.TextAppearance"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_discountSection" />
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
 
     <TextView
         android:id="@+id/issueRefund_taxesTotal"

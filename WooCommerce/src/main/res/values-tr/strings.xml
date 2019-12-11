@@ -9,7 +9,6 @@ Language: tr
     <string name="magic_link_fetch_account_error">Hesabınızı alırken bazı sorunlar oluştu. Şimdi yeniden deneyebilir veya kapatıp daha sonra tekrar deneyebilirsiniz.</string>
     <string name="magic_link_update_error">Bir hata oluştu. Devam etmek için lütfen giriş yapın</string>
     <string name="login_magic_link_token_updating">Sitenize bağlanıyor…</string>
-    <string name="product_variants">Varyasyonlar</string>
     <string name="product_property_edit">Ürünü düzenle</string>
     <string name="product_variants_fetch_product_variants_error">Ürün varyasyonları alınırken bir hata oluştu</string>
     <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük. Beta istatistiklerini kullanmak için lütfen 0.22 veya daha üst sürüm WooCommerce Yönetici eklentisini etkinleştirin</string>
