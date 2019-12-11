@@ -286,9 +286,16 @@
     <string name="order_refunds_manual_refund">Manual refund</string>
     <string name="order_refunds_quote_image_description">Quotation icon</string>
     <string name="order_refunds_amount_refund_progress_message">Your refund for %s is being processed. Please wait…</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Waiting for refund confirmation…</string>
     <string name="order_refunds_amount_refund_successful">The refund was successfully submitted.</string>
     <string name="order_refunds_amount_refund_error">Something went wrong with the refund. Please try again.</string>
     <string name="order_refunds_refund_manual_refund_note">The payment method does not support automatic refunds. Complete the refund by transferring the money to the customer manually.</string>
+    <string name="order_refunds_items_select_all">Select all</string>
+    <string name="order_refunds_items_selected">%d items selected</string>
+    <string name="order_refunds_item_description">%d x %s each</string>
+    <string name="order_refunds_products_refund">Products refund</string>
+    <string name="order_refunds_shipping_refund">Shipping refund</string>
+    <string name="order_refunds_select_quantity">Select quantity</string>
     <!--
         Add Order Note
     -->

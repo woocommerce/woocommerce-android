@@ -1,36 +1,22 @@
-<androidx.core.widget.NestedScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
-    android:fillViewport="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/default_window_background">
 
-    <LinearLayout
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/issueRefund_tabLayout"
+        style="@style/Woo.Refunds.TabLayout"
+        app:tabMode="fixed"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/default_window_background"
-        tools:context="com.woocommerce.android.ui.refunds.IssueRefundFragment">
+        android:layout_height="wrap_content" />
 
-        <fragment
-            android:id="@+id/refundByAmount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.woocommerce.android.ui.refunds.RefundByAmountFragment" />
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/issueRefund_viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <!-- Button: Next -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/issueRefund_btnNext"
-            android:theme="@style/Woo.Button.Purple"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_padding_bottom"
-            android:layout_marginStart="@dimen/card_item_padding_intra_double"
-            android:layout_marginEnd="@dimen/card_item_padding_intra_double"
-            android:text="@string/order_refunds_next_button_title" />
-
-    </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+</LinearLayout>

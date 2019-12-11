@@ -7,15 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_detail.*
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
-class RefundDetailFragment : DaggerFragment() {
+class RefundDetailFragment : BaseFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     private val navArgs: RefundDetailFragmentArgs by navArgs()
@@ -34,16 +34,12 @@ class RefundDetailFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
-    }
-
-    private fun initializeViewModel() {
         setupObservers(viewModel)
         viewModel.start(navArgs.orderId, navArgs.refundId)
     }
 
     private fun setupObservers(viewModel: RefundDetailViewModel) {
-        viewModel.viewStateData.observe(this) { _, data ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { _, data ->
             activity?.title = data.screenTitle
             refundDetail_refundAmount.text = data.refundAmount
             refundDetail_refundMethod.text = data.refundMethod

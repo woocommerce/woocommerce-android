@@ -36,7 +36,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
-import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
@@ -64,11 +63,6 @@ class ReviewDetailFragment : BaseFragment() {
             true -> processReviewModeration(APPROVED)
             false -> processReviewModeration(HOLD)
         }
-    }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

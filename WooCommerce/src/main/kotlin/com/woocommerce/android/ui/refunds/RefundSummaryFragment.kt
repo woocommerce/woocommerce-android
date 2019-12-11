@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -15,20 +15,20 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
-class RefundSummaryFragment : DaggerFragment(), BackPressListener {
+class RefundSummaryFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -43,16 +43,12 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViewModel()
-    }
-
-    private fun initializeViewModel() {
         initializeViews()
         setupObservers()
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> {
                     if (event.undoAction == null) {
@@ -83,7 +79,7 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
             }
         })
 
-        viewModel.refundSummaryStateLiveData.observe(this) { old, new ->
+        viewModel.refundSummaryStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isFormEnabled?.takeIfNotEqualTo(old?.isFormEnabled) {
                 refundSummary_btnRefund.isEnabled = new.isFormEnabled
                 refundSummary_reason.isEnabled = new.isFormEnabled
