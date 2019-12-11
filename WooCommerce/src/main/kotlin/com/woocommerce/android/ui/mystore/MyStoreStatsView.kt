@@ -282,7 +282,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
         this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.grossRevenue ?: 0.0)
+            it.interval!! to (it.subtotals?.totalSales ?: 0.0)
         }?.toMap() ?: mapOf()
 
         this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
