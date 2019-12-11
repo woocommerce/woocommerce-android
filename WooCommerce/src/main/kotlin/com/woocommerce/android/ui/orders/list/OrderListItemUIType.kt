@@ -37,4 +37,6 @@ sealed class OrderListItemUIType {
         val dateCreated: String,
         val currencyCode: String
     ) : OrderListItemUIType()
+
+    override fun equals(other: Any?) = other?.let { this::class == other::class } ?: false
 }

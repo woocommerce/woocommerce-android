@@ -9,7 +9,6 @@ Language: es
     <string name="magic_link_fetch_account_error">No se ha podido obtener tu cuenta. Puedes intentarlo de nuevo ahora o cerrar e intentarlo más tarde.</string>
     <string name="magic_link_update_error">Se ha producido un error. Accede para continuar</string>
     <string name="login_magic_link_token_updating">Conectando con tu sitio…</string>
-    <string name="product_variants">Variantes</string>
     <string name="product_property_edit">Editar producto</string>
     <string name="product_variants_fetch_product_variants_error">Error al obtener las reseñas de los productos</string>
     <string name="my_store_stats_reverted_message">Hemos cambiado a las antiguas estadísticas. Para usar las estadísticas beta, activa el plugin Administración de WooCommerce con la versión 0.22 o una posterior</string>
