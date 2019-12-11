@@ -16,15 +16,12 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.util.WooLog
 
 abstract class AppUpgradeActivity : AppCompatActivity(),
         AppUpgradeActivityView,
         InstallStateUpdatedListener {
-    companion object {
-        private const val REQUEST_CODE_IN_APP_UPDATE = 19888
-    }
-
     private lateinit var appUpdateManager: AppUpdateManager
 
     /**
@@ -78,7 +75,7 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_IN_APP_UPDATE) {
+        if (requestCode == RequestCodes.IN_APP_UPDATE) {
             when (resultCode) {
                 //  handle user's rejection
                 Activity.RESULT_CANCELED -> {
@@ -208,7 +205,7 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
                 appUpdateInfo,
                 inAppUpdateType,
                 this,
-                REQUEST_CODE_IN_APP_UPDATE
+                RequestCodes.IN_APP_UPDATE
         )
     }
 

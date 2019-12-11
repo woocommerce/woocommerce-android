@@ -23,7 +23,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
+import dagger.android.HasAndroidInjector
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
 import org.wordpress.android.fluxc.store.SiteStore
@@ -46,20 +46,20 @@ import kotlin.text.RegexOption.IGNORE_CASE
 
 @Suppress("SameParameterValue")
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasSupportFragmentInjector, LoginNoJetpackListener, LoginEmailHelpDialogFragment.Listener {
+        HasAndroidInjector, LoginNoJetpackListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
     }
 
-    @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
 
     private var loginMode: LoginMode? = null
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
