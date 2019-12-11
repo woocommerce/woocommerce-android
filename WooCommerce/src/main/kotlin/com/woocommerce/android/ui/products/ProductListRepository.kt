@@ -8,7 +8,8 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -20,7 +21,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
@@ -35,10 +35,9 @@ final class ProductListRepository @Inject constructor(
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
-    private var loadContinuation: Continuation<Boolean>? = null
-    private var searchContinuation: Continuation<List<Product>>? = null
+    private var loadContinuation: CancellableContinuation<Boolean>? = null
+    private var searchContinuation: CancellableContinuation<List<Product>>? = null
     private var offset = 0
-    private var isLoadingProducts = false
 
     final var canLoadMoreProducts = true
         private set
@@ -59,24 +58,21 @@ final class ProductListRepository @Inject constructor(
      * list of products from the database
      */
     suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
-        if (!isLoadingProducts) {
-            try {
-                suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                    offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
-                    loadContinuation = it
-                    isLoadingProducts = true
-                    lastSearchQuery = null
-                    val payload = WCProductStore.FetchProductsPayload(
-                            selectedSite.get(),
-                            PRODUCT_PAGE_SIZE,
-                            offset,
-                            PRODUCT_SORTING
-                    )
-                    dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
-                }
-            } catch (e: CancellationException) {
-                WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching products", e)
+        try {
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
+                loadContinuation = it
+                lastSearchQuery = null
+                val payload = WCProductStore.FetchProductsPayload(
+                        selectedSite.get(),
+                        PRODUCT_PAGE_SIZE,
+                        offset,
+                        PRODUCT_SORTING
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
+        } catch (e: CancellationException) {
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching products")
         }
 
         return getProductList()
@@ -85,19 +81,17 @@ final class ProductListRepository @Inject constructor(
     /**
      * Submits a fetch request to get a page of products for the current site matching the passed
      * query and returns only that page of products - note that this returns null if the search
-     * is interrupted (which means the user submitted another search while this was running) or
-     * if products are currently being loaded
+     * is interrupted (which means the user submitted another search while this was running)
      */
     suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
-        if (isLoadingProducts) {
-            return null
-        }
+        // cancel any existing load or search
+        loadContinuation?.cancel()
+        searchContinuation?.cancel()
 
         try {
-            val products = suspendCoroutineWithTimeout<List<Product>>(ACTION_TIMEOUT) {
+            val products = suspendCancellableCoroutineWithTimeout<List<Product>>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 searchContinuation = it
-                isLoadingProducts = true
                 lastSearchQuery = searchQuery
                 val payload = WCProductStore.SearchProductsPayload(
                         selectedSite.get(),
@@ -111,7 +105,7 @@ final class ProductListRepository @Inject constructor(
 
             return products ?: emptyList()
         } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while searching products", e)
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while searching products")
             return null
         }
     }
@@ -128,7 +122,6 @@ final class ProductListRepository @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCTS) {
-            isLoadingProducts = false
             if (event.isError) {
                 loadContinuation?.resume(false)
                 AnalyticsTracker.track(
@@ -149,7 +142,6 @@ final class ProductListRepository @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductsSearched(event: OnProductsSearched) {
-        isLoadingProducts = false
         if (event.isError) {
             searchContinuation?.resume(emptyList())
         } else {

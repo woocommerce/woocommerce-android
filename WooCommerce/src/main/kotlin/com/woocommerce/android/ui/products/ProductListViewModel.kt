@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -60,6 +61,10 @@ class ProductListViewModel @AssistedInject constructor(
         productRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
+
+    fun isSearching() = viewState.isSearchActive == true
+
+    private fun isLoadingMore() = viewState.isLoadingMore == true
 
     fun onSearchQueryChanged(query: String) {
         viewState = viewState.copy(query = query, isEmptyViewVisible = false)
@@ -111,7 +116,12 @@ class ProductListViewModel @AssistedInject constructor(
             return
         }
 
-        if (viewState.isSearchActive == true) {
+        if (loadMore && isLoadingMore()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading more products")
+            return
+        }
+
+        if (isSearching()) {
             // cancel any existing search, then start a new one after a brief delay so we don't actually perform
             // the fetch until the user stops typing
             searchJob?.cancel()
@@ -124,10 +134,8 @@ class ProductListViewModel @AssistedInject constructor(
                 fetchProductList(viewState.query, loadMore)
             }
         } else {
-            if (searchJob?.isActive == true || loadJob?.isActive == true) {
-                WooLog.d(WooLog.T.PRODUCTS, "already loading products")
-                return
-            }
+            // if a fetch is already active, wait for it to finish before we start another one
+            waitForExistingLoad()
 
             loadJob = launch {
                 viewState = viewState.copy(isLoadingMore = loadMore)
@@ -144,6 +152,21 @@ class ProductListViewModel @AssistedInject constructor(
                 }
 
                 fetchProductList(loadMore = loadMore)
+            }
+        }
+    }
+
+    /**
+     * If products are already being fetched, wait for the existing job to finish
+     */
+    private fun waitForExistingLoad() {
+        if (loadJob?.isActive == true) {
+            launch {
+                try {
+                    loadJob?.join()
+                } catch (e: CancellationException) {
+                    WooLog.d(WooLog.T.PRODUCTS, "CancellationException while waiting for existing fetch")
+                }
             }
         }
     }

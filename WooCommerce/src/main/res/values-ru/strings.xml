@@ -9,7 +9,6 @@ Language: ru
     <string name="magic_link_fetch_account_error">При загрузке вашей учетной записи произошла ошибка. Повторите попытку сейчас или закройте и попробуйте позже.</string>
     <string name="magic_link_update_error">Произошла ошибка. Войдите, чтобы продолжить.</string>
     <string name="login_magic_link_token_updating">Подключение к сайту…</string>
-    <string name="product_variants">Варианты</string>
     <string name="product_property_edit">Изменить продукт</string>
     <string name="product_variants_fetch_product_variants_error">Ошибка при получении вариантов продукта</string>
     <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин администратора WooCommerce 0.22 или более поздней версии.</string>

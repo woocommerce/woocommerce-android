@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.login
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
-import com.woocommerce.android.ui.reviews.RequestResult
-import com.woocommerce.android.ui.reviews.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.ui.reviews.RequestResult.RETRY
-import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.RETRY
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.suspendCoroutineWithTimeout

@@ -35,7 +35,8 @@ import javax.inject.Singleton
         CurrencyModule::class,
         ProductImagesServiceModule::class,
         ThreadModule::class,
-        SupportModule::class])
+        SupportModule::class,
+        OrderFetcherModule::class])
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

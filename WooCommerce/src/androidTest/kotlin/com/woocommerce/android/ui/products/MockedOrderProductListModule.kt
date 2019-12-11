@@ -6,13 +6,10 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.ui.orders.OrderProductListContract
-import com.woocommerce.android.ui.orders.OrderProductListFragment
 import com.woocommerce.android.ui.orders.OrderProductListPresenter
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
@@ -29,7 +26,6 @@ abstract class MockedOrderProductListModule {
         }
 
         @JvmStatic
-        @ActivityScope
         @Provides
         fun provideOrderProductListPresenter(): OrderProductListContract.Presenter {
             /**
@@ -41,9 +37,20 @@ abstract class MockedOrderProductListModule {
             val mockDispatcher = mock<Dispatcher>()
             val mockContext = mock<Context>()
 
-            val mockedOrderProductListPresenter = spy(OrderProductListPresenter(
-                    WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock()))
-            ))
+            val mockedOrderProductListPresenter = spy(
+                    OrderProductListPresenter(
+                            WCOrderStore(
+                                    mockDispatcher,
+                                    OrderRestClient(
+                                            mockContext,
+                                            mockDispatcher,
+                                            mock(),
+                                            mock(),
+                                            mock()
+                                    )
+                            )
+                    )
+            )
 
             /**
              * Mocking the below methods in [OrderProductListPresenter] class to pass mock values.
@@ -53,7 +60,4 @@ abstract class MockedOrderProductListModule {
             return mockedOrderProductListPresenter
         }
     }
-
-    @ContributesAndroidInjector
-    abstract fun orderProductListFragment(): OrderProductListFragment
 }

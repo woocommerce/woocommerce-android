@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideRequests
+import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.products.ProductVariantsAdapter.ProductVariantViewHolder
 import kotlinx.android.synthetic.main.product_variant_list_item.view.*
@@ -27,7 +28,7 @@ class ProductVariantsAdapter(
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int) = productVariantList[position].remoteProductId
+    override fun getItemId(position: Int) = productVariantList[position].remoteVariationId
 
     override fun getItemCount() = productVariantList.size
 
@@ -43,9 +44,15 @@ class ProductVariantsAdapter(
         val productVariant = productVariantList[position]
 
         holder.txtVariantOptionName.text = productVariant.optionName
-        productVariant.priceWithCurrency?.let {
-            holder.txtVariantOptionPriceAndStock.text = it
+
+        val variantPurchasable = if (!productVariant.purchasable) {
+            context.getString(R.string.product_variant_hidden)
+        } else {
+            null
         }
+        holder.txtVariantOptionPriceAndStock.text = StringBuilder()
+                .appendWithIfNotEmpty(variantPurchasable)
+                .appendWithIfNotEmpty(productVariant.priceWithCurrency, context.getString(R.string.product_bullet))
 
         productVariant.imageUrl?.let {
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
@@ -60,7 +67,7 @@ class ProductVariantsAdapter(
         val newList: List<ProductVariant>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                oldList[oldItemPosition].remoteProductId == newList[newItemPosition].remoteProductId
+                oldList[oldItemPosition].remoteVariationId == newList[newItemPosition].remoteVariationId
 
         override fun getOldListSize(): Int = oldList.size
 
@@ -72,6 +79,7 @@ class ProductVariantsAdapter(
             return oldItem.stockQuantity == newItem.stockQuantity &&
                     oldItem.remoteVariationId == newItem.remoteVariationId &&
                     oldItem.price == newItem.price &&
+                    oldItem.purchasable == newItem.purchasable &&
                     oldItem.stockStatus == newItem.stockStatus &&
                     oldItem.imageUrl == newItem.imageUrl &&
                     oldItem.optionName == newItem.optionName

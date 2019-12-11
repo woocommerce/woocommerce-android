@@ -30,7 +30,7 @@ abstract class MockedReviewListModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(MockedReviewListViewModel::class)
+    @ViewModelKey(ReviewListViewModel::class)
     abstract fun bindFactory(factory: MockedReviewListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
