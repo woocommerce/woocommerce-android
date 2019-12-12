@@ -213,7 +213,7 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation(group: 'com.zendesk', name: 'support', version: '3.0.1') {
+    implementation(group: 'com.zendesk', name: 'support', version: '3.0.3') {
         exclude group: 'com.google.dagger'
     }
 
