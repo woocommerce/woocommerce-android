@@ -408,7 +408,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         selectedQuantities[productId] = newQuantity
 
         val (taxes, subtotal) = calculateTotals(newItems)
-        val productsRefund = min(max(subtotal + taxes - order.refundTotal, BigDecimal.ZERO), maxRefund)
+        val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), maxRefund)
 
         val selectButtonTitle = if (areAllItemsSelected)
                 resourceProvider.getString(R.string.order_refunds_items_select_none)
