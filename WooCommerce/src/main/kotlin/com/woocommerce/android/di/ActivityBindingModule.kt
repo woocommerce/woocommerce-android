@@ -3,6 +3,8 @@ package com.woocommerce.android.di
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
+import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.imageviewer.ImageViewerModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginNoJetpackFragmentModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
@@ -10,13 +12,7 @@ import com.woocommerce.android.ui.login.MagicLinkInterceptFragmentModule
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
-import com.woocommerce.android.ui.orders.notes.AddOrderNoteModule
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
-import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
-import com.woocommerce.android.ui.orders.OrderDetailModule
-import com.woocommerce.android.ui.orders.OrderFulfillmentModule
-import com.woocommerce.android.ui.orders.OrderListModule
-import com.woocommerce.android.ui.orders.OrderProductListModule
+import com.woocommerce.android.ui.orders.OrdersModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
@@ -38,17 +34,11 @@ abstract class ActivityBindingModule {
             MainModule::class,
             DashboardModule::class,
             MyStoreModule::class,
-            OrderListModule::class,
-            OrderDetailModule::class,
-            OrderProductListModule::class,
-            OrderFulfillmentModule::class,
+            OrdersModule::class,
             RefundsModule::class,
             ProductsModule::class,
             ReviewsModule::class,
-            AddOrderNoteModule::class,
-            SitePickerModule::class,
-            AddOrderShipmentTrackingModule::class,
-            AddOrderTrackingProviderListModule::class
+            SitePickerModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
@@ -78,4 +68,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = [SitePickerModule::class])
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(ImageViewerModule::class))
+    abstract fun provideImageViewerActivity(): ImageViewerActivity
 }

@@ -10,8 +10,6 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -52,8 +50,8 @@ class RefundByItemsFragment : BaseFragment() {
         issueRefund_products.layoutManager = LinearLayoutManager(context)
         issueRefund_products.setHasFixedSize(true)
 
-        issueRefund_selectAllButton.setOnClickListener {
-            viewModel.onSelectAllButtonTapped()
+        issueRefund_selectButton.setOnClickListener {
+            viewModel.onSelectButtonTapped()
         }
 
         issueRefund_btnNextFromItems.setOnClickListener {
@@ -65,7 +63,7 @@ class RefundByItemsFragment : BaseFragment() {
         }
 
         // will be used in the future
-//        issueRefund_productsTotalButton.setOnClickListener {
+//        issueRefund_productsTotal.setOnClickListener {
 //            viewModel.onProductRefundAmountTapped()
 //        }
     }
@@ -85,15 +83,6 @@ class RefundByItemsFragment : BaseFragment() {
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
                 issueRefund_productsTotal.text = it
             }
-            new.isDiscountVisible.takeIfNotEqualTo(old?.isDiscountVisible) { isVisible ->
-                if (isVisible) {
-                    issueRefund_discountTotal.text = new.formattedDiscount
-                    issueRefund_discountItems.text = new.discountCodes
-                    issueRefund_discountSection.show()
-                } else {
-                    issueRefund_discountSection.hide()
-                }
-            }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 issueRefund_taxesTotal.text = it
             }
@@ -102,6 +91,9 @@ class RefundByItemsFragment : BaseFragment() {
             }
             new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
                 issueRefund_selectedItems.text = it
+            }
+            new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
+                issueRefund_selectButton.text = it
             }
             // temporarily hidden
 //            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
@@ -118,11 +110,11 @@ class RefundByItemsFragment : BaseFragment() {
             adapter.update(list)
         })
 
-        viewModel.event.observe(this.viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowNumberPicker -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
-                            getString(R.string.order_refunds_refund_quantity),
+                            getString(R.string.order_refunds_select_quantity),
                             event.refundItem.product.productId,
                             event.refundItem.maxQuantity,
                             event.refundItem.quantity

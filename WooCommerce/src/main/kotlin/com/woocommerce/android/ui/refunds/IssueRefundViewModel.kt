@@ -83,7 +83,10 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private val _refundItems = MutableLiveData<List<RefundListItem>>()
-    val refundItems: LiveData<List<RefundListItem>> = _refundItems
+    final val refundItems: LiveData<List<RefundListItem>> = _refundItems
+
+    private val areAllItemsSelected: Boolean
+        get() = refundItems.value?.all { it.quantity == it.maxQuantity } ?: false
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
@@ -159,8 +162,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                     currency = order.currency,
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
-                    formattedDiscount = formatCurrency(BigDecimal.ZERO),
-                    discountCodes = order.discountCodes,
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
                     isShippingRefundVisible = false
             )
@@ -213,10 +214,26 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onNextButtonTappedFromItems() {
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                        AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                )
+        )
+
         showRefundSummary()
     }
 
     fun onNextButtonTappedFromAmounts() {
+        AnalyticsTracker.track(
+                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                        AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
+                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                )
+        )
+
         if (isInputValid()) {
             showRefundSummary()
         } else {
@@ -237,14 +254,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                 isFormEnabled = true,
                 previouslyRefunded = formatCurrency(order.refundTotal),
                 refundAmount = formatCurrency(commonState.refundTotal)
-        )
-
-        AnalyticsTracker.track(
-                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
-                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId
-                )
         )
 
         triggerEvent(ShowRefundSummary(commonState.refundType))
@@ -286,13 +295,12 @@ class IssueRefundViewModel @AssistedInject constructor(
                 val wasRefundCanceled = waitForCancellation()
                 if (!wasRefundCanceled) {
                     triggerEvent(ShowSnackbar(
-                            R.string.order_refunds_amount_refund_progress_message,
-                            arrayOf(formatCurrency(commonState.refundTotal)),
-                            isEndless = true)
+                            R.string.order_refunds_amount_refund_confirmation_message,
+                            arrayOf(formatCurrency(commonState.refundTotal))
+                        )
                     )
 
-                    AnalyticsTracker.track(
-                            REFUND_CREATE, mapOf(
+                    AnalyticsTracker.track(REFUND_CREATE, mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
                                     (commonState.refundTotal isEqualTo maxRefund).toString(),
@@ -363,9 +371,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundQuantityTapped(productId: Long) {
-        val refundItem = _refundItems.value?.firstOrNull { it.product.productId == productId }
-        if (refundItem != null) {
-            triggerEvent(ShowNumberPicker(refundItem))
+        _refundItems.value?.firstOrNull { it.product.productId == productId }?.let {
+            triggerEvent(ShowNumberPicker(it))
         }
 
         AnalyticsTracker.track(
@@ -418,21 +425,30 @@ class IssueRefundViewModel @AssistedInject constructor(
         updateRefundItems(newItems)
 
         val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), maxRefund)
+        val selectButtonTitle = if (areAllItemsSelected)
+                resourceProvider.getString(R.string.order_refunds_items_select_none)
+            else
+                resourceProvider.getString(R.string.order_refunds_items_select_all)
+
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = productsRefund,
                 formattedProductsRefund = formatCurrency(productsRefund),
                 taxes = formatCurrency(taxes),
-                discount = order.discountTotal,
-                formattedDiscount = "-${formatCurrency(order.discountTotal)}",
-                discountCodes = order.discountCodes,
                 subtotal = formatCurrency(subtotal),
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO
+                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
+                selectButtonTitle = selectButtonTitle
         )
     }
 
-    fun onSelectAllButtonTapped() {
-        _refundItems.value?.forEach {
-            onRefundQuantityChanged(it.product.productId, it.maxQuantity)
+    fun onSelectButtonTapped() {
+        if (areAllItemsSelected) {
+            _refundItems.value?.forEach {
+                onRefundQuantityChanged(it.product.productId, 0)
+            }
+        } else {
+            _refundItems.value?.forEach {
+                onRefundQuantityChanged(it.product.productId, it.maxQuantity)
+            }
         }
 
         AnalyticsTracker.track(
@@ -547,9 +563,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         val isNextButtonEnabled: Boolean? = null,
         val productsRefund: BigDecimal = BigDecimal.ZERO,
         val formattedProductsRefund: String? = null,
-        val discount: BigDecimal = BigDecimal.ZERO,
-        val formattedDiscount: String? = null,
-        val discountCodes: String? = null,
         val subtotal: String? = null,
         val taxes: String? = null,
         val shippingRefund: BigDecimal = BigDecimal.ZERO,
@@ -557,13 +570,11 @@ class IssueRefundViewModel @AssistedInject constructor(
         val shippingSubtotal: String? = null,
         val shippingTaxes: String? = null,
         val isShippingRefundVisible: Boolean? = null,
-        val selectedItemsHeader: String? = null
+        val selectedItemsHeader: String? = null,
+        val selectButtonTitle: String? = null
     ) : Parcelable {
         val totalRefund: BigDecimal
             get() = max(productsRefund + shippingRefund, BigDecimal.ZERO)
-
-        val isDiscountVisible: Boolean
-            get() = discount > BigDecimal.ZERO
     }
 
     @Parcelize

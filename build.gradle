@@ -7,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.2'
+        classpath 'com.android.tools.build:gradle:3.5.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.automattic.android:fetchstyle:1.1'
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
@@ -85,8 +85,8 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = 'c40cda1e070ecee4ec351deea09270a50df7944f'
-    daggerVersion = '2.22.1'
+    fluxCVersion = 'f51c4837bfa11c6c6ca3398a316bbee8400d84ae'
+    daggerVersion = '2.25.2'
     glideVersion = '4.10.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.0.1'

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.format.DateFormat
 import android.util.AttributeSet
@@ -27,6 +28,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         orientation = VERTICAL
     }
 
+    @SuppressLint("SetTextI18n")
     fun initView(
         order: Order,
         formatCurrencyForDisplay: (BigDecimal) -> String,
@@ -96,7 +98,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_discountSection.hide()
         } else {
             paymentInfo_discountSection.show()
-            paymentInfo_discountTotal.text = formatCurrencyForDisplay(order.discountTotal)
+            paymentInfo_discountTotal.text = "-${formatCurrencyForDisplay(order.discountTotal)}"
             paymentInfo_discountItems.text = context.getString(
                     R.string.orderdetail_discount_items,
                     order.discountCodes

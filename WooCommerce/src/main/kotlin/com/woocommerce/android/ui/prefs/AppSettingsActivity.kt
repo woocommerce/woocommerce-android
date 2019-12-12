@@ -23,7 +23,7 @@ import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
+import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_app_settings.*
 import java.util.Locale
 import javax.inject.Inject
@@ -31,7 +31,7 @@ import javax.inject.Inject
 class AppSettingsActivity : AppCompatActivity(),
         AppSettingsListener,
         AppSettingsContract.View,
-        HasSupportFragmentInjector {
+        HasAndroidInjector {
     companion object {
         private const val KEY_SITE_CHANGED = "key_site_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
@@ -39,7 +39,7 @@ class AppSettingsActivity : AppCompatActivity(),
         const val KEY_BETA_OPTION_CHANGED = "key_beta_option_changed"
     }
 
-    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
+    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
 
@@ -139,7 +139,7 @@ class AppSettingsActivity : AppCompatActivity(),
         }
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun finishLogout() {
         NotificationHandler.removeAllNotificationsFromSystemBar(this)
