@@ -5,9 +5,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.mystore.MyStoreFragment
-import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.products.ProductListFragment
 import com.woocommerce.android.ui.reviews.ReviewListFragment
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 
 enum class BottomNavigationPosition(val position: Int, val id: Int) {
     DASHBOARD(0, R.id.dashboard),

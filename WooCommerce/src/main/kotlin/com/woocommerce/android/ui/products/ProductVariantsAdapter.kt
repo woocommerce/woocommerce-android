@@ -50,6 +50,9 @@ class ProductVariantsAdapter(
         } else {
             null
         }
+        holder.txtVariantOptionPriceAndStock.text = StringBuilder()
+                .appendWithIfNotEmpty(variantPurchasable)
+                .appendWithIfNotEmpty(productVariant.priceWithCurrency, context.getString(R.string.product_bullet))
 
         holder.txtVariantOptionPriceAndStock.text = StringBuilder()
                 .appendWithIfNotEmpty(variantPurchasable)

@@ -72,7 +72,7 @@ final class ProductListRepository @Inject constructor(
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
         } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching products", e)
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching products")
         }
 
         return getProductList()
@@ -83,7 +83,7 @@ final class ProductListRepository @Inject constructor(
      * query and returns only that page of products - note that this returns null if the search
      * is interrupted (which means the user submitted another search while this was running)
      */
-    suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product> {
+    suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
         // cancel any existing load or search
         loadContinuation?.cancel()
         searchContinuation?.cancel()
@@ -106,7 +106,7 @@ final class ProductListRepository @Inject constructor(
             return products ?: emptyList()
         } catch (e: CancellationException) {
             WooLog.d(WooLog.T.PRODUCTS, "CancellationException while searching products")
-            return emptyList()
+            return null
         }
     }
 

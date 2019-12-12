@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -11,12 +10,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.CancellationException
@@ -24,6 +25,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
@@ -46,6 +50,7 @@ class ProductListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
 
     init {
+        EventBus.getDefault().register(this)
         if (_productList.value == null) {
             loadProducts()
         }
@@ -54,6 +59,7 @@ class ProductListViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
+        EventBus.getDefault().unregister(this)
     }
 
     fun isSearching() = viewState.isSearchActive == true
@@ -175,22 +181,24 @@ class ProductListViewModel @AssistedInject constructor(
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
             } else {
-                val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
-                // make sure the search query hasn't changed while the fetch was processing
-                if (searchQuery == productRepository.lastSearchQuery) {
-                    if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + fetchedProducts
+                productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+                    // make sure the search query hasn't changed while the fetch was processing
+                    if (searchQuery == productRepository.lastSearchQuery) {
+                        if (loadMore) {
+                            _productList.value = _productList.value.orEmpty() + fetchedProducts
+                        } else {
+                            _productList.value = fetchedProducts
+                        }
                     } else {
-                        _productList.value = fetchedProducts
+                        WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                     }
-                } else {
-                    WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
+
+                    viewState = viewState.copy(
+                            canLoadMore = productRepository.canLoadMoreProducts,
+                            isEmptyViewVisible = _productList.value?.isEmpty() == true
+                    )
                 }
             }
-            viewState = viewState.copy(
-                    canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = _productList.value?.isEmpty() == true
-            )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
         }
@@ -200,6 +208,12 @@ class ProductListViewModel @AssistedInject constructor(
                 isLoadingMore = false,
                 isRefreshing = false
         )
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        loadProducts()
     }
 
     @Parcelize

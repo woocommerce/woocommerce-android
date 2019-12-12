@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductImagesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import dagger.Module
@@ -10,7 +11,8 @@ import dagger.android.ContributesAndroidInjector
 @Module(includes = [
     ProductDetailFragmentModule::class,
     ProductListFragmentModule::class,
-    ProductVariantsFragmentModule::class
+    ProductVariantsFragmentModule::class,
+    ProductImagesFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -32,5 +34,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductVariantsModule::class])
         abstract fun productVariantsFragment(): ProductVariantsFragment
+    }
+
+    @Module
+    internal abstract class ProductImagesFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductImagesModule::class])
+        abstract fun productImagesFragment(): ProductImagesFragment
     }
 }
