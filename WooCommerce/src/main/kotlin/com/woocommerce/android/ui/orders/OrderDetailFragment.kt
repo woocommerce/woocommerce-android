@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ import com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView.Orde
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
@@ -83,6 +85,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         savedInstanceState?.let { bundle ->
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
         }
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

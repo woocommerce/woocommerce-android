@@ -6,10 +6,12 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -46,7 +48,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.math.RoundingMode
+import java.math.RoundingMode.HALF_UP
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -137,7 +139,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                     items = order.items.map { RefundListItem(it) },
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
-                    formattedProductsRefund = formatCurrency(BigDecimal.ZERO)
+                    formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
+                    isShippingRefundVisible = false
             )
         }
     }
@@ -202,6 +205,14 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
+    fun onRefundItemsShippingSwitchChanged(isChecked: Boolean) {
+        refundByItemsState = if (isChecked) {
+            refundByItemsState.copy(isShippingRefundVisible = true)
+        } else {
+            refundByItemsState.copy(isShippingRefundVisible = false)
+        }
+    }
+
     private fun showRefundSummary() {
         refundSummaryState = refundSummaryState.copy(
                 isFormEnabled = true,
@@ -253,7 +264,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                         )
                     )
 
-                    AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
+                    AnalyticsTracker.track(REFUND_CREATE, mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
                                     (refundByAmountState.enteredAmount isEqualTo maxRefund).toString(),
@@ -264,18 +275,33 @@ class IssueRefundViewModel @AssistedInject constructor(
                     ))
 
                     val resultCall = async(dispatchers.io) {
-                        return@async refundStore.createAmountRefund(
-                                selectedSite.get(),
-                                order.remoteId,
-                                refundByAmountState.enteredAmount,
-                                reason,
-                                gateway.supportsRefunds
-                        )
+                        return@async when (commonState.refundType) {
+                            ITEMS -> {
+                                refundStore.createItemsRefund(
+                                        selectedSite.get(),
+                                        order.remoteId,
+                                        reason,
+                                        true,
+                                        gateway.supportsRefunds,
+                                        emptyList()
+                                )
+                            }
+                            AMOUNT -> {
+                                refundStore.createAmountRefund(
+                                        selectedSite.get(),
+                                        order.remoteId,
+                                        refundByAmountState.enteredAmount,
+                                        reason,
+                                        gateway.supportsRefunds
+                                )
+                            }
+                        }
                     }
 
                     val result = resultCall.await()
                     if (result.isError) {
-                        AnalyticsTracker.track(Stat.REFUND_CREATE_FAILED, mapOf(
+                        AnalyticsTracker.track(
+                                REFUND_CREATE_FAILED, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                                 AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                                 AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
@@ -284,7 +310,8 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                         triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
                     } else {
-                        AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
+                        AnalyticsTracker.track(
+                                REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                                 AnalyticsTracker.KEY_ID to result.model?.id
                         ))
@@ -325,7 +352,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         items?.forEach { item ->
             subtotal += item.quantity.toBigDecimal().times(item.product.price)
 
-            val singleItemTax = item.product.totalTax.divide(item.product.quantity.toBigDecimal(), RoundingMode.HALF_UP)
+            val singleItemTax = item.product.totalTax.divide(item.product.quantity.toBigDecimal(), HALF_UP)
             taxes += item.quantity.toBigDecimal().times(singleItemTax)
         }
         val productsRefund = subtotal + taxes
@@ -421,7 +448,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         val shippingRefund: BigDecimal = BigDecimal.ZERO,
         val formattedShippingRefund: String? = null,
         val shippingSubtotal: String? = null,
-        val shippingTaxes: String? = null
+        val shippingTaxes: String? = null,
+        val isShippingRefundVisible: Boolean? = null
     ) : Parcelable {
         val totalRefund: BigDecimal
             get() {

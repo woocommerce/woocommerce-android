@@ -9,24 +9,19 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.ContextThemeWrapper
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.NumberPicker.Formatter
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-
 import com.woocommerce.android.R
 
-class NumberPickerDialog : DialogFragment(),
-        DialogInterface.OnClickListener,
-        CompoundButton.OnCheckedChangeListener {
+open class NumberPickerDialog : DialogFragment(), DialogInterface.OnClickListener {
     companion object {
-        const val TITLE_KEY = "dialog-title"
-        const val HEADER_TEXT_KEY = "header-text"
-        const val MIN_VALUE_KEY = "min-value"
-        const val MAX_VALUE_KEY = "max-value"
-        const val CUR_VALUE_KEY = "cur-value"
+        const val TITLE_KEY = "title"
+        const val MIN_VALUE_KEY = "minValue"
+        const val MAX_VALUE_KEY = "maxValue"
+        const val CUR_VALUE_KEY = "currentValue"
 
         private const val DEFAULT_MIN_VALUE = 0
         private const val DEFAULT_MAX_VALUE = 99
@@ -44,17 +39,11 @@ class NumberPickerDialog : DialogFragment(),
 
     private lateinit var headerText: TextView
     private lateinit var numberPicker: NumberPicker
-    private lateinit var format: Formatter
+
+    private var format: Formatter = Formatter { it.toString() }
     private var minValue: Int = 0
     private var maxValue: Int = 0
     private var confirmed: Boolean = false
-
-    private val resultIntent: Intent?
-        get() = if (confirmed) {
-            val intent = Intent()
-            arguments?.let { intent.replaceExtras(it) }
-            intent.putExtra(CUR_VALUE_KEY, numberPicker.value)
-        } else null
 
     init {
         minValue = DEFAULT_MIN_VALUE
@@ -72,12 +61,10 @@ class NumberPickerDialog : DialogFragment(),
 
         val args = arguments
         if (args != null) {
-            headerText.text = args.getString(HEADER_TEXT_KEY, "")
+            headerText.text = args.getString(TITLE_KEY, "")
             minValue = args.getInt(MIN_VALUE_KEY, DEFAULT_MIN_VALUE)
             maxValue = args.getInt(MAX_VALUE_KEY, DEFAULT_MAX_VALUE)
             value = args.getInt(CUR_VALUE_KEY, minValue)
-
-            builder.setTitle(args.getString(TITLE_KEY, ""))
         }
 
         // Fix for https://issuetracker.google.com/issues/36952035
@@ -108,16 +95,26 @@ class NumberPickerDialog : DialogFragment(),
         dismiss()
     }
 
-    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        numberPicker.isEnabled = isChecked
-        headerText.isEnabled = isChecked
+    override fun onSaveInstanceState(outState: Bundle) {
+        arguments?.putInt(CUR_VALUE_KEY, numberPicker.value)
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDismiss(dialog: DialogInterface) {
-        val target = targetFragment
-        target?.onActivityResult(targetRequestCode, Activity.RESULT_OK, resultIntent)
+        if (confirmed) {
+            returnResult(numberPicker.value)
+        }
 
         super.onDismiss(dialog)
+    }
+
+    open fun returnResult(selectedValue: Int) {
+        val target = targetFragment
+        val resultIntent = Intent()
+        arguments?.let { resultIntent.replaceExtras(it) }
+        resultIntent.putExtra(CUR_VALUE_KEY, numberPicker.value)
+        target?.onActivityResult(targetRequestCode, Activity.RESULT_OK, resultIntent)
     }
 
     fun setNumberFormat(format: Formatter) {

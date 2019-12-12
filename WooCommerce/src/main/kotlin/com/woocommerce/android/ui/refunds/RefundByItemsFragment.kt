@@ -1,35 +1,31 @@
 package com.woocommerce.android.ui.refunds
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.NumberPicker
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import com.woocommerce.android.widgets.NumberPickerDialog
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
+import kotlinx.android.synthetic.main.refund_by_items_products.*
 import javax.inject.Inject
 
 class RefundByItemsFragment : BaseFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
-
-    companion object {
-        const val PRODUCT_ID_KEY = "PRODUCT_ID_KEY"
-        const val REFUND_ITEM_QUANTITY_REQUEST_CODE = 12345
-    }
 
     private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
 
@@ -61,6 +57,10 @@ class RefundByItemsFragment : BaseFragment() {
         issueRefund_btnNextFromItems.setOnClickListener {
             viewModel.onNextButtonTappedFromItems()
         }
+
+        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
+        }
     }
 
     private fun setupObservers() {
@@ -83,7 +83,7 @@ class RefundByItemsFragment : BaseFragment() {
                 issueRefund_selectedItems.text = selectedItemsHeader
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                issueRefund_total.text = it
+                issueRefund_productsTotal.text = it
             }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 issueRefund_taxesTotal.text = it
@@ -91,36 +91,28 @@ class RefundByItemsFragment : BaseFragment() {
             new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
                 issueRefund_subtotal.text = it
             }
+            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
+                if (isVisible) {
+                    issueRefund_shippingSection.expand()
+                } else {
+                    issueRefund_shippingSection.collapse()
+                }
+            }
         }
 
-        viewModel.event.observe(this.viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowNumberPicker -> {
-                    val args = Bundle()
-                    args.putString(NumberPickerDialog.TITLE_KEY, getString(R.string.order_refunds_select_quantity))
-                    args.putLong(PRODUCT_ID_KEY, event.refundItem.product.productId)
-                    args.putInt(NumberPickerDialog.MAX_VALUE_KEY, event.refundItem.product.quantity.toInt())
-                    args.putInt(NumberPickerDialog.CUR_VALUE_KEY, event.refundItem.quantity)
-                    val dialog = NumberPickerDialog.createInstance(args, NumberPicker.Formatter {
-                        it.toString()
-                    })
-                    dialog.setTargetFragment(this, REFUND_ITEM_QUANTITY_REQUEST_CODE)
-                    dialog.show(parentFragmentManager, "item-picker")
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
+                            getString(R.string.order_refunds_select_quantity),
+                            event.refundItem.product.productId,
+                            event.refundItem.product.quantity.toInt(),
+                            event.refundItem.quantity
+                    )
+                    findNavController().navigate(action)
                 }
                 else -> event.isHandled = false
             }
         })
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REFUND_ITEM_QUANTITY_REQUEST_CODE -> {
-                val productId = data?.getLongExtra(PRODUCT_ID_KEY, 0)
-                val quantity = data?.getIntExtra(NumberPickerDialog.CUR_VALUE_KEY, 0)
-                if (productId != null && quantity != null) {
-                    viewModel.onRefundQuantityChanged(productId, quantity)
-                }
-            }
-        }
     }
 }

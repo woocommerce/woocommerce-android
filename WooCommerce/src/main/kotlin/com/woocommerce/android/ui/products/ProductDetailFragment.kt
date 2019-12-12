@@ -95,7 +95,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.viewStateData.observe(this) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.product?.let { showProduct(new) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
@@ -103,7 +103,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowImages -> showProductImages(event.product, event.image)

@@ -21,5 +21,25 @@
             android:name="orderId"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_issueRefundFragment_to_refundItemsPickerDialog"
+            app:destination="@id/refundItemsPickerDialog" />
     </fragment>
+    <dialog
+        android:id="@+id/refundItemsPickerDialog"
+        android:name="com.woocommerce.android.ui.refunds.RefundItemsPickerDialog"
+        tools:layout="@layout/number_picker_dialog"
+        android:label="RefundItemsPickerDialog" >
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
+            android:name="maxValue"
+            app:argType="integer" />
+        <argument android:name="currentValue"
+            app:argType="integer" />
+    </dialog>
 </navigation>
