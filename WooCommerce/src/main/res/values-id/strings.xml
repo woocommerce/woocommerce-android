@@ -9,7 +9,6 @@ Language: id
     <string name="magic_link_fetch_account_error">Ada masalah saat mengambil akun Anda. Anda dapat mencoba lagi sekarang atau menutupnya dan mencoba lagi nanti.</string>
     <string name="magic_link_update_error">Terjadi error. Harap login untuk melanjutkan</string>
     <string name="login_magic_link_token_updating">Menyambungkan ke situs Anda…</string>
-    <string name="product_variants">Varian</string>
     <string name="product_property_edit">Sunting produk</string>
     <string name="product_variants_fetch_product_variants_error">Terjadi error saat mengambil variasi produk</string>
     <string name="my_store_stats_reverted_message">Kami telah mengembalikan ke statistik lama. Untuk menggunakan statistik beta, harap aktifkan plugin Admin WooCommerce Admin dengan versi 0.22 atau yang lebih tinggi</string>

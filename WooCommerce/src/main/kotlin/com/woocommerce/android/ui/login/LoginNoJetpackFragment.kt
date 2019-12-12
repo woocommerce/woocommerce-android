@@ -210,11 +210,11 @@ class LoginNoJetpackFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.isLoading.observe(this, Observer {
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             showProgressDialog(it)
         })
 
-        viewModel.isJetpackAvailable.observe(this, Observer { isJetpackAvailable ->
+        viewModel.isJetpackAvailable.observe(viewLifecycleOwner, Observer { isJetpackAvailable ->
             if (isJetpackAvailable) {
                 AppPrefs.setLoginUserBypassedJetpackRequired(false)
                 redirectToSiteCredentialsScreen()

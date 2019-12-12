@@ -1,54 +1,54 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
-    android:fillViewport="true"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:context="com.woocommerce.android.ui.refunds.RefundByItemsFragment">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             style="@style/Woo.Card.WithoutPadding"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <TextView
+                android:id="@+id/issueRefund_selectedItems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/card_padding_start"
+                android:layout_marginEnd="@dimen/card_padding_end"
+                android:textAppearance="@style/Woo.TextAppearance.Title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/issueRefund_selectButton"
+                app:layout_constraintBottom_toTopOf="@id/issueRefund_productsList"
+                tools:text="5 items selected" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/issueRefund_selectButton"
+                style="@style/Woo.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/order_refunds_items_select_all"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <include
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:id="@+id/issueRefund_productsList"
+                layout="@layout/refund_by_items_products"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_selectButton" />
 
-                <TextView
-                    android:id="@+id/issueRefund_selectedItems"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.TextAppearance.Title"
-                    android:paddingStart="@dimen/card_padding_start"
-                    android:paddingEnd="@dimen/card_padding_end"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="5 items selected" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/issueRefund_selectButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/Woo.Button"
-                    android:text="@string/order_refunds_items_select_all"
-                    android:textAllCaps="false"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <include layout="@layout/refund_by_items_products" />
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:visibility="gone"
@@ -87,9 +87,9 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_item_padding_intra_double"
-            android:layout_marginEnd="@dimen/card_item_padding_intra_double"
-            android:layout_marginBottom="@dimen/card_item_padding_intra_double"
+            android:layout_marginStart="@dimen/card_button_padding"
+            android:layout_marginEnd="@dimen/card_button_padding"
+            android:layout_marginBottom="@dimen/card_button_padding"
             android:text="@string/order_refunds_next_button_title" />
 
     </LinearLayout>

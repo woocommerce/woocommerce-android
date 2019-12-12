@@ -12,9 +12,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -126,7 +126,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     fun `Handle successful review moderation correctly`() = test {
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(review).whenever(repository).getCachedProductReview(any())
-        doReturn(SUCCESS).whenever(repository).fetchProductReview(any())
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchProductReview(any())
 
         // first we must load the product review so the viewmodel will have
         // a reference to it.

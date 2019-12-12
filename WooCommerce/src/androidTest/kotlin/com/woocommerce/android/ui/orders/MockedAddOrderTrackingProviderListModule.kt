@@ -6,12 +6,10 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -42,7 +40,6 @@ abstract class MockedAddOrderTrackingProviderListModule {
         }
 
         @JvmStatic
-        @ActivityScope
         @Provides
         fun provideAddOrderTrackingProviderListPresenter(): AddOrderTrackingProviderListContract.Presenter {
             /**
@@ -79,7 +76,4 @@ abstract class MockedAddOrderTrackingProviderListModule {
             return mockPresenter
         }
     }
-
-    @ContributesAndroidInjector
-    abstract fun addOrderTrackingProviderListFragment(): AddOrderTrackingProviderListFragment
 }

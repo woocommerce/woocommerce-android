@@ -91,7 +91,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     ContextCompat.getColor(activity, R.color.colorAccent),
                     ContextCompat.getColor(activity, R.color.colorPrimaryDark)
             )
-            scrollUpChild = scroll_view
+            scrollUpChild = productsRecycler
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }
@@ -138,6 +138,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
+
+        if (!viewModel.isSearching()) {
+            viewModel.loadProducts()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

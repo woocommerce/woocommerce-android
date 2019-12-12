@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
@@ -61,10 +62,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             context.startActivity(intent)
         }
 
-        fun showSitePickerForResult(fragment: Fragment, requestCode: Int) {
+        fun showSitePickerForResult(fragment: Fragment) {
             val intent = Intent(fragment.activity, SitePickerActivity::class.java)
             intent.putExtra(KEY_CALLED_FROM_LOGIN, false)
-            fragment.startActivityForResult(intent, requestCode)
+            fragment.startActivityForResult(intent, RequestCodes.SITE_PICKER)
         }
     }
 
