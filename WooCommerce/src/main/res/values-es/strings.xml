@@ -11,7 +11,7 @@ Language: es
     <string name="login_magic_link_token_updating">Conectando con tu sitio…</string>
     <string name="product_property_edit">Editar producto</string>
     <string name="product_variants_fetch_product_variants_error">Error al obtener las reseñas de los productos</string>
-    <string name="my_store_stats_reverted_message">Hemos cambiado a las antiguas estadísticas. Para usar las estadísticas beta, activa el plugin Administración de WooCommerce con la versión 0.22 o una posterior</string>
+    <string name="my_store_stats_reverted_message">Hemos cambiado a las antiguas estadísticas. Para usar las estadísticas beta, activa el plugin Administración de WooCommerce con la versión 0.23 o una posterior</string>
     <string name="login_discovery_error_option_select">Elige una opción</string>
     <string name="login_troubleshooting_tips">Lee nuestros consejos de solución de problemas</string>
     <string name="login_with_wordpress">Inicia sesión con WordPress.com</string>

@@ -11,7 +11,7 @@ Language: ru
     <string name="login_magic_link_token_updating">Подключение к сайту…</string>
     <string name="product_property_edit">Изменить продукт</string>
     <string name="product_variants_fetch_product_variants_error">Ошибка при получении вариантов продукта</string>
-    <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин администратора WooCommerce 0.22 или более поздней версии.</string>
+    <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин администратора WooCommerce 0.23 или более поздней версии.</string>
     <string name="login_discovery_error_option_select">Выберите вариант.</string>
     <string name="login_troubleshooting_tips">Просмотрите советы по устранению неполадок</string>
     <string name="login_with_wordpress">Войти с помощью WordPress.com</string>
