@@ -11,7 +11,7 @@ Language: nl
     <string name="login_magic_link_token_updating">Je site wordt gekoppeld …</string>
     <string name="product_property_edit">Product bewerken</string>
     <string name="product_variants_fetch_product_variants_error">Fout bij ophalen productvariaties</string>
-    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld. Om de bèta-statistieken te kunnen gebruiken, moet je de WooCommerce Admin-plugin met versie 0.22 of hoger activeren</string>
+    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld. Om de bèta-statistieken te kunnen gebruiken, moet je de WooCommerce Admin-plugin met versie 0.23 of hoger activeren</string>
     <string name="login_discovery_error_option_select">Selecteer een optie</string>
     <string name="login_troubleshooting_tips">Bekijk onze tips voor probleemoplossing</string>
     <string name="login_with_wordpress">Aanmelden via WordPress.com</string>
