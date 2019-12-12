@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.Order.Address
 import com.woocommerce.android.model.Order.Address.Type.BILLING
 import com.woocommerce.android.model.Order.Address.Type.SHIPPING
@@ -83,12 +84,12 @@ fun WCOrderModel.toAppModel(): Order {
             DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
             DateTimeUtils.dateUTCFromIso8601(this.datePaid),
             CoreOrderStatus.fromValue(this.status) ?: PENDING,
-            this.total.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            this.getOrderSubtotal().toBigDecimal(),
-            this.totalTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            this.shippingTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            this.discountTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            -this.refundTotal.toBigDecimal(), // WCOrderModel.refundTotal is NEGATIVE
+            this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            this.getOrderSubtotal().toBigDecimal().roundError(),
+            this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
             this.currency,
             this.customerNote,
             this.discountCodes,
@@ -129,12 +130,12 @@ fun WCOrderModel.toAppModel(): Order {
                         Item(
                                 it.productId!!,
                                 it.name ?: "",
-                                it.price?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                                it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.sku ?: "",
                                 it.quantity ?: 0f,
-                                it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                                it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.variationId ?: 0
                         )
                     }
