@@ -47,7 +47,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        private const val REFUNDS_REFRESH_DELAY = 2000L
+        private const val REFUNDS_REFRESH_DELAY = 1000L
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
