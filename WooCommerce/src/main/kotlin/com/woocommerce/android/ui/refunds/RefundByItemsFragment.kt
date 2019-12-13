@@ -61,8 +61,7 @@ class RefundByItemsFragment : BaseFragment() {
         issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onRefundItemsShippingSwitchChanged(isChecked)
         }
-
-        // TODO: Temporary; it will be used again in a future release - do not remove
+        // TODO: Temporarily disabled, this will be used in a future release - do not remove
 //        issueRefund_productsTotal.setOnClickListener {
 //            viewModel.onProductRefundAmountTapped()
 //        }
@@ -95,8 +94,7 @@ class RefundByItemsFragment : BaseFragment() {
             new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
                 issueRefund_selectButton.text = it
             }
-
-            // TODO: Temporary; it will be used again in a future release - do not remove
+            // TODO: Temporarily disabled, this will be used in a future release - do not remove
 //            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
 //                if (isVisible) {
 //                    issueRefund_shippingSection.expand()

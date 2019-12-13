@@ -119,6 +119,7 @@
         app:layout_constraintTop_toTopOf="@id/issueRefund_lblProductsTotal"
         tools:text="$1.00"/>
 
+    <!-- TODO: Temporarily disabled, this will be used in a future release - do not remove -->
 <!--    <androidx.appcompat.widget.AppCompatButton-->
 <!--        android:id="@+id/issueRefund_productsTotalButton"-->
 <!--        style="@style/Woo.Refunds.Button"-->

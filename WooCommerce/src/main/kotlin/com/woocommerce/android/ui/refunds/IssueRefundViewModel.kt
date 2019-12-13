@@ -122,6 +122,9 @@ class IssueRefundViewModel @AssistedInject constructor(
         quantities
     }
 
+    final var isRefundInProgress: Boolean = false
+        private set
+
     init {
         order = loadOrder(arguments.orderId)
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
@@ -297,6 +300,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                             })
             )
 
+            isRefundInProgress = true
+
             launch {
                 refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false,
@@ -370,6 +375,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                         triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
                         triggerEvent(Exit)
                     }
+
+                    isRefundInProgress = false
                 }
                 refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
             }
