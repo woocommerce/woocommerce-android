@@ -3,6 +3,7 @@
 * In rare situations, the labels on the bottom navigation bar could be cut off
 * Fixed a rare crash when updating a product variant in wp-admin and refreshing the same in the app.
 * Fixed bug that could cause stats chart to prevent scrolling vertically
+* Refunds are back! Select individual order items and the refund amount will be automatically calculated for you.
  
 3.2
 -----
