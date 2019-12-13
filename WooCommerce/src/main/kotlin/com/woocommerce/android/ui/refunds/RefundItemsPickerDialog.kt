@@ -26,7 +26,7 @@ class RefundItemsPickerDialog : NumberPickerDialog(), HasAndroidInjector {
     }
 
     override fun returnResult(selectedValue: Int) {
-        viewModel.onRefundQuantityChanged(navArgs.productId, selectedValue)
+        viewModel.onRefundQuantityChanged(navArgs.uniqueId, selectedValue)
     }
 
     override fun androidInjector(): AndroidInjector<Any> {

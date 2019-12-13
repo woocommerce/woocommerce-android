@@ -23,7 +23,7 @@ class RefundProductListAdapter(
     private val formatCurrency: (BigDecimal) -> String,
     private val imageMap: ProductImageMap,
     private val isReadOnly: Boolean,
-    private val onRefundQuantityClicked: (Long) -> Unit = { }
+    private val onRefundQuantityClicked: (String) -> Unit = { }
 ) : RecyclerView.Adapter<RefundProductListAdapter.ViewHolder>() {
     private var items = mutableListOf<RefundListItem>()
 
@@ -48,7 +48,7 @@ class RefundProductListAdapter(
         parent: ViewGroup,
         @LayoutRes layout: Int,
         private val formatCurrency: (BigDecimal) -> String,
-        private val onRefundQuantityClicked: (Long) -> Unit,
+        private val onRefundQuantityClicked: (String) -> Unit,
         private val imageMap: ProductImageMap
     ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(layout, parent, false)
@@ -59,20 +59,20 @@ class RefundProductListAdapter(
         private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
 
         fun bind(item: RefundListItem) {
-            nameTextView.text = item.product.name
+            nameTextView.text = item.orderItem.name
 
             descriptionTextView.text = itemView.context.getString(
                     R.string.order_refunds_item_description,
-                    item.product.quantity,
-                    formatCurrency(item.product.price)
+                    item.orderItem.quantity,
+                    formatCurrency(item.orderItem.price)
             )
 
             quantityTextView.text = item.quantity.toString()
             quantityTextView.setOnClickListener {
-                onRefundQuantityClicked(item.product.productId)
+                onRefundQuantityClicked(item.orderItem.uniqueId)
             }
 
-            imageMap.get(item.product.productId)?.let {
+            imageMap.get(item.orderItem.productId)?.let {
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
@@ -85,16 +85,16 @@ class RefundProductListAdapter(
 
     @Parcelize
     data class RefundListItem(
-        val product: Order.Item,
+        val orderItem: Order.Item,
         val maxQuantity: Int = 0,
         val quantity: Int = 0
     ) : Parcelable {
         fun toDataModel(): WCRefundItem {
             return WCRefundItem(
-                    product.itemId,
+                    orderItem.itemId,
                     quantity,
-                    quantity.toBigDecimal().times(product.price),
-                    product.totalTax.divide(product.quantity.toBigDecimal()).times(quantity.toBigDecimal())
+                    quantity.toBigDecimal().times(orderItem.price),
+                    orderItem.totalTax.divide(orderItem.quantity.toBigDecimal()).times(quantity.toBigDecimal())
             )
         }
     }
@@ -104,7 +104,7 @@ class RefundProductListAdapter(
         private val newList: List<RefundListItem>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].product.productId == newList[newItemPosition].product.productId
+            return oldList[oldItemPosition].orderItem.uniqueId == newList[newItemPosition].orderItem.uniqueId
         }
 
         override fun getOldListSize(): Int = oldList.size
@@ -114,9 +114,9 @@ class RefundProductListAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
-            return old.product.name == old.product.name &&
-                    old.product.price isEqualTo new.product.price &&
-                    old.product.quantity == new.product.quantity &&
+            return old.orderItem.name == old.orderItem.name &&
+                    old.orderItem.price isEqualTo new.orderItem.price &&
+                    old.orderItem.quantity == new.orderItem.quantity &&
                     old.quantity == new.quantity &&
                     old.maxQuantity == new.maxQuantity
         }

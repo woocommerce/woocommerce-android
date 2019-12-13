@@ -65,7 +65,7 @@ class RefundDetailViewModel @AssistedInject constructor(
         if (refund.items.isNotEmpty()) {
             val items = refund.items.map { refundItem ->
                 RefundListItem(
-                    order.items.first { it.productId == refundItem.productId },
+                    order.items.first { it.uniqueId == refundItem.uniqueId },
                     quantity = refundItem.quantity
                 )
             }
