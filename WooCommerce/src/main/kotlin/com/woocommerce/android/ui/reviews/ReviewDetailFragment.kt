@@ -146,7 +146,7 @@ class ReviewDetailFragment : BaseFragment() {
                 .circleCrop()
                 .into(review_gravatar)
         review_user_name.text = review.reviewerName
-        review_time.text = DateTimeUtils.timeSpanFromTimestamp(review.dateCreated.time, activity as Context)
+        review_time.text = DateTimeUtils.javaDateToTimeSpan(review.dateCreated, requireActivity())
 
         // Populate reviewed product info
         review.product?.let { product ->

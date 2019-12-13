@@ -323,15 +323,17 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun setOrderStatus(newStatus: String) {
-        val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
-        orderDetail_orderStatus.updateStatus(orderStatus)
-        presenter.orderModel?.let {
-            orderDetail_productList.updateView(it, this)
-            orderDetail_paymentInfo.initView(
-                    it.toAppModel(),
-                    currencyFormatter.buildBigDecimalFormatter(it.currency),
-                    this
-            )
+        if (isAdded) {
+            val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
+            orderDetail_orderStatus.updateStatus(orderStatus)
+            presenter.orderModel?.let {
+                orderDetail_productList.updateView(it, this)
+                orderDetail_paymentInfo.initView(
+                        it.toAppModel(),
+                        currencyFormatter.buildBigDecimalFormatter(it.currency),
+                        this
+                )
+            }
         }
     }
 

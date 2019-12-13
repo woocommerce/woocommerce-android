@@ -96,7 +96,10 @@ class SitePickerPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
-        if (!event.isError && !userIsLoggedIn()) {
+        if (event.isError) {
+            WooLog.e(T.LOGIN, "Account error [type = ${event.causeOfChange}] : " +
+                    "${event.error.type} > ${event.error.message}")
+        } else if (!userIsLoggedIn()) {
             view?.didLogout()
         }
     }
@@ -105,7 +108,9 @@ class SitePickerPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
         view?.showSkeleton(false)
-        if (!event.isError) {
+        if (event.isError) {
+            WooLog.e(T.LOGIN, "Site error [${event.error.type}] : ${event.error.message}")
+        } else {
             loadSites()
         }
     }
