@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
-import java.util.Calendar
 import java.util.Date
 
 enum class TimeGroup(@StringRes val labelRes: Int) {
@@ -17,18 +16,18 @@ enum class TimeGroup(@StringRes val labelRes: Int) {
 
     companion object {
         fun getTimeGroupForDate(date: Date): TimeGroup {
-            // Normalize the dates to drop time information
-            val dateToday = DateUtils.round(DateTimeUtils.nowUTC(), Calendar.DATE)
-            val dateToCheck = DateUtils.round(date, Calendar.DATE)
+            val dateToday = DateTimeUtils.nowUTC()
 
             return when {
-                dateToCheck.after(dateToday) -> GROUP_FUTURE
-                dateToCheck < DateUtils.addMonths(dateToday, -1) -> GROUP_OLDER_MONTH
-                dateToCheck < DateUtils.addWeeks(dateToday, -1) -> GROUP_OLDER_WEEK
-                dateToCheck < DateUtils.addDays(dateToday, -2) -> GROUP_OLDER_TWO_DAYS
-                DateUtils.isSameDay(DateUtils.addDays(dateToday, -2), dateToCheck) -> GROUP_OLDER_TWO_DAYS
-                DateUtils.isSameDay(DateUtils.addDays(dateToday, -1), dateToCheck) -> GROUP_YESTERDAY
-                else -> GROUP_TODAY
+                date < DateUtils.addMonths(dateToday, -1) -> GROUP_OLDER_MONTH
+                date < DateUtils.addWeeks(dateToday, -1) -> GROUP_OLDER_WEEK
+                date < DateUtils.addDays(dateToday, -2) -> GROUP_OLDER_TWO_DAYS
+                DateUtils.isSameDay(DateUtils.addDays(dateToday, -2), date) -> GROUP_OLDER_TWO_DAYS
+                DateUtils.isSameDay(DateUtils.addDays(dateToday, -1), date) -> GROUP_YESTERDAY
+                DateUtils.isSameDay(dateToday, date) -> GROUP_TODAY
+                else -> {
+                    GROUP_FUTURE
+                }
             }
         }
     }
