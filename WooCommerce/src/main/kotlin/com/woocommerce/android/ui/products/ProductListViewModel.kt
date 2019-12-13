@@ -147,6 +147,7 @@ class ProductListViewModel @AssistedInject constructor(
                     if (productsInDb.isEmpty()) {
                         viewState = viewState.copy(isSkeletonShown = true)
                     } else {
+                        viewState = viewState.copy(isRefreshing = true)
                         _productList.value = productsInDb
                     }
                 }
