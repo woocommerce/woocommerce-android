@@ -120,26 +120,29 @@ class OrderListViewModel @AssistedInject constructor(
             // value in many different places in the order list view.
             _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
         }
-
-        initializeListsForMainTabs()
     }
 
     /**
      * Create and prefetch the two main order lists to prevent them getting out of
      * sync when the device goes offline.
      */
-    private fun initializeListsForMainTabs() {
+    fun initializeListsForMainTabs() {
         // "ALL" tab
-        val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = true)
-        allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle).also { it.fetchFirstPage() }
+        if (allPagedListWrapper == null) {
+            val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = true)
+            allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
+                    .also { it.fetchFirstPage() }
+        }
 
         // "PROCESSING" tab
-        val processingDescriptor = WCOrderListDescriptor(
-                site = selectedSite.get(),
-                statusFilter = CoreOrderStatus.PROCESSING.value,
-                excludeFutureOrders = false)
-        processingPagedListWrapper =
-                listStore.getList(processingDescriptor, dataSource, lifecycle).also { it.fetchFirstPage() }
+        if (processingPagedListWrapper == null) {
+            val processingDescriptor = WCOrderListDescriptor(
+                    site = selectedSite.get(),
+                    statusFilter = CoreOrderStatus.PROCESSING.value,
+                    excludeFutureOrders = false)
+            processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
+                    .also { it.fetchFirstPage() }
+        }
 
         // Fetch order dependencies such as order status list and payment gateways
         fetchOrdersAndOrderDependencies()
@@ -150,7 +153,7 @@ class OrderListViewModel @AssistedInject constructor(
      */
     fun loadAllList() {
         requireNotNull(allPagedListWrapper) {
-            "allPagedListWrapper must be initialized in the init block"
+            "allPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
         }
         activatePagedListWrapper(allPagedListWrapper!!)
     }
@@ -160,7 +163,7 @@ class OrderListViewModel @AssistedInject constructor(
      */
     fun loadProcessingList() {
         requireNotNull(processingPagedListWrapper) {
-            "processingPagedListWrapper must be initialized in the init block"
+            "processingPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
         }
         activatePagedListWrapper(processingPagedListWrapper!!)
     }

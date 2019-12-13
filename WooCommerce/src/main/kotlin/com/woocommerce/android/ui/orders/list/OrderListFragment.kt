@@ -371,6 +371,8 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun initializeViewModel() {
+        viewModel.initializeListsForMainTabs()
+
         // populate views with any existing viewModel data
         viewModel.orderStatusOptions.value?.let { options ->
             // So the order status can be matched to the appropriate label
