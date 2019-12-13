@@ -146,8 +146,6 @@ class ProductListViewModel @AssistedInject constructor(
 
             loadJob = launch {
                 viewState = viewState.copy(isLoadingMore = loadMore)
-
-                println("@#@#I@#@#@${viewState.isLoadingMore}")
                 if (!loadMore) {
                     // if this is the initial load, first get the products from the db and if there are any show
                     // them immediately, otherwise make sure the skeleton shows
@@ -155,7 +153,6 @@ class ProductListViewModel @AssistedInject constructor(
                     if (productsInDb.isEmpty()) {
                         viewState = viewState.copy(isSkeletonShown = true)
                     } else {
-                        viewState = viewState.copy(isRefreshing = true)
                         _productList.value = productsInDb
                     }
                 }
