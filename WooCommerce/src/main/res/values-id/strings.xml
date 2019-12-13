@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:04+0000
+Translation-Revision-Date: 2019-12-12 00:54:58+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
+    <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b>Sertifikat SSL&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
+    <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b>Autentikasi HTTP&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
+    <string name="login_discovery_error_xmlrpc">Kami tidak dapat mengakses &lt;b>file XMLRPC&lt;/b> situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
+    <string name="login_site_credentials_magic_link_label">Hampir selesai! Kami hanya perlu memverifikasi alamat email Anda yang terhubung dengan Jetpack &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">Login dengan kredensial situs.</string>
+    <string name="enter_credentials_for_site">Login dengan kredensial situs %1$s</string>
+    <string name="send_verification_email">Kirim email verifikasi</string>
+    <string name="settings_enable_product_teaser_message">Uji bagian produk baru saat kami mempersiapkan peluncuran</string>
+    <string name="settings_enable_product_teaser_title">Produk</string>
+    <string name="product_wip_message">Kami bekerja keras dalam mengembangkan bagian Produk yang baru. Anda mungkin melihat beberapa perubahan saat kami mempersiapkan peluncurkan 🚀</string>
+    <string name="product_wip_title">Sedang dalam proses!</string>
     <string name="magic_link_fetch_account_error">Ada masalah saat mengambil akun Anda. Anda dapat mencoba lagi sekarang atau menutupnya dan mencoba lagi nanti.</string>
     <string name="magic_link_update_error">Terjadi error. Harap login untuk melanjutkan</string>
     <string name="login_magic_link_token_updating">Menyambungkan ke situs Anda…</string>
+    <string name="product_variants">Varian</string>
     <string name="product_property_edit">Sunting produk</string>
     <string name="product_variants_fetch_product_variants_error">Terjadi error saat mengambil variasi produk</string>
-    <string name="my_store_stats_reverted_message">Kami telah mengembalikan ke statistik lama. Untuk menggunakan statistik beta, harap aktifkan plugin Admin WooCommerce Admin dengan versi 0.23 atau yang lebih tinggi</string>
+    <string name="my_store_stats_reverted_message">Kami telah mengembalikan ke statistik lama. Untuk menggunakan statistik beta, harap aktifkan plugin Admin WooCommerce Admin dengan versi 0.22 atau yang lebih tinggi</string>
     <string name="login_discovery_error_option_select">Tentukan pilihan</string>
     <string name="login_troubleshooting_tips">Baca tips pemecahan masalah kami</string>
     <string name="login_with_wordpress">Masuk dengan WordPress.com</string>
@@ -47,9 +60,9 @@ Language: id
     <string name="wc_unapproved">Tidak disetujui</string>
     <string name="review_single_fetch_error">Error saat memuat ulasan produk baru</string>
     <string name="review_fetch_error">Error saat memuat ulasan produk</string>
-    <string name="order_refunds_manual_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
-    <string name="order_refunds_manual_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
-    <string name="order_refunds_manual_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
+    <string name="order_refunds_amount_refund_error">Ada masalah dengan pengembalian dananya. Coba lagi.</string>
+    <string name="order_refunds_amount_refund_successful">Pengembalian dana tidak berhasil dikirim.</string>
+    <string name="order_refunds_amount_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
     <string name="order_refunds_quote_image_description">Ikon kutipan</string>
     <string name="order_refunds_manual_refund">Pengembalian dana manual</string>
     <string name="order_refunds_refund_details">Rincian pengembalian dana</string>
@@ -628,7 +641,7 @@ Language: id
     <string name="enter_wpcom_password">Masukkan kata sandi WordPress.com Anda.</string>
     <string name="magic_link_unavailable_error_message">Saat ini tidak tersedia. Masukkan kata sandi Anda</string>
     <string name="login_magic_link_email_requesting">Meminta email login</string>
-    <string name="login_magic_links_sent_label">Email terkirim! Periksa email Anda di perangkat ini, dan ketuk tautan dalam email yang Anda terima dari WordPress.com</string>
+    <string name="login_magic_links_sent_label">Tautan ajaib Anda segera tiba! Periksa email Anda di perangkat ini, dan ketuk tautan dalam email yang Anda terima dari WordPress.com</string>
     <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan ajaib yang bisa Anda gunakan untuk login dalam sekejap, tanpa kata sandi. Tak perlu lagi repot mengetik!</string>
     <string name="password_incorrect">Sepertinya kata sandi ini salah. Periksa lagi informasi Anda dan coba lagi.</string>
     <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini. Coba tautan di bawah ini untuk login menggunakan alamat situs Anda.</string>
@@ -651,6 +664,7 @@ Language: id
     <string name="log_in">Login</string>
     <string name="help">Bantuan</string>
     <string name="password">Kata sandi</string>
+    <string name="username">Nama pengguna</string>
     <string name="enter_your_password_instead">Sebaiknya masukkan kata sandi Anda</string>
     <string name="send_link">Kirim tautan</string>
     <string name="invalid_verification_code">Kode verifikasi tidak valid</string>
