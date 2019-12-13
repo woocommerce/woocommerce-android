@@ -58,7 +58,7 @@ class RefundProductListAdapter(
 
             descriptionTextView.text = itemView.context.getString(
                     R.string.order_refunds_item_description,
-                    item.product.quantity.toInt(),
+                    item.product.quantity,
                     formatCurrency(item.product.price)
             )
 
@@ -81,6 +81,7 @@ class RefundProductListAdapter(
     @Parcelize
     data class RefundListItem(
         val product: Order.Item,
+        val maxQuantity: Int,
         val quantity: Int = 0
     ) : Parcelable
 
@@ -102,7 +103,8 @@ class RefundProductListAdapter(
             return old.product.name == old.product.name &&
                     old.product.price isEqualTo new.product.price &&
                     old.product.quantity == new.product.quantity &&
-                    old.quantity == new.quantity
+                    old.quantity == new.quantity &&
+                    old.maxQuantity == new.maxQuantity
         }
     }
 }

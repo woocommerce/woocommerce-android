@@ -10,16 +10,16 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
 import kotlinx.android.synthetic.main.refund_by_items_products.*
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class RefundByItemsFragment : BaseFragment() {
@@ -50,8 +50,8 @@ class RefundByItemsFragment : BaseFragment() {
         issueRefund_products.layoutManager = LinearLayoutManager(context)
         issueRefund_products.setHasFixedSize(true)
 
-        issueRefund_selectAllButton.setOnClickListener {
-            viewModel.onSelectAllButtonTapped()
+        issueRefund_selectButton.setOnClickListener {
+            viewModel.onSelectButtonTapped()
         }
 
         issueRefund_btnNextFromItems.setOnClickListener {
@@ -60,6 +60,10 @@ class RefundByItemsFragment : BaseFragment() {
 
         issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onRefundItemsShippingSwitchChanged(isChecked)
+        }
+
+        issueRefund_productsTotal.setOnClickListener {
+            viewModel.onProductRefundAmountTapped()
         }
     }
 
@@ -72,15 +76,8 @@ class RefundByItemsFragment : BaseFragment() {
                         imageMap
                 )
             }
-            new.items?.takeIfNotEqualTo(old?.items) { list ->
-                val adapter = issueRefund_products.adapter as RefundProductListAdapter
-                adapter.update(list)
-
-                val selectedItems = list.sumBy { it.quantity }
-                issueRefund_btnNextFromItems.isEnabled = selectedItems > 0
-
-                val selectedItemsHeader = getString(R.string.order_refunds_items_selected, selectedItems)
-                issueRefund_selectedItems.text = selectedItemsHeader
+            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
+                issueRefund_btnNextFromItems.isEnabled = it
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
                 issueRefund_productsTotal.text = it
@@ -91,14 +88,26 @@ class RefundByItemsFragment : BaseFragment() {
             new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
                 issueRefund_subtotal.text = it
             }
-            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
-                if (isVisible) {
-                    issueRefund_shippingSection.expand()
-                } else {
-                    issueRefund_shippingSection.collapse()
-                }
+            new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
+                issueRefund_selectedItems.text = it
             }
+            new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
+                issueRefund_selectButton.text = it
+            }
+            // temporarily hidden
+//            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
+//                if (isVisible) {
+//                    issueRefund_shippingSection.expand()
+//                } else {
+//                    issueRefund_shippingSection.collapse()
+//                }
+//            }
         }
+
+        viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
+            val adapter = issueRefund_products.adapter as RefundProductListAdapter
+            adapter.update(list)
+        })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -106,8 +115,18 @@ class RefundByItemsFragment : BaseFragment() {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
                             getString(R.string.order_refunds_select_quantity),
                             event.refundItem.product.productId,
-                            event.refundItem.product.quantity.toInt(),
+                            event.refundItem.maxQuantity,
                             event.refundItem.quantity
+                    )
+                    findNavController().navigate(action)
+                }
+                is ShowRefundAmountDialog -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
+                            getString(R.string.order_refunds_products_refund),
+                            event.maxRefund,
+                            event.refundAmount,
+                            BigDecimal.ZERO,
+                            event.message
                     )
                     findNavController().navigate(action)
                 }
