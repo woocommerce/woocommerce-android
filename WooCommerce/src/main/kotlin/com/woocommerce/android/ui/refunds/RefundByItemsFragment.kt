@@ -72,8 +72,9 @@ class RefundByItemsFragment : BaseFragment() {
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 issueRefund_products.adapter = RefundProductListAdapter(
                         currencyFormatter.buildBigDecimalFormatter(new.currency),
-                        { productId -> viewModel.onRefundQuantityTapped(productId) },
-                        imageMap
+                        imageMap,
+                        false,
+                        { productId -> viewModel.onRefundQuantityTapped(productId) }
                 )
             }
             new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
