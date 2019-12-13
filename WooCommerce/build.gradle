@@ -6,7 +6,7 @@ buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:3.2.0'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.51'
-        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.16'
+        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.28'
     }
 }
 
@@ -213,7 +213,7 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation(group: 'com.zendesk', name: 'support', version: '3.0.1') {
+    implementation(group: 'com.zendesk', name: 'support', version: '3.0.3') {
         exclude group: 'com.google.dagger'
     }
 
