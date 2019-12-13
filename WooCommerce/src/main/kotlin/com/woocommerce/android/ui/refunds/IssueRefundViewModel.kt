@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUC
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -428,7 +429,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
         selectedQuantities[productId] = newQuantity
 
-        val (taxes, subtotal) = calculateTotals(newItems)
+        val (subtotal, taxes) = newItems.calculateTotals()
         val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), maxRefund)
 
         val selectButtonTitle = if (areAllItemsSelected)
@@ -444,22 +445,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                 isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
                 selectButtonTitle = selectButtonTitle
         )
-    }
-
-    private fun calculateTotals(newItems: MutableList<RefundListItem>): Pair<BigDecimal, BigDecimal> {
-        var taxes = BigDecimal.ZERO
-        var subtotal = BigDecimal.ZERO
-        newItems.forEach { item ->
-            val quantity = item.quantity.toBigDecimal()
-            subtotal += quantity.times(item.product.price)
-
-            val singleItemTax = item.product.totalTax.divide(
-                    item.product.quantity.toBigDecimal(),
-                    HALF_UP
-            )
-            taxes += quantity.times(singleItemTax)
-        }
-        return Pair(taxes, subtotal)
     }
 
     private fun getUpdatedItemList(productId: Long, newQuantity: Int): MutableList<RefundListItem> {
