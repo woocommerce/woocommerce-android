@@ -11,7 +11,7 @@ Language: zh_CN
     <string name="login_magic_link_token_updating">正在连接到您的站点…</string>
     <string name="product_property_edit">编辑产品</string>
     <string name="product_variants_fetch_product_variants_error">获取产品变体时出错</string>
-    <string name="my_store_stats_reverted_message">我们已还原为旧统计信息。要使用测试版统计信息，请激活 0.22 或更高版本的 WooCommerce Admin 插件</string>
+    <string name="my_store_stats_reverted_message">我们已还原为旧统计信息。要使用测试版统计信息，请激活 0.23 或更高版本的 WooCommerce Admin 插件</string>
     <string name="login_discovery_error_option_select">选择一个选项</string>
     <string name="login_troubleshooting_tips">了解我们的故障排除技巧</string>
     <string name="login_with_wordpress">通过 WordPress.com 登录</string>

@@ -11,7 +11,7 @@ Language: de
     <string name="login_magic_link_token_updating">Verbindung mit deiner Website wird hergestellt…</string>
     <string name="product_property_edit">Produkt bearbeiten</string>
     <string name="product_variants_fetch_product_variants_error">Fehler beim Abrufen von Produktvarianten</string>
-    <string name="my_store_stats_reverted_message">Wir sind zu den alten Statistiken zurückgekehrt. Um die Beta-Statistiken zu verwenden, aktiviere das WooCommerce Admin-Plugin mit Version 0.22 oder höher</string>
+    <string name="my_store_stats_reverted_message">Wir sind zu den alten Statistiken zurückgekehrt. Um die Beta-Statistiken zu verwenden, aktiviere das WooCommerce Admin-Plugin mit Version 0.23 oder höher</string>
     <string name="login_discovery_error_option_select">Eine Option auswählen</string>
     <string name="login_troubleshooting_tips">Tipps zur Fehlerbehebung lesen</string>
     <string name="login_with_wordpress">Mit WordPress.com anmelden</string>

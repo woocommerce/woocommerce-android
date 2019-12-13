@@ -54,6 +54,10 @@ class ProductVariantsAdapter(
                 .appendWithIfNotEmpty(variantPurchasable)
                 .appendWithIfNotEmpty(productVariant.priceWithCurrency, context.getString(R.string.product_bullet))
 
+        holder.txtVariantOptionPriceAndStock.text = StringBuilder()
+                .appendWithIfNotEmpty(variantPurchasable)
+                .appendWithIfNotEmpty(productVariant.priceWithCurrency, context.getString(R.string.product_bullet))
+
         productVariant.imageUrl?.let {
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             glideRequest.load(imageUrl)

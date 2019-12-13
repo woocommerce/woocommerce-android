@@ -11,7 +11,7 @@ Language: sv_SE
     <string name="login_magic_link_token_updating">Ansluter till din webbplats …</string>
     <string name="product_property_edit">Redigera produkt</string>
     <string name="product_variants_fetch_product_variants_error">Ett fel uppstod när produktvarianterna skulle hämtas</string>
-    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.22 eller senare</string>
+    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.23 eller senare</string>
     <string name="login_discovery_error_option_select">Välj ett alternativ</string>
     <string name="login_troubleshooting_tips">Läs våra felsökningstips</string>
     <string name="login_with_wordpress">Logga in med WordPress.com</string>

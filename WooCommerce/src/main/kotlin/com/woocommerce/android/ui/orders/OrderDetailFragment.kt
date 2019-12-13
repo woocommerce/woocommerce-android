@@ -296,7 +296,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun issueOrderRefund(order: Order) {
         AnalyticsTracker.track(ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED)
 
-        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.number.toLong())
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.remoteId)
         findNavController().navigate(action)
     }
 

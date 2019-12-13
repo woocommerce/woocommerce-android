@@ -11,7 +11,7 @@ Language: id
     <string name="login_magic_link_token_updating">Menyambungkan ke situs Anda…</string>
     <string name="product_property_edit">Sunting produk</string>
     <string name="product_variants_fetch_product_variants_error">Terjadi error saat mengambil variasi produk</string>
-    <string name="my_store_stats_reverted_message">Kami telah mengembalikan ke statistik lama. Untuk menggunakan statistik beta, harap aktifkan plugin Admin WooCommerce Admin dengan versi 0.22 atau yang lebih tinggi</string>
+    <string name="my_store_stats_reverted_message">Kami telah mengembalikan ke statistik lama. Untuk menggunakan statistik beta, harap aktifkan plugin Admin WooCommerce Admin dengan versi 0.23 atau yang lebih tinggi</string>
     <string name="login_discovery_error_option_select">Tentukan pilihan</string>
     <string name="login_troubleshooting_tips">Baca tips pemecahan masalah kami</string>
     <string name="login_with_wordpress">Masuk dengan WordPress.com</string>
