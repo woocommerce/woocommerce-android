@@ -44,7 +44,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @UseExperimental(InternalCoroutinesApi::class)
