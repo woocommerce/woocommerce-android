@@ -86,7 +86,7 @@ class RefundProductListAdapter(
     @Parcelize
     data class RefundListItem(
         val product: Order.Item,
-        val maxQuantity: Int,
+        val maxQuantity: Int = 0,
         val quantity: Int = 0
     ) : Parcelable {
         fun toDataModel(): WCRefundItem {
