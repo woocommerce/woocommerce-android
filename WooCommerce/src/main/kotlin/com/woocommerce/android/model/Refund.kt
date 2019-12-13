@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.roundError
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
@@ -20,7 +21,7 @@ data class Refund(
     data class Item(
         val productId: Long,
         val quantity: Int,
-        val itemId: Long = 0,
+        val id: Long = 0,
         val name: String = "",
         val variationId: Long = 0,
         val subtotal: BigDecimal = BigDecimal.ZERO,
@@ -35,7 +36,7 @@ fun WCRefundModel.toAppModel(): Refund {
     return Refund(
             id,
             dateCreated,
-            amount,
+            amount.roundError(),
             reason,
             automaticGatewayRefund,
             items.map { it.toAppModel() }
@@ -49,10 +50,10 @@ fun WCRefundItem.toAppModel(): Refund.Item {
             itemId,
             name ?: "",
             variationId ?: -1,
-            -subtotal, // WCRefundItem.subtotal is NEGATIVE
-            -(total ?: BigDecimal.ZERO), // WCRefundItem.total is NEGATIVE
-            -totalTax, // WCRefundItem.totalTax is NEGATIVE
+            -subtotal.roundError(), // WCRefundItem.subtotal is NEGATIVE
+            -(total ?: BigDecimal.ZERO).roundError(), // WCRefundItem.total is NEGATIVE
+            -totalTax.roundError(), // WCRefundItem.totalTax is NEGATIVE
             sku ?: "",
-            price ?: BigDecimal.ZERO
+            price?.roundError() ?: BigDecimal.ZERO
     )
 }
