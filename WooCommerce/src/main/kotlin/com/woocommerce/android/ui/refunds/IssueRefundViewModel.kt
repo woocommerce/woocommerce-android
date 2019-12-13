@@ -496,6 +496,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
+    // TODO: Temporarily unused; it will be used again in a future release - do not remove
+    @Suppress("unused")
     fun onRefundTabChanged(type: RefundType) {
         val refundAmount = when (type) {
             ITEMS -> refundByItemsState.totalRefund
