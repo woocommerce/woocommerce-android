@@ -66,6 +66,8 @@ class ProductListViewModel @AssistedInject constructor(
 
     private fun isLoadingMore() = viewState.isLoadingMore == true
 
+    private fun isRefreshing() = viewState.isRefreshing == true
+
     fun onSearchQueryChanged(query: String) {
         viewState = viewState.copy(query = query, isEmptyViewVisible = false)
 
@@ -121,6 +123,11 @@ class ProductListViewModel @AssistedInject constructor(
             return
         }
 
+        if (loadMore && isRefreshing()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already refreshing products")
+            return
+        }
+
         if (isSearching()) {
             // cancel any existing search, then start a new one after a brief delay so we don't actually perform
             // the fetch until the user stops typing
@@ -139,7 +146,6 @@ class ProductListViewModel @AssistedInject constructor(
 
             loadJob = launch {
                 viewState = viewState.copy(isLoadingMore = loadMore)
-
                 if (!loadMore) {
                     // if this is the initial load, first get the products from the db and if there are any show
                     // them immediately, otherwise make sure the skeleton shows
