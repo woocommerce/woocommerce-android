@@ -11,19 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_032"
+msgid ""
+"3.2:\n"
+"- You’ll see a new “variants” section in the Product detail screen for your variable products.\n"
+"- The bottom navigation bar no longer disappears when scrolling — we think you’ll like it better.\n"
+"- We know a Products tab is high on people’s wish lists, and you can now preview the coming-soon Products tab — head to Settings in the app to enable it.\n"
+msgstr ""
+
 msgctxt "release_note_031"
 msgid ""
 "3.1:\n"
 "- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.\n"
-msgstr ""
-
-msgctxt "release_note_030"
-msgid ""
-"3.0:\n"
-"* The app now supports refunds by amount. It’s available on the order detail screen, and lets you manually issue a partial or full refund for a paid order.\n"
-"* Products with multiple images now show all images in a gallery.\n"
-"* Bug fix: Rarely, the saving while on the “Add Order Note” screen would lead to a crash. Now, “rarely” is “never.”\n"
-"* The order detail view now includes the order’s shipping method.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

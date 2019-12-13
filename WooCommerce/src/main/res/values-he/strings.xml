@@ -11,7 +11,7 @@ Language: he_IL
     <string name="login_magic_link_token_updating">מתחבר לאתר שלך…</string>
     <string name="product_property_edit">עריכת מוצר</string>
     <string name="product_variants_fetch_product_variants_error">שגיאה בהבאת הסוגים של המוצר</string>
-    <string name="my_store_stats_reverted_message">שינינו את הנתונים הסטטיסטיים הישנים. כדי להשתמש בנתונים הסטטיסטיים בגרסת ביתא, עליך להפעיל את התוסף של מנהל המערכת של WooCommerce עם גרסה 0.22 ומעלה</string>
+    <string name="my_store_stats_reverted_message">שינינו את הנתונים הסטטיסטיים הישנים. כדי להשתמש בנתונים הסטטיסטיים בגרסת ביתא, עליך להפעיל את התוסף של מנהל המערכת של WooCommerce עם גרסה 0.23 ומעלה</string>
     <string name="login_discovery_error_option_select">לבחור אפשרות</string>
     <string name="login_troubleshooting_tips">לעיון בעצות שלנו לפתרון בעיות</string>
     <string name="login_with_wordpress">התחברות באמצעות WordPress.com</string>

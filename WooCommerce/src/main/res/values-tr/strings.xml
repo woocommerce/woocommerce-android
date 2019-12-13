@@ -11,7 +11,7 @@ Language: tr
     <string name="login_magic_link_token_updating">Sitenize bağlanıyor…</string>
     <string name="product_property_edit">Ürünü düzenle</string>
     <string name="product_variants_fetch_product_variants_error">Ürün varyasyonları alınırken bir hata oluştu</string>
-    <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük. Beta istatistiklerini kullanmak için lütfen 0.22 veya daha üst sürüm WooCommerce Yönetici eklentisini etkinleştirin</string>
+    <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük. Beta istatistiklerini kullanmak için lütfen 0.23 veya daha üst sürüm WooCommerce Yönetici eklentisini etkinleştirin</string>
     <string name="login_discovery_error_option_select">Bir seçenek seçin</string>
     <string name="login_troubleshooting_tips">Sorun giderme ipuçlarımızı okuyun</string>
     <string name="login_with_wordpress">WordPress.com ile Giriş Yap</string>

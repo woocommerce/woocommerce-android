@@ -11,7 +11,7 @@ Language: ko_KR
     <string name="login_magic_link_token_updating">사이트에 연결하는 중…</string>
     <string name="product_property_edit">제품 편집</string>
     <string name="product_variants_fetch_product_variants_error">제품 변경을 가져오는 중에 오류 발생</string>
-    <string name="my_store_stats_reverted_message">이전 통계로 되돌렸습니다. 베타 통계를 사용하려면 버전 0.22 이상으로 WooCommerce Admin 플러그인을 활성화하세요.</string>
+    <string name="my_store_stats_reverted_message">이전 통계로 되돌렸습니다. 베타 통계를 사용하려면 버전 0.23 이상으로 WooCommerce Admin 플러그인을 활성화하세요.</string>
     <string name="login_discovery_error_option_select">옵션 선택</string>
     <string name="login_troubleshooting_tips">문제 해결 팁 읽기</string>
     <string name="login_with_wordpress">워드프레스닷컴으로 로그인</string>

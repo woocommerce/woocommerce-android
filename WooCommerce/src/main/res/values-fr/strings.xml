@@ -11,7 +11,7 @@ Language: fr
     <string name="login_magic_link_token_updating">Connexion à votre site en cours…</string>
     <string name="product_property_edit">Modifier le produit</string>
     <string name="product_variants_fetch_product_variants_error">Erreur lors de la récupération des variations du produit</string>
-    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques. Pour utiliser les statistiques en version bêta, veuillez activer l\'extension d\'administration WooCommerce version 0.22 ou ultérieure.</string>
+    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques. Pour utiliser les statistiques en version bêta, veuillez activer l\'extension d\'administration WooCommerce version 0.23 ou ultérieure.</string>
     <string name="login_discovery_error_option_select">Sélectionner une option</string>
     <string name="login_troubleshooting_tips">Lire les astuces de résolution de problème</string>
     <string name="login_with_wordpress">Se connecter avec WordPress.com</string>

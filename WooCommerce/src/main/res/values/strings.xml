@@ -180,7 +180,7 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.22 or higher</string>
+    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.23 or higher</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for  stores using the WooCommerce Admin plugin</string>
     <!--
@@ -455,6 +455,7 @@
     <string name="image_source_title">Select an upload method</string>
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
+    >>>>>>> develop
     <!--
         Empty list messages
     -->

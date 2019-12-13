@@ -76,11 +76,13 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                         order.paymentMethodTitle
                 )
 
-                if (order.total - order.refundTotal > BigDecimal.ZERO) {
-                    paymentInfo_issueRefundButtonSection.show()
-                } else {
-                    paymentInfo_issueRefundButtonSection.hide()
-                }
+                // temporarily disabled in v3.2
+                paymentInfo_issueRefundButtonSection.hide()
+//                if (order.total - order.refundTotal > BigDecimal.ZERO) {
+//                    paymentInfo_issueRefundButtonSection.show()
+//                } else {
+//                    paymentInfo_issueRefundButtonSection.hide()
+//                }
             }
         }
 
