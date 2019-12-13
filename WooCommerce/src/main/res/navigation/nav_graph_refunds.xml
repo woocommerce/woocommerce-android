@@ -38,7 +38,7 @@
             app:argType="string" />
         <argument
             android:name="uniqueId"
-            app:argType="string" />
+            app:argType="long" />
         <argument
             android:name="maxValue"
             app:argType="integer" />

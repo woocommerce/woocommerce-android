@@ -6,6 +6,7 @@ import com.woocommerce.android.model.Order.Address
 import com.woocommerce.android.model.Order.Address.Type.BILLING
 import com.woocommerce.android.model.Order.Address.Type.SHIPPING
 import com.woocommerce.android.model.Order.Item
+import com.woocommerce.android.ui.products.ProductHelper
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -56,7 +57,7 @@ data class Order(
         val variationId: Long
     ) : Parcelable {
         @IgnoredOnParcel
-        val uniqueId: String = productId.toString() + variationId.toString()
+        val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
     }
 
     @Parcelize

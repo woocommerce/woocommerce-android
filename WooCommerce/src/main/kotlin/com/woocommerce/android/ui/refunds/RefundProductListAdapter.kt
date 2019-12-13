@@ -23,7 +23,7 @@ class RefundProductListAdapter(
     private val formatCurrency: (BigDecimal) -> String,
     private val imageMap: ProductImageMap,
     private val isReadOnly: Boolean,
-    private val onRefundQuantityClicked: (String) -> Unit = { }
+    private val onRefundQuantityClicked: (Long) -> Unit = { }
 ) : RecyclerView.Adapter<RefundProductListAdapter.ViewHolder>() {
     private var items = mutableListOf<RefundListItem>()
 
@@ -48,7 +48,7 @@ class RefundProductListAdapter(
         parent: ViewGroup,
         @LayoutRes layout: Int,
         private val formatCurrency: (BigDecimal) -> String,
-        private val onRefundQuantityClicked: (String) -> Unit,
+        private val onRefundQuantityClicked: (Long) -> Unit,
         private val imageMap: ProductImageMap
     ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(layout, parent, false)

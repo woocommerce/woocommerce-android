@@ -111,13 +111,13 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val refunds: List<Refund>
 
     private val maxRefund: BigDecimal
-    private val maxQuantities: Map<String, Int>
+    private val maxQuantities: Map<Long, Int>
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
     private val arguments: RefundsArgs by savedState.navArgs()
 
-    private val selectedQuantities: MutableMap<String, Int> by lazy {
-        val quantities = savedState.get<MutableMap<String, Int>>(SELECTED_QUANTITIES_KEY) ?: mutableMapOf()
+    private val selectedQuantities: MutableMap<Long, Int> by lazy {
+        val quantities = savedState.get<MutableMap<Long, Int>>(SELECTED_QUANTITIES_KEY) ?: mutableMapOf()
         savedState[SELECTED_QUANTITIES_KEY] = quantities
         quantities
     }
@@ -389,7 +389,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         refundContinuation?.resume(false)
     }
 
-    fun onRefundQuantityTapped(uniqueId: String) {
+    fun onRefundQuantityTapped(uniqueId: Long) {
         _refundItems.value?.firstOrNull { it.orderItem.uniqueId == uniqueId }?.let {
             triggerEvent(ShowNumberPicker(it))
         }
@@ -422,7 +422,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    fun onRefundQuantityChanged(uniqueId: String, newQuantity: Int) {
+    fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
         val newItems = getUpdatedItemList(uniqueId, newQuantity)
         updateRefundItems(newItems)
 
@@ -446,7 +446,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private fun getUpdatedItemList(uniqueId: String, newQuantity: Int): MutableList<RefundListItem> {
+    private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<RefundListItem> {
         val newItems = mutableListOf<RefundListItem>()
         _refundItems.value?.forEach {
             if (it.orderItem.uniqueId == uniqueId) {
@@ -512,8 +512,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     // calculate the max quantity for each item by subtracting the number of already-refunded items
-    private fun getMaxQuantities(): Map<String, Int> {
-        val map = mutableMapOf<String, Int>()
+    private fun getMaxQuantities(): Map<Long, Int> {
+        val map = mutableMapOf<Long, Int>()
         val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
         order.items.map { item ->
             map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
