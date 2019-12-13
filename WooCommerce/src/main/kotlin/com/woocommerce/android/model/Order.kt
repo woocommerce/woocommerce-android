@@ -6,6 +6,7 @@ import com.woocommerce.android.model.Order.Address
 import com.woocommerce.android.model.Order.Address.Type.BILLING
 import com.woocommerce.android.model.Order.Address.Type.SHIPPING
 import com.woocommerce.android.model.Order.Item
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -53,7 +54,10 @@ data class Order(
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val uniqueId: String = productId.toString() + variationId.toString()
+    }
 
     @Parcelize
     data class Address(
