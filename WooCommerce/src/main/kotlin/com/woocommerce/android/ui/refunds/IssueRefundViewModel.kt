@@ -179,8 +179,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
 
         val items = order.items.map {
-            val maxQuantity = maxQuantities[it.productId] ?: 0
-            val selectedQuantity = min(selectedQuantities[it.productId] ?: 0, maxQuantity)
+            val maxQuantity = maxQuantities[it.uniqueId] ?: 0
+            val selectedQuantity = min(selectedQuantities[it.uniqueId] ?: 0, maxQuantity)
             RefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
@@ -389,8 +389,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         refundContinuation?.resume(false)
     }
 
-    fun onRefundQuantityTapped(productId: Long) {
-        _refundItems.value?.firstOrNull { it.product.productId == productId }?.let {
+    fun onRefundQuantityTapped(uniqueId: Long) {
+        _refundItems.value?.firstOrNull { it.orderItem.uniqueId == uniqueId }?.let {
             triggerEvent(ShowNumberPicker(it))
         }
 
@@ -422,11 +422,11 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    fun onRefundQuantityChanged(productId: Long, newQuantity: Int) {
-        val newItems = getUpdatedItemList(productId, newQuantity)
+    fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
+        val newItems = getUpdatedItemList(uniqueId, newQuantity)
         updateRefundItems(newItems)
 
-        selectedQuantities[productId] = newQuantity
+        selectedQuantities[uniqueId] = newQuantity
 
         val (subtotal, taxes) = newItems.calculateTotals()
         val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), maxRefund)
@@ -446,14 +446,14 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private fun getUpdatedItemList(productId: Long, newQuantity: Int): MutableList<RefundListItem> {
+    private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<RefundListItem> {
         val newItems = mutableListOf<RefundListItem>()
         _refundItems.value?.forEach {
-            if (it.product.productId == productId) {
+            if (it.orderItem.uniqueId == uniqueId) {
                 newItems.add(
                         it.copy(
                                 quantity = newQuantity,
-                                maxQuantity = maxQuantities[productId] ?: 0
+                                maxQuantity = maxQuantities[uniqueId] ?: 0
                         )
                 )
             } else {
@@ -466,11 +466,11 @@ class IssueRefundViewModel @AssistedInject constructor(
     fun onSelectButtonTapped() {
         if (areAllItemsSelected) {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.product.productId, 0)
+                onRefundQuantityChanged(it.orderItem.uniqueId, 0)
             }
         } else {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.product.productId, it.maxQuantity)
+                onRefundQuantityChanged(it.orderItem.uniqueId, it.maxQuantity)
             }
         }
 
@@ -514,9 +514,9 @@ class IssueRefundViewModel @AssistedInject constructor(
     // calculate the max quantity for each item by subtracting the number of already-refunded items
     private fun getMaxQuantities(): Map<Long, Int> {
         val map = mutableMapOf<Long, Int>()
-        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.productId }
+        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
         order.items.map { item ->
-            map[item.productId] = item.quantity - (groupedRefunds[item.productId]?.sumBy { it.quantity } ?: 0)
+            map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
         }
         return map
     }

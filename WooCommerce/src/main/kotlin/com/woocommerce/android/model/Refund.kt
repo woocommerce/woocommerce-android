@@ -2,6 +2,8 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.ui.products.ProductHelper
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
@@ -29,7 +31,10 @@ data class Refund(
         val totalTax: BigDecimal = BigDecimal.ZERO,
         val sku: String = "",
         val price: BigDecimal = BigDecimal.ZERO
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
+    }
 }
 
 fun WCRefundModel.toAppModel(): Refund {

@@ -44,7 +44,10 @@ class IssueRefundFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        parentFragmentManager.beginTransaction().replace(R.id.issueRefund_frame, RefundByItemsFragment()).commit()
+        childFragmentManager
+                .beginTransaction()
+                .replace(R.id.issueRefund_frame, RefundByItemsFragment())
+                .commit()
 
         // TODO: Temporary; it will be used again in a future release - do not remove
 //        initializeViews(viewModel)

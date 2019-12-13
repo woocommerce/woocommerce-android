@@ -74,7 +74,7 @@ class RefundByItemsFragment : BaseFragment() {
                         currencyFormatter.buildBigDecimalFormatter(new.currency),
                         imageMap,
                         false,
-                        { productId -> viewModel.onRefundQuantityTapped(productId) }
+                        { uniqueId -> viewModel.onRefundQuantityTapped(uniqueId) }
                 )
             }
             new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
@@ -115,7 +115,7 @@ class RefundByItemsFragment : BaseFragment() {
                 is ShowNumberPicker -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
                             getString(R.string.order_refunds_select_quantity),
-                            event.refundItem.product.productId,
+                            event.refundItem.orderItem.uniqueId,
                             event.refundItem.maxQuantity,
                             event.refundItem.quantity
                     )

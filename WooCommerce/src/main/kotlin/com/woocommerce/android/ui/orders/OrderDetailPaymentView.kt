@@ -120,7 +120,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_refundTotalSection.hide()
 
         var availableRefundQuantity = order.items.sumBy { it.quantity }
-        refunds.flatMap { it.items }.groupBy { it.productId }.forEach { productRefunds ->
+        refunds.flatMap { it.items }.groupBy { it.uniqueId }.forEach { productRefunds ->
             val refundedCount = productRefunds.value.sumBy { it.quantity }
             availableRefundQuantity -= refundedCount
         }
