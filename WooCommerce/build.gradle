@@ -6,7 +6,7 @@ buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:3.2.0'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.51'
-        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.16'
+        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.28'
     }
 }
 
