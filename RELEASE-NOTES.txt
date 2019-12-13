@@ -5,6 +5,7 @@
 * Fixed bug that could cause stats chart to prevent scrolling vertically
 * Fixed bug that caused reviews to show an incorrect timestamp
 * Fixed rare crash when backing out of an order immediately after changing order status
+* Fixed the sorting in product variations to match the sorting displayed on the web.
  
 3.2
 -----
