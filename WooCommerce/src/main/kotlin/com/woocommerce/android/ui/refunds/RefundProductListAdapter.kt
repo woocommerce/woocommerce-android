@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
@@ -20,13 +21,15 @@ import java.math.BigDecimal
 
 class RefundProductListAdapter(
     private val formatCurrency: (BigDecimal) -> String,
-    private val onRefundQuantityClicked: (Long) -> Unit,
-    private val imageMap: ProductImageMap
+    private val imageMap: ProductImageMap,
+    private val isReadOnly: Boolean,
+    private val onRefundQuantityClicked: (Long) -> Unit = { }
 ) : RecyclerView.Adapter<RefundProductListAdapter.ViewHolder>() {
     private var items = mutableListOf<RefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ViewHolder {
-        return ViewHolder(parent, formatCurrency, onRefundQuantityClicked, imageMap)
+        val layout = if (isReadOnly) R.layout.refunds_detail_product_list_item else R.layout.refunds_product_list_item
+        return ViewHolder(parent, layout, formatCurrency, onRefundQuantityClicked, imageMap)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -43,11 +46,12 @@ class RefundProductListAdapter(
 
     class ViewHolder(
         parent: ViewGroup,
+        @LayoutRes layout: Int,
         private val formatCurrency: (BigDecimal) -> String,
         private val onRefundQuantityClicked: (Long) -> Unit,
         private val imageMap: ProductImageMap
     ) : RecyclerView.ViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.refunds_product_list_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(layout, parent, false)
     ) {
         private val nameTextView: TextView = itemView.findViewById(R.id.refundItem_productName)
         private val descriptionTextView: TextView = itemView.findViewById(R.id.refundItem_description)
