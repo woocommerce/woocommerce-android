@@ -1,39 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
-        <!--
-            Default colors
-        -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/default_window_bg</item>
-        <item name="colorButtonNormal">@color/light_gray</item>
-
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowContentTransitions">true</item>
-
-        <!--
-            Default text
-        -->
-        <item name="android:textAppearance">@style/Woo.TextAppearance</item>
-        <!--
-            Widgets
-        -->
-        <item name="tagViewStyle">@style/Woo.Tag</item>
-        <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
-        <item name="android:listViewStyle">@style/Woo.List</item>
-        <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
-        <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
-    </style>
-
-    <style name="AppTheme" parent="AppTheme.Base">
-        <!-- Overrides for various api levels -->
-    </style>
-
     <!--
         Set a custom cursor for search views so they don't inherit colorAccent
     -->
@@ -538,7 +505,7 @@
         Image viewer
     -->
     <style name="ImageViewer" />
-    <style name="ImageViewer.Activity" parent="AppTheme">
+    <style name="ImageViewer.Activity" parent="Theme.Woo.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
@@ -553,7 +520,7 @@
         <item name="colorAccent">@color/color_accent</item>
     </style>
 
-    <style name="EditText" parent="@style/AppTheme">
+    <style name="EditText" parent="Theme.Woo.DayNight">
         <item name="android:textColor">@color/edit_text_text_color</item>
         <item name="android:textColorHighlight">@color/edit_text_text_color_highlight</item>
         <item name="android:textColorHint">@color/edit_text_text_hint_color</item>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Final top-level theme -->
+    <style name="Theme.Woo.DayNight" parent="Theme.Woo.Dark"/>
+
+    <style name="Theme.Woo.Dark" parent="Theme.Woo">
+        <!-- Override dark colors -->
+    </style>
+</resources>

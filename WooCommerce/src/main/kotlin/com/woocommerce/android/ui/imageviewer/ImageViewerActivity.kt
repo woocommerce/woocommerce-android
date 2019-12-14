@@ -226,7 +226,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
      */
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
-        confirmationDialog = AlertDialog.Builder(ContextThemeWrapper(this, style.AppTheme))
+        confirmationDialog = AlertDialog.Builder(ContextThemeWrapper(this, style.Theme_Woo_DayNight))
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->

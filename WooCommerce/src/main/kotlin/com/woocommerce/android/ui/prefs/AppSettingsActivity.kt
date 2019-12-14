@@ -162,7 +162,7 @@ class AppSettingsActivity : AppCompatActivity(),
                 getString(R.string.settings_confirm_logout),
                 presenter.getAccountDisplayName()
         )
-        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
+        AlertDialog.Builder(ContextThemeWrapper(this, R.style.Theme_Woo_DayNight))
                 .setMessage(message)
                 .setPositiveButton(R.string.signout) { _, _ ->
                     AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
