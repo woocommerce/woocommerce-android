@@ -1,10 +1,13 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
 import com.woocommerce.android.ui.products.ProductStockStatus
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import java.math.BigDecimal
 
+@Parcelize
 data class ProductVariant(
     val remoteProductId: Long,
     val remoteVariationId: Long,
@@ -15,7 +18,19 @@ data class ProductVariant(
     val optionName: String,
     var priceWithCurrency: String? = null,
     val purchasable: Boolean
-)
+) : Parcelable {
+    fun isSameVariant(product: ProductVariant): Boolean {
+        return remoteVariationId == product.remoteVariationId &&
+                remoteProductId == product.remoteProductId &&
+                imageUrl == product.imageUrl &&
+                price == product.price &&
+                stockQuantity == product.stockQuantity &&
+                stockStatus == product.stockStatus &&
+                optionName == product.optionName &&
+                priceWithCurrency == product.priceWithCurrency &&
+                purchasable == product.purchasable
+    }
+}
 
 fun WCProductVariationModel.toAppModel(): ProductVariant {
     return ProductVariant(

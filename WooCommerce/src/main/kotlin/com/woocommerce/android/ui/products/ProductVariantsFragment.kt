@@ -28,7 +28,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_variants.*
 import javax.inject.Inject
 
-class ProductVariantsFragment : BaseFragment() {
+class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
     companion object {
         const val TAG: String = "ProductVariantsFragment"
     }
@@ -101,7 +101,7 @@ class ProductVariantsFragment : BaseFragment() {
 
         val activity = requireActivity()
 
-        productVariantsAdapter = ProductVariantsAdapter(activity, GlideApp.with(this))
+        productVariantsAdapter = ProductVariantsAdapter(activity, GlideApp.with(this), this)
         with(productVariantsList) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productVariantsAdapter
@@ -125,6 +125,10 @@ class ProductVariantsFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variations)
+
+    override fun onRequestLoadMore() {
+        viewModel.onLoadMoreRequested(navArgs.remoteProductId)
+    }
 
     private fun showSkeleton(show: Boolean) {
         if (show) {

@@ -11,6 +11,7 @@ import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -41,7 +42,11 @@ class ProductVariantsViewModel @AssistedInject constructor(
 
     fun refreshProductVariants(remoteProductId: Long) {
         viewState = viewState.copy(isRefreshing = true)
-        loadProductVariants(remoteProductId, forceRefresh = true)
+        loadProductVariants(remoteProductId)
+    }
+
+    fun onLoadMoreRequested(remoteProductId: Long) {
+        loadProductVariants(remoteProductId, loadMore = true)
     }
 
     override fun onCleared() {
@@ -49,27 +54,53 @@ class ProductVariantsViewModel @AssistedInject constructor(
         productVariantsRepository.onCleanup()
     }
 
-    private fun loadProductVariants(remoteProductId: Long, forceRefresh: Boolean = false) {
-        val shouldFetch = remoteProductId != this.remoteProductId
+    private fun isLoadingMore() = viewState.isLoadingMore == true
+
+    private fun isRefreshing() = viewState.isRefreshing == true
+
+    private fun loadProductVariants(
+        remoteProductId: Long,
+        loadMore: Boolean = false) {
+        if (loadMore && !productVariantsRepository.canLoadMoreProductVariants) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more product variants")
+            return
+        }
+
+        if (loadMore && isLoadingMore()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading more product variants")
+            return
+        }
+
+        if (loadMore && isRefreshing()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already refreshing product variants")
+            return
+        }
+
         this.remoteProductId = remoteProductId
 
         launch {
-            val variantsInDb = productVariantsRepository.getProductVariantList(remoteProductId)
-            if (variantsInDb.isNullOrEmpty()) {
-                viewState = viewState.copy(isSkeletonShown = true)
-                fetchProductVariants(remoteProductId)
-            } else {
-                _productVariantList.value = combineData(variantsInDb)
-                if (shouldFetch || forceRefresh) {
-                    fetchProductVariants(remoteProductId)
+            viewState = viewState.copy(isLoadingMore = loadMore)
+            if (!loadMore) {
+                // if this is the initial load, first get the product variants from the db and if there are any show
+                // them immediately, otherwise make sure the skeleton shows
+                val variantsInDb = productVariantsRepository.getProductVariantList(remoteProductId)
+                if (variantsInDb.isNullOrEmpty()) {
+                    viewState = viewState.copy(isSkeletonShown = true)
+                } else {
+                    _productVariantList.value = combineData(variantsInDb)
                 }
             }
+
+            fetchProductVariants(remoteProductId, loadMore = loadMore)
         }
     }
 
-    private suspend fun fetchProductVariants(remoteProductId: Long) {
+    private suspend fun fetchProductVariants(
+        remoteProductId: Long,
+        loadMore: Boolean = false
+    ) {
         if (networkStatus.isConnected()) {
-            val fetchedVariants = productVariantsRepository.fetchProductVariants(remoteProductId)
+            val fetchedVariants = productVariantsRepository.fetchProductVariants(remoteProductId, loadMore)
             if (fetchedVariants.isNullOrEmpty()) {
                 triggerEvent(ShowSnackbar(string.product_variants_fetch_product_variants_error))
                 triggerEvent(Exit)
@@ -81,7 +112,8 @@ class ProductVariantsViewModel @AssistedInject constructor(
         }
         viewState = viewState.copy(
                 isSkeletonShown = false,
-                isRefreshing = false
+                isRefreshing = false,
+                isLoadingMore = false
         )
     }
 
@@ -98,7 +130,9 @@ class ProductVariantsViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
-        val isRefreshing: Boolean? = null
+        val isRefreshing: Boolean? = null,
+        val isLoadingMore: Boolean? = null,
+        val canLoadMore: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory
