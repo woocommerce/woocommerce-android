@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 00:54:59+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
+    <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b>SSL-Zertifikat&lt;/b> konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
+    <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b>HTTP-Authentifizierung&lt;/b> erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
+    <string name="login_discovery_error_xmlrpc">Leider konnten wir nicht auf die &lt;b>XMLRPC-Datei&lt;/b> auf deiner Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
+    <string name="login_site_credentials_magic_link_label">Fast geschafft! Wir müssen nur noch deine mit Jetpack verbundene E-Mail-Adresse &lt;b>%1$s&lt;/b> überprüfen.</string>
+    <string name="enter_site_credentials_instead">Melde dich mit deinen Website-Anmeldedaten an.</string>
+    <string name="enter_credentials_for_site">Melde dich mit deinen Website-Anmeldedaten für %1$s an.</string>
+    <string name="send_verification_email">Verifizierungs-E-Mail senden</string>
+    <string name="settings_enable_product_teaser_message">Teste den neuen Produktabschnitt, an dem wir gerade arbeiten.</string>
+    <string name="settings_enable_product_teaser_title">Produkte</string>
+    <string name="product_wip_message">Wir sind gerade mit dem neuen Produktabschnitt beschäftigt. Während wir ihn fertigstellen, kannst du vielleicht schon einige Neuerungen sehen 🚀</string>
+    <string name="product_wip_title">In Bearbeitung!</string>
     <string name="magic_link_fetch_account_error">Es gab Probleme beim Abrufen deines Kontos. Du kannst es jetzt oder es schließen und später erneut versuchen.</string>
     <string name="magic_link_update_error">Es ist ein Fehler aufgetreten. Melde dich an, umfortzufahren</string>
     <string name="login_magic_link_token_updating">Verbindung mit deiner Website wird hergestellt…</string>
@@ -48,9 +60,9 @@ Language: de
     <string name="wc_unapproved">Nicht genehmigt</string>
     <string name="review_single_fetch_error">Fehler beim Abrufen neuer Produktbewertungen</string>
     <string name="review_fetch_error">Fehler beim Abrufen von Produktbewertungen</string>
-    <string name="order_refunds_manual_refund_error">Bei der Rückerstattung ist ein Fehler aufgetreten. Bitte versuche es erneut.</string>
-    <string name="order_refunds_manual_refund_successful">Die Rückerstattung wurde erfolgreich übermittelt.</string>
-    <string name="order_refunds_manual_refund_progress_message">Deine Rückerstattung für %s wird verarbeitet. Bitte warten …</string>
+    <string name="order_refunds_amount_refund_error">Bei der Rückerstattung ist ein Fehler aufgetreten. Bitte versuche es erneut.</string>
+    <string name="order_refunds_amount_refund_successful">Die Rückerstattung wurde erfolgreich übermittelt.</string>
+    <string name="order_refunds_amount_refund_progress_message">Deine Rückerstattung für %s wird verarbeitet. Bitte warten …</string>
     <string name="order_refunds_quote_image_description">Icon für Rückerstattungsangebot</string>
     <string name="order_refunds_manual_refund">Manuelle Rückerstattung</string>
     <string name="order_refunds_refund_details">Rückerstattungsdetails</string>
@@ -629,7 +641,7 @@ Language: de
     <string name="enter_wpcom_password">Gib dein WordPress.com-Passwort ein.</string>
     <string name="magic_link_unavailable_error_message">Zur Zeit nicht verfügbar. Bitte gib dein Passwort ein</string>
     <string name="login_magic_link_email_requesting">Anmelde-E-Mail wird angefordert</string>
-    <string name="login_magic_links_sent_label">E-Mail wurde gesendet! Überprüfe deine E-Mails auf diesem Gerät und tippe auf den Link in der E-Mail, die du von WordPress.com erhältst.</string>
+    <string name="login_magic_links_sent_label">Dein magischer Link ist unterwegs! Überprüfe deine E-Mails auf diesem Gerät und tippe auf den Link in der E-Mail, die du von WordPress.com erhalten hast.</string>
     <string name="login_magic_links_label">Wir senden dir per E-Mail einen magischen Link, mit dem du sofort angemeldet wirst, ohne dass du ein Passwort eingeben musst. Kein Zweifingersystem mehr!</string>
     <string name="password_incorrect">Dieses Passwort ist anscheinend falsch. Prüfe bitte deine Angaben und versuche es erneut.</string>
     <string name="email_not_registered_wpcom">Hmm, wir können kein WordPress.com-Konto finden, das mit dieser E-Mail-Adresse verknüpft ist. Versuche, dich über den unten stehenden Link mit deiner Website-Adresse anzumelden.</string>
@@ -652,6 +664,7 @@ Language: de
     <string name="log_in">Anmelden</string>
     <string name="help">Hilfe</string>
     <string name="password">Passwort</string>
+    <string name="username">Benutzername</string>
     <string name="enter_your_password_instead">Gib stattdessen dein Passwort ein</string>
     <string name="send_link">Link senden</string>
     <string name="invalid_verification_code">Ungültiger Überprüfungscode</string>

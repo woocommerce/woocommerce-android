@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 00:55:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="login_discovery_error_generic">No hemos podido acceder a tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
+    <string name="login_discovery_error_ssl">No hemos podido acceder a tu sitio debido a un problema con el &lt;b>Certificado SSL&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
+    <string name="login_discovery_error_http_auth">No hemos podido acceder a tu sitio porque requiere &lt;b>Autentificación con HTTP&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
+    <string name="login_discovery_error_xmlrpc">No hemos podido acceder al &lt;b>archivo XMLRPC&lt;/b> en tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
+    <string name="login_site_credentials_magic_link_label">¡Ya casi estamos! Solo necesitamos verificar tu dirección de correo electrónico conectada a Jetpack: &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">Accede con las credenciales del sitio.</string>
+    <string name="enter_credentials_for_site">Acceder con las credenciales del sitio %1$s</string>
+    <string name="send_verification_email">Enviar el correo electrónico de verificación</string>
+    <string name="settings_enable_product_teaser_message">Prueba la sección de nuevos productos mientras preparamos el lanzamiento</string>
+    <string name="settings_enable_product_teaser_title">Productos</string>
+    <string name="product_wip_message">Estamos poniendo todo nuestro empeño en la nueva sección Productos, así que puede que veas algunos cambios mientras preparamos el lanzamiento 🚀</string>
+    <string name="product_wip_title">¡Trabajo en curso!</string>
     <string name="magic_link_fetch_account_error">No se ha podido obtener tu cuenta. Puedes intentarlo de nuevo ahora o cerrar e intentarlo más tarde.</string>
     <string name="magic_link_update_error">Se ha producido un error. Accede para continuar</string>
     <string name="login_magic_link_token_updating">Conectando con tu sitio…</string>
@@ -48,9 +60,9 @@ Language: es
     <string name="wc_unapproved">Rechazada</string>
     <string name="review_single_fetch_error">No se ha podido obtener la reseña del producto</string>
     <string name="review_fetch_error">No se han podido obtener las reseñas de los productos</string>
-    <string name="order_refunds_manual_refund_error">No se ha podido realizar el reembolso. Inténtalo de nuevo.</string>
-    <string name="order_refunds_manual_refund_successful">Se ha enviado el reembolso.</string>
-    <string name="order_refunds_manual_refund_progress_message">Tu reembolso de %s se está procesando. Por favor, espera…</string>
+    <string name="order_refunds_amount_refund_error">No se ha podido realizar el reembolso. Inténtalo de nuevo.</string>
+    <string name="order_refunds_amount_refund_successful">Se ha enviado el reembolso.</string>
+    <string name="order_refunds_amount_refund_progress_message">Tu reembolso de %s se está procesando. Por favor, espera…</string>
     <string name="order_refunds_quote_image_description">Icono de comilla</string>
     <string name="order_refunds_manual_refund">Reembolso manual</string>
     <string name="order_refunds_refund_details">Información del reembolso</string>
@@ -629,7 +641,7 @@ Language: es
     <string name="enter_wpcom_password">Introduce tu contraseña de WordPress.com</string>
     <string name="magic_link_unavailable_error_message">Actualmente no disponible. Por favor, introduce tu contraseña</string>
     <string name="login_magic_link_email_requesting">Solicitando el correo electrónico de acceso</string>
-    <string name="login_magic_links_sent_label">Se ha enviado el correo electrónico. Consulta tu correo electrónico en este dispositivo y pulsa el enlace que hay en el mensaje que has recibido de WordPress.com.</string>
+    <string name="login_magic_links_sent_label">¡Tu enlace mágico está de camino! Consulta tu correo electrónico en este dispositivo y pulsa el enlace que hay en el mensaje que has recibido de WordPress.com.</string>
     <string name="login_magic_links_label">Te enviaremos por correo electrónico un enlace mágico que te conectará al instante, sin tener que introducir contraseña. ¡Caza y no picotees más!</string>
     <string name="password_incorrect">Parece que esta contraseña es incorrecta. Por favor, vuelve a comprobar tu información e inténtalo de nuevo.</string>
     <string name="email_not_registered_wpcom">Umm, no encontramos una cuenta WordPress.com conectada a esta dirección de correo. Prueba con el enlace de abajo para acceder usando la dirección de tu sitio.</string>
@@ -652,6 +664,7 @@ Language: es
     <string name="log_in">Acceder</string>
     <string name="help">Ayuda</string>
     <string name="password">Contraseña</string>
+    <string name="username">Nombre de usuario</string>
     <string name="enter_your_password_instead">Introduce tu contraseña</string>
     <string name="send_link">Enviar enlace</string>
     <string name="invalid_verification_code">Código de verificación no válido</string>

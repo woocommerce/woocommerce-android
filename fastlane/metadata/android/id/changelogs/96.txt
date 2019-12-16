@@ -1,0 +1,4 @@
+3.2:
+- Anda akan melihat bagian “varian” yang baru di layar Detail produk untuk produk variabel Anda.
+- Bilah navigasi bawah tidak lagi muncul saat menggulir — kami rasa Anda lebih suka yang begini.
+- Kami tahu bahwa tab Produk merupakan keinginan dari banyak pihak, dan kini Anda dapat mempratinjau tab Produk yang akan segera hadir tersebut — buka Pengaturan di aplikasi untuk mengaktifkannya.

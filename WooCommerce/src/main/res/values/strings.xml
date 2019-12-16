@@ -178,7 +178,7 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.22 or higher</string>
+    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.23 or higher</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for  stores using the WooCommerce Admin plugin</string>
     <!--
@@ -381,7 +381,6 @@
     <string name="product_property_variant_formatter" translatable="false">%1$s (%2$s options)</string>
     <string name="product_property_edit">Edit product</string>
     <string name="product_inventory">Inventory</string>
-    <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -422,6 +421,8 @@
     <string name="product_search_hint">Search products</string>
     <string name="product_wip_title">Work in progress!</string>
     <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch 🚀</string>
+    <string name="product_bullet" translatable="false">&#160;\u2022&#160;</string>
+    <string name="product_variant_hidden">Hidden</string>
     <!--
         Empty list messages
     -->

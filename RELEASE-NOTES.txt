@@ -6,6 +6,9 @@
 * Added a new option in the Settings page for users to opt in or out of our new Products tab.
 * Added a new variants section in the Product detail screen for variable products
 * The bottom navigation bar no longer disappears when scrolling
+* Fixed a rare crash in refunds when custom order numbers are used
+* Fixed a rare crash when updating a product variant in wp-admin and refreshing the same in the app.
+* Temporarily disabled the refunds feature due to a reporting inconsistency issue
  
 3.1
 -----
