@@ -19,16 +19,16 @@ data class ProductVariant(
     var priceWithCurrency: String? = null,
     val purchasable: Boolean
 ) : Parcelable {
-    fun isSameVariant(product: ProductVariant): Boolean {
-        return remoteVariationId == product.remoteVariationId &&
-                remoteProductId == product.remoteProductId &&
-                imageUrl == product.imageUrl &&
-                price == product.price &&
-                stockQuantity == product.stockQuantity &&
-                stockStatus == product.stockStatus &&
-                optionName == product.optionName &&
-                priceWithCurrency == product.priceWithCurrency &&
-                purchasable == product.purchasable
+    fun isSameVariant(variant: ProductVariant): Boolean {
+        return remoteVariationId == variant.remoteVariationId &&
+                remoteProductId == variant.remoteProductId &&
+                imageUrl == variant.imageUrl &&
+                price == variant.price &&
+                stockQuantity == variant.stockQuantity &&
+                stockStatus == variant.stockStatus &&
+                optionName == variant.optionName &&
+                priceWithCurrency == variant.priceWithCurrency &&
+                purchasable == variant.purchasable
     }
 }
 
