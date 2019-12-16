@@ -371,6 +371,8 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun initializeViewModel() {
+        viewModel.initializeListsForMainTabs()
+
         // populate views with any existing viewModel data
         viewModel.orderStatusOptions.value?.let { options ->
             // So the order status can be matched to the appropriate label
@@ -405,7 +407,10 @@ class OrderListFragment : TopLevelFragment(),
 
         viewModel.event.observe(this, Observer { event ->
             when (event) {
-                is ShowErrorSnack -> { uiMessageResolver.showSnack(event.messageRes) }
+                is ShowErrorSnack -> {
+                    uiMessageResolver.showSnack(event.messageRes)
+                    orderRefreshLayout?.isRefreshing = false
+                }
                 else -> event.isHandled = false
             }
         })
@@ -551,6 +556,7 @@ class OrderListFragment : TopLevelFragment(),
             clearSearchResults()
             searchMenuItem?.isVisible = true
         }
+        loadListForActiveTab()
         return true
     }
 
@@ -561,13 +567,11 @@ class OrderListFragment : TopLevelFragment(),
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
-            loadListForActiveTab()
         }
     }
 
     private fun loadListForActiveTab() {
         orderStatusFilter = getOrderStatusFilterForActiveTab()
-        getOrderStatusFilterForActiveTab()
         when (tab_layout.selectedTabPosition) {
             TAB_INDEX_PROCESSING -> viewModel.loadProcessingList()
             TAB_INDEX_ALL -> viewModel.loadAllList()
