@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-15 00:54:05+0000
+Translation-Revision-Date: 2019-12-12 00:54:52+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
+    <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
+    <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
+    <string name="login_discovery_error_xmlrpc">تعذر علينا الوصول إلى &lt;b>ملف XMLRPC&lt;/b> على موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
+    <string name="login_site_credentials_magic_link_label">تقريبًا هناك! يتعين علينا فقط التحقق من صحة عنوان بريدك الإلكتروني المتصل بـ Jetpack &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">سجِّل الدخول باستخدام بيانات اعتماد الموقع.</string>
+    <string name="enter_credentials_for_site">تسجيل الدخول باستخدام بيانات اعتماد الموقع %1$s الخاصة بك</string>
+    <string name="send_verification_email">إرسال رسالة تحقق عبر البريد الإلكتروني</string>
+    <string name="settings_enable_product_teaser_message">اختبار قسم \"المنتجات\" الجديد عندما نصبح جاهزين للبدء</string>
+    <string name="settings_enable_product_teaser_title">المنتجات</string>
+    <string name="product_wip_message">نبذل قصارى جهدنا في قسم المنتجات الجديد لكي تتمكن من رؤية بعض التغييرات عندما نصبح جاهزين للبدء &amp;#128640؛</string>
+    <string name="product_wip_title">العمل قيد التنفيذ!</string>
+    <string name="magic_link_fetch_account_error">كانت هناك بعض المشكلات في إحضار الحساب الخاص بك. يمكنك إعادة المحاولة الآن أو الإغلاق والمحاولة مرة أخرى لاحقًا.</string>
+    <string name="magic_link_update_error">حدث خطأ. يرجى تسجيل الدخول مجددًا للمتابعة</string>
+    <string name="login_magic_link_token_updating">جارٍ الاتصال بموقعك…</string>
+    <string name="product_variants">المتغيرات</string>
+    <string name="product_property_edit">تحرير منتج</string>
+    <string name="product_variants_fetch_product_variants_error">خطأ في إحضار أنواع المنتج</string>
+    <string name="my_store_stats_reverted_message">تم الإرجاع إلى الإحصاءات القديمة. لاستخدام إحصاءات بيتا، يرجى تنشيط المكون الإضافي مسؤول WooCommerce بإصدار 0.22 أو إصدار أحدث</string>
+    <string name="login_discovery_error_option_select">حدد خيارًا</string>
+    <string name="login_troubleshooting_tips">قراءة نصائح استكشاف المشكلات وإصلاحها</string>
+    <string name="login_with_wordpress">تسجيل الدخول باستخدام ووردبريس.كوم</string>
+    <string name="login_discovery_error_options">فيما يلي بعض الأشياء الأخرى التي يمكنك محاولتها:</string>
+    <string name="login_discovery_error_title">خطأ في الاتصال</string>
+    <string name="login_jetpack_not_found">لم يتم العثور على Jetpack. يرجى المحاولة مرة أخرى</string>
+    <string name="login_jetpack_view_setup_instructions">عرض تعليمات الإعداد</string>
+    <string name="login_no_jetpack">لاستخدام هذا التطبيق لـ %1$s، سيتعين عليك إعداد إضافة Jetpack وربطها بحساب ووردبريس.كوم.</string>
+    <string name="login_no_jetpack_username">تم تسجيل الدخول باسم @%1$s\nهل الحساب خطأ؟ %2$s</string>
+    <string name="try_again">حاول مرة أخرى</string>
+    <string name="product_variations">الأنواع</string>
     <string name="order_refunds_refund_manual_refund_note">لا تدعم طريقة الدفع عمليات استرداد الأموال التلقائية. أكمل عملية استرداد الأموال عن طريق تحويل الأموال إلى العميل يدويًا.</string>
     <string name="orderdetail_shipping_notice">يستخدم هذا الطلب الامتدادات لحساب الشحن. قد تكون طرق الشحن الموضَّحة غير كاملة.</string>
     <string name="orderdetail_shipping_method">طريقة الشحن</string>
@@ -30,9 +60,9 @@ Language: ar
     <string name="wc_unapproved">غير موافق عليه</string>
     <string name="review_single_fetch_error">حدث خطأ في أثناء إحضار مراجعة المنتج الجديدة</string>
     <string name="review_fetch_error">حدث خطأ في أثناء إحضار مراجعات المنتج</string>
-    <string name="order_refunds_manual_refund_error">حدث خطأ ما في عملية استرداد الأموال. يُرجى المحاولة مرة أخرى.</string>
-    <string name="order_refunds_manual_refund_successful">تم إرسال عملية استرداد الأموال بنجاح.</string>
-    <string name="order_refunds_manual_refund_progress_message">تجري معالجة عملية استرداد الأموال الخاصة بك لـ %s. يُرجى الانتظار…</string>
+    <string name="order_refunds_amount_refund_error">حدث خطأ ما في عملية استرداد الأموال. يُرجى المحاولة مجددًا.</string>
+    <string name="order_refunds_amount_refund_successful">تم إرسال عملية استرداد الأموال بنجاح.</string>
+    <string name="order_refunds_amount_refund_progress_message">تجري معالجة عملية استرداد الأموال الخاصة بك لـ %s. يُرجى الانتظار…</string>
     <string name="order_refunds_quote_image_description">أيقونة الاقتباس</string>
     <string name="order_refunds_manual_refund">عملية استرداد الأموال اليدوية</string>
     <string name="order_refunds_refund_details">تفاصيل استرداد الأموال</string>
@@ -611,6 +641,7 @@ Language: ar
     <string name="enter_wpcom_password">أدخل كلمة مرور وردبرس.كوم.</string>
     <string name="magic_link_unavailable_error_message">غير متاح حاليًا. يُرجى إدخال كلمة مرورك</string>
     <string name="login_magic_link_email_requesting">طلب بريد إلكتروني لتسجيل الدخول</string>
+    <string name="login_magic_links_sent_label">رابطك السحري على وشك الحدوث! تحقق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط الوارد في رسالة البريد الإلكتروني التي تلقيتها من ووردبريس.كوم.</string>
     <string name="login_magic_links_label">سنرسل إليك رسالة على البريد الإلكتروني تحتوي على ارتباط سحري يمكنك من تسجيل الدخول على الفور، دون الحاجة إلى كلمة مرور. لا توجد حاجة إلى تحديد المزيد أو النقر عليه!</string>
     <string name="password_incorrect">يبدو أن كلمة المرور هذه غير صحيحة. يرجى التحقق مجددًا من معلوماتك والمحاولة مرة أخرى.</string>
     <string name="email_not_registered_wpcom">حسنًا، لا يمكننا العثور على حساب وردبرس.كوم متصل بعنوان البريد الإلكتروني هذا. حاول الرابط أدناه لتسجيل الدخول باستخدام عنوان موقعك.</string>
@@ -633,6 +664,7 @@ Language: ar
     <string name="log_in">تسجيل الدخول</string>
     <string name="help">المساعدة</string>
     <string name="password">كلمة المرور</string>
+    <string name="username">إسم المستخدم</string>
     <string name="enter_your_password_instead">أدخل كلمة مرورك بدلاً من ذلك</string>
     <string name="send_link">إرسال رابط</string>
     <string name="invalid_verification_code">رمز التحقق غير صالح</string>
