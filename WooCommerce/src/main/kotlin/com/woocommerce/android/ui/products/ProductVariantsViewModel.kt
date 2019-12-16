@@ -1,18 +1,22 @@
 package com.woocommerce.android.ui.products
 
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
@@ -24,26 +28,19 @@ class ProductVariantsViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
-    val productVariantList = MutableLiveData<List<ProductVariant>>()
 
-    private val _isSkeletonShown = MutableLiveData<Boolean>()
-    val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
+    private val _productVariantList = MutableLiveData<List<ProductVariant>>()
+    val productVariantList: LiveData<List<ProductVariant>> = _productVariantList
 
-    private val _showSnackbarMessage = SingleLiveEvent<Int>()
-    val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
-
-    private val _isRefreshing = MutableLiveData<Boolean>()
-    val isRefreshing: LiveData<Boolean> = _isRefreshing
-
-    private val _exit = SingleLiveEvent<Unit>()
-    val exit: LiveData<Unit> = _exit
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateLiveData
 
     fun start(remoteProductId: Long) {
         loadProductVariants(remoteProductId)
     }
 
     fun refreshProductVariants(remoteProductId: Long) {
-        _isRefreshing.value = true
+        viewState = viewState.copy(isRefreshing = true)
         loadProductVariants(remoteProductId, forceRefresh = true)
     }
 
@@ -59,10 +56,10 @@ class ProductVariantsViewModel @AssistedInject constructor(
         launch {
             val variantsInDb = productVariantsRepository.getProductVariantList(remoteProductId)
             if (variantsInDb.isNullOrEmpty()) {
-                _isSkeletonShown.value = true
+                viewState = viewState.copy(isSkeletonShown = true)
                 fetchProductVariants(remoteProductId)
             } else {
-                productVariantList.value = combineData(variantsInDb)
+                _productVariantList.value = combineData(variantsInDb)
                 if (shouldFetch || forceRefresh) {
                     fetchProductVariants(remoteProductId)
                 }
@@ -74,16 +71,18 @@ class ProductVariantsViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             val fetchedVariants = productVariantsRepository.fetchProductVariants(remoteProductId)
             if (fetchedVariants.isNullOrEmpty()) {
-                _showSnackbarMessage.value = R.string.product_variants_fetch_product_variants_error
-                _exit.call()
+                triggerEvent(ShowSnackbar(string.product_variants_fetch_product_variants_error))
+                triggerEvent(Exit)
             } else {
-                productVariantList.value = combineData(fetchedVariants)
+                _productVariantList.value = combineData(fetchedVariants)
             }
         } else {
-            _showSnackbarMessage.value = R.string.offline_error
+            triggerEvent(ShowSnackbar(string.offline_error))
         }
-        _isRefreshing.value = false
-        _isSkeletonShown.value = false
+        viewState = viewState.copy(
+                isSkeletonShown = false,
+                isRefreshing = false
+        )
     }
 
     private fun combineData(productVariants: List<ProductVariant>): List<ProductVariant> {
@@ -95,6 +94,12 @@ class ProductVariantsViewModel @AssistedInject constructor(
         }
         return productVariants
     }
+
+    @Parcelize
+    data class ViewState(
+        val isSkeletonShown: Boolean? = null,
+        val isRefreshing: Boolean? = null
+    ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductVariantsViewModel>

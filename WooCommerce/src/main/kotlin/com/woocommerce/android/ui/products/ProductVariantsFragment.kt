@@ -15,9 +15,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
@@ -76,24 +79,20 @@ class ProductVariantsFragment : BaseFragment() {
     }
 
     private fun setupObservers(viewModel: ProductVariantsViewModel) {
-        viewModel.isSkeletonShown.observe(this, Observer {
-            showSkeleton(it)
-        })
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productVariantsRefreshLayout.isRefreshing = it }
+        }
 
         viewModel.productVariantList.observe(this, Observer {
             showProductVariants(it)
         })
 
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
-        viewModel.isRefreshing.observe(this, Observer {
-            productVariantsRefreshLayout.isRefreshing = it
-        })
-
-        viewModel.exit.observe(this, Observer {
-            activity?.onBackPressed()
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> activity?.onBackPressed()
+            }
         })
     }
 
