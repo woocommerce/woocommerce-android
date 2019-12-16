@@ -82,6 +82,7 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productVariantsRefreshLayout.isRefreshing = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
         }
 
         viewModel.productVariantList.observe(this, Observer {
@@ -136,6 +137,10 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun showLoadMoreProgress(show: Boolean) {
+        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showProductVariants(productVariants: List<ProductVariant>) {

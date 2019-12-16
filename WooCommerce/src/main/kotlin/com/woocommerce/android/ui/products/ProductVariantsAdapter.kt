@@ -85,13 +85,7 @@ class ProductVariantsAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem.stockQuantity == newItem.stockQuantity &&
-                    oldItem.remoteVariationId == newItem.remoteVariationId &&
-                    oldItem.price == newItem.price &&
-                    oldItem.purchasable == newItem.purchasable &&
-                    oldItem.stockStatus == newItem.stockStatus &&
-                    oldItem.imageUrl == newItem.imageUrl &&
-                    oldItem.optionName == newItem.optionName
+            return oldItem.isSameVariant(newItem)
         }
     }
 
