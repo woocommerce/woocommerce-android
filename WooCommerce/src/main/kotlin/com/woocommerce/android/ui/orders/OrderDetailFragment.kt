@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED
@@ -46,7 +47,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        const val REFUND_REQUEST_CODE = 1001
         private const val REFUNDS_REFRESH_DELAY = 1000L
     }
 
@@ -296,7 +296,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun issueOrderRefund(order: Order) {
         AnalyticsTracker.track(ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED)
 
-        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.number.toLong())
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.remoteId)
         findNavController().navigate(action)
     }
 
@@ -323,15 +323,17 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun setOrderStatus(newStatus: String) {
-        val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
-        orderDetail_orderStatus.updateStatus(orderStatus)
-        presenter.orderModel?.let {
-            orderDetail_productList.updateView(it, this)
-            orderDetail_paymentInfo.initView(
-                    it.toAppModel(),
-                    currencyFormatter.buildBigDecimalFormatter(it.currency),
-                    this
-            )
+        if (isAdded) {
+            val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
+            orderDetail_orderStatus.updateStatus(orderStatus)
+            presenter.orderModel?.let {
+                orderDetail_productList.updateView(it, this)
+                orderDetail_paymentInfo.initView(
+                        it.toAppModel(),
+                        currencyFormatter.buildBigDecimalFormatter(it.currency),
+                        this
+                )
+            }
         }
     }
 
@@ -636,7 +638,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
-            REFUND_REQUEST_CODE -> {
+            RequestCodes.ORDER_REFUND -> {
                 presenter.refreshOrderAfterDelay(REFUNDS_REFRESH_DELAY)
             }
         }

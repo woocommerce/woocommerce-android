@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 00:54:52+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_discovery_error_generic">Vi kunde inte komma åt din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
+    <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b>SSL-certifikatet&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
+    <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b>HTTP-autentisering&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
+    <string name="login_discovery_error_xmlrpc">Vi kunde inte komma åt &lt;b>XMLRPC-filen&lt;/b> på din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
+    <string name="login_site_credentials_magic_link_label">Nästan där! Nästan klart! Vi behöver bara bekräfta den e-postadress du har registrerad hos Jetpack &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">Logga in med dina inloggningsuppgifter.</string>
+    <string name="enter_credentials_for_site">Logga in med dina inloggningsuppgifter för %1$s</string>
+    <string name="send_verification_email">Skicka verifieringsmeddelande via e-post</string>
+    <string name="settings_enable_product_teaser_message">Testa sektionen nya produkter när vi börjar närma oss lansering</string>
+    <string name="settings_enable_product_teaser_title">Produkter</string>
+    <string name="product_wip_message">Vi jobbar hårt på den nya Produkter-sektionen så du kan se några ändringar när vi närmar oss lanseringen 🚀</string>
+    <string name="product_wip_title">Arbete pågår!</string>
     <string name="magic_link_fetch_account_error">Det uppstod ett fel när ditt konto skulle hämtas. Du kan försöka igen nu eller stänga och försöka igen senare.</string>
     <string name="magic_link_update_error">Ett fel har uppstått. Logga in för att fortsätta</string>
     <string name="login_magic_link_token_updating">Ansluter till din webbplats …</string>
@@ -48,9 +60,9 @@ Language: sv_SE
     <string name="wc_unapproved">Förkastad</string>
     <string name="review_single_fetch_error">Den nya produktrecensionen kunde inte hämtas</string>
     <string name="review_fetch_error">Produktrecensionerna kunde inte hämtas</string>
-    <string name="order_refunds_manual_refund_error">Något gick fel med återbetalningen. Var vänlig försök igen.</string>
-    <string name="order_refunds_manual_refund_successful">Återbetalningen har skickats.</string>
-    <string name="order_refunds_manual_refund_progress_message">Din återbetalning för %s behandlas. Vänligen vänta …</string>
+    <string name="order_refunds_amount_refund_error">Något gick fel med återbetalningen. Var vänlig försök igen.</string>
+    <string name="order_refunds_amount_refund_successful">Återbetalningen har skickats.</string>
+    <string name="order_refunds_amount_refund_progress_message">Din återbetalning för %s behandlas. Vänligen vänta …</string>
     <string name="order_refunds_quote_image_description">Offertikon</string>
     <string name="order_refunds_manual_refund">Manuell återbetalning</string>
     <string name="order_refunds_refund_details">Återbetalningsinformation</string>
@@ -629,7 +641,7 @@ Language: sv_SE
     <string name="enter_wpcom_password">Skriv in ditt lösenord för WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">Inte tillgänglig för närvarande. Ange ditt lösenord</string>
     <string name="login_magic_link_email_requesting">Begär e-postadress för inloggning</string>
-    <string name="login_magic_links_sent_label">E-postmeddelande skickat! Kolla e-posten på din enhet och tryck på länken i det e-postmeddelande som du får från WordPress.com</string>
+    <string name="login_magic_links_sent_label">Din magiska länk är på väg! Kolla e-posten på den här enheten och tryck på länken i det e-postmeddelande som du får från WordPress.com</string>
     <string name="login_magic_links_label">Vi skickar en magisk länk som låter dig logga in direkt, utan något lösenord. Slut på pekfingervalsandet!</string>
     <string name="password_incorrect">Det verkar som om ditt lösenord inte stämmer. Dubbelkolla dina uppgifer och försök igen.</string>
     <string name="email_not_registered_wpcom">Hmm, vi kan inte hitta något konto på WordPress.com som är kopplat till denna e-postadress. Prova länken nedan för att logga in med din webbsideadress.</string>
@@ -652,6 +664,7 @@ Language: sv_SE
     <string name="log_in">Logga in</string>
     <string name="help">Hjälp</string>
     <string name="password">Lösenord</string>
+    <string name="username">Användarnamn</string>
     <string name="enter_your_password_instead">Ange ditt lösenord istället</string>
     <string name="send_link">Skicka länk</string>
     <string name="invalid_verification_code">Ogiltig verifieringskod</string>

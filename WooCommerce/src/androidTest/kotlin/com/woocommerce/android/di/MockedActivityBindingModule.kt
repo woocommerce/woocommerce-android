@@ -6,16 +6,11 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
-import com.woocommerce.android.ui.orders.MockedAddOrderShipmentTrackingModule
-import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModule
-import com.woocommerce.android.ui.orders.MockedOrderDetailModule
-import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
-import com.woocommerce.android.ui.orders.MockedOrderListModule
+import com.woocommerce.android.ui.orders.MockedOrdersModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
-import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import com.woocommerce.android.ui.products.MockedProductDetailFragmentModule
 import com.woocommerce.android.ui.reviews.MockedReviewDetailFragmentModule
 import com.woocommerce.android.ui.reviews.MockedReviewListFragmentModule
@@ -34,12 +29,7 @@ abstract class MockedActivityBindingModule {
             MockedMainModule::class,
             MockedDashboardModule::class,
             MockedMyStoreModule::class,
-            MockedOrderListModule::class,
-            MockedOrderDetailModule::class,
-            MockedOrderProductListModule::class,
-            MockedOrderFulfillmentModule::class,
-            MockedAddOrderShipmentTrackingModule::class,
-            MockedAddOrderTrackingProviderListModule::class,
+            MockedOrdersModule::class,
             MockedProductModule::class,
             MockedReviewModule::class))
     abstract fun provideMainActivityInjector(): MainActivity

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -18,6 +17,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -46,14 +46,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ViewState(
-        product,
-        "10kg",
-        "1 x 2 x 3 cm",
-        "CZK20.00",
-        "CZK10.00",
-        "CZK30.00",
-        false,
-        storedProduct = product
+            product,
+            "10kg",
+            "1 x 2 x 3 cm",
+            "CZK20.00",
+            "CZK10.00",
+            "CZK30.00",
+            false,
+            emptyList(),
+            storedProduct = product
     )
 
     @Before

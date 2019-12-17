@@ -12,6 +12,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -36,8 +38,8 @@ class ProductDetailRepository @Inject constructor(
         private const val ACTION_TIMEOUT = 10L * 1000
     }
 
-    private var continuation: Continuation<Boolean>? = null
     private var continuationUpdateProduct: Continuation<Boolean>? = null
+    private var continuation: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -48,11 +50,16 @@ class ProductDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
-        suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-            continuation = it
+        try {
+            continuation?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuation = it
 
-            val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.d(PRODUCTS, "CancellationException while fetching single product")
         }
 
         continuation = null

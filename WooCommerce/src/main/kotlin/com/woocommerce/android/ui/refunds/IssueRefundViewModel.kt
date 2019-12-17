@@ -226,7 +226,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                     ))
 
                     val resultCall = async(dispatchers.io) {
-                        return@async refundStore.createRefund(
+                        return@async refundStore.createAmountRefund(
                                 selectedSite.get(),
                                 order.remoteId,
                                 refundByAmountState.enteredAmount,

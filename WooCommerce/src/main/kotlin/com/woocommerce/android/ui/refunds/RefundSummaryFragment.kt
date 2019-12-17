@@ -9,14 +9,14 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -73,7 +73,7 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
                 }
                 is Exit -> {
                     requireActivity().navigateBackWithResult(
-                            REFUND_REQUEST_CODE,
+                            RequestCodes.ORDER_REFUND,
                             Bundle(),
                             R.id.nav_host_fragment_main,
                             R.id.orderDetailFragment

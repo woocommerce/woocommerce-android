@@ -11,9 +11,9 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate

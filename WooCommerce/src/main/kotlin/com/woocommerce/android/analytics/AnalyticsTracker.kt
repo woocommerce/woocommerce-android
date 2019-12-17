@@ -238,6 +238,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED,
         SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED,
         SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED,
+        SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
         PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
         PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
@@ -271,6 +272,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIANTS_PULLED_TO_REFRESH,
         PRODUCT_VARIANTS_LOADED,
         PRODUCT_VARIANTS_LOAD_ERROR,
+
+        // -- Product images
+        PRODUCT_IMAGE_ADDED,
+        PRODUCT_IMAGE_REMOVED,
 
         // -- Help & Support
         SUPPORT_HELP_CENTER_VIEWED(siteless = true),
@@ -485,11 +490,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_LAST_KNOWN_VERSION_CODE = "last_known_version_code"
         const val KEY_REVIEW_ID = "review_id"
         const val KEY_NOTE_ID = "note_id"
+        const val KEY_IMAGE_SOURCE = "source"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_ORDER_FULFILL = "order_fulfill"
+        const val IMAGE_SOURCE_CAMERA = "camera"
+        const val IMAGE_SOURCE_DEVICE = "device"
 
         const val KEY_REFUND_IS_FULL = "is_full"
         const val KEY_REFUND_TYPE = "method"

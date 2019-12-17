@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 00:54:53+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="login_discovery_error_generic">לא הייתה לנו אפשרות לגשת לאתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
+    <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b>בתעודת SSL&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
+    <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b>אימות HTTP&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
+    <string name="login_discovery_error_xmlrpc">לא הייתה לנו אפשרות לגשת &lt;b>לקובץ XMLRPC&lt;/b> באתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
+    <string name="login_site_credentials_magic_link_label">כמעט סיימת! אנחנו רק צריכים לאמת שהשירות של Jetpack מחובר לכתובת האימייל שלך &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">יש להתחבר עם פרטי הכניסה של האתר.</string>
+    <string name="enter_credentials_for_site">יש להתחבר עם פרטי הכניסה שלך לאתר %1$s</string>
+    <string name="send_verification_email">לשלוח את הודעת האימייל לאישור</string>
+    <string name="settings_enable_product_teaser_message">ניתן לעיין במקטע המוצרים החדשים בזמן שאנחנו מכינים הכול להשקה</string>
+    <string name="settings_enable_product_teaser_title">מוצרים</string>
+    <string name="product_wip_message">אנחנו עובדים קשה על מקטע המוצרים החדש ולכן, ייתכן שיוצגו שינויים בזמן שאנחנו מכינים הכול להשקה 🚀</string>
+    <string name="product_wip_title">העמוד בתהליך בנייה!</string>
     <string name="magic_link_fetch_account_error">אירעה בעיה בהבאת החשבון שלך. אפשר לנסות שוב עכשיו או לסגור את העמוד ולנסות שוב מאוחר יותר.</string>
     <string name="magic_link_update_error">אירעה שגיאה. עליך להתחבר כדי להמשיך</string>
     <string name="login_magic_link_token_updating">מתחבר לאתר שלך…</string>
@@ -48,9 +60,9 @@ Language: he_IL
     <string name="wc_unapproved">לא מאושר</string>
     <string name="review_single_fetch_error">שגיאה בהבאת הביקורת על המוצר החדש</string>
     <string name="review_fetch_error">שגיאה בהבאת הביקורות על המוצר</string>
-    <string name="order_refunds_manual_refund_error">משהו השתבש בביצוע ההחזר הכספי. יש לנסות שוב.</string>
-    <string name="order_refunds_manual_refund_successful">ההחזר הכספי נשלח בהצלחה.</string>
-    <string name="order_refunds_manual_refund_progress_message">ההחזר הכספי שלך עבור %s נמצא בטיפול. נא להמתין…</string>
+    <string name="order_refunds_amount_refund_error">משהו השתבש בביצוע ההחזר הכספי. יש לנסות שוב.</string>
+    <string name="order_refunds_amount_refund_successful">ההחזר הכספי נשלח בהצלחה.</string>
+    <string name="order_refunds_amount_refund_progress_message">ההחזר הכספי שלך עבור %s נמצא בטיפול. נא להמתין…</string>
     <string name="order_refunds_quote_image_description">סמל ציטוט</string>
     <string name="order_refunds_manual_refund">החזר כספי ידני</string>
     <string name="order_refunds_refund_details">פרטי ההחזר הכספי</string>
@@ -629,7 +641,7 @@ Language: he_IL
     <string name="enter_wpcom_password">הזן את הסיסמה שלך ל-WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">לא זמין כרגע. יש להזין סיסמה</string>
     <string name="login_magic_link_email_requesting">שולח בקשה לאימייל להתחברות</string>
-    <string name="login_magic_links_sent_label">האימייל נשלח! עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com</string>
+    <string name="login_magic_links_sent_label">הקישור המיוחד שלך בדרך! עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
     <string name="login_magic_links_label">נשלח לך קישור מיוחד להתחברות מיידית, ללא צורך בסיסמה. לא צריך לחפש או לנחש!</string>
     <string name="password_incorrect">נראה שהסיסמה הזו שגויה. יש לבדוק את המידע שהזנת ולנסות שוב.</string>
     <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו. מומלץ לנסות את הקישור למטה כדי להתחבר באמצעות כתובת האתר שלך.</string>
@@ -652,6 +664,7 @@ Language: he_IL
     <string name="log_in">התחבר</string>
     <string name="help">עזרה</string>
     <string name="password">סיסמה</string>
+    <string name="username">שם משתמש</string>
     <string name="enter_your_password_instead">במקום זאת יש להזין סיסמה</string>
     <string name="send_link">שלח קישור</string>
     <string name="invalid_verification_code">קוד אימות שגוי</string>

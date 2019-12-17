@@ -1,11 +1,20 @@
 3.3
 -----
+* In rare situations, the labels on the bottom navigation bar could be cut off
+* Fixed a rare crash when updating a product variant in wp-admin and refreshing the same in the app.
+* Fixed bug that could cause stats chart to prevent scrolling vertically
+* Fixed bug that caused reviews to show an incorrect timestamp
+* Fixed rare crash when backing out of an order immediately after changing order status
+* Fixed the sorting in product variations to match the sorting displayed on the web.
  
 3.2
 -----
 * Added a new option in the Settings page for users to opt in or out of our new Products tab.
 * Added a new variants section in the Product detail screen for variable products
 * The bottom navigation bar no longer disappears when scrolling
+* Fixed a rare crash in refunds when custom order numbers are used
+* Fixed a rare crash when updating a product variant in wp-admin and refreshing the same in the app.
+* Temporarily disabled the refunds feature due to a reporting inconsistency issue
  
 3.1
 -----
@@ -13,6 +22,7 @@
  
 3.0
 -----
+* The logic that loads and updates the orders list view with orders has been completely revamped and optimized. Orders now load faster!
 * Can't remember your WordPress.com credentials? No problem! We've added a new login option that allows a user to enter their site credentials during login. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.
 
 * Added a new refunding feature that brings the ability to specify the amount to refund

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -11,18 +10,24 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
@@ -45,6 +50,7 @@ class ProductListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
 
     init {
+        EventBus.getDefault().register(this)
         if (_productList.value == null) {
             loadProducts()
         }
@@ -53,7 +59,14 @@ class ProductListViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
+        EventBus.getDefault().unregister(this)
     }
+
+    fun isSearching() = viewState.isSearchActive == true
+
+    private fun isLoadingMore() = viewState.isLoadingMore == true
+
+    private fun isRefreshing() = viewState.isRefreshing == true
 
     fun onSearchQueryChanged(query: String) {
         viewState = viewState.copy(query = query, isEmptyViewVisible = false)
@@ -105,7 +118,17 @@ class ProductListViewModel @AssistedInject constructor(
             return
         }
 
-        if (viewState.isSearchActive == true) {
+        if (loadMore && isLoadingMore()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading more products")
+            return
+        }
+
+        if (loadMore && isRefreshing()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already refreshing products")
+            return
+        }
+
+        if (isSearching()) {
             // cancel any existing search, then start a new one after a brief delay so we don't actually perform
             // the fetch until the user stops typing
             searchJob?.cancel()
@@ -118,14 +141,11 @@ class ProductListViewModel @AssistedInject constructor(
                 fetchProductList(viewState.query, loadMore)
             }
         } else {
-            if (searchJob?.isActive == true || loadJob?.isActive == true) {
-                WooLog.d(WooLog.T.PRODUCTS, "already loading products")
-                return
-            }
+            // if a fetch is already active, wait for it to finish before we start another one
+            waitForExistingLoad()
 
             loadJob = launch {
                 viewState = viewState.copy(isLoadingMore = loadMore)
-
                 if (!loadMore) {
                     // if this is the initial load, first get the products from the db and if there are any show
                     // them immediately, otherwise make sure the skeleton shows
@@ -142,6 +162,21 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * If products are already being fetched, wait for the existing job to finish
+     */
+    private fun waitForExistingLoad() {
+        if (loadJob?.isActive == true) {
+            launch {
+                try {
+                    loadJob?.join()
+                } catch (e: CancellationException) {
+                    WooLog.d(WooLog.T.PRODUCTS, "CancellationException while waiting for existing fetch")
+                }
+            }
+        }
+    }
+
     fun refreshProducts() {
         viewState = viewState.copy(isRefreshing = true)
         loadProducts()
@@ -152,22 +187,24 @@ class ProductListViewModel @AssistedInject constructor(
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
             } else {
-                val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
-                // make sure the search query hasn't changed while the fetch was processing
-                if (searchQuery == productRepository.lastSearchQuery) {
-                    if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + fetchedProducts
+                productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+                    // make sure the search query hasn't changed while the fetch was processing
+                    if (searchQuery == productRepository.lastSearchQuery) {
+                        if (loadMore) {
+                            _productList.value = _productList.value.orEmpty() + fetchedProducts
+                        } else {
+                            _productList.value = fetchedProducts
+                        }
                     } else {
-                        _productList.value = fetchedProducts
+                        WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                     }
-                } else {
-                    WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
+
+                    viewState = viewState.copy(
+                            canLoadMore = productRepository.canLoadMoreProducts,
+                            isEmptyViewVisible = _productList.value?.isEmpty() == true
+                    )
                 }
             }
-            viewState = viewState.copy(
-                    canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = _productList.value?.isEmpty() == true
-            )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
         }
@@ -177,6 +214,12 @@ class ProductListViewModel @AssistedInject constructor(
                 isLoadingMore = false,
                 isRefreshing = false
         )
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        loadProducts()
     }
 
     @Parcelize

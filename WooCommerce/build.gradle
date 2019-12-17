@@ -6,7 +6,7 @@ buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:3.2.0'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.51'
-        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.16'
+        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.28'
     }
 }
 
@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "3.2-rc-1"
+            versionName "3.2"
         }
-        versionCode 92
+        versionCode 96
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -122,13 +122,13 @@ dependencies {
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.constraintlayout:constraintlayout:1.1.3"
-    implementation "androidx.recyclerview:recyclerview:1.0.0"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "androidx.multidex:multidex:2.0.1"
-    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "com.google.android.material:material:1.0.0"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.browser:browser:1.0.0"
-    implementation "androidx.preference:preference:1.0.0"
+    implementation "androidx.preference:preference:1.1.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
@@ -222,16 +222,17 @@ dependencies {
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
 
     // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.0.0"
+    androidTestImplementation "androidx.annotation:annotation:1.1.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation(group: 'com.zendesk', name: 'support', version: '3.0.1') {
+    implementation(group: 'com.zendesk', name: 'support', version: '3.0.3') {
         exclude group: 'com.google.dagger'
     }
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
     implementation "androidx.fragment:fragment-ktx:1.1.0"
+    implementation "androidx.activity:activity-ktx:1.1.0-rc02"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0-beta01"
 
     // Coroutines
