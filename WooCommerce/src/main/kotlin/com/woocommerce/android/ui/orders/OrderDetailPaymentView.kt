@@ -101,12 +101,9 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         }
 
         if (FeatureFlag.REFUNDS.isEnabled()) {
-            paymentInfo_issueRefundButtonSection.show()
             paymentInfo_issueRefundButton.setOnClickListener {
                 actionListener.issueOrderRefund(order)
             }
-        } else {
-            paymentInfo_issueRefundButtonSection.hide()
         }
     }
 
