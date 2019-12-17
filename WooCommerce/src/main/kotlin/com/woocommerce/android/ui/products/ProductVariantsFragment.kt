@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +20,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
-import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_variants.*
 import javax.inject.Inject
 
@@ -49,11 +47,6 @@ class ProductVariantsFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_product_variants, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
-
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
@@ -76,23 +69,23 @@ class ProductVariantsFragment : BaseFragment() {
     }
 
     private fun setupObservers(viewModel: ProductVariantsViewModel) {
-        viewModel.isSkeletonShown.observe(this, Observer {
+        viewModel.isSkeletonShown.observe(viewLifecycleOwner, Observer {
             showSkeleton(it)
         })
 
-        viewModel.productVariantList.observe(this, Observer {
+        viewModel.productVariantList.observe(viewLifecycleOwner, Observer {
             showProductVariants(it)
         })
 
-        viewModel.showSnackbarMessage.observe(this, Observer {
+        viewModel.showSnackbarMessage.observe(viewLifecycleOwner, Observer {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.isRefreshing.observe(this, Observer {
+        viewModel.isRefreshing.observe(viewLifecycleOwner, Observer {
             productVariantsRefreshLayout.isRefreshing = it
         })
 
-        viewModel.exit.observe(this, Observer {
+        viewModel.exit.observe(viewLifecycleOwner, Observer {
             activity?.onBackPressed()
         })
     }
