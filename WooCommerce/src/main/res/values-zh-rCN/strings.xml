@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 00:54:52+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="login_discovery_error_generic">我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
+    <string name="login_discovery_error_ssl">由于 &lt;b>SSL 证书&lt;/b>的问题，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
+    <string name="login_discovery_error_http_auth">由于需要 &lt;b>HTTP 验证&lt;/b>，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
+    <string name="login_discovery_error_xmlrpc">我们无法访问您的站点上的 &lt;b>XMLRPC 文件&lt;/b>。您需要联系您的主机来解决这个问题。</string>
+    <string name="login_site_credentials_magic_link_label">马上就好！我们需要验证您的 Jetpack 连接的电子邮件地址 &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">使用站点凭据登录。</string>
+    <string name="enter_credentials_for_site">使用 %1$s 站点凭据登录</string>
+    <string name="send_verification_email">发送验证电子邮件</string>
+    <string name="settings_enable_product_teaser_message">在我们准备发布新产品时测试一下新的“产品”部分</string>
+    <string name="settings_enable_product_teaser_title">产品</string>
+    <string name="product_wip_message">我们正在努力开发此新的“产品”部分，因此，在我们准备发布时，您可能会看到一些更改 🚀</string>
+    <string name="product_wip_title">工作进行中！</string>
     <string name="magic_link_fetch_account_error">获取您的帐户时出现一些问题。您可以立即重试，或关闭并稍后重试。</string>
     <string name="magic_link_update_error">出现错误。请登录以继续</string>
     <string name="login_magic_link_token_updating">正在连接到您的站点…</string>
+    <string name="product_variants">变体</string>
     <string name="product_property_edit">编辑产品</string>
     <string name="product_variants_fetch_product_variants_error">获取产品变体时出错</string>
-    <string name="my_store_stats_reverted_message">我们已还原为旧统计信息。要使用测试版统计信息，请激活 0.23 或更高版本的 WooCommerce Admin 插件</string>
+    <string name="my_store_stats_reverted_message">我们已还原为旧统计信息。要使用测试版统计信息，请激活 0.22 或更高版本的 WooCommerce Admin 插件</string>
     <string name="login_discovery_error_option_select">选择一个选项</string>
     <string name="login_troubleshooting_tips">了解我们的故障排除技巧</string>
     <string name="login_with_wordpress">通过 WordPress.com 登录</string>
@@ -47,9 +60,9 @@ Language: zh_CN
     <string name="wc_unapproved">未批准</string>
     <string name="review_single_fetch_error">获取新产品评论时出错</string>
     <string name="review_fetch_error">获取产品评论时出错</string>
-    <string name="order_refunds_manual_refund_error">退款时出错。请重试。</string>
-    <string name="order_refunds_manual_refund_successful">已成功提交退款。</string>
-    <string name="order_refunds_manual_refund_progress_message">您的 %s 退款正在处理。请稍候…</string>
+    <string name="order_refunds_amount_refund_error">退款时出错。请重试。</string>
+    <string name="order_refunds_amount_refund_successful">已成功提交退款。</string>
+    <string name="order_refunds_amount_refund_progress_message">您的 %s 退款正在处理。请稍候…</string>
     <string name="order_refunds_quote_image_description">引用图标</string>
     <string name="order_refunds_manual_refund">手动退款</string>
     <string name="order_refunds_refund_details">退款详细信息</string>
@@ -628,7 +641,7 @@ Language: zh_CN
     <string name="enter_wpcom_password">输入您的 WordPress.com 密码。</string>
     <string name="magic_link_unavailable_error_message">目前不可用。请输入密码</string>
     <string name="login_magic_link_email_requesting">正在请求登录电子邮件</string>
-    <string name="login_magic_links_sent_label">电子邮件已发送！在此设备上查看电子邮件，并轻点您从 WordPress.com 收到的电子邮件中的链接</string>
+    <string name="login_magic_links_sent_label">神奇的链接就要来了！在此设备上查看电子邮件，并轻点您从 WordPress.com 收到的电子邮件中的链接。</string>
     <string name="login_magic_links_label">我们将通过电子邮件向您发送一个神奇链接，通过它您无需密码即可登录。快去看邮件!</string>
     <string name="password_incorrect">密码似乎不对。请仔细检查您的信息，然后再试一次。</string>
     <string name="email_not_registered_wpcom">找不到与此电子邮件地址关联的 WordPress.com 帐户。请尝试使用您的站点地址通过以下链接登录。</string>
@@ -651,6 +664,7 @@ Language: zh_CN
     <string name="log_in">登录</string>
     <string name="help">帮助</string>
     <string name="password">密码</string>
+    <string name="username">用户名</string>
     <string name="enter_your_password_instead">改为输入密码</string>
     <string name="send_link">发送链接</string>
     <string name="invalid_verification_code">验证码无效</string>

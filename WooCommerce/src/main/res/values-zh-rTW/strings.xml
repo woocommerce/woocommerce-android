@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:04+0000
+Translation-Revision-Date: 2019-12-12 00:54:52+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="login_discovery_error_generic">無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
+    <string name="login_discovery_error_ssl">由於 &lt;b>SSL 憑證&lt;/b>發生問題，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
+    <string name="login_discovery_error_http_auth">由於你的網站須進行 &lt;b>HTTP 驗證&lt;/b>，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
+    <string name="login_discovery_error_xmlrpc">無法存取你網站上的 &lt;b>XMLRPC 檔案&lt;/b>。你必須聯絡主機商以解決此問題。</string>
+    <string name="login_site_credentials_magic_link_label">快完成了！我們只需要驗證你與 Jetpack 綁定的電子郵件地址&lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">請使用網站憑證登入。</string>
+    <string name="enter_credentials_for_site">請使用 %1$s 網站憑證登入</string>
+    <string name="send_verification_email">傳送驗證電子郵件</string>
+    <string name="settings_enable_product_teaser_message">新產品推出前的測試階段</string>
+    <string name="settings_enable_product_teaser_title">產品</string>
+    <string name="product_wip_message">我們正在新產品籌備階段，因此也許會在產品推出前發佈一些變更 🚀</string>
+    <string name="product_wip_title">正在籌備階段！</string>
     <string name="magic_link_fetch_account_error">擷取帳號時發生錯誤。你可以現在重試，或先關閉並稍後再試。</string>
     <string name="magic_link_update_error">發生錯誤。請登入以繼續</string>
     <string name="login_magic_link_token_updating">正在連線至你的網站…</string>
+    <string name="product_variants">型號</string>
     <string name="product_property_edit">編輯商品</string>
     <string name="product_variants_fetch_product_variants_error">擷取產品不同型號時發生錯誤</string>
-    <string name="my_store_stats_reverted_message">我們已回復為舊的統計資料。若要使用 Beta 版統計資料，請啟用 0.23 或更新版本的 WooCommerce Admin 外掛程式</string>
+    <string name="my_store_stats_reverted_message">我們已回復為舊的統計資料。若要使用 Beta 版統計資料，請啟用 0.22 或更新版本的 WooCommerce Admin 外掛程式</string>
     <string name="login_discovery_error_option_select">選取一個選項</string>
     <string name="login_troubleshooting_tips">閱讀疑難排解提示</string>
     <string name="login_with_wordpress">透過 WordPress.com 登入</string>
@@ -47,9 +60,9 @@ Language: zh_TW
     <string name="wc_unapproved">未核准</string>
     <string name="review_single_fetch_error">擷取新產品評論時發生錯誤</string>
     <string name="review_fetch_error">擷取產品評論時發生錯誤</string>
-    <string name="order_refunds_manual_refund_error">退款發生錯誤。請再試一次。</string>
-    <string name="order_refunds_manual_refund_successful">退款已成功轉出。</string>
-    <string name="order_refunds_manual_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
+    <string name="order_refunds_amount_refund_error">退款發生錯誤。請再試一次。</string>
+    <string name="order_refunds_amount_refund_successful">退款已成功轉出。</string>
+    <string name="order_refunds_amount_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
     <string name="order_refunds_quote_image_description">報價圖示</string>
     <string name="order_refunds_manual_refund">手動退款</string>
     <string name="order_refunds_refund_details">退款詳細資料</string>
@@ -628,7 +641,7 @@ Language: zh_TW
     <string name="enter_wpcom_password">輸入你的 WordPress.com 密碼。</string>
     <string name="magic_link_unavailable_error_message">目前無法使用。請輸入你的密碼</string>
     <string name="login_magic_link_email_requesting">要求登入的電子郵件</string>
-    <string name="login_magic_links_sent_label">已傳送電子郵件！用此裝置查看電子郵件，點選你從 WordPress.com 收到的電子郵件中的連結。</string>
+    <string name="login_magic_links_sent_label">神奇連結已傳送！請使用此裝置查看電子郵件，並點選 WordPress.com 所傳送電子郵件中的連結。</string>
     <string name="login_magic_links_label">我們會寄給你一個神奇的連結，讓你馬上就能登入，無須輸入密碼。不用再敲著兩隻手指打字了！</string>
     <string name="password_incorrect">看來你輸入的密碼不正確。請重新確認你的資訊，然後再試一次。</string>
     <string name="email_not_registered_wpcom">很抱歉，我們找不到與此電子郵件地址連結的 WordPress.com 帳號。請試著點擊下方連結，並使用你的網站位址登入。</string>
@@ -651,6 +664,7 @@ Language: zh_TW
     <string name="log_in">登入</string>
     <string name="help">說明</string>
     <string name="password">密碼</string>
+    <string name="username">使用者帳號</string>
     <string name="enter_your_password_instead">改為輸入你的密碼</string>
     <string name="send_link">傳送連結</string>
     <string name="invalid_verification_code">驗證碼無效</string>
