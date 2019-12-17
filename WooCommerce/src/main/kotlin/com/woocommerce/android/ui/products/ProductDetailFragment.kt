@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
@@ -521,7 +522,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun showProductVariations(remoteId: Long) {
         val action = ProductDetailFragmentDirections
                 .actionProductDetailFragmentToProductVariantsFragment(remoteId)
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     /**
@@ -568,6 +569,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun showImageChooser() {
         val action = ProductDetailFragmentDirections
                 .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 }

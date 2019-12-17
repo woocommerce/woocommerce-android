@@ -10,6 +10,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -119,7 +120,7 @@ class RefundByItemsFragment : BaseFragment() {
                             event.refundItem.maxQuantity,
                             event.refundItem.quantity
                     )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
                 is ShowRefundAmountDialog -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
@@ -129,7 +130,7 @@ class RefundByItemsFragment : BaseFragment() {
                             BigDecimal.ZERO,
                             event.message
                     )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }
