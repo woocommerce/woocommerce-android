@@ -60,7 +60,8 @@ class ProductVariantsViewModel @AssistedInject constructor(
 
     private fun loadProductVariants(
         remoteProductId: Long,
-        loadMore: Boolean = false) {
+        loadMore: Boolean = false
+    ) {
         if (loadMore && !productVariantsRepository.canLoadMoreProductVariants) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more product variants")
             return
