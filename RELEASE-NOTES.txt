@@ -1,3 +1,6 @@
+3.4
+-----
+ 
 3.3
 -----
 * In rare situations, the labels on the bottom navigation bar could be cut off

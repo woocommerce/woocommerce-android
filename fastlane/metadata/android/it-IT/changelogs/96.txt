@@ -1,0 +1,4 @@
+3.2:
+- Vedrai una nuova sezione delle "variants" (varianti) nella schermata dei dettagli Prodotto per i prodotti variabili.
+- La barra di navigazione in basso non apparirà più durante lo scorrimento: crediamo lo apprezzerai.
+- Sappiamo che la scheda Products (Prodotti) è in cima alla lista dei desideri degli utenti. Ora puoi visualizzare in anteprima la scheda Products (Prodotti) in arrivo: vai su Impostazioni nell'app per abilitarla.
