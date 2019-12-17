@@ -53,7 +53,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             "CZK10.00",
             "CZK30.00",
             false,
-            emptyList(),
+            uploadingImageUris = emptyList(),
             storedProduct = product
     )
 

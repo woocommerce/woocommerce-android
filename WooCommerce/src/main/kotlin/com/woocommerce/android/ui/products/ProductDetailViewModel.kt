@@ -128,7 +128,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         launch {
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
-                updateProduct(productInDb)
+                updateProductState(productInDb)
                 if (shouldFetch) {
                     fetchProduct(remoteProductId)
                 }
@@ -153,7 +153,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
-                updateProduct(fetchedProduct)
+                updateProductState(fetchedProduct)
             } else {
                 triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
                 triggerEvent(Exit)
