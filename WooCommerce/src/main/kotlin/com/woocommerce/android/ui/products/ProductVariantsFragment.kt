@@ -14,16 +14,19 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.fragment_product_variants.*
 import javax.inject.Inject
 
-class ProductVariantsFragment : BaseFragment() {
+class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
     companion object {
         const val TAG: String = "ProductVariantsFragment"
     }
@@ -69,24 +72,21 @@ class ProductVariantsFragment : BaseFragment() {
     }
 
     private fun setupObservers(viewModel: ProductVariantsViewModel) {
-        viewModel.isSkeletonShown.observe(viewLifecycleOwner, Observer {
-            showSkeleton(it)
-        })
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productVariantsRefreshLayout.isRefreshing = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+        }
 
         viewModel.productVariantList.observe(viewLifecycleOwner, Observer {
             showProductVariants(it)
         })
 
-        viewModel.showSnackbarMessage.observe(viewLifecycleOwner, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
-        viewModel.isRefreshing.observe(viewLifecycleOwner, Observer {
-            productVariantsRefreshLayout.isRefreshing = it
-        })
-
-        viewModel.exit.observe(viewLifecycleOwner, Observer {
-            activity?.onBackPressed()
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> activity?.onBackPressed()
+            }
         })
     }
 
@@ -95,7 +95,7 @@ class ProductVariantsFragment : BaseFragment() {
 
         val activity = requireActivity()
 
-        productVariantsAdapter = ProductVariantsAdapter(activity, GlideApp.with(this))
+        productVariantsAdapter = ProductVariantsAdapter(activity, GlideApp.with(this), this)
         with(productVariantsList) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productVariantsAdapter
@@ -120,12 +120,20 @@ class ProductVariantsFragment : BaseFragment() {
 
     override fun getFragmentTitle() = getString(R.string.product_variations)
 
+    override fun onRequestLoadMore() {
+        viewModel.onLoadMoreRequested(navArgs.remoteProductId)
+    }
+
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productVariantsList, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun showLoadMoreProgress(show: Boolean) {
+        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showProductVariants(productVariants: List<ProductVariant>) {
