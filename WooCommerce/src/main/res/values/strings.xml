@@ -294,6 +294,7 @@
     <string name="order_refunds_items_select_none">Select none</string>
     <string name="order_refunds_items_selected">%d items selected</string>
     <string name="order_refunds_item_description">%d x %s each</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>

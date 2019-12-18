@@ -48,16 +48,30 @@
         tools:text="Awesome Sauce" />
 
     <TextView
-        android:id="@+id/refundItem_description"
+        android:id="@+id/refundItem_sku"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
+        android:textSize="@dimen/text_caption"
         android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
         app:layout_constraintEnd_toEndOf="@+id/refundItem_productName"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/refundItem_productName"
         app:layout_constraintTop_toBottomOf="@+id/refundItem_productName"
-        tools:text="2 x $15.00 each" />
+        tools:text="SKU: water-bottle" />
+
+    <TextView
+        android:id="@+id/refundItem_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:textSize="@dimen/text_caption"
+        android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
+        app:layout_constraintEnd_toEndOf="@+id/refundItem_productName"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/refundItem_productName"
+        app:layout_constraintTop_toBottomOf="@+id/refundItem_sku"
+        tools:text="$30.00 ($15.00 x 2)" />
 
     <TextView
         android:id="@+id/refundItem_quantity"
@@ -66,7 +80,6 @@
         android:layout_gravity="center"
         android:gravity="end"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="2" />
