@@ -3,7 +3,6 @@ package com.woocommerce.android.extensions
 import androidx.annotation.IdRes
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
-import androidx.navigation.Navigator
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 
@@ -14,11 +13,9 @@ import com.woocommerce.android.util.WooLog.T
  *
  * https://github.com/woocommerce/woocommerce-android/issues/1719
  */
-fun NavController.navigateSafely(directions: NavDirections, extras: Navigator.Extras? = null) {
+fun NavController.navigateSafely(directions: NavDirections) {
     try {
-        extras?.let {
-            navigate(directions, it)
-        } ?: navigate(directions)
+        navigate(directions)
     } catch (e: IllegalArgumentException) {
         WooLog.e(T.UTILS, e)
     }
