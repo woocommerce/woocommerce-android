@@ -45,6 +45,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:textSize="@dimen/text_caption"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:textColor="@color/wc_grey_medium"
         app:layout_constraintStart_toStartOf="parent"

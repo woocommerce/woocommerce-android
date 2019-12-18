@@ -204,6 +204,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/card_item_padding_intra_h"
             android:textAlignment="viewStart"
+            android:textSize="@dimen/text_caption"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
             android:textColor="@color/wc_grey_medium"
             tools:text="Payment of $49.00 received via credit card (PayPal)"/>
