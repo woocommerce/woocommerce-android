@@ -240,7 +240,12 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        super.onBackPressed()
+        // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
+        if (bottomNavView.currentPosition != DASHBOARD) {
+            bottomNavView.currentPosition = DASHBOARD
+        } else {
+            super.onBackPressed()
+        }
     }
 
     /**
