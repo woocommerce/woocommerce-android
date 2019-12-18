@@ -57,4 +57,12 @@
         <!-- Required: string text of title -->
         <attr name="aevTitle" format="string"/>
     </declare-styleable>
+
+    <!--
+    Emphasis values are used in combination with each "on" color to create
+    three available levels of emphasis for text and content.
+    -->
+    <attr name="emphasisHighAlpha" format="float"/>
+    <attr name="emphasisMediumAlpha" format="float"/>
+    <attr name="emphasisDisabledAlpha" format="float"/>
 </resources>
