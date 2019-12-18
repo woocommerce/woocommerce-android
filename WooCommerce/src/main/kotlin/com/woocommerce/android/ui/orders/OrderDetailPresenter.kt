@@ -143,7 +143,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     private fun loadRefunds(order: Order) {
-        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId)
+        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId).map { it.toAppModel() }
         if (refunds.isNotEmpty()) {
             orderView?.showOrderRefunds(refunds.reversed())
         } else {
@@ -155,7 +155,7 @@ class OrderDetailPresenter @Inject constructor(
                 val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
                 withContext(dispatchers.main) {
                     if (!requestResult.isError) {
-                        requestResult.model?.let { freshRefunds ->
+                        requestResult.model?.map { it.toAppModel() }?.let { freshRefunds ->
                             orderView?.showOrderRefunds(freshRefunds.reversed())
                         }
                     } else {

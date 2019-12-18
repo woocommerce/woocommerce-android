@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -34,14 +35,14 @@ data class ProductVariant(
 
 fun WCProductVariationModel.toAppModel(): ProductVariant {
     return ProductVariant(
-        this.remoteProductId,
-        this.remoteVariationId,
-        this.imageUrl,
-        this.price.toBigDecimalOrNull(),
-        ProductStockStatus.fromString(this.stockStatus),
-        this.stockQuantity,
-        getAttributeOptionName(this.getProductVariantOptions()),
-        purchasable = this.purchasable
+            this.remoteProductId,
+            this.remoteVariationId,
+            this.imageUrl,
+            this.price.toBigDecimalOrNull()?.roundError(),
+            ProductStockStatus.fromString(this.stockStatus),
+            this.stockQuantity,
+            getAttributeOptionName(this.getProductVariantOptions()),
+            purchasable = this.purchasable
     )
 }
 
