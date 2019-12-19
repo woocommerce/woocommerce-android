@@ -247,7 +247,7 @@ class OrderListFragment : TopLevelFragment(),
         if (isFilterEnabled) {
             viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
         } else if (isSearching) {
-            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true)}, 100)
+            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         } else {
             loadListForActiveTab()
         }
