@@ -177,6 +177,8 @@ class OrderListFragment : TopLevelFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
+        order_status_list_view.init(listener = this)
         initializeViewModel()
     }
 
@@ -207,9 +209,6 @@ class OrderListFragment : TopLevelFragment(),
                         tab.select()
                     }
                 }
-
-        order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        order_status_list_view.init(listener = this)
 
         listState?.let {
             order_list_view.onFragmentRestoreInstanceState(it)
