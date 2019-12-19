@@ -41,6 +41,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
@@ -226,8 +227,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                         refunds = refunds
                 )
                 orderDetail_productList.show()
+                orderDetail_refundsInfo.hide()
             } else {
                 orderDetail_productList.hide()
+
+                orderDetail_refundsInfo.initView(refunds) { ToastUtils.showToast(context, "Hello") }
+                orderDetail_refundsInfo.show()
             }
 
             // check if product is a virtual product. If it is, hide only the shipping details card

@@ -55,6 +55,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="refunds">Refunds</string>
     <string name="product_variations">Variations</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
@@ -300,6 +301,11 @@
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
+    <plurals name="order_refunds_refund_info_description">
+        <item quantity="one">%d product</item>
+        <item quantity="other">%d products</item>
+    </plurals>
+    <string name="order_refunds_refund_info_title">Refunded products</string>
     <!--
         Add Order Note
     -->
