@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -68,6 +67,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                 // Can't refund if we haven't received the money yet
                 paymentInfo_issueRefundButtonSection.hide()
             } else {
+                paymentInfo_issueRefundButtonSection.show()
                 paymentInfo_paid.text = formatCurrencyForDisplay(order.total)
 
                 val dateStr = DateFormat.getMediumDateFormat(context).format(order.datePaid)
@@ -100,10 +100,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             )
         }
 
-        if (FeatureFlag.REFUNDS.isEnabled()) {
-            paymentInfo_issueRefundButton.setOnClickListener {
-                actionListener.issueOrderRefund(order)
-            }
+        paymentInfo_issueRefundButton.setOnClickListener {
+            actionListener.issueOrderRefund(order)
         }
     }
 
@@ -128,9 +126,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             availableRefundQuantity -= refundedCount
         }
 
-        if (availableRefundQuantity > 0 && FeatureFlag.REFUNDS.isEnabled()) {
-            paymentInfo_issueRefundButtonSection.show()
-        } else {
+        if (availableRefundQuantity == 0) {
             paymentInfo_issueRefundButtonSection.hide()
         }
     }
