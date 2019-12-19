@@ -31,24 +31,27 @@
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.MaterialComponents.LargeComponent</item>
 
         <!-- Typography -->
-        <!-- TODO: Add typography -->
-        <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2</item>
-        <item name="textAppearanceHeadline3">@style/TextAppearance.MaterialComponents.Headline3</item>
-        <item name="textAppearanceHeadline4">@style/TextAppearance.MaterialComponents.Headline4</item>
-        <item name="textAppearanceHeadline5">@style/TextAppearance.MaterialComponents.Headline5</item>
-        <item name="textAppearanceHeadline6">@style/TextAppearance.MaterialComponents.Headline6</item>
-        <item name="textAppearanceSubtitle1">@style/TextAppearance.MaterialComponents.Subtitle1</item>
-        <item name="textAppearanceSubtitle2">@style/TextAppearance.MaterialComponents.Subtitle2</item>
-        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
-        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
-        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
-        <item name="textAppearanceCaption">@style/TextAppearance.MaterialComponents.Caption</item>
-        <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Woo.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Woo.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Woo.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Woo.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Woo.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Woo.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.Woo.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Woo.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Woo.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Woo.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
 
         <!-- Custom attrs for setting alpha values -->
         <item name="emphasisHighAlpha">0.87</item>
         <item name="emphasisMediumAlpha">0.60</item>
         <item name="emphasisDisabledAlpha">0.38</item>
+        <item name="emphasisHighAlphaPrimary">1.00</item>
+        <item name="emphasisMediumAlphaPrimary">0.74</item>
+        <item name="emphasisDisabledAlphaPrimary">0.38</item>
 
         <!-- Styles -->
         <!-- TODO: Configure custom styles -->
