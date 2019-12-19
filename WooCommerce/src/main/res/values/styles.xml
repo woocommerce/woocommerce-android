@@ -42,6 +42,15 @@
     </style>
 
     <!--
+        Number picker
+    -->
+    <style name="NumberPickerTheme" parent="AppTheme">
+        <item name="colorControlNormal">@color/transparent</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+    </style>
+
+    <!--
         Toolbar Theme
     -->
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -427,6 +436,13 @@
     </style>
 
     <style name="Woo.Refunds.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
+
+    <style name="Woo.Refunds.TabLayout" parent="Woo.OrderList.TabLayout" />
+
+    <style name="Woo.Refunds.Button" parent="Woo.Button">
+        <item name="android:textAlignment">viewEnd</item>
+    </style>
+
     <!--
         Settings Styles
     -->
