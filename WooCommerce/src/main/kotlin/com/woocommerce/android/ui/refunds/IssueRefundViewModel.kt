@@ -133,7 +133,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
-        maxQuantities = getMaxQuantities()
+        maxQuantities = order.getMaxRefundQuantities(refunds)
         gateway = loadPaymentGateway()
         isCashPayment = CASH_PAYMENTS.contains(order.paymentMethod)
 
@@ -515,16 +515,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                     selectedItems
                 )
         )
-    }
-
-    // calculate the max quantity for each item by subtracting the number of already-refunded items
-    private fun getMaxQuantities(): Map<Long, Int> {
-        val map = mutableMapOf<Long, Int>()
-        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
-        order.items.map { item ->
-            map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
-        }
-        return map
     }
 
     private suspend fun waitForCancellation(): Boolean {
