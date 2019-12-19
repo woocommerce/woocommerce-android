@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
 class OrderProductListPresenter @Inject constructor(
-    private val orderStore: WCOrderStore
+    private val orderStore: WCOrderStore,
+    private val refundStore: WCRefundStore,
+    private val selectedSite: SelectedSite
 ) : OrderProductListContract.Presenter {
     private var productView: OrderProductListContract.View? = null
 
@@ -32,8 +37,10 @@ class OrderProductListPresenter @Inject constructor(
         if (orderIdentifier.isNotEmpty()) {
             productView?.let { view ->
                 val orderModel = getOrderDetailFromDb(orderIdentifier)
-                orderModel?.let {
-                    view.showOrderProducts(it)
+                orderModel?.let { order ->
+                    val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteOrderId)
+                            .map { it.toAppModel() }
+                    view.showOrderProducts(order, refunds = refunds)
                 }
             }
         }

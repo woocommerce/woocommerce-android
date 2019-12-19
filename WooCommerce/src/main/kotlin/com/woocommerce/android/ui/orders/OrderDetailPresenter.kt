@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -131,28 +131,25 @@ class OrderDetailPresenter @Inject constructor(
         if (orderIdentifier.isNotEmpty()) {
             orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
-                orderView?.showOrderDetail(order, isFreshData = false)
+                val refunds = loadRefundsFromDb(order)
+                orderView?.showOrderDetail(order, isFreshData = false, refunds = refunds)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadRefundsFromDb(order.toAppModel())
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
+    private fun loadRefundsFromDb(order: WCOrderModel): List<Refund> {
+        return refundStore.getAllRefunds(selectedSite.get(), order.remoteOrderId)
+                .map { it.toAppModel() }
+                .reversed()
+    }
+
     override fun refreshOrderAfterDelay(refreshDelay: Long) {
         GlobalScope.launch(dispatchers.computation) {
             delay(refreshDelay)
             refreshOrderDetail(false)
-        }
-    }
-
-    private fun loadRefundsFromDb(order: Order) {
-        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId).map { it.toAppModel() }
-        if (refunds.isNotEmpty()) {
-            orderView?.showOrderRefunds(refunds.reversed())
-        } else {
-            orderView?.showOrderRefundTotal(order.refundTotal)
         }
     }
 
@@ -343,18 +340,14 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    private suspend fun awaitAndShowRefunds() {
-        deferredRefunds?.await()?.let { requestResult ->
+    private suspend fun awaitRefunds(): List<Refund> {
+        return deferredRefunds?.await()?.let { requestResult ->
             if (!requestResult.isError) {
-                requestResult.model?.map { it.toAppModel() }?.let { freshRefunds ->
-                    orderView?.showOrderRefunds(freshRefunds.reversed())
-                }
+                requestResult.model?.map { it.toAppModel() } ?: emptyList()
             } else {
-                orderModel?.toAppModel()?.let { order ->
-                    orderView?.showOrderRefundTotal(order.refundTotal)
-                }
+                emptyList()
             }
-        }
+        } ?: emptyList()
     }
 
     @Suppress("unused")
@@ -369,9 +362,9 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
                 GlobalScope.launch(dispatchers.main) {
                     orderModel?.let { order ->
-                        awaitAndShowRefunds()
+                        val refunds = awaitRefunds()
+                        orderView?.showOrderDetail(order, isFreshData = true, refunds = refunds)
                         orderView?.showSkeleton(false)
-                        orderView?.showOrderDetail(order, isFreshData = true)
                         loadOrderNotes()
                         loadOrderShipmentTrackings()
                     } ?: orderView?.showLoadOrderError()

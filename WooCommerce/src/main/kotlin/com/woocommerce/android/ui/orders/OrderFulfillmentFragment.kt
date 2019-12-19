@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -83,15 +84,16 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
         super.onStop()
     }
 
-    override fun showOrderDetail(order: WCOrderModel) {
+    override fun showOrderDetail(order: WCOrderModel, refunds: List<Refund>) {
         // Populate the Order Product List Card
         orderFulfill_products.initView(
-                order = order,
+                orderModel = order,
                 productImageMap = productImageMap,
                 expanded = true,
-                formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
                 orderListener = null,
-                productListener = this
+                productListener = this,
+                refunds = refunds
         )
 
         // Check for customer provided note, show if available

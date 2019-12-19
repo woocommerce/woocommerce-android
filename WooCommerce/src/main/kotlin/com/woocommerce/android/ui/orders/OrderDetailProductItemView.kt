@@ -7,9 +7,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.model.Order
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.PhotonUtils
+import java.math.BigDecimal
 import java.text.NumberFormat
 
 class OrderDetailProductItemView @JvmOverloads constructor(
@@ -21,10 +22,10 @@ class OrderDetailProductItemView @JvmOverloads constructor(
     }
 
     fun initView(
-        item: WCOrderModel.LineItem,
+        item: Order.Item,
         productImage: String?,
         expanded: Boolean,
-        formatCurrencyForDisplay: (String?) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
         productInfo_name.text = item.name
 

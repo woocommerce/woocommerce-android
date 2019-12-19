@@ -39,7 +39,6 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
@@ -199,7 +198,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
 
-    override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
+    override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean, refunds: List<Refund>) {
         order?.let {
             // set the title to the order number
             updateActivityTitle()
@@ -215,12 +214,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(
-                    order = order,
+                    orderModel = order,
                     productImageMap = productImageMap,
                     expanded = false,
-                    formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
                     orderListener = this,
-                    productListener = this
+                    productListener = this,
+                    refunds = refunds
             )
 
             // check if product is a virtual product. If it is, hide only the shipping details card
@@ -238,6 +238,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     currencyFormatter.buildBigDecimalFormatter(order.currency),
                     this
             )
+
+            if (refunds.isNotEmpty()) {
+                orderDetail_paymentInfo.showRefunds(refunds)
+            } else {
+                orderDetail_paymentInfo.showRefundTotal(order.toAppModel().refundTotal)
+            }
 
             if (isFreshData) {
                 isRefreshPending = false
@@ -454,14 +460,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         } else {
             activity?.onBackPressed()
         }
-    }
-
-    override fun showOrderRefunds(refunds: List<Refund>) {
-        orderDetail_paymentInfo.showRefunds(refunds)
-    }
-
-    override fun showOrderRefundTotal(refundTotal: BigDecimal) {
-        orderDetail_paymentInfo.showRefundTotal(refundTotal)
     }
 
     override fun showAddOrderNoteScreen(order: WCOrderModel) {
