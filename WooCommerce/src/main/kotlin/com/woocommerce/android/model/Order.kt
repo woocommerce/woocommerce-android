@@ -90,6 +90,8 @@ data class Order(
         }
         return map
     }
+
+    fun hasNonRefundedItems(refunds: List<Refund>): Boolean = getMaxRefundQuantities(refunds).values.any { it > 0 }
 }
 
 fun WCOrderModel.toAppModel(): Order {

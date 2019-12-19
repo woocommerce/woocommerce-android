@@ -19,6 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
@@ -213,15 +215,20 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     })
 
             // Populate the Order Product List Card
-            orderDetail_productList.initView(
-                    orderModel = order,
-                    productImageMap = productImageMap,
-                    expanded = false,
-                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-                    orderListener = this,
-                    productListener = this,
-                    refunds = refunds
-            )
+            if (order.toAppModel().hasNonRefundedItems(refunds)) {
+                orderDetail_productList.initView(
+                        orderModel = order,
+                        productImageMap = productImageMap,
+                        expanded = false,
+                        formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                        orderListener = this,
+                        productListener = this,
+                        refunds = refunds
+                )
+                orderDetail_productList.show()
+            } else {
+                orderDetail_productList.hide()
+            }
 
             // check if product is a virtual product. If it is, hide only the shipping details card
             val isVirtualProduct = presenter.isVirtualProduct(order)
