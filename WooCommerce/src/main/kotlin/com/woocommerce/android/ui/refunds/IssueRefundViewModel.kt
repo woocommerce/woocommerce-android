@@ -162,7 +162,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                     availableForRefund = resourceProvider.getString(
                             R.string.order_refunds_available_for_refund,
                             formatCurrency(maxRefund)
-                    )
+                    ),
+                    isNextButtonEnabled = false
             )
         }
     }
@@ -174,7 +175,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                    isShippingRefundVisible = false
+                    isShippingRefundVisible = false,
+                    isNextButtonEnabled = false
             )
         }
 
@@ -441,7 +443,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                 formattedProductsRefund = formatCurrency(productsRefund),
                 taxes = formatCurrency(taxes),
                 subtotal = formatCurrency(subtotal),
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
+                isNextButtonEnabled = _refundItems.value?.any { it.quantity > 0 } ?: false,
                 selectButtonTitle = selectButtonTitle
         )
     }
