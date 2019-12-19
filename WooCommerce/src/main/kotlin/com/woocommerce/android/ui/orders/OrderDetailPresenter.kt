@@ -23,10 +23,11 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -47,6 +48,8 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
@@ -99,6 +102,8 @@ class OrderDetailPresenter @Inject constructor(
     private var isNotesInit = false
     private var isRefreshingOrderStatusOptions = false
 
+    private var deferredRefunds: Deferred<WooResult<List<WCRefundModel>>>? = null
+
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
         dispatcher.register(this)
@@ -128,7 +133,7 @@ class OrderDetailPresenter @Inject constructor(
             orderModel?.let { order ->
                 orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadRefunds(order.toAppModel())
+                loadRefundsFromDb(order.toAppModel())
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
@@ -142,27 +147,12 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    private fun loadRefunds(order: Order) {
+    private fun loadRefundsFromDb(order: Order) {
         val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId).map { it.toAppModel() }
         if (refunds.isNotEmpty()) {
             orderView?.showOrderRefunds(refunds.reversed())
         } else {
             orderView?.showOrderRefundTotal(order.refundTotal)
-        }
-
-        if (networkStatus.isConnected()) {
-            GlobalScope.launch(dispatchers.io) {
-                val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
-                withContext(dispatchers.main) {
-                    if (!requestResult.isError) {
-                        requestResult.model?.map { it.toAppModel() }?.let { freshRefunds ->
-                            orderView?.showOrderRefunds(freshRefunds.reversed())
-                        }
-                    } else {
-                        orderView?.showOrderRefundTotal(order.refundTotal)
-                    }
-                }
-            }
         }
     }
 
@@ -248,9 +238,17 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean) {
+        fetchRefunds(remoteOrderId)
+
         orderView?.showSkeleton(displaySkeleton)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
+    }
+
+    private fun fetchRefunds(remoteOrderId: Long) {
+        deferredRefunds = GlobalScope.async {
+            refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
+        }
     }
 
     /**
@@ -345,6 +343,20 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    private suspend fun awaitAndShowRefunds() {
+        deferredRefunds?.await()?.let { requestResult ->
+            if (!requestResult.isError) {
+                requestResult.model?.map { it.toAppModel() }?.let { freshRefunds ->
+                    orderView?.showOrderRefunds(freshRefunds.reversed())
+                }
+            } else {
+                orderModel?.toAppModel()?.let { order ->
+                    orderView?.showOrderRefundTotal(order.refundTotal)
+                }
+            }
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -355,13 +367,15 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showLoadOrderError()
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
-                orderModel?.let { order ->
-                    orderView?.showSkeleton(false)
-                    orderView?.showOrderDetail(order, isFreshData = true)
-                    loadRefunds(order.toAppModel())
-                    loadOrderNotes()
-                    loadOrderShipmentTrackings()
-                } ?: orderView?.showLoadOrderError()
+                GlobalScope.launch(dispatchers.main) {
+                    orderModel?.let { order ->
+                        awaitAndShowRefunds()
+                        orderView?.showSkeleton(false)
+                        orderView?.showOrderDetail(order, isFreshData = true)
+                        loadOrderNotes()
+                        loadOrderShipmentTrackings()
+                    } ?: orderView?.showLoadOrderError()
+                }
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
