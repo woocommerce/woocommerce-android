@@ -9,14 +9,11 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Unconfined
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
@@ -81,7 +78,6 @@ abstract class MockedOrderDetailModule {
         }
 
         @JvmStatic
-        @ActivityScope
         @Provides
         fun provideOrderDetailPresenter(): OrderDetailContract.Presenter {
             /**
@@ -103,7 +99,7 @@ abstract class MockedOrderDetailModule {
                             mock(),
                             mock()
                     ),
-                    Dispatchers.Unconfined,
+                    Unconfined,
                     RefundMapper()
             )
             val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
@@ -154,7 +150,4 @@ abstract class MockedOrderDetailModule {
             return mockedOrderDetailPresenter
         }
     }
-
-    @ContributesAndroidInjector
-    abstract fun orderDetailfragment(): OrderDetailFragment
 }

@@ -150,21 +150,6 @@ class ProductListAdapter(
         }
     }
 
-    private class ProductItemDiffUtil(val items: List<Product>, val result: List<Product>) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                items[oldItemPosition].remoteId == result[newItemPosition].remoteId
-
-        override fun getOldListSize(): Int = items.size
-
-        override fun getNewListSize(): Int = result.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = items[oldItemPosition]
-            val newItem = result[newItemPosition]
-            return oldItem.isSameProduct(newItem)
-        }
-    }
-
     fun setProductList(products: List<Product>) {
         fun isSameList(): Boolean {
             if (products.size != productList.size) {
@@ -192,5 +177,20 @@ class ProductListAdapter(
         val imgProduct: ImageView = view.productImage
         val txtProductName: TextView = view.productName
         val txtProductStockAndStatus: TextView = view.productStockAndStatus
+    }
+
+    private class ProductItemDiffUtil(val items: List<Product>, val result: List<Product>) : DiffUtil.Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                items[oldItemPosition].remoteId == result[newItemPosition].remoteId
+
+        override fun getOldListSize(): Int = items.size
+
+        override fun getNewListSize(): Int = result.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = items[oldItemPosition]
+            val newItem = result[newItemPosition]
+            return oldItem.isSameProduct(newItem)
+        }
     }
 }

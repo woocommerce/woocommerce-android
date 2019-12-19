@@ -35,8 +35,34 @@
                 <com.woocommerce.android.widgets.WCProductImageGalleryView
                     android:id="@+id/imageGallery"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:height="200dp" />
+                    android:layout_height="@dimen/product_image_gallery_image_size"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/margin_extra_large"
+                    android:layout_marginBottom="@dimen/margin_extra_large"
+                    android:background="@color/white"
+                    app:isGridView="false"
+                    app:showAddImageIcon="true" />
+
+                <FrameLayout
+                    android:id="@+id/addImageContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/product_image_gallery_image_size"
+                    android:background="@drawable/ripple_grey_framed"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/textAddImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_gridicons_add_image"
+                        android:drawablePadding="@dimen/margin_medium"
+                        android:gravity="center"
+                        android:text="@string/product_image_add"
+                        android:textColor="@color/wc_grey_mid"
+                        android:textSize="@dimen/text_medium" />
+                </FrameLayout>
 
                 <FrameLayout
                     android:id="@+id/frameStatusBadge"

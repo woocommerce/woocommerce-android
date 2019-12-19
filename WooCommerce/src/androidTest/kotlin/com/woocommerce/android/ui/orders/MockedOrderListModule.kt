@@ -1,77 +1,103 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.os.Bundle
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.paging.PagedList
+import androidx.savedstate.SavedStateRegistryOwner
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.di.ActivityScope
+import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.list.MockedOrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderFetcher
+import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType
+import com.woocommerce.android.ui.orders.list.OrderListRepository
+import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.woocommerce.android.viewmodel.ViewModelKey
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
-import kotlinx.coroutines.Dispatchers
-import org.mockito.ArgumentMatchers.anyString
+import dagger.multibindings.IntoMap
+import kotlinx.coroutines.Dispatchers.Unconfined
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.store.WCGatewayStore
+import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 
 @Module
 abstract class MockedOrderListModule {
     @Module
     companion object {
-        private var orders: List<WCOrderModel>? = null
-        private var orderStatusList: Map<String, WCOrderStatusModel>? = null
+        private var testOrders: PagedList<OrderListItemUIType>? = null
+        private var testOrderStatusOptions: Map<String, WCOrderStatusModel>? = null
+        private val mockDispatcher = mock<Dispatcher>()
 
-        fun setOrders(orders: List<WCOrderModel>) {
-            this.orders = orders
+        fun setMockedOrders(ordersList: PagedList<OrderListItemUIType>) {
+            this.testOrders = ordersList
         }
 
-        fun setOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
-            this.orderStatusList = orderStatusList
+        fun setMockedOrderStatusList(orderStatusOptions: Map<String, WCOrderStatusModel>) {
+            this.testOrderStatusOptions = orderStatusOptions
         }
 
         @JvmStatic
-        @ActivityScope
         @Provides
-        fun provideOrderListPresenter(): OrderListContract.Presenter {
-            /**
-             * Creating a spy object here since we need to mock specific methods of [OrderListPresenter] class
-             * instead of mocking all the methods in the class.
-             * We cannot mock final classes ([WCOrderStore], [SelectedSite] and [NetworkStatus]), so
-             * creating a mock instance of those classes and passing to the presenter class constructor.
-             */
-            val mockDispatcher = mock<Dispatcher>()
+        fun provideOrderListViewModel(
+            site: SelectedSite,
+            networkStatus: NetworkStatus,
+            listStore: ListStore
+        ): OrderListViewModel {
             val mockContext = mock<Context>()
+            val orderStore = WCOrderStore(
+                    mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock()))
             val gatewayStore = mock<WCGatewayStore>()
-            val coroutineDispatchers = CoroutineDispatchers(
-                    Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
-            val mockedOrderListPresenter = spy(OrderListPresenter(
-                    coroutineDispatchers,
-                    mockDispatcher,
-                    WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
-                    SelectedSite(mockContext, mock()),
-                    NetworkStatus(mockContext),
-                    gatewayStore
-            ))
+            val testDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
+            val repository = spy(OrderListRepository(mockDispatcher, testDispatchers, orderStore, gatewayStore, site))
+            val mockSavedState: SavedStateWithArgs = mock()
+            val orderFetcher: OrderFetcher = mock()
+            doReturn(MutableLiveData(ViewState())).whenever(mockSavedState).getLiveData<ViewState>(any(), any())
 
-            /**
-             * Mocking the below methods in [OrderListPresenter] class to pass mock values.
-             * These are the methods that invoke [WCOrderStore] methods from FluxC
-             */
-            doReturn(true).whenever(mockedOrderListPresenter).isOrderStatusOptionsRefreshing()
-            doReturn(orderStatusList).whenever(mockedOrderListPresenter).getOrderStatusOptions()
-            doReturn(orders).whenever(mockedOrderListPresenter).fetchOrdersFromDb(anyString(), eq(false))
-            return mockedOrderListPresenter
+            val viewModel = spy(MockedOrderListViewModel(
+                    dispatchers = testDispatchers,
+                    repository = repository,
+                    orderStore = orderStore,
+                    listStore = listStore,
+                    networkStatus = networkStatus,
+                    dispatcher = mockDispatcher,
+                    selectedSite = site,
+                    fetcher = orderFetcher,
+                    arg0 = mockSavedState
+            ))
+            viewModel.testOrderData = this.testOrders
+            viewModel.testOrderStatusData = this.testOrderStatusOptions
+
+            return viewModel
+        }
+
+        @JvmStatic
+        @Provides
+        fun provideDefaultArgs(): Bundle? {
+            return null
         }
     }
 
-    @ContributesAndroidInjector
-    abstract fun orderListFragment(): OrderListFragment
+    @Binds
+    @IntoMap
+    @ViewModelKey(OrderListViewModel::class)
+    abstract fun bindFactory(factory: MockedOrderListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    abstract fun bindSavedStateRegistryOwner(fragment: OrderListFragment): SavedStateRegistryOwner
 }

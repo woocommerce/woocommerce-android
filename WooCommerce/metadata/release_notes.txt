@@ -1,3 +1,2 @@
-- You’ll see a new “variants” section in the Product detail screen for your variable products.
-- The bottom navigation bar no longer disappears when scrolling — we think you’ll like it better.
-- We know a Products tab is high on people’s wish lists, and you can now preview the coming-soon Products tab — head to Settings in the app to enable it.
+- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
+- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.

@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.core.app.JobIntentService
 import androidx.preference.PreferenceManager
 import com.google.firebase.iid.FirebaseInstanceId
+import com.woocommerce.android.JobServiceIds.JOB_FCM_REGISTRATION_SERVICE_ID
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -27,7 +28,6 @@ class FCMRegistrationIntentService : JobIntentService() {
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     companion object {
-        private const val JOB_FCM_REGISTRATION_SERVICE_ID = 1000
         const val WPCOM_PUSH_DEVICE_TOKEN = "WC_PREF_NOTIFICATIONS_TOKEN"
 
         fun enqueueWork(context: Context) {

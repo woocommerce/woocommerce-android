@@ -18,9 +18,9 @@ import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.
 import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.reviews.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
