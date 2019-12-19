@@ -65,4 +65,7 @@
     <attr name="emphasisHighAlpha" format="float"/>
     <attr name="emphasisMediumAlpha" format="float"/>
     <attr name="emphasisDisabledAlpha" format="float"/>
+    <attr name="emphasisHighAlphaPrimary" format="float"/>
+    <attr name="emphasisMediumAlphaPrimary" format="float"/>
+    <attr name="emphasisDisabledAlphaPrimary" format="float"/>
 </resources>
