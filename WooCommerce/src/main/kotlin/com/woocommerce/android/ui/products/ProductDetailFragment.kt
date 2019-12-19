@@ -288,7 +288,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                     SpannableString(HtmlUtils.fromHtml(description)),
                     LinearLayout.VERTICAL
             )?.also {
-                it.setMaxLines(2)
+                it.setMaxLines(1)
                 it.setClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED)
                     showProductDescriptionEditor(product.description)
