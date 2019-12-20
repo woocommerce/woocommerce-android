@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackin
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -36,6 +37,7 @@ class OrderFulfillmentPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val productStore: WCProductStore = mock()
+    private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val uiMessageResolver: UIMessageResolver = mock()
     private val networkStatus: NetworkStatus = mock()
@@ -46,7 +48,7 @@ class OrderFulfillmentPresenterTest {
     @Before
     fun setup() {
         presenter = spy(OrderFulfillmentPresenter(
-                dispatcher, orderStore, productStore, selectedSite, uiMessageResolver, networkStatus
+                dispatcher, orderStore, productStore, refundStore, selectedSite, uiMessageResolver, networkStatus
         ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
@@ -58,7 +60,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(order.getIdentifier())
-        verify(view).showOrderDetail(order)
+        verify(view).showOrderDetail(order, emptyList())
     }
 
     @Test
@@ -300,7 +302,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(order.getIdentifier())
-        verify(view).showOrderDetail(any())
+        verify(view).showOrderDetail(any(), any())
 
         assertTrue(presenter.isVirtualProduct(order))
     }
@@ -314,7 +316,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(order.getIdentifier())
-        verify(view).showOrderDetail(any())
+        verify(view).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order))
     }
@@ -333,7 +335,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(order.getIdentifier())
-        verify(view).showOrderDetail(any())
+        verify(view).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order))
     }
@@ -345,7 +347,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(order.getIdentifier())
-        verify(view).showOrderDetail(any())
+        verify(view).showOrderDetail(any(), any())
 
         verify(productStore, times(0)).getProductsByRemoteIds(any(), any())
         assertFalse(presenter.isVirtualProduct(order))
@@ -359,7 +361,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(order.getIdentifier())
-        verify(view).showOrderDetail(any())
+        verify(view).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order))
     }
