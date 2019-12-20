@@ -76,7 +76,9 @@ class ProductDetailRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationUpdateProduct = it
 
-                val payload = WCProductStore.UpdateProductPayload(selectedSite.get(), updatedProduct.toDataModel())
+                val payload = WCProductStore.UpdateProductPayload(
+                        selectedSite.get(), updatedProduct.toDataModel(getCachedWCProductModel(updatedProduct.remoteId))
+                )
                 dispatcher.dispatch(WCProductActionBuilder.newUpdateProductAction(payload))
             } ?: false // request timed out
         } catch (e: CancellationException) {
@@ -85,8 +87,10 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    fun getProduct(remoteProductId: Long): Product? =
-            productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.toAppModel()
+    private fun getCachedWCProductModel(remoteProductId: Long) =
+            productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+
+    fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

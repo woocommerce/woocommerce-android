@@ -80,8 +80,8 @@ data class Product(
     }
 }
 
-fun Product.toDataModel(): WCProductModel {
-    return WCProductModel().also {
+fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
+    return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
     }
