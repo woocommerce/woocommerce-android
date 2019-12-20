@@ -41,7 +41,6 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
@@ -215,7 +214,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                         }
                     })
 
-            // Populate the Order Product List Card
+            // populate the Order Product List Card if not all have been refunded
             if (order.toAppModel().hasNonRefundedItems(refunds)) {
                 orderDetail_productList.initView(
                         orderModel = order,
@@ -227,12 +226,16 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                         refunds = refunds
                 )
                 orderDetail_productList.show()
-                orderDetail_refundsInfo.hide()
             } else {
                 orderDetail_productList.hide()
+            }
 
-                orderDetail_refundsInfo.initView(refunds) { ToastUtils.showToast(context, "Hello") }
+            // show the refund products count if at least one refunded
+            if (refunds.any { refund -> refund.items.sumBy { it.quantity } > 0 }) {
+                orderDetail_refundsInfo.initView(refunds) { openRefundedProductList(order) }
                 orderDetail_refundsInfo.show()
+            } else {
+                orderDetail_refundsInfo.hide()
             }
 
             // check if product is a virtual product. If it is, hide only the shipping details card
@@ -332,6 +335,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderProductListFragment(
                 order.getIdentifier(),
                 order.number
+        )
+        findNavController().navigate(action)
+    }
+
+    override fun openRefundedProductList(order: WCOrderModel) {
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundDetailFragment(
+                order.remoteOrderId
         )
         findNavController().navigate(action)
     }
