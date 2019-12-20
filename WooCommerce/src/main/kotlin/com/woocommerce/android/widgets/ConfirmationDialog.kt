@@ -6,18 +6,11 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.text.TextUtils
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.Observer
-import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.util.CurrencyFormatter
-import org.wordpress.android.util.ActivityUtils
-import java.math.BigDecimal
 
 open class ConfirmationDialog : DialogFragment(), DialogInterface.OnClickListener {
     companion object {

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.refunds
 import android.app.Dialog
 import android.os.Bundle
 import androidx.navigation.navGraphViewModels
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.ConfirmationDialog
