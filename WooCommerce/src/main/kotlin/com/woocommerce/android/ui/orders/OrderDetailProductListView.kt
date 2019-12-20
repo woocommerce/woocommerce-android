@@ -64,7 +64,6 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
 
         val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
 
-
         val order = orderModel.toAppModel()
         val leftoverProducts = order.getMaxRefundQuantities(refunds).filter { it.value > 0 }
         val filteredItems = order.items.filter { leftoverProducts.contains(it.uniqueId) }
