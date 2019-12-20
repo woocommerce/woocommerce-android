@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import com.woocommerce.android.extensions.calculateTotals
+import com.woocommerce.android.extensions.isCashPayment
 
 @OpenClassOnDebug
 class RefundDetailViewModel @AssistedInject constructor(
@@ -83,7 +84,7 @@ class RefundDetailViewModel @AssistedInject constructor(
     }
 
     private fun displayRefundDetails(refund: Refund, order: Order) {
-        val method = if (refund.automaticGatewayRefund)
+        val method = if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
             order.paymentMethodTitle
         else
             "${resourceProvider.getString(R.string.order_refunds_manual_refund)} - ${order.paymentMethodTitle}"

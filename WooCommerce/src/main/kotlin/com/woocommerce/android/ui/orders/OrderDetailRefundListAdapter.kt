@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -56,7 +57,7 @@ class OrderDetailRefundListAdapter(
             amountTextView.text = "-${formatCurrency(refund.amount)}"
 
             val linkText = itemView.resources.getString(R.string.orderdetail_refund_view_details)
-            val method = if (refund.automaticGatewayRefund)
+            val method = if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
                 order.paymentMethodTitle
             else
                 itemView.context.getString(R.string.order_refunds_manual_refund)

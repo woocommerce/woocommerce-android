@@ -22,6 +22,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.calculateTotals
+import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -83,7 +84,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val REFUND_METHOD_MANUAL = "manual"
         private const val SELECTED_QUANTITIES_KEY = "selected_quantities_key"
-        private val CASH_PAYMENTS = listOf("cod", "bacs", "cheque")
     }
 
     private val _refundItems = MutableLiveData<List<RefundListItem>>()
@@ -117,7 +117,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
     private val arguments: RefundsArgs by savedState.navArgs()
-    private val isCashPayment: Boolean
 
     private val selectedQuantities: MutableMap<Long, Int> by lazy {
         val quantities = savedState.get<MutableMap<Long, Int>>(SELECTED_QUANTITIES_KEY) ?: mutableMapOf()
@@ -136,7 +135,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         maxRefund = order.total - order.refundTotal
         maxQuantities = order.getMaxRefundQuantities(refunds)
         gateway = loadPaymentGateway()
-        isCashPayment = CASH_PAYMENTS.contains(order.paymentMethod)
 
         initRefundByAmountState()
         initRefundByItemsState()
@@ -208,7 +206,7 @@ class IssueRefundViewModel @AssistedInject constructor(
             val paymentTitle: String
             val isManualRefund: Boolean
 
-            if (!isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
+            if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
                 paymentTitle = if (gateway.title.isNotBlank())
                     "$manualRefundMethod via ${gateway.title}"
                 else
