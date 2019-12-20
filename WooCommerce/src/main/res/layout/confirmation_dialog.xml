@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/currencyAmount_header"
+        android:id="@+id/confirmationDialog_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
@@ -14,32 +14,18 @@
         android:duplicateParentState="true"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
+        tools:text="Refund $87.50"
         android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/currencyAmount_refundAmountInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:importantForAccessibility="no">
-
-        <com.woocommerce.android.widgets.CurrencyEditText
-            android:id="@+id/currencyAmount_refundAmount"
-            android:imeOptions="flagNoExtractUi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
     <TextView
-        android:id="@+id/currencyAmount_message"
+        android:id="@+id/confirmationDialog_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/dialog_content_text_color"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
+        android:textAppearance="@style/Woo.TextAppearance.Large"
+        android:textColor="@color/dialog_content_text_color"
+        tools:text="Are you sure you want to issue a refund? This can't be undone."
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         />
 

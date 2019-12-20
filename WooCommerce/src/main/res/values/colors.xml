@@ -107,6 +107,10 @@
     <color name="graph_grid_color">@color/wc_border_color</color>
     <color name="graph_highlight_color">@color/wc_purple</color>
     <!--
+        Dialog colors
+    -->
+    <color name="dialog_content_text_color">@color/wc_grey_medium</color>
+    <!--
         Order: status tag background colors
     -->
     <color name="orderStatus_processing_text">@color/tagView_text</color>

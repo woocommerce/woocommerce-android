@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -76,6 +77,12 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
                             R.id.orderDetailFragment
                     )
                 }
+                is ShowRefundConfirmation -> {
+                    val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
+                            event.title, event.message, event.confirmButtonTitle
+                    )
+                    findNavController().navigate(action)
+                }
                 else -> event.isHandled = false
             }
         })
@@ -101,7 +108,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
 
     private fun initializeViews() {
         refundSummary_btnRefund.setOnClickListener {
-            viewModel.onRefundConfirmed(refundSummary_reason.text.toString())
+            viewModel.onRefundIssued(refundSummary_reason.text.toString())
         }
     }
 

@@ -273,6 +273,7 @@
     -->
     <string name="order_refunds_available_for_refund">%s available for refund</string>
     <string name="order_refunds_title_with_amount">Refund %s</string>
+    <string name="order_refunds_confirmation">Are you sure you want to issue a refund? This can’t be undone.</string>
     <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
     <string name="order_refunds_next_button_title">Next</string>
     <string name="order_refunds_refund">Refund</string>

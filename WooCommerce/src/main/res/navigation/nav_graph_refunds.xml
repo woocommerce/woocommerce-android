@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/refundSummaryFragment"
         android:name="com.woocommerce.android.ui.refunds.RefundSummaryFragment"
-        tools:layout="@layout/fragment_refund_summary"/>
+        tools:layout="@layout/fragment_refund_summary">
+        <action
+            android:id="@+id/action_refundSummaryFragment_to_refundConfirmationDialog"
+            app:destination="@id/refundConfirmationDialog" />
+    </fragment>
     <fragment
         android:id="@+id/issueRefundFragment"
         android:name="com.woocommerce.android.ui.refunds.IssueRefundFragment"
@@ -63,6 +67,19 @@
             app:argType="java.math.BigDecimal" />
         <argument
             android:name="message"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/refundConfirmationDialog"
+        android:name="com.woocommerce.android.ui.refunds.RefundConfirmationDialog"
+        android:label="RefundConfirmationDialog" >
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="message"
+            app:argType="string" />
+        <argument android:name="positiveButtonTitle"
             app:argType="string" />
     </dialog>
 </navigation>

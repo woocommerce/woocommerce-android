@@ -335,6 +335,7 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderNoteFragment,
                 R.id.issueRefundFragment,
                 R.id.refundAmountDialog,
+                R.id.refundConfirmationDialog,
                 R.id.refundItemsPickerDialog,
                 R.id.refundSummaryFragment -> {
                     false
