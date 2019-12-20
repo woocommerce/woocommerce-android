@@ -47,13 +47,39 @@ class RefundDetailViewModel @AssistedInject constructor(
     private val navArgs: RefundDetailFragmentArgs by savedState.navArgs()
 
     init {
-        orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, navArgs.orderId))
-                ?.toAppModel()?.let { order ->
+        val orderModel = orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, navArgs.orderId))
+        orderModel?.toAppModel()?.let { order ->
             formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-            refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)?.toAppModel()?.let { refund ->
-                displayRefundDetails(refund, order)
+            if (navArgs.refundId > 0) {
+                refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
+                    ?.toAppModel()?.let { refund ->
+                        displayRefundDetails(refund, order)
+                    }
+            } else {
+                val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
+                displayRefundedProducts(order, refunds)
             }
         }
+    }
+
+    private fun displayRefundedProducts(order: Order, refunds: List<Refund>) {
+        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
+        val refundedProducts = groupedRefunds.keys.mapNotNull { id ->
+            order.items.firstOrNull { it.uniqueId == id }?.let { item ->
+                groupedRefunds[id]?.sumBy { it.quantity }?.let { quantity ->
+                    RefundListItem(item, quantity = quantity)
+                }
+            }
+        }
+
+        viewState = viewState.copy(
+            currency = order.currency,
+            screenTitle = resourceProvider.getString(R.string.orderdetail_refunded_products),
+            areItemsVisible = true,
+            areDetailsVisible = false
+        )
+
+        _refundItems.value = refundedProducts
     }
 
     private fun displayRefundDetails(refund: Refund, order: Order) {
@@ -87,7 +113,8 @@ class RefundDetailViewModel @AssistedInject constructor(
                 screenTitle = "${resourceProvider.getString(R.string.order_refunds_refund)} #${refund.id}",
                 refundAmount = formatCurrency(refund.amount),
                 refundMethod = resourceProvider.getString(R.string.order_refunds_refunded_via).format(method),
-                refundReason = refund.reason
+                refundReason = refund.reason,
+                areDetailsVisible = true
         )
     }
 
@@ -100,7 +127,8 @@ class RefundDetailViewModel @AssistedInject constructor(
         val refundMethod: String? = null,
         val refundReason: String? = null,
         val currency: String? = null,
-        val areItemsVisible: Boolean? = null
+        val areItemsVisible: Boolean? = null,
+        val areDetailsVisible: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory
