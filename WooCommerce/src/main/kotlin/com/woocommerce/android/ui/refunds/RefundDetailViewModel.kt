@@ -87,7 +87,7 @@ class RefundDetailViewModel @AssistedInject constructor(
         val method = if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
             order.paymentMethodTitle
         else
-            "${resourceProvider.getString(R.string.order_refunds_manual_refund)} - ${order.paymentMethodTitle}"
+            "${resourceProvider.getString(R.string.order_refunds_manual_refund)} via ${order.paymentMethodTitle}"
 
         if (refund.items.isNotEmpty()) {
             val items = refund.items.map { refundItem ->

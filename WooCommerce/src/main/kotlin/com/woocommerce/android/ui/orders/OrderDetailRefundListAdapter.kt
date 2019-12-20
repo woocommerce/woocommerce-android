@@ -60,7 +60,8 @@ class OrderDetailRefundListAdapter(
             val method = if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
                 order.paymentMethodTitle
             else
-                itemView.context.getString(R.string.order_refunds_manual_refund)
+                "${itemView.context.getString(R.string.order_refunds_manual_refund)} via ${order.paymentMethodTitle}"
+            
             val methodText = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
                     DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
                     method,
