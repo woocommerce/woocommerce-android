@@ -27,15 +27,15 @@ class RefundProductListAdapter(
     private val formatCurrency: (BigDecimal) -> String,
     private val imageMap: ProductImageMap,
     private val isProductDetailList: Boolean,
-    private val onRefundQuantityClicked: (Long) -> Unit = { }
+    private val onItemClicked: (Long) -> Unit = { }
 ) : RecyclerView.Adapter<RefundViewHolder>() {
     private var items = mutableListOf<RefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
         return if (isProductDetailList)
-            RefundDetailViewHolder(parent, formatCurrency, onRefundQuantityClicked, imageMap)
+            RefundDetailViewHolder(parent, formatCurrency, onItemClicked, imageMap)
         else
-            IssueRefundViewHolder(parent, formatCurrency, onRefundQuantityClicked, imageMap)
+            IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
     }
 
     override fun onBindViewHolder(holder: RefundViewHolder, position: Int) {
@@ -59,7 +59,7 @@ class RefundProductListAdapter(
     class RefundDetailViewHolder(
         parent: ViewGroup,
         private val formatCurrency: (BigDecimal) -> String,
-        private val onRefundQuantityClicked: (Long) -> Unit,
+        private val onItemClicked: (Long) -> Unit,
         private val imageMap: ProductImageMap
     ) : RefundViewHolder(parent, R.layout.refunds_detail_product_list_item) {
         private val nameTextView: TextView = itemView.findViewById(R.id.refundItem_productName)
@@ -92,9 +92,6 @@ class RefundProductListAdapter(
             }
 
             quantityTextView.text = item.quantity.toString()
-            quantityTextView.setOnClickListener {
-                onRefundQuantityClicked(item.orderItem.uniqueId)
-            }
 
             imageMap.get(item.orderItem.productId)?.let {
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
@@ -104,13 +101,17 @@ class RefundProductListAdapter(
                         .placeholder(R.drawable.ic_product)
                         .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
+
+            itemView.setOnClickListener {
+                onItemClicked(item.orderItem.uniqueId)
+            }
         }
     }
 
     class IssueRefundViewHolder(
         parent: ViewGroup,
         private val formatCurrency: (BigDecimal) -> String,
-        private val onRefundQuantityClicked: (Long) -> Unit,
+        private val onItemClicked: (Long) -> Unit,
         private val imageMap: ProductImageMap
     ) : RefundViewHolder(parent, R.layout.refunds_product_list_item) {
         private val nameTextView: TextView = itemView.findViewById(R.id.refundItem_productName)
@@ -130,7 +131,7 @@ class RefundProductListAdapter(
 
             quantityTextView.text = item.quantity.toString()
             quantityTextView.setOnClickListener {
-                onRefundQuantityClicked(item.orderItem.uniqueId)
+                onItemClicked(item.orderItem.uniqueId)
             }
 
             imageMap.get(item.orderItem.productId)?.let {
