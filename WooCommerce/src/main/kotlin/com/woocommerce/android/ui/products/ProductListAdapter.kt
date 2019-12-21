@@ -40,6 +40,10 @@ class ProductListAdapter(
         fun onProductClick(remoteProductId: Long)
     }
 
+    interface OnLoadMoreListener {
+        fun onRequestLoadMore()
+    }
+
     init {
         setHasStableIds(true)
     }

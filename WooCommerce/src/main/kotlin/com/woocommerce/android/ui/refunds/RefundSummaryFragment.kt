@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -16,20 +15,20 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
-class RefundSummaryFragment : BaseFragment(), BackPressListener {
+class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -44,12 +43,16 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initializeViewModel()
+    }
+
+    private fun initializeViewModel() {
         initializeViews()
         setupObservers()
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowSnackbar -> {
                     if (event.undoAction == null) {
@@ -80,7 +83,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
             }
         })
 
-        viewModel.refundSummaryStateLiveData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.refundSummaryStateLiveData.observe(this) { old, new ->
             new.isFormEnabled?.takeIfNotEqualTo(old?.isFormEnabled) {
                 refundSummary_btnRefund.isEnabled = new.isFormEnabled
                 refundSummary_reason.isEnabled = new.isFormEnabled
@@ -106,11 +109,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        if (viewModel.isRefundInProgress) {
-            Toast.makeText(context, R.string.order_refunds_refund_in_progress, Toast.LENGTH_SHORT).show()
-        } else {
-            findNavController().popBackStack()
-        }
+        findNavController().popBackStack()
         return false
     }
 }

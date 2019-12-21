@@ -43,6 +43,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
@@ -73,6 +74,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
@@ -95,7 +101,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.viewStateData.observe(this) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.product?.let { showProduct(new) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
@@ -103,7 +109,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowImages -> showProductImages(event.product, event.image)
@@ -132,7 +138,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
             skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageGallery.height
         } else {
             skeletonView.hide()

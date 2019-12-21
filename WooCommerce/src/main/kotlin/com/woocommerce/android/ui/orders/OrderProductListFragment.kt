@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
@@ -21,6 +23,11 @@ class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
     @Inject lateinit var productImageMap: ProductImageMap
 
     private val navArgs: OrderProductListFragmentArgs by navArgs()
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.fragment_order_product_list, container, false)

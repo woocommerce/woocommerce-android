@@ -1,7 +1,6 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -96,9 +95,9 @@ fun WCProductModel.toAppModel(): Product {
         this.averageRating.toFloatOrNull() ?: 0f,
         this.permalink,
         this.externalUrl,
-        this.price.toBigDecimalOrNull()?.roundError(),
-        this.salePrice.toBigDecimalOrNull()?.roundError(),
-        this.regularPrice.toBigDecimalOrNull()?.roundError(),
+        this.price.toBigDecimalOrNull(),
+        this.salePrice.toBigDecimalOrNull(),
+        this.regularPrice.toBigDecimalOrNull(),
         this.taxClass,
         this.manageStock,
         this.stockQuantity,

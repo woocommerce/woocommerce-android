@@ -313,9 +313,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
 
             itemView.setOnClickListener {
-                if (adapterPosition > NO_POSITION) {
-                    onImageClicked(adapterPosition, productImageView)
-                }
+                onImageClicked(adapterPosition, productImageView)
             }
         }
     }

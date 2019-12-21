@@ -155,7 +155,7 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation 'com.facebook.shimmer:shimmer:0.4.0'
+    implementation 'com.facebook.shimmer:shimmer:0.3.0'
     implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
 
@@ -191,7 +191,7 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
-    testImplementation("androidx.arch.core:core-testing:2.1.0", {
+    testImplementation("androidx.arch.core:core-testing:$archComponentsVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
@@ -219,15 +219,15 @@ dependencies {
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
-    implementation "androidx.fragment:fragment-ktx:1.2.0-rc03"
-    implementation "androidx.activity:activity-ktx:1.1.0-rc03"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0-rc03"
+    implementation "androidx.fragment:fragment-ktx:1.1.0"
+    implementation "androidx.activity:activity-ktx:1.1.0-rc02"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0-beta01"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
-    implementation "org.apache.commons:commons-lang3:3.9"
+    implementation "org.apache.commons:commons-lang3:3.7"
     implementation "org.apache.commons:commons-text:1.8"
 }
 

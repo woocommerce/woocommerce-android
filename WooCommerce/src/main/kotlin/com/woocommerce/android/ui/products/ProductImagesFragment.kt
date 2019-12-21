@@ -90,27 +90,27 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun setupObservers(viewModel: ProductImagesViewModel) {
-        viewModel.product.observe(viewLifecycleOwner, Observer {
+        viewModel.product.observe(this, Observer {
             imageGallery.showProductImages(it, this)
         })
 
-        viewModel.showSnackbarMessage.observe(viewLifecycleOwner, Observer {
+        viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.chooseProductImage.observe(viewLifecycleOwner, Observer {
+        viewModel.chooseProductImage.observe(this, Observer {
             chooseProductImage()
         })
 
-        viewModel.captureProductImage.observe(viewLifecycleOwner, Observer {
+        viewModel.captureProductImage.observe(this, Observer {
             captureProductImage()
         })
 
-        viewModel.uploadingImageUris.observe(viewLifecycleOwner, Observer {
+        viewModel.uploadingImageUris.observe(this, Observer {
             imageGallery.setPlaceholderImageUris(it)
         })
 
-        viewModel.exit.observe(viewLifecycleOwner, Observer {
+        viewModel.exit.observe(this, Observer {
             activity?.onBackPressed()
         })
     }

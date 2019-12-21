@@ -47,7 +47,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        private const val REFUNDS_REFRESH_DELAY = 2000L
+        private const val REFUNDS_REFRESH_DELAY = 1000L
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
@@ -79,17 +79,17 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     private val navArgs: OrderDetailFragmentArgs by navArgs()
 
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
         }
-    }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -32,12 +33,14 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
+import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -45,7 +48,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.P
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import javax.inject.Inject
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 class OrderListFragment : TopLevelFragment(),
         OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
@@ -245,11 +247,14 @@ class OrderListFragment : TopLevelFragment(),
 
         if (isFilterEnabled) {
             viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
-        } else if (isSearching) {
-            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
-        } else {
+        } else if (!isSearching) {
             loadListForActiveTab()
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        checkOrientation()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -376,17 +381,17 @@ class OrderListFragment : TopLevelFragment(),
         }
 
         // setup observers
-        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer {
+        viewModel.isFetchingFirstPage.observe(this, Observer {
             orderRefreshLayout?.isRefreshing = it == true
         })
 
-        viewModel.isLoadingMore.observe(viewLifecycleOwner, Observer {
+        viewModel.isLoadingMore.observe(this, Observer {
             it?.let { isLoadingMore ->
                 order_list_view.setLoadingMoreIndicator(active = isLoadingMore)
             }
         })
 
-        viewModel.orderStatusOptions.observe(viewLifecycleOwner, Observer {
+        viewModel.orderStatusOptions.observe(this, Observer {
             it?.let { options ->
                 // So the order status can be matched to the appropriate label
                 order_list_view.setOrderStatusOptions(options)
@@ -395,11 +400,11 @@ class OrderListFragment : TopLevelFragment(),
             }
         })
 
-        viewModel.pagedListData.observe(viewLifecycleOwner, Observer {
+        viewModel.pagedListData.observe(this, Observer {
             updatePagedListData(it)
         })
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowErrorSnack -> {
                     uiMessageResolver.showSnack(event.messageRes)
@@ -409,7 +414,7 @@ class OrderListFragment : TopLevelFragment(),
             }
         })
 
-        viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
+        viewModel.emptyViewState.observe(this, Observer {
             it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
         })
     }

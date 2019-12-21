@@ -25,6 +25,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -42,7 +43,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
-        const val KEY_WIP_EXPANDED = "wip_expanded"
         fun newInstance() = ProductListFragment()
     }
 
@@ -74,7 +74,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         val activity = requireActivity()
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
-        products_wip_card.isExpanded = savedInstanceState?.getBoolean(KEY_WIP_EXPANDED) ?: false
 
         productAdapter = ProductListAdapter(activity, this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
@@ -106,7 +105,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(KEY_LIST_STATE, productsRecycler.layoutManager?.onSaveInstanceState())
-        outState.putBoolean(KEY_WIP_EXPANDED, products_wip_card.isExpanded)
         super.onSaveInstanceState(outState)
     }
 

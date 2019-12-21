@@ -4,24 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_by_amount.*
 import javax.inject.Inject
 
-class RefundByAmountFragment : BaseFragment() {
+class RefundByAmountFragment : DaggerFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -36,18 +36,15 @@ class RefundByAmountFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViews()
+        initializeViewModel()
+    }
+
+    private fun initializeViewModel() {
         setupObservers()
     }
 
-    private fun initializeViews() {
-        issueRefund_btnNextFromAmount.setOnClickListener {
-            viewModel.onNextButtonTappedFromAmounts()
-        }
-    }
-
     private fun setupObservers() {
-        viewModel.refundByAmountStateLiveData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.refundByAmountStateLiveData.observe(this) { old, new ->
             new.availableForRefund?.takeIfNotEqualTo(old?.availableForRefund) {
                 issueRefund_txtAvailableForRefund.text = it
             }
@@ -57,12 +54,9 @@ class RefundByAmountFragment : BaseFragment() {
             new.enteredAmount.takeIfNotEqualTo(old?.enteredAmount) {
                 issueRefund_refundAmount.setValue(new.enteredAmount)
             }
-            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
-                issueRefund_btnNextFromAmount.isEnabled = it
-            }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(this, Observer { event ->
             when (event) {
                 is ShowValidationError -> issueRefund_refundAmountInputLayout.error = event.message
                 is HideValidationError -> issueRefund_refundAmountInputLayout.error = null
@@ -70,7 +64,7 @@ class RefundByAmountFragment : BaseFragment() {
             }
         })
 
-        issueRefund_refundAmount.value.observe(viewLifecycleOwner, Observer {
+        issueRefund_refundAmount.value.observe(this, Observer {
             viewModel.onManualRefundAmountChanged(it)
         })
     }

@@ -240,12 +240,7 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
-        if (bottomNavView.currentPosition != DASHBOARD) {
-            bottomNavView.currentPosition = DASHBOARD
-        } else {
-            super.onBackPressed()
-        }
+        super.onBackPressed()
     }
 
     /**
@@ -316,12 +311,10 @@ class MainActivity : AppUpgradeActivity(),
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
         val showBottomNav: Boolean
-        val showToolbarShadow: Boolean
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
             showBottomNav = true
-            showToolbarShadow = true
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
@@ -339,18 +332,12 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
                 R.id.issueRefundFragment,
-                R.id.refundAmountDialog,
-                R.id.refundItemsPickerDialog,
                 R.id.refundSummaryFragment -> {
                     false
                 }
                 else -> {
                     true
                 }
-            }
-            showToolbarShadow = when (destination.id) {
-                R.id.issueRefundFragment -> false
-                else -> true
             }
         }
         supportActionBar?.let { actionBar ->
@@ -361,12 +348,6 @@ class MainActivity : AppUpgradeActivity(),
                 R.drawable.ic_back_white_24dp
             }
             actionBar.setHomeAsUpIndicator(icon)
-
-            if (showToolbarShadow) {
-                actionBar.elevation = resources.getDimension(R.dimen.appbar_elevation)
-            } else {
-                actionBar.elevation = 0f
-            }
         }
 
         if (showBottomNav) {

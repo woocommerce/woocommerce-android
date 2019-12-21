@@ -19,8 +19,7 @@ import org.wordpress.android.util.PhotonUtils
 
 class ProductVariantsAdapter(
     private val context: Context,
-    private val glideRequest: GlideRequests,
-    private val loadMoreListener: OnLoadMoreListener
+    private val glideRequest: GlideRequests
 ) : RecyclerView.Adapter<ProductVariantViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
     private val productVariantList = ArrayList<ProductVariant>()
@@ -65,10 +64,6 @@ class ProductVariantsAdapter(
                     .placeholder(R.drawable.ic_product)
                     .into(holder.imgVariantOption)
         } ?: holder.imgVariantOption.setImageResource(R.drawable.ic_product)
-
-        if (position == itemCount - 1) {
-            loadMoreListener.onRequestLoadMore()
-        }
     }
 
     private class ProductVariantItemDiffUtil(
@@ -85,33 +80,23 @@ class ProductVariantsAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem.isSameVariant(newItem)
+            return oldItem.stockQuantity == newItem.stockQuantity &&
+                    oldItem.remoteVariationId == newItem.remoteVariationId &&
+                    oldItem.price == newItem.price &&
+                    oldItem.purchasable == newItem.purchasable &&
+                    oldItem.stockStatus == newItem.stockStatus &&
+                    oldItem.imageUrl == newItem.imageUrl &&
+                    oldItem.optionName == newItem.optionName
         }
     }
 
     fun setProductVariantList(productVariants: List<ProductVariant>) {
-        fun isSameList(): Boolean {
-            if (productVariants.size != productVariantList.size) {
-                return false
-            }
-            for (index in productVariants.indices) {
-                val oldItem = productVariantList[index]
-                val newItem = productVariants[index]
-                if (!oldItem.isSameVariant(newItem)) {
-                    return false
-                }
-            }
-            return true
-        }
-
-        if (!isSameList()) {
-            val diffResult = DiffUtil.calculateDiff(
-                    ProductVariantItemDiffUtil(productVariantList, productVariants)
-            )
-            productVariantList.clear()
-            productVariantList.addAll(productVariants)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult = DiffUtil.calculateDiff(
+                ProductVariantItemDiffUtil(productVariantList, productVariants)
+        )
+        productVariantList.clear()
+        productVariantList.addAll(productVariants)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     class ProductVariantViewHolder(view: View) : RecyclerView.ViewHolder(view) {

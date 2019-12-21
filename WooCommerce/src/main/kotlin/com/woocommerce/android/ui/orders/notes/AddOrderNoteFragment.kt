@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.notes
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -19,6 +20,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
 import com.woocommerce.android.util.AnalyticsUtils
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
@@ -51,6 +53,11 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add_order_note, container, false)
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

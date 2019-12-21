@@ -97,23 +97,23 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
+        viewModel.isLoading.observe(this, Observer {
             showProgressDialog(it)
         })
 
-        viewModel.isAuthTokenUpdated.observe(viewLifecycleOwner, Observer { authTokenUpdated ->
+        viewModel.isAuthTokenUpdated.observe(this, Observer { authTokenUpdated ->
             if (authTokenUpdated) {
                 showSitePickerScreen()
             } else showLoginScreen()
         })
 
-        viewModel.showSnackbarMessage.observe(viewLifecycleOwner, Observer { messageId ->
+        viewModel.showSnackbarMessage.observe(this, Observer { messageId ->
             view?.let {
                 Snackbar.make(it, getString(messageId), Snackbar.LENGTH_LONG).show()
             }
         })
 
-        viewModel.showRetryOption.observe(viewLifecycleOwner, Observer {
+        viewModel.showRetryOption.observe(this, Observer {
             showRetryButton(it)
         })
     }

@@ -2,10 +2,9 @@ package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
-import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
-import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
@@ -18,14 +17,8 @@ abstract class RefundSummaryModule {
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(): Bundle? {
+        fun provideDefaultArgs(fragment: RefundSummaryFragment): Bundle? {
             return Bundle()
-        }
-
-        @JvmStatic
-        @Provides
-        fun provideSavedStateRegistryOwner(fragment: RefundSummaryFragment): SavedStateRegistryOwner {
-            return fragment.findNavController().getBackStackEntry(R.id.nav_graph_refunds)
         }
     }
 
@@ -33,4 +26,7 @@ abstract class RefundSummaryModule {
     @IntoMap
     @ViewModelKey(IssueRefundViewModel::class)
     abstract fun bindFactory(factory: IssueRefundViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    abstract fun bindSavedStateRegistryOwner(activity: MainActivity): SavedStateRegistryOwner
 }
