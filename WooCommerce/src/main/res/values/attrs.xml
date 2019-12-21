@@ -17,7 +17,7 @@
         <attr name="tagBorderColor" format="reference|color"/>
     </declare-styleable>
 
-    <declare-styleable name="AppTheme">
+    <declare-styleable name="WooTheme">
         <attr name="tagViewStyle" format="reference"/>
         <attr name="flowLayoutStyle" format="reference"/>
     </declare-styleable>
