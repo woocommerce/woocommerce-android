@@ -53,7 +53,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         return inflater.inflate(R.layout.fragment_aztec_editor, container, false)
     }
 
-    override fun getFragmentTitle() = getString(R.string.product_description)
+    override fun getFragmentTitle() = navArgs.aztecTitle
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

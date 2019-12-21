@@ -219,5 +219,9 @@
             android:name="aztecText"
             app:argType="string"
             android:defaultValue='""'/>
+        <argument
+            android:name="aztecTitle"
+            app:argType="string"
+            android:defaultValue='""'/>
     </fragment>
 </navigation>

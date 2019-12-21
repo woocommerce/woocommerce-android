@@ -635,7 +635,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
     private fun showProductDescriptionEditor(productDescription: String) {
         findNavController().navigate(ProductDetailFragmentDirections
-                .actionProductDetailFragmentToAztecEditorFragment(productDescription))
+                .actionProductDetailFragmentToAztecEditorFragment(
+                        productDescription, getString(R.string.product_description
+                )))
     }
 
     /**
