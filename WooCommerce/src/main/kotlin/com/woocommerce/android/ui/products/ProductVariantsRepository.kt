@@ -28,10 +28,14 @@ class ProductVariantsRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
+        private const val PRODUCT_VARIANTS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
     }
 
     private var loadContinuation: Continuation<Boolean>? = null
-    private var isLoadingProductVariants = false
+    private var offset = 0
+
+    var canLoadMoreProductVariants = true
+        private set
 
     init {
         dispatcher.register(this)
@@ -45,21 +49,21 @@ class ProductVariantsRepository @Inject constructor(
      * Submits a fetch request to get a list of products variants for the current site and productId
      * and returns the full list of product variants from the database
      */
-    suspend fun fetchProductVariants(remoteProductId: Long): List<ProductVariant> {
-        if (!isLoadingProductVariants) {
-            try {
-                suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                    loadContinuation = it
-                    isLoadingProductVariants = true
-                    val payload = WCProductStore.FetchProductVariationsPayload(
-                            selectedSite.get(),
-                            remoteProductId
-                    )
-                    dispatcher.dispatch(WCProductActionBuilder.newFetchProductVariationsAction(payload))
-                }
-            } catch (e: CancellationException) {
-                WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product variants", e)
+    suspend fun fetchProductVariants(remoteProductId: Long, loadMore: Boolean = false): List<ProductVariant> {
+        try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                offset = if (loadMore) offset + PRODUCT_VARIANTS_PAGE_SIZE else 0
+                loadContinuation = it
+                val payload = WCProductStore.FetchProductVariationsPayload(
+                        selectedSite.get(),
+                        remoteProductId,
+                        pageSize = PRODUCT_VARIANTS_PAGE_SIZE,
+                        offset = offset
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductVariationsAction(payload))
             }
+        } catch (e: CancellationException) {
+            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product variants", e)
         }
 
         return getProductVariantList(remoteProductId)
@@ -82,7 +86,6 @@ class ProductVariantsRepository @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCT_VARIATIONS) {
-            isLoadingProductVariants = false
             if (event.isError) {
                 loadContinuation?.resume(false)
                 AnalyticsTracker.track(
@@ -92,6 +95,7 @@ class ProductVariantsRepository @Inject constructor(
                         event.error.message
                 )
             } else {
+                canLoadMoreProductVariants = event.canLoadMore
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_LOADED)
                 loadContinuation?.resume(true)
             }

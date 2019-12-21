@@ -58,10 +58,4 @@ class LiveDataDelegate<T : Parcelable>(
     }
 
     operator fun getValue(ref: Any, p: KProperty<*>): T = _liveData.value!!
-
-    // This resets the previous values
-    // Workaround for the activity ViewModel scope
-    fun reset() {
-        previousValue = null
-    }
 }
