@@ -134,7 +134,6 @@
                 style="@style/Woo.Settings.Label.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_app_theme_option_default"
                 tools:text="@string/settings_app_theme_option_default"/>
         </LinearLayout>
 

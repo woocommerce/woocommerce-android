@@ -500,6 +500,7 @@
     <string name="settings_app_theme_option_dark">Dark</string>
     <string name="settings_app_theme_option_system">System default</string>
     <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
+    <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
     <!--
         WCToggleSingleOptionView
     -->

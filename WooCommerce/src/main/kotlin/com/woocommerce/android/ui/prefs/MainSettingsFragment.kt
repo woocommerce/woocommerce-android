@@ -32,8 +32,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_H
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -188,6 +190,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             // advertise the site switcher if we haven't already
             WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
         }
+        settings_selectedTheme.text = getString(AppPrefs.getAppTheme().label)
         settings_theme.setOnClickListener {
             // FIXME AMANDA tracks event
             showThemeChooser()
@@ -243,11 +246,17 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     }
 
     private fun showThemeChooser() {
-        // FIXME AMANDA get option set in shared preferences
+        val currentTheme = AppPrefs.getAppTheme()
+        val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
         MaterialAlertDialogBuilder(context)
                 .setTitle(getString(R.string.settings_app_theme_title))
-                .setSingleChoiceItems(R.array.settings_app_theme_options, 0) { dialog, which ->
-                    // FIXME AMANDA handle selection
+                .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
+                    val selectedTheme = ThemeOption.values()[which]
+                    context?.let {
+                        AppThemeUtils.setAppTheme(it, selectedTheme)
+                        settings_selectedTheme?.text = getString(selectedTheme.label)
+                    }
+                    dialog.dismiss()
                 }
                 .setNegativeButton(R.string.cancel) { dialog, _ ->
                     dialog.cancel()
