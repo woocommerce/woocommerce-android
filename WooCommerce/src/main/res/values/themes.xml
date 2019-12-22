@@ -80,6 +80,8 @@
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 
+    <style name="Theme.Woo.DayNight.Toolbar" parent="Theme.Woo.Toolbar"/>
+
     <style name="Theme.Woo.Toolbar">
         <item name="colorControlNormal">?attr/colorOnPrimary</item>
     </style>

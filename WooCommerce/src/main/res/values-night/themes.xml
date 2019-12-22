@@ -36,4 +36,10 @@
         <!--System/Platform attributes-->
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
+
+    <style name="Theme.Woo.DayNight.Toolbar" parent="Theme.Woo.Dark.Toolbar"/>
+
+    <style name="Theme.Woo.Dark.Toolbar">
+        <item name="colorControlNormal">?attr/colorOnSurface</item>
+    </style>
 </resources>
