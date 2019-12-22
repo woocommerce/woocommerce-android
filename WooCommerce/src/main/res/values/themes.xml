@@ -70,15 +70,17 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="colorControlNormal">@color/woo_white</item>
 
         <!-- Custom Widgets -->
         <!-- TODO: Update styles -->
         <item name="tagViewStyle">@style/Woo.Tag</item>
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
-        <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
+        <item name="android:alertDialogTheme">@style/Theme.MaterialComponents.DayNight.Dialog.Alert</item>
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 
+    <style name="Theme.Woo.Toolbar">
+        <item name="colorControlNormal">?attr/colorOnPrimary</item>
+    </style>
 </resources>
