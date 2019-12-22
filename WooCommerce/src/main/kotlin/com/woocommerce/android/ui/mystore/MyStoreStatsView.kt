@@ -56,7 +56,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     }
 
     private lateinit var activeGranularity: StatsGranularity
-    private lateinit var listener: DashboardStatsListener
+    private var listener: DashboardStatsListener? = null
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
@@ -112,6 +112,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         }
     }
 
+    fun removeListener() {
+        listener = null
+    }
+
     fun loadDashboardStats(granularity: StatsGranularity) {
         this.activeGranularity = granularity
         // Track range change
@@ -120,7 +124,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase()))
 
         isRequestingStats = true
-        listener.onRequestLoadStats(granularity)
+        listener?.onRequestLoadStats(granularity)
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -230,7 +234,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
 
         // update date bar when unselected
-        listener.onChartValueUnSelected(revenueStatsModel, activeGranularity)
+        listener?.onChartValueUnSelected(revenueStatsModel, activeGranularity)
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -255,7 +259,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         }
 
         // update the date bar
-        listener.onChartValueSelected(date, activeGranularity)
+        listener?.onChartValueSelected(date, activeGranularity)
     }
 
     /**
