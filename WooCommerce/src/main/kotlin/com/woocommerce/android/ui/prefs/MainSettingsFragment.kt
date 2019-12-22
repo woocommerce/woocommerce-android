@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -187,6 +188,10 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             // advertise the site switcher if we haven't already
             WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
         }
+        settings_theme.setOnClickListener {
+            // FIXME AMANDA tracks event
+            showThemeChooser()
+        }
     }
 
     override fun onResume() {
@@ -235,5 +240,18 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                 AnalyticsTracker.KEY_FROM to !newValue,
                 AnalyticsTracker.KEY_TO to newValue)
         )
+    }
+
+    private fun showThemeChooser() {
+        // FIXME AMANDA get option set in shared preferences
+        MaterialAlertDialogBuilder(context)
+                .setTitle(getString(R.string.settings_theme))
+                .setSingleChoiceItems(R.array.settings_theme_options, 0) { dialog, which ->
+                    // FIXME AMANDA handle selection
+                }
+                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.cancel()
+                }
+                .show()
     }
 }
