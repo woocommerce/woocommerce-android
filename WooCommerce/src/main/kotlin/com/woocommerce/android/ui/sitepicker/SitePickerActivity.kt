@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -366,6 +367,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
 
+    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+    @Suppress("WrongConstant")
     override fun siteVerificationError(site: SiteModel) {
         progressDialog?.dismiss()
 
@@ -373,7 +376,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         Snackbar.make(
                 site_picker_root as ViewGroup,
                 getString(R.string.login_verifying_site_error, siteName),
-                Snackbar.LENGTH_LONG
+                BaseTransientBottomBar.LENGTH_LONG
         ).show()
     }
 

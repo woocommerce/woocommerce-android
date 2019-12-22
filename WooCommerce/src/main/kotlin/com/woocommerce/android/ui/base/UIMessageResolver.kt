@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.base
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 
@@ -104,8 +105,10 @@ interface UIMessageResolver {
      * @param [stringResId] The string resource id of the base message
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
+    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+    @Suppress("WrongConstant")
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
-            snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), Snackbar.LENGTH_LONG)
+            snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG)
 
     /**
      * Display a snackbar with the provided message.
