@@ -245,8 +245,8 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     private fun showThemeChooser() {
         // FIXME AMANDA get option set in shared preferences
         MaterialAlertDialogBuilder(context)
-                .setTitle(getString(R.string.settings_theme))
-                .setSingleChoiceItems(R.array.settings_theme_options, 0) { dialog, which ->
+                .setTitle(getString(R.string.settings_app_theme_title))
+                .setSingleChoiceItems(R.array.settings_app_theme_options, 0) { dialog, which ->
                     // FIXME AMANDA handle selection
                 }
                 .setNegativeButton(R.string.cancel) { dialog, _ ->

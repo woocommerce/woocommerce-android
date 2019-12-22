@@ -127,15 +127,15 @@
                 style="@style/Woo.Settings.LabelWithDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_theme"/>
+                android:text="@string/settings_app_theme_title"/>
 
             <TextView
                 android:id="@+id/settings_selectedTheme"
                 style="@style/Woo.Settings.Label.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_theme_default"
-                tools:text="@string/settings_theme_default"/>
+                android:text="@string/settings_app_theme_option_default"
+                tools:text="@string/settings_app_theme_option_default"/>
         </LinearLayout>
 
         <View

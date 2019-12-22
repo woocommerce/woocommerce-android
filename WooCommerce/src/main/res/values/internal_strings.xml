@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        App Theme Settings Options
+    -->
+    <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
+    <string name="settings_app_theme_value_dark" translatable="false">dark</string>
+    <string name="settings_app_theme_value_light" translatable="false">light</string>
+    <string name="settings_app_theme_value_default" translatable="false">default</string>
+    <string-array name="settings_app_theme_options">
+        <item>@string/settings_app_theme_option_light</item>
+        <item>@string/settings_app_theme_option_dark</item>
+        <item>@string/settings_app_theme_option_default</item>
+    </string-array>
+    <string-array name="settings_app_theme_options_values">
+        <item>@string/settings_app_theme_value_light</item>
+        <item>@string/settings_app_theme_value_dark</item>
+        <item>@string/settings_app_theme_value_default</item>
+    </string-array>
+</resources>
