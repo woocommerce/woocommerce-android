@@ -11,7 +11,7 @@ import com.woocommerce.android.R
  * Helper class for working with Android Dark and Light Themes
  */
 object AppThemeUtils {
-    fun setAppTheme(context: Context, newTheme: ThemeOption?) {
+    fun setAppTheme(context: Context, newTheme: ThemeOption? = null) {
         val theme = newTheme?.let {
             AppPrefs.setAppTheme(it)
             it

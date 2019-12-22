@@ -20,6 +20,7 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashUtils
@@ -118,6 +119,9 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
         component.inject(this)
         dispatcher.register(this)
+
+        // Apply Theme
+        AppThemeUtils.setAppTheme(this)
 
         AppRatingDialog.init(this)
 
