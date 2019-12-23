@@ -1,71 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
-        <!--
-            Default colors
-        -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/default_window_bg</item>
-        <item name="colorButtonNormal">@color/light_gray</item>
-
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowContentTransitions">true</item>
-
-        <!--
-            Default text
-        -->
-        <item name="android:textAppearance">@style/Woo.TextAppearance</item>
-        <!--
-            Widgets
-        -->
-        <item name="tagViewStyle">@style/Woo.Tag</item>
-        <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
-        <item name="android:listViewStyle">@style/Woo.List</item>
-        <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
-        <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
-    </style>
-
-    <style name="AppTheme" parent="AppTheme.Base">
-        <!-- Overrides for various api levels -->
-    </style>
-
     <!--
         Set a custom cursor for search views so they don't inherit colorAccent
     -->
     <style name="SearchViewCursor" parent="Widget.AppCompat.AutoCompleteTextView">
         <item name="android:textCursorDrawable">@drawable/searchview_cursor</item>
     </style>
-
-    <!--
-        Toolbar Theme
-    -->
-    <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <!-- Tints input fields like checkboxes and text fields -->
-        <item name="colorAccent">@color/colorAccent</item>
-        <!-- Color of the title text in the toolbar -->
-        <item name="android:textColorPrimary">@color/menu_title_text</item>
-        <!-- Applies to views in their normal state. -->
-        <item name="colorControlNormal">#FFFFFFFF</item>
-        <!-- Applies to views in their activated state (i.e checked or switches) -->
-        <item name="colorControlActivated">#FFCCCCCC</item>
-        <!-- Applied to framework control highlights (i.e ripples or list selectors) -->
-        <item name="colorControlHighlight">#3d96588a</item>
-        <!-- Ripple effect when clicking items -->
-        <item name="selectableItemBackground">?android:selectableItemBackground</item>
-        <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
-        <!-- Light touch feedback for actions -->
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-        <!-- Light background for menus -->
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-    </style>
-
+    
     <style name="Woo"/>
     <!--
         Text Styles
@@ -538,7 +480,7 @@
         Image viewer
     -->
     <style name="ImageViewer" />
-    <style name="ImageViewer.Activity" parent="AppTheme">
+    <style name="ImageViewer.Activity" parent="Theme.Woo.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
@@ -553,7 +495,7 @@
         <item name="colorAccent">@color/color_accent</item>
     </style>
 
-    <style name="EditText" parent="@style/AppTheme">
+    <style name="EditText" parent="Theme.Woo.DayNight">
         <item name="android:textColor">@color/edit_text_text_color</item>
         <item name="android:textColorHighlight">@color/edit_text_text_color_highlight</item>
         <item name="android:textColorHint">@color/edit_text_text_hint_color</item>

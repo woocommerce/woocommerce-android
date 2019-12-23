@@ -9,6 +9,7 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -101,6 +102,8 @@ class AppSettingsActivity : AppCompatActivity(),
      * User switched sites from the main settings fragment, set the result code so the calling activity
      * will know the site changed
      */
+    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+    @Suppress("WrongConstant")
     override fun onSiteChanged() {
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)
@@ -112,7 +115,7 @@ class AppSettingsActivity : AppCompatActivity(),
             Snackbar.make(
                     main_content,
                     getString(R.string.settings_switch_site_notifs_msg, it.name),
-                    Snackbar.LENGTH_LONG
+                    BaseTransientBottomBar.LENGTH_LONG
             ).show()
         }
     }
@@ -162,7 +165,7 @@ class AppSettingsActivity : AppCompatActivity(),
                 getString(R.string.settings_confirm_logout),
                 presenter.getAccountDisplayName()
         )
-        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
+        AlertDialog.Builder(ContextThemeWrapper(this, R.style.Theme_Woo_DayNight))
                 .setMessage(message)
                 .setPositiveButton(R.string.signout) { _, _ ->
                     AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(

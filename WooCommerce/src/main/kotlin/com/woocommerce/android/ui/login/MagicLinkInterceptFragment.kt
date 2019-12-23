@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -96,6 +97,8 @@ class MagicLinkInterceptFragment : Fragment() {
         authToken?.let { viewModel.updateMagicLinkAuthToken(it) }
     }
 
+    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+    @Suppress("WrongConstant")
     private fun setupObservers() {
         viewModel.isLoading.observe(this, Observer {
             showProgressDialog(it)
@@ -109,7 +112,7 @@ class MagicLinkInterceptFragment : Fragment() {
 
         viewModel.showSnackbarMessage.observe(this, Observer { messageId ->
             view?.let {
-                Snackbar.make(it, getString(messageId), Snackbar.LENGTH_LONG).show()
+                Snackbar.make(it, getString(messageId), BaseTransientBottomBar.LENGTH_LONG).show()
             }
         })
 

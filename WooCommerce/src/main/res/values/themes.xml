@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Final top-level theme -->
+    <style name="Theme.Woo.DayNight" parent="Theme.Woo"/>
+
+    <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Colors -->
+        <item name="colorPrimary">@color/woo_purple_60</item>
+        <item name="colorPrimaryVariant">@color/woo_purple_80</item>
+        <item name="colorSecondary">@color/woo_pink_50</item>
+        <item name="colorSecondaryVariant">@color/woo_pink_70</item>
+
+        <item name="android:colorBackground">@color/woo_white</item>
+        <item name="colorSurface">@color/woo_white</item>
+        <item name="colorError">@color/woo_red_50</item>
+
+        <item name="colorOnPrimary">@color/woo_white</item>
+        <item name="colorOnSecondary">@color/woo_black</item>
+        <item name="colorOnBackground">@color/woo_black</item>
+        <item name="colorOnSurface">@color/woo_black</item>
+        <item name="colorOnError">@color/woo_white</item>
+
+        <item name="scrimBackground">@color/woo_white_alpha_038</item>
+        <item name="android:statusBarColor">@color/woo_purple_60</item>
+        <item name="android:navigationBarColor">@color/nav_bar</item>
+
+        <!-- TODO: Add ShapeAppearance values -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MaterialComponents.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.MaterialComponents.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.MaterialComponents.LargeComponent</item>
+
+        <!-- Typography -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Woo.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Woo.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Woo.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Woo.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Woo.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Woo.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.Woo.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Woo.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Woo.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Woo.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
+
+        <!-- Custom attrs for setting alpha values -->
+        <item name="emphasisHighAlpha">0.87</item>
+        <item name="emphasisMediumAlpha">0.60</item>
+        <item name="emphasisDisabledAlpha">0.38</item>
+        <item name="emphasisHighAlphaPrimary">1.00</item>
+        <item name="emphasisMediumAlphaPrimary">0.74</item>
+        <item name="emphasisDisabledAlphaPrimary">0.38</item>
+
+        <!-- Styles -->
+        <!-- TODO: Configure custom styles -->
+        <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.PrimarySurface</item>
+        <item name="bottomSheetStyle">@style/Widget.MaterialComponents.BottomSheet.Modal</item>
+        <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
+        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Primary</item>
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
+
+        <!-- System/Platform attributes -->
+        <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
+
+        <!-- TODO: Verify if needed -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="colorControlNormal">@color/woo_white</item>
+
+        <!-- Custom Widgets -->
+        <!-- TODO: Update styles -->
+        <item name="tagViewStyle">@style/Woo.Tag</item>
+        <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
+        <item name="android:listViewStyle">@style/Woo.List</item>
+        <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
+        <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
+    </style>
+
+</resources>

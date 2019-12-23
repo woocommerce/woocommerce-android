@@ -17,7 +17,7 @@
         <attr name="tagBorderColor" format="reference|color"/>
     </declare-styleable>
 
-    <declare-styleable name="AppTheme">
+    <declare-styleable name="WooTheme">
         <attr name="tagViewStyle" format="reference"/>
         <attr name="flowLayoutStyle" format="reference"/>
     </declare-styleable>
@@ -57,4 +57,15 @@
         <!-- Required: string text of title -->
         <attr name="aevTitle" format="string"/>
     </declare-styleable>
+
+    <!--
+    Emphasis values are used in combination with each "on" color to create
+    three available levels of emphasis for text and content.
+    -->
+    <attr name="emphasisHighAlpha" format="float"/>
+    <attr name="emphasisMediumAlpha" format="float"/>
+    <attr name="emphasisDisabledAlpha" format="float"/>
+    <attr name="emphasisHighAlphaPrimary" format="float"/>
+    <attr name="emphasisMediumAlphaPrimary" format="float"/>
+    <attr name="emphasisDisabledAlphaPrimary" format="float"/>
 </resources>

@@ -12,6 +12,7 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -73,7 +74,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listener = targetFragment as AddOrderTrackingProviderActionListener
-        setStyle(STYLE_NORMAL, R.style.AppTheme)
+        setStyle(STYLE_NORMAL, R.style.Theme_Woo_DayNight)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -172,12 +173,14 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
         }
     }
 
+    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+    @Suppress("WrongConstant")
     override fun showProviderListErrorSnack(@StringRes stringResId: Int) {
         dialog?.window?.let {
             Snackbar.make(
                     it.findViewById(android.R.id.content),
                     stringResId,
-                    Snackbar.LENGTH_LONG
+                    BaseTransientBottomBar.LENGTH_LONG
             ).show()
         }
     }

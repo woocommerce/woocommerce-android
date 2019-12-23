@@ -37,7 +37,7 @@ class SupportHelper {
         val (layout, emailEditText, nameEditText) =
                 supportIdentityInputDialogLayout(context, isNameInputHidden, email, name)
 
-        val dialog = AlertDialog.Builder(ContextThemeWrapper(context, style.AppTheme))
+        val dialog = AlertDialog.Builder(ContextThemeWrapper(context, style.Theme_Woo_DayNight))
                 .setView(layout)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
