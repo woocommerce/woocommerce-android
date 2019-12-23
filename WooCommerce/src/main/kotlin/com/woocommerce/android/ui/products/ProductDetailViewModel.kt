@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.products
 
+import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -23,6 +25,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -77,6 +80,39 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(ShowImageChooser)
     }
 
+    fun onUpdateButtonClicked() {
+        viewState.product?.let {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            launch { updateProduct(it) }
+        }
+    }
+
+    fun onBackButtonClicked(): Boolean {
+        return if (viewState.isProductUpdated == true && viewState.shouldShowDiscardDialog) {
+            viewState = viewState.copy(shouldShowDiscardDialog = false)
+            triggerEvent(ShowDiscardDialog(
+                    string.aztec_confirm_discard,
+                    string.save, string.discard_changes,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        onUpdateButtonClicked()
+                    },
+                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    }
+            ))
+            false
+        } else {
+            true
+        }
+    }
+
+    fun updateProductDraft(description: String?) {
+        description?.let {
+            viewState.product?.description = it
+            viewState = viewState.copy(isProductUpdated = true)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
@@ -92,7 +128,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         launch {
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
-                updateProduct(productInDb)
+                updateProductState(productInDb)
                 if (shouldFetch) {
                     fetchProduct(remoteProductId)
                 }
@@ -117,7 +153,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
-                updateProduct(fetchedProduct)
+                updateProductState(fetchedProduct)
             } else {
                 triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
                 triggerEvent(Exit)
@@ -135,7 +171,23 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(uploadingImageUris = uris)
     }
 
-    private fun updateProduct(product: Product) {
+    private suspend fun updateProduct(product: Product) {
+        if (networkStatus.isConnected()) {
+            if (productRepository.updateProduct(product)) {
+                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_success))
+                viewState = viewState.copy(isProgressDialogShown = false, isProductUpdated = false, product = null)
+                loadProduct(remoteProductId)
+            } else {
+                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+                viewState = viewState.copy(isProgressDialogShown = false)
+            }
+        } else {
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            viewState = viewState.copy(isProgressDialogShown = false)
+        }
+    }
+
+    private fun updateProductState(product: Product) {
         val weight = if (product.weight > 0) "${format(product.weight)}${parameters?.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
@@ -151,13 +203,20 @@ class ProductDetailViewModel @AssistedInject constructor(
         }.trim()
 
         viewState = viewState.copy(
-                product = product,
+                product = combineData(storedProduct = product),
                 weightWithUnits = weight,
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(product.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(product.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters?.currencyCode)
+                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters?.currencyCode),
+                storedProduct = product
         )
+    }
+
+    private fun combineData(storedProduct: Product): Product {
+        return viewState.product?.let {
+            storedProduct.copy(description = it.description)
+        } ?: storedProduct
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -212,7 +271,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isSkeletonShown: Boolean? = null,
-        val uploadingImageUris: List<Uri>? = null
+        val uploadingImageUris: List<Uri>? = null,
+        val isProgressDialogShown: Boolean? = null,
+        val isProductUpdated: Boolean? = null,
+        val shouldShowDiscardDialog: Boolean = true,
+        var storedProduct: Product? = null
     ) : Parcelable
 
     @AssistedInject.Factory

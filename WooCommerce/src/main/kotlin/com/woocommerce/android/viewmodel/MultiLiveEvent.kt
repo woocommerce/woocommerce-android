@@ -1,5 +1,6 @@
 package com.woocommerce.android.viewmodel
 
+import android.content.DialogInterface.OnClickListener
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
@@ -77,5 +78,35 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         }
 
         object Exit : Event()
+
+        data class ShowDiscardDialog(
+            @StringRes val message: Int,
+            @StringRes val positiveBtnText: Int,
+            @StringRes val negativeBtnText: Int,
+            val positiveBtnAction: OnClickListener? = null,
+            val negativeBtnAction: OnClickListener? = null
+        ) : Event() {
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (other !is ShowDiscardDialog) return false
+
+                if (message != other.message) return false
+                if (positiveBtnText != other.positiveBtnText) return false
+                if (negativeBtnText != other.negativeBtnText) return false
+                if (positiveBtnAction != other.positiveBtnAction) return false
+                if (negativeBtnAction != other.negativeBtnAction) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = message
+                result = 31 * result + positiveBtnText.hashCode()
+                result = 31 * result + negativeBtnText.hashCode()
+                result = 31 * result + (positiveBtnAction?.hashCode() ?: 0)
+                result = 31 * result + (negativeBtnAction?.hashCode() ?: 0)
+                return result
+            }
+        }
     }
 }

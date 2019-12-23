@@ -666,6 +666,40 @@
     </style>
 
     <!--
+        Aztec Editor
+    -->
+    <style name="Woo.Aztec"/>
+    <style name="Woo.Aztec.Text">
+        <item name="android:paddingStart">@dimen/card_padding_start</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
+        <item name="android:paddingTop">@dimen/card_padding_top</item>
+        <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="android:gravity">top|start</item>
+        <item name="lineSpacingExtra">2dp</item>
+    </style>
+    <style name="Woo.Aztec.VisualEditor" parent="@style/Woo.Aztec.Text">
+        <item name="textColor">@color/wc_black_darker</item>
+        <item name="textColorHint">@color/wc_black_lighter</item>
+        <item name="bulletColor">@color/wc_black_darker</item>
+        <item name="quoteColor">@color/wc_black_darker</item>
+        <item name="quoteBackground">@color/white</item>
+        <item name="quoteMargin">0dp</item>
+        <item name="quotePadding">0dp</item>
+        <item name="historyEnable">true</item>
+        <item name="historySize">10</item>
+        <item name="linkColor">@color/colorPrimary</item>
+        <item name="linkUnderline">true</item>
+    </style>
+    <style name="Woo.Aztec.SourceEditor" parent="@style/Woo.Aztec.Text">
+        <item name="codeTextColor">@color/wc_black_darker</item>
+        <item name="codeBackgroundColor">@android:color/transparent</item>
+        <item name="android:inputType">textNoSuggestions|textMultiLine</item>
+    </style>
+
+    <!--
          Stats
         -->
     <style name="Woo.Stats.Card" parent="Woo.Card">

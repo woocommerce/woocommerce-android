@@ -25,15 +25,20 @@ class WCProductPropertyView @JvmOverloads constructor(
     private var propertyValueText: TextView? = null
     private var ratingBar: RatingBar? = null
 
-    fun show(orientation: Int, caption: String, detail: String?) {
+    fun show(orientation: Int, caption: String, detail: CharSequence?) {
         ensureViewCreated(orientation)
 
         propertyNameText?.text = caption
+
         if (detail.isNullOrEmpty()) {
             propertyValueText?.visibility = View.GONE
         } else {
             propertyValueText?.text = detail
         }
+    }
+
+    fun showPropertyName(show: Boolean) {
+        propertyNameText?.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     /**
@@ -44,6 +49,10 @@ class WCProductPropertyView @JvmOverloads constructor(
             propertyGroupImg?.visibility = View.VISIBLE
             view?.setOnClickListener(onClickListener)
         }
+    }
+
+    fun setMaxLines(maxLines: Int) {
+        propertyValueText?.maxLines = maxLines
     }
 
     fun setRating(rating: Float) {

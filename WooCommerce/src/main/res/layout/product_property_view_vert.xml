@@ -15,7 +15,7 @@
 
         android:layout_marginStart="@dimen/product_detail_property_margin"
         android:layout_marginTop="@dimen/product_detail_property_margin"
-        android:textColor="@color/wc_grey_dark"
+        android:textColor="@color/wc_black_darker"
         android:textSize="@dimen/text_large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,20 +23,22 @@
 
     <TextView
         android:id="@+id/textPropertyValue"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/product_detail_property_margin"
         android:layout_marginEnd="@dimen/product_detail_property_margin"
         android:layout_marginStart="@dimen/product_detail_property_margin"
         android:layout_marginTop="@dimen/margin_small"
+        app:layout_goneMarginTop="@dimen/product_detail_property_margin"
         android:ellipsize="end"
         android:lineSpacingExtra="2dp"
-        android:textColor="@color/wc_grey_medium"
+        android:textColor="@color/wc_black_lighter"
         android:textSize="@dimen/text_medium"
         android:layout_gravity="start"
         android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imgProperty"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         tools:text="textPropertyValue"/>
 
