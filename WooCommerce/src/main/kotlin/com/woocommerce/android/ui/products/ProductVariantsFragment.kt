@@ -76,6 +76,14 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productVariantsRefreshLayout.isRefreshing = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
+                empty_view.visibility = if (isEmptyViewVisible) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+                empty_view?.button?.visibility = View.GONE
+            }
         }
 
         viewModel.productVariantList.observe(viewLifecycleOwner, Observer {
