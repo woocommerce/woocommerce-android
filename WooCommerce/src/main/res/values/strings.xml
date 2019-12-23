@@ -63,6 +63,7 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="done">Done</string>
     <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
     <string name="dismiss">Dismiss</string>
@@ -75,6 +76,9 @@
     <string name="unknown">Unknown</string>
     <string name="remove">Remove</string>
     <string name="try_again">Try again</string>
+    <string name="update">Update</string>
+    <string name="save">Save</string>
+    <string name="discard_changes">Discard changes</string>
     <!--
         Date/Time Labels
     -->
@@ -126,8 +130,8 @@
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_refresh_app">refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
-    <string name="login_refresh_app_progress">Checking for WooCommerce...</string>
-    <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack...</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
+    <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack…</string>
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
     <string name="login_jetpack_view_instructions">View instructions</string>
@@ -180,7 +184,7 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.23 or higher</string>
+    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.22 or higher</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for  stores using the WooCommerce Admin plugin</string>
     <!--
@@ -195,7 +199,6 @@
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_fetching">Fetching orders…</string>
-    <string name="orderlist_search_prompt">Search orders</string>
     <!--
         Order Detail Views
     -->
@@ -309,13 +312,15 @@
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_confirm_discard">Discard this note?</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+
     <!--
-        Order List Tab Labels
+    Order List Tab Labels
     -->
     <string-array name="order_list_tabs">
         <item>Processing</item>
         <item>All Orders</item>
     </string-array>
+
     <!--
         Order Status Labels
     -->
@@ -394,6 +399,7 @@
     <string name="product_property_variant_formatter" translatable="false">%1$s (%2$s options)</string>
     <string name="product_property_edit">Edit product</string>
     <string name="product_inventory">Inventory</string>
+    <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -437,6 +443,16 @@
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_hidden">Hidden</string>
     <string name="product_variant_list_empty">Add options like size and color from web. These will show up as options on the product page of your site</string>
+    <string name="product_description_hint">Start writing…</string>
+    <string name="product_edit_description">Edit description</string>
+    <string name="product_description">Description</string>
+    <string name="product_description_empty">Describe your product</string>
+    <string name="aztec_confirm_discard">Do you want to save your changes?</string>
+    <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_update_dialog_message">Please wait…</string>
+    <string name="product_detail_update_product_error">Error updating product</string>
+    <string name="product_detail_update_product_success">Product updated</string>
+    >>>>>>> develop
     <!--
         Product images
     -->
