@@ -15,6 +15,8 @@ import com.woocommerce.android.R
  *
  * @see com.woocommerce.android.ui.main.MainUIMessageResolver
  */
+// BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+@Suppress("WrongConstant")
 interface UIMessageResolver {
     /**
      * Set by the implementing class. This is the root view the snackbar should be attached to. To enable
@@ -105,8 +107,6 @@ interface UIMessageResolver {
      * @param [stringResId] The string resource id of the base message
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
             snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG)
 
@@ -115,33 +115,35 @@ interface UIMessageResolver {
      *
      * @param [msg] The message to display in the snackbar
      */
-    fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, Snackbar.LENGTH_LONG).show()
+    fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, BaseTransientBottomBar.LENGTH_LONG).show()
 
     /**
      * Display a snackbar with the provided string resource.
      *
      * @param [msgId] The resource ID of the message to display in the snackbar
      */
-    fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, Snackbar.LENGTH_LONG).show()
+    fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, BaseTransientBottomBar.LENGTH_LONG).show()
 
     /**
      * Display a generic offline message.
      */
-    fun showOfflineSnack() = Snackbar
-            .make(snackbarRoot, snackbarRoot.context.getString(R.string.offline_error), Snackbar.LENGTH_LONG)
-            .show()
+    fun showOfflineSnack() = Snackbar.make(
+            snackbarRoot,
+            snackbarRoot.context.getString(R.string.offline_error),
+            BaseTransientBottomBar.LENGTH_LONG
+    ).show()
 
     private fun getIndefiniteSnackbarWithAction(
         view: View,
         msg: String,
         actionString: String,
         actionListener: View.OnClickListener
-    ) = Snackbar.make(view, msg, Snackbar.LENGTH_INDEFINITE).setAction(actionString, actionListener)
+    ) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_INDEFINITE).setAction(actionString, actionListener)
 
     private fun getSnackbarWithAction(
         view: View,
         msg: String,
         actionString: String,
         actionListener: View.OnClickListener
-    ) = Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAction(actionString, actionListener)
+    ) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_LONG).setAction(actionString, actionListener)
 }
