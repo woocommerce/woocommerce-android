@@ -101,10 +101,11 @@ class ProductVariantsViewModel @AssistedInject constructor(
     ) {
         if (networkStatus.isConnected()) {
             val fetchedVariants = productVariantsRepository.fetchProductVariants(remoteProductId, loadMore)
-            if (fetchedVariants.isNullOrEmpty() && !loadMore) {
-                viewState = viewState.copy(isEmptyViewVisible = true)
+            if (fetchedVariants.isNullOrEmpty()) {
+                if (!loadMore) {
+                    viewState = viewState.copy(isEmptyViewVisible = true)
+                }
             } else {
-                viewState = viewState.copy(isEmptyViewVisible = false)
                 _productVariantList.value = combineData(fetchedVariants)
             }
         } else {
