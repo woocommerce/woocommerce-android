@@ -277,25 +277,24 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
         if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
-            val caption = if (!product.description.isEmpty()) {
-                getString(R.string.product_description)
-            } else ""
-
-            val description = if (product.description.isEmpty()) {
+            val productDescription = product.description
+            val showCaption = !productDescription.isEmpty()
+            val description = if (productDescription.isEmpty()) {
                 getString(R.string.product_description_empty)
             } else {
-                product.description
+                productDescription
             }
             addPropertyView(
                     DetailCard.Primary,
-                    caption,
+                    getString(R.string.product_description),
                     SpannableString(HtmlUtils.fromHtml(description)),
                     LinearLayout.VERTICAL
             )?.also {
+                it.showPropertyName(showCaption)
                 it.setMaxLines(1)
                 it.setClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED)
-                    showProductDescriptionEditor(product.description)
+                    showProductDescriptionEditor(productDescription)
                 }
             }
         }
