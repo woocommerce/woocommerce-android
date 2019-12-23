@@ -92,6 +92,9 @@ class ProductDetailRepository @Inject constructor(
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
+    fun getCachedVariantCount(remoteProductId: Long) =
+            productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
