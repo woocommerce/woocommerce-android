@@ -218,9 +218,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         // show product variants only if product type is variable and if there are variations for the product
-        if (product.type == VARIABLE
-                && FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context)
-                && product.numVariations > 0) {
+        if (product.type == VARIABLE &&
+                FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context) &&
+                product.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
