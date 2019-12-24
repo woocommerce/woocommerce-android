@@ -1,6 +1,6 @@
 package com.woocommerce.android.util
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -11,7 +11,8 @@ import com.woocommerce.android.R
  * Helper class for working with Android Dark and Light Themes
  */
 object AppThemeUtils {
-    fun setAppTheme(context: Context, newTheme: ThemeOption? = null) {
+    @SuppressLint("WrongConstant")
+    fun setAppTheme(newTheme: ThemeOption? = null) {
         val theme = newTheme?.let {
             AppPrefs.setAppTheme(it)
             it
@@ -23,10 +24,10 @@ object AppThemeUtils {
             ThemeOption.DARK ->
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             ThemeOption.DEFAULT -> {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                } else {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }
             }
         }

@@ -114,7 +114,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
         AppPrefs.init(this)
 
         // Apply Theme
-        AppThemeUtils.setAppTheme(this)
+        AppThemeUtils.setAppTheme()
 
         CrashUtils.initCrashLogging(this)
 

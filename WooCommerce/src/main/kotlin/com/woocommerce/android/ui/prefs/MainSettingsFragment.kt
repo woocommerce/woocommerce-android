@@ -252,10 +252,8 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                 .setTitle(getString(R.string.settings_app_theme_title))
                 .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
                     val selectedTheme = ThemeOption.values()[which]
-                    context?.let {
-                        AppThemeUtils.setAppTheme(it, selectedTheme)
-                        settings_selectedTheme?.text = getString(selectedTheme.label)
-                    }
+                    AppThemeUtils.setAppTheme(selectedTheme)
+                    settings_selectedTheme?.text = getString(selectedTheme.label)
                     dialog.dismiss()
                 }
                 .setNegativeButton(R.string.cancel) { dialog, _ ->
