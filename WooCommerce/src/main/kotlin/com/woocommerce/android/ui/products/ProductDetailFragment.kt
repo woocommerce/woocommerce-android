@@ -317,8 +317,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             )?.setRating(product.averageRating)
         }
 
-        // show product variants only if product type is variable
-        if (product.type == VARIABLE && FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context)) {
+        // show product variants only if product type is variable and if there are variations for the product
+        if (product.type == VARIABLE &&
+                FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context) &&
+                product.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
@@ -334,6 +336,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
                 showProductVariations(product.remoteId)
             }
+        } else {
+            removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
         }
 
         addLinkView(
@@ -452,6 +456,24 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
         return addPropertyView(card, propertyName, SpannableString(propertyValue), orientation)
+    }
+
+    private fun removePropertyView(
+        card: DetailCard,
+        propertyName: String
+    ) {
+        // locate the card, add it if it doesn't exist yet
+        val cardView = findOrAddCardView(card)
+
+        // locate the linear layout container inside the card
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+
+        // locate the existing property view in the container, add it if not found
+        val propertyTag = "{$propertyName}_tag"
+        val propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
+        if (propertyView != null) {
+            container.removeView(propertyView)
+        }
     }
 
     private fun addPropertyView(

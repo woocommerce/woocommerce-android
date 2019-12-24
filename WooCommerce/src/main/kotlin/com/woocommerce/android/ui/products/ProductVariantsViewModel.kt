@@ -13,7 +13,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -103,8 +102,9 @@ class ProductVariantsViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             val fetchedVariants = productVariantsRepository.fetchProductVariants(remoteProductId, loadMore)
             if (fetchedVariants.isNullOrEmpty()) {
-                triggerEvent(ShowSnackbar(string.product_variants_fetch_product_variants_error))
-                triggerEvent(Exit)
+                if (!loadMore) {
+                    viewState = viewState.copy(isEmptyViewVisible = true)
+                }
             } else {
                 _productVariantList.value = combineData(fetchedVariants)
             }
@@ -133,7 +133,8 @@ class ProductVariantsViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isLoadingMore: Boolean? = null,
-        val canLoadMore: Boolean? = null
+        val canLoadMore: Boolean? = null,
+        val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

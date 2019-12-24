@@ -442,6 +442,7 @@
     <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch 🚀</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_hidden">Hidden</string>
+    <string name="product_variant_list_empty">Add options like size and color from web. These will show up as options on the product page of your site</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
@@ -451,6 +452,7 @@
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
+    >>>>>>> develop
     <!--
         Product images
     -->
