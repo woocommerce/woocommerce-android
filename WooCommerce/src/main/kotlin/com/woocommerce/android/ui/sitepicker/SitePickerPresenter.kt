@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
+import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
 class SitePickerPresenter @Inject constructor(
@@ -91,7 +92,7 @@ class SitePickerPresenter @Inject constructor(
     }
 
     override fun getSiteModelByUrl(url: String): SiteModel? =
-            siteStore.getSitesByNameOrUrlMatching(url).firstOrNull()
+            SiteUtils.getSiteByMatchingUrl(siteStore, url)
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
