@@ -160,13 +160,13 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
     override fun confirmDiscard() {
         isConfirmingDiscard = true
         AlertDialog.Builder(activity)
-                .setMessage(R.string.add_order_note_confirm_discard)
+                .setMessage(R.string.discard_message)
                 .setCancelable(true)
                 .setPositiveButton(R.string.discard) { _, _ ->
                     shouldShowDiscardDialog = false
                     activity?.onBackPressed()
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+                .setNegativeButton(R.string.keep_editing) { _, _ ->
                     isConfirmingDiscard = false
                 }
                 .show()

@@ -258,7 +258,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
     override fun confirmDiscard() {
         isConfirmingDiscard = true
         AlertDialog.Builder(activity)
-                .setMessage(R.string.order_shipment_tracking_confirm_discard)
+                .setMessage(R.string.discard_message)
                 .setCancelable(true)
                 .setPositiveButton(R.string.discard) { _, _ ->
                     shouldShowDiscardDialog = false
