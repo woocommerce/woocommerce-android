@@ -91,13 +91,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         return if (viewState.isProductUpdated == true && viewState.shouldShowDiscardDialog) {
             viewState = viewState.copy(shouldShowDiscardDialog = false)
             triggerEvent(ShowDiscardDialog(
-                    string.aztec_confirm_discard,
-                    string.save, string.discard_changes,
+                    string.discard_message,
+                    string.discard, string.keep_editing,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        onUpdateButtonClicked()
+                        triggerEvent(Exit)
                     },
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(Exit)
+                        viewState = viewState.copy(shouldShowDiscardDialog = true)
                     }
             ))
             false
