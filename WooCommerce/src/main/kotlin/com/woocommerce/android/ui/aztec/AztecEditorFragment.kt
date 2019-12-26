@@ -126,15 +126,14 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     private fun confirmDiscard() {
         isConfirmingDiscard = true
         discardDialog = AlertDialog.Builder(activity)
-                .setMessage(R.string.aztec_confirm_discard)
+                .setMessage(R.string.discard_message)
                 .setCancelable(true)
-                .setPositiveButton(R.string.save) { _, _ ->
-                    shouldShowDiscardDialog = false
-                    navigateBackWithResult(true)
-                }
-                .setNegativeButton(R.string.discard_changes) { _, _ ->
+                .setPositiveButton(R.string.discard) { _, _ ->
                     isConfirmingDiscard = false
                     navigateBackWithResult(false)
+                }
+                .setNegativeButton(R.string.keep_editing) { _, _ ->
+                    isConfirmingDiscard = false
                 }
                 .show()
     }

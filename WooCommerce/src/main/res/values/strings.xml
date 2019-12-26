@@ -79,6 +79,7 @@
     <string name="update">Update</string>
     <string name="save">Save</string>
     <string name="discard_changes">Discard changes</string>
+    <string name="discard_message">Do you want to discard your changes?</string>
     <!--
         Date/Time Labels
     -->
