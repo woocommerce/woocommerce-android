@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
@@ -213,6 +214,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             isDragEnabled = true
 
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
+            getPaint(Chart.PAINT_INFO).textSize = context.resources.getDimension(R.dimen.text_large)
         }
         chart.setOnChartValueSelectedListener(this)
         chart.onChartGestureListener = this
