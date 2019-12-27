@@ -5,19 +5,21 @@
     <corners android:radius="8dp" />
 
     <padding
-        android:bottom="3dp"
-        android:left="6dp"
-        android:right="6dp"
-        android:top="3dp" />
+        android:bottom="1dp"
+        android:left="4dp"
+        android:right="4dp"
+        android:top="1dp" />
 
     <size
-        android:width="18dp"
-        android:height="12dp" />
+        android:width="15dp"
+        android:height="15dp" />
 
-    <solid android:color="@color/wc_purple" />
+    <solid android:color="?attr/colorSecondary" />
 
+    <!--
+        Use a color resource for dark mode so we can add the elevation alpha
+    -->
     <stroke
         android:width="1dp"
-        android:color="@color/bottomBar_bg" />
-
+        android:color="@color/color_bottom_nav_badge_border"/>
 </shape>

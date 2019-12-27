@@ -19,9 +19,13 @@
         android:layout_marginTop="@dimen/margin_small"
         android:background="@drawable/badge_orders"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="9dp"
-        android:textStyle="bold"
-        tools:text="99+" />
+        android:textColor="?attr/colorSurface"
+        android:lineHeight="16dp"
+        android:textSize="10sp"
+        android:textStyle="normal"
+        android:textFontWeight="500"
+        tools:text="99+"
+        tools:targetApi="p"
+        tools:ignore="SmallSp" />
 
 </FrameLayout>

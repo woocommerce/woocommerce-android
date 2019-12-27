@@ -134,7 +134,7 @@
     <!--
          Notifications
      -->
-    <dimen name="notification_badge_sz">12dp</dimen>
+    <dimen name="notification_badge_sz">9dp</dimen>
 
     <!--
         Offline Status Bar
