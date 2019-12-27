@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="badge_border_color">@color/woo_white</color>
+    <color name="badge_background_color">@color/woo_purple_60</color>
     <!--
         Nav bar color protection for behavior differences between Android P and Q. All sdk
         levels should draw fullscreen. P should color the nav bar with a translucent background
