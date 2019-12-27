@@ -14,12 +14,12 @@
         android:width="15dp"
         android:height="15dp" />
 
-    <solid android:color="?attr/colorSecondary" />
+    <solid android:color="?attr/badgeBackgroundColor" />
 
     <!--
         Use a color resource for dark mode so we can add the elevation alpha
     -->
     <stroke
         android:width="1dp"
-        android:color="@color/color_bottom_nav_badge_border"/>
+        android:color="?attr/badgeBorderColor"/>
 </shape>
