@@ -20,6 +20,7 @@
         android:background="@drawable/badge_orders"
         android:gravity="center"
         android:textAppearance="?attr/badgeTextAppearance"
+        android:textColor="@color/woo_white"
         tools:text="99+" />
 
 </FrameLayout>
