@@ -1,26 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="woo_purple_30">#B17FD4</color>
-    <color name="woo_purple_50">#7F54B3</color>
-    <color name="woo_purple_60">#674399</color>
-    <color name="woo_purple_80">#3C2861</color>
-
-    <color name="woo_pink_30">#EB6594</color>
-    <color name="woo_pink_50">#C9356E</color>
-    <color name="woo_pink_70">#8C1749</color>
-
-    <color name="woo_red_30">#F86368</color>
-    <color name="woo_red_50">#D63638</color>
-
-    <color name="woo_white">@android:color/white</color>
-    <color name="woo_white_alpha_038">#61FFFFFF</color>
-
-    <color name="woo_black">@android:color/black</color>
-    <color name="woo_black_90">#121212</color>
-    <color name="woo_black_90_alpha_020">#33121212</color>
-    <color name="woo_black_90_alpha_038">#61121212</color>
-    <color name="woo_black_90_alpha_087">#DE121212</color>
-
     <!--
         Nav bar color protection for behavior differences between Android P and Q. All sdk
         levels should draw fullscreen. P should color the nav bar with a translucent background
