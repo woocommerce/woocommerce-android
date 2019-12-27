@@ -31,8 +31,6 @@
         <item name="emphasisMediumAlpha">0.60</item>
         <item name="emphasisDisabledAlpha">0.38</item>
 
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Surface</item>
-
         <!--System/Platform attributes-->
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
