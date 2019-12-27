@@ -91,15 +91,6 @@
     <color name="link_text_color">@color/wc_purple</color>
 
     <!--
-        Bottom Navigation Bar
-    -->
-    <!-- Bar Background color -->
-    <color name="bottomBar_bg">@color/white</color>
-    <!-- Option icon/text color when NOT selected -->
-    <color name="bottomBar_fg_normal">@color/wc_grey_darker</color>
-    <!-- Option icon/text color when selected -->
-    <color name="bottomBar_fg_checked">@color/colorPrimary</color>
-    <!--
         Default graph colors
     -->
     <color name="graph_no_data_text_color">@color/default_text_color</color>
