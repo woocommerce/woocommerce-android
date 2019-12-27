@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <fraction name="alpha_plane_00">0.00</fraction>
-    <fraction name="alpha_plane_01">0.05</fraction>
-    <fraction name="alpha_plane_02">0.07</fraction>
-    <fraction name="alpha_plane_03">0.08</fraction>
-    <fraction name="alpha_plane_04">0.09</fraction>
-    <fraction name="alpha_plane_06">0.11</fraction>
-    <fraction name="alpha_plane_08">0.12</fraction>
-    <fraction name="alpha_plane_12">0.14</fraction>
-    <fraction name="alpha_plane_16">0.14</fraction>
-    <fraction name="alpha_plane_24">0.16</fraction>
+    <item name="alpha_plane_00" format="float" type="dimen">0.00</item>
+    <item name="alpha_plane_01" format="float" type="dimen">0.05</item>
+    <item name="alpha_plane_02" format="float" type="dimen">0.07</item>
+    <item name="alpha_plane_03" format="float" type="dimen">0.08</item>
+    <item name="alpha_plane_04" format="float" type="dimen">0.09</item>
+    <item name="alpha_plane_06" format="float" type="dimen">0.11</item>
+    <item name="alpha_plane_08" format="float" type="dimen">0.12</item>
+    <item name="alpha_plane_12" format="float" type="dimen">0.14</item>
+    <item name="alpha_plane_16" format="float" type="dimen">0.14</item>
+    <item name="alpha_plane_24" format="float" type="dimen">0.16</item>
 </resources>
