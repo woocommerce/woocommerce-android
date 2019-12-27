@@ -89,14 +89,6 @@
 
     <!-- Default Link Color -->
     <color name="link_text_color">@color/wc_purple</color>
-
-    <!--
-        Default graph colors
-    -->
-    <color name="graph_no_data_text_color">@color/default_text_color</color>
-    <color name="graph_data_color">@color/wc_grey_mid</color>
-    <color name="graph_grid_color">@color/wc_border_color</color>
-    <color name="graph_highlight_color">@color/wc_purple</color>
     <!--
         Order: status tag background colors
     -->
