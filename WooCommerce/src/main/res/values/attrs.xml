@@ -72,7 +72,5 @@
     <!--
         Badge attributes for the bottom bar
     -->
-    <attr name="badgeBackgroundColor" format="reference|color"/>
-    <attr name="badgeBorderColor" format="reference|color"/>
     <attr name="badgeTextAppearance" format="reference"/>
 </resources>

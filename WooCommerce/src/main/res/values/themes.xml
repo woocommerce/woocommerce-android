@@ -54,8 +54,6 @@
         <item name="emphasisDisabledAlphaPrimary">0.38</item>
 
         <!-- Bottom bar badge attributes -->
-        <item name="badgeBackgroundColor">?attr/colorSecondary</item>
-        <item name="badgeBorderColor">@color/color_bottom_nav_badge_border</item>
         <item name="badgeTextAppearance">@style/TextAppearance.Woo.Overline</item>
 
         <!-- Styles -->
