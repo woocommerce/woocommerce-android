@@ -26,11 +26,6 @@
 
         <item name="elevationOverlayEnabled">true</item>
 
-        <!-- Custom attrs for setting alpha values -->
-        <item name="emphasisHighAlpha">0.87</item>
-        <item name="emphasisMediumAlpha">0.60</item>
-        <item name="emphasisDisabledAlpha">0.38</item>
-
         <!--System/Platform attributes-->
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
