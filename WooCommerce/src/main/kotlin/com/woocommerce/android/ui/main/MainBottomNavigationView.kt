@@ -32,9 +32,8 @@ import kotlin.math.min
 
 class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : BottomNavigationView(context, attrs, defStyleAttr),
+    attrs: AttributeSet? = null
+) : BottomNavigationView(context, attrs),
         OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
     private lateinit var navAdapter: NavAdapter
     private lateinit var fragmentManager: FragmentManager
