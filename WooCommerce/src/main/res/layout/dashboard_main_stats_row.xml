@@ -20,7 +20,7 @@
 
         <TextView
             android:id="@+id/visitors_label"
-            style="@style/Woo.TextAppearance.Title.Small"
+            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/visitors_value"
-            style="@style/Woo.TextAppearance.Label.XL"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -47,7 +47,7 @@
 
         <TextView
             android:id="@+id/orders_label"
-            style="@style/Woo.TextAppearance.Title.Small"
+            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -56,7 +56,7 @@
 
         <TextView
             android:id="@+id/orders_value"
-            style="@style/Woo.TextAppearance.Label.XL"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -74,7 +74,7 @@
 
         <TextView
             android:id="@+id/revenue_label"
-            style="@style/Woo.TextAppearance.Title.Small"
+            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -82,7 +82,7 @@
 
         <TextView
             android:id="@+id/revenue_value"
-            style="@style/Woo.TextAppearance.Label.XL"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
