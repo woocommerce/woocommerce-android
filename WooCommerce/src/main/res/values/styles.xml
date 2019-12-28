@@ -7,6 +7,10 @@
         <item name="android:elevation">@dimen/plane_08</item>
     </style>
 
+    <style name="Widget.Woo.Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface">
+        <item name="android:elevation">@dimen/appbar_elevation</item>
+    </style>
+
     <!--
         Set a custom cursor for search views so they don't inherit colorAccent
     -->
