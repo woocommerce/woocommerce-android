@@ -1,14 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+        Bottom Bar Style
+    -->
     <style name="Widget.Woo.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
         <item name="android:background">?attr/colorSurface</item>
         <item name="itemIconTint">@color/color_on_surface</item>
         <item name="itemTextColor">@color/color_on_surface</item>
         <item name="android:elevation">@dimen/plane_08</item>
     </style>
-
+    <!--
+        Toolbar Style
+    -->
     <style name="Widget.Woo.Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface">
         <item name="android:elevation">@dimen/appbar_elevation</item>
+    </style>
+    <!--
+        Default Card Style
+    -->
+    <style name="Widget.Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/minor_00</item>
+        <item name="android:checkable">false</item>
+        <item name="contentPaddingTop">@dimen/major_75</item>
+        <item name="contentPaddingBottom">@dimen/major_75</item>
+    </style>
+    <style name="Widget.Woo.Card.Tabbed">
+        <item name="contentPaddingTop">@dimen/minor_00</item>
+    </style>
+    <style name="Widget.Woo.Card.Expandable">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+    <style name="Widget.Woo.Card.WithoutPadding">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+    <!--
+        TextView Styles
+    -->
+    <style name="Woo.TextView.Subtitle2" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/major_75</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+        <item name="android:gravity">center_horizontal|start</item>
     </style>
 
     <!--
@@ -169,29 +208,7 @@
         <item name="tagColor">@color/tagView_bg</item>
         <item name="tagBorderColor">@color/tagView_border_bg</item>
     </style>
-    <!--
-        Default Card Style
-    -->
-    <style name="Widget.Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
-        <item name="cardCornerRadius">@dimen/minor_00</item>
-        <item name="android:checkable">false</item>
-        <item name="contentPaddingTop">@dimen/major_75</item>
-        <item name="contentPaddingBottom">@dimen/major_75</item>
-    </style>
-    <style name="Widget.Woo.Card.Tabbed">
-        <item name="contentPaddingTop">@dimen/minor_00</item>
-    </style>
-    <style name="Widget.Woo.Card.Expandable">
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-    </style>
-    <style name="Widget.Woo.Card.WithoutPadding">
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-    </style>
+
     <style name="Woo.TextView">
         <item name="android:paddingStart">@dimen/card_item_padding_intra_h</item>
         <item name="android:paddingEnd">@dimen/card_item_padding_intra_h</item>
