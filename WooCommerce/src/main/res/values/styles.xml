@@ -41,13 +41,21 @@
     <!--
         TextView Styles
     -->
-    <style name="Woo.TextView.Subtitle2" parent="@style/Widget.MaterialComponents.TextView">
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+    <style name="Woo.TextView" parent="@style/Widget.MaterialComponents.TextView">
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/major_75</item>
         <item name="android:layout_marginBottom">@dimen/major_75</item>
+    </style>
+
+    <style name="Woo.TextView.Subtitle2">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_horizontal|start</item>
+    </style>
+
+    <style name="Woo.TextView.Caption">
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
     </style>
 
     <!--
@@ -207,14 +215,6 @@
         <item name="tagTextSize">@dimen/tag_text_size</item>
         <item name="tagColor">@color/tagView_bg</item>
         <item name="tagBorderColor">@color/tagView_border_bg</item>
-    </style>
-
-    <style name="Woo.TextView">
-        <item name="android:paddingStart">@dimen/card_item_padding_intra_h</item>
-        <item name="android:paddingEnd">@dimen/card_item_padding_intra_h</item>
-        <item name="android:paddingTop">@dimen/card_item_padding_intra_v</item>
-        <item name="android:paddingBottom">@dimen/card_item_padding_intra_v</item>
-        <item name="android:textAppearance">@style/Woo.TextAppearance</item>
     </style>
     <style name="Woo.TextView.Title">
         <item name="android:paddingStart">@dimen/card_padding_start</item>
@@ -603,7 +603,7 @@
     <!--
         Product Detail
     -->
-    <style name="Woo.TextView.Caption">
+    <style name="Woo.TextView.CaptionOld">
         <item name="android:paddingTop">@dimen/default_padding</item>
         <item name="android:paddingStart">?dialogPreferredPadding</item>
         <item name="android:paddingEnd">?dialogPreferredPadding</item>

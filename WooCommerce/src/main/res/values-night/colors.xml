@@ -9,6 +9,7 @@
         App colors
     -->
     <color name="default_window_background">@color/woo_black_90</color>
+    <color name="list_divider">@color/woo_white_alpha_012</color>
     <!--
         Badge colors
     -->

@@ -8,5 +8,5 @@
         android:id="@+id/product_purchase_note"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Woo.TextView.Caption" />
+        android:theme="@style/Woo.TextView.CaptionOld" />
 </ScrollView>
