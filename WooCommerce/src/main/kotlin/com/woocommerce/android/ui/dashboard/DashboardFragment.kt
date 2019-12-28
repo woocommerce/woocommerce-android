@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -25,7 +24,6 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -65,11 +63,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
         with(view) {
             dashboard_refresh_layout.apply {
-                activity?.let { activity ->
+                activity?.let { _ ->
                     setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.colorPrimary),
-                            ContextCompat.getColor(activity, R.color.colorAccent),
-                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
+                            R.attr.colorPrimary,
+                            R.attr.colorSecondary,
+                            R.attr.colorPrimaryVariant
                     )
                 }
                 setOnRefreshListener {
@@ -206,7 +204,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_stats.showVisitorStats(visitorStats)
         }
 
-        if (granularity == DAYS) {
+        if (granularity == StatsGranularity.DAYS) {
             empty_view.updateVisitorCount(visitorStats.values.sum())
         }
     }

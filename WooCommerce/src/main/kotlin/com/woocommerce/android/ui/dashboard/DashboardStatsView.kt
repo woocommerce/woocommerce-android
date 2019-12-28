@@ -195,6 +195,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
 
                 setLabelCount(2, true) // Only show first and last date
+                textColor = ContextCompat.getColor(context, R.color.graph_label_color)
 
                 valueFormatter = StartEndDateAxisFormatter()
             }
@@ -207,6 +208,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setDrawGridLines(true)
                 gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 setLabelCount(3, true)
+                textColor = ContextCompat.getColor(context, R.color.graph_label_color)
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
