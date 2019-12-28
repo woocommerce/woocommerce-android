@@ -45,6 +45,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.io.Serializable
 import java.util.ArrayList
 import java.util.Date
+import java.util.Locale
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs), OnChartValueSelectedListener, BarChartGestureListener {
@@ -94,6 +95,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 // TODO: add a custom empty view
                 chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             }
+            field = value
         }
 
     private val fadeHandler = Handler()
@@ -125,7 +127,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 // Track range change
                 AnalyticsTracker.track(
                         Stat.DASHBOARD_MAIN_STATS_DATE,
-                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
+                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase(Locale.ROOT)))
 
                 isRequestingStats = true
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
@@ -203,7 +205,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
-                gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 setLabelCount(3, true)
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
@@ -456,7 +458,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         // fade in the new value after fade out finishes
         val delay = duration.toMillis(context) + 100
         fadeHandler.postDelayed({
-            val color = ContextCompat.getColor(context, R.color.default_text_title)
+            val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
             view.setTextColor(color)
             view.text = value
             WooAnimUtils.fadeIn(view, duration)

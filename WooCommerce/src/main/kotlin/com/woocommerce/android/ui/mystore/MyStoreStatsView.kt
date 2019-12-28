@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
 import java.util.ArrayList
 import java.util.Date
+import java.util.Locale
 import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -86,6 +87,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 // TODO: add a custom empty view
                 chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             }
+            field = value
         }
 
     private val fadeHandler = Handler()
@@ -117,7 +119,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         // Track range change
         AnalyticsTracker.track(
                 Stat.DASHBOARD_MAIN_STATS_DATE,
-                mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase()))
+                mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase(Locale.ROOT)))
 
         isRequestingStats = true
         listener.onRequestLoadStats(granularity)
