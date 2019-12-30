@@ -274,7 +274,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun addPrimaryCard(productData: ViewState) {
         val product = requireNotNull(productData.product)
 
-        addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productTitle)
+        } else {
+            addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+        }
 
         if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
             val productDescription = product.description
@@ -566,6 +570,31 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
 
         readMoreView.show(caption, HtmlUtils.fastStripHtml(content), maxLines)
+    }
+
+    /**
+     * Adds an editText to the passed card
+     */
+    private fun addEditableView(
+        card: DetailCard,
+        @StringRes propertyNameId: Int,
+        propertyValue: String?
+    ): WCProductPropertyEditableView? {
+        val hint = getString(propertyNameId)
+        val editableViewTag = "${hint}_tag"
+
+        val cardView = findOrAddCardView(card)
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+        var editableView = container.findViewWithTag<WCProductPropertyEditableView>(editableViewTag)
+
+        if (editableView == null) {
+            editableView = WCProductPropertyEditableView(requireActivity())
+            editableView.tag = editableViewTag
+            container.addView(editableView)
+        }
+
+        editableView.show(hint, propertyValue)
+        return editableView
     }
 
     /**

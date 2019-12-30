@@ -452,7 +452,8 @@
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
-    >>>>>>> develop
+    <string name="product_detail_title_hint">Enter title</string>
+
     <!--
         Product images
     -->
