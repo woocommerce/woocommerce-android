@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.aztec
 
-import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import kotlinx.android.synthetic.main.fragment_aztec_editor.*
@@ -41,8 +42,6 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     private var isConfirmingDiscard = false
     private var shouldShowDiscardDialog = true
     private var isHtmlEditorEnabled: Boolean = false
-
-    private var discardDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,12 +102,12 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onDestroy() {
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
-        discardDialog?.dismiss()
-        super.onDestroy()
     }
 
     /**
@@ -125,18 +124,15 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     private fun confirmDiscard() {
         isConfirmingDiscard = true
-        discardDialog = AlertDialog.Builder(activity)
-                .setMessage(R.string.aztec_confirm_discard)
-                .setCancelable(true)
-                .setPositiveButton(R.string.save) { _, _ ->
-                    shouldShowDiscardDialog = false
-                    navigateBackWithResult(true)
-                }
-                .setNegativeButton(R.string.discard_changes) { _, _ ->
+        CustomDiscardDialog.showDiscardDialog(
+                requireActivity(),
+                posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                     navigateBackWithResult(false)
-                }
-                .show()
+                },
+                negBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    isConfirmingDiscard = false
+                })
     }
 
     override fun onToolbarCollapseButtonClicked() {
