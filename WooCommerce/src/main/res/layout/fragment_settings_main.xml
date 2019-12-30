@@ -115,6 +115,32 @@
             style="@style/Woo.Settings.Divider"/>
 
         <!--
+            Appearance (App Theme)
+        -->
+        <LinearLayout
+            android:id="@+id/settings_theme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Woo.Settings.LabelWithDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_app_theme_title"/>
+
+            <TextView
+                android:id="@+id/settings_selectedTheme"
+                style="@style/Woo.Settings.Label.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="@string/settings_app_theme_option_default"/>
+        </LinearLayout>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <!--
             Privacy
         -->
         <TextView

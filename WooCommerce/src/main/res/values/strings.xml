@@ -495,6 +495,12 @@
     <string name="settings_crash_reporting">Crash reports</string>
     <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports</string>
     <string name="settings_switch_site_notifs_msg">Switched to %s. You will only receive notifications for this store</string>
+    <string name="settings_app_theme_title">Appearance</string>
+    <string name="settings_app_theme_option_light">Light</string>
+    <string name="settings_app_theme_option_dark">Dark</string>
+    <string name="settings_app_theme_option_system">System default</string>
+    <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
+    <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
     <!--
         WCToggleSingleOptionView
     -->

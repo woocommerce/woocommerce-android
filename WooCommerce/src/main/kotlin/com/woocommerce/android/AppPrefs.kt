@@ -10,6 +10,8 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
+import com.woocommerce.android.util.ThemeOption
+import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 
@@ -38,7 +40,8 @@ object AppPrefs {
         IS_PRODUCTS_FEATURE_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
-        IMAGE_OPTIMIZE_ENABLED
+        IMAGE_OPTIMIZE_ENABLED,
+        SELECTED_APP_THEME
     }
 
     /**
@@ -62,7 +65,7 @@ object AppPrefs {
         CANCELLED_APP_VERSION_CODE,
         // Application permissions
         ASKED_PERMISSION_STORAGE,
-        ASKED_PERMISSION_CAMERA,
+        ASKED_PERMISSION_CAMERA
     }
 
     fun init(context: Context) {
@@ -262,6 +265,13 @@ object AppPrefs {
 
     fun setImageOptimizationEnabled(enabled: Boolean) {
         setBoolean(IMAGE_OPTIMIZE_ENABLED, enabled)
+    }
+
+    fun getAppTheme(): ThemeOption =
+            ThemeOption.valueOf(getString(DeletablePrefKey.SELECTED_APP_THEME, DEFAULT.toString()))
+
+    fun setAppTheme(theme: ThemeOption) {
+        setString(DeletablePrefKey.SELECTED_APP_THEME, theme.toString())
     }
 
     /**
