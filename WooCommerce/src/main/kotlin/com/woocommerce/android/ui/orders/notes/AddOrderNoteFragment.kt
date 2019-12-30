@@ -105,11 +105,15 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onDestroyView() {
+    override fun onStop() {
+        super.onStop()
         CustomDiscardDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
+    }
+
+    override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
     }

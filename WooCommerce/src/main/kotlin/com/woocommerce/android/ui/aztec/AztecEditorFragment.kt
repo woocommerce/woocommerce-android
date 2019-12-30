@@ -102,12 +102,12 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onDestroy() {
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
-        CustomDiscardDialog.onCleared()
-        super.onDestroy()
     }
 
     /**

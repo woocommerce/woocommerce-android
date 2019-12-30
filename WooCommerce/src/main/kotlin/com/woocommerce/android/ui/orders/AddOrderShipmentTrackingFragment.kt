@@ -24,6 +24,7 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.fragment_add_shipment_tracking.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.util.ActivityUtils
 import java.util.Calendar
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
@@ -143,9 +144,16 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
+        activity?.let {
+            ActivityUtils.hideKeyboard(it)
+        }
+    }
+
     override fun onDestroy() {
         presenter.dropView()
-        CustomDiscardDialog.onCleared()
         super.onDestroy()
     }
 
