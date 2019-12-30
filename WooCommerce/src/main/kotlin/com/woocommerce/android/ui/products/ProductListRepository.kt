@@ -114,8 +114,13 @@ final class ProductListRepository @Inject constructor(
      * Returns all products for the current site that are in the database
      */
     fun getProductList(): List<Product> {
-        val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
-        return wcProducts.map { it.toAppModel() }
+        return if (selectedSite.exists()) {
+            val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
+            wcProducts.map { it.toAppModel() }
+        } else {
+            WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")
+            emptyList()
+        }
     }
 
     @SuppressWarnings("unused")
