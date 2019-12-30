@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders
 
-import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TR
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -144,6 +145,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     override fun onDestroy() {
         presenter.dropView()
+        CustomDiscardDialog.onCleared()
         super.onDestroy()
     }
 
@@ -257,17 +259,15 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     override fun confirmDiscard() {
         isConfirmingDiscard = true
-        AlertDialog.Builder(activity)
-                .setMessage(R.string.discard_message)
-                .setCancelable(true)
-                .setPositiveButton(R.string.discard) { _, _ ->
+        CustomDiscardDialog.showDiscardDialog(
+                requireActivity(),
+                posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     shouldShowDiscardDialog = false
                     activity?.onBackPressed()
-                }
-                .setNegativeButton(R.string.keep_editing) { _, _ ->
+                },
+                negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
-                }
-                .show()
+                })
     }
 
     override fun getProviderText(): String {
