@@ -77,8 +77,6 @@
     <string name="remove">Remove</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
-    <string name="save">Save</string>
-    <string name="discard_changes">Discard changes</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <!--
         Date/Time Labels
@@ -311,7 +309,6 @@
     <string name="add_order_note_menu_item">Add</string>
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
-    <string name="add_order_note_confirm_discard">Discard this note?</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
 
     <!--
@@ -353,7 +350,6 @@
     <string name="order_shipment_tracking_provider_list_error_empty_list">No providers found</string>
     <string name="order_shipment_tracking_added">Shipment tracking added</string>
     <string name="order_shipment_tracking_error">Unable to add tracking</string>
-    <string name="order_shipment_tracking_confirm_discard">Are you sure you want to discard this tracking?</string>
     <string name="order_shipment_tracking_empty_provider">Please select a provider</string>
     <string name="order_shipment_tracking_empty_tracking_num">Please enter a tracking number</string>
     <string name="order_shipment_tracking_empty_custom_provider_name">Please enter a provider name</string>
@@ -448,12 +444,11 @@
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
     <string name="product_description_empty">Describe your product</string>
-    <string name="aztec_confirm_discard">Do you want to save your changes?</string>
     <string name="product_update_dialog_title">Updating product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
-    >>>>>>> develop
+
     <!--
         Product images
     -->
