@@ -7,7 +7,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -90,8 +89,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onBackButtonClicked(): Boolean {
         return if (viewState.isProductUpdated == true && viewState.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
-                    string.discard_message,
-                    string.discard, string.keep_editing,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         viewState = viewState.copy(shouldShowDiscardDialog = false)
                         triggerEvent(Exit)
