@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 These dimensions are calculated starting with a baseline, then defined as a percentage of
-that baseline.
+that baseline. The percentage doesn't have to be exact, it's main purpose it to describe
+the relationship of the dimension to the baseline. So < 100 would be smaller and > 100 would
+be larger.
 
 Minor: Smaller dimensions often used for padding and margins between components inside a view.
 The most common is 8dp, so that's the baseline used. Since 8dp is the baseline for minor,
@@ -22,4 +24,31 @@ so that's the baseline as defined in `major_100`.
     <dimen name="major_150">24dp</dimen>
     <dimen name="major_175">28dp</dimen>
     <dimen name="major_200">32dp</dimen>
+
+    <!-- Regular text dimensions (body, subtitles, caption, etc -->
+    <dimen name="text_minor_60">10sp</dimen>
+    <dimen name="text_minor_80">12sp</dimen>
+    <dimen name="text_minor_100">14sp</dimen>
+    <dimen name="text_minor_125">16sp</dimen>
+
+    <!-- Large text dimensions (headings) -->
+    <dimen name="text_major_25">20sp</dimen>
+    <dimen name="text_major_50">24sp</dimen>
+    <dimen name="text_major_75">34sp</dimen>
+    <dimen name="text_major_100">48sp</dimen>
+    <dimen name="text_major_150">60sp</dimen>
+    <dimen name="text_major_200">96sp</dimen>
+
+    <!-- Regular text line heights -->
+    <dimen name="line_height_minor_70">16dp</dimen>
+    <dimen name="line_height_minor_80">20dp</dimen>
+    <dimen name="line_height_minor_100">24dp</dimen>
+
+    <!-- Large text line heights -->
+    <dimen name="line_height_major_25">24dp</dimen>
+    <dimen name="line_height_major_50">36dp</dimen>
+    <dimen name="line_height_major_100">56dp</dimen>
+    <dimen name="line_height_major_150">72dp</dimen>
+    <dimen name="line_height_major_200">112dp</dimen>
+
 </resources>
