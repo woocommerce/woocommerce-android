@@ -201,7 +201,7 @@ class DashboardStatsView @JvmOverloads constructor(
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
 
                 // Couldn't use the dimension resource here due to the way this component is written :/
-                textSize = 12f
+                textSize = 10f
 
                 valueFormatter = StartEndDateAxisFormatter()
             }
@@ -217,7 +217,7 @@ class DashboardStatsView @JvmOverloads constructor(
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
 
                 // Couldn't use the dimension resource here due to the way this component is written :/
-                textSize = 12f
+                textSize = 10f
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
