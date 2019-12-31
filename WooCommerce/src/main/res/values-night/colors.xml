@@ -2,4 +2,5 @@
 <resources>
     <color name="badge_border_color">#313131</color>
     <color name="badge_background_color">@color/woo_purple_30</color>
+    <color name="color_on_surface_medium">@color/woo_white_alpha_060</color>
 </resources>

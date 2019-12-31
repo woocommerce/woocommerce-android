@@ -10,4 +10,5 @@
         or automatically applying a translucent background (3-button mode).
     -->
     <color name="nav_bar">@color/woo_black_90_alpha_020</color>
+    <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
 </resources>
