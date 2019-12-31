@@ -20,5 +20,5 @@
     -->
     <color name="graph_data_color">@color/woo_pink_30</color>
     <color name="graph_grid_color">@color/woo_white_alpha_012</color>
-    <color name="graph_highlight_color">@color/woo_pink_10</color>
+    <color name="graph_highlight_color">@color/woo_white</color>
 </resources>

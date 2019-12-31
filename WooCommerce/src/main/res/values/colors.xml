@@ -20,7 +20,7 @@
     -->
     <color name="graph_data_color">@color/woo_pink_50</color>
     <color name="graph_grid_color">@color/woo_black_90_alpha_012</color>
-    <color name="graph_highlight_color">@color/woo_pink_70</color>
+    <color name="graph_highlight_color">@color/woo_pink_90</color>
     <color name="graph_no_data_text_color">@color/color_on_surface</color>
     <color name="graph_label_color">@color/color_on_surface_medium</color>
     <!--

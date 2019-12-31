@@ -5,10 +5,11 @@
     <color name="woo_purple_60">#674399</color>
     <color name="woo_purple_80">#3C2861</color>
 
-    <color name="woo_pink_10">#F7A8C3</color>
+    <color name="woo_pink_10">#ED9BB8</color>
     <color name="woo_pink_30">#EB6594</color>
     <color name="woo_pink_50">#C9356E</color>
-    <color name="woo_pink_70">#8C1749</color>
+    <color name="woo_pink_70">#880E4F</color>
+    <color name="woo_pink_90">#5C0935</color>
 
     <color name="woo_red_30">#F86368</color>
     <color name="woo_red_50">#D63638</color>
