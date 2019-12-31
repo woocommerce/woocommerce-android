@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.doAfterTextChanged
 import com.woocommerce.android.R
 
 class WCProductPropertyEditableView @JvmOverloads constructor(
@@ -13,6 +15,9 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
     private var editableText: EditText
+
+    // Flag to check if [EditText] already has a [EditText.doAfterTextChanged] defined to avoid multiple callbacks
+    private var isTextChangeListenerActive: Boolean = false
 
     init {
         with(View.inflate(context, R.layout.product_property_editable_view, this)) {
@@ -25,6 +30,13 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
             editableText.hint = hint
         } else {
             editableText.setText(detail)
+        }
+    }
+
+    fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
+        if (!isTextChangeListenerActive) {
+            isTextChangeListenerActive = true
+            editableText.doAfterTextChanged { cb(it) }
         }
     }
 }

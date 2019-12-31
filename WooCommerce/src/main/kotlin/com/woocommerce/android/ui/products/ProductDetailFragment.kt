@@ -115,7 +115,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
-            new.product?.let { showProduct(new) }
+            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
@@ -275,7 +275,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         val product = requireNotNull(productData.product)
 
         if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
-            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productTitle)
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
+                view.setOnTextChangedListener {
+                    // TODO: update viewmodel with the product name
+                }
+            }
         } else {
             addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
         }
