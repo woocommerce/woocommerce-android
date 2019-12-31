@@ -199,7 +199,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
-                gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
 
                 // Couldn't use the dimension resource here due to the way this component is written :/
@@ -435,7 +435,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         // fade in the new value after fade out finishes
         val delay = duration.toMillis(context) + 100
         fadeHandler.postDelayed({
-            val color = ContextCompat.getColor(context, R.color.default_text_title)
+            val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
             view.setTextColor(color)
             view.text = value
             WooAnimUtils.fadeIn(view, duration)
