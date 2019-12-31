@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -22,6 +21,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -46,8 +46,11 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.round
 
-class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), OnChartValueSelectedListener, BarChartGestureListener {
+class MyStoreStatsView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr), OnChartValueSelectedListener, BarChartGestureListener {
     init {
         View.inflate(context, R.layout.my_store_stats, this)
     }
@@ -185,6 +188,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
+                textColor = ContextCompat.getColor(context, R.color.graph_label_color)
+
+                // Couldn't use the dimension resource here due to the way this component is written :/
+                textSize = 10f
             }
 
             axisRight.isEnabled = false
@@ -193,6 +200,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                textColor = ContextCompat.getColor(context, R.color.graph_label_color)
+
+                // Couldn't use the dimension resource here due to the way this component is written :/
+                textSize = 10f
+
                 setLabelCount(3, true)
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
@@ -284,7 +296,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
         this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.grossRevenue ?: 0.0)
+            it.interval!! to (it.subtotals?.totalSales ?: 0.0)
         }?.toMap() ?: mapOf()
 
         this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
@@ -332,7 +344,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val grossRevenue = revenueStatsModel?.getTotal()?.grossRevenue ?: 0.0
+        val grossRevenue = revenueStatsModel?.getTotal()?.totalSales ?: 0.0
         val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
 
         val orderCount = revenueStatsModel?.getTotal()?.ordersCount ?: 0
@@ -341,7 +353,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.grossRevenue?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.totalSales?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return

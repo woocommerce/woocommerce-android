@@ -22,8 +22,8 @@
     <style name="Widget.Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
         <item name="cardCornerRadius">@dimen/minor_00</item>
         <item name="android:checkable">false</item>
-        <item name="contentPaddingTop">@dimen/major_75</item>
-        <item name="contentPaddingBottom">@dimen/major_75</item>
+        <item name="contentPaddingTop">@dimen/minor_25</item>
+        <item name="contentPaddingBottom">@dimen/minor_25</item>
     </style>
     <style name="Widget.Woo.Card.Tabbed">
         <item name="contentPaddingTop">@dimen/minor_00</item>
