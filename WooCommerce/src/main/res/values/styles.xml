@@ -14,7 +14,7 @@
         Toolbar Styles
     -->
     <style name="Widget.Woo.Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface">
-        <item name="android:elevation">@dimen/appbar_elevation</item>
+        <item name="android:elevation">@dimen/plane_04</item>
     </style>
     <!--
         Card Styles
@@ -59,16 +59,35 @@
     <!--
         TabLayout Styles
     -->
-    <style name="Woo.TabLayout" parent="@style/Widget.MaterialComponents.TabLayout">
+    <style name="Woo.TabLayout" parent="@style/Widget.MaterialComponents.TabLayout.PrimarySurface">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">25dp</item>
+        <item name="tabPaddingEnd">25dp</item>
+        <item name="android:elevation">@dimen/plane_04</item>
+    </style>
+    <style name="Woo.TabLayout.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+    <style name="Woo.TabLayout.Surface" parent="@style/Widget.MaterialComponents.TabLayout">
         <item name="tabMode">fixed</item>
         <item name="tabTextAppearance">?attr/textAppearanceButton</item>
         <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
         <item name="tabIndicatorColor">?attr/colorOnSurface</item>
         <item name="tabIndicatorHeight">2dp</item>
-        <item name="tabPaddingStart">25dp</item>
-        <item name="tabPaddingEnd">25dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
     </style>
-    <style name="Woo.TabLayout.Scrollable">
+    <style name="Woo.TabLayout.Surface.Scrollable">
         <!--
         Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
         this number as being (tabContentStart - tabPaddingStart), so you have to add the

@@ -6,10 +6,10 @@
 
     <style name="Theme.Woo.Dark" parent="Theme.Woo">
         <!-- Color -->
-        <item name="colorPrimary">@color/woo_pink_30</item>
-        <item name="colorPrimaryVariant">@color/woo_pink_50</item>
-        <item name="colorSecondary">@color/woo_purple_30</item>
-        <item name="colorSecondaryVariant">@color/woo_purple_50</item>
+        <item name="colorPrimary">@color/woo_purple_30</item>
+        <item name="colorPrimaryVariant">@color/woo_purple_50</item>
+        <item name="colorSecondary">@color/woo_pink_30</item>
+        <item name="colorSecondaryVariant">@color/woo_pink_50</item>
 
         <item name="android:colorBackground">@color/woo_black_90</item>
         <item name="colorSurface">@color/woo_black_90</item>
