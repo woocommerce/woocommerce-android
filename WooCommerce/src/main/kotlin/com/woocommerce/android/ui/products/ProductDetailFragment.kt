@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
@@ -35,6 +33,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -96,6 +95,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         super.onDestroyView()
     }
 
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -129,10 +133,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 is ShowImageChooser -> showImageChooser()
                 is ShareProduct -> shareProduct(event.product)
                 is Exit -> requireActivity().onBackPressed()
-                is ShowDiscardDialog -> showDiscardDialog(
-                        event.message,
-                        event.positiveBtnText,
-                        event.negativeBtnText,
+                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                        requireActivity(),
                         event.positiveBtnAction,
                         event.negativeBtnAction
                 )
@@ -197,25 +199,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
-    }
-
-    /**
-     * Method to display discard changes dialog. This can eventually be moved to a separate class
-     * that can be reused by multiple fragments
-     */
-    private fun showDiscardDialog(
-        @StringRes messageId: Int,
-        @StringRes posBtnTextId: Int,
-        @StringRes negBtnTextId: Int,
-        posBtnAction: (OnClickListener)? = null,
-        negBtnAction: (OnClickListener)? = null
-    ) {
-        AlertDialog.Builder(activity)
-                .setMessage(getString(messageId))
-                .setCancelable(true)
-                .setPositiveButton(posBtnTextId, posBtnAction)
-                .setNegativeButton(negBtnTextId, negBtnAction)
-                .show()
     }
 
     override fun getFragmentTitle() = productTitle
