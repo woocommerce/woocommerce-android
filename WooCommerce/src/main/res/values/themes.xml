@@ -44,6 +44,7 @@
         <item name="textAppearanceButton">@style/TextAppearance.Woo.Button</item>
         <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
         <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
+        <item name="badgeTextAppearance">@style/TextAppearance.Woo.Badge</item>
 
         <!-- Custom attrs for setting alpha values -->
         <item name="emphasisHighAlpha">0.87</item>
@@ -52,9 +53,6 @@
         <item name="emphasisHighAlphaPrimary">1.00</item>
         <item name="emphasisMediumAlphaPrimary">0.74</item>
         <item name="emphasisDisabledAlphaPrimary">0.38</item>
-
-        <!-- Bottom bar badge attributes -->
-        <item name="badgeTextAppearance">@style/TextAppearance.Woo.Overline</item>
 
         <!-- Styles -->
         <!-- TODO: Configure custom styles -->
