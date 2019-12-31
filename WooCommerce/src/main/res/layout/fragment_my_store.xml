@@ -45,13 +45,6 @@
                     android:descendantFocusability="blocksDescendants"
                     android:orientation="vertical">
 
-                    <!-- Date bar -->
-                    <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
-                        android:id="@+id/my_store_date_bar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
-
                     <!-- Order stats -->
                     <com.woocommerce.android.ui.mystore.MyStoreStatsView
                         android:id="@+id/my_store_stats"
