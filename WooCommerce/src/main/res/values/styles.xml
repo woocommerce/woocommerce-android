@@ -65,8 +65,8 @@
         <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
         <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
         <item name="tabIndicatorHeight">2dp</item>
-        <item name="tabPaddingStart">25dp</item>
-        <item name="tabPaddingEnd">25dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
         <item name="android:elevation">@dimen/plane_04</item>
     </style>
     <style name="Woo.TabLayout.Scrollable">
