@@ -203,7 +203,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun updateProductState(storedProduct: Product) {
-        val weight = if (storedProduct.weight > 0) "${format(storedProduct.weight)}${parameters?.weightUnit ?: ""}" else ""
+        val weight = if (storedProduct.weight > 0) {
+            "${format(storedProduct.weight)}${parameters?.weightUnit ?: ""}"
+        } else ""
 
         val hasLength = storedProduct.length > 0
         val hasWidth = storedProduct.width > 0
