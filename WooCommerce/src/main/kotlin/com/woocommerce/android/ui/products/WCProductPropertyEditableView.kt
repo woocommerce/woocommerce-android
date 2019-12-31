@@ -30,6 +30,7 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
             editableText.hint = hint
         } else {
             editableText.setText(detail)
+            editableText.setSelection(detail.length)
         }
     }
 
