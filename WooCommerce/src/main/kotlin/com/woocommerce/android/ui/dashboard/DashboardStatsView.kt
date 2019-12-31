@@ -200,6 +200,9 @@ class DashboardStatsView @JvmOverloads constructor(
                 setLabelCount(2, true) // Only show first and last date
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
 
+                // Couldn't use the dimension resource here due to the way this component is written :/
+                textSize = 12f
+
                 valueFormatter = StartEndDateAxisFormatter()
             }
 
@@ -212,6 +215,9 @@ class DashboardStatsView @JvmOverloads constructor(
                 gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 setLabelCount(3, true)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
+
+                // Couldn't use the dimension resource here due to the way this component is written :/
+                textSize = 12f
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
