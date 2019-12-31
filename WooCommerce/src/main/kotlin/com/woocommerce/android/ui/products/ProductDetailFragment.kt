@@ -55,6 +55,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_detail.*
+import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -155,6 +156,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
             R.id.menu_update -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+                ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
                 true
             }
@@ -276,9 +278,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
         if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
             addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
-                view.setOnTextChangedListener {
-                    // TODO: update viewmodel with the product name
-                }
+                view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
             }
         } else {
             addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
