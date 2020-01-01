@@ -18,28 +18,28 @@
             android:id="@+id/orderFulfill_products"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.Woo.Card.WithoutPadding"/>
+            style="@style/Woo.Card.WithoutPadding"/>
 
         <!-- Customer Provided Note -->
         <com.woocommerce.android.ui.orders.notes.OrderDetailCustomerNoteView
             android:id="@+id/orderFulfill_customerNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.Woo.Card"/>
+            style="@style/Woo.Card"/>
 
         <!-- Customer Info -->
         <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
             android:id="@+id/orderFulfill_customerInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.Woo.Card.Expandable"/>
+            style="@style/Woo.Card.Expandable"/>
 
         <!-- Add Optional Shipment Tracking -->
         <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
             android:id="@+id/orderFulfill_addShipmentTracking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.Woo.Card.WithoutPadding"
+            style="@style/Woo.Card.WithoutPadding"
             android:clipToPadding="false"
             android:paddingBottom="0dp"
             android:contentDescription="@string/order_shipment_tracking_add_label"

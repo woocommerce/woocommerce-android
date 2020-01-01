@@ -43,22 +43,21 @@
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardStatsView
                     android:id="@+id/dashboard_stats"
-                    style="@style/Widget.Woo.Card.Tabbed"
+                    style="@style/Woo.Card.Tabbed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/minor_00"
                     android:layout_marginEnd="@dimen/minor_00"
                     android:layout_marginTop="@dimen/minor_100"
-                    android:layout_marginBottom="@dimen/minor_100"/>
+                    android:layout_marginBottom="@dimen/major_100"/>
 
                 <!-- Top earner stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
                     android:id="@+id/dashboard_top_earners"
-                    style="@style/Widget.Woo.Card"
+                    style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:orientation="vertical"/>
+                    android:layout_marginTop="@dimen/minor_50"/>
 
             </LinearLayout>
 
