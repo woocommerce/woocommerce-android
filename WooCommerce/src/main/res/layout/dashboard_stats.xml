@@ -27,7 +27,7 @@
         <!-- Date bar -->
         <TextView
             android:id="@+id/dashboard_date_range_value"
-            style="@style/Woo.TextView.Subtitle2"
+            style="@style/Woo.DateBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="June 30-Jul 06"/>
