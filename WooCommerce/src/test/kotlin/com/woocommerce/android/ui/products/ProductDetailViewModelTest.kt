@@ -286,6 +286,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.updateProductDraft(updatedDescription)
         viewModel.onBackButtonClicked()
 
-        assertThat(shouldShowDiscard).containsExactly(true)
+        assertThat(shouldShowDiscard).containsExactly(true, false)
     }
 }
