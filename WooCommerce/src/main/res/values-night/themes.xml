@@ -29,14 +29,4 @@
         <!--System/Platform attributes-->
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
-
-    <style name="Theme.Woo.DayNight.Toolbar" parent="Theme.Woo.Dark.Toolbar"/>
-
-    <style name="Theme.Woo.Dark.Toolbar">
-        <item name="colorPrimary">@color/woo_purple_30</item>
-        <item name="colorPrimaryVariant">@color/woo_purple_50</item>
-        <item name="colorSecondary">@color/woo_pink_30</item>
-        <item name="colorSecondaryVariant">@color/woo_pink_50</item>
-        <item name="colorControlNormal">?attr/colorOnSurface</item>
-    </style>
 </resources>

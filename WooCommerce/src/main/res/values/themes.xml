@@ -75,14 +75,4 @@
         <item name="android:listViewStyle">@style/Woo.List</item>
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
-
-    <style name="Theme.Woo.DayNight.Toolbar" parent="Theme.Woo.Toolbar"/>
-
-    <style name="Theme.Woo.Toolbar">
-        <item name="colorPrimary">@color/woo_purple_60</item>
-        <item name="colorPrimaryVariant">@color/woo_purple_80</item>
-        <item name="colorSecondary">@color/woo_pink_50</item>
-        <item name="colorSecondaryVariant">@color/woo_pink_70</item>
-        <item name="colorControlNormal">?attr/colorOnPrimary</item>
-    </style>
 </resources>
