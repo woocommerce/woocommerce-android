@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Base Woo Styles. Use these styles as a base for custom component styles and override only the
+properties necessary. The goal is to make as few modifications as possible to keep a consistent
+theme across the entire app.
+-->
+<resources>
+    <style name="Woo"/>
+
+    <!--
+        Toolbar Style
+    -->
+    <style name="Widget.Woo.Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+
+    <!--
+        AppBarLayout Style
+    -->
+    <style name="Woo.AppBarLayout" parent="@style/Widget.MaterialComponents.AppBarLayout.PrimarySurface">
+        <item name="android:elevation">@dimen/plane_04</item>
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <!--
+        Bottom Bar Style
+    -->
+    <style name="Widget.Woo.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="itemIconTint">@color/color_on_surface</item>
+        <item name="itemTextColor">@color/color_on_surface</item>
+        <item name="android:elevation">@dimen/plane_08</item>
+    </style>
+
+    <!--
+        TabLayout Styles
+    -->
+    <style name="Woo.TabLayout" parent="@style/Widget.MaterialComponents.TabLayout.PrimarySurface">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">25dp</item>
+        <item name="tabPaddingEnd">25dp</item>
+        <item name="android:elevation">@dimen/plane_00</item>
+    </style>
+
+    <style name="Woo.TabLayout.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+
+    <style name="Woo.TabLayout.Surface" parent="@style/Widget.MaterialComponents.TabLayout">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
+        <item name="tabIndicatorColor">?attr/colorOnSurface</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
+    </style>
+
+    <style name="Woo.TabLayout.Surface.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+
+    <!--
+        Card Styles
+    -->
+    <style name="Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/minor_00</item>
+        <item name="android:checkable">false</item>
+        <item name="contentPaddingTop">@dimen/minor_25</item>
+        <item name="contentPaddingBottom">@dimen/minor_25</item>
+    </style>
+
+    <style name="Woo.Card.Tabbed">
+        <item name="contentPaddingTop">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.Card.Expandable">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="Woo.Card.WithoutPadding">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <!--
+        TextView Styles
+    -->
+    <style name="Woo.TextView" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/major_75</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+    </style>
+
+    <style name="Woo.TextView.Headline1">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline1</item>
+    </style>
+
+    <style name="Woo.TextView.Headline2">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline2</item>
+    </style>
+
+    <style name="Woo.TextView.Headline3">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline3</item>
+    </style>
+
+    <style name="Woo.TextView.Headline4">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline4</item>
+    </style>
+
+    <style name="Woo.TextView.Headline5">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline5</item>
+    </style>
+
+    <style name="Woo.TextView.Headline6">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline6</item>
+    </style>
+
+    <style name="Woo.TextView.Subtitle1">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_horizontal|start</item>
+    </style>
+
+    <style name="Woo.TextView.Subtitle2">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:gravity">center_horizontal|start</item>
+    </style>
+
+    <style name="Woo.TextView.Body1">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+    </style>
+
+    <style name="Woo.TextView.Body2">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:gravity">center_horizontal|start</item>
+        <item name="android:layout_marginTop">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.TextView.Caption">
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+    </style>
+
+    <style name="Woo.TextView.Overline">
+        <item name="android:textAppearance">?attr/textAppearanceOverline</item>
+    </style>
+</resources>

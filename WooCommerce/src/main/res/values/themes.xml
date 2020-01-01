@@ -66,6 +66,7 @@
         <item name="tabStyle">@style/Woo.TabLayout</item>
         <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
         <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
+        <item name="android:listDivider">@drawable/list_divider</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

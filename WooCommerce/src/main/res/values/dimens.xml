@@ -16,6 +16,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="minor_00">0dp</dimen>
     <dimen name="minor_25">2dp</dimen>
     <dimen name="minor_50">4dp</dimen>
+    <dimen name="minor_75">6dp</dimen>
     <dimen name="minor_100">8dp</dimen>
 
     <dimen name="major_75">12dp</dimen>
@@ -50,5 +51,8 @@ so that's the baseline as defined in `major_100`.
     <dimen name="line_height_major_100">56dp</dimen>
     <dimen name="line_height_major_150">72dp</dimen>
     <dimen name="line_height_major_200">112dp</dimen>
+
+    <!-- Smaller image sizes (ex. icons) -->
+    <dimen name="image_minor_100">40dp</dimen>
 
 </resources>
