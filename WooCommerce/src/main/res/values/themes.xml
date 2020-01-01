@@ -16,6 +16,7 @@
         <item name="colorError">@color/woo_red_50</item>
 
         <item name="colorOnPrimary">@color/woo_white</item>
+        <item name="colorOnPrimarySurface">@color/woo_white</item>
         <item name="colorOnSecondary">@color/woo_black</item>
         <item name="colorOnBackground">@color/woo_black</item>
         <item name="colorOnSurface">@color/woo_black</item>
@@ -62,6 +63,9 @@
         <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
+        <item name="tabStyle">@style/Woo.TabLayout</item>
+        <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
+        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.PrimarySurface</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

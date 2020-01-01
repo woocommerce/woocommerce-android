@@ -16,6 +16,7 @@
         <item name="colorError">@color/woo_red_30</item>
 
         <item name="colorOnPrimary">@color/woo_black</item>
+        <item name="colorOnPrimarySurface">@color/woo_white</item>
         <item name="colorOnSecondary">@color/woo_black</item>
         <item name="colorOnBackground">@color/woo_white</item>
         <item name="colorOnSurface">@color/woo_white</item>
