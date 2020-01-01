@@ -166,4 +166,11 @@ theme across the entire app.
     <style name="Woo.TextView.Overline">
         <item name="android:textAppearance">?attr/textAppearanceOverline</item>
     </style>
+
+    <!--
+        Button Styles
+    -->
+    <style name="Woo.Button" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/button_text_color_selector</item>
+    </style>
 </resources>
