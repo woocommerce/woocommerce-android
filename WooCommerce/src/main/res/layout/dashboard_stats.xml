@@ -54,7 +54,7 @@
                 android:contentDescription="@string/dashboard_stats_error_content_description"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_woo_error_state"
-                tools:visibility="visible"/>
+                tools:visibility="gone"/>
         </FrameLayout>
 
         <TextView
@@ -63,6 +63,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            tools:text="dashboard_recency_text"/>
+            tools:text="Updated 3 minutes ago"/>
     </LinearLayout>
 </merge>
