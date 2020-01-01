@@ -25,7 +25,7 @@
                 <!-- My Store stats reverted notice card -->
                 <com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard
                     android:id="@+id/dashboard_stats_reverted_card"
-                    style="@style/Woo.Stats.Notice.Card"
+                    style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:visibility="gone"
