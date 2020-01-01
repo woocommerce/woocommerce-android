@@ -65,7 +65,7 @@
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
         <item name="tabStyle">@style/Woo.TabLayout</item>
         <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
-        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.PrimarySurface</item>
+        <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
