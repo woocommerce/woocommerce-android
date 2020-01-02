@@ -72,7 +72,7 @@
     <!--
         Badge attributes for the bottom bar
     -->
-    <attr name="badgeTextAppearance" format="reference"/>
+    <attr name="textAppearanceBadge" format="reference"/>
 
     <!--
         Attribute for defining different types of TabLayout styles
