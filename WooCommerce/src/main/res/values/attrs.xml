@@ -72,5 +72,5 @@
     <!--
         Badge attributes for the bottom bar
     -->
-    <attr name="badgeTextAppearance" format="reference"/>
+    <attr name="textAppearanceBadge" format="reference"/>
 </resources>

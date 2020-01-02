@@ -67,6 +67,7 @@
 
     <style name="TextAppearance.Woo.Body1" parent="TextAppearance.MaterialComponents.Body1">
         <item name="fontFamily">@font/roboto</item>
+        <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_125</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
         <item name="android:textStyle">normal</item>
@@ -75,6 +76,7 @@
 
     <style name="TextAppearance.Woo.Body2" parent="TextAppearance.MaterialComponents.Body2">
         <item name="fontFamily">@font/roboto</item>
+        <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_100</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
         <item name="android:textStyle">normal</item>
@@ -83,15 +85,17 @@
 
     <style name="TextAppearance.Woo.Button" parent="TextAppearance.MaterialComponents.Button">
         <item name="fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:textSize">@dimen/text_minor_100</item>
+        <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textAllCaps">true</item>
         <item name="lineHeight">@dimen/line_height_minor_70</item>
     </style>
 
     <style name="TextAppearance.Woo.Caption" parent="TextAppearance.MaterialComponents.Caption">
         <item name="fontFamily">@font/roboto</item>
+        <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_80</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
         <item name="android:textStyle">normal</item>
@@ -100,15 +104,24 @@
 
     <style name="TextAppearance.Woo.Overline" parent="TextAppearance.MaterialComponents.Overline">
         <item name="fontFamily">@font/roboto</item>
+        <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_60</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textAllCaps">false</item>
-        <item name="lineHeight">@dimen/line_height_minor_70</item>
+        <item name="android:fontWeight" tools:targetApi="o">500</item>
+        <item name="lineHeight">@dimen/line_height_major_100</item>
     </style>
 
     <style name="TextAppearance.Woo.Badge" parent="TextAppearance.MaterialComponents.Badge">
         <item name="fontFamily">@font/roboto</item>
-        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/color_on_primary_medium</item>
+        <item name="android:fontWeight" tools:targetApi="o">500</item>
+        <item name="android:fontStyle" tools:targetApi="o">normal</item>
+        <item name="android:lineHeight" tools:targetApi="p">16sp</item>
+        <item name="lineHeight">@dimen/line_height_major_100</item>
     </style>
 </resources>
