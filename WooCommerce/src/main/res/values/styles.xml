@@ -63,7 +63,7 @@
         <item name="tabMode">fixed</item>
         <item name="tabTextAppearance">?attr/textAppearanceButton</item>
         <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
-        <item name="tabIndicatorColor">?attr/colorOnSurface</item>
+        <item name="tabIndicatorColor">?attr/colorSecondary</item>
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabPaddingStart">40dp</item>
         <item name="tabPaddingEnd">40dp</item>
