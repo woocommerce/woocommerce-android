@@ -88,13 +88,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun onBackButtonClicked(): Boolean {
         return if (viewState.isProductUpdated == true && viewState.shouldShowDiscardDialog) {
-            viewState = viewState.copy(shouldShowDiscardDialog = false)
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        onUpdateButtonClicked()
+                        viewState = viewState.copy(shouldShowDiscardDialog = false)
+                        triggerEvent(Exit)
                     },
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(Exit)
+                        viewState = viewState.copy(shouldShowDiscardDialog = true)
                     }
             ))
             false
