@@ -11,4 +11,5 @@
     -->
     <color name="nav_bar">@color/woo_black_90_alpha_020</color>
     <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
+    <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
 </resources>

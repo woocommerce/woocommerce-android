@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
-    tools:visibility="visible">
+    tools:visibility="visible"
+    tools:context=".ui.main.MainActivity">
 
     <!--
        note that the DP text size is on purpose to avoid having the text overlap the badge
@@ -19,8 +20,7 @@
         android:layout_marginTop="@dimen/margin_small"
         android:background="@drawable/badge_orders"
         android:gravity="center"
-        android:textAppearance="?attr/badgeTextAppearance"
-        android:textColor="@color/woo_white"
+        android:textAppearance="?attr/textAppearanceBadge"
         tools:text="99+" />
 
 </FrameLayout>
