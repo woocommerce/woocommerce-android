@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.View
-import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
@@ -21,7 +21,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
 import java.util.Date
 
-class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
+class WCEmptyView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private var showNoCustomersImage = true
     private var siteModel: SiteModel? = null
     private var shareTracksEvent: AnalyticsTracker.Stat? = null
