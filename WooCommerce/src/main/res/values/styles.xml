@@ -23,7 +23,9 @@
     <!--
         Card Styles
     -->
-    <style name="Woo.Card.Title" parent="@style/Woo.TextView.Subtitle1"/>
+    <style name="Woo.Card.Title" parent="@style/Woo.TextView.Subtitle1">
+        <item name="android:textAlignment">viewStart</item>
+    </style>
 
     <style name="Woo.Card.Body" parent="@style/Woo.TextView.Body2"/>
 
@@ -603,7 +605,7 @@
         <item name="android:background">@drawable/button_white_bg</item>
         <item name="android:textColor">@color/wc_grey_dark</item>
         <item name="android:drawableStart">@drawable/ic_gridicons_gift</item>
-        <item name="android:drawableEnd">@drawable/stats_availability_expander_selector</item>
+        <item name="android:drawableEnd">@drawable/card_expander_selector</item>
         <item name="android:paddingStart">@dimen/card_padding_start</item>
         <item name="android:paddingTop">@dimen/card_padding_top</item>
         <item name="android:paddingBottom">@dimen/card_padding_bottom</item>

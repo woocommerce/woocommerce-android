@@ -67,6 +67,7 @@
         <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
         <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
         <item name="borderlessButtonStyle">@style/Woo.Button</item>
+        <item name="materialCardViewStyle">@style/Woo.Card</item>
         <item name="android:listDivider">@drawable/list_divider</item>
 
         <item name="windowActionBar">false</item>
