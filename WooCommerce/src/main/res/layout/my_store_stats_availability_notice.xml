@@ -1,82 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <!-- VIEW MORE Button -->
+    <ToggleButton
+        android:id="@+id/my_store_availability_viewMore"
+        style="@style/Woo.Stats.Availability.CardExtenderButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@null"
+        android:textOff="@string/my_store_stats_availability_title"
+        android:textOn="@string/my_store_stats_availability_title"/>
 
-        <!-- VIEW MORE Button -->
-        <ToggleButton
-            android:id="@+id/my_store_availability_viewMore"
-            style="@style/Woo.Stats.Availability.CardExtenderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:textOff="@string/my_store_stats_availability_title"
-            android:textOn="@string/my_store_stats_availability_title"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/my_store_availability_morePanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/default_padding"
+        android:paddingTop="@dimen/default_padding"
+        android:paddingStart="@dimen/card_padding_start"
+        android:layout_marginStart="9dp"
+        android:paddingEnd="0dp"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/my_store_availability_morePanel"
-            android:layout_width="match_parent"
+        <!-- Message -->
+        <TextView
+            android:id="@+id/my_store_availability_message"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_extra_large"
+            android:gravity="start"
+            android:lineSpacingExtra="4sp"
             android:paddingBottom="@dimen/default_padding"
-            android:paddingTop="@dimen/default_padding"
+            android:paddingEnd="@dimen/card_padding_end"
             android:paddingStart="@dimen/card_padding_start"
-            android:layout_marginStart="9dp"
-            android:paddingEnd="0dp"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:text="@string/my_store_stats_availability_message"
+            android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-            <!-- Message -->
-            <TextView
-                android:id="@+id/my_store_availability_message"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_extra_large"
-                android:gravity="start"
-                android:lineSpacingExtra="4sp"
-                android:paddingBottom="@dimen/default_padding"
-                android:paddingEnd="@dimen/card_padding_end"
-                android:paddingStart="@dimen/card_padding_start"
-                android:text="@string/my_store_stats_availability_message"
-                android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+        <!-- TRY IT NOW button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_try"
+            style="@style/Woo.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/try_it_now"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
 
-            <!-- TRY IT NOW button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_try"
-                style="@style/Woo.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/try_it_now"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
+        <!-- NO THANKS button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_no_thanks"
+            style="@style/Woo.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/no_thanks"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_try"
+            app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
 
-            <!-- NO THANKS button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_no_thanks"
-                style="@style/Woo.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/no_thanks"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_try"
-                app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </LinearLayout>
-
-</merge>
-
+</LinearLayout>
