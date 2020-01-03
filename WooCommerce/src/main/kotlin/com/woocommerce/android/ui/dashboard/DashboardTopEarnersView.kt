@@ -29,8 +29,11 @@ import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.io.Serializable
 
-class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
-    : MaterialCardView(ctx, attrs, defStyleAttr) {
+class DashboardTopEarnersView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.dashboard_top_earners, this)
     }
