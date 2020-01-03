@@ -7,6 +7,7 @@
     <color name="color_secondary">@color/woo_pink_30</color>
     <color name="color_on_surface_high">@color/woo_white_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_white_alpha_060</color>
+    <color name="color_on_primary_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_white_alpha_038</color>
     <!--
         App colors

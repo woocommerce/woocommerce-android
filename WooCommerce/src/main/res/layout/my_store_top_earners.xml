@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/topEarners_title"
-        style="@style/Woo.TextAppearance.Title.Bold"
+        style="@style/Woo.Card.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/dashboard_top_earners_title"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        style="@style/Woo.Card.Body"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_small"
         android:text="@string/dashboard_top_earners_description"/>
 
     <FrameLayout
@@ -26,28 +26,22 @@
         android:layout_height="wrap_content">
 
         <TextView
+            style="@style/Woo.Card.ListHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_marginBottom="@dimen/margin_large"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/product"
-            android:textStyle="bold"/>
+            android:text="@string/product"/>
 
         <TextView
+            style="@style/Woo.Card.ListHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginBottom="@dimen/margin_large"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/dashboard_top_earners_total_spend"
-            android:textStyle="bold"/>
+            android:text="@string/dashboard_top_earners_total_spend"/>
     </FrameLayout>
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/list_divider"/>
+        style="@style/Woo.Divider"/>
 
     <RelativeLayout
         android:id="@+id/dashboard_top_earners_container"
@@ -73,7 +67,7 @@
 
         <TextView
             android:id="@+id/topEarners_emptyView"
-            style="@style/Woo.Settings.Label"
+            style="@style/Woo.Card.EmptyMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -82,4 +76,4 @@
             tools:visibility="visible"/>
     </RelativeLayout>
 
-</merge>
+</LinearLayout>

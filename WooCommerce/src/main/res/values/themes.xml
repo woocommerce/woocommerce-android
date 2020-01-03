@@ -45,7 +45,7 @@
         <item name="textAppearanceButton">@style/TextAppearance.Woo.Button</item>
         <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
         <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
-        <item name="badgeTextAppearance">@style/TextAppearance.Woo.Badge</item>
+        <item name="textAppearanceBadge">@style/TextAppearance.Woo.Badge</item>
 
         <!-- Custom attrs for setting alpha values -->
         <item name="emphasisHighAlpha">0.87</item>

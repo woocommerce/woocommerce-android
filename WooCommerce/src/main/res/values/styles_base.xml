@@ -58,7 +58,7 @@ theme across the entire app.
         <item name="tabMode">fixed</item>
         <item name="tabTextAppearance">?attr/textAppearanceButton</item>
         <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
-        <item name="tabIndicatorColor">?attr/colorOnSurface</item>
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabPaddingStart">40dp</item>
         <item name="tabPaddingEnd">40dp</item>
@@ -82,6 +82,7 @@ theme across the entire app.
         <item name="android:checkable">false</item>
         <item name="contentPaddingTop">@dimen/minor_25</item>
         <item name="contentPaddingBottom">@dimen/minor_25</item>
+        <item name="android:layout_marginBottom">@dimen/minor_100</item>
     </style>
 
     <style name="Woo.Card.Tabbed">
