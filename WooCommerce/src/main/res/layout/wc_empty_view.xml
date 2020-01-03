@@ -4,66 +4,63 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/empty_view_stats_row"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/empty_container">
 
-            <TextView
-                android:id="@+id/date_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginStart="@dimen/margin_extra_large"
-                android:layout_marginTop="@dimen/margin_extra_large"
-                android:text="@string/dashboard_stats_todays_stats"
-                android:textColor="@color/wc_grey_medium"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"/>
-
-            <View
-                android:id="@+id/divider1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/margin_extra_large"
-                android:background="@color/list_divider"/>
-
-            <include
-                android:id="@+id/empty_view_row"
-                layout="@layout/dashboard_main_stats_row"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_extra_large"/>
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_extra_large"
-                android:text="@string/dashboard_stats_updated_now"
-                android:textColor="@color/wc_grey_mid"
-                android:textSize="@dimen/text_caption"/>
+                <TextView
+                    android:id="@+id/date_title"
+                    style="@style/Woo.Card.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_stats_todays_stats"/>
 
-        </LinearLayout>
+                <View
+                    style="@style/Woo.Divider"/>
+
+                <include
+                    android:id="@+id/empty_view_row"
+                    layout="@layout/dashboard_main_stats_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"/>
+
+                <TextView
+                    style="@style/Woo.TextView.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/dashboard_stats_updated_now"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:id="@+id/empty_container"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_below="@+id/empty_view_stats_row"
             android:gravity="center"
             android:orientation="vertical"
+            android:elevation="@dimen/minor_00"
             app:layout_constraintTop_toBottomOf="@+id/empty_view_stats_row"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -80,18 +77,17 @@
 
             <TextView
                 android:id="@+id/empty_view_text"
-                style="@style/Woo.TextAppearance.Bold"
+                style="@style/Woo.Card.EmptyMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
                 tools:text="@string/waiting_for_customers"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/empty_view_share_button"
-                style="@style/Woo.Button.Purple"
+                style="@style/Woo.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginTop="@dimen/major_75"
                 android:text="@string/share_store_button"/>
 
         </LinearLayout>

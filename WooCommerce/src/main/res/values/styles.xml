@@ -165,9 +165,7 @@
     <!--
         Button Styles
     -->
-    <style name="Woo.Button.Bordered" parent="Woo.Button">
-        <item name="android:background">@drawable/button_bordered_bg</item>
-    </style>
+
 
     <style name="Woo.Button.Lowercase">
         <item name="android:textAllCaps">false</item>
