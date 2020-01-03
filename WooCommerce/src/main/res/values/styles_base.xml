@@ -82,6 +82,7 @@ theme across the entire app.
         <item name="android:checkable">false</item>
         <item name="contentPaddingTop">@dimen/minor_25</item>
         <item name="contentPaddingBottom">@dimen/minor_25</item>
+        <item name="android:layout_marginBottom">@dimen/minor_100</item>
     </style>
 
     <style name="Woo.Card.Tabbed">
