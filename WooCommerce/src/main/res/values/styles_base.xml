@@ -95,13 +95,6 @@ theme across the entire app.
         <item name="android:paddingBottom">0dp</item>
     </style>
 
-    <style name="Woo.Card.WithoutPadding">
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-    </style>
-
     <!--
         TextView Styles
     -->

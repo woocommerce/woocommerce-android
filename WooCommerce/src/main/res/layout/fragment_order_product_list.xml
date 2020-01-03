@@ -10,6 +10,5 @@
     <com.woocommerce.android.ui.orders.OrderDetailProductListView
         android:id="@+id/orderProducts_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Woo.Card.WithoutPadding"/>
+        android:layout_height="wrap_content"/>
 </LinearLayout>
