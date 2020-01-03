@@ -6,7 +6,9 @@ Use this file to override styles in the styles_base.xml file.
     <!--
         DateBar Style
     -->
-    <style name="Woo.DateBar" parent="@style/Woo.TextView.Subtitle1"/>
+    <style name="Woo.DateBar" parent="@style/Woo.TextView.Subtitle1">
+        <item name="android:gravity">start</item>
+    </style>
 
 
     <!---
