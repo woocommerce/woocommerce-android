@@ -24,8 +24,8 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 private const val MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION = 2
 
 class OrderListView @JvmOverloads constructor(
-    ctx: Context, attrs:
-    AttributeSet? = null,
+    ctx: Context,
+    attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(ctx, attrs, defStyleAttr) {
     init {
