@@ -21,14 +21,14 @@
         <View
             style="@style/Woo.Divider"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/topEarners_title"
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/dashboard_top_earners_title"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Woo.Card.Body"
@@ -38,14 +38,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 style="@style/Woo.Card.ListHeader"
                 android:text="@string/product"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -79,7 +79,7 @@
                 app:srcCompat="@drawable/ic_woo_error_state"
                 tools:visibility="gone"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/topEarners_emptyView"
                 style="@style/Woo.Card.StatusMessage"
                 android:layout_width="wrap_content"
