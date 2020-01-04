@@ -12,7 +12,7 @@
     <!--
         App colors
     -->
-    <color name="default_window_background">#f7f7f7</color>
+    <color name="default_window_background">#F2F2F2</color>
     <color name="list_divider">@color/woo_black_90_alpha_012</color>
     <!--
         Badge colors
