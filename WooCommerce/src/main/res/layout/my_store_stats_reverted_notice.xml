@@ -23,7 +23,7 @@
             app:srcCompat="@drawable/ic_error_grey"/>
 
         <!-- Message -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/my_store_reverted_title"
             style="@style/Woo.Card.Body"
             android:layout_width="0dp"

@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/date_title"
                     style="@style/Woo.Card.Title"
                     android:layout_width="wrap_content"
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/major_100"/>
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     style="@style/Woo.TextView.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 android:importantForAccessibility="no"
                 app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/empty_view_text"
                 style="@style/Woo.Card.EmptyMessage"
                 android:layout_width="wrap_content"

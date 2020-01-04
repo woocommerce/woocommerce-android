@@ -30,7 +30,7 @@
             tools:visibility="visible">
 
             <!-- Message -->
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/my_store_availability_message"
                 style="@style/Woo.Card.Body"
                 android:layout_width="0dp"
@@ -42,7 +42,7 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <!-- TRY IT NOW button -->
-            <androidx.appcompat.widget.AppCompatButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_try"
                 style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
 
             <!-- NO THANKS button -->
-            <androidx.appcompat.widget.AppCompatButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_no_thanks"
                 style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
