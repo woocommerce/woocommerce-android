@@ -21,7 +21,7 @@
             style="@style/Woo.Divider"/>
 
         <!-- Date bar -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/dashboard_date_range_value"
             style="@style/Woo.DateBar"
             android:layout_width="match_parent"
@@ -57,7 +57,7 @@
                 tools:visibility="gone"/>
         </FrameLayout>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/dashboard_recency_text"
             style="@style/Woo.TextView.Caption"
             android:layout_width="wrap_content"
