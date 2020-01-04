@@ -228,15 +228,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:textSize">@dimen/list_header_text_size</item>
     </style>
     <!--
-        Default FlowLayout Style
-    -->
-    <style name="Woo.FlowLayout">
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="horizontalSpacing">4dp</item>
-        <item name="verticalSpacing">4dp</item>
-    </style>
-    <!--
         Order: List Style
     -->
     <style name="Woo.OrderList.TextAppearance.Header" parent="Woo.TextAppearance.ListHeader"/>

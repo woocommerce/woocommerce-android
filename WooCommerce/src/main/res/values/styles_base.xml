@@ -235,4 +235,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.ListItem.Title" parent="@style/Woo.TextView.Subtitle1"/>
     <style name="Woo.ListItem.Overline" parent="@style/Woo.TextView.Overline"/>
     <style name="Woo.ListItem.Body" parent="@style/Woo.TextView.Body2"/>
+
+    <!--
+        FlowLayout Style
+    -->
+    <style name="Woo.FlowLayout">
+        <item name="android:layout_marginTop">@dimen/minor_100</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="horizontalSpacing">4dp</item>
+        <item name="verticalSpacing">4dp</item>
+    </style>
 </resources>
