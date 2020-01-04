@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Widget.Woo.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="itemIconTint">@color/color_on_surface</item>
+        <item name="itemTextColor">@color/color_on_surface</item>
+        <item name="android:elevation">@dimen/plane_08</item>
+    </style>
 
     <!--
         Set a custom cursor for search views so they don't inherit colorAccent
@@ -7,7 +13,7 @@
     <style name="SearchViewCursor" parent="Widget.AppCompat.AutoCompleteTextView">
         <item name="android:textCursorDrawable">@drawable/searchview_cursor</item>
     </style>
-    
+
     <style name="Woo"/>
     <!--
         Text Styles

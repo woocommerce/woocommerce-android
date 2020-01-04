@@ -59,8 +59,8 @@
     </declare-styleable>
 
     <!--
-    Emphasis values are used in combination with each "on" color to create
-    three available levels of emphasis for text and content.
+        Emphasis values are used in combination with each "on" color to create
+        three available levels of emphasis for text and content.
     -->
     <attr name="emphasisHighAlpha" format="float"/>
     <attr name="emphasisMediumAlpha" format="float"/>
@@ -68,4 +68,9 @@
     <attr name="emphasisHighAlphaPrimary" format="float"/>
     <attr name="emphasisMediumAlphaPrimary" format="float"/>
     <attr name="emphasisDisabledAlphaPrimary" format="float"/>
+
+    <!--
+        Badge attributes for the bottom bar
+    -->
+    <attr name="textAppearanceBadge" format="reference"/>
 </resources>

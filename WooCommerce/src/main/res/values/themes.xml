@@ -44,6 +44,7 @@
         <item name="textAppearanceButton">@style/TextAppearance.Woo.Button</item>
         <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
         <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
+        <item name="textAppearanceBadge">@style/TextAppearance.Woo.Badge</item>
 
         <!-- Custom attrs for setting alpha values -->
         <item name="emphasisHighAlpha">0.87</item>
@@ -55,17 +56,13 @@
 
         <!-- Styles -->
         <!-- TODO: Configure custom styles -->
-        <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.PrimarySurface</item>
+        <item name="bottomNavigationStyle">@style/Widget.Woo.BottomNavigationView</item>
         <item name="bottomSheetStyle">@style/Widget.MaterialComponents.BottomSheet.Modal</item>
         <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Primary</item>
+        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
 
-        <!-- System/Platform attributes -->
-        <item name="android:windowBackground">?android:colorBackground</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
-
-        <!-- TODO: Verify if needed -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
@@ -76,7 +73,6 @@
         <item name="tagViewStyle">@style/Woo.Tag</item>
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
-        <item name="android:alertDialogTheme">@style/Theme.MaterialComponents.DayNight.Dialog.Alert</item>
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 
