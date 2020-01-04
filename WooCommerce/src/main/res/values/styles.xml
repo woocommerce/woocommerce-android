@@ -249,8 +249,6 @@ Use this file to override styles in the styles_base.xml file.
     <!--
         Order: List Style
     -->
-    <style name="Woo.OrderList.Item" parent="Woo.ListItem"/>
-    <style name="Woo.OrderList.Header" parent="Woo.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.Header" parent="Woo.TextAppearance.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.ListItem" parent="Woo.TextAppearance.ListItem"/>
     <style name="Woo.OrderList.TextAppearance.ListItem.Date" parent="Woo.TextAppearance.ListItem">
@@ -283,7 +281,7 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:paddingBottom">@dimen/margin_large</item>
         <item name="android:background">@null</item>
     </style>
-    <style name="Woo.OrderStatusList.Item" parent="Woo.OrderList.Item">
+    <style name="Woo.OrderStatusList.Item" parent="Woo.ListItem">
         <item name="android:paddingTop">@dimen/margin_extra_large</item>
         <item name="android:paddingBottom">@dimen/margin_extra_large</item>
     </style>

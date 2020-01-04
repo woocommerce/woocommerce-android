@@ -24,10 +24,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            tools:visibility="visible"
             app:aevTitle="@string/waiting_for_customers"
             app:aevButton="@string/share_store_button"
-            app:aevImage="@drawable/ic_woo_waiting_customers"/>
+            app:aevImage="@drawable/ic_woo_waiting_customers"
+            tools:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"
@@ -38,7 +38,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/margin_large"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="gone"/>
     </RelativeLayout>
 
 </merge>
