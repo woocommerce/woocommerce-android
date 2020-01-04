@@ -221,16 +221,6 @@ Use this file to override styles in the styles_base.xml file.
     <!--
         Default List Item Header Styles
     -->
-    <style name="Woo.ListHeader" parent="android:Widget.DeviceDefault.TextView">
-        <item name="android:paddingStart">@dimen/list_item_padding_start</item>
-        <item name="android:paddingEnd">@dimen/list_item_padding_end</item>
-        <item name="android:background">@drawable/list_header_bg</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/list_group_header_height</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textAppearance">@style/Woo.TextAppearance.ListHeader</item>
-        <item name="android:textAlignment">viewStart</item>
-    </style>
 
     <style name="Woo.TextAppearance.ListHeader">
         <item name="android:textStyle">bold</item>

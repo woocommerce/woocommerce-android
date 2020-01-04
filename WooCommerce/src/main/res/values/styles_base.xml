@@ -196,6 +196,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.TextView.Caption">
         <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
     </style>
 
     <style name="Woo.TextView.Overline">
@@ -226,4 +227,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
+
+    <!--
+        List Styles
+    -->
+    <style name="Woo.ListHeader" parent="@style/Woo.TextView.Subtitle2"/>
+    <style name="Woo.ListItem.Title" parent="@style/Woo.TextView.Subtitle1"/>
+    <style name="Woo.ListItem.Overline" parent="@style/Woo.TextView.Overline"/>
+    <style name="Woo.ListItem.Body" parent="@style/Woo.TextView.Body2"/>
 </resources>
