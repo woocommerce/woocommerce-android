@@ -20,28 +20,27 @@
             android:layout_height="match_parent"
             tools:itemCount="5"
             tools:listitem="@layout/order_list_item"
-            tools:visibility="visible"/>
+            tools:visibility="gone"/>
 
         <com.woocommerce.android.widgets.ActionableEmptyView
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            app:aevTitle="@string/waiting_for_customers"
-            app:aevButton="@string/share_store_button"
-            app:aevImage="@drawable/ic_woo_waiting_customers"
-            tools:visibility="gone"/>
+            app:aevTitle="@string/orders_empty_message_with_filter"
+            app:aevImage="@drawable/ic_hourglass_empty"
+            tools:visibility="visible"/>
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"
-            style="?android:attr/progressBarStyle"
+            style="@style/Woo.ProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/margin_large"
             android:visibility="gone"
-            tools:visibility="gone"/>
+            tools:visibility="visible"/>
     </RelativeLayout>
 
 </merge>

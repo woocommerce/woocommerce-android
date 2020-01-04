@@ -250,4 +250,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="horizontalSpacing">4dp</item>
         <item name="verticalSpacing">4dp</item>
     </style>
+
+    <!--
+        Progressbar Style
+    -->
+    <style name="Woo.ProgressBar" parent="@style/Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
 </resources>
