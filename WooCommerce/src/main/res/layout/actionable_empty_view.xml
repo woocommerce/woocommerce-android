@@ -31,7 +31,7 @@
 
         <TextView
             android:id="@+id/empty_view_text"
-            style="@style/Woo.TextAppearance.Bold"
+            style="@style/Woo.Card.StatusMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"

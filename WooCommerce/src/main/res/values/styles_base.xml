@@ -119,7 +119,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Card.Body" parent="@style/Woo.TextView.Body2"/>
 
-    <style name="Woo.Card.EmptyMessage" parent="@style/Woo.TextView.Subtitle1"/>
+    <style name="Woo.Card.StatusMessage" parent="@style/Woo.TextView.Subtitle1"/>
 
     <style name="Woo.Card.ListHeader" parent="@style/Woo.TextView.Subtitle2">
         <item name="android:layout_marginTop">@dimen/major_100</item>
