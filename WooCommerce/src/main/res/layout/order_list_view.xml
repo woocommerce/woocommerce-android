@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:itemCount="5"
-            tools:listitem="@layout/order_list_item"/>
+            tools:listitem="@layout/order_list_item"
+            tools:visibility="visible"/>
 
         <com.woocommerce.android.widgets.ActionableEmptyView
             android:id="@+id/empty_view"

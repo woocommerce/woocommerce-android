@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderDate"
             style="@style/Woo.ListItem.Overline"
             android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="May 11, 1967"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderNum"
             style="@style/Woo.ListItem.Title"
             android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
             app:layout_constraintTop_toBottomOf="@+id/orderDate"
             tools:text="#51"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderName"
             style="@style/Woo.ListItem.Title"
             android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
             app:layout_constraintTop_toBottomOf="@+id/orderDate"
             tools:text="John Doe"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderTotal"
             style="@style/Woo.ListItem.Title"
             android:layout_width="wrap_content"
