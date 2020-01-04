@@ -42,17 +42,10 @@ class OrderListView @JvmOverloads constructor(
         this.listener = orderListListener
         this.ordersAdapter = OrderListAdapter(orderListListener, currencyFormatter)
 
-        // Set the divider decoration for the list
-        val ordersDividerDecoration = androidx.recyclerview.widget.DividerItemDecoration(
-                context,
-                androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
-        )
-
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(true)
-            addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
         }
     }

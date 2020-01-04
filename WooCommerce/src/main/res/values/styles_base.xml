@@ -241,7 +241,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Woo.FlowLayout">
         <item name="android:layout_marginTop">@dimen/minor_100</item>
-        <item name="android:layout_marginBottom">@dimen/major_75</item>
+        <item name="android:layout_marginBottom">@dimen/major_100</item>
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="horizontalSpacing">4dp</item>
