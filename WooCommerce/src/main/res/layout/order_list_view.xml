@@ -17,7 +17,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ordersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            tools:itemCount="5"
+            tools:listitem="@layout/order_list_item"/>
 
         <com.woocommerce.android.widgets.ActionableEmptyView
             android:id="@+id/empty_view"
