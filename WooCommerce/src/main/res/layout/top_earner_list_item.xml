@@ -35,7 +35,7 @@
         android:layout_marginTop="@dimen/major_100"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_ProductName"
             style="@style/Woo.Card.ListItem.Title"
             android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
             android:maxLines="2"
             tools:text="text_ProductName"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_ProductOrders"
             style="@style/Woo.Card.ListItem.Body"
             android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
             tools:text="text_ProductOrders"/>
     </LinearLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_TotalSpend"
         style="@style/Woo.Card.ListItem.Title"
         android:layout_width="wrap_content"
