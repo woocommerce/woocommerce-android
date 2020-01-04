@@ -45,7 +45,7 @@
                 tools:visibility="visible"/>
         </FrameLayout>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/dashboard_recency_text"
             style="@style/Woo.TextView.Caption"
             android:layout_width="wrap_content"
