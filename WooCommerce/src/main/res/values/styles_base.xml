@@ -95,7 +95,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Card.ExpanderButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
-        <item name="android:drawableTint" tools:targetApi="m">@color/color_on_surface_high</item>
         <item name="android:gravity">start|center_vertical</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
