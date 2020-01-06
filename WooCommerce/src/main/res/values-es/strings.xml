@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:55:01+0000
+Translation-Revision-Date: 2019-12-25 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="settings_image_optimization_message">Cambia el tamaño y comprime imágenes para que se carguen más rápido</string>
+    <string name="settings_image_optimization_title">Optimización de imagen</string>
+    <string name="image_source_device_camera">Hacer una foto</string>
+    <string name="image_source_device_chooser">Elegir del dispositivo</string>
+    <string name="image_source_title">Elegir un método de carga</string>
+    <string name="product_images_upload_channel_title">Cargas</string>
+    <string name="product_images_uploading_multi_notif_message">Cargando imágenes…%d de %d</string>
+    <string name="product_images_uploading_single_notif_message">Cargando imagen…</string>
+    <string name="product_images_camera_error">No se puede acceder a la cámara</string>
+    <string name="product_image_remove_confirmation">¿Seguro que quieres eliminar esta imagen?</string>
+    <string name="product_image_capture_failed">No se ha podido capturar la imagen</string>
+    <string name="product_image_service_busy">Espera a que finalice la operación actual</string>
+    <string name="product_image_service_error_uploading">Error al cargar la imagen de producto</string>
+    <string name="product_image_error_removing">Error al recuperar la imagen de producto</string>
+    <string name="product_image_add">Añadir una imagen de producto</string>
+    <string name="product_remove_photo">Eliminar foto</string>
+    <string name="product_add_photos">Añadir fotos</string>
+    <string name="product_images_title">Fotos</string>
+    <string name="product_add_image_content_description">Añadir imagen</string>
+    <string name="orderlist_search_prompt">Buscar pedidos</string>
+    <string name="orderlist_fetching">Obteniendo pedidos…</string>
+    <string name="date_timeframe_future">Próximo</string>
+    <string name="remove">Eliminar</string>
+    <string name="product_variant_hidden">Oculto</string>
     <string name="login_discovery_error_generic">No hemos podido acceder a tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_ssl">No hemos podido acceder a tu sitio debido a un problema con el &lt;b>Certificado SSL&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_http_auth">No hemos podido acceder a tu sitio porque requiere &lt;b>Autentificación con HTTP&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
@@ -21,10 +45,9 @@ Language: es
     <string name="magic_link_fetch_account_error">No se ha podido obtener tu cuenta. Puedes intentarlo de nuevo ahora o cerrar e intentarlo más tarde.</string>
     <string name="magic_link_update_error">Se ha producido un error. Accede para continuar</string>
     <string name="login_magic_link_token_updating">Conectando con tu sitio…</string>
-    <string name="product_variants">Variantes</string>
     <string name="product_property_edit">Editar producto</string>
     <string name="product_variants_fetch_product_variants_error">Error al obtener las reseñas de los productos</string>
-    <string name="my_store_stats_reverted_message">Hemos cambiado a las antiguas estadísticas. Para usar las estadísticas beta, activa el plugin Administración de WooCommerce con la versión 0.22 o una posterior</string>
+    <string name="my_store_stats_reverted_message">Hemos cambiado a las antiguas estadísticas. Para usar las estadísticas beta, activa el plugin Administración de WooCommerce con la versión 0.23 o una posterior</string>
     <string name="login_discovery_error_option_select">Elige una opción</string>
     <string name="login_troubleshooting_tips">Lee nuestros consejos de solución de problemas</string>
     <string name="login_with_wordpress">Inicia sesión con WordPress.com</string>

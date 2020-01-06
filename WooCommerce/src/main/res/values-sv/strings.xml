@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:52+0000
+Translation-Revision-Date: 2019-12-28 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_image_optimization_message">Ändra storlek på och komprimera bilder för snabbare uppladdning</string>
+    <string name="settings_image_optimization_title">Bildoptimering</string>
+    <string name="image_source_device_camera">Ta ett foto</string>
+    <string name="image_source_device_chooser">Välj från enheten</string>
+    <string name="image_source_title">Välj en uppladdningsmetod</string>
+    <string name="product_images_upload_channel_title">Uppladdningar</string>
+    <string name="product_images_uploading_multi_notif_message">Laddar upp bilder…%d av %d</string>
+    <string name="product_images_uploading_single_notif_message">Laddar upp bild…</string>
+    <string name="product_images_camera_error">Det går inte att komma åt kameran</string>
+    <string name="product_image_remove_confirmation">Är du säker på att du vill ta bort den här bilden?</string>
+    <string name="product_image_capture_failed">Det gick inte att ta bilden</string>
+    <string name="product_image_service_busy">Vänta tills den aktuella åtgärden har slutförts</string>
+    <string name="product_image_service_error_uploading">Det gick inte att ladda upp produktbilden</string>
+    <string name="product_image_error_removing">Det gick inte att ta bort produktbilden</string>
+    <string name="product_image_add">Lägg till en produktbild</string>
+    <string name="product_remove_photo">Ta bort foto</string>
+    <string name="product_add_photos">Lägg till foton</string>
+    <string name="product_images_title">Foton</string>
+    <string name="product_add_image_content_description">Lägg till bild</string>
+    <string name="orderlist_search_prompt">Sök ordrar</string>
+    <string name="orderlist_fetching">Hämtar ordrar…</string>
+    <string name="date_timeframe_future">Kommande</string>
+    <string name="remove">Ta bort</string>
+    <string name="product_variant_hidden">Dold</string>
     <string name="login_discovery_error_generic">Vi kunde inte komma åt din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b>SSL-certifikatet&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b>HTTP-autentisering&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
@@ -21,10 +45,9 @@ Language: sv_SE
     <string name="magic_link_fetch_account_error">Det uppstod ett fel när ditt konto skulle hämtas. Du kan försöka igen nu eller stänga och försöka igen senare.</string>
     <string name="magic_link_update_error">Ett fel har uppstått. Logga in för att fortsätta</string>
     <string name="login_magic_link_token_updating">Ansluter till din webbplats …</string>
-    <string name="product_variants">Varianter</string>
     <string name="product_property_edit">Redigera produkt</string>
     <string name="product_variants_fetch_product_variants_error">Ett fel uppstod när produktvarianterna skulle hämtas</string>
-    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.22 eller senare</string>
+    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.23 eller senare</string>
     <string name="login_discovery_error_option_select">Välj ett alternativ</string>
     <string name="login_troubleshooting_tips">Läs våra felsökningstips</string>
     <string name="login_with_wordpress">Logga in med WordPress.com</string>

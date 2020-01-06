@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:53+0000
+Translation-Revision-Date: 2019-12-25 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="settings_image_optimization_message">Comprimeer en wijzig de formaten van afbeeldingen voor snellere uploadtijden</string>
+    <string name="settings_image_optimization_title">Afbeeldingoptimalisatie</string>
+    <string name="image_source_device_camera">Een foto maken</string>
+    <string name="image_source_device_chooser">Kiezen op apparaat</string>
+    <string name="image_source_title">Selecteer een uploadmethode</string>
+    <string name="product_images_upload_channel_title">Uploads</string>
+    <string name="product_images_uploading_multi_notif_message">Bezig met afbeeldingen uploaden…%d van %d</string>
+    <string name="product_images_uploading_single_notif_message">Bezig met afbeeldingen uploaden…</string>
+    <string name="product_images_camera_error">Geen toegang tot camera</string>
+    <string name="product_image_remove_confirmation">Weet je zeker dat je deze afbeelding wilt verwijderen?</string>
+    <string name="product_image_capture_failed">Afbeelding vastleggen mislukt</string>
+    <string name="product_image_service_busy">Wacht tot de huidige handeling voltooid is</string>
+    <string name="product_image_service_error_uploading">Fout bij uploaden van productafbeelding</string>
+    <string name="product_image_error_removing">Fout bij verwijderen van productafbeelding</string>
+    <string name="product_image_add">Voeg een productafbeelding toe</string>
+    <string name="product_remove_photo">Foto verwijderen</string>
+    <string name="product_add_photos">Foto\'s toevoegen</string>
+    <string name="product_images_title">Foto\'s</string>
+    <string name="product_add_image_content_description">Afbeelding toevoegen</string>
+    <string name="orderlist_search_prompt">Bestellingen doorzoeken</string>
+    <string name="orderlist_fetching">Bestellingen ophalen…</string>
+    <string name="date_timeframe_future">Komende</string>
+    <string name="remove">Verwijderen</string>
+    <string name="product_variant_hidden">Verborgen</string>
     <string name="login_discovery_error_generic">We konden geen toegang krijgen tot je site. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b>SSL-certificaat&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b>HTTP-authenticatie is vereist&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
@@ -21,10 +45,9 @@ Language: nl
     <string name="magic_link_fetch_account_error">Er is een probleem opgetreden bij het ophalen van je account. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
     <string name="magic_link_update_error">Er is een fout opgetreden. Log in om door te gaan</string>
     <string name="login_magic_link_token_updating">Je site wordt gekoppeld …</string>
-    <string name="product_variants">Varianten</string>
     <string name="product_property_edit">Product bewerken</string>
     <string name="product_variants_fetch_product_variants_error">Fout bij ophalen productvariaties</string>
-    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld. Om de bèta-statistieken te kunnen gebruiken, moet je de WooCommerce Admin-plugin met versie 0.22 of hoger activeren</string>
+    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld. Om de bèta-statistieken te kunnen gebruiken, moet je de WooCommerce Admin-plugin met versie 0.23 of hoger activeren</string>
     <string name="login_discovery_error_option_select">Selecteer een optie</string>
     <string name="login_troubleshooting_tips">Bekijk onze tips voor probleemoplossing</string>
     <string name="login_with_wordpress">Aanmelden via WordPress.com</string>

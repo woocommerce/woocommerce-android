@@ -21,10 +21,8 @@ Language: ja_JP
     <string name="magic_link_fetch_account_error">アカウントの取得時に問題が発生しました。今すぐ再試行するか、閉じてから後で再試行できます。</string>
     <string name="magic_link_update_error">エラーが発生しました。ログインして続行してください</string>
     <string name="login_magic_link_token_updating">サイトに接続しています…</string>
-    <string name="product_variants">バリアント</string>
     <string name="product_property_edit">商品を編集</string>
     <string name="product_variants_fetch_product_variants_error">商品バリエーションを取得する際にエラーが発生しました</string>
-    <string name="my_store_stats_reverted_message">従来の統計に戻しました。ベータ統計を使用するには、バージョン0.22以上の WooCommerce Admin プラグインを有効化してください</string>
     <string name="login_discovery_error_option_select">オプションを選択してください</string>
     <string name="login_troubleshooting_tips">トラブルシューティングのヒントを参照してください</string>
     <string name="login_with_wordpress">WordPress.com アカウントでログイン</string>

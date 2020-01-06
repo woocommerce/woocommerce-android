@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:53+0000
+Translation-Revision-Date: 2019-12-27 00:54:49+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="settings_image_optimization_message">Daha hızlı yükleme için görsellerin boyutlarını değiştirip sıkıştırın</string>
+    <string name="settings_image_optimization_title">Görsel optimizasyonu</string>
+    <string name="image_source_device_camera">Fotoğraf çek</string>
+    <string name="image_source_device_chooser">Cihazdan seç</string>
+    <string name="image_source_title">Karşıya yükleme yöntemi seçin</string>
+    <string name="product_images_upload_channel_title">Yüklemeler</string>
+    <string name="product_images_uploading_multi_notif_message">Görseller yükleniyor…%d/%d</string>
+    <string name="product_images_uploading_single_notif_message">Görsel yükleniyor…</string>
+    <string name="product_images_camera_error">Kameraya erişilemedi</string>
+    <string name="product_image_remove_confirmation">Bu görseli kaldırmak istediğinizden emin misiniz?</string>
+    <string name="product_image_capture_failed">Görsel yakalanamadı</string>
+    <string name="product_image_service_busy">Lütfen devam eden işlemin tamamlanmasını bekleyin</string>
+    <string name="product_image_service_error_uploading">Ürün görseli yüklenirken hata oluştu</string>
+    <string name="product_image_error_removing">Ürün görseli kaldırılırken hata oluştu</string>
+    <string name="product_image_add">Bir ürün görseli ekle</string>
+    <string name="product_remove_photo">Fotoğrafı kaldır</string>
+    <string name="product_add_photos">Fotoğraf ekle</string>
+    <string name="product_images_title">Fotoğraflar</string>
+    <string name="product_add_image_content_description">Görsel ekle</string>
+    <string name="orderlist_search_prompt">Siparişlerde ara</string>
+    <string name="orderlist_fetching">Siparişler alınıyor…</string>
+    <string name="date_timeframe_future">Yakında</string>
+    <string name="remove">Kaldır</string>
+    <string name="product_variant_hidden">Gizli</string>
     <string name="login_discovery_error_generic">Sitenize erişimi başaramadık. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL Sertifikası&lt;/b> ile ilgili bir sorun nedeniyle sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP Kimlik Doğrulaması&lt;/b> gerektiğinden sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
@@ -21,10 +45,9 @@ Language: tr
     <string name="magic_link_fetch_account_error">Hesabınızı alırken bazı sorunlar oluştu. Şimdi yeniden deneyebilir veya kapatıp daha sonra tekrar deneyebilirsiniz.</string>
     <string name="magic_link_update_error">Bir hata oluştu. Devam etmek için lütfen giriş yapın</string>
     <string name="login_magic_link_token_updating">Sitenize bağlanıyor…</string>
-    <string name="product_variants">Varyasyonlar</string>
     <string name="product_property_edit">Ürünü düzenle</string>
     <string name="product_variants_fetch_product_variants_error">Ürün varyasyonları alınırken bir hata oluştu</string>
-    <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük. Beta istatistiklerini kullanmak için lütfen 0.22 veya daha üst sürüm WooCommerce Yönetici eklentisini etkinleştirin</string>
+    <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük. Beta istatistiklerini kullanmak için lütfen WooCommerce Yönetici eklentisinin 0.23 veya daha üst bir sürümünü etkinleştirin</string>
     <string name="login_discovery_error_option_select">Bir seçenek seçin</string>
     <string name="login_troubleshooting_tips">Sorun giderme ipuçlarımızı okuyun</string>
     <string name="login_with_wordpress">WordPress.com ile Giriş Yap</string>

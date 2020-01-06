@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-11 00:54:04+0000
+Translation-Revision-Date: 2019-12-26 00:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="settings_image_optimization_message">Изменять размер и сжимать изображения для ускорения загрузки</string>
+    <string name="settings_image_optimization_title">Оптимизация изображений</string>
+    <string name="image_source_device_camera">Сделать фото</string>
+    <string name="image_source_device_chooser">Выбрать с устройства</string>
+    <string name="image_source_title">Выберите способ загрузки</string>
+    <string name="product_images_upload_channel_title">Загрузки</string>
+    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%d из %d</string>
+    <string name="product_images_uploading_single_notif_message">Загрузка изображения…</string>
+    <string name="product_images_camera_error">Нет доступа к камере</string>
+    <string name="product_image_remove_confirmation">Вы уверены, что хотите удалить это изображение?</string>
+    <string name="product_image_capture_failed">Не удалось получить изображение</string>
+    <string name="product_image_service_busy">Дождитесь завершения текущей операции</string>
+    <string name="product_image_service_error_uploading">Ошибка при загрузке изображения продукта</string>
+    <string name="product_image_error_removing">Ошибка при удалении изображения продукта</string>
+    <string name="product_image_add">Добавить изображение продукта</string>
+    <string name="product_remove_photo">Удалить фото</string>
+    <string name="product_add_photos">Добавить фото</string>
+    <string name="product_images_title">Фотографии</string>
+    <string name="product_add_image_content_description">Добавить изображение</string>
+    <string name="orderlist_search_prompt">Поиск по заказам</string>
+    <string name="orderlist_fetching">Получение заказов…</string>
+    <string name="date_timeframe_future">Ближайшие</string>
+    <string name="remove">Удалить</string>
+    <string name="product_variant_hidden">Скрыто</string>
     <string name="login_discovery_error_generic">Не удалось получить доступ к вашему сайту. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b>сертификатом SSL&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b>проверку подлинности HTTP&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
@@ -21,10 +45,9 @@ Language: ru
     <string name="magic_link_fetch_account_error">При загрузке вашей учетной записи произошла ошибка. Повторите попытку сейчас или закройте и попробуйте позже.</string>
     <string name="magic_link_update_error">Произошла ошибка. Войдите, чтобы продолжить.</string>
     <string name="login_magic_link_token_updating">Подключение к сайту…</string>
-    <string name="product_variants">Варианты</string>
     <string name="product_property_edit">Изменить продукт</string>
     <string name="product_variants_fetch_product_variants_error">Ошибка при получении вариантов продукта</string>
-    <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин администратора WooCommerce 0.22 или более поздней версии.</string>
+    <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин WooCommerce Admin 0.23 или более поздней версии</string>
     <string name="login_discovery_error_option_select">Выберите вариант.</string>
     <string name="login_troubleshooting_tips">Просмотрите советы по устранению неполадок</string>
     <string name="login_with_wordpress">Войти с помощью WordPress.com</string>

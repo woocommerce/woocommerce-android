@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:52+0000
+Translation-Revision-Date: 2019-12-16 18:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -16,15 +16,13 @@ Language: ar
     <string name="send_verification_email">إرسال رسالة تحقق عبر البريد الإلكتروني</string>
     <string name="settings_enable_product_teaser_message">اختبار قسم \"المنتجات\" الجديد عندما نصبح جاهزين للبدء</string>
     <string name="settings_enable_product_teaser_title">المنتجات</string>
-    <string name="product_wip_message">نبذل قصارى جهدنا في قسم المنتجات الجديد لكي تتمكن من رؤية بعض التغييرات عندما نصبح جاهزين للبدء &amp;#128640؛</string>
+    <string name="product_wip_message">نبذل قصارى جهدنا في قسم المنتجات الجديد لكي تتمكن من رؤية بعض التغييرات عندما نصبح جاهزين للبدء</string>
     <string name="product_wip_title">العمل قيد التنفيذ!</string>
     <string name="magic_link_fetch_account_error">كانت هناك بعض المشكلات في إحضار الحساب الخاص بك. يمكنك إعادة المحاولة الآن أو الإغلاق والمحاولة مرة أخرى لاحقًا.</string>
     <string name="magic_link_update_error">حدث خطأ. يرجى تسجيل الدخول مجددًا للمتابعة</string>
     <string name="login_magic_link_token_updating">جارٍ الاتصال بموقعك…</string>
-    <string name="product_variants">المتغيرات</string>
     <string name="product_property_edit">تحرير منتج</string>
     <string name="product_variants_fetch_product_variants_error">خطأ في إحضار أنواع المنتج</string>
-    <string name="my_store_stats_reverted_message">تم الإرجاع إلى الإحصاءات القديمة. لاستخدام إحصاءات بيتا، يرجى تنشيط المكون الإضافي مسؤول WooCommerce بإصدار 0.22 أو إصدار أحدث</string>
     <string name="login_discovery_error_option_select">حدد خيارًا</string>
     <string name="login_troubleshooting_tips">قراءة نصائح استكشاف المشكلات وإصلاحها</string>
     <string name="login_with_wordpress">تسجيل الدخول باستخدام ووردبريس.كوم</string>

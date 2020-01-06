@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:53+0000
+Translation-Revision-Date: 2019-12-27 00:54:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="settings_image_optimization_message">ניתן לשנות את גודלן של התמונות ולדחוס אותן להעלאה מהירה יותר</string>
+    <string name="settings_image_optimization_title">מיטוב תמונות</string>
+    <string name="image_source_device_camera">לצלם תמונה</string>
+    <string name="image_source_device_chooser">לבחור מהמכשיר</string>
+    <string name="image_source_title">יש לבחור את שיטת ההעלאה</string>
+    <string name="product_images_upload_channel_title">העלאות</string>
+    <string name="product_images_uploading_multi_notif_message">מעלה תמונות…%dמתוך %d</string>
+    <string name="product_images_uploading_single_notif_message">מעלה תמונות…</string>
+    <string name="product_images_camera_error">לא ניתן לגשת למצלמה</string>
+    <string name="product_image_remove_confirmation">האם ברצונך להסיר את התמונה?</string>
+    <string name="product_image_capture_failed">כשל בצילום התמונה</string>
+    <string name="product_image_service_busy">יש להמתין להשלמת הפעולה הנוכחית</string>
+    <string name="product_image_service_error_uploading">שגיאה בהעלאה של תמונת המוצר</string>
+    <string name="product_image_error_removing">שגיאה בהסרה של תמונת המוצר</string>
+    <string name="product_image_add">להוסיף תמונה למוצר</string>
+    <string name="product_remove_photo">להסיר תמונה</string>
+    <string name="product_add_photos">להוסיף תמונות</string>
+    <string name="product_images_title">תמונות</string>
+    <string name="product_add_image_content_description">להוסיף תמונה</string>
+    <string name="orderlist_search_prompt">לחפש הזמנות</string>
+    <string name="orderlist_fetching">מביא הזמנות…</string>
+    <string name="date_timeframe_future">אירועים קרובים</string>
+    <string name="remove">הסרה</string>
+    <string name="product_variant_hidden">מוסתר</string>
     <string name="login_discovery_error_generic">לא הייתה לנו אפשרות לגשת לאתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b>בתעודת SSL&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b>אימות HTTP&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
@@ -21,10 +45,9 @@ Language: he_IL
     <string name="magic_link_fetch_account_error">אירעה בעיה בהבאת החשבון שלך. אפשר לנסות שוב עכשיו או לסגור את העמוד ולנסות שוב מאוחר יותר.</string>
     <string name="magic_link_update_error">אירעה שגיאה. עליך להתחבר כדי להמשיך</string>
     <string name="login_magic_link_token_updating">מתחבר לאתר שלך…</string>
-    <string name="product_variants">משתנים</string>
     <string name="product_property_edit">עריכת מוצר</string>
     <string name="product_variants_fetch_product_variants_error">שגיאה בהבאת הסוגים של המוצר</string>
-    <string name="my_store_stats_reverted_message">שינינו את הנתונים הסטטיסטיים הישנים. כדי להשתמש בנתונים הסטטיסטיים בגרסת ביתא, עליך להפעיל את התוסף של מנהל המערכת של WooCommerce עם גרסה 0.22 ומעלה</string>
+    <string name="my_store_stats_reverted_message">שינינו את הנתונים הסטטיסטיים הישנים. כדי להשתמש בנתונים הסטטיסטיים בגרסת ביתא, עליך להפעיל את התוסף של מנהל המערכת של WooCommerce עם גרסה 0.23 ומעלה</string>
     <string name="login_discovery_error_option_select">לבחור אפשרות</string>
     <string name="login_troubleshooting_tips">לעיון בעצות שלנו לפתרון בעיות</string>
     <string name="login_with_wordpress">התחברות באמצעות WordPress.com</string>

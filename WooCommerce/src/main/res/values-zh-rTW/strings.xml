@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:52+0000
+Translation-Revision-Date: 2019-12-28 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="settings_image_optimization_message">調整圖片大小並壓縮圖片，以便加快上傳速度</string>
+    <string name="settings_image_optimization_title">圖片最佳化</string>
+    <string name="image_source_device_camera">拍攝照片</string>
+    <string name="image_source_device_chooser">從裝置中選擇</string>
+    <string name="image_source_title">選取上傳方式</string>
+    <string name="product_images_upload_channel_title">上傳</string>
+    <string name="product_images_uploading_multi_notif_message">正在上傳圖片…已上傳 %d，共 %d</string>
+    <string name="product_images_uploading_single_notif_message">正在上傳圖片…</string>
+    <string name="product_images_camera_error">無法存取攝影機</string>
+    <string name="product_image_remove_confirmation">確定要移除此圖片？</string>
+    <string name="product_image_capture_failed">無法擷取圖片</string>
+    <string name="product_image_service_busy">請等待目前作業完成</string>
+    <string name="product_image_service_error_uploading">上傳產品圖片時發生錯誤</string>
+    <string name="product_image_error_removing">移除產品圖片時發生錯誤</string>
+    <string name="product_image_add">請新增產品圖片</string>
+    <string name="product_remove_photo">移除相片</string>
+    <string name="product_add_photos">新增相片</string>
+    <string name="product_images_title">相片</string>
+    <string name="product_add_image_content_description">新增圖片</string>
+    <string name="orderlist_search_prompt">搜尋訂單</string>
+    <string name="orderlist_fetching">正在擷取訂單…</string>
+    <string name="date_timeframe_future">即將到來</string>
+    <string name="remove">移除</string>
+    <string name="product_variant_hidden">隱藏</string>
     <string name="login_discovery_error_generic">無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_ssl">由於 &lt;b>SSL 憑證&lt;/b>發生問題，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_http_auth">由於你的網站須進行 &lt;b>HTTP 驗證&lt;/b>，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
@@ -21,10 +45,9 @@ Language: zh_TW
     <string name="magic_link_fetch_account_error">擷取帳號時發生錯誤。你可以現在重試，或先關閉並稍後再試。</string>
     <string name="magic_link_update_error">發生錯誤。請登入以繼續</string>
     <string name="login_magic_link_token_updating">正在連線至你的網站…</string>
-    <string name="product_variants">型號</string>
     <string name="product_property_edit">編輯商品</string>
     <string name="product_variants_fetch_product_variants_error">擷取產品不同型號時發生錯誤</string>
-    <string name="my_store_stats_reverted_message">我們已回復為舊的統計資料。若要使用 Beta 版統計資料，請啟用 0.22 或更新版本的 WooCommerce Admin 外掛程式</string>
+    <string name="my_store_stats_reverted_message">我們已回復為舊的統計資料。若要使用 Beta 版統計資料，請啟用 0.23 或更新版本的 WooCommerce Admin 外掛程式</string>
     <string name="login_discovery_error_option_select">選取一個選項</string>
     <string name="login_troubleshooting_tips">閱讀疑難排解提示</string>
     <string name="login_with_wordpress">透過 WordPress.com 登入</string>

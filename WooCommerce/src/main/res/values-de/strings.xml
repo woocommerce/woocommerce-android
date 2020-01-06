@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:59+0000
+Translation-Revision-Date: 2019-12-28 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="settings_image_optimization_message">Passe die Größe von Bildern an und komprimiere sie, um sie schneller hochzuladen.</string>
+    <string name="settings_image_optimization_title">Bildoptimierung</string>
+    <string name="image_source_device_camera">Foto aufnehmen</string>
+    <string name="image_source_device_chooser">Von Gerät auswählen</string>
+    <string name="image_source_title">Upload-Methode wählen</string>
+    <string name="product_images_upload_channel_title">Uploads</string>
+    <string name="product_images_uploading_multi_notif_message">Bilder werden hochgeladen …%d von %d</string>
+    <string name="product_images_uploading_single_notif_message">Bild wird hochgeladen …</string>
+    <string name="product_images_camera_error">Auf die Kamera kann nicht zugegriffen werden</string>
+    <string name="product_image_remove_confirmation">Möchtest du dieses Bild wirklich entfernen?</string>
+    <string name="product_image_capture_failed">Bildaufnahme fehlgeschlagen</string>
+    <string name="product_image_service_busy">Warte bitte, bis der aktuelle Vorgang abgeschlossen ist.</string>
+    <string name="product_image_service_error_uploading">Fehler beim Hochladen des Produktbilds</string>
+    <string name="product_image_error_removing">Fehler beim Entfernen des Produktbilds</string>
+    <string name="product_image_add">Produktbild hinzufügen</string>
+    <string name="product_remove_photo">Foto entfernen</string>
+    <string name="product_add_photos">Fotos hinzufügen</string>
+    <string name="product_images_title">Fotos</string>
+    <string name="product_add_image_content_description">Bild hinzufügen</string>
+    <string name="orderlist_search_prompt">Bestellungen durchsuchen</string>
+    <string name="orderlist_fetching">Bestellungen werden abgerufen …</string>
+    <string name="date_timeframe_future">Bevorstehend</string>
+    <string name="remove">Entfernen</string>
+    <string name="product_variant_hidden">Versteckt</string>
     <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b>SSL-Zertifikat&lt;/b> konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b>HTTP-Authentifizierung&lt;/b> erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
@@ -21,10 +45,9 @@ Language: de
     <string name="magic_link_fetch_account_error">Es gab Probleme beim Abrufen deines Kontos. Du kannst es jetzt oder es schließen und später erneut versuchen.</string>
     <string name="magic_link_update_error">Es ist ein Fehler aufgetreten. Melde dich an, umfortzufahren</string>
     <string name="login_magic_link_token_updating">Verbindung mit deiner Website wird hergestellt…</string>
-    <string name="product_variants">Varianten</string>
     <string name="product_property_edit">Produkt bearbeiten</string>
     <string name="product_variants_fetch_product_variants_error">Fehler beim Abrufen von Produktvarianten</string>
-    <string name="my_store_stats_reverted_message">Wir sind zu den alten Statistiken zurückgekehrt. Um die Beta-Statistiken zu verwenden, aktiviere das WooCommerce Admin-Plugin mit Version 0.22 oder höher</string>
+    <string name="my_store_stats_reverted_message">Wir sind zu den alten Statistiken zurückgekehrt. Um die Beta-Statistiken zu verwenden, aktiviere das WooCommerce Admin-Plugin mit Version 0.23 oder höher.</string>
     <string name="login_discovery_error_option_select">Eine Option auswählen</string>
     <string name="login_troubleshooting_tips">Tipps zur Fehlerbehebung lesen</string>
     <string name="login_with_wordpress">Mit WordPress.com anmelden</string>
