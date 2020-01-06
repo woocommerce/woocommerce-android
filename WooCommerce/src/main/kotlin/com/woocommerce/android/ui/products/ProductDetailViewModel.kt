@@ -6,7 +6,7 @@ import android.os.Parcelable
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -103,10 +103,24 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateProductDraft(description: String?) {
+    /**
+     * Update all product fields that are edited by the user
+     */
+    fun updateProductDraft(description: String? = null, title: String? = null) {
         description?.let {
-            viewState.product?.description = it
-            viewState = viewState.copy(isProductUpdated = true)
+            if (it != viewState.product?.description) {
+                viewState.product?.description = it
+            }
+        }
+        title?.let {
+            if (it != viewState.product?.name) {
+                viewState.product?.name = it
+            }
+        }
+
+        viewState.product?.let {
+            val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
+            viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
     }
 
@@ -154,11 +168,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
-                triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
+                triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
                 triggerEvent(Exit)
             }
         } else {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
+            triggerEvent(ShowSnackbar(string.offline_error))
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
@@ -173,49 +187,45 @@ class ProductDetailViewModel @AssistedInject constructor(
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
-                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_success))
+                triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 viewState = viewState.copy(isProgressDialogShown = false, isProductUpdated = false, product = null)
                 loadProduct(remoteProductId)
             } else {
-                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+                triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
                 viewState = viewState.copy(isProgressDialogShown = false)
             }
         } else {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
+            triggerEvent(ShowSnackbar(string.offline_error))
             viewState = viewState.copy(isProgressDialogShown = false)
         }
     }
 
-    private fun updateProductState(product: Product) {
-        val weight = if (product.weight > 0) "${format(product.weight)}${parameters?.weightUnit ?: ""}" else ""
+    private fun updateProductState(storedProduct: Product) {
+        val weight = if (storedProduct.weight > 0) {
+            "${format(storedProduct.weight)}${parameters?.weightUnit ?: ""}"
+        } else ""
 
-        val hasLength = product.length > 0
-        val hasWidth = product.width > 0
-        val hasHeight = product.height > 0
+        val hasLength = storedProduct.length > 0
+        val hasWidth = storedProduct.width > 0
+        val hasHeight = storedProduct.height > 0
         val unit = parameters?.dimensionUnit ?: ""
         val size = if (hasLength && hasWidth && hasHeight) {
-            "${format(product.length)} x ${format(product.width)} x ${format(product.height)} $unit"
+            "${format(storedProduct.length)} x ${format(storedProduct.width)} x ${format(storedProduct.height)} $unit"
         } else if (hasWidth && hasHeight) {
-            "${format(product.width)} x ${format(product.height)} $unit"
+            "${format(storedProduct.width)} x ${format(storedProduct.height)} $unit"
         } else {
             ""
         }.trim()
 
         viewState = viewState.copy(
-                product = combineData(storedProduct = product),
+                product = storedProduct.mergeProduct(viewState.product),
                 weightWithUnits = weight,
                 sizeWithUnits = size,
-                priceWithCurrency = formatCurrency(product.price, parameters?.currencyCode),
-                salePriceWithCurrency = formatCurrency(product.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters?.currencyCode),
-                storedProduct = product
+                priceWithCurrency = formatCurrency(storedProduct.price, parameters?.currencyCode),
+                salePriceWithCurrency = formatCurrency(storedProduct.salePrice, parameters?.currencyCode),
+                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode),
+                storedProduct = storedProduct
         )
-    }
-
-    private fun combineData(storedProduct: Product): Product {
-        return viewState.product?.let {
-            storedProduct.copy(description = it.description)
-        } ?: storedProduct
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -241,7 +251,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
-            triggerEvent(ShowSnackbar(R.string.product_image_service_error_uploading))
+            triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             loadProduct(remoteProductId)
         }

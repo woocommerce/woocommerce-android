@@ -54,6 +54,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_detail.*
+import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -119,7 +120,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
-            new.product?.let { showProduct(new) }
+            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
@@ -157,6 +158,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
             R.id.menu_update -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+                ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
                 true
             }
@@ -257,7 +259,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun addPrimaryCard(productData: ViewState) {
         val product = requireNotNull(productData.product)
 
-        addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
+                view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
+            }
+        } else {
+            addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+        }
 
         if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
             val productDescription = product.description
@@ -549,6 +557,31 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
 
         readMoreView.show(caption, HtmlUtils.fastStripHtml(content), maxLines)
+    }
+
+    /**
+     * Adds an editText to the passed card
+     */
+    private fun addEditableView(
+        card: DetailCard,
+        @StringRes propertyNameId: Int,
+        propertyValue: String?
+    ): WCProductPropertyEditableView? {
+        val hint = getString(propertyNameId)
+        val editableViewTag = "${hint}_tag"
+
+        val cardView = findOrAddCardView(card)
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+        var editableView = container.findViewWithTag<WCProductPropertyEditableView>(editableViewTag)
+
+        if (editableView == null) {
+            editableView = WCProductPropertyEditableView(requireActivity())
+            editableView.tag = editableViewTag
+            container.addView(editableView)
+        }
+
+        editableView.show(hint, propertyValue)
+        return editableView
     }
 
     /**

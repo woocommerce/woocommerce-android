@@ -15,7 +15,7 @@ import java.util.Date
 @Parcelize
 data class Product(
     val remoteId: Long,
-    val name: String,
+    var name: String,
     var description: String,
     val type: ProductType,
     val status: ProductStatus?,
@@ -76,7 +76,30 @@ data class Product(
                 type == product.type &&
                 numVariations == product.numVariations &&
                 name == product.name &&
+                description == product.description &&
                 images == product.images
+    }
+
+    /**
+     * Method merges the updated product fields edited by the user with the locally cached
+     * [Product] model and returns the updated [Product] model.
+     *
+     * [newProduct] includes the updated product fields edited by the user.
+     * if [newProduct] is not null, a copy of the stored [Product] model is created
+     * and product fields edited by the user and added to this model before returning it
+     *
+     */
+    fun mergeProduct(newProduct: Product?): Product {
+        return newProduct?.let { updatedProduct ->
+            this.copy().apply {
+                if (updatedProduct.description != this.description) {
+                    description = updatedProduct.description
+                }
+                if (updatedProduct.name != this.name) {
+                    name = updatedProduct.name
+                }
+            }
+        } ?: this.copy()
     }
 }
 
@@ -84,6 +107,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
+        it.name = name
     }
 }
 
