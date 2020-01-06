@@ -1,4 +1,0 @@
-3.2:
-- Je ziet een nieuw gedeelte met 'varianten' in het scherm Productinformatie voor je variabele producten.
-- De navigatiebalk onderaan verdwijnt niet meer tijdens het scrollen en we denken dat je dit op prijs zult stellen.
-- We weten dat een tabblad met producten hoog op de lijst met gewenste functies staat en kunnen je nu een voorproefje geven van het tabblad Producten, dat binnenkort beschikbaar wordt. Ga naar Instellingen in de app om deze functie in te schakelen.

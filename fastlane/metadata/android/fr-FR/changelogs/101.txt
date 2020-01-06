@@ -1,0 +1,3 @@
+3.3 :
+- Amélioration des performances : Les commandes de la liste des commandes se chargent désormais plus vite. Nous avons par ailleurs résolu les plantages qui se produisaient après avoir mis à jour les variantes d’un produit ou après avoir quitté une commande à la suite de modifications apportées à son état.
+- Résolution de bugs : Dans le fond de la barre de navigation, les étiquettes qui étaient tronquées sont affichées en intégralité, le défilement vertical dans le tableau de vos statistiques fonctionne correctement, les horodatages incorrects des avis sont corrigés, et le triage des variantes de produit dans l’application correspond à la version Web.
