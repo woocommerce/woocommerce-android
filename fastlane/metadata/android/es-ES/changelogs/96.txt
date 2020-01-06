@@ -1,4 +1,0 @@
-3.2:
-- Verás una nueva sección "Variantes" en la pantalla de detalles del producto para tus productos con variaciones.
-- La barra de navegación inferior ya no desaparece cuando te desplazas por la página. Creemos que te gustará más así.
-- Sabemos que muchos una pestaña Productos está en la lista de deseos de muchos. Ahora puedes obtener una vista previa de la pestaña Productos que se lanzará pronto. Dirígete a Configuración en la aplicación para activarla.
