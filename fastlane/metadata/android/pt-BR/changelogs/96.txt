@@ -1,4 +1,0 @@
-3.2:
-- Você verá uma nova seção "Variantes" na tela de detalhes do produto para seus produtos variáveis.
-- A barra de navegação inferior não desaparece mais durante a rolagem, o que você provavelmente vai preferir.
-- Sabemos que um dos principais pedidos é por uma guia "Produtos" e agora você pode visualizar a prévia dessa guia. Acesse "Configurações" no aplicativo para ativá-la.
