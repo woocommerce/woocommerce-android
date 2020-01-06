@@ -376,7 +376,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 animateY(duration)
             }
             with(xAxis) {
-                setLabelCount(getBarLabelCount(), true)
+                // Added axis minimum offset & axis max offset in order to align the bar chart with the x-axis labels
+                // Related fix: https://github.com/PhilJay/MPAndroidChart/issues/2566
+                axisMinimum = data.xMin - 0.5f
+                axisMaximum = data.xMax + 0.5f
+                labelCount = getBarLabelCount()
                 valueFormatter = StartEndDateAxisFormatter()
             }
         }
@@ -523,21 +527,19 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return when (value) {
-                axis.mEntries.first() -> getStartValue()
-                axis.mEntries.max() -> getEndValue()
-                else -> {
-                    val index = round(value).toInt() - 1
-                    return if (index > 0 && index < chartRevenueStats.keys.size - 1) {
-                        getLabelValue(chartRevenueStats.keys.elementAt(index))
-                    } else ""
+            var index = round(value).toInt() - 1
+            index = if (index == -1) 0 else index
+            return if (index > -1 && index < chartRevenueStats.keys.size) {
+                // if this is the first entry in the chart, then display the month as well as the date
+                // for weekly and monthly stats
+                val dateString = chartRevenueStats.keys.elementAt(index)
+                if (value == axis.mEntries.first()) {
+                    getEntryValue(dateString)
+                } else {
+                    getLabelValue(dateString)
                 }
-            }
+            } else ""
         }
-
-        fun getStartValue() = getEntryValue(chartRevenueStats.keys.first())
-
-        fun getEndValue() = getLabelValue(chartRevenueStats.keys.last())
 
         /**
          * Displays the x-axis labels in the following format based on [StatsGranularity]
