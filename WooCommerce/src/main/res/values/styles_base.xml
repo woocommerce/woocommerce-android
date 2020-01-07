@@ -246,8 +246,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginBottom">@dimen/major_100</item>
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
-        <item name="horizontalSpacing">4dp</item>
-        <item name="verticalSpacing">4dp</item>
+        <item name="horizontalSpacing">@dimen/minor_50</item>
+        <item name="verticalSpacing">@dimen/minor_50</item>
     </style>
 
     <!--
