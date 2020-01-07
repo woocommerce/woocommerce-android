@@ -257,4 +257,24 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:indeterminateTint">?attr/colorPrimary</item>
         <item name="android:indeterminateTintMode">src_in</item>
     </style>
+
+    <!--
+        TagView Style
+    -->
+    <style name="Woo.Tag" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/minor_50</item>
+        <item name="android:layout_marginRight">@dimen/minor_50</item>
+        <item name="android:layout_marginBottom">@dimen/minor_50</item>
+        <item name="android:paddingStart">@dimen/major_75</item>
+        <item name="android:paddingEnd">@dimen/major_75</item>
+        <item name="android:paddingTop">@dimen/minor_50</item>
+        <item name="android:paddingBottom">@dimen/minor_50</item>
+        <!-- Custom View Attributes -->
+        <item name="tagTextColor">@color/color_on_primary_high</item>
+        <item name="tagColor">@color/tagView_bg</item>
+        <item name="tagBorderColor">@color/tagView_border_bg</item>
+    </style>
 </resources>

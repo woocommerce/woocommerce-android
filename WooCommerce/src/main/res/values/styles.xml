@@ -150,25 +150,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:backgroundTint">@color/wc_grey_light</item>
     </style>
 
-    <!--
-        Default TagView Style
-    -->
-    <style name="Woo.Tag" parent="android:Widget.DeviceDefault.TextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/tag_margin_top</item>
-        <item name="android:layout_marginRight">@dimen/tag_margin_end</item>
-        <item name="android:layout_marginBottom">@dimen/tag_margin_bottom</item>
-        <item name="android:paddingStart">@dimen/tag_padding_start</item>
-        <item name="android:paddingEnd">@dimen/tag_padding_end</item>
-        <item name="android:paddingTop">@dimen/tag_padding_top</item>
-        <item name="android:paddingBottom">@dimen/tag_padding_bottom</item>
-        <!-- Custom View Attributes -->
-        <item name="tagTextColor">@color/tagView_text</item>
-        <item name="tagTextSize">@dimen/tag_text_size</item>
-        <item name="tagColor">@color/tagView_bg</item>
-        <item name="tagBorderColor">@color/tagView_border_bg</item>
-    </style>
     <style name="Woo.TextView.Title">
         <item name="android:paddingStart">@dimen/card_padding_start</item>
         <item name="android:paddingEnd">@dimen/card_padding_end</item>
