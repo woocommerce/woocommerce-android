@@ -10,6 +10,11 @@
     <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
     <!--
+        Custom widget tint
+    -->
+    <color name="button_colored_bg_tint">@color/color_secondary</color>
+
+    <!--
         App colors
     -->
     <color name="default_window_background">#f7f7f7</color>

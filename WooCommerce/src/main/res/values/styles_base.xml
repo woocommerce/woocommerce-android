@@ -215,6 +215,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.Button.Colored" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/major_100</item>
+        <item name="android:layout_marginBottom">@dimen/major_100</item>
+        <item name="android:backgroundTint">@color/button_colored_bg_selector</item>
     </style>
 
     <!--
