@@ -16,6 +16,11 @@
     <color name="button_colored_bg_tint">?attr/colorSecondary</color>
 
     <!--
+        Custom widget tint
+    -->
+    <color name="button_colored_bg_tint">@color/color_secondary</color>
+
+    <!--
         App colors
     -->
     <color name="default_window_background">#F2F2F2</color>
