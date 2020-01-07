@@ -102,21 +102,20 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on fetch product variants error`() = test {
+    fun `Display empty view on fetch product variants error`() = test {
         whenever(productVariantsRepository.fetchProductVariants(productRemoteId)).thenReturn(null)
         whenever(productVariantsRepository.getProductVariantList(productRemoteId)).thenReturn(null)
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+        val showEmptyView = ArrayList<Boolean>()
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showEmptyView.add(it) }
         }
 
         viewModel.start(productRemoteId)
 
         verify(productVariantsRepository, times(1)).fetchProductVariants(productRemoteId)
-
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.product_variants_fetch_product_variants_error))
+        assertThat(showEmptyView).containsExactly(true, false)
     }
 }
