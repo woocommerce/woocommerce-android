@@ -1,187 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+These dimensions are calculated starting with a baseline, then defined as a percentage of
+that baseline. The percentage doesn't have to be exact, it's main purpose it to describe
+the relationship of the dimension to the baseline. So < 100 would be smaller and > 100 would
+be larger.
+
+Minor: Smaller dimensions often used for padding and margins between components inside a view.
+The most common is 8dp, so that's the baseline used. Since 8dp is the baseline for minor,
+then `minor_100` just means the dimension value is 100% of the baseline of 8dp.
+
+Major: Larger dimensions often used for layout margins and padding. The most often used is 16dp,
+so that's the baseline as defined in `major_100`.
+-->
 <resources>
-    <dimen name="min_tap_target">48dp</dimen>
+    <dimen name="minor_00">0dp</dimen>
+    <dimen name="minor_25">2dp</dimen>
+    <dimen name="minor_50">4dp</dimen>
+    <dimen name="minor_100">8dp</dimen>
 
-    <!--
-        Text Sizes
-    -->
-    <dimen name="text_extra_small">10sp</dimen>
-    <dimen name="text_small">12sp</dimen>
-    <dimen name="text_caption">13sp</dimen>
-    <dimen name="text_medium">14sp</dimen>
-    <dimen name="text_large">16sp</dimen>
-    <dimen name="text_medium_extra_large">18sp</dimen>
-    <dimen name="text_extra_large">20sp</dimen>
-    <dimen name="text_double_extra_large">24sp</dimen>
-    <dimen name="text_triple_extra_large">26sp</dimen>
+    <dimen name="major_75">12dp</dimen>
+    <dimen name="major_100">16dp</dimen>
+    <dimen name="major_125">20dp</dimen>
+    <dimen name="major_150">24dp</dimen>
+    <dimen name="major_175">28dp</dimen>
+    <dimen name="major_200">32dp</dimen>
 
-    <!--
-        Default Padding
-    -->
-    <dimen name="default_padding">8dp</dimen>
-    <dimen name="default_padding_tablet">16dp</dimen>
+    <!-- Regular text dimensions (body, subtitles, caption, etc -->
+    <dimen name="text_minor_60">10sp</dimen>
+    <dimen name="text_minor_80">12sp</dimen>
+    <dimen name="text_minor_100">14sp</dimen>
+    <dimen name="text_minor_125">16sp</dimen>
 
-    <!--
-        Appbar and bottom navigation
-    -->
-    <dimen name="appbar_elevation">4dp</dimen>
-    <dimen name="bottomm_nav_top_border">1dp</dimen>
+    <!-- Large text dimensions (headings) -->
+    <dimen name="text_major_25">20sp</dimen>
+    <dimen name="text_major_50">24sp</dimen>
+    <dimen name="text_major_75">34sp</dimen>
+    <dimen name="text_major_100">48sp</dimen>
+    <dimen name="text_major_150">60sp</dimen>
+    <dimen name="text_major_200">96sp</dimen>
 
-    <!--
-        TabLayout
-    -->
-    <dimen name="tablayout_elevation">4dp</dimen>
+    <!-- Regular text line heights -->
+    <dimen name="line_height_minor_70">16dp</dimen>
+    <dimen name="line_height_minor_80">20dp</dimen>
+    <dimen name="line_height_minor_100">24dp</dimen>
 
-    <!--
-        Default Card
-    -->
-    <dimen name="card_padding_start">16dp</dimen>
-    <dimen name="card_padding_start_tablet">24dp</dimen>
+    <!-- Large text line heights -->
+    <dimen name="line_height_major_25">24dp</dimen>
+    <dimen name="line_height_major_50">36dp</dimen>
+    <dimen name="line_height_major_100">56dp</dimen>
+    <dimen name="line_height_major_150">72dp</dimen>
+    <dimen name="line_height_major_200">112dp</dimen>
 
-    <dimen name="card_padding_end">16dp</dimen>
-    <dimen name="card_padding_end_tablet">24dp</dimen>
-
-    <dimen name="card_padding_top">16dp</dimen>
-    <dimen name="card_padding_top_tablet">24dp</dimen>
-
-    <dimen name="card_padding_bottom">16dp</dimen>
-    <dimen name="card_padding_bottom_tablet">24dp</dimen>
-
-    <dimen name="card_gutter">16dp</dimen>
-    <dimen name="card_gutter_tablet">16dp</dimen>
-
-    <dimen name="card_item_padding_intra_h">8dp</dimen>
-    <dimen name="card_item_padding_intra_double">16dp</dimen>
-    <dimen name="card_item_padding_intra_v">4dp</dimen>
-    <dimen name="card_section_padding_h">12dp</dimen>
-    <dimen name="card_elevation">1dp</dimen>
-
-    <dimen name="card_label_padding_intra_h">4dp</dimen>
-
-    <dimen name="card_title_text_size">@dimen/text_medium</dimen>
-    <dimen name="card_normal_text_size">@dimen/text_medium</dimen>
-    <dimen name="card_label_text_size">@dimen/text_large</dimen>
-
-    <!--
-        Default List
-    -->
-    <dimen name="list_item_text_size">@dimen/text_large</dimen>
-    <dimen name="list_header_text_size">@dimen/text_medium</dimen>
-
-    <dimen name="list_group_header_height">48dp</dimen>
-
-    <dimen name="list_item_padding_intra_h">8dp</dimen>
-    <dimen name="list_item_padding_intra_v">4dp</dimen>
-
-    <dimen name="list_item_padding_start_from_icon">14dp</dimen>
-    <dimen name="list_item_padding_start">16dp</dimen>
-    <dimen name="list_item_padding_start_tablet">24dp</dimen>
-
-    <dimen name="list_item_padding_end">16dp</dimen>
-    <dimen name="list_item_padding_end_tablet">24dp</dimen>
-
-    <dimen name="list_item_padding_top">4dp</dimen>
-    <dimen name="list_item_padding_top_tablet">4dp</dimen>
-
-    <dimen name="list_item_padding_bottom">4dp</dimen>
-    <dimen name="list_item_padding_bottom_tablet">4dp</dimen>
-
-    <dimen name="list_divider_padding_top">8dp</dimen>
-    <dimen name="list_divider_padding_top_tablet">12dp</dimen>
-
-    <dimen name="list_divider_padding_bottom">8dp</dimen>
-    <dimen name="list_divider_padding_bottom_tablet">12dp</dimen>
-
-    <!--
-        Default TagView
-    -->
-    <dimen name="tag_text_size">@dimen/text_small</dimen>
-
-    <dimen name="tag_margin_end">4dp</dimen>
-    <dimen name="tag_margin_top">4dp</dimen>
-    <dimen name="tag_margin_bottom">4dp</dimen>
-    <dimen name="tag_padding_start">8dp</dimen>
-    <dimen name="tag_padding_end">8dp</dimen>
-    <dimen name="tag_padding_top">2dp</dimen>
-    <dimen name="tag_padding_bottom">2dp</dimen>
-
-    <dimen name="tag_layout_margin_end">8dp</dimen>
-    <dimen name="tag_layout_margin_bottom">8dp</dimen>
-
-    <!--
-        Default Chart
-    -->
-    <dimen name="chart_height">200dp</dimen>
-
-    <!--
-        Login
-    -->
-    <dimen name="login_avatar_size">64dp</dimen>
-    <dimen name="login_prologue_padding">28dp</dimen>
-
-    <!--
-        Settings
-    -->
-    <dimen name="settings_padding">16dp</dimen>
-    <dimen name="settings_logout_button_horz">50dp</dimen>
-    <dimen name="settings_logout_button_vert">12dp</dimen>
-
-    <!--
-        Stats and Top earners
-    -->
-    <dimen name="top_earner_min_height">224dp</dimen>
-
-    <!--
-         Notifications
-     -->
-    <dimen name="notification_badge_sz">9dp</dimen>
-
-    <!--
-        Offline Status Bar
-    -->
-    <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
-
-    <!--
-        Orders and order notes
-    -->
-    <dimen name="order_note_icon">26dp</dimen>
-
-    <!--
-        Skeletons
-    -->
-    <dimen name="skeleton_bar_chart_padding">30dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
-    <dimen name="skeleton_order_note_item_height">96dp</dimen>
-    <dimen name="skeleton_default_text_height">20sp</dimen>
-    <dimen name="skeleton_default_text_height_two_lines">40sp</dimen>
-
-    <!--
-        Products
-    -->
-    <dimen name="product_icon_sz">40dp</dimen>
-    <dimen name="product_detail_card_divider_height">16dp</dimen>
-    <dimen name="product_detail_property_margin">@dimen/settings_padding</dimen>
-    <dimen name="product_image_gallery_image_size">128dp</dimen>
-
-    <!--
-        Shipment Trackings
-    -->
-    <dimen name="card_level_button_width">32dp</dimen>
-    <dimen name="card_level_button_height">32dp</dimen>
-    <dimen name="card_level_button_padding">6dp</dimen>
-
-    <!--
-        Dialogs
-    -->
-    <dimen name="alert_dialog_max_width">300dp</dimen>
-
-    <!--
-        Misc
-    -->
-    <dimen name="image_border_size">1dp</dimen>
-    <dimen name="image_border_radius">2dp</dimen>
 </resources>

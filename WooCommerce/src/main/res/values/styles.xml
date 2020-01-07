@@ -1,10 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Woo"/>
+    <!--
+        Bottom Bar Styles
+    -->
     <style name="Widget.Woo.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
         <item name="android:background">?attr/colorSurface</item>
         <item name="itemIconTint">@color/color_on_surface</item>
         <item name="itemTextColor">@color/color_on_surface</item>
         <item name="android:elevation">@dimen/plane_08</item>
+    </style>
+    <!--
+        Toolbar Styles
+    -->
+    <style name="Widget.Woo.Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface">
+        <item name="android:elevation">@dimen/appbar_elevation</item>
+    </style>
+    <!--
+        Card Styles
+    -->
+    <style name="Widget.Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/minor_00</item>
+        <item name="android:checkable">false</item>
+        <item name="contentPaddingTop">@dimen/major_75</item>
+        <item name="contentPaddingBottom">@dimen/major_75</item>
+    </style>
+    <style name="Widget.Woo.Card.Tabbed">
+        <item name="contentPaddingTop">@dimen/minor_00</item>
+    </style>
+    <style name="Widget.Woo.Card.Expandable">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+    <style name="Widget.Woo.Card.WithoutPadding">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+    <!--
+        TextView Styles
+    -->
+    <style name="Woo.TextView" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/major_75</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+    </style>
+    <style name="Woo.TextView.Subtitle2">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_horizontal|start</item>
+    </style>
+    <style name="Woo.TextView.Caption">
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+    </style>
+    <!--
+        TabLayout Styles
+    -->
+    <style name="Woo.TabLayout" parent="@style/Widget.MaterialComponents.TabLayout">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
+        <item name="tabIndicatorColor">?attr/colorSecondary</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
+    </style>
+    <style name="Woo.TabLayout.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
     </style>
 
     <!--
@@ -14,7 +85,6 @@
         <item name="android:textCursorDrawable">@drawable/searchview_cursor</item>
     </style>
 
-    <style name="Woo"/>
     <!--
         Text Styles
     -->
@@ -165,36 +235,6 @@
         <item name="tagColor">@color/tagView_bg</item>
         <item name="tagBorderColor">@color/tagView_border_bg</item>
     </style>
-    <!--
-        Default Card Style
-    -->
-    <style name="Woo.Card">
-        <item name="android:paddingStart">@dimen/card_padding_start</item>
-        <item name="android:paddingEnd">@dimen/card_padding_end</item>
-        <item name="android:paddingTop">@dimen/card_padding_top</item>
-        <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
-        <item name="android:background">@color/card_bgColor</item>
-        <item name="android:elevation">@dimen/card_elevation</item>
-        <item name="android:layout_marginBottom">@dimen/card_gutter</item>
-    </style>
-    <style name="Woo.Card.Expandable">
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-    </style>
-    <style name="Woo.Card.WithoutPadding">
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-    </style>
-    <style name="Woo.TextView">
-        <item name="android:paddingStart">@dimen/card_item_padding_intra_h</item>
-        <item name="android:paddingEnd">@dimen/card_item_padding_intra_h</item>
-        <item name="android:paddingTop">@dimen/card_item_padding_intra_v</item>
-        <item name="android:paddingBottom">@dimen/card_item_padding_intra_v</item>
-        <item name="android:textAppearance">@style/Woo.TextAppearance</item>
-    </style>
     <style name="Woo.TextView.Title">
         <item name="android:paddingStart">@dimen/card_padding_start</item>
         <item name="android:paddingEnd">@dimen/card_padding_end</item>
@@ -206,7 +246,6 @@
         <item name="android:textAppearance">@style/Woo.TextAppearance.Medium.Purple</item>
     </style>
     <style name="Woo.CardExtenderButton">
-        <item name="android:background">@drawable/card_expander_bg</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:paddingEnd">@dimen/card_padding_end</item>
         <item name="android:paddingStart">@dimen/card_padding_end</item>
@@ -271,33 +310,6 @@
         <item name="android:paddingBottom">4dp</item>
         <item name="horizontalSpacing">4dp</item>
         <item name="verticalSpacing">4dp</item>
-    </style>
-    <!--
-        TabLayout Style
-    -->
-    <style name="Woo.TabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabMode">scrollable</item>
-        <item name="tabTextAppearance">@style/Woo.TabLayout.Text</item>
-        <item name="tabTextColor">@color/wc_grey_mid</item>
-        <item name="tabSelectedTextColor">@color/black</item>
-        <item name="tabContentStart">48dp</item>
-        <item name="tabPaddingStart">40dp</item>
-        <item name="tabPaddingEnd">40dp</item>
-    </style>
-
-    <!--
-        TabLayout Style
-    -->
-    <style name="Woo.TabLayout.MyStore" parent="Woo.TabLayout">
-        <item name="android:background">@color/card_bgColor</item>
-        <item name="android:elevation">@dimen/tablayout_elevation</item>
-        <item name="tabPaddingStart">25dp</item>
-        <item name="tabPaddingEnd">25dp</item>
-        <item name="tabIndicatorHeight">2.5dp</item>
-    </style>
-
-    <style name="Woo.TabLayout.Text" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">@dimen/text_large</item>
     </style>
     <!--
         Order: List Style
@@ -588,7 +600,7 @@
     <!--
         Product Detail
     -->
-    <style name="Woo.TextView.Caption">
+    <style name="Woo.TextView.CaptionOld">
         <item name="android:paddingTop">@dimen/default_padding</item>
         <item name="android:paddingStart">?dialogPreferredPadding</item>
         <item name="android:paddingEnd">?dialogPreferredPadding</item>
@@ -600,17 +612,17 @@
     <!--
          Stats
         -->
-    <style name="Woo.Stats.Card" parent="Woo.Card">
+    <style name="Woo.Stats.Card" parent="Widget.Woo.Card">
         <item name="android:layout_marginBottom">@dimen/card_item_padding_intra_h</item>
     </style>
 
-    <style name="Woo.Stats.Notice.Card" parent="Woo.Card">
+    <style name="Woo.Stats.Notice.Card" parent="Widget.Woo.Card">
         <item name="android:paddingEnd">@dimen/margin_small</item>
         <item name="android:paddingBottom">@dimen/default_padding</item>
         <item name="android:layout_marginBottom">@dimen/margin_medium</item>
     </style>
 
-    <style name="Woo.Stats.Card.Expandable" parent="Woo.Card.Expandable">
+    <style name="Woo.Stats.Card.Expandable" parent="Widget.Woo.Card.Expandable">
         <item name="android:paddingTop">0dp</item>
         <item name="android:layout_marginBottom">@dimen/margin_medium</item>
     </style>
@@ -628,9 +640,7 @@
     </style>
 
     <style name="Woo.Stats.DateBar" parent="Woo.TextView">
-        <item name="android:fontFamily">@font/roboto_medium</item>
-        <item name="android:textColor">@color/wc_grey_darker</item>
-        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:paddingTop">@dimen/margin_large</item>
         <item name="android:paddingBottom">@dimen/margin_large</item>
     </style>

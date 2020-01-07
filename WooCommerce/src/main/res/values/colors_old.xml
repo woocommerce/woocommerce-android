@@ -6,7 +6,6 @@
     <!--
         Default Colors
     -->
-    <color name="default_window_background">#f7f7f7</color>
     <color name="default_text_color">@color/wc_grey_dark</color>
     <color name="default_button_fg_color">@color/colorPrimary</color>
     <color name="default_text_label_color">@color/colorPrimary</color>
@@ -65,7 +64,6 @@
     <color name="tagView_fgColor">#a7a7a7</color>
 
     <!-- Default List colors -->
-    <color name="list_divider">@color/wc_border_color</color>
     <color name="list_item_text">@color/default_text</color>
     <color name="list_item_text_title">@color/default_text_title</color>
     <color name="list_item_bg">@color/white</color>
@@ -89,14 +87,6 @@
 
     <!-- Default Link Color -->
     <color name="link_text_color">@color/wc_purple</color>
-
-    <!--
-        Default graph colors
-    -->
-    <color name="graph_no_data_text_color">@color/default_text_color</color>
-    <color name="graph_data_color">@color/wc_grey_mid</color>
-    <color name="graph_grid_color">@color/wc_border_color</color>
-    <color name="graph_highlight_color">@color/wc_purple</color>
     <!--
         Order: status tag background colors
     -->

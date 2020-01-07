@@ -28,14 +28,14 @@
                 <!-- Order Status -->
                 <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
                     android:id="@+id/orderDetail_orderStatus"
-                    style="@style/Woo.Card"
+                    style="@style/Widget.Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <!-- Order Shipping method warning card -->
                 <com.woocommerce.android.ui.orders.OrderDetailShippingMethodNoticeCard
                     android:id="@+id/orderDetail_shippingMethodNotice"
-                    style="@style/Woo.Card"
+                    style="@style/Widget.Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_large"
@@ -46,7 +46,7 @@
                 <!-- Product List -->
                 <com.woocommerce.android.ui.orders.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
-                    style="@style/Woo.Card.WithoutPadding"
+                    style="@style/Widget.Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
@@ -55,7 +55,7 @@
                 <!-- Payments -->
                 <com.woocommerce.android.ui.orders.OrderDetailPaymentView
                     android:id="@+id/orderDetail_paymentInfo"
-                    style="@style/Woo.Card.WithoutPadding"
+                    style="@style/Widget.Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
@@ -64,14 +64,14 @@
                 <!-- Customer Info -->
                 <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
                     android:id="@+id/orderDetail_customerInfo"
-                    style="@style/Woo.Card.Expandable"
+                    style="@style/Widget.Woo.Card.Expandable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <!-- Shipment Tracking -->
                 <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
                     android:id="@+id/orderDetail_shipmentList"
-                    style="@style/Woo.Card.WithoutPadding"
+                    style="@style/Widget.Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
@@ -82,7 +82,7 @@
                 <!-- Order Notes -->
                 <com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView
                     android:id="@+id/orderDetail_noteList"
-                    style="@style/Woo.Card.WithoutPadding"
+                    style="@style/Widget.Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>

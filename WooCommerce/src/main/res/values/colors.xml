@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+        General colors
+    -->
+    <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
+    <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
+    <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
+    <!--
+        App colors
+    -->
+    <color name="default_window_background">#f7f7f7</color>
+    <color name="list_divider">@color/woo_black_90_alpha_012</color>
+    <!--
+        Badge colors
+    -->
     <color name="badge_border_color">@color/woo_white</color>
     <color name="badge_background_color">@color/woo_purple_60</color>
+    <!--
+        Default graph colors
+    -->
+    <color name="graph_data_color">@color/woo_pink_50</color>
+    <color name="graph_grid_color">@color/woo_black_90_alpha_012</color>
+    <color name="graph_highlight_color">@color/woo_pink_90</color>
+    <color name="graph_no_data_text_color">@color/color_on_surface</color>
+    <color name="graph_label_color">@color/color_on_surface_medium</color>
     <!--
         Nav bar color protection for behavior differences between Android P and Q. All sdk
         levels should draw fullscreen. P should color the nav bar with a translucent background
@@ -10,6 +32,4 @@
         or automatically applying a translucent background (3-button mode).
     -->
     <color name="nav_bar">@color/woo_black_90_alpha_020</color>
-    <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
-    <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
 </resources>

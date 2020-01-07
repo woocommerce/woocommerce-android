@@ -18,18 +18,18 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/visitors_label"
-            style="@style/Woo.TextAppearance.Title.Small"
+            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/dashboard_stats_visitors"
             tools:text="Visitors"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/visitors_value"
-            style="@style/Woo.TextAppearance.Label.XL"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -45,18 +45,18 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orders_label"
-            style="@style/Woo.TextAppearance.Title.Small"
+            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/dashboard_stats_orders"
             tools:text="Orders"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orders_value"
-            style="@style/Woo.TextAppearance.Label.XL"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -72,17 +72,17 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/revenue_label"
-            style="@style/Woo.TextAppearance.Title.Small"
+            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/dashboard_stats_revenue"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/revenue_value"
-            style="@style/Woo.TextAppearance.Label.XL"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"

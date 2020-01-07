@@ -11,7 +11,7 @@
         <item name="colorSecondary">@color/woo_purple_60</item>
         <item name="colorSecondaryVariant">@color/woo_purple_80</item>
 
-        <item name="android:colorBackground">@color/woo_white</item>
+        <item name="android:colorBackground">@color/default_window_background</item>
         <item name="colorSurface">@color/woo_white</item>
         <item name="colorError">@color/woo_red_50</item>
 
@@ -59,7 +59,7 @@
         <item name="bottomNavigationStyle">@style/Widget.Woo.BottomNavigationView</item>
         <item name="bottomSheetStyle">@style/Widget.MaterialComponents.BottomSheet.Modal</item>
         <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
+        <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
 

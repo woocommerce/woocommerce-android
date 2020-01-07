@@ -5,20 +5,24 @@
     <color name="woo_purple_60">#674399</color>
     <color name="woo_purple_80">#3C2861</color>
 
+    <color name="woo_pink_10">#ED9BB8</color>
     <color name="woo_pink_30">#EB6594</color>
     <color name="woo_pink_50">#C9356E</color>
-    <color name="woo_pink_70">#8C1749</color>
+    <color name="woo_pink_70">#880E4F</color>
+    <color name="woo_pink_90">#5C0935</color>
 
     <color name="woo_red_30">#F86368</color>
     <color name="woo_red_50">#D63638</color>
 
     <color name="woo_white">@android:color/white</color>
+    <color name="woo_white_alpha_012">#1FFFFFFF</color>
     <color name="woo_white_alpha_038">#61FFFFFF</color>
     <color name="woo_white_alpha_060">#99FFFFFF</color>
     <color name="woo_white_alpha_087">#DEFFFFFF</color>
 
     <color name="woo_black">@android:color/black</color>
     <color name="woo_black_90">#121212</color>
+    <color name="woo_black_90_alpha_012">#1F121212</color>
     <color name="woo_black_90_alpha_020">#33121212</color>
     <color name="woo_black_90_alpha_038">#61121212</color>
     <color name="woo_black_90_alpha_060">#99121212</color>

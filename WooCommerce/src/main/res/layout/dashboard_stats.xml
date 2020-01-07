@@ -6,65 +6,71 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
-        style="@style/Woo.TabLayout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <FrameLayout
-        android:id="@+id/tab_layout_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/list_divider"
-        app:srcCompat="@drawable/list_divider"/>
-
-    <!-- Date bar -->
-    <TextView
-        android:id="@+id/dashboard_date_range_value"
-        style="@style/Woo.Stats.DateBar"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:paddingEnd="0dp"
-        android:paddingStart="0dp"
-        tools:text="June 30-Jul 06"/>
+        android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/tab_layout_divider_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/list_divider"
-        app:srcCompat="@drawable/list_divider"/>
-
-    <include android:id="@+id/stats_view_row" layout="@layout/dashboard_main_stats_row" />
-
-    <FrameLayout
-        android:id="@+id/chart_container"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/chart_height">
-
-        <com.woocommerce.android.ui.dashboard.DashboardStatsBarChart
-            android:id="@+id/chart"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            style="@style/Woo.TabLayout.Scrollable"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"/>
 
-        <ImageView
-            android:id="@+id/dashboard_stats_error"
+        <FrameLayout
+            android:id="@+id/tab_layout_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/list_divider"
+            app:srcCompat="@drawable/list_divider"/>
+
+        <!-- Date bar -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/dashboard_date_range_value"
+            style="@style/Woo.TextView.Subtitle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="June 30-Jul 06"/>
+
+        <FrameLayout
+            android:id="@+id/tab_layout_divider_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/list_divider"
+            app:srcCompat="@drawable/list_divider"/>
+
+        <include android:id="@+id/stats_view_row" layout="@layout/dashboard_main_stats_row" />
+
+        <FrameLayout
+            android:id="@+id/chart_container"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/chart_height"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_75">
+
+            <com.woocommerce.android.ui.dashboard.DashboardStatsBarChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <ImageView
+                android:id="@+id/dashboard_stats_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/dashboard_stats_error_content_description"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_woo_error_state"
+                tools:visibility="visible"/>
+        </FrameLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/dashboard_recency_text"
+            style="@style/Woo.TextView.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:contentDescription="@string/dashboard_stats_error_content_description"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_woo_error_state"
-            tools:visibility="visible"/>
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/dashboard_recency_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        tools:text="dashboard_recency_text"/>
-
+            tools:text="dashboard_recency_text"/>
+    </LinearLayout>
 </merge>
