@@ -4,23 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/list_item_bg"
-    android:padding="@dimen/margin_extra_large">
+    android:layout_height="wrap_content">
 
     <FrameLayout
         android:id="@+id/productImageFrame"
         android:layout_width="@dimen/product_icon_sz"
         android:layout_height="@dimen/product_icon_sz"
+        android:layout_margin="@dimen/major_100"
         android:background="@drawable/picture_frame"
         android:padding="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/productImage"
-            android:layout_width="@dimen/product_icon_sz"
-            android:layout_height="@dimen/product_icon_sz"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
             android:layout_gravity="center"
             android:background="@drawable/picture_corners"
             android:contentDescription="@string/product_image_content_description"
@@ -28,35 +28,42 @@
             tools:src="@drawable/ic_product" />
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/productName"
-        android:layout_width="wrap_content"
+    <!--
+        LinearLayout is necessary to ensure the contents will always center properly in the
+        view, even when the productStockAndStatus is hidden, or if productName takes up
+        two lines.
+    -->
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_extra_large"
-        android:layout_marginStart="@dimen/margin_extra_large"
-        android:layout_marginTop="1dp"
-        android:includeFontPadding="false"
-        android:maxLines="2"
-        android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
+        android:layout_margin="@dimen/major_100"
+        android:orientation="vertical"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toTopOf="@+id/productStockAndStatus"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productImageFrame"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Awesome Sauce" />
+        app:layout_constraintVertical_bias="0.50">
 
-    <TextView
-        android:id="@+id/productStockAndStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/productName"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/productName"
-        app:layout_constraintTop_toBottomOf="@+id/productName"
-        tools:text="Out of stock" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productName"
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            android:ellipsize="end"
+            tools:text="Awesome Sauce" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productStockAndStatus"
+            style="@style/Woo.ListItem.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            tools:text="Out of stock"
+            tools:visibility="visible"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
