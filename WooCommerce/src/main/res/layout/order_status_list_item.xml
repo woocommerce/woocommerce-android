@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderStatusItem_name"
             style="@style/Woo.ListItem.Title"
             android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Pending payment"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderStatusItem_count"
             style="@style/Woo.ListItem.Title"
             android:layout_width="wrap_content"
