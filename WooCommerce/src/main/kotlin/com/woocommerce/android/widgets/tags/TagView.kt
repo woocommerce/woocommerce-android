@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.util.getDensityPixel
 
@@ -20,7 +20,7 @@ import com.woocommerce.android.util.getDensityPixel
  * @attr ref com.woocommerce.android.R.styleable#tagBorderColor
  */
 class TagView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : AppCompatTextView(ctx, attrs, R.attr.tagViewStyle) {
+    : MaterialTextView(ctx, attrs, R.attr.tagViewStyle) {
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, R.attr.tagViewStyle, 0)
