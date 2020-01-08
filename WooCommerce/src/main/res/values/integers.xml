@@ -5,5 +5,5 @@
     <integer name="stats_label_count_days">6</integer>
     <integer name="stats_label_count_weeks">6</integer>
     <integer name="stats_label_count_months">6</integer>
-    <integer name="stats_label_count_years">4</integer>
+    <integer name="stats_label_count_years">6</integer>
 </resources>
