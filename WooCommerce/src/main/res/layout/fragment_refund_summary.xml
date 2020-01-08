@@ -15,7 +15,7 @@
         tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
 
         <LinearLayout
-            style="@style/Widget.Woo.Card"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -107,7 +107,7 @@
         </LinearLayout>
 
         <LinearLayout
-            style="@style/Widget.Woo.Card"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

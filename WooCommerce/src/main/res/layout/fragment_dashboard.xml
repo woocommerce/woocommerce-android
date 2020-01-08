@@ -28,7 +28,7 @@
                     style="@style/Woo.Stats.Notice.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:visibility="visible"
+                    tools:visibility="gone"
                     android:visibility="gone"/>
 
                 <!-- My Store stats availability notice card -->
@@ -37,13 +37,13 @@
                     style="@style/Woo.Stats.Card.Expandable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:visibility="visible"
+                    tools:visibility="gone"
                     android:visibility="gone"/>
 
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardStatsView
                     android:id="@+id/dashboard_stats"
-                    style="@style/Widget.Woo.Card.Tabbed"
+                    style="@style/Woo.Card.Tabbed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/minor_00"
@@ -54,11 +54,10 @@
                 <!-- Top earner stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
                     android:id="@+id/dashboard_top_earners"
-                    style="@style/Widget.Woo.Card"
+                    style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:orientation="vertical"/>
+                    tools:visibility="visible"/>
 
             </LinearLayout>
 
@@ -67,7 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                tools:visibility="visible"/>
+                tools:visibility="gone"/>
 
         </FrameLayout>
 

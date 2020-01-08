@@ -11,5 +11,5 @@
         android:id="@+id/orderProducts_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.Woo.Card.WithoutPadding"/>
+        style="@style/Woo.Card.WithoutPadding"/>
 </LinearLayout>
