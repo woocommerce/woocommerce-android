@@ -160,6 +160,13 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         return context.resources.getDimensionPixelSize(resId)
     }
 
+    private fun getAxisOffset(): Float {
+        return if (activeGranularity == StatsGranularity.DAYS ||
+                activeGranularity == StatsGranularity.MONTHS) {
+            1f
+        } else 0.5f
+    }
+
     private fun getBarLabelCount(): Int {
         val resId = when (activeGranularity) {
             StatsGranularity.DAYS -> R.integer.stats_label_count_days
@@ -378,9 +385,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             with(xAxis) {
                 // Added axis minimum offset & axis max offset in order to align the bar chart with the x-axis labels
                 // Related fix: https://github.com/PhilJay/MPAndroidChart/issues/2566
-                axisMinimum = data.xMin - 0.5f
-                axisMaximum = data.xMax + 0.5f
+                val axisValue = getAxisOffset()
+                axisMinimum = data.xMin - axisValue
+                axisMaximum = data.xMax + axisValue
                 labelCount = getBarLabelCount()
+                setCenterAxisLabels(activeGranularity == StatsGranularity.YEARS)
                 valueFormatter = StartEndDateAxisFormatter()
             }
         }
@@ -528,7 +537,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
             var index = round(value).toInt() - 1
-            index = if (index == -1) 0 else index
+            index = if (index == -1 || activeGranularity == StatsGranularity.YEARS) index + 1 else index
             return if (index > -1 && index < chartRevenueStats.keys.size) {
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
