@@ -11,5 +11,4 @@ class TagConfig(context: Context) {
     @ColorInt var fgColor = ContextCompat.getColor(context, R.color.tagView_text)
     @ColorInt var bgColor = ContextCompat.getColor(context, R.color.tagView_bg)
     @ColorInt var borderColor = ContextCompat.getColor(context, R.color.tagView_border_bg)
-    @Dimension var textSize = context.resources.getDimension(R.dimen.tag_text_size)
 }

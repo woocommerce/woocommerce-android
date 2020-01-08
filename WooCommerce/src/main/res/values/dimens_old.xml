@@ -93,22 +93,6 @@
     <dimen name="list_divider_padding_bottom_tablet">12dp</dimen>
 
     <!--
-        Default TagView
-    -->
-    <dimen name="tag_text_size">@dimen/text_small</dimen>
-
-    <dimen name="tag_margin_end">4dp</dimen>
-    <dimen name="tag_margin_top">4dp</dimen>
-    <dimen name="tag_margin_bottom">4dp</dimen>
-    <dimen name="tag_padding_start">8dp</dimen>
-    <dimen name="tag_padding_end">8dp</dimen>
-    <dimen name="tag_padding_top">2dp</dimen>
-    <dimen name="tag_padding_bottom">2dp</dimen>
-
-    <dimen name="tag_layout_margin_end">8dp</dimen>
-    <dimen name="tag_layout_margin_bottom">8dp</dimen>
-
-    <!--
         Default Chart
     -->
     <dimen name="chart_height">200dp</dimen>

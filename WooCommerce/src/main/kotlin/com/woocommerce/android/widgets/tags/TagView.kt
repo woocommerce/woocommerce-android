@@ -19,11 +19,15 @@ import com.woocommerce.android.util.getDensityPixel
  * @attr ref com.woocommerce.android.R.styleable#tagColor
  * @attr ref com.woocommerce.android.R.styleable#tagBorderColor
  */
-class TagView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : MaterialTextView(ctx, attrs, R.attr.tagViewStyle) {
+class TagView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = R.attr.tagViewStyle,
+    defStyleRes: Int = R.style.Woo_TextView_Caption
+) : MaterialTextView(ctx, attrs, defStyleAttr, defStyleRes) {
     init {
         if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, R.attr.tagViewStyle, 0)
+            val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, defStyleAttr, defStyleRes)
             val config = TagConfig(context)
             try {
                 config.tagText = a.getString(R.styleable.TagView_tagText).orEmpty()
@@ -34,13 +38,6 @@ class TagView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = nul
                     textColor = ContextCompat.getColor(context, textColorResId)
                 }
                 config.fgColor = textColor
-
-                val textSize = a.getDimensionPixelSize(R.styleable.TagView_tagTextSize, 0)
-                if (textSize == 0) {
-                    config.textSize = context.resources.getDimension(R.dimen.tag_text_size)
-                } else {
-                    config.textSize = textSize.toFloat()
-                }
 
                 var bgColor = a.getColor(R.styleable.TagView_tagColor, 0)
                 if (bgColor == 0) {
@@ -78,12 +75,11 @@ class TagView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = nul
      */
     private fun initTag(config: TagConfig) {
         text = config.tagText
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, config.textSize)
         setTextColor(config.fgColor)
         val gd = GradientDrawable()
         gd.setColor(config.bgColor)
-        gd.cornerRadius = getDensityPixel(context, 2).toFloat()
-            gd.setStroke(3, config.borderColor)
+        gd.cornerRadius = getDensityPixel(context, 4).toFloat()
+        gd.setStroke(2, config.borderColor)
         background = gd
     }
 }
