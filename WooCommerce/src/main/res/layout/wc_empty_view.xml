@@ -65,21 +65,21 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/empty_view_text"
+            style="@style/Woo.TextAppearance.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/waiting_for_customers"/>
+
         <ImageView
             android:id="@+id/empty_view_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
             android:layout_gravity="center"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_woo_waiting_customers"/>
-
-        <TextView
-            android:id="@+id/empty_view_text"
-            style="@style/Woo.TextAppearance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            tools:text="@string/waiting_for_customers"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/empty_view_share_button"
