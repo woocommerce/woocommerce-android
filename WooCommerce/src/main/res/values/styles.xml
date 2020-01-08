@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Woo"/>
+
+    <!--
+        Toolbar Styles
+    -->
+    <style name="Widget.Woo.Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+
+    <!--
+        AppBarLayout Styles
+    -->
+    <style name="Woo.AppBarLayout" parent="@style/Widget.MaterialComponents.AppBarLayout.PrimarySurface">
+        <item name="android:elevation">@dimen/plane_04</item>
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
     <!--
         Bottom Bar Styles
     -->
@@ -10,20 +24,56 @@
         <item name="itemTextColor">@color/color_on_surface</item>
         <item name="android:elevation">@dimen/plane_08</item>
     </style>
+
     <!--
-        Toolbar Styles
+        TabLayout Styles
     -->
-    <style name="Widget.Woo.Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface">
-        <item name="android:elevation">@dimen/appbar_elevation</item>
+    <style name="Woo.TabLayout" parent="@style/Widget.MaterialComponents.TabLayout.PrimarySurface">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">25dp</item>
+        <item name="tabPaddingEnd">25dp</item>
+        <item name="android:elevation">@dimen/plane_00</item>
     </style>
+    <style name="Woo.TabLayout.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+    <style name="Woo.TabLayout.Surface" parent="@style/Widget.MaterialComponents.TabLayout">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
+    </style>
+    <style name="Woo.TabLayout.Surface.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+
     <!--
         Card Styles
     -->
     <style name="Widget.Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
         <item name="cardCornerRadius">@dimen/minor_00</item>
         <item name="android:checkable">false</item>
-        <item name="contentPaddingTop">@dimen/major_75</item>
-        <item name="contentPaddingBottom">@dimen/major_75</item>
+        <item name="contentPaddingTop">@dimen/minor_25</item>
+        <item name="contentPaddingBottom">@dimen/minor_25</item>
     </style>
     <style name="Widget.Woo.Card.Tabbed">
         <item name="contentPaddingTop">@dimen/minor_00</item>
@@ -39,6 +89,7 @@
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
     </style>
+
     <!--
         TextView Styles
     -->
@@ -56,27 +107,22 @@
     <style name="Woo.TextView.Caption">
         <item name="android:textAppearance">?attr/textAppearanceCaption</item>
     </style>
+
     <!--
-        TabLayout Styles
+        Custom TextView Styles
     -->
-    <style name="Woo.TabLayout" parent="@style/Widget.MaterialComponents.TabLayout">
-        <item name="tabMode">fixed</item>
-        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
-        <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
-        <item name="tabIndicatorColor">?attr/colorSecondary</item>
-        <item name="tabIndicatorHeight">2dp</item>
-        <item name="tabPaddingStart">40dp</item>
-        <item name="tabPaddingEnd">40dp</item>
+    <style name="Woo.DateBar" parent="Woo.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
-    <style name="Woo.TabLayout.Scrollable">
-        <!--
-        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
-        this number as being (tabContentStart - tabPaddingStart), so you have to add the
-        padding amount of 40dp on top to make sure the tab actually starts at 52dp
-        -->
-        <item name="tabContentStart">92dp</item>
-        <item name="tabMode">scrollable</item>
-    </style>
+
+
+    <!--
+
+        OLD STUFF below this line will eventually be phased out during the course of this
+        project.
+
+    -->
+
 
     <!--
         Set a custom cursor for search views so they don't inherit colorAccent
@@ -637,12 +683,6 @@
         <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
         <item name="android:drawablePadding">@dimen/card_padding_start</item>
         <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="Woo.Stats.DateBar" parent="Woo.TextView">
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
-        <item name="android:paddingTop">@dimen/margin_large</item>
-        <item name="android:paddingBottom">@dimen/margin_large</item>
     </style>
 
     <style name="Woo.Products.WIP.CardExtenderButton" parent="Woo.Stats.Availability.CardExtenderButton">

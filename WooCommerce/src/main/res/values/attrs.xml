@@ -73,4 +73,14 @@
         Badge attributes for the bottom bar
     -->
     <attr name="textAppearanceBadge" format="reference"/>
+
+    <!--
+        Attribute for defining different types of TabLayout styles
+    -->
+    <attr name="scrollableTabStyle" format="reference"/>
+    <!--
+        General app attributes
+    -->
+    <!-- Sets the thickness of indicators like the tab indicator or new review indicator -->
+    <attr name="lineIndicatorThickness" format="dimension" />
 </resources>

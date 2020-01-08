@@ -7,10 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
 
-    <include
-        layout="@layout/view_toolbar"
-        android:id="@+id/toolbar"/>
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/snack_root"
         android:layout_width="0dp"
@@ -19,11 +15,23 @@
         app:layout_constraintBottom_toTopOf="@+id/offline_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+
+            <include
+                layout="@layout/view_toolbar"
+                android:id="@+id/toolbar"/>
+        </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <!-- container for top level fragments -->
             <FrameLayout
@@ -38,7 +46,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
-                app:navGraph="@navigation/nav_graph_main"/>
+                app:navGraph="@navigation/nav_graph_main"
+                tools:layout="@layout/fragment_my_store"/>
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

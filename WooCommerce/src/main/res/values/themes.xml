@@ -6,16 +6,17 @@
 
     <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Colors -->
-        <item name="colorPrimary">@color/woo_pink_50</item>
-        <item name="colorPrimaryVariant">@color/woo_pink_70</item>
-        <item name="colorSecondary">@color/woo_purple_60</item>
-        <item name="colorSecondaryVariant">@color/woo_purple_80</item>
+        <item name="colorPrimary">@color/woo_purple_60</item>
+        <item name="colorPrimaryVariant">@color/woo_purple_80</item>
+        <item name="colorSecondary">@color/woo_pink_50</item>
+        <item name="colorSecondaryVariant">@color/woo_pink_70</item>
 
         <item name="android:colorBackground">@color/default_window_background</item>
         <item name="colorSurface">@color/woo_white</item>
         <item name="colorError">@color/woo_red_50</item>
 
         <item name="colorOnPrimary">@color/woo_white</item>
+        <item name="colorOnPrimarySurface">@color/woo_white</item>
         <item name="colorOnSecondary">@color/woo_black</item>
         <item name="colorOnBackground">@color/woo_black</item>
         <item name="colorOnSurface">@color/woo_black</item>
@@ -62,6 +63,9 @@
         <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
+        <item name="tabStyle">@style/Woo.TabLayout</item>
+        <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
+        <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -74,15 +78,5 @@
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
-    </style>
-
-    <style name="Theme.Woo.DayNight.Toolbar" parent="Theme.Woo.Toolbar"/>
-
-    <style name="Theme.Woo.Toolbar">
-        <item name="colorPrimary">@color/woo_purple_60</item>
-        <item name="colorPrimaryVariant">@color/woo_purple_80</item>
-        <item name="colorSecondary">@color/woo_pink_50</item>
-        <item name="colorSecondaryVariant">@color/woo_pink_70</item>
-        <item name="colorControlNormal">?attr/colorOnPrimary</item>
     </style>
 </resources>

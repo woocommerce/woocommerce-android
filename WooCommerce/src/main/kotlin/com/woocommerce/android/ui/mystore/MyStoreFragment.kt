@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import androidx.core.content.ContextCompat
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
@@ -21,6 +23,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
+import kotlinx.android.synthetic.main.my_store_stats.*
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -53,10 +56,14 @@ class MyStoreFragment : TopLevelFragment(),
     private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
     private val activeGranularity: StatsGranularity
         get() {
-            return tab_layout.getTabAt(tabStatsPosition)?.let {
+            return tabLayout.getTabAt(tabStatsPosition)?.let {
                 it.tag as StatsGranularity
             } ?: DEFAULT_STATS_GRANULARITY
         }
+
+    private val tabLayout: TabLayout by lazy {
+        TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
+    }
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -103,18 +110,20 @@ class MyStoreFragment : TopLevelFragment(),
 
         empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
+        // Create tabs and add to appbar
         StatsGranularity.values().forEach { granularity ->
-            val tab = tab_layout.newTab().apply {
+            val tab = tabLayout.newTab().apply {
                 setText(my_store_stats.getStringForGranularity(granularity))
                 tag = granularity
             }
-            tab_layout.addTab(tab)
+            tabLayout.addTab(tab)
 
             // Start with the given time period selected
             if (granularity == activeGranularity) {
                 tab.select()
             }
         }
+        addTabLayoutToAppBar(tabLayout)
 
         my_store_date_bar.initView()
         my_store_stats.initView(
@@ -127,7 +136,7 @@ class MyStoreFragment : TopLevelFragment(),
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
 
-        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
                 my_store_date_bar.clearDateRangeValues()
@@ -157,8 +166,10 @@ class MyStoreFragment : TopLevelFragment(),
         // silently refresh if this fragment is no longer hidden
         if (!isHidden && !isStatsRefreshed) {
             refreshMyStoreStats(forced = false)
+            addTabLayoutToAppBar(tabLayout)
         } else {
             isStatsRefreshed = false
+            removeTabLayoutFromAppBar(tabLayout)
         }
     }
 
@@ -183,7 +194,7 @@ class MyStoreFragment : TopLevelFragment(),
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putInt(STATE_KEY_TAB_POSITION, tab_layout.selectedTabPosition)
+        outState.putInt(STATE_KEY_TAB_POSITION, tabLayout.selectedTabPosition)
     }
 
     override fun showStats(
@@ -316,5 +327,16 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun showEmptyView(show: Boolean) {
         if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
+    }
+
+    private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.addView(
+                tabLayout,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        )
+    }
+
+    private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
 }
