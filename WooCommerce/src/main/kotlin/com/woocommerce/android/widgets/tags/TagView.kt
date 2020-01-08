@@ -3,7 +3,6 @@ package com.woocommerce.android.widgets.tags
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
-import android.util.TypedValue
 import androidx.core.content.ContextCompat
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R

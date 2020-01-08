@@ -2,7 +2,6 @@ package com.woocommerce.android.widgets.tags
 
 import android.content.Context
 import androidx.annotation.ColorInt
-import androidx.annotation.Dimension
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 
