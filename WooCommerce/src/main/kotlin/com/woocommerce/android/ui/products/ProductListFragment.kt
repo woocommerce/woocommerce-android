@@ -257,7 +257,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     val message: Int
                     val showImage: Boolean
                     if (new.isSearchActive == true) {
-                        message = R.string.product_list_empty_search
+                        message = R.string.empty_message_with_search
                         showImage = false
                     } else {
                         message = R.string.product_list_empty

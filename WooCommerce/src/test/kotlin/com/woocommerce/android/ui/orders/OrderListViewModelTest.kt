@@ -426,7 +426,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
             assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_search))
+            assertEquals(emptyView.title, UiStringRes(string.empty_message_with_search))
             assertEquals(emptyView.imgResId, null)
         }
     }

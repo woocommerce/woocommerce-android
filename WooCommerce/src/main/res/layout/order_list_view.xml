@@ -25,9 +25,8 @@
             android:layout_height="match_parent"
             android:visibility="gone"
             tools:visibility="visible"
-            app:aevTitle="@string/waiting_for_customers"
-            app:aevButton="@string/share_store_button"
-            app:aevImage="@drawable/ic_woo_waiting_customers"/>
+            app:aevTitle="@string/empty_message_with_search"
+            app:aevImage="@drawable/ic_img_light_empty_search"/>
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"
