@@ -70,13 +70,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:contentDescription="@string/waiting_for_customers_contentdesc"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
         <TextView
             android:id="@+id/empty_view_text"
-            style="@style/Woo.TextAppearance.Bold"
+            style="@style/Woo.TextAppearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"

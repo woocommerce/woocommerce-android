@@ -317,6 +317,6 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
+        if (show) empty_view.show(R.string.waiting_for_customers, showShareButton = true) else empty_view.hide()
     }
 }

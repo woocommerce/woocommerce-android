@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
+import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
@@ -21,7 +23,6 @@ import org.wordpress.android.util.DisplayUtils
 import java.util.Date
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
-    private var showNoCustomersImage = true
     private var siteModel: SiteModel? = null
     private var shareTracksEvent: AnalyticsTracker.Stat? = null
 
@@ -31,11 +32,11 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     }
 
     /**
-     * Hide the "no customers" image in landscape since there isn't enough room for it on most devices
+     * Hide the image in landscape since there isn't enough room for it on most devices
      */
     private fun checkOrientation() {
         val isLandscape = DisplayUtils.isLandscape(context)
-        empty_view_image.visibility = if (showNoCustomersImage && !isLandscape) View.VISIBLE else View.GONE
+        empty_view_image.visibility = if (isLandscape) View.GONE else View.VISIBLE
     }
 
     /**
@@ -57,16 +58,23 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     fun show(
         @StringRes messageId: Int,
-        showImage: Boolean = true,
-        showShareButton: Boolean = true,
+        showShareButton: Boolean = false,
         showStats: Boolean = false,
-        @DrawableRes imageId: Int? = null
+        @DrawableRes imageId: Int = R.drawable.ic_woo_waiting_customers
     ) {
-        showNoCustomersImage = showImage
+        show(context.getString(messageId), showShareButton, showStats, imageId)
+    }
+
+    fun show(
+        message: String,
+        showShareButton: Boolean = false,
+        showStats: Boolean = false,
+        @DrawableRes imageId: Int = R.drawable.ic_woo_waiting_customers
+    ) {
         checkOrientation()
 
-        empty_view_text.text = context.getText(messageId)
-        imageId?.let { empty_view_image.setImageDrawable(context.getDrawable(it)) }
+        empty_view_text.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_COMPACT)
+        empty_view_image.setImageDrawable(context.getDrawable(imageId))
 
         if (showShareButton && siteModel != null) {
             empty_view_share_button.visibility = View.VISIBLE
