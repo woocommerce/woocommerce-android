@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.model.UiDimen.UiDimenDPInt
@@ -35,9 +36,12 @@ object UiHelpers {
         view.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
-    fun setTextOrHide(view: TextView, uiString: UiString?) {
+    fun setTextOrHide(view: TextView, uiString: UiString?, fmtArgs: String? = null) {
         val text = uiString?.let { getTextOfUiString(view.context, uiString) }
-        setTextOrHide(view, text)
+        fmtArgs?.let { args ->
+            val message = HtmlCompat.fromHtml(String.format(text!!, args), HtmlCompat.FROM_HTML_MODE_LEGACY)
+            setTextOrHide(view, message)
+        } ?: setTextOrHide(view, text)
     }
 
     fun setTextOrHide(view: TextView, @StringRes resId: Int?) {

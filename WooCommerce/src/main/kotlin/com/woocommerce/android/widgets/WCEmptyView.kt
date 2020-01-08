@@ -7,7 +7,6 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
-import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
@@ -73,7 +72,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     ) {
         checkOrientation()
 
-        empty_view_text.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_COMPACT)
+        empty_view_text.text = HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY)
         empty_view_image.setImageDrawable(context.getDrawable(imageId))
 
         if (showShareButton && siteModel != null) {
