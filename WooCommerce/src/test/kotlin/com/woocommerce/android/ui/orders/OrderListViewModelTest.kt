@@ -413,7 +413,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - pagedListWrapper.isError = null
      */
     @Test
-    fun `Display |No matching orders| for empty search result`() = test {
+    fun `Display empty view for empty search result`() = test {
         viewModel.isSearching = true
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -426,8 +426,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             val emptyView = viewModel.emptyViewState.value
             assertNotNull(emptyView)
             assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.empty_message_with_search))
-            assertEquals(emptyView.imgResId, null)
+            assertNotNull(emptyView.imgResId)
         }
     }
 
