@@ -8,6 +8,19 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
+    <ImageView
+        android:id="@+id/imgPropertyIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_large"
+        android:contentDescription="@string/product_property_edit"
+        android:src="@drawable/ic_gridicons_list_checkmark"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/textPropertyName"
         android:layout_width="wrap_content"
@@ -17,7 +30,7 @@
         android:layout_marginTop="@dimen/product_detail_property_margin"
         android:textColor="@color/wc_black_darker"
         android:textSize="@dimen/text_large"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="textPropertyName"/>
 
@@ -37,7 +50,7 @@
         android:layout_gravity="start"
         android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@id/divider"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintEnd_toStartOf="@+id/imgProperty"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         tools:text="textPropertyValue"/>

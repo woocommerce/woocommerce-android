@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -63,6 +64,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         BackPressListener {
     private enum class DetailCard {
         Primary,
+        Secondary,
         PricingAndInventory,
         Inventory,
         PurchaseDetails
@@ -251,7 +253,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         // display pricing/inventory card only if product is not a variable product
         // since pricing, inventory, shipping and SKU for a variable product can differ per variant
         if (product.type != VARIABLE) {
-            addPricingAndInventoryCard(productData)
+            if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+                addSecondaryCard(productData)
+            } else {
+                addPricingAndInventoryCard(productData)
+            }
         }
         addPurchaseDetailsCard(productData)
     }
@@ -343,6 +349,59 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 product.externalUrl,
                 PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
         )
+    }
+
+    private fun addSecondaryCard(productData: ViewState) {
+        val product = requireNotNull(productData.product)
+
+        // If we have pricing info and there's a sale price show price & sales price as a group,
+        // otherwise show price separately
+        val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
+        val pricingGroup = if (hasPricingInfo) {
+            product.salePrice?.let {
+                mapOf(getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency),
+                        getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
+                )
+            } ?: run {
+                mapOf(getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency))
+            }
+        } else {
+            mapOf(Pair("", getString(R.string.product_price_empty)))
+        }
+
+        addPropertyGroup(
+                DetailCard.Secondary,
+                R.string.product_price,
+                pricingGroup,
+                groupIconId = R.drawable.ic_gridicons_money
+        )?.also {
+            if (!hasPricingInfo) {
+                it.showPropertyName(false)
+            }
+        }
+
+        // show stock properties as a group if stock management is enabled, otherwise show sku separately
+        val inventoryGroup = when {
+            product.manageStock -> mapOf(
+                    Pair(getString(R.string.product_stock_status), stockStatusToDisplayString(product.stockStatus)),
+                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorderStatus)),
+                    Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
+                    Pair(getString(R.string.product_sku), product.sku)
+            )
+            product.sku.isNotEmpty() -> mapOf(Pair(getString(R.string.product_sku), product.sku))
+            else -> mapOf(Pair("", getString(R.string.product_inventory_empty)))
+        }
+
+        addPropertyGroup(
+                DetailCard.Secondary,
+                R.string.product_inventory,
+                inventoryGroup,
+                groupIconId = R.drawable.ic_gridicons_list_checkmark
+        )?.also {
+            if (!product.manageStock && product.sku.isEmpty()) {
+                it.showPropertyName(false)
+            }
+        }
     }
 
     private fun addPricingAndInventoryCard(productData: ViewState) {
@@ -444,9 +503,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         card: DetailCard,
         propertyName: String,
         propertyValue: String,
-        orientation: Int = LinearLayout.HORIZONTAL
+        orientation: Int = LinearLayout.HORIZONTAL,
+        @DrawableRes propertyIcon: Int? = null
     ): WCProductPropertyView? {
-        return addPropertyView(card, propertyName, SpannableString(propertyValue), orientation)
+        return addPropertyView(card, propertyName, SpannableString(propertyValue), orientation, propertyIcon)
     }
 
     private fun removePropertyView(
@@ -471,7 +531,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         card: DetailCard,
         propertyName: String,
         propertyValue: SpannableString,
-        orientation: Int = LinearLayout.HORIZONTAL
+        orientation: Int = LinearLayout.HORIZONTAL,
+        @DrawableRes propertyIcon: Int? = null
     ): WCProductPropertyView? {
         if (propertyValue.isBlank()) return null
 
@@ -490,7 +551,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             container.addView(propertyView)
         }
 
-        propertyView.show(orientation, propertyName, propertyValue)
+        propertyView.show(orientation, propertyName, propertyValue, propertyIcon)
         return propertyView
     }
 
@@ -502,10 +563,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         @StringRes groupTitleId: Int,
         properties: Map<String, String>,
         @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter,
-        propertyGroupClickListener: ((view: View) -> Unit)? = null
+        propertyGroupClickListener: ((view: View) -> Unit)? = null,
+        @DrawableRes groupIconId: Int? = null
     ): WCProductPropertyView? {
         val propertyValue = getPropertyValue(properties, propertyValueFormatterId)
-        return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL)?.also {
+        return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL, groupIconId)?.also {
             it.setClickListener(propertyGroupClickListener)
         }
     }
@@ -603,6 +665,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
         val cardViewCaption: String? = when (card) {
             DetailCard.Primary -> null
+            DetailCard.Secondary -> null
             DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
             DetailCard.Inventory -> getString(R.string.product_inventory)
             DetailCard.PurchaseDetails -> getString(R.string.product_purchase_details)
@@ -630,7 +693,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     ): String {
         var propertyValue = ""
         properties.forEach { property ->
-            if (property.value.isNotEmpty()) {
+            if (property.key.isEmpty()) {
+                propertyValue += property.value
+            } else if (property.value.isNotEmpty()) {
                 if (propertyValue.isNotEmpty()) {
                     propertyValue += "\n"
                 }
