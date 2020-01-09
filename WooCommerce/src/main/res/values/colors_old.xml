@@ -21,6 +21,10 @@
     <color name="wc_grey_lightest">#f7f7f7</color>
     <color name="grey_dark_highlight">#333333</color>
 
+    <!-- Primary Blacks -->
+    <color name="wc_black_lighter">#99000000</color>
+    <color name="wc_black_darker">#DE000000</color>
+
     <!-- Primary Greens -->
     <color name="wc_green_light">#d1dcc7</color>
     <color name="wc_green_lightest">#e9f4db</color>

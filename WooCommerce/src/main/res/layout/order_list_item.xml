@@ -14,12 +14,12 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderDate"
-            style="@style/Woo.ListItem.Overline"
+            style="@style/Woo.ListItem.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="May 11, 1967"/>
+            tools:text="May 11, 1967 11:30"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderNum"

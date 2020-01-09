@@ -1,2 +1,0 @@
-3.1:
-- Kommer du inte ihåg dina användaruppgifter för WordPress.com? Inga problem! Vi har lagt till ett nytt alternativ som gör det möjligt för en användare att logga in med användaruppgifterna för sin webbplats. Om dessa användaruppgifter fungerar, hämtar appen informationen för det anslutna WordPress.com-kontot och låter användaren slutföra inloggningsprocessen med en magisk länk.

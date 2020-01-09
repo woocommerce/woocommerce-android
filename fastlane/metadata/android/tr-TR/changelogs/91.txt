@@ -1,2 +1,0 @@
-3.1:
-- WordPress.com kimlik bilgilerinizi hatırlamıyor musunuz? Sorun değil! Bir kullanıcının site kimlik bilgilerini kullanarak giriş yapmasını sağlayan yeni bir seçenek ekledik. Bu kimlik bilgileri işe yararsa, uygulama bağlı WordPress.com hesap bilgilerini alır ve kullanıcının özel bir bağlantı kullanarak giriş yapma işlemini tamamlamasına izin verir.
