@@ -432,6 +432,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             if (!product.manageStock && product.sku.isEmpty()) {
                 it.showPropertyName(false)
             }
+            it.setClickListener {
+                // TODO: add event listener for click
+                showProductInventory(product.remoteId)
+            }
         }
     }
 
@@ -775,6 +779,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 .actionProductDetailFragmentToAztecEditorFragment(
                         productDescription, getString(R.string.product_description
                 )))
+    }
+
+    private fun showProductInventory(remoteId: Long) {
+        findNavController().navigate(ProductDetailFragmentDirections
+                .actionProductDetailFragmentToProductInventoryFragment(remoteId))
     }
 
     /**
