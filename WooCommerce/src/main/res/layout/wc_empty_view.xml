@@ -1,95 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/empty_view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_window_background"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/empty_view_stats_row"
-        style="@style/Woo.Card.WithoutPadding"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/date_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:text="@string/dashboard_stats_todays_stats"
-            android:textColor="@color/wc_grey_medium"
-            android:textSize="@dimen/text_medium"
-            android:textStyle="bold"/>
-
-        <View
-            android:id="@+id/divider1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:background="@color/list_divider"/>
-
-        <include
-            android:id="@+id/empty_view_row"
-            layout="@layout/dashboard_main_stats_row"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/empty_view_stats_row"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/empty_container">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:text="@string/dashboard_stats_updated_now"
-            android:textColor="@color/wc_grey_mid"
-            android:textSize="@dimen/text_caption"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    </LinearLayout>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/date_title"
+                    style="@style/Woo.Card.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_stats_todays_stats"/>
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        style="@style/Woo.Card.WithoutPadding"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/empty_view_stats_row"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="vertical">
+                <View
+                    style="@style/Woo.Divider"/>
 
-        <ImageView
-            android:id="@+id/empty_view_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/waiting_for_customers_contentdesc"
-            android:importantForAccessibility="no"
-            app:srcCompat="@drawable/ic_woo_waiting_customers"/>
+                <include
+                    android:id="@+id/empty_view_row"
+                    layout="@layout/dashboard_main_stats_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"/>
 
-        <TextView
-            android:id="@+id/empty_view_text"
-            style="@style/Woo.TextAppearance.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            tools:text="@string/waiting_for_customers"/>
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/Woo.TextView.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/dashboard_stats_updated_now"/>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/empty_view_share_button"
-            style="@style/Woo.Button.Purple"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/share_store_button"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/empty_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/empty_view_stats_row"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:elevation="@dimen/minor_00"
+            app:layout_constraintTop_toBottomOf="@+id/empty_view_stats_row"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
+            <ImageView
+                android:id="@+id/empty_view_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/waiting_for_customers_contentdesc"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
-</RelativeLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/empty_view_text"
+                style="@style/Woo.Card.EmptyMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/waiting_for_customers"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/empty_view_share_button"
+                style="@style/Woo.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                android:text="@string/share_store_button"/>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

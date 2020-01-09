@@ -1,49 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Use this file to override styles in the styles_base.xml file.
+-->
 <resources>
     <!--
         DateBar Style
     -->
-    <style name="Woo.DateBar" parent="@style/Woo.TextView.Subtitle1"/>
-
-    <!--
-        Divider Styles
-    -->
-    <style name="Woo.Divider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">?android:attr/listDivider</item>
+    <style name="Woo.DateBar" parent="@style/Woo.TextView.Subtitle1">
+        <item name="android:gravity">start</item>
     </style>
-
-    <style name="Woo.Divider.Padded">
-        <item name="android:layout_height">17dp</item>
-        <item name="android:paddingTop">@dimen/minor_100</item>
-        <item name="android:paddingBottom">@dimen/minor_100</item>
-    </style>
-
-    <!--
-        Card Styles
-    -->
-    <style name="Woo.Card.Title" parent="@style/Woo.TextView.Subtitle1"/>
-
-    <style name="Woo.Card.Body" parent="@style/Woo.TextView.Body2"/>
-
-    <style name="Woo.Card.EmptyMessage" parent="@style/Woo.TextView.Subtitle1"/>
-
-    <style name="Woo.Card.ListHeader" parent="@style/Woo.TextView.Subtitle2">
-        <item name="android:layout_marginTop">@dimen/major_100</item>
-        <item name="android:layout_marginBottom">@dimen/major_75</item>
-        <item name="android:layout_marginStart">@dimen/major_100</item>
-        <item name="android:layout_marginEnd">@dimen/major_100</item>
-    </style>
-
-    <style name="Woo.Card.ListItem.Title" parent="@style/Woo.TextView.Subtitle1">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
-
-    <style name="Woo.Card.ListItem.Body" parent="@style/Woo.TextView.Body2">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
-
 
 
     <!---
@@ -163,17 +128,7 @@
     <!--
         Button Styles
     -->
-    <style name="Woo.Button" parent="Widget.AppCompat.Button.Borderless">
-        <item name="android:textColor">@color/wc_purple</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:textSize">@dimen/text_large</item>
-    </style>
 
-    <style name="Woo.Button.Bordered" parent="Woo.Button">
-        <item name="android:background">@drawable/button_bordered_bg</item>
-    </style>
 
     <style name="Woo.Button.Lowercase">
         <item name="android:textAllCaps">false</item>
@@ -611,7 +566,7 @@
         <item name="android:background">@drawable/button_white_bg</item>
         <item name="android:textColor">@color/wc_grey_dark</item>
         <item name="android:drawableStart">@drawable/ic_gridicons_gift</item>
-        <item name="android:drawableEnd">@drawable/stats_availability_expander_selector</item>
+        <item name="android:drawableEnd">@drawable/card_expander_selector</item>
         <item name="android:paddingStart">@dimen/card_padding_start</item>
         <item name="android:paddingTop">@dimen/card_padding_top</item>
         <item name="android:paddingBottom">@dimen/card_padding_bottom</item>

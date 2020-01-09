@@ -3,15 +3,18 @@ package com.woocommerce.android.ui.mystore
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.LinearLayout
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.my_store_stats_availability_notice.view.*
 
-class MyStoreStatsAvailabilityCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+class MyStoreStatsAvailabilityCard @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttrs: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttrs) {
     init {
         View.inflate(context, R.layout.my_store_stats_availability_notice, this)
     }

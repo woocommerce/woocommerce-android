@@ -127,7 +127,6 @@
     <!-- Login -->
     <!-- Login uses snake_case instead of CamelCase for the main color palette,
     this makes sure they're not used accidentally -->
-    <color name="color_primary">@color/colorPrimary</color>
     <color name="color_primary_dark">@color/colorPrimaryDark</color>
     <color name="color_accent">@color/colorAccent</color>
 

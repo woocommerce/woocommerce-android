@@ -21,7 +21,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
 import java.util.Date
 
-class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
+class WCEmptyView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(ctx, attrs, defStyleAttr) {
     private var showNoCustomersImage = true
     private var siteModel: SiteModel? = null
     private var shareTracksEvent: AnalyticsTracker.Stat? = null
