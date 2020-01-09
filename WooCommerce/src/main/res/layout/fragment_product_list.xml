@@ -15,7 +15,7 @@
         <!-- Products work in progress notice card -->
         <com.woocommerce.android.ui.products.ProductsWIPNoticeCard
             android:id="@+id/products_wip_card"
-            style="@style/Woo.Stats.Card.Expandable"
+            style="@style/Woo.Card.Expandable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -28,12 +28,16 @@
             android:id="@+id/productsRecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="@dimen/minor_100"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
+            android:background="?attr/colorSurface"
+            android:elevation="@dimen/plane_02"
             tools:itemCount="5"
-            tools:listitem="@layout/product_list_item"/>
+            tools:listitem="@layout/product_list_item"
+            tools:visibility="visible"/>
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"
@@ -58,6 +62,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

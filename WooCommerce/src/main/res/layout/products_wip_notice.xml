@@ -1,66 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <!-- VIEW MORE Button -->
         <ToggleButton
             android:id="@+id/products_wip_viewMore"
-            style="@style/Woo.Products.WIP.CardExtenderButton"
+            style="@style/Woo.Card.ExpanderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null"
+            android:drawableStart="@drawable/ic_gridicons_tools"
             android:textOff="@string/product_wip_title"
-            android:textOn="@string/product_wip_title" />
+            android:textOn="@string/product_wip_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/products_wip_morePanel"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/products_wip_message"
+            style="@style/Woo.Card.StatusMessage"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="9dp"
-            android:paddingStart="@dimen/card_padding_start"
-            android:paddingEnd="0dp"
-            android:paddingBottom="@dimen/default_padding"
+            android:gravity="start"
+            android:lineSpacingExtra="4sp"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/major_100"
+            android:text="@string/product_wip_message"
             android:visibility="gone"
-            tools:visibility="visible">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintTop_toBottomOf="@+id/products_wip_viewMore"
+            tools:visibility="visible"/>
 
-            <!-- Message -->
-            <TextView
-                android:id="@+id/products_wip_message"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_extra_large"
-                android:gravity="start"
-                android:lineSpacingExtra="4sp"
-                android:paddingStart="@dimen/card_padding_start"
-                android:paddingEnd="@dimen/card_padding_end"
-                android:paddingBottom="@dimen/default_padding"
-                android:text="@string/product_wip_message"
-                android:textAppearance="@style/Woo.TextAppearance.Medium.Black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="57dp" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/list_divider" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/margin_medium"
-            android:background="@color/default_window_background" />
-
-    </LinearLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
 
