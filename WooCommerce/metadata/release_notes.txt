@@ -1,1 +1,3 @@
-- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.
+- You’ll see a new “variants” section in the Product detail screen for your variable products.
+- The bottom navigation bar no longer disappears when scrolling — we think you’ll like it better.
+- We know a Products tab is high on people’s wish lists, and you can now preview the coming-soon Products tab — head to Settings in the app to enable it.

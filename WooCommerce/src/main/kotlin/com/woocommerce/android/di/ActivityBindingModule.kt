@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
+import com.woocommerce.android.ui.aztec.AztecModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.imageviewer.ImageViewerModule
@@ -38,7 +39,8 @@ abstract class ActivityBindingModule {
             RefundsModule::class,
             ProductsModule::class,
             ReviewsModule::class,
-            SitePickerModule::class
+            SitePickerModule::class,
+            AztecModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 

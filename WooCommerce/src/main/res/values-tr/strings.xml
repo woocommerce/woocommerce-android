@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-29 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 00:54:53+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="login_discovery_error_generic">Sitenize erişimi başaramadık. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
+    <string name="login_discovery_error_ssl">&lt;b>SSL Sertifikası&lt;/b> ile ilgili bir sorun nedeniyle sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
+    <string name="login_discovery_error_http_auth">&lt;b>HTTP Kimlik Doğrulaması&lt;/b> gerektiğinden sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
+    <string name="login_discovery_error_xmlrpc">Sitenizdeki &lt;b>XMLRPC dosyasına&lt;/b> erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
+    <string name="login_site_credentials_magic_link_label">Çok az kaldı! Sadece Jetpack bağlantılı e-posta adresinizi doğrulamamız gerekiyor &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">Site kimlik bilgileriyle giriş yapın.</string>
+    <string name="enter_credentials_for_site">%1$s site kimlik bilginizle giriş yapın</string>
+    <string name="send_verification_email">Doğrulama e-postası gönder</string>
+    <string name="settings_enable_product_teaser_message">Yayımlamaya hazırlanırken yeni ürünler bölümünü deneyin</string>
+    <string name="settings_enable_product_teaser_title">Ürünler</string>
+    <string name="product_wip_message">Yeni Ürünler bölümünde çok çalışıyoruz, bu nedenle yayımlamaya için hazırlanırken bazı değişiklikler görebilirsiniz. &amp; # 128640;</string>
+    <string name="product_wip_title">Çalışma devam ediyor!</string>
     <string name="magic_link_fetch_account_error">Hesabınızı alırken bazı sorunlar oluştu. Şimdi yeniden deneyebilir veya kapatıp daha sonra tekrar deneyebilirsiniz.</string>
     <string name="magic_link_update_error">Bir hata oluştu. Devam etmek için lütfen giriş yapın</string>
     <string name="login_magic_link_token_updating">Sitenize bağlanıyor…</string>
+    <string name="product_variants">Varyasyonlar</string>
     <string name="product_property_edit">Ürünü düzenle</string>
     <string name="product_variants_fetch_product_variants_error">Ürün varyasyonları alınırken bir hata oluştu</string>
     <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük. Beta istatistiklerini kullanmak için lütfen 0.22 veya daha üst sürüm WooCommerce Yönetici eklentisini etkinleştirin</string>
@@ -47,9 +60,9 @@ Language: tr
     <string name="wc_unapproved">Onaylanmamış</string>
     <string name="review_single_fetch_error">Yeni ürün incelemesi alınırken hata</string>
     <string name="review_fetch_error">Ürün incelemesi alınırken hata</string>
-    <string name="order_refunds_manual_refund_error">Para iadesiyle ilgili bir şeyler yanlış gitti. Lütfen yeniden deneyin.</string>
-    <string name="order_refunds_manual_refund_successful">Para iadesi başarıyla bildirildi.</string>
-    <string name="order_refunds_manual_refund_progress_message">%s için para iadeniz işleniyor. Lütfen bekleyin…</string>
+    <string name="order_refunds_amount_refund_error">Para iadesiyle ilgili bir şeyler yanlış gitti. Lütfen yeniden deneyin.</string>
+    <string name="order_refunds_amount_refund_successful">Para iadesi başarıyla bildirildi.</string>
+    <string name="order_refunds_amount_refund_progress_message">%s için para iadeniz işleniyor. Lütfen bekleyin…</string>
     <string name="order_refunds_quote_image_description">Alıntı simgesi</string>
     <string name="order_refunds_manual_refund">Elle para iadesi</string>
     <string name="order_refunds_refund_details">Para İadesi ayrıntıları</string>
@@ -628,7 +641,7 @@ Language: tr
     <string name="enter_wpcom_password">WordPress.com parolanızı girin.</string>
     <string name="magic_link_unavailable_error_message">Şu an uygun değil. Lütfen parolanızı girin</string>
     <string name="login_magic_link_email_requesting">Oturum açma e-postası istemek</string>
-    <string name="login_magic_links_sent_label">E-posta gönderildi! E-postanızı bu cihazda kontrol edin ve WordPress.com’dan gelen e-postadaki bağlantıya dokunun</string>
+    <string name="login_magic_links_sent_label">Sihirli bağlantınız yolda! E-postanızı bu cihazda kontrol edin ve WordPress.com’dan gelen e-postadaki bağlantıya dokunun.</string>
     <string name="login_magic_links_label">Size anında giriş yapacağınız bir sihirli bağlantıyı e-posta ile göndereceğiz, hiç bir parolaya gerek yok. Artık tek tek yazmak yok.</string>
     <string name="password_incorrect">Bu parola yanlış gibi görünüyor. Lütfen bilgilerinizi iki kez kontrol edin ve tekrar deneyin.</string>
     <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz. Site adresinizi kullanarak oturum açmak için aşağıdaki bağlantıyı deneyin.</string>
@@ -651,6 +664,7 @@ Language: tr
     <string name="log_in">Giriş yap</string>
     <string name="help">Yardım</string>
     <string name="password">Sifre</string>
+    <string name="username">Kullanici Adi</string>
     <string name="enter_your_password_instead">Bunun yerine parola gir</string>
     <string name="send_link">Bağlantı gönder</string>
     <string name="invalid_verification_code">Geçersiz doğrulama kodu</string>

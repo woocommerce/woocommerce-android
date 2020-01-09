@@ -2,7 +2,6 @@ package com.woocommerce.android.widgets
 
 import android.app.Dialog
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -70,11 +69,6 @@ class WCPromoDialog : androidx.fragment.app.DialogFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_Promo
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        checkOrientation()
     }
 
     // hide the image in landscape

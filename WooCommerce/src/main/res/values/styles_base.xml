@@ -93,6 +93,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="contentPaddingBottom">@dimen/minor_00</item>
     </style>
 
+    <style name="Woo.Card.WithoutPadding">
+        <item name="contentPaddingTop">@dimen/minor_00</item>
+        <item name="contentPaddingBottom">@dimen/minor_00</item>
+    </style>
+
     <style name="Woo.Card.ExpanderButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:gravity">start|center_vertical</item>
@@ -236,6 +241,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.ListHeader" parent="@style/Woo.TextView.Subtitle2"/>
     <style name="Woo.ListItem.Title" parent="@style/Woo.TextView.Subtitle1"/>
     <style name="Woo.ListItem.Overline" parent="@style/Woo.TextView.Overline"/>
+    <style name="Woo.ListItem.Caption" parent="@style/Woo.TextView.Caption"/>
     <style name="Woo.ListItem.Body" parent="@style/Woo.TextView.Body2"/>
 
     <!--

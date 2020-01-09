@@ -1,0 +1,4 @@
+3.2 :
+- Vous verrez une nouvelle section « variantes » sur l'écran Détails sur le produit de vos produits variables.
+- La barre de navigation inférieure ne disparaît plus lors du défilement. Nous pensons que ce sera mieux pour vous.
+- Nous savons qu'un onglet Produits intéresse fortement les utilisateurs. Vous pouvez désormais apercevoir l'onglet Produits disponible bientôt. Accédez à Paramètres dans l'application pour l'activer.

@@ -1,5 +1,6 @@
 package com.woocommerce.android.viewmodel
 
+import android.content.DialogInterface.OnClickListener
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
@@ -55,8 +56,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         data class ShowSnackbar(
             @StringRes val message: Int,
             val args: Array<String> = arrayOf(),
-            val undoAction: (() -> Unit)? = null,
-            val isEndless: Boolean = false
+            val undoAction: (() -> Unit)? = null
         ) : Event() {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
@@ -65,7 +65,6 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
                 if (message != other.message) return false
                 if (!args.contentEquals(other.args)) return false
                 if (undoAction != other.undoAction) return false
-                if (isEndless != other.isEndless) return false
 
                 return true
             }
@@ -74,11 +73,31 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
                 var result = message
                 result = 31 * result + args.contentHashCode()
                 result = 31 * result + (undoAction?.hashCode() ?: 0)
-                result = 31 * result + isEndless.hashCode()
                 return result
             }
         }
 
         object Exit : Event()
+
+        data class ShowDiscardDialog(
+            val positiveBtnAction: OnClickListener? = null,
+            val negativeBtnAction: OnClickListener? = null
+        ) : Event() {
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (other !is ShowDiscardDialog) return false
+
+                if (positiveBtnAction != other.positiveBtnAction) return false
+                if (negativeBtnAction != other.negativeBtnAction) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = positiveBtnAction?.hashCode() ?: 0
+                result = 31 * result + (negativeBtnAction?.hashCode() ?: 0)
+                return result
+            }
+        }
     }
 }

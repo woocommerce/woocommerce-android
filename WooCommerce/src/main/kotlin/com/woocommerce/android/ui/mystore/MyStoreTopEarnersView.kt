@@ -33,9 +33,9 @@ class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Attri
     }
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var listener: DashboardStatsListener
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
+    private var listener: DashboardStatsListener? = null
     private var skeletonView = SkeletonView()
 
     fun initView(
@@ -52,6 +52,10 @@ class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Attri
         topEarners_recycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
     }
 
+    fun removeListener() {
+        listener = null
+    }
+
     /**
      * Load top earners stats when tab is selected in [MyStoreStatsView]
      */
@@ -64,7 +68,7 @@ class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Attri
         topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
         showEmptyView(false)
         showErrorView(false)
-        listener.onRequestLoadTopEarnerStats(granularity)
+        listener?.onRequestLoadTopEarnerStats(granularity)
     }
 
     fun showSkeleton(show: Boolean) {
@@ -101,7 +105,7 @@ class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Attri
     class TopEarnersAdapter(
         context: Context,
         val formatCurrencyForDisplay: FormatCurrencyRounded,
-        val listener: DashboardStatsListener
+        val listener: DashboardStatsListener?
     ) : RecyclerView.Adapter<TopEarnersViewHolder>() {
         private val orderString: String
         private val imageSize: Int
@@ -149,7 +153,7 @@ class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Attri
 
             holder.itemView.setOnClickListener {
                 AnalyticsTracker.track(TOP_EARNER_PRODUCT_TAPPED)
-                listener.onTopEarnerClicked(topEarner)
+                listener?.onTopEarnerClicked(topEarner)
             }
         }
     }
