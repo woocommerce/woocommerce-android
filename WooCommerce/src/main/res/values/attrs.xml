@@ -54,6 +54,10 @@
         <attr name="android:inputType"/>
     </declare-styleable>
 
+    <declare-styleable name="WCMaterialOutlinedSpinnerView">
+        <attr name="spinnerHint" format="string"/>
+    </declare-styleable>
+
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
         <attr name="aevButton" format="string"/>
