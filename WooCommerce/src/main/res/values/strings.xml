@@ -474,6 +474,8 @@
     <!--
         Empty list messages
     -->
+    <string name="get_the_word_out">Let\'s get the word out</string>
+    <string name="share_your_store_message">Share your store on social media and by email with your contacts</string>
     <string name="waiting_for_customers">Waiting for customers</string>
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
     <string name="orders_empty_message_with_filter">No orders yet</string>

@@ -100,8 +100,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         presenter.takeView(this)
 
-        empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-
         dashboard_stats.initView(
                 dashboard_stats.activeGranularity,
                 listener = this,
@@ -207,7 +205,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         if (granularity == DAYS) {
-            empty_view.updateVisitorCount(visitorStats.values.sum())
+            share_your_store_view.updateVisitorCount(visitorStats.values.sum())
         }
     }
 
@@ -304,12 +302,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) {
-            empty_view.show(R.string.waiting_for_customers, showShareButton = true, showStats = true)
+        if (!show) {
+            share_your_store_view.show(
+                    selectedSite.get(),
+                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED,
+                    showStats = true
+            )
             dashboard_view.hide()
         } else {
             dashboard_view.show()
-            empty_view.hide()
+            share_your_store_view.hide()
         }
     }
 

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_window_background"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/share_your_store_stats_row"
+        style="@style/Woo.Card.WithoutPadding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/margin_extra_large"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:text="@string/dashboard_stats_todays_stats"
+            android:textColor="@color/wc_grey_medium"
+            android:textSize="@dimen/text_medium"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:background="@color/list_divider" />
+
+        <include
+            layout="@layout/dashboard_main_stats_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_extra_large" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:paddingBottom="@dimen/card_padding_bottom"
+            android:text="@string/dashboard_stats_updated_now"
+            android:textColor="@color/wc_grey_mid"
+            android:textSize="@dimen/text_caption" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/Woo.Card.WithoutPadding"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:gravity="center"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/Woo.TextAppearance.Title.Large.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/get_the_word_out" />
+
+        <ImageView
+            android:id="@+id/share_your_store_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/ic_img_light_empty_my_store" />
+
+        <TextView
+            style="@style/Woo.TextAppearance.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/share_your_store_message" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/share_your_store_button"
+            style="@style/Woo.Button.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/share_store_button" />
+    </LinearLayout>
+
+
+</LinearLayout>
