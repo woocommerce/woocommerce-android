@@ -48,6 +48,11 @@
         <attr name="borderRadius" format="float" />
     </declare-styleable>
 
+    <declare-styleable name="WCMaterialOutlinedEditTextView">
+        <attr name="editTextHint" format="string"/>
+        <attr name="editTextSummary" format="string"/>
+        <attr name="android:inputType"/>
+    </declare-styleable>
 
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
