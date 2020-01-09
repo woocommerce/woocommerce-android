@@ -256,7 +256,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         // display pricing/inventory card only if product is not a variable product
         // since pricing, inventory, shipping and SKU for a variable product can differ per variant
         if (product.type != VARIABLE) {
-            if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            if (isAddEditProductRelease1Enabled(product.type)) {
                 addSecondaryCard(productData)
             } else {
                 addPricingAndInventoryCard(productData)
@@ -268,7 +268,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun addPrimaryCard(productData: ViewState) {
         val product = requireNotNull(productData.product)
 
-        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+        if (isAddEditProductRelease1Enabled(product.type)) {
             addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
                 view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
             }
@@ -276,7 +276,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
         }
 
-        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+        if (isAddEditProductRelease1Enabled(product.type)) {
             val productDescription = product.description
             val showCaption = !productDescription.isEmpty()
             val description = if (productDescription.isEmpty()) {
@@ -833,4 +833,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
         findNavController().navigate(action)
     }
+
+    /**
+     * Add/Edit Product Release 1 is enabled only for debug users for SIMPLE products only
+     */
+    private fun isAddEditProductRelease1Enabled(productType: ProductType) =
+            FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled() && productType == ProductType.SIMPLE
 }
