@@ -27,6 +27,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -58,6 +60,7 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
+import java.util.Date
 import javax.inject.Inject
 
 class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, NavigationResult,
@@ -351,22 +354,48 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         )
     }
 
+    /**
+     * New product detail card UI slated for new products release 1
+     */
     private fun addSecondaryCard(productData: ViewState) {
         val product = requireNotNull(productData.product)
 
-        // If we have pricing info and there's a sale price show price & sales price as a group,
-        // otherwise show price separately
+        // If we have pricing info, show price & sales price as a group,
+        // otherwise provide option to add pricing info for the product
         val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
-        val pricingGroup = if (hasPricingInfo) {
-            product.salePrice?.let {
-                mapOf(getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency),
-                        getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
-                )
-            } ?: run {
-                mapOf(getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency))
+        val pricingGroup = mutableMapOf<String, String>()
+        if (hasPricingInfo) {
+            // regular product price
+            pricingGroup[getString(R.string.product_regular_price)] =
+                    requireNotNull(productData.regularPriceWithCurrency)
+            // display product sale price, if available
+            if (product.salePrice != null) {
+                pricingGroup[getString(R.string.product_sale_price)] = requireNotNull(productData.salePriceWithCurrency)
+            }
+
+            // display product sale dates, if available
+            var dateOnSaleFrom = product.dateOnSaleFrom
+            val dateOnSaleTo = product.dateOnSaleTo
+            if (dateOnSaleTo != null && dateOnSaleFrom == null) {
+                dateOnSaleFrom = Date()
+            }
+            val saleDates = when {
+                (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
+                    getString(R.string.product_sale_date_from_to,
+                            dateOnSaleFrom.formatToMMMdd(),
+                            dateOnSaleTo.formatToMMMddYYYY()
+                    )
+                }
+                (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
+                    getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                }
+                else -> null
+            }
+            saleDates?.let {
+                pricingGroup[getString(R.string.product_sale_dates)] = it
             }
         } else {
-            mapOf(Pair("", getString(R.string.product_price_empty)))
+            pricingGroup[""] = getString(R.string.product_price_empty)
         }
 
         addPropertyGroup(
@@ -375,6 +404,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 pricingGroup,
                 groupIconId = R.drawable.ic_gridicons_money
         )?.also {
+            // display pricing caption only if pricing info is available
             if (!hasPricingInfo) {
                 it.showPropertyName(false)
             }
@@ -398,12 +428,17 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 inventoryGroup,
                 groupIconId = R.drawable.ic_gridicons_list_checkmark
         )?.also {
+            // display inventory caption only if manage stock is true or if product sku is available
             if (!product.manageStock && product.sku.isEmpty()) {
                 it.showPropertyName(false)
             }
         }
     }
 
+    /**
+     * Existing product detail card UI which that will be replaced by the new design once
+     * Product Release 1 changes are completed.
+     */
     private fun addPricingAndInventoryCard(productData: ViewState) {
         val product = requireNotNull(productData.product)
 
