@@ -33,7 +33,7 @@ Use this file to override styles in the styles_base.xml file.
     <!--
         Number picker
     -->
-    <style name="NumberPickerTheme" parent="AppTheme">
+    <style name="NumberPickerTheme" parent="Theme.Woo.DayNight">
         <item name="colorControlNormal">@color/transparent</item>
         <item name="android:textSize">@dimen/text_extra_large</item>
         <item name="android:textColorPrimary">@color/colorPrimary</item>

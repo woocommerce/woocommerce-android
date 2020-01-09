@@ -35,6 +35,8 @@
     <!--
         Default Card
     -->
+    <dimen name="card_button_padding">12dp</dimen>
+
     <dimen name="card_padding_start">16dp</dimen>
     <dimen name="card_padding_start_tablet">24dp</dimen>
 
