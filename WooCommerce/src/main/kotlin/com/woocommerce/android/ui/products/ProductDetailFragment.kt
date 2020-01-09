@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -22,13 +23,20 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.aztec.AztecEditorFragment
+import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
@@ -39,17 +47,20 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
-import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
+import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
+class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, NavigationResult,
+        BackPressListener {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -67,6 +78,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private val skeletonView = SkeletonView()
     private var clickedImage = WeakReference<View>(null)
 
+    private var publishMenuItem: MenuItem? = null
+
+    private var progressDialog: CustomProgressDialog? = null
+
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -74,15 +89,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
-
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
     }
 
     override fun onResume() {
@@ -101,28 +116,36 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.viewStateData.observe(this) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.product?.let { showProduct(new) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
         }
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowImages -> showProductImages(event.product, event.image)
                 is ShowImageChooser -> showImageChooser()
                 is ShareProduct -> shareProduct(event.product)
                 is Exit -> requireActivity().onBackPressed()
+                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                        requireActivity(),
+                        event.positiveBtnAction,
+                        event.negativeBtnAction
+                )
             }
         })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.menu_share, menu)
+        inflater.inflate(R.menu.menu_product_detail_fragment, menu)
+        publishMenuItem = menu.findItem(R.id.menu_update)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -132,17 +155,50 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 viewModel.onShareButtonClicked()
                 true
             }
+
+            R.id.menu_update -> {
+                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onUpdateButtonClicked()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked()
+    }
+
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
             skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageGallery.height
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun showUpdateProductAction(show: Boolean) {
+        view?.post { publishMenuItem?.isVisible = show }
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                    getString(R.string.product_update_dialog_title),
+                    getString(R.string.product_update_dialog_message)
+            ).also { it.show(requireFragmentManager(), CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     override fun getFragmentTitle() = productTitle
@@ -203,7 +259,36 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
     private fun addPrimaryCard(productData: ViewState) {
         val product = requireNotNull(productData.product)
 
-        addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
+                view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
+            }
+        } else {
+            addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+        }
+
+        if (FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled()) {
+            val productDescription = product.description
+            val showCaption = !productDescription.isEmpty()
+            val description = if (productDescription.isEmpty()) {
+                getString(R.string.product_description_empty)
+            } else {
+                productDescription
+            }
+            addPropertyView(
+                    DetailCard.Primary,
+                    getString(R.string.product_description),
+                    SpannableString(HtmlUtils.fromHtml(description)),
+                    LinearLayout.VERTICAL
+            )?.also {
+                it.showPropertyName(showCaption)
+                it.setMaxLines(1)
+                it.setClickListener {
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED)
+                    showProductDescriptionEditor(productDescription)
+                }
+            }
+        }
 
         // we don't show total sales for variations because they're always zero
         if (!isVariation) {
@@ -223,8 +308,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             )?.setRating(product.averageRating)
         }
 
-        // show product variants only if product type is variable
-        if (product.type == VARIABLE && FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context)) {
+        // show product variants only if product type is variable and if there are variations for the product
+        if (product.type == VARIABLE &&
+                FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context) &&
+                product.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
@@ -240,6 +327,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
                 showProductVariations(product.remoteId)
             }
+        } else {
+            removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
         }
 
         addLinkView(
@@ -266,9 +355,9 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice != null) {
-                val group = mapOf(
-                    getString(R.string.product_regular_price) to requireNotNull(productData.regularPriceWithCurrency),
-                    getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
+                val group = mapOf(getString(R.string.product_regular_price)
+                        to requireNotNull(productData.regularPriceWithCurrency),
+                        getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
@@ -357,6 +446,33 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         propertyValue: String,
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
+        return addPropertyView(card, propertyName, SpannableString(propertyValue), orientation)
+    }
+
+    private fun removePropertyView(
+        card: DetailCard,
+        propertyName: String
+    ) {
+        // locate the card, add it if it doesn't exist yet
+        val cardView = findOrAddCardView(card)
+
+        // locate the linear layout container inside the card
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+
+        // locate the existing property view in the container, add it if not found
+        val propertyTag = "{$propertyName}_tag"
+        val propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
+        if (propertyView != null) {
+            container.removeView(propertyView)
+        }
+    }
+
+    private fun addPropertyView(
+        card: DetailCard,
+        propertyName: String,
+        propertyValue: SpannableString,
+        orientation: Int = LinearLayout.HORIZONTAL
+    ): WCProductPropertyView? {
         if (propertyValue.isBlank()) return null
 
         // locate the card, add it if it doesn't exist yet
@@ -374,8 +490,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             container.addView(propertyView)
         }
 
-        // some details, such as product description, contain html which needs to be stripped here
-        propertyView.show(orientation, propertyName, HtmlUtils.fastStripHtml(propertyValue).trim())
+        propertyView.show(orientation, propertyName, propertyValue)
         return propertyView
     }
 
@@ -442,6 +557,31 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         readMoreView.show(caption, HtmlUtils.fastStripHtml(content), maxLines)
+    }
+
+    /**
+     * Adds an editText to the passed card
+     */
+    private fun addEditableView(
+        card: DetailCard,
+        @StringRes propertyNameId: Int,
+        propertyValue: String?
+    ): WCProductPropertyEditableView? {
+        val hint = getString(propertyNameId)
+        val editableViewTag = "${hint}_tag"
+
+        val cardView = findOrAddCardView(card)
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+        var editableView = container.findViewWithTag<WCProductPropertyEditableView>(editableViewTag)
+
+        if (editableView == null) {
+            editableView = WCProductPropertyEditableView(requireActivity())
+            editableView.tag = editableViewTag
+            container.addView(editableView)
+        }
+
+        editableView.show(hint, propertyValue)
+        return editableView
     }
 
     /**
@@ -530,6 +670,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
         findNavController().navigate(action)
     }
 
+    private fun showProductDescriptionEditor(productDescription: String) {
+        findNavController().navigate(ProductDetailFragmentDirections
+                .actionProductDetailFragmentToAztecEditorFragment(
+                        productDescription, getString(R.string.product_description
+                )))
+    }
+
     /**
      * returns the product's stock status formatted for display
      */
@@ -546,6 +693,16 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener {
             getString(status.stringResource)
         } else {
             status.value
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            AZTEC_EDITOR_REQUEST_CODE -> {
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.updateProductDraft(result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+            }
         }
     }
 

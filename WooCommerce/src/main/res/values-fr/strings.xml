@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-27 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 16:28:52+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_discovery_error_generic">Nous n\'avons pas pu accéder à votre site. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
+    <string name="login_discovery_error_ssl">Nous n\'avons pas pu accéder à votre site à cause d\'un problème avec le &lt;b>certificat SSL&lt;/b>. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
+    <string name="login_discovery_error_http_auth">Nous n\'avons pas pu accéder à votre site car il requiert une &lt;b>authentification HTTP&lt;/b>. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
+    <string name="login_discovery_error_xmlrpc">Nous n\'avons pas pu accéder au &lt;b>fichier XMLRPC&lt;/b> sur votre site. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
+    <string name="login_site_credentials_magic_link_label">Vous y êtes presque ! Nous devons juste vérifier votre adresse e-mail connectée à Jetpack &lt;b>%1$s&lt;/b></string>
+    <string name="enter_site_credentials_instead">Connectez-vous avec vos identifiants au site.</string>
+    <string name="enter_credentials_for_site">Connexion avec vos identifiants au site %1$s</string>
+    <string name="send_verification_email">Envoyer l\'e-mail de vérification</string>
+    <string name="settings_enable_product_teaser_message">Essayer la section sur les nouveaux produits dès que nous sommes prêts pour le lancement</string>
+    <string name="settings_enable_product_teaser_title">Produits</string>
+    <string name="product_wip_message">Nous nous occupons de la section sur les nouveaux produits. Vous pourrez constater quelques modifications au moment du lancement 🚀</string>
+    <string name="product_wip_title">Tâche en cours !</string>
     <string name="magic_link_fetch_account_error">Une erreur s\'est produite lors de la récupération de votre compte. Vous pouvez recommencer maintenant ou fermer et réessayer ultérieurement.</string>
     <string name="magic_link_update_error">Une erreur inconnue est survenue. Veuillez vous connecter pour continuer.</string>
     <string name="login_magic_link_token_updating">Connexion à votre site en cours…</string>
+    <string name="product_variants">Variantes</string>
     <string name="product_property_edit">Modifier le produit</string>
     <string name="product_variants_fetch_product_variants_error">Erreur lors de la récupération des variations du produit</string>
     <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques. Pour utiliser les statistiques en version bêta, veuillez activer l\'extension d\'administration WooCommerce version 0.22 ou ultérieure.</string>
@@ -47,9 +60,9 @@ Language: fr
     <string name="wc_unapproved">Désapprouvé</string>
     <string name="review_single_fetch_error">Erreur lors de la récupération du nouvel avis sur le produit</string>
     <string name="review_fetch_error">Erreur lors de la récupération des avis sur le produit</string>
-    <string name="order_refunds_manual_refund_error">Un problème est survenu lors du remboursement. Veuillez réessayer.</string>
-    <string name="order_refunds_manual_refund_successful">Le remboursement a bien été envoyé.</string>
-    <string name="order_refunds_manual_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>
+    <string name="order_refunds_amount_refund_error">Un problème est survenu lors du remboursement. Veuillez réessayer.</string>
+    <string name="order_refunds_amount_refund_successful">Le remboursement a bien été envoyé.</string>
+    <string name="order_refunds_amount_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>
     <string name="order_refunds_quote_image_description">Icône de devis</string>
     <string name="order_refunds_manual_refund">Remboursement manuel</string>
     <string name="order_refunds_refund_details">Détails du remboursement</string>
@@ -487,6 +500,7 @@ Language: fr
     <string name="orderdetail_call_or_message_contentdesc">Appeler ou envoyer un message au client</string>
     <string name="wc_moderate_review_error">Erreur lors de la mise à jour de l’état de l’avis sur le produit</string>
     <string name="wc_load_review_error">Erreur lors du chargement des détails de l’avis sur le produit</string>
+    <string name="wc_trash">Corbeille</string>
     <string name="wc_spam">Indésirables</string>
     <string name="wc_approved">Approuvé</string>
     <string name="wc_approve">Approuver</string>
@@ -627,7 +641,7 @@ Language: fr
     <string name="enter_wpcom_password">Saisissez votre mot de passe WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">Actuellement indisponible. Veuillez saisir votre mot de passe</string>
     <string name="login_magic_link_email_requesting">Demande de l’e-mail de connexion</string>
-    <string name="login_magic_links_sent_label">E-mail envoyé. Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l\'e-mail que vous recevez de WordPress.com.</string>
+    <string name="login_magic_links_sent_label">Votre lien magique arrive ! Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l\'e-mail que vous avez reçu de WordPress.com.</string>
     <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
     <string name="password_incorrect">Il semblerait que ce mot de passe est incorrect. Veuillez vérifier et essayer à nouveau.</string>
     <string name="email_not_registered_wpcom">Hmm, nous ne trouvons pas de compte WordPress.com associé à cette adresse e-mail. Essayez de vous connecter avec le lien ci-après à l\'aide de votre adresse e-mail.</string>
@@ -650,6 +664,7 @@ Language: fr
     <string name="log_in">Connexion</string>
     <string name="help">Aide</string>
     <string name="password">Mot de passe</string>
+    <string name="username">Identifiant</string>
     <string name="enter_your_password_instead">Saisissez votre mot de passe à la place</string>
     <string name="send_link">Envoyer le lien</string>
     <string name="invalid_verification_code">Code de vérification invalide</string>

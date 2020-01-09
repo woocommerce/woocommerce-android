@@ -1,10 +1,14 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
+import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductStockStatus
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import java.math.BigDecimal
 
+@Parcelize
 data class ProductVariant(
     val remoteProductId: Long,
     val remoteVariationId: Long,
@@ -15,18 +19,30 @@ data class ProductVariant(
     val optionName: String,
     var priceWithCurrency: String? = null,
     val purchasable: Boolean
-)
+) : Parcelable {
+    fun isSameVariant(variant: ProductVariant): Boolean {
+        return remoteVariationId == variant.remoteVariationId &&
+                remoteProductId == variant.remoteProductId &&
+                imageUrl == variant.imageUrl &&
+                price == variant.price &&
+                stockQuantity == variant.stockQuantity &&
+                stockStatus == variant.stockStatus &&
+                optionName == variant.optionName &&
+                priceWithCurrency == variant.priceWithCurrency &&
+                purchasable == variant.purchasable
+    }
+}
 
 fun WCProductVariationModel.toAppModel(): ProductVariant {
     return ProductVariant(
-        this.remoteProductId,
-        this.remoteVariationId,
-        this.imageUrl,
-        this.price.toBigDecimalOrNull(),
-        ProductStockStatus.fromString(this.stockStatus),
-        this.stockQuantity,
-        getAttributeOptionName(this.getProductVariantOptions()),
-        purchasable = this.purchasable
+            this.remoteProductId,
+            this.remoteVariationId,
+            this.imageUrl,
+            this.price.toBigDecimalOrNull()?.roundError(),
+            ProductStockStatus.fromString(this.stockStatus),
+            this.stockQuantity,
+            getAttributeOptionName(this.getProductVariantOptions()),
+            purchasable = this.purchasable
     )
 }
 

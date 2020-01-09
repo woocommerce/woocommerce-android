@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-11-28 00:54:03+0000
+Translation-Revision-Date: 2019-12-12 00:54:59+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
+    <string name="login_discovery_error_ssl">&lt;b>SSL 인증서&lt;/b> 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
+    <string name="login_discovery_error_http_auth">&lt;b>HTTP 인증&lt;/b>이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
+    <string name="login_discovery_error_xmlrpc">사이트에서 &lt;b>XMLRPC 파일&lt;/b>에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
+    <string name="login_site_credentials_magic_link_label">마지막 부분입니다! 젯팩에 연결된 이메일 주소 &lt;b>%1$s&lt;/b>만 확인하면 됩니다.</string>
+    <string name="enter_site_credentials_instead">사이트 자격 증명으로 로그인하세요.</string>
+    <string name="enter_credentials_for_site">%1$s 사이트 자격 증명으로 로그인</string>
+    <string name="send_verification_email">인증 이메일 보내기</string>
+    <string name="settings_enable_product_teaser_message">출시 준비가 완료되면 새 제품 섹션을 테스트하세요.</string>
+    <string name="settings_enable_product_teaser_title">제품</string>
+    <string name="product_wip_message">새로운 제품 섹션을 최선을 다해 준비하고 있습니다. 출시 준비 과정에서 일부 변경 사항이 발생할 수 있습니다. 🚀</string>
+    <string name="product_wip_title">작업 진행 중!</string>
     <string name="magic_link_fetch_account_error">계정을 가져오는 중에 문제가 발생했습니다. 지금 다시 시도하거나 닫고 나중에 다시 시도할 수 있습니다.</string>
     <string name="magic_link_update_error">오류가 발생했습니다. 계속하려면 로그인하세요.</string>
     <string name="login_magic_link_token_updating">사이트에 연결하는 중…</string>
+    <string name="product_variants">변형</string>
     <string name="product_property_edit">제품 편집</string>
     <string name="product_variants_fetch_product_variants_error">제품 변경을 가져오는 중에 오류 발생</string>
     <string name="my_store_stats_reverted_message">이전 통계로 되돌렸습니다. 베타 통계를 사용하려면 버전 0.22 이상으로 WooCommerce Admin 플러그인을 활성화하세요.</string>
@@ -47,9 +60,9 @@ Language: ko_KR
     <string name="wc_unapproved">받아들이지 않기</string>
     <string name="review_single_fetch_error">신제품 리뷰를 가져오는 동안 오류 발생</string>
     <string name="review_fetch_error">제품 리뷰를 가져오는 동안 오류 발생</string>
-    <string name="order_refunds_manual_refund_error">환불에 문제가 발생했습니다. 다시 시도하세요.</string>
-    <string name="order_refunds_manual_refund_successful">환불이 성공적으로 제출되었습니다.</string>
-    <string name="order_refunds_manual_refund_progress_message">%s에 대한 환불을 처리 중입니다. 기다려주세요…</string>
+    <string name="order_refunds_amount_refund_error">환불에 문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="order_refunds_amount_refund_successful">환불이 성공적으로 제출되었습니다.</string>
+    <string name="order_refunds_amount_refund_progress_message">%s에 대한 환불을 처리 중입니다. 기다려주세요…</string>
     <string name="order_refunds_quote_image_description">인용 아이콘</string>
     <string name="order_refunds_manual_refund">수동 환불</string>
     <string name="order_refunds_refund_details">환불 정보</string>
@@ -628,7 +641,7 @@ Language: ko_KR
     <string name="enter_wpcom_password">워드프레스닷컴 비밀번호를 입력합니다.</string>
     <string name="magic_link_unavailable_error_message">현재 사용할 수 없습니다. 비밀번호를 입력하세요.</string>
     <string name="login_magic_link_email_requesting">로그인 이메일 요청 중</string>
-    <string name="login_magic_links_sent_label">이메일이 전송되었습니다. 이 기기에서 이메일을 확인하고 워드프레스닷컴에서 받은 이메일의 링크를 누르세요.</string>
+    <string name="login_magic_links_sent_label">매직 링크를 처리 중입니다! 이 기기에서 이메일을 확인하고 워드프레스닷컴에서 받은 이메일의 링크를 누르세요.</string>
     <string name="login_magic_links_label">암호 없이 즉시 로그인되는 링크를 이메일로 보내드립니다. 더 이상 암호를 직접 입력할 필요가 없습니다!</string>
     <string name="password_incorrect">이 비밀번호가 올바르지 않은 것 같습니다. 정보를 확인하고 다시 시도하세요.</string>
     <string name="email_not_registered_wpcom">이 이메일 주소에 연결된 워드프레스닷컴 계정을 찾을 수 없습니다. 아래 링크를 클릭하여 고객님의 사이트 주소로 로그인해 보세요.</string>
@@ -651,6 +664,7 @@ Language: ko_KR
     <string name="log_in">로그인</string>
     <string name="help">도우미</string>
     <string name="password">암호</string>
+    <string name="username">사용자 이름</string>
     <string name="enter_your_password_instead">비밀번호를 대신 입력하세요.</string>
     <string name="send_link">링크 전송</string>
     <string name="invalid_verification_code">잘못된 확인 코드</string>
