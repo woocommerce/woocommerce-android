@@ -414,7 +414,7 @@ class OrderListFragment : TopLevelFragment(),
             it?.let { emptyViewState ->
                 // when searching, pass the searu query so it can be included in the empty message
                 val fmtArgs = if (isSearching) {
-                    "<strong>${searchQuery}</strong>"
+                    "<strong>$searchQuery</strong>"
                 } else {
                     null
                 }
