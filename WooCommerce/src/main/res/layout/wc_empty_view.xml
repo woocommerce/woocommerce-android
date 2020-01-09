@@ -77,7 +77,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/empty_view_text"
-                style="@style/Woo.Card.EmptyMessage"
+                style="@style/Woo.Card.StatusMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="@string/waiting_for_customers"/>

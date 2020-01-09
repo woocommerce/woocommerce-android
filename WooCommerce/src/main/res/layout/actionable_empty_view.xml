@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/white"
     tools:context=".ui.orders.list.OrderListFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,10 +17,10 @@
             android:id="@+id/empty_view_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="100dp"
-            android:minWidth="100dp"
+            android:minHeight="@dimen/image_major_100"
+            android:minWidth="@dimen/image_major_100"
             android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/margin_extra_large"
+            android:layout_marginBottom="@dimen/major_100"
             android:contentDescription="@string/waiting_for_customers_contentdesc"
             android:importantForAccessibility="no"
             app:layout_constraintBottom_toTopOf="@+id/empty_view_text"
@@ -29,13 +28,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/ic_woo_error_state" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/empty_view_text"
-            style="@style/Woo.TextAppearance.Bold"
+            style="@style/Woo.Card.StatusMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,12 +41,11 @@
             app:layout_constraintVertical_bias="0.52"
             tools:text="@string/error_generic_network" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/empty_view_button"
-            style="@style/Woo.Button.Purple"
+            style="@style/Woo.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/share_store_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

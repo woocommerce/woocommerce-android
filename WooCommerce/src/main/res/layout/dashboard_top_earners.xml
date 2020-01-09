@@ -81,7 +81,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/topEarners_emptyView"
-                style="@style/Woo.Card.EmptyMessage"
+                style="@style/Woo.Card.StatusMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"

@@ -123,7 +123,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Card.Body" parent="@style/Woo.TextView.Body2"/>
 
-    <style name="Woo.Card.EmptyMessage" parent="@style/Woo.TextView.Subtitle1"/>
+    <style name="Woo.Card.StatusMessage" parent="@style/Woo.TextView.Subtitle1"/>
 
     <style name="Woo.Card.ListHeader" parent="@style/Woo.TextView.Subtitle2">
         <item name="android:layout_marginTop">@dimen/major_100</item>
@@ -200,6 +200,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.TextView.Caption">
         <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
     </style>
 
     <style name="Woo.TextView.Overline">
@@ -232,5 +233,34 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
+    </style>
+
+    <!--
+        List Styles
+    -->
+    <style name="Woo.ListHeader" parent="@style/Woo.TextView.Subtitle2"/>
+    <style name="Woo.ListItem.Title" parent="@style/Woo.TextView.Subtitle1"/>
+    <style name="Woo.ListItem.Overline" parent="@style/Woo.TextView.Overline"/>
+    <style name="Woo.ListItem.Caption" parent="@style/Woo.TextView.Caption"/>
+    <style name="Woo.ListItem.Body" parent="@style/Woo.TextView.Body2"/>
+
+    <!--
+        FlowLayout Style
+    -->
+    <style name="Woo.FlowLayout">
+        <item name="android:layout_marginTop">@dimen/minor_100</item>
+        <item name="android:layout_marginBottom">@dimen/major_100</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="horizontalSpacing">4dp</item>
+        <item name="verticalSpacing">4dp</item>
+    </style>
+
+    <!--
+        Progressbar Style
+    -->
+    <style name="Woo.ProgressBar" parent="@style/Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
     </style>
 </resources>

@@ -230,16 +230,6 @@ Use this file to override styles in the styles_base.xml file.
     <!--
         Default List Item Header Styles
     -->
-    <style name="Woo.ListHeader" parent="android:Widget.DeviceDefault.TextView">
-        <item name="android:paddingStart">@dimen/list_item_padding_start</item>
-        <item name="android:paddingEnd">@dimen/list_item_padding_end</item>
-        <item name="android:background">@drawable/list_header_bg</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/list_group_header_height</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textAppearance">@style/Woo.TextAppearance.ListHeader</item>
-        <item name="android:textAlignment">viewStart</item>
-    </style>
 
     <style name="Woo.TextAppearance.ListHeader">
         <item name="android:textStyle">bold</item>
@@ -247,19 +237,8 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:textSize">@dimen/list_header_text_size</item>
     </style>
     <!--
-        Default FlowLayout Style
-    -->
-    <style name="Woo.FlowLayout">
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="horizontalSpacing">4dp</item>
-        <item name="verticalSpacing">4dp</item>
-    </style>
-    <!--
         Order: List Style
     -->
-    <style name="Woo.OrderList.Item" parent="Woo.ListItem"/>
-    <style name="Woo.OrderList.Header" parent="Woo.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.Header" parent="Woo.TextAppearance.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.ListItem" parent="Woo.TextAppearance.ListItem"/>
     <style name="Woo.OrderList.TextAppearance.ListItem.Date" parent="Woo.TextAppearance.ListItem">
@@ -292,7 +271,7 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:paddingBottom">@dimen/margin_large</item>
         <item name="android:background">@null</item>
     </style>
-    <style name="Woo.OrderStatusList.Item" parent="Woo.OrderList.Item">
+    <style name="Woo.OrderStatusList.Item" parent="Woo.ListItem">
         <item name="android:paddingTop">@dimen/margin_extra_large</item>
         <item name="android:paddingBottom">@dimen/margin_extra_large</item>
     </style>

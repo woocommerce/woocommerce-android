@@ -16,9 +16,11 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -109,6 +111,10 @@ class OrderListFragment : TopLevelFragment(),
      */
     private var isFilterEnabled: Boolean = false
 
+    private val tabLayout: TabLayout by lazy {
+        TabLayout(requireContext(), null, R.attr.tabStyle)
+    }
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -194,11 +200,11 @@ class OrderListFragment : TopLevelFragment(),
 
         resources.getStringArray(R.array.order_list_tabs).toList()
                 .forEachIndexed { index, title ->
-                    val tab = tab_layout.newTab().apply {
+                    val tab = tabLayout.newTab().apply {
                         text = title
                         tag = englishTabArray?.get(index) ?: title
                     }
-                    tab_layout.addTab(tab)
+                    tabLayout.addTab(tab)
 
                     // If this tab is the one that should be active, select it and load
                     // the appropriate list.
@@ -207,13 +213,14 @@ class OrderListFragment : TopLevelFragment(),
                         tab.select()
                     }
                 }
+        addTabLayoutToAppBar(tabLayout)
 
         listState?.let {
             order_list_view.onFragmentRestoreInstanceState(it)
             listState = null
         }
 
-        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 // Hide the empty view if visible
                 order_list_view.hideEmptyView()
@@ -280,16 +287,20 @@ class OrderListFragment : TopLevelFragment(),
             val isChildFragmentShowing = isChildFragmentShowing()
             if (!isChildFragmentShowing) {
                 showOptionsMenu(true)
+                addTabLayoutToAppBar(tabLayout)
 
                 if (isSearching) {
                     clearSearchResults()
                 }
             }
+        } else {
+            removeTabLayoutFromAppBar(tabLayout)
         }
     }
 
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
+        addTabLayoutToAppBar(tabLayout)
 
         if (isOrderStatusFilterEnabled()) {
             viewModel.reloadListFromCache()
@@ -429,6 +440,7 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun openOrderDetail(remoteOrderId: Long) {
         showOptionsMenu(false)
+        removeTabLayoutFromAppBar(tabLayout)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }
 
@@ -484,7 +496,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun getOrderStatusFilterForActiveTab(): String {
-        return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+        return tabLayout.getTabAt(tabLayout.selectedTabPosition)?.let {
             calculateOrderStatusFilter(it)
         } ?: StringUtils.EMPTY
     }
@@ -560,7 +572,8 @@ class OrderListFragment : TopLevelFragment(),
 
     private fun loadListForActiveTab() {
         orderStatusFilter = getOrderStatusFilterForActiveTab()
-        when (tab_layout.selectedTabPosition) {
+        getOrderStatusFilterForActiveTab()
+        when (tabLayout.selectedTabPosition) {
             TAB_INDEX_PROCESSING -> viewModel.loadProcessingList()
             TAB_INDEX_ALL -> viewModel.loadAllList()
         }
@@ -604,10 +617,10 @@ class OrderListFragment : TopLevelFragment(),
     private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching
 
     private fun showTabs(show: Boolean) {
-        if (show && tab_layout.visibility != View.VISIBLE) {
-            WooAnimUtils.fadeIn(tab_layout)
-        } else if (!show && tab_layout.visibility != View.GONE) {
-            tab_layout.visibility = View.GONE
+        if (show && tabLayout.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(tabLayout)
+        } else if (!show && tabLayout.visibility != View.GONE) {
+            tabLayout.visibility = View.GONE
         }
     }
 
@@ -722,4 +735,16 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
     // endregion
+
+    private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
+            if (!appBar.children.contains(tabLayout)) {
+                appBar.addView(tabLayout)
+            }
+        }
+    }
+
+    private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
+    }
 }
