@@ -225,6 +225,9 @@ class MyStoreFragment : TopLevelFragment(),
     override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_stats.showVisitorStats(visitorStats)
+            if (granularity == StatsGranularity.DAYS) {
+                empty_view.updateVisitorCount(visitorStats.values.sum())
+            }
         }
     }
 
