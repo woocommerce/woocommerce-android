@@ -29,12 +29,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/minor_100"
+            android:background="?attr/colorSurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
-            android:background="?attr/colorSurface"
-            android:elevation="@dimen/plane_02"
             tools:itemCount="5"
             tools:listitem="@layout/product_list_item"
             tools:visibility="visible"/>

@@ -10,12 +10,13 @@
 
     <FrameLayout
         android:id="@+id/productImageFrame"
-        android:layout_width="@dimen/product_icon_sz"
-        android:layout_height="@dimen/product_icon_sz"
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
         android:layout_margin="@dimen/major_100"
         android:background="@drawable/picture_frame"
         android:padding="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.50"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -36,12 +37,13 @@
         two lines.
     -->
     <LinearLayout
+        android:id="@+id/productInfoContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/major_100"
         android:orientation="vertical"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/productImageFrame"
         app:layout_constraintTop_toTopOf="parent"
@@ -53,10 +55,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/minor_00"
+            android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="2"
-            android:ellipsize="end"
-            tools:text="Awesome Sauce" />
+            tools:text="Awesome Sauce and all that jazz is all I gotta tell you how do we go " />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/productStockAndStatus"
@@ -64,8 +66,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/minor_00"
-            tools:text="Out of stock"
-            tools:visibility="visible"/>
+            tools:text="Out of stock this is a really long version to see what happens when we move o"
+            tools:visibility="visible" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/minor_00"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/productInfoContainer"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
