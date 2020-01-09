@@ -18,12 +18,12 @@ fun View.hide() {
 
 fun View.expand() {
     this.visibility = View.VISIBLE
-    this.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST),
+    this.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED))
     val targetHeight = this.measuredHeight
     val view = this
 
-    this.layoutParams.height = 0
+    this.layoutParams.height = 1
     val a = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
             view.layoutParams.height = if (interpolatedTime == 1f)

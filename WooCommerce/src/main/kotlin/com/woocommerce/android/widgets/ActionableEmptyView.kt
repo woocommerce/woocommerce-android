@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -45,10 +46,19 @@ class ActionableEmptyView : LinearLayout {
             val imageResource = typedArray.getResourceId(R.styleable.ActionableEmptyView_aevImage, 0)
             val titleAttribute = typedArray.getString(R.styleable.ActionableEmptyView_aevTitle)
             val buttonAttribute = typedArray.getString(R.styleable.ActionableEmptyView_aevButton)
+            val titleAppearance = typedArray.getResourceId(R.styleable.ActionableEmptyView_aevTitleAppearance, 0)
 
             if (imageResource != 0) {
                 image.setImageResource(imageResource)
                 image.visibility = View.VISIBLE
+            }
+
+            if (titleAppearance != 0) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    title.setTextAppearance(titleAppearance)
+                } else {
+                    title.setTextAppearance(context, titleAppearance)
+                }
             }
 
             if (!titleAttribute.isNullOrEmpty()) {

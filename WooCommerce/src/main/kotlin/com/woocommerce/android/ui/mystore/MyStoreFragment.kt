@@ -187,6 +187,8 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun onDestroyView() {
+        my_store_stats.removeListener()
+        my_store_top_earners.removeListener()
         presenter.dropView()
         super.onDestroyView()
     }

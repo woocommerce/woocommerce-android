@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -33,13 +32,11 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
-import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -47,6 +44,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.P
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import javax.inject.Inject
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 class OrderListFragment : TopLevelFragment(),
         OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
@@ -176,6 +174,9 @@ class OrderListFragment : TopLevelFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
+        order_status_list_view.init(listener = this)
+
         initializeViewModel()
     }
 
@@ -206,9 +207,6 @@ class OrderListFragment : TopLevelFragment(),
                         tab.select()
                     }
                 }
-
-        order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        order_status_list_view.init(listener = this)
 
         listState?.let {
             order_list_view.onFragmentRestoreInstanceState(it)
@@ -246,14 +244,11 @@ class OrderListFragment : TopLevelFragment(),
 
         if (isFilterEnabled) {
             viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
-        } else if (!isSearching) {
+        } else if (isSearching) {
+            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
+        } else {
             loadListForActiveTab()
         }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        checkOrientation()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -364,6 +359,8 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun initializeViewModel() {
+        viewModel.initializeListsForMainTabs()
+
         // populate views with any existing viewModel data
         viewModel.orderStatusOptions.value?.let { options ->
             // So the order status can be matched to the appropriate label
@@ -373,17 +370,17 @@ class OrderListFragment : TopLevelFragment(),
         }
 
         // setup observers
-        viewModel.isFetchingFirstPage.observe(this, Observer {
+        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer {
             orderRefreshLayout?.isRefreshing = it == true
         })
 
-        viewModel.isLoadingMore.observe(this, Observer {
+        viewModel.isLoadingMore.observe(viewLifecycleOwner, Observer {
             it?.let { isLoadingMore ->
                 order_list_view.setLoadingMoreIndicator(active = isLoadingMore)
             }
         })
 
-        viewModel.orderStatusOptions.observe(this, Observer {
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner, Observer {
             it?.let { options ->
                 // So the order status can be matched to the appropriate label
                 order_list_view.setOrderStatusOptions(options)
@@ -392,18 +389,21 @@ class OrderListFragment : TopLevelFragment(),
             }
         })
 
-        viewModel.pagedListData.observe(this, Observer {
+        viewModel.pagedListData.observe(viewLifecycleOwner, Observer {
             updatePagedListData(it)
         })
 
-        viewModel.event.observe(this, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowErrorSnack -> { uiMessageResolver.showSnack(event.messageRes) }
+                is ShowErrorSnack -> {
+                    uiMessageResolver.showSnack(event.messageRes)
+                    orderRefreshLayout?.isRefreshing = false
+                }
                 else -> event.isHandled = false
             }
         })
 
-        viewModel.emptyViewState.observe(this, Observer {
+        viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
             it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
         })
     }
@@ -544,6 +544,7 @@ class OrderListFragment : TopLevelFragment(),
             clearSearchResults()
             searchMenuItem?.isVisible = true
         }
+        loadListForActiveTab()
         return true
     }
 
@@ -554,13 +555,11 @@ class OrderListFragment : TopLevelFragment(),
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
-            loadListForActiveTab()
         }
     }
 
     private fun loadListForActiveTab() {
         orderStatusFilter = getOrderStatusFilterForActiveTab()
-        getOrderStatusFilterForActiveTab()
         when (tab_layout.selectedTabPosition) {
             TAB_INDEX_PROCESSING -> viewModel.loadProcessingList()
             TAB_INDEX_ALL -> viewModel.loadAllList()
