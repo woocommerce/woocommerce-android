@@ -12,10 +12,10 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
 import org.wordpress.android.util.DisplayUtils
 
 /**
- * Item decoration for recycler views which simply shows a vertical green bar to the left to
- * indicate unread items (such as unread notifications)
+ * Item decoration for recycler views which simply shows a vertical indicator bar to the left to
+ * communicate unread items (such as unread product reviews)
  */
-class UnreadItemDecoration(context: Context, val decorListener: ItemDecorationListener) :
+class UnreadItemDecoration(context: Context, private val decorListener: ItemDecorationListener) :
         DividerItemDecoration(context, HORIZONTAL) {
     interface ItemDecorationListener {
         fun getItemTypeAtPosition(position: Int): ItemType
@@ -43,9 +43,9 @@ class UnreadItemDecoration(context: Context, val decorListener: ItemDecorationLi
                  * in order to paint over recycled cells that have a previously-drawn indicator
                  */
                 val colorId = when (itemType) {
-                    ItemType.HEADER -> R.color.list_header_bg
-                    ItemType.UNREAD -> R.color.wc_green
-                    else -> R.color.list_item_bg
+                    ItemType.HEADER -> android.R.color.transparent
+                    ItemType.UNREAD -> R.color.unread_indicator_color
+                    else -> android.R.color.transparent
                 }
 
                 val paint = Paint()
