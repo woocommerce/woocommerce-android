@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -205,7 +206,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         if (granularity == DAYS) {
-            share_your_store_view.updateVisitorCount(visitorStats.values.sum())
+            empty_view.updateVisitorCount(visitorStats.values.sum())
         }
     }
 
@@ -303,15 +304,15 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showEmptyView(show: Boolean) {
         if (!show) { // TODO
-            share_your_store_view.show(
+            empty_view.show(
+                    EmptyViewType.DASHBOARD,
                     selectedSite.get(),
-                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED,
-                    showStats = true
+                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED
             )
             dashboard_view.hide()
         } else {
             dashboard_view.show()
-            share_your_store_view.hide()
+            empty_view.hide()
         }
     }
 

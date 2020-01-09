@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/share_your_store_stats_row"
+        android:id="@+id/empty_view_stats_row"
         style="@style/Woo.Card.WithoutPadding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/date_title"
+            android:id="@+id/empty_view_date_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
@@ -63,13 +63,14 @@
         android:paddingBottom="28dp">
 
         <TextView
+            android:id="@+id/empty_view_title"
             style="@style/Woo.TextAppearance.Title.Large.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/get_the_word_out" />
 
         <ImageView
-            android:id="@+id/share_your_store_image"
+            android:id="@+id/empty_view_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -79,6 +80,7 @@
             app:srcCompat="@drawable/ic_img_light_empty_my_store" />
 
         <TextView
+            android:id="@+id/empty_view_message"
             style="@style/Woo.TextAppearance.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +88,7 @@
             android:text="@string/share_your_store_message" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/share_your_store_button"
+            android:id="@+id/empty_view_button"
             style="@style/Woo.Button.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
