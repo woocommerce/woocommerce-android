@@ -32,7 +32,6 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
-import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class ProductListFragment : TopLevelFragment(), OnProductClickListener,
@@ -254,17 +253,18 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
-                    val message: Int
-                    val showImage: Boolean
+                    val message: String
+                    val imageId: Int
                     if (new.isSearchActive == true) {
-                        message = R.string.product_list_empty_search
-                        showImage = false
+                        val queryText = "<strong>${viewModel.getSearchQuery()}</strong>"
+                        message = String.format(getString(R.string.empty_message_with_search), queryText)
+                        imageId = R.drawable.ic_img_light_empty_search
                     } else {
-                        message = R.string.product_list_empty
-                        showImage = !DisplayUtils.isLandscape(activity)
+                        message = getString(R.string.product_list_empty)
+                        imageId = R.drawable.ic_woo_waiting_customers
                     }
 
-                    empty_view.show(message, showImage)
+                    empty_view.show(message, imageId = imageId)
                 } else {
                     empty_view.hide()
                 }

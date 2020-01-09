@@ -283,7 +283,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             empty_view.setSiteToShare(
                     selectedSite.get(),
                     Stat.REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-            empty_view.show(R.string.reviews_empty_message)
+            empty_view.show(R.string.reviews_empty_message, showShareButton = true)
         } else {
             empty_view.hide()
         }

@@ -108,7 +108,9 @@ private fun createEmptyListUiState(
 ): OrderListEmptyUiState {
     return when (orderListType) {
         SEARCH -> {
-            OrderListEmptyUiState.EmptyList(UiStringRes(R.string.orders_empty_message_with_search), null)
+            OrderListEmptyUiState.EmptyList(
+                    UiStringRes(R.string.empty_message_with_search),
+                    R.drawable.ic_img_light_empty_search)
         }
         PROCESSING -> {
             if (hasOrders) {

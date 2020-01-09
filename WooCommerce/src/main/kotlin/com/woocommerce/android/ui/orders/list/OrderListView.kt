@@ -112,25 +112,35 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         empty_view?.visibility = View.GONE
     }
 
-    fun updateEmptyViewForState(state: OrderListEmptyUiState) {
+    /**
+     * When search results are empty, the fmtArgs parameter will contain the search query
+     * so we can include it in the formatted empty message
+     */
+    fun updateEmptyViewForState(state: OrderListEmptyUiState, fmtArgs: String? = null) {
         when (state) {
             is DataShown -> { hideEmptyView() }
-            is EmptyList -> { showEmptyView(state.title, state.imgResId) }
+            is EmptyList -> { showEmptyView(state.title, fmtArgs, state.imgResId) }
             is Loading -> { showEmptyView(state.title) }
             is ErrorWithRetry -> {
-                showEmptyView(state.title, state.imgResId, state.buttonText, state.onButtonClick())
+                showEmptyView(
+                        state.title,
+                        imgResId = state.imgResId,
+                        buttonText = state.buttonText,
+                        onButtonClick = state.onButtonClick()
+                )
             }
         }
     }
 
     private fun showEmptyView(
         title: UiString? = null,
+        fmtArgs: String? = null,
         @DrawableRes imgResId: Int? = null,
         buttonText: UiString? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
         empty_view?.let { emptyView ->
-            UiHelpers.setTextOrHide(emptyView.title, title)
+            UiHelpers.setTextOrHide(emptyView.title, title, fmtArgs)
             UiHelpers.setImageOrHide(emptyView.image, imgResId)
             UiHelpers.setTextOrHide(emptyView.button, buttonText)
             emptyView.button.setOnClickListener { onButtonClick?.invoke() }

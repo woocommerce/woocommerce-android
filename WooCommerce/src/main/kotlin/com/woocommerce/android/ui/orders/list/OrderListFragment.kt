@@ -411,7 +411,15 @@ class OrderListFragment : TopLevelFragment(),
         })
 
         viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
-            it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
+            it?.let { emptyViewState ->
+                // when searching, pass the searu query so it can be included in the empty message
+                val fmtArgs = if (isSearching) {
+                    "<strong>$searchQuery</strong>"
+                } else {
+                    null
+                }
+                order_list_view?.updateEmptyViewForState(emptyViewState, fmtArgs)
+            }
         })
     }
 

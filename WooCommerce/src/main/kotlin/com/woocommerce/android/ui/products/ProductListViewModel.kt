@@ -68,6 +68,8 @@ class ProductListViewModel @AssistedInject constructor(
 
     private fun isRefreshing() = viewState.isRefreshing == true
 
+    fun getSearchQuery() = viewState.query
+
     fun onSearchQueryChanged(query: String) {
         viewState = viewState.copy(query = query, isEmptyViewVisible = false)
 
