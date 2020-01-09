@@ -33,8 +33,8 @@ class ProductListAdapter(
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
     private val productList = ArrayList<Product>()
     private val bullet = "\u2022"
-    private val statusColor = ContextCompat.getColor(context, R.color.blue_50)
-    private val stockColor = ContextCompat.getColor(context, R.color.wc_grey_mid)
+    private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
+    private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
 
     interface OnProductClickListener {
         fun onProductClick(remoteProductId: Long)
@@ -53,10 +53,18 @@ class ProductListAdapter(
     override fun getItemCount() = productList.size
 
     private fun getProductStockStatusText(product: Product): String? {
-        val statusHtml = if (product.status != null && product.status != ProductStatus.PUBLISH) {
-            "<font color=$statusColor>${product.status.toString(context)}</font>"
-        } else {
-            null
+        val statusHtml = product.status?.let {
+            when {
+                it == ProductStatus.PENDING -> {
+                    "<font color=$statusPendingColor>${product.status.toString(context)}</font>"
+                }
+                it != ProductStatus.PUBLISH -> {
+                    "<font color=$statusColor>${product.status.toString(context)}</font>"
+                }
+                else -> {
+                    null
+                }
+            }
         }
 
         if (!product.manageStock) {
@@ -91,7 +99,7 @@ class ProductListAdapter(
                 product.stockStatus.value
             }
         }
-        val stockHtml = "<font color=$stockColor>$stock</font>"
+        val stockHtml = "$stock"
 
         return if (statusHtml != null) "$statusHtml $bullet $stockHtml" else stockHtml
     }
