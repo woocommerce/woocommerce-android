@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -24,15 +23,16 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
+import kotlin.math.roundToInt
 
 class ReviewListAdapter(
     private val context: Context,
     private val clickListener: OnReviewClickListener
 ) : SectionedRecyclerViewAdapter() {
-    private var starTintColor: Int = 0
-    init {
-        starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
-    }
+//    private var starTintColor: Int = 0
+//    init {
+//        starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
+//    }
 
     private val reviewList = mutableListOf<ProductReview>()
 
@@ -347,19 +347,19 @@ class ReviewListAdapter(
             itemHolder.desc.maxLines = 2
 
             if (review.rating > 0) {
-                itemHolder.rating.rating = review.rating.toFloat()
+                itemHolder.rating.numStars = review.rating
+                itemHolder.rating.rating = 100F // necessary to hide unfilled stars
                 itemHolder.rating.visibility = View.VISIBLE
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    val stars = itemHolder.rating.progressDrawable as? LayerDrawable
-                    stars?.getDrawable(2)?.setColorFilter(starTintColor, PorterDuff.Mode.SRC_ATOP)
-                }
             } else {
                 itemHolder.rating.visibility = View.GONE
             }
 
+            println("AMANDA-TEST > ReviewListSection.onBindItemViewHolder > ${review.reviewerName} ${review.rating}")
+
             itemHolder.title.text = context.getString(
                     R.string.review_list_item_title, review.reviewerName, review.product?.name)
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
+            itemHolder.divider.visibility = if (position < getContentItemsTotal() - 1) View.VISIBLE else View.GONE
 
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review)
@@ -386,6 +386,7 @@ class ReviewListAdapter(
         var title: TextView = view.notif_title
         var desc: TextView = view.notif_desc
         var rating: RatingBar = view.notif_rating
+        val divider: View = view.notif_divider
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
