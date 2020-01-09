@@ -287,5 +287,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         Misc Widgets
     -->
-    <style name="Woo.RatingsBar.Small" parent="@style/Widget.AppCompat.RatingBar.Small"/>
+    <style name="Woo.RatingsBar.Small" parent="@style/Widget.AppCompat.RatingBar.Small">
+        <item name="android:progressTint">@color/ratings_bar_progress_tint</item>
+        <item name="android:numStars">5</item>
+        <item name="android:rating">0</item>
+        <item name="android:stepSize">1</item>
+    </style>
 </resources>
