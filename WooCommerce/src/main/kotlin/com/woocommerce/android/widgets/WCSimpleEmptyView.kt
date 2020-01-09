@@ -10,12 +10,15 @@ import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import kotlinx.android.synthetic.main.wc_empty_view.view.*
+import kotlinx.android.synthetic.main.wc_simple_empty_view.view.*
 import org.wordpress.android.util.DisplayUtils
 
-class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
+/**
+ * Simple empty view for lists which contains just a textView and an imageView
+ */
+class WCSimpleEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     init {
-        View.inflate(context, R.layout.wc_empty_view, this)
+        View.inflate(context, R.layout.wc_simple_empty_view, this)
         checkOrientation()
     }
 
