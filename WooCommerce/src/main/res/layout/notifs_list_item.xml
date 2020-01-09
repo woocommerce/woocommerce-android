@@ -57,11 +57,19 @@
             android:layout_marginBottom="@dimen/major_100"
             android:isIndicator="true"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/notif_divider"
             app:layout_constraintStart_toStartOf="@+id/notif_desc"
             app:layout_constraintTop_toBottomOf="@+id/notif_desc"
             tools:rating="4"
             tools:visibility="visible" />
+
+        <View
+            android:id="@+id/notif_divider"
+            style="@style/Woo.Divider"
+            android:layout_width="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/notif_title"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

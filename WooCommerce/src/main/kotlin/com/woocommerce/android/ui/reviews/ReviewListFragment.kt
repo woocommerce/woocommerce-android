@@ -96,15 +96,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(false)
-            // divider decoration between items
-            addItemDecoration(
-                    androidx.recyclerview.widget.DividerItemDecoration(
-                            context,
-                            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
-                    )
-            )
+
             // unread item decoration
             addItemDecoration(unreadDecoration)
+
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
