@@ -112,7 +112,7 @@ class ReviewListAdapter(
             reviewList.forEach {
                 if (it.remoteId == review.remoteId &&
                         it.review == review.review &&
-                        it.read == review.read ?: true &&
+                        it.read == (review.read != false) &&
                         it.status == review.status) {
                     return true
                 }

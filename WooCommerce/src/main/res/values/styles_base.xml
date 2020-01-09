@@ -283,4 +283,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tagColor">@color/tagView_bg</item>
         <item name="tagBorderColor">@color/tagView_border_bg</item>
     </style>
+
+    <!--
+        Misc Widgets
+    -->
+    <style name="Woo.RatingsBar.Small" parent="@style/Widget.AppCompat.RatingBar.Small"/>
 </resources>

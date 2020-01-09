@@ -18,19 +18,23 @@
             android:id="@+id/notifsView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/reviewsList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/notifs_list_item"
+                tools:itemCount="5"/>
         </LinearLayout>
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/notifsLoadMoreProgress"
@@ -39,8 +43,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginBottom="@dimen/major_75"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="gone"/>
     </RelativeLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
