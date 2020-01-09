@@ -56,9 +56,11 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         android:gravity="center"
+        android:orientation="vertical"
         android:paddingStart="28dp"
+        android:paddingTop="28dp"
         android:paddingEnd="28dp"
-        android:orientation="vertical">
+        android:paddingBottom="28dp">
 
         <TextView
             style="@style/Woo.TextAppearance.Title.Large.Bold"
@@ -80,6 +82,7 @@
             style="@style/Woo.TextAppearance.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:text="@string/share_your_store_message" />
 
         <androidx.appcompat.widget.AppCompatButton
