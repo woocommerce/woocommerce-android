@@ -302,7 +302,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (!show) {
+        if (!show) { // TODO
             share_your_store_view.show(
                     selectedSite.get(),
                     Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED,

@@ -280,10 +280,13 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            empty_view.setSiteToShare(
+            /* TODO:
+                empty_view.setSiteToShare(
                     selectedSite.get(),
                     Stat.REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-            empty_view.show(R.string.reviews_empty_message, showShareButton = true)
+                empty_view.show(R.string.reviews_empty_message, showShareButton = true)
+            */
+            empty_view.show(R.string.reviews_empty_message)
         } else {
             empty_view.hide()
         }

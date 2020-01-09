@@ -13,7 +13,6 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
-import kotlinx.android.synthetic.main.wc_empty_view.view.date_title
 import kotlinx.android.synthetic.main.wc_share_your_store_view.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
@@ -48,7 +47,7 @@ class WCShareYourStoreView @JvmOverloads constructor(ctx: Context, attrs: Attrib
     fun show(
         site: SiteModel,
         stat: AnalyticsTracker.Stat,
-        showStats: Boolean = false
+        showStats: Boolean
     ) {
         checkOrientation()
 

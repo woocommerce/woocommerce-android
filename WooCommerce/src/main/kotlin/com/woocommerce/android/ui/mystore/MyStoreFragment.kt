@@ -101,8 +101,6 @@ class MyStoreFragment : TopLevelFragment(),
 
         presenter.takeView(this)
 
-        empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-
         StatsGranularity.values().forEach { granularity ->
             val tab = tab_layout.newTab().apply {
                 setText(my_store_stats.getStringForGranularity(granularity))
@@ -317,6 +315,14 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.waiting_for_customers, showShareButton = true) else empty_view.hide()
+        if (!show) { // TODO
+            share_your_store_view.show(
+                    selectedSite.get(),
+                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED,
+                    showStats = true
+            )
+        } else {
+            share_your_store_view.hide()
+        }
     }
 }
