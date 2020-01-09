@@ -25,7 +25,7 @@
 
         <TextView
             android:id="@+id/products_wip_message"
-            style="@style/Woo.Card.StatusMessage"
+            style="@style/Woo.Card.Body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="start"
