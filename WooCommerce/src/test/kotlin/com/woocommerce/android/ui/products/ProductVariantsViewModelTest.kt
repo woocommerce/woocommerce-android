@@ -1,18 +1,22 @@
 package com.woocommerce.android.ui.products
 
+import androidx.lifecycle.MutableLiveData
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductVariantsViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +38,11 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
+        doReturn(true).whenever(networkStatus).isConnected()
+    }
+
+    private fun createViewModel() {
         viewModel = spy(
                 ProductVariantsViewModel(
                         savedState,
@@ -43,16 +52,16 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
                         currencyFormatter
                 )
         )
-
-        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test
     fun `Displays the product variant list view correctly`() {
         doReturn(productVariants).whenever(productVariantsRepository).getProductVariantList(productRemoteId)
 
+        createViewModel()
+
         val fetchedProductVariantList = ArrayList<ProductVariant>()
-        viewModel.productVariantList.observeForever { fetchedProductVariantList.addAll(it) }
+        viewModel.productVariantList.observeForever { it?.let { fetchedProductVariantList.addAll(it) } }
 
         viewModel.start(productRemoteId)
         assertThat(fetchedProductVariantList).isEqualTo(productVariants)
@@ -62,40 +71,51 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
     fun `Do not fetch product variants from api when not connected`() = test {
         doReturn(false).whenever(networkStatus).isConnected()
 
-        var message: Int? = null
-        viewModel.showSnackbarMessage.observeForever { message = it }
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
 
         viewModel.start(productRemoteId)
 
         verify(productVariantsRepository, times(1)).getProductVariantList(productRemoteId)
         verify(productVariantsRepository, times(0)).fetchProductVariants(productRemoteId)
 
-        assertThat(message).isEqualTo(string.offline_error)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
 
     @Test
     fun `Shows and hides product variants skeleton correctly`() = test {
         doReturn(emptyList<ProductVariant>()).whenever(productVariantsRepository).getProductVariantList(productRemoteId)
 
+        createViewModel()
+
         val isSkeletonShown = ArrayList<Boolean>()
-        viewModel.isSkeletonShown.observeForever { isSkeletonShown.add(it) }
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
+        }
 
         viewModel.start(productRemoteId)
         assertThat(isSkeletonShown).containsExactly(true, false)
     }
 
     @Test
-    fun `Display error message on fetch product variants error`() = test {
+    fun `Display empty view on fetch product variants error`() = test {
         whenever(productVariantsRepository.fetchProductVariants(productRemoteId)).thenReturn(null)
         whenever(productVariantsRepository.getProductVariantList(productRemoteId)).thenReturn(null)
 
-        var message: Int? = null
-        viewModel.showSnackbarMessage.observeForever { message = it }
+        createViewModel()
+
+        val showEmptyView = ArrayList<Boolean>()
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showEmptyView.add(it) }
+        }
 
         viewModel.start(productRemoteId)
 
         verify(productVariantsRepository, times(1)).fetchProductVariants(productRemoteId)
-
-        assertThat(message).isEqualTo(R.string.product_variants_fetch_product_variants_error)
+        assertThat(showEmptyView).containsExactly(true, false)
     }
 }

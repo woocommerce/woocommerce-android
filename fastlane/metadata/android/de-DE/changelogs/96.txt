@@ -1,0 +1,4 @@
+3.2:
+- In der Produktdetailansicht für deine variablen Produkte gibt es einen neuen „Varianten“-Abschnitt.
+- Die untere Navigationsleiste verschwindet beim Scrollen nicht mehr – das dürfte dir gefallen.
+- Der von vielen ersehnte Produkte-Tab ist in Kürze verfügbar. Sieh ihn dir jetzt in der Vorschau an, indem du ihn über die Einstellungen in der App aktivierst.

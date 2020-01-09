@@ -1,60 +1,102 @@
+<ar>
+3.2:
+- سترى قسم "المتغيرات" الجديد في شاشة تفاصيل "المنتجات" الخاصة بالمنتجات المتغيرة لديك.
+- لا يختفي شريط التنقل السفلي بعد الآن عند التمرير — نعتقد أنك ستحب هذا أكثر.
+- نعلم أن علامة التبويب "منتجات" تحتل المرتبة الأولى في القوائم التي يطلبها الأشخاص، ويمكنك الآن معاينة علامة تبويب "المنتجات" التي ستظهر قريبًا — انتقل إلى "الإعدادات" في التطبيق لتمكينها.
+</ar>
 <de-DE>
-3.1:
-- Du kannst dich nicht mehr an deine Anmeldedaten von WordPress.com erinnern? Kein Problem! Wir haben eine neue Option hinzugefügt, mit der Benutzer sich mit ihren Website-Anmeldedaten anmelden können. Wenn diese Anmeldedaten funktionieren, ruft die App die Informationen des verknüpften WordPress.com-Kontos ab und ermöglicht dem Benutzer, die Anmeldung über einen magischen Link abzuschließen.
+3.2:
+- In der Produktdetailansicht für deine variablen Produkte gibt es einen neuen „Varianten“-Abschnitt.
+- Die untere Navigationsleiste verschwindet beim Scrollen nicht mehr – das dürfte dir gefallen.
+- Der von vielen ersehnte Produkte-Tab ist in Kürze verfügbar. Sieh ihn dir jetzt in der Vorschau an, indem du ihn über die Einstellungen in der App aktivierst.
 </de-DE>
 <es-ES>
-3.1:
-- ¿Has olvidado tus credenciales de WordPress.com? ¡No hay problema! Hemos añadido una nueva opción que permite a los usuarios acceder con las credenciales de su sitio. Si las credenciales funcionan, la aplicación obtendrá la información de la cuenta de WordPress.com conectada y permitirá a los usuarios completar el proceso de acceso con un enlace mágico.
+3.2:
+- Verás una nueva sección "Variantes" en la pantalla de detalles del producto para tus productos con variaciones.
+- La barra de navegación inferior ya no desaparece cuando te desplazas por la página. Creemos que te gustará más así.
+- Sabemos que muchos una pestaña Productos está en la lista de deseos de muchos. Ahora puedes obtener una vista previa de la pestaña Productos que se lanzará pronto. Dirígete a Configuración en la aplicación para activarla.
 </es-ES>
 <fr-FR>
-3.1 :
-- Vous avez oublié vos identifiants WordPress.com ? Pas de problème. Nous avons ajouté une nouvelle option qui permet à l'utilisateur de se connecter avec les identifiants de son site. Si ces identifiants fonctionnent, l'application récupère les informations du compte WordPress.com connecté et autorise l'utilisateur à terminer la procédure de connexion à l'aide d'un lien magique.
+3.2 :
+- Vous verrez une nouvelle section « variantes » sur l'écran Détails sur le produit de vos produits variables.
+- La barre de navigation inférieure ne disparaît plus lors du défilement. Nous pensons que ce sera mieux pour vous.
+- Nous savons qu'un onglet Produits intéresse fortement les utilisateurs. Vous pouvez désormais apercevoir l'onglet Produits disponible bientôt. Accédez à Paramètres dans l'application pour l'activer.
 </fr-FR>
 <iw-IL>
-3.1:
-- אין לך מושג מהם פרטי הכניסה שלך ל-WordPress.com? אין בעיה! הוספנו אפשרויות חדשות שמאפשרות למשתמש להתחבר באמצעות פרטי הכניסה שלו לאתר. אם פרטי הכניסה האלה יעבדו, היישום יביא את המידע של החשבון המקושר ב-WordPress.com ויאפשר למשתמש להשלים את תהליך הכניסה באמצעות הקישור הישיר.
+3.2:
+- הוספנו מקטע 'משתנים' חדש במסך הפרטים של המוצר כדי להציג מוצרים משתנים.
+- תפריט הניווט התחתון לא נעלם יותר כאשר גוללים למטה אנחנו חושבים שתאהבו את זה.
+- אנחנו יודעים שהלשונית 'מוצרים' נמצאת בראש רשימת המשאלות של הרבה אנשים וכעת, אפשר לראות תצוגה מקדימה של הלשונית שתפורסם בקרוב – ניתן לעבור למקטע 'הגדרות' באפליקציה כדי להפעיל את הלשונית.
 </iw-IL>
 <id>
-3.1.
-- Tidak dapat mengingat kredensial WordPress.com Anda? Tidak masalah! Kami telah menambahkan pilihan baru yang memungkinkan pengguna login menggunakan kredensial situs mereka. Jika kredensial ini berfungsi, aplikasi akan mengambil informasi akun WordPress.com yang tersambung dan memungkinkan pengguna menyelesaikan proses login menggunakan tautan ajaib.
+3.2:
+- Anda akan melihat bagian “varian” yang baru di layar Detail produk untuk produk variabel Anda.
+- Bilah navigasi bawah tidak lagi muncul saat menggulir — kami rasa Anda lebih suka yang begini.
+- Kami tahu bahwa tab Produk merupakan keinginan dari banyak pihak, dan kini Anda dapat mempratinjau tab Produk yang akan segera hadir tersebut — buka Pengaturan di aplikasi untuk mengaktifkannya.
 </id>
+<it-IT>
+3.2:
+- Vedrai una nuova sezione delle "variants" (varianti) nella schermata dei dettagli Prodotto per i prodotti variabili.
+- La barra di navigazione in basso non apparirà più durante lo scorrimento: crediamo lo apprezzerai.
+- Sappiamo che la scheda Products (Prodotti) è in cima alla lista dei desideri degli utenti. Ora puoi visualizzare in anteprima la scheda Products (Prodotti) in arrivo: vai su Impostazioni nell'app per abilitarla.
+</it-IT>
 <ja-JP>
-3.1:
-- WordPress.com のログイン情報をお忘れですか ?ご心配ありません。サイトのログイン情報を使用してログインできる新しいオプションが追加されました。これらのログイン情報が機能する場合、連携済みの WordPress.com アカウント情報がアプリで取得され、ユーザーはマジックリンクを使用してログインプロセスを完了できます。
+3.2 :
+- さまざまな商品の「商品の詳細」画面に新しい「バリアント」セクションが表示されます。
+- スクロールしても下部のナビゲーションバーが非表示にならないため、使いやすくなりました。
+- 「商品」タブは利用頻度が高いタブですが、追加予定の「商品」タブをプレビューできるようになりました。「商品」タブはアプリの「設定」で有効にできます。
 </ja-JP>
 <ko-KR>
-3.1:
-- 워드프레스닷컴 자격 증명이 기억나지 않으세요? 걱정하지 마세요! 사용자가 사이트 자격 증명을 사용하여 로그인할 수 있는 새로운 옵션이 추가되었습니다. 이러한 자격 증명이 작동하면 앱이 연결된 워드프레스닷컴 계정 정보를 가져오므로 사용자가 매직 링크를 사용하여 로그인 프로세스를 완료할 수 있습니다.
+3.2:
+- 제품 세부 정보 화면에 다양한 제품의 새 "변형" 섹션이 표시됩니다.
+- 스크롤할 때 하단 탐색 표시줄이 더 이상 사라지지 않습니다. 더 마음에 드셨으면 좋겠습니다.
+- 제품 탭이 사람들의 위시리스트 상단에 있습니다. 이제 출시 예정 제품 탭을 미리 볼 수 있습니다. 앱에서 설정으로 이동하여 이 기능을 활성화하세요.
 </ko-KR>
 <nl-NL>
-3.1:
-- Ben je je WordPress.com-inloggegevens vergeten? Geen probleem! We hebben een nieuwe optie toegevoegd waarmee een gebruiker in kan loggen door middel van site-inloggegevens. Als deze inloggegevens werken, haalt de app de gegevens van het verbonden WordPress.com-account op en kan de gebruiker het inlogproces afronden via een magische link.
+3.2:
+- Je ziet een nieuw gedeelte met 'varianten' in het scherm Productinformatie voor je variabele producten.
+- De navigatiebalk onderaan verdwijnt niet meer tijdens het scrollen en we denken dat je dit op prijs zult stellen.
+- We weten dat een tabblad met producten hoog op de lijst met gewenste functies staat en kunnen je nu een voorproefje geven van het tabblad Producten, dat binnenkort beschikbaar wordt. Ga naar Instellingen in de app om deze functie in te schakelen.
 </nl-NL>
 <pt-BR>
-3.1:
-- Não se lembra das suas credenciais do WordPress.com? Sem problema! Adicionamos uma nova opção que permite ao usuário fazer login usando as credenciais do site. Se essas credenciais funcionarem, o aplicativo buscará as informações da conta do WordPress.com conectada e permitirá que o usuário conclua o processo de login usando um link mágico.
+3.2:
+- Você verá uma nova seção "Variantes" na tela de detalhes do produto para seus produtos variáveis.
+- A barra de navegação inferior não desaparece mais durante a rolagem, o que você provavelmente vai preferir.
+- Sabemos que um dos principais pedidos é por uma guia "Produtos" e agora você pode visualizar a prévia dessa guia. Acesse "Configurações" no aplicativo para ativá-la.
 </pt-BR>
 <ru-RU>
-3.1:
-— Не можете вспомнить учетные данные WordPress.com? Нет проблем! Благодаря новой функции входить можно с помощью учетных данных сайта. Если учетные данные действительны, приложение получит информацию об учетной записи WordPress.com и пользователь сможет войти с помощью ссылки.
+Версия 3.2
+— На экране сведений о продуктах отображается раздел “варианты” для продуктов с переменными параметрами.
+— Нижняя панель навигации больше не исчезает при прокрутке — надеемся, вам понравится.
+— Мы знаем, что очень много людей ждали вкладку "Товары", — вы можете оценить ее в процессе подготовки к запуску. Чтобы включить вкладку, перейдите в настройки приложения.
 </ru-RU>
 <sv-SE>
-3.1:
-- Kommer du inte ihåg dina användaruppgifter för WordPress.com? Inga problem! Vi har lagt till ett nytt alternativ som gör det möjligt för en användare att logga in med användaruppgifterna för sin webbplats. Om dessa användaruppgifter fungerar, hämtar appen informationen för det anslutna WordPress.com-kontot och låter användaren slutföra inloggningsprocessen med en magisk länk.
+3.2:
+– Du ser en sektion med nya varianter i Produktinformation-skärmen för dina variabla produkter.
+– Det nedre navigeringsfältet döljs inte längre när du bläddrar – vi tror du kommer gilla det bättre.
+– Vi vet att Produkter-fliken ligger högt på allas önskelistor och du kan nu förhandsgranska Produkter-fliken som kommer snart – gå till Inställningar i appen för att aktivera den.
 </sv-SE>
 <tr-TR>
-3.1:
-- WordPress.com kimlik bilgilerinizi hatırlamıyor musunuz? Sorun değil! Bir kullanıcının site kimlik bilgilerini kullanarak giriş yapmasını sağlayan yeni bir seçenek ekledik. Bu kimlik bilgileri işe yararsa, uygulama bağlı WordPress.com hesap bilgilerini alır ve kullanıcının özel bir bağlantı kullanarak giriş yapma işlemini tamamlamasına izin verir.
+3.2:
+- Değişebilen ürünleriniz için Ürün detay ekranında yeni bir "değişken" bölümü göreceksiniz.
+- Kaydırma sırasında alt gezinti çubuğu artık kaybolmuyor. Bunu daha çok seveceğinizi düşünüyoruz.
+- Ürünler sekmesinin hevesle beklendiğini biliyoruz ve şimdi yakında gelecek olan Ürünler sekmesinin önizlemesini görüntüleyebilirsiniz. Bunu etkinleştirmek için uygulamadaki Ayarlar'a gidin.
 </tr-TR>
 <zh-CN>
-3.1：
-- 忘记了您的 WordPress.com 凭据？没问题！我们添加了一个允许用户使用其站点凭据登录的新选项。如果这些凭据有效，则该应用程序将获取已关联的 WordPress.com 帐户信息，并允许用户使用免密登录链接完成登录过程。
+3.2：
+– 您将在“产品详细信息”屏幕中看到可变产品的新“变体”部分。
+– 滚动浏览时底部导航栏不再消失（我们认为您会更喜欢它）。
+– 我们知道大家都期盼着“产品”选项卡，现在您可以预览即将推出的“产品”选项卡（转到应用程序中的“设置”即可启用）。
 </zh-CN>
 <zh-TW>
-3.1：
-- 記不住 WordPress.com 憑證嗎？沒問題！我們已新增讓使用者能夠以網站憑證登入的選項。若使用網站憑證成功登入，應用程式會擷取連結的 WordPress.com 帳號資料，並允許使用者透過神奇連結完成登入程序。
+3.2：
+- 針對具有不同型號的產品，產品詳細資訊畫面將會新增「型號」區段。
+- 底部導覽列再也不會在捲動時消失了，也許你會比較喜歡這樣的設計。
+- 很多人希望我們推出「產品」分頁，現在你可以預覽即將推出的產品分頁了，前往應用程式中的設定即可啟用預覽。
 </zh-TW>
 <en-US>
-3.1:
-- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.
+3.2:
+- You’ll see a new “variants” section in the Product detail screen for your variable products.
+- The bottom navigation bar no longer disappears when scrolling — we think you’ll like it better.
+- We know a Products tab is high on people’s wish lists, and you can now preview the coming-soon Products tab — head to Settings in the app to enable it.
 </en-US>

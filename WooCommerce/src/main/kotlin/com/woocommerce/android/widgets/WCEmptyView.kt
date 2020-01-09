@@ -1,7 +1,6 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
-import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -9,12 +8,12 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.fluxc.model.SiteModel
@@ -32,11 +31,6 @@ class WCEmptyView @JvmOverloads constructor(
 
     init {
         View.inflate(context, R.layout.wc_empty_view, this)
-        checkOrientation()
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
         checkOrientation()
     }
 

@@ -31,6 +31,15 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <!--
+        Number picker
+    -->
+    <style name="NumberPickerTheme" parent="Theme.Woo.DayNight">
+        <item name="colorControlNormal">@color/transparent</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+    </style>
+
+    <!--
         Text Styles
     -->
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
@@ -263,6 +272,13 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <style name="Woo.Refunds.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
+
+    <style name="Woo.Refunds.TabLayout" parent="Woo.OrderList.TabLayout" />
+
+    <style name="Woo.Refunds.Button" parent="Woo.Button">
+        <item name="android:textAlignment">viewEnd</item>
+    </style>
+
     <!--
         Settings Styles
     -->
@@ -486,6 +502,40 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <!--
+        Aztec Editor
+    -->
+    <style name="Woo.Aztec"/>
+    <style name="Woo.Aztec.Text">
+        <item name="android:paddingStart">@dimen/card_padding_start</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
+        <item name="android:paddingTop">@dimen/card_padding_top</item>
+        <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="android:gravity">top|start</item>
+        <item name="lineSpacingExtra">2dp</item>
+    </style>
+    <style name="Woo.Aztec.VisualEditor" parent="@style/Woo.Aztec.Text">
+        <item name="textColor">@color/wc_black_darker</item>
+        <item name="textColorHint">@color/wc_black_lighter</item>
+        <item name="bulletColor">@color/wc_black_darker</item>
+        <item name="quoteColor">@color/wc_black_darker</item>
+        <item name="quoteBackground">@color/white</item>
+        <item name="quoteMargin">0dp</item>
+        <item name="quotePadding">0dp</item>
+        <item name="historyEnable">true</item>
+        <item name="historySize">10</item>
+        <item name="linkColor">@color/colorPrimary</item>
+        <item name="linkUnderline">true</item>
+    </style>
+    <style name="Woo.Aztec.SourceEditor" parent="@style/Woo.Aztec.Text">
+        <item name="codeTextColor">@color/wc_black_darker</item>
+        <item name="codeBackgroundColor">@android:color/transparent</item>
+        <item name="android:inputType">textNoSuggestions|textMultiLine</item>
+    </style>
+
+    <!--
          Stats
         -->
     <style name="Woo.Stats.Card" parent="Woo.Card">
@@ -519,6 +569,21 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:drawableStart">@drawable/ic_gridicons_tools</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textColor">@color/black_85</item>
+    </style>
+
+    <style name="Woo.Product"/>
+    <style name="Woo.Product.Title" parent="@style/EditText">
+        <item name="android:textColor">@color/wc_black_darker</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColorHint">@color/wc_black_lighter</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="colorControlActivated">@color/edit_text_color_control_activated</item>
+        <item name="colorControlHighlight">@color/edit_text_color_control_highlight</item>
+        <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:inputType">textNoSuggestions|textVisiblePassword</item>
     </style>
 
 </resources>

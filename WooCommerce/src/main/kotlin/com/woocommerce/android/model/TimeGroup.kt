@@ -16,15 +16,18 @@ enum class TimeGroup(@StringRes val labelRes: Int) {
 
     companion object {
         fun getTimeGroupForDate(date: Date): TimeGroup {
-            val dateToday = Date()
+            val dateToday = DateTimeUtils.nowUTC()
+
             return when {
-                date.after(DateTimeUtils.nowUTC()) -> GROUP_FUTURE
                 date < DateUtils.addMonths(dateToday, -1) -> GROUP_OLDER_MONTH
                 date < DateUtils.addWeeks(dateToday, -1) -> GROUP_OLDER_WEEK
                 date < DateUtils.addDays(dateToday, -2) -> GROUP_OLDER_TWO_DAYS
                 DateUtils.isSameDay(DateUtils.addDays(dateToday, -2), date) -> GROUP_OLDER_TWO_DAYS
                 DateUtils.isSameDay(DateUtils.addDays(dateToday, -1), date) -> GROUP_YESTERDAY
-                else -> GROUP_TODAY
+                DateUtils.isSameDay(dateToday, date) -> GROUP_TODAY
+                else -> {
+                    GROUP_FUTURE
+                }
             }
         }
     }

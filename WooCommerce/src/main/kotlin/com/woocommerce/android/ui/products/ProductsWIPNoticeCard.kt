@@ -17,13 +17,21 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
         View.inflate(context, R.layout.products_wip_notice, this)
     }
 
+    var isExpanded: Boolean = false
+        set(value) {
+            if (value != field) {
+                field = value
+                if (value) {
+                    WooAnimUtils.fadeIn(products_wip_message)
+                } else {
+                WooAnimUtils.fadeOut(products_wip_message)
+                }
+            }
+        }
+
     fun initView() {
         products_wip_viewMore.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                WooAnimUtils.fadeIn(products_wip_message)
-            } else {
-                WooAnimUtils.fadeOut(products_wip_message)
-            }
+            isExpanded = isChecked
         }
     }
 }

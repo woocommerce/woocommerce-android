@@ -42,7 +42,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/list_item_padding_start"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_gridicons_add_outline_purple"/>
+                app:srcCompat="@drawable/ic_add_purple"/>
 
             <TextView
                 style="@style/Woo.TextAppearance.Button"
