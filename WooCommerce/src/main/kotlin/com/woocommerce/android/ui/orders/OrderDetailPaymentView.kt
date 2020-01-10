@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.format.DateFormat
 import android.util.AttributeSet
@@ -12,6 +13,7 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -27,6 +29,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         orientation = VERTICAL
     }
 
+    @SuppressLint("SetTextI18n")
     fun initView(
         order: Order,
         formatCurrencyForDisplay: (BigDecimal) -> String,
@@ -73,14 +76,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                         dateStr,
                         order.paymentMethodTitle
                 )
-
-                // temporarily disabled in v3.2
-                paymentInfo_issueRefundButtonSection.hide()
-//                if (order.total - order.refundTotal > BigDecimal.ZERO) {
-//                    paymentInfo_issueRefundButtonSection.show()
-//                } else {
-//                    paymentInfo_issueRefundButtonSection.hide()
-//                }
             }
         }
 
@@ -98,15 +93,17 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_discountSection.hide()
         } else {
             paymentInfo_discountSection.show()
-            paymentInfo_discountTotal.text = formatCurrencyForDisplay(order.discountTotal)
+            paymentInfo_discountTotal.text = "-${formatCurrencyForDisplay(order.discountTotal)}"
             paymentInfo_discountItems.text = context.getString(
                     R.string.orderdetail_discount_items,
                     order.discountCodes
             )
         }
 
-        paymentInfo_issueRefundButton.setOnClickListener {
-            actionListener.issueOrderRefund(order)
+        if (FeatureFlag.REFUNDS.isEnabled()) {
+            paymentInfo_issueRefundButton.setOnClickListener {
+                actionListener.issueOrderRefund(order)
+            }
         }
     }
 
@@ -124,6 +121,18 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
 
         paymentInfo_refunds.show()
         paymentInfo_refundTotalSection.hide()
+
+        var availableRefundQuantity = order.items.sumBy { it.quantity }
+        refunds.flatMap { it.items }.groupBy { it.uniqueId }.forEach { productRefunds ->
+            val refundedCount = productRefunds.value.sumBy { it.quantity }
+            availableRefundQuantity -= refundedCount
+        }
+
+        if (availableRefundQuantity > 0 && FeatureFlag.REFUNDS.isEnabled()) {
+            paymentInfo_issueRefundButtonSection.show()
+        } else {
+            paymentInfo_issueRefundButtonSection.hide()
+        }
     }
 
     fun showRefundTotal(refundTotal: BigDecimal) {
