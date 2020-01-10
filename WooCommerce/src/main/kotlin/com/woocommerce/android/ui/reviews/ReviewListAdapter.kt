@@ -47,6 +47,7 @@ class ReviewListAdapter(
         removeAllSections()
 
         // Build a reviews for each [TimeGroup] section
+        val listFuture = ArrayList<ProductReview>() // Should never be needed, but some extension could change that
         val listToday = ArrayList<ProductReview>()
         val listYesterday = ArrayList<ProductReview>()
         val listTwoDays = ArrayList<ProductReview>()
@@ -61,7 +62,12 @@ class ReviewListAdapter(
                 TimeGroup.GROUP_OLDER_TWO_DAYS -> listTwoDays.add(it)
                 TimeGroup.GROUP_OLDER_WEEK -> listWeek.add(it)
                 TimeGroup.GROUP_OLDER_MONTH -> listMonth.add(it)
+                TimeGroup.GROUP_FUTURE -> listFuture.add(it)
             }
+        }
+
+        if (listFuture.size > 0) {
+            addSection(ReviewListSection(TimeGroup.GROUP_FUTURE.name, listFuture))
         }
 
         if (listToday.size > 0) {
