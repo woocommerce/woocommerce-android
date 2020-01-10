@@ -366,6 +366,7 @@ class ReviewListAdapter(
                 TimeGroup.GROUP_OLDER_TWO_DAYS -> headerViewHolder.title.setText(R.string.date_timeframe_older_two_days)
                 TimeGroup.GROUP_YESTERDAY -> headerViewHolder.title.setText(R.string.date_timeframe_yesterday)
                 TimeGroup.GROUP_TODAY -> headerViewHolder.title.setText(R.string.date_timeframe_today)
+                TimeGroup.GROUP_FUTURE -> headerViewHolder.title.setText(R.string.date_timeframe_future)
             }
         }
     }
