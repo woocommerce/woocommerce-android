@@ -34,4 +34,6 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(ctx: Context, attr
     fun setText(selectedText: String) {
         edit_text.setText(selectedText)
     }
+
+    fun getText() = edit_text.text.toString()
 }

@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
@@ -15,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -22,13 +24,16 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
 import javax.inject.Inject
 
-class ProductInventoryFragment : BaseFragment() {
+class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogListener {
     private val navArgs: ProductInventoryFragmentArgs by navArgs()
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory }
+
+    private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
+    private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +42,15 @@ class ProductInventoryFragment : BaseFragment() {
     ): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_inventory, container, false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        productBackOrderSelectorDialog?.dismiss()
+        productBackOrderSelectorDialog = null
+
+        productStockStatusSelectorDialog?.dismiss()
+        productStockStatusSelectorDialog = null
     }
 
     override fun onResume() {
@@ -81,15 +95,48 @@ class ProductInventoryFragment : BaseFragment() {
             product_sku.setText(product.sku)
         }
 
-        product_stock_quantity.setText(product.stockQuantity.toString())
-        edit_product_backorders.setText(product.backordersToDisplayString(requireContext()))
-        edit_product_stock_status.setText(product.stockStatusToDisplayString(requireContext()))
-
         val manageStock = product.manageStock
-        manageStock_switch.isChecked = manageStock
         enableManageStockStatus(manageStock)
-        manageStock_switch.setOnCheckedChangeListener { _, b ->
-            enableManageStockStatus(b)
+        with(manageStock_switch) {
+            isChecked = manageStock
+            setOnCheckedChangeListener { _, b ->
+                enableManageStockStatus(b)
+                // TODO: update product draft in another PR
+            }
+        }
+
+        with(product_stock_quantity) {
+            setText(product.stockQuantity.toString())
+            // TODO: update product draft in another PR
+        }
+
+        with(edit_product_backorders) {
+            setText(product.backordersToDisplayString(requireContext()))
+            setClickListener {
+                productBackOrderSelectorDialog = ProductInventorySelectorDialog.newInstance(
+                        this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_BACKORDERS,
+                        getString(R.string.product_backorders), ProductBackorderStatus.toMap(requireContext()),
+                        edit_product_backorders.getText()
+                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+            }
+        }
+
+        with(edit_product_stock_status) {
+            setText(product.stockStatusToDisplayString(requireContext()))
+            setClickListener {
+                productStockStatusSelectorDialog = ProductInventorySelectorDialog.newInstance(
+                        this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS,
+                        getString(R.string.product_stock_status), ProductStockStatus.toMap(requireContext()),
+                        edit_product_stock_status.getText()
+                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+            }
+        }
+
+        with(soldIndividually_switch) {
+            isChecked = product.soldIndividually
+            setOnCheckedChangeListener { _, b ->
+                // TODO: update product draft in another PR
+            }
         }
     }
 
@@ -100,6 +147,21 @@ class ProductInventoryFragment : BaseFragment() {
         } else {
             edit_product_stock_status.visibility = View.VISIBLE
             manageStock_morePanel.collapse()
+        }
+    }
+
+    override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {
+        when (resultCode) {
+            RequestCodes.PRODUCT_INVENTORY_BACKORDERS -> {
+                selectedItem?.let {
+                    edit_product_backorders.setText(getString(ProductBackorderStatus.toStringResource(it)))
+                }
+            }
+            RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS -> {
+                selectedItem?.let {
+                    edit_product_stock_status.setText(getString(ProductStockStatus.toStringResource(it)))
+                }
+            }
         }
     }
 }
