@@ -96,6 +96,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.Card.WithoutPadding">
         <item name="contentPaddingTop">@dimen/minor_00</item>
         <item name="contentPaddingBottom">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
     </style>
 
     <style name="Woo.Card.ExpanderButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
