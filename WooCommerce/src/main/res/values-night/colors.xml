@@ -32,4 +32,11 @@
         TagView colors
     -->
     <color name="tagView_text">@color/color_on_primary_high</color>
+
+    <!--
+        Products List
+    -->
+    <color name="product_stock_fg">@color/color_on_surface_medium</color>
+    <color name="product_status_fg_other">@color/woo_blue_30</color>
+    <color name="product_status_fg_pending">@color/woo_orange_30</color>
 </resources>

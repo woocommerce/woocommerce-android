@@ -57,4 +57,11 @@
         or automatically applying a translucent background (3-button mode).
     -->
     <color name="nav_bar">@color/woo_black_90_alpha_020</color>
+
+    <!--
+        Products List
+    -->
+    <color name="product_stock_fg">@color/color_on_surface_medium</color>
+    <color name="product_status_fg_other">@color/woo_blue_50</color>
+    <color name="product_status_fg_pending">@color/woo_orange_50</color>
 </resources>
