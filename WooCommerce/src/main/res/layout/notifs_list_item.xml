@@ -14,10 +14,12 @@
 
         <ImageView
             android:id="@+id/notif_icon"
-            android:layout_width="@dimen/image_minor_100"
-            android:layout_height="@dimen/image_minor_100"
-            android:importantForAccessibility="no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/major_100"
+            android:paddingTop="@dimen/minor_25"
+            android:importantForAccessibility="no"
+            android:scaleType="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
