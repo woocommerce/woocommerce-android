@@ -1,10 +1,12 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.doAfterTextChanged
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.view_material_outlined_edittext.view.*
 
@@ -40,5 +42,11 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
 
     fun setText(selectedText: String) {
         edit_text.setText(selectedText)
+    }
+
+    fun getText() = edit_text.text.toString()
+
+    fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
+        edit_text.doAfterTextChanged { cb(it) }
     }
 }

@@ -72,7 +72,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
 
     private fun setupObservers(viewModel: ProductInventoryViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
+            new.productInventoryParameters?.takeIfNotEqualTo(old?.productInventoryParameters) { showProduct(new) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -90,9 +90,12 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
     private fun showProduct(productData: ViewState) {
         if (!isAdded) return
 
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productInventoryParameters)
         if (product.sku.isNotEmpty()) {
-            product_sku.setText(product.sku)
+            with(product_sku) {
+                setText(product.sku)
+                setOnTextChangedListener { viewModel.updateProductInventoryDraft(sku = it.toString()) }
+            }
         }
 
         val manageStock = product.manageStock
@@ -101,17 +104,21 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
             isChecked = manageStock
             setOnCheckedChangeListener { _, b ->
                 enableManageStockStatus(b)
-                // TODO: update product draft in another PR
+                viewModel.updateProductInventoryDraft(manageStock = b)
             }
         }
 
         with(product_stock_quantity) {
             setText(product.stockQuantity.toString())
-            // TODO: update product draft in another PR
+            setOnTextChangedListener {
+                if (it.toString().isNotEmpty()) {
+                    viewModel.updateProductInventoryDraft(stockQuantity = it.toString())
+                }
+            }
         }
 
         with(edit_product_backorders) {
-            setText(product.backordersToDisplayString(requireContext()))
+            setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), product.backOrderStatus))
             setClickListener {
                 productBackOrderSelectorDialog = ProductInventorySelectorDialog.newInstance(
                         this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_BACKORDERS,
@@ -122,7 +129,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         }
 
         with(edit_product_stock_status) {
-            setText(product.stockStatusToDisplayString(requireContext()))
+            setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), product.stockStatus))
             setClickListener {
                 productStockStatusSelectorDialog = ProductInventorySelectorDialog.newInstance(
                         this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS,
@@ -135,7 +142,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         with(soldIndividually_switch) {
             isChecked = product.soldIndividually
             setOnCheckedChangeListener { _, b ->
-                // TODO: update product draft in another PR
+                viewModel.updateProductInventoryDraft(soldIndividually = b)
             }
         }
     }
@@ -155,11 +162,13 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
             RequestCodes.PRODUCT_INVENTORY_BACKORDERS -> {
                 selectedItem?.let {
                     edit_product_backorders.setText(getString(ProductBackorderStatus.toStringResource(it)))
+                    viewModel.updateProductInventoryDraft(backorderStatus = ProductBackorderStatus.fromString(it))
                 }
             }
             RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS -> {
                 selectedItem?.let {
                     edit_product_stock_status.setText(getString(ProductStockStatus.toStringResource(it)))
+                    viewModel.updateProductInventoryDraft(stockStatus = ProductStockStatus.fromString(it))
                 }
             }
         }
