@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
+import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -314,5 +315,19 @@ object DateUtils {
     fun getDayOfWeekWithMonthAndDayFromDate(date: Date): String {
         val dateFormat = SimpleDateFormat("EEEE, MMM dd", Locale.US)
         return dateFormat.format(date)
+    }
+
+    /**
+     * Compares two dates to determine if [date2] is after [Date1]. Note that
+     * this method strips the time information from the comparison and is only comparing
+     * the dates.
+     *
+     * @param date1 the base date for comparison
+     * @param date2 the date to determine if after [date1]
+     */
+    fun isAfterDate(date1: Date, date2: Date): Boolean {
+        val dateOnly1 = DateUtils.round(date1, Calendar.DATE)
+        val dateOnly2 = DateUtils.round(date2, Calendar.DATE)
+        return dateOnly2.after(dateOnly1)
     }
 }

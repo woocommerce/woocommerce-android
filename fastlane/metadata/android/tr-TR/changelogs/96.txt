@@ -1,4 +1,0 @@
-3.2:
-- Değişebilen ürünleriniz için Ürün detay ekranında yeni bir "değişken" bölümü göreceksiniz.
-- Kaydırma sırasında alt gezinti çubuğu artık kaybolmuyor. Bunu daha çok seveceğinizi düşünüyoruz.
-- Ürünler sekmesinin hevesle beklendiğini biliyoruz ve şimdi yakında gelecek olan Ürünler sekmesinin önizlemesini görüntüleyebilirsiniz. Bunu etkinleştirmek için uygulamadaki Ayarlar'a gidin.

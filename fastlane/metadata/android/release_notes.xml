@@ -1,102 +1,85 @@
 <ar>
-3.2:
-- سترى قسم "المتغيرات" الجديد في شاشة تفاصيل "المنتجات" الخاصة بالمنتجات المتغيرة لديك.
-- لا يختفي شريط التنقل السفلي بعد الآن عند التمرير — نعتقد أنك ستحب هذا أكثر.
-- نعلم أن علامة التبويب "منتجات" تحتل المرتبة الأولى في القوائم التي يطلبها الأشخاص، ويمكنك الآن معاينة علامة تبويب "المنتجات" التي ستظهر قريبًا — انتقل إلى "الإعدادات" في التطبيق لتمكينها.
+3.3:
+- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
+- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.
 </ar>
 <de-DE>
-3.2:
-- In der Produktdetailansicht für deine variablen Produkte gibt es einen neuen „Varianten“-Abschnitt.
-- Die untere Navigationsleiste verschwindet beim Scrollen nicht mehr – das dürfte dir gefallen.
-- Der von vielen ersehnte Produkte-Tab ist in Kürze verfügbar. Sieh ihn dir jetzt in der Vorschau an, indem du ihn über die Einstellungen in der App aktivierst.
+3.3:
+- Verbesserungen an der Performance: Die Bestellungen in der Bestellliste laden jetzt schneller und die gelegentlichen Abstürze nach der Aktualisierung von Produktvarianten oder beim Verlassen einer Bestellung nach einer Statusänderung kommen nun nicht mehr vor.
+- Fehlerkorrekturen: Abgeschnittene Labels in der unteren Navigationsleiste werden jetzt vollständig angezeigt, das vertikale Scrollen in deinen Statistiken funktioniert jetzt richtig, es gibt keine Bewertungen mit falschen Zeitstempeln mehr und die Sortierung von Produktvarianten funktioniert nun in der App genauso wie im Web.
 </de-DE>
 <es-ES>
-3.2:
-- Verás una nueva sección "Variantes" en la pantalla de detalles del producto para tus productos con variaciones.
-- La barra de navegación inferior ya no desaparece cuando te desplazas por la página. Creemos que te gustará más así.
-- Sabemos que muchos una pestaña Productos está en la lista de deseos de muchos. Ahora puedes obtener una vista previa de la pestaña Productos que se lanzará pronto. Dirígete a Configuración en la aplicación para activarla.
+3.3:
+- Mejoras de rendimiento: Los pedidos de la lista de pedidos ahora se cargan más rápido y se han solucionado los errores que a veces se producían después de actualizar las variantes de productos o al salir de un pedido, después de cambiar su estado.
+- Corrección de errores: Las etiquetas de la barra de navegación inferior que estaban cortadas ya aparecen enteras, el desplazamiento vertical en la tabla de estadísticas funciona correctamente, las valoraciones con marcas de tiempo incorrectas tienen las correctas, y la clasificación de las variaciones de productos en la aplicación coincide con la web.
 </es-ES>
 <fr-FR>
-3.2 :
-- Vous verrez une nouvelle section « variantes » sur l'écran Détails sur le produit de vos produits variables.
-- La barre de navigation inférieure ne disparaît plus lors du défilement. Nous pensons que ce sera mieux pour vous.
-- Nous savons qu'un onglet Produits intéresse fortement les utilisateurs. Vous pouvez désormais apercevoir l'onglet Produits disponible bientôt. Accédez à Paramètres dans l'application pour l'activer.
+3.3 :
+- Amélioration des performances : Les commandes de la liste des commandes se chargent désormais plus vite. Nous avons par ailleurs résolu les plantages qui se produisaient après avoir mis à jour les variantes d’un produit ou après avoir quitté une commande à la suite de modifications apportées à son état.
+- Résolution de bugs : Dans le fond de la barre de navigation, les étiquettes qui étaient tronquées sont affichées en intégralité, le défilement vertical dans le tableau de vos statistiques fonctionne correctement, les horodatages incorrects des avis sont corrigés, et le triage des variantes de produit dans l’application correspond à la version Web.
 </fr-FR>
 <iw-IL>
-3.2:
-- הוספנו מקטע 'משתנים' חדש במסך הפרטים של המוצר כדי להציג מוצרים משתנים.
-- תפריט הניווט התחתון לא נעלם יותר כאשר גוללים למטה אנחנו חושבים שתאהבו את זה.
-- אנחנו יודעים שהלשונית 'מוצרים' נמצאת בראש רשימת המשאלות של הרבה אנשים וכעת, אפשר לראות תצוגה מקדימה של הלשונית שתפורסם בקרוב – ניתן לעבור למקטע 'הגדרות' באפליקציה כדי להפעיל את הלשונית.
+3.3:
+- שיפורים בביצועים: הזמנות ברשימת ההזמנות נטענות כעת מהר יותר וטיפלנו בקריסות שלפעמים התרחשו לאחר העדכון של משתני המוצר או של הזמנה קיימת אחרי שינוי המצב שלה.
+- תיקוני באגים: תוויות בתחתית של סרגל הניווט שנחתכו בעבר כעת מופיעות בצורה שלמה, הגלילה האנרכית בטבלה של הנתונים הסטטיסטיים כעת עובדת באופן תקין, ביקורות עם חותמות זמן שגויות מופיעות כעת עם חותמת הזמן הנכונה, המיון לפי סוג מוצר באפליקציה כעת תואם לתצוגה ברשת.
 </iw-IL>
 <id>
-3.2:
-- Anda akan melihat bagian “varian” yang baru di layar Detail produk untuk produk variabel Anda.
-- Bilah navigasi bawah tidak lagi muncul saat menggulir — kami rasa Anda lebih suka yang begini.
-- Kami tahu bahwa tab Produk merupakan keinginan dari banyak pihak, dan kini Anda dapat mempratinjau tab Produk yang akan segera hadir tersebut — buka Pengaturan di aplikasi untuk mengaktifkannya.
+3.3:
+- Peningkatan performa: Pesanan dalam daftar pesanan kini dimuat lebih cepat, dan terkadang terjadi crash setelah memperbarui varian produk atau keluar dari pesanan setelah mengubah status.
+- Memperbaiki bug: label di bilah navigasi bawah yang terpotong kini sudah terlihat, pengguliran vertikal di bagan statistik berfungsi dengan semestinya, ulasan dengan stempel waktu yang salah sudah memiliki stempel waktu yang benar, dan pengurutan variasi produk di aplikasi cocok dengan yang ada di web.
 </id>
 <it-IT>
-3.2:
-- Vedrai una nuova sezione delle "variants" (varianti) nella schermata dei dettagli Prodotto per i prodotti variabili.
-- La barra di navigazione in basso non apparirà più durante lo scorrimento: crediamo lo apprezzerai.
-- Sappiamo che la scheda Products (Prodotti) è in cima alla lista dei desideri degli utenti. Ora puoi visualizzare in anteprima la scheda Products (Prodotti) in arrivo: vai su Impostazioni nell'app per abilitarla.
+3.3:
+- Migliori prestazioni: caricamento più rapido degli ordini nell'elenco e correzione degli arresti imprevisti dopo l'aggiornamento di varianti di prodotto o all'uscita da un ordine dopo averne modificato lo stato.
+- Correzioni di bug: le etichette troncate nella barra di navigazione inferiore ora sono intere, lo scorrimento verticale nelle statistiche funziona, le recensioni con data e ora errate ora sono corrette e l'ordinamento delle varianti di prodotto nell'app ora corrisponde al web.
 </it-IT>
 <ja-JP>
-3.2 :
-- さまざまな商品の「商品の詳細」画面に新しい「バリアント」セクションが表示されます。
-- スクロールしても下部のナビゲーションバーが非表示にならないため、使いやすくなりました。
-- 「商品」タブは利用頻度が高いタブですが、追加予定の「商品」タブをプレビューできるようになりました。「商品」タブはアプリの「設定」で有効にできます。
+3.3:
+- Performance improvements:Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
+- Bug fixes:labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.
 </ja-JP>
 <ko-KR>
-3.2:
-- 제품 세부 정보 화면에 다양한 제품의 새 "변형" 섹션이 표시됩니다.
-- 스크롤할 때 하단 탐색 표시줄이 더 이상 사라지지 않습니다. 더 마음에 드셨으면 좋겠습니다.
-- 제품 탭이 사람들의 위시리스트 상단에 있습니다. 이제 출시 예정 제품 탭을 미리 볼 수 있습니다. 앱에서 설정으로 이동하여 이 기능을 활성화하세요.
+3.3:
+- 성능 개선 사항: 이제 주문 목록의 주문이 더 빨리 로드되며, 제품 변형을 업데이트하거나 상태 변경 후 주문을 종료하면 때때로 발생하던 충돌 문제가 해결되었습니다.
+- 버그 수정: 하단 탐색 표시줄에서 잘려서 표시되던 레이블이 이제 온전하게 표시됩니다. 통계 차트에서 세로 스크롤이 정상적으로 작동하며, 리뷰의 잘못된 타임스탬프가 올바르게 수정되었고, 앱에서 정렬되는 제품 변형이 웹과 일치합니다.
 </ko-KR>
 <nl-NL>
-3.2:
-- Je ziet een nieuw gedeelte met 'varianten' in het scherm Productinformatie voor je variabele producten.
-- De navigatiebalk onderaan verdwijnt niet meer tijdens het scrollen en we denken dat je dit op prijs zult stellen.
-- We weten dat een tabblad met producten hoog op de lijst met gewenste functies staat en kunnen je nu een voorproefje geven van het tabblad Producten, dat binnenkort beschikbaar wordt. Ga naar Instellingen in de app om deze functie in te schakelen.
+3.3:
+- Prestatieverbeteringen: Bestellingen in de bestellijst worden nu sneller geladen en crashes die soms plaatsvonden na het bijwerken van productvarianten of het afsluiten van een bestelling na het wijzigen van de status zijn opgelost.
+- Bugfixes: Labels op de navigatiebalk onderaan die afgebroken werden, worden nu in het geheel weergegeven; verticaal scrollen in je statistiekengrafiek werkt nu goed; beoordelingen met onjuiste tijden hebben nu de juiste tijden; en het sorteren van productvariaties in de app komt nu overeen met dat van de webbrowser.
 </nl-NL>
 <pt-BR>
-3.2:
-- Você verá uma nova seção "Variantes" na tela de detalhes do produto para seus produtos variáveis.
-- A barra de navegação inferior não desaparece mais durante a rolagem, o que você provavelmente vai preferir.
-- Sabemos que um dos principais pedidos é por uma guia "Produtos" e agora você pode visualizar a prévia dessa guia. Acesse "Configurações" no aplicativo para ativá-la.
+3.3:
+- Melhorias de desempenho: pedidos na lista agora carregam mais depressa. Erros ocasionais após atualizar variantes de produtos ou sair de um pedido após alterar seu status foram resolvidos.
+- Correções de bugs: rótulos na barra de navegação inferior foram totalmente eliminados, rolagem vertical no gráfico de estatísticas funciona corretamente, carimbos de data/hora incorretos em avaliações foram corrigidos e a classificação da variação de produtos no aplicativo corresponde à classificação na Web.
 </pt-BR>
 <ru-RU>
-Версия 3.2
-— На экране сведений о продуктах отображается раздел “варианты” для продуктов с переменными параметрами.
-— Нижняя панель навигации больше не исчезает при прокрутке — надеемся, вам понравится.
-— Мы знаем, что очень много людей ждали вкладку "Товары", — вы можете оценить ее в процессе подготовки к запуску. Чтобы включить вкладку, перейдите в настройки приложения.
+Версия 3.3
+— Улучшена производительность. Элементы списка заказов теперь загружаются быстрее, а сбои, которые иногда возникали при обновлении вариантов продуктов или при выходе из заказа после изменения его статуса, устранены.
+— Исправлены ошибки. Обрезанные ярлыки на нижней панели навигации теперь отображаются целиком, вертикальная прокрутка таблицы статистики работает нормально, исправлены отзывы с неверными метками, а сортировка вариантов продуктов в приложении совпадает с сортировкой на сайте.
 </ru-RU>
 <sv-SE>
-3.2:
-– Du ser en sektion med nya varianter i Produktinformation-skärmen för dina variabla produkter.
-– Det nedre navigeringsfältet döljs inte längre när du bläddrar – vi tror du kommer gilla det bättre.
-– Vi vet att Produkter-fliken ligger högt på allas önskelistor och du kan nu förhandsgranska Produkter-fliken som kommer snart – gå till Inställningar i appen för att aktivera den.
+3.3:
+– Prestandaförbättringar: Ordrar i orderlistan laddar nu snabbare och krascher som ibland kunde inträffa efter uppdatering av produktvarianter eller när man gick ut från en order efter att ha ändrat dess status har åtgärdats.
+– Buggkorrigeringar: etiketter i det nedre navigeringsfältet som var beskurna är nu hela, lodrät bläddring i dina statistikdiagram fungerar nu korrekt, recensioner med felaktiga tidsstämplar har korrigerats och sortering efter produktvarianter i appen matchar nu webben.
 </sv-SE>
 <tr-TR>
-3.2:
-- Değişebilen ürünleriniz için Ürün detay ekranında yeni bir "değişken" bölümü göreceksiniz.
-- Kaydırma sırasında alt gezinti çubuğu artık kaybolmuyor. Bunu daha çok seveceğinizi düşünüyoruz.
-- Ürünler sekmesinin hevesle beklendiğini biliyoruz ve şimdi yakında gelecek olan Ürünler sekmesinin önizlemesini görüntüleyebilirsiniz. Bunu etkinleştirmek için uygulamadaki Ayarlar'a gidin.
+3.3:
+- Performans iyileştirmeleri: Artık sipariş listesindeki siparişler daha hızlı yükleniyor. Ürün varyasyonları güncellenirken veya sipariş durumu değiştirildikten sonra sayfadan ayrılırken yaşanan kilitlenmeler giderildi.
+- Hata düzeltmeleri: Alt gezinme çubuğundaki kesilmiş etiketler artık tam görünüyor, istatistik grafiklerinde dikey kaydırma sırasında yaşanan sorunlar ve zaman damgası yanlış olan yorumlar düzeltildi, uygulamadaki ürün varyasyonu sınıflandırması ile web uyumlu hale getirildi.
 </tr-TR>
 <zh-CN>
-3.2：
-– 您将在“产品详细信息”屏幕中看到可变产品的新“变体”部分。
-– 滚动浏览时底部导航栏不再消失（我们认为您会更喜欢它）。
-– 我们知道大家都期盼着“产品”选项卡，现在您可以预览即将推出的“产品”选项卡（转到应用程序中的“设置”即可启用）。
+3.3：
+– 性能改进：现在，订单列表中的订单加载速度更快，另外，在更新产品变体后，或者在更改了订单状态退出后，有时会发生的崩溃现已解决。
+– 错误修复：底部导航栏上被切断的标签已恢复完整，在统计信息图表中垂直滚动现已恢复正常，带有错误时间戳的评论已更改为正确的时间戳，并且在应用程序中排列的产品变体现已与 Web 匹配。
 </zh-CN>
 <zh-TW>
-3.2：
-- 針對具有不同型號的產品，產品詳細資訊畫面將會新增「型號」區段。
-- 底部導覽列再也不會在捲動時消失了，也許你會比較喜歡這樣的設計。
-- 很多人希望我們推出「產品」分頁，現在你可以預覽即將推出的產品分頁了，前往應用程式中的設定即可啟用預覽。
+3.3：
+- 效能改善：訂單清單現在會更快載入訂單，且我們已解決更新產品型號或在變更訂單狀態後離開訂單時，偶爾會發生的當機問題。
+- 故障修正：底部導覽列被截斷的標籤已恢復完整，統計資料圖表的垂直捲動功能已可正常運作，時間戳記錯誤的評論已改為顯示正確時間戳記，以及應用城市中的產品型號排序已符合網站上的排序。
 </zh-TW>
 <en-US>
-3.2:
-- You’ll see a new “variants” section in the Product detail screen for your variable products.
-- The bottom navigation bar no longer disappears when scrolling — we think you’ll like it better.
-- We know a Products tab is high on people’s wish lists, and you can now preview the coming-soon Products tab — head to Settings in the app to enable it.
+3.3:
+- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
+- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.
 </en-US>

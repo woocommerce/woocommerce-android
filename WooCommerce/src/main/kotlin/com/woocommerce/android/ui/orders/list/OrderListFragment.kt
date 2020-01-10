@@ -177,7 +177,6 @@ class OrderListFragment : TopLevelFragment(),
 
         order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
         order_status_list_view.init(listener = this)
-
         initializeViewModel()
     }
 
