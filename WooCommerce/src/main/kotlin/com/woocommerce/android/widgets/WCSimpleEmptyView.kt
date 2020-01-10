@@ -16,7 +16,10 @@ import org.wordpress.android.util.DisplayUtils
 /**
  * Simple empty view for lists which contains just a textView and an imageView
  */
-class WCSimpleEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
+class WCSimpleEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(
+        ctx,
+        attrs
+) {
     init {
         View.inflate(context, R.layout.wc_simple_empty_view, this)
         checkOrientation()

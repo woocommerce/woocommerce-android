@@ -11,6 +11,8 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -319,7 +321,8 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (!show) { // TODO
+        if (show) {
+            tab_layout.hide()
             empty_view.show(
                     EmptyViewType.DASHBOARD,
                     selectedSite.get(),
@@ -327,6 +330,7 @@ class MyStoreFragment : TopLevelFragment(),
             )
         } else {
             empty_view.hide()
+            tab_layout.show()
         }
     }
 }

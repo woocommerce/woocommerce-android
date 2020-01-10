@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -205,7 +204,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_stats.showVisitorStats(visitorStats)
         }
 
-        if (granularity == DAYS) {
+        if (granularity == StatsGranularity.DAYS) {
             empty_view.updateVisitorCount(visitorStats.values.sum())
         }
     }
@@ -303,7 +302,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (!show) { // TODO
+        if (show) {
             empty_view.show(
                     EmptyViewType.DASHBOARD,
                     selectedSite.get(),
