@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
 import android.content.Context
-import android.graphics.PorterDuff
-import android.graphics.drawable.LayerDrawable
-import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -23,17 +20,11 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
-import kotlin.math.roundToInt
 
 class ReviewListAdapter(
     private val context: Context,
     private val clickListener: OnReviewClickListener
 ) : SectionedRecyclerViewAdapter() {
-//    private var starTintColor: Int = 0
-//    init {
-//        starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
-//    }
-
     private val reviewList = mutableListOf<ProductReview>()
 
     // Copy of current review manually removed from the list so the action may be undone.
@@ -354,8 +345,6 @@ class ReviewListAdapter(
                 itemHolder.rating.visibility = View.GONE
             }
 
-            println("AMANDA-TEST > ReviewListSection.onBindItemViewHolder > ${review.reviewerName} ${review.rating}")
-
             itemHolder.title.text = context.getString(
                     R.string.review_list_item_title, review.reviewerName, review.product?.name)
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
@@ -383,13 +372,13 @@ class ReviewListAdapter(
 
     private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var icon: ImageView = view.notif_icon
-        var title: TextView = view.notif_title
-        var desc: TextView = view.notif_desc
+        var title: TextView = view.notif_title as TextView
+        var desc: TextView = view.notif_desc as TextView
         var rating: RatingBar = view.notif_rating
         val divider: View = view.notif_divider
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.orderListHeader
+        val title: TextView = view.orderListHeader as TextView
     }
 }
