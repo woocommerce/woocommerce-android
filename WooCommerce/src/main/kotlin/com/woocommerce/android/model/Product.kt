@@ -1,5 +1,6 @@
 package com.woocommerce.android.model
 
+import android.content.Context
 import android.os.Parcelable
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.roundError
@@ -103,6 +104,27 @@ data class Product(
                 }
             }
         } ?: this.copy()
+    }
+
+    /**
+     * returns the product's stock status formatted for display
+     */
+    fun stockStatusToDisplayString(context: Context): String {
+        val status = this.stockStatus
+        return if (status.stringResource != 0) {
+            context.getString(status.stringResource)
+        } else {
+            status.value
+        }
+    }
+
+    fun backordersToDisplayString(context: Context): String {
+        val status = this.backorderStatus
+        return if (status.stringResource != 0) {
+            context.getString(status.stringResource)
+        } else {
+            status.value
+        }
     }
 }
 
