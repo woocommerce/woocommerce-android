@@ -252,8 +252,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginBottom">@dimen/major_100</item>
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
-        <item name="horizontalSpacing">4dp</item>
-        <item name="verticalSpacing">4dp</item>
+        <item name="horizontalSpacing">@dimen/minor_50</item>
+        <item name="verticalSpacing">@dimen/minor_50</item>
     </style>
 
     <!--
@@ -262,5 +262,25 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.ProgressBar" parent="@style/Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateTint">?attr/colorPrimary</item>
         <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
+    <!--
+        TagView Style
+    -->
+    <style name="Woo.Tag" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/minor_50</item>
+        <item name="android:layout_marginRight">@dimen/minor_50</item>
+        <item name="android:layout_marginBottom">@dimen/minor_50</item>
+        <item name="android:paddingStart">@dimen/major_75</item>
+        <item name="android:paddingEnd">@dimen/major_75</item>
+        <item name="android:paddingTop">@dimen/minor_50</item>
+        <item name="android:paddingBottom">@dimen/minor_50</item>
+        <!-- Custom View Attributes -->
+        <item name="tagTextColor">@color/color_on_primary_high</item>
+        <item name="tagColor">@color/tagView_bg</item>
+        <item name="tagBorderColor">@color/tagView_border_bg</item>
     </style>
 </resources>

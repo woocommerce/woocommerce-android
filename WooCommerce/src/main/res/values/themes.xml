@@ -76,9 +76,10 @@
         <item name="android:windowContentTransitions">true</item>
 
         <!-- Custom Widgets -->
-        <!-- TODO: Update styles -->
         <item name="tagViewStyle">@style/Woo.Tag</item>
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
+
+        <!-- TODO: convert styles to material -->
         <item name="android:listViewStyle">@style/Woo.List</item>
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>

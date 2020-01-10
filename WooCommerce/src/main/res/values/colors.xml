@@ -7,8 +7,10 @@
     <color name="color_secondary">@color/woo_pink_50</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
-    <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
+    <color name="color_on_primary_high">@color/woo_white</color>
+    <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
+    <color name="color_on_primary_disabled">@color/woo_white_alpha_038</color>
 
     <!--
         Custom widget tint
@@ -35,6 +37,17 @@
     <color name="graph_highlight_color">@color/woo_pink_90</color>
     <color name="graph_no_data_text_color">@color/color_on_surface</color>
     <color name="graph_label_color">@color/color_on_surface_medium</color>
+
+    <!--
+        TagView colors
+    -->
+    <color name="tagView_bg">@color/tag_bg_other</color>
+    <color name="tagView_text">@color/color_on_surface_high</color>
+    <color name="tagView_border_bg">@android:color/transparent</color>
+    <color name="tag_bg_processing">@color/woo_celadon_5</color>
+    <color name="tag_bg_failed">@color/woo_red_5</color>
+    <color name="tag_bg_on_hold">@color/woo_orange_5</color>
+    <color name="tag_bg_other">@color/woo_gray_5</color>
 
     <!--
         Nav bar color protection for behavior differences between Android P and Q. All sdk

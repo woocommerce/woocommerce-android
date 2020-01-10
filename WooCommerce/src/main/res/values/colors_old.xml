@@ -75,11 +75,6 @@
     <color name="list_header_bg">@color/wc_grey_light</color>
     <color name="list_header_border">@color/wc_grey_17</color>
 
-    <!-- Default Tag colors -->
-    <color name="tagView_bg">@color/wc_border_color</color>
-    <color name="tagView_text">@color/default_text_title</color>
-    <color name="tagView_border_bg">@color/wc_grey_darker</color>
-
     <!-- Default Edit Text -->
     <color name="edit_text_color_control_activated">@color/grey_dark_highlight</color>
     <color name="edit_text_color_control_highlight">@color/grey_dark_highlight</color>
@@ -91,36 +86,6 @@
 
     <!-- Default Link Color -->
     <color name="link_text_color">@color/wc_purple</color>
-    <!--
-        Order: status tag background colors
-    -->
-    <color name="orderStatus_processing_text">@color/tagView_text</color>
-    <color name="orderStatus_processing_bg">@color/wc_green_lightest</color>
-    <color name="orderStatus_processing_border">@color/wc_green_light</color>
-
-    <color name="orderStatus_pending_text">@color/tagView_text</color>
-    <color name="orderStatus_pending_bg">@color/wc_green_lightest</color>
-    <color name="orderStatus_pending_border">@color/wc_green_light</color>
-
-    <color name="orderStatus_failed_text">@color/tagView_text</color>
-    <color name="orderStatus_failed_bg">@color/wc_red_lightest</color>
-    <color name="orderStatus_failed_border">@color/wc_red_light</color>
-
-    <color name="orderStatus_completed_text">@color/tagView_text</color>
-    <color name="orderStatus_completed_bg">@color/wc_blue_lightest</color>
-    <color name="orderStatus_completed_border">@color/wc_blue_light</color>
-
-    <color name="orderStatus_hold_text">@color/tagView_text</color>
-    <color name="orderStatus_hold_bg">@color/wc_border_color</color>
-    <color name="orderStatus_hold_border">@color/wc_grey_17</color>
-
-    <color name="orderStatus_cancelled_text">@color/tagView_text</color>
-    <color name="orderStatus_cancelled_bg">@color/wc_border_color</color>
-    <color name="orderStatus_cancelled_border">@color/wc_grey_17</color>
-
-    <color name="orderStatus_refunded_text">@color/tagView_text</color>
-    <color name="orderStatus_refunded_bg">@color/wc_red_lightest</color>
-    <color name="orderStatus_refunded_border">@color/wc_red_light</color>
     <!--
         Order: Order note icon colors
     -->
