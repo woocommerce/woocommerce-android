@@ -10,9 +10,7 @@
         android:id="@+id/settingsView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:layout_marginBottom="@dimen/default_padding">
+        android:orientation="vertical">
 
         <!--
             Primary store
@@ -23,20 +21,20 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                style="@style/Woo.Settings.Caption"
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Woo.Card.ListHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_selected_store"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textPrimaryStoreDomain"
                 style="@style/Woo.Settings.LabelWithDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:text="textPrimaryStoreDomain"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textPrimaryStoreUsername"
                 style="@style/Woo.Settings.Label.Detail"
                 android:layout_width="match_parent"
@@ -56,7 +54,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/Woo.Settings.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,14 +94,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textDeviceNotifSettings"
                 style="@style/Woo.Settings.LabelWithDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_notifs_device"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/Woo.Settings.Label.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -123,13 +121,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/Woo.Settings.LabelWithDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_app_theme_title"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/settings_selectedTheme"
                 style="@style/Woo.Settings.Label.Detail"
                 android:layout_width="match_parent"
@@ -143,7 +141,7 @@
         <!--
             Privacy
         -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textPrivacySettings"
             style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
@@ -176,7 +174,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textBetaFeatures"
                 style="@style/Woo.Settings.Label"
                 android:layout_width="match_parent"
@@ -191,7 +189,7 @@
         <!--
             Feature Requests
         -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textFeatureRequests"
             style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
@@ -204,20 +202,20 @@
         <!--
             About
         -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/Woo.Settings.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_about"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textAbout"
             style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/app_name"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textLicenses"
             style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
@@ -229,7 +227,7 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLogout"
         style="@style/Woo.Button.Purple"
         android:layout_width="wrap_content"
@@ -254,7 +252,7 @@
         android:tint="@color/wc_purple"
         app:srcCompat="@drawable/ic_gridicons_heart_outline"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settingsHiring"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -263,6 +261,7 @@
         android:layout_marginTop="@dimen/margin_small"
         android:textColor="@color/wc_grey_mid"/>
 
+    <!-- FIXME : IS THIS BEING USED? -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
