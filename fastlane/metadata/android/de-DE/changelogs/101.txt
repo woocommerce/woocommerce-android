@@ -1,0 +1,3 @@
+3.3:
+- Verbesserungen an der Performance: Die Bestellungen in der Bestellliste laden jetzt schneller und die gelegentlichen Abstürze nach der Aktualisierung von Produktvarianten oder beim Verlassen einer Bestellung nach einer Statusänderung kommen nun nicht mehr vor.
+- Fehlerkorrekturen: Abgeschnittene Labels in der unteren Navigationsleiste werden jetzt vollständig angezeigt, das vertikale Scrollen in deinen Statistiken funktioniert jetzt richtig, es gibt keine Bewertungen mit falschen Zeitstempeln mehr und die Sortierung von Produktvarianten funktioniert nun in der App genauso wie im Web.

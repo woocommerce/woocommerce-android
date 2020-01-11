@@ -45,6 +45,7 @@
             android:layout_marginTop="@dimen/margin_extra_large"/>
 
         <TextView
+            android:paddingBottom="@dimen/card_padding_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_extra_large"

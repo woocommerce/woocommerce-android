@@ -126,9 +126,6 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
-        navController = findNavController(R.id.nav_host_fragment_main)
-        navController.addOnDestinationChangedListener(this)
-
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
@@ -165,6 +162,13 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
+        navController = findNavController(R.id.nav_host_fragment_main)
+        navController.addOnDestinationChangedListener(this)
     }
 
     override fun hideProgressDialog() {
