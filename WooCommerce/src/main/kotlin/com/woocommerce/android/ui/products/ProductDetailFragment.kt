@@ -279,7 +279,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
         if (isAddEditProductRelease1Enabled(product.type)) {
             val productDescription = product.description
-            val showCaption = !productDescription.isEmpty()
+            val showCaption = productDescription.isNotEmpty()
             val description = if (productDescription.isEmpty()) {
                 getString(R.string.product_description_empty)
             } else {
