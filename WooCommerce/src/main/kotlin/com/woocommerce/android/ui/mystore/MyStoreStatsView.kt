@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
@@ -56,7 +57,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     }
 
     private lateinit var activeGranularity: StatsGranularity
-    private lateinit var listener: DashboardStatsListener
+    private var listener: DashboardStatsListener? = null
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
@@ -112,6 +113,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         }
     }
 
+    fun removeListener() {
+        listener = null
+    }
+
     fun loadDashboardStats(granularity: StatsGranularity) {
         this.activeGranularity = granularity
         // Track range change
@@ -120,7 +125,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase()))
 
         isRequestingStats = true
-        listener.onRequestLoadStats(granularity)
+        listener?.onRequestLoadStats(granularity)
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -157,6 +162,13 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             StatsGranularity.YEARS -> R.dimen.skeleton_bar_chart_bar_width_years
         }
         return context.resources.getDimensionPixelSize(resId)
+    }
+
+    private fun getAxisOffset(): Float {
+        return if (activeGranularity == StatsGranularity.DAYS ||
+                activeGranularity == StatsGranularity.MONTHS) {
+            1f
+        } else 0.5f
     }
 
     private fun getBarLabelCount(): Int {
@@ -213,6 +225,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             isDragEnabled = true
 
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
+            getPaint(Chart.PAINT_INFO).textSize = context.resources.getDimension(R.dimen.text_large)
         }
         chart.setOnChartValueSelectedListener(this)
         chart.onChartGestureListener = this
@@ -230,7 +243,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
 
         // update date bar when unselected
-        listener.onChartValueUnSelected(revenueStatsModel, activeGranularity)
+        listener?.onChartValueUnSelected(revenueStatsModel, activeGranularity)
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -255,7 +268,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         }
 
         // update the date bar
-        listener.onChartValueSelected(date, activeGranularity)
+        listener?.onChartValueSelected(date, activeGranularity)
     }
 
     /**
@@ -374,7 +387,13 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 animateY(duration)
             }
             with(xAxis) {
-                setLabelCount(getBarLabelCount(), true)
+                // Added axis minimum offset & axis max offset in order to align the bar chart with the x-axis labels
+                // Related fix: https://github.com/PhilJay/MPAndroidChart/issues/2566
+                val axisValue = getAxisOffset()
+                axisMinimum = data.xMin - axisValue
+                axisMaximum = data.xMax + axisValue
+                labelCount = getBarLabelCount()
+                setCenterAxisLabels(activeGranularity == StatsGranularity.YEARS)
                 valueFormatter = StartEndDateAxisFormatter()
             }
         }
@@ -521,21 +540,19 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return when (value) {
-                axis.mEntries.first() -> getStartValue()
-                axis.mEntries.max() -> getEndValue()
-                else -> {
-                    val index = round(value).toInt() - 1
-                    return if (index > 0 && index < chartRevenueStats.keys.size - 1) {
-                        getLabelValue(chartRevenueStats.keys.elementAt(index))
-                    } else ""
+            var index = round(value).toInt() - 1
+            index = if (index == -1 || activeGranularity == StatsGranularity.YEARS) index + 1 else index
+            return if (index > -1 && index < chartRevenueStats.keys.size) {
+                // if this is the first entry in the chart, then display the month as well as the date
+                // for weekly and monthly stats
+                val dateString = chartRevenueStats.keys.elementAt(index)
+                if (value == axis.mEntries.first()) {
+                    getEntryValue(dateString)
+                } else {
+                    getLabelValue(dateString)
                 }
-            }
+            } else ""
         }
-
-        fun getStartValue() = getEntryValue(chartRevenueStats.keys.first())
-
-        fun getEndValue() = getLabelValue(chartRevenueStats.keys.last())
 
         /**
          * Displays the x-axis labels in the following format based on [StatsGranularity]

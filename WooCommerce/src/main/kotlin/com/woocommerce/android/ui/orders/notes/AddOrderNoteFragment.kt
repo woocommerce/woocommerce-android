@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.notes
 
-import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
 import com.woocommerce.android.util.AnalyticsUtils
@@ -104,17 +105,22 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onDestroyView() {
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
+    }
+
+    override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu?.clear()
-        inflater?.inflate(R.menu.menu_add, menu)
+        menu.clear()
+        inflater.inflate(R.menu.menu_add, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -159,17 +165,15 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
 
     override fun confirmDiscard() {
         isConfirmingDiscard = true
-        AlertDialog.Builder(activity)
-                .setMessage(R.string.add_order_note_confirm_discard)
-                .setCancelable(true)
-                .setPositiveButton(R.string.discard) { _, _ ->
+        CustomDiscardDialog.showDiscardDialog(
+                requireActivity(),
+                posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     shouldShowDiscardDialog = false
                     activity?.onBackPressed()
-                }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+                },
+                negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
-                }
-                .show()
+                })
     }
 
     override fun showAddOrderNoteSnack() {

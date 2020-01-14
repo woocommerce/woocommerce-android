@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "3.3"
+            versionName "3.4-rc-1"
         }
-        versionCode 101
+        versionCode 102
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -152,6 +152,18 @@ dependencies {
 
     implementation(project(path: ':libs:login:WordPressLoginFlow')) {
         exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
+        exclude group: "org.wordpress", module: "utils"
+    }
+
+    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:$aztecVersion") {
+        exclude group: "com.android.volley"
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+
+    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:glide-loader:$aztecVersion") {
+        exclude group: "com.android.volley"
+        exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
 

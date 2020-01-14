@@ -20,6 +20,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+
+        <com.woocommerce.android.widgets.ActionableEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:aevTitleAppearance="@style/Woo.TextAppearance.Medium"
+            app:aevTitle="@string/product_variant_list_empty"
+            app:aevImage="@drawable/ic_empty_variations"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
         <ProgressBar
             android:id="@+id/loadMoreProgress"
             style="?android:attr/progressBarStyle"
