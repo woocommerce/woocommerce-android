@@ -1,6 +1,6 @@
 source "https://rubygems.org" do 
   gem 'nokogiri'
-  gem "fastlane", "2.133.0"
+  gem 'fastlane', '~> 2'
 end
 
 
