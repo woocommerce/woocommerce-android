@@ -96,6 +96,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.Card.WithoutPadding">
         <item name="contentPaddingTop">@dimen/minor_00</item>
         <item name="contentPaddingBottom">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
     </style>
 
     <style name="Woo.Card.ExpanderButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
@@ -282,5 +283,15 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tagTextColor">@color/color_on_primary_high</item>
         <item name="tagColor">@color/tagView_bg</item>
         <item name="tagBorderColor">@color/tagView_border_bg</item>
+    </style>
+
+    <!--
+        Misc Widgets
+    -->
+    <style name="Woo.RatingsBar.Small" parent="@style/Widget.AppCompat.RatingBar.Small">
+        <item name="android:progressTint">@color/ratings_bar_progress_tint</item>
+        <item name="android:numStars">5</item>
+        <item name="android:rating">0</item>
+        <item name="android:stepSize">1</item>
     </style>
 </resources>

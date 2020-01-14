@@ -1,14 +1,10 @@
 package com.woocommerce.android.ui.reviews
 
 import android.content.Context
-import android.graphics.PorterDuff
-import android.graphics.drawable.LayerDrawable
-import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -29,11 +25,6 @@ class ReviewListAdapter(
     private val context: Context,
     private val clickListener: OnReviewClickListener
 ) : SectionedRecyclerViewAdapter() {
-    private var starTintColor: Int = 0
-    init {
-        starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
-    }
-
     private val reviewList = mutableListOf<ProductReview>()
 
     // Copy of current review manually removed from the list so the action may be undone.
@@ -56,6 +47,7 @@ class ReviewListAdapter(
         removeAllSections()
 
         // Build a reviews for each [TimeGroup] section
+        val listFuture = ArrayList<ProductReview>() // Should never be needed, but some extension could change that
         val listToday = ArrayList<ProductReview>()
         val listYesterday = ArrayList<ProductReview>()
         val listTwoDays = ArrayList<ProductReview>()
@@ -70,7 +62,12 @@ class ReviewListAdapter(
                 TimeGroup.GROUP_OLDER_TWO_DAYS -> listTwoDays.add(it)
                 TimeGroup.GROUP_OLDER_WEEK -> listWeek.add(it)
                 TimeGroup.GROUP_OLDER_MONTH -> listMonth.add(it)
+                TimeGroup.GROUP_FUTURE -> listFuture.add(it)
             }
+        }
+
+        if (listFuture.size > 0) {
+            addSection(ReviewListSection(TimeGroup.GROUP_FUTURE.name, listFuture))
         }
 
         if (listToday.size > 0) {
@@ -112,7 +109,7 @@ class ReviewListAdapter(
             reviewList.forEach {
                 if (it.remoteId == review.remoteId &&
                         it.review == review.review &&
-                        it.read == review.read ?: true &&
+                        it.read == (review.read != false) &&
                         it.status == review.status) {
                     return true
                 }
@@ -347,12 +344,9 @@ class ReviewListAdapter(
             itemHolder.desc.maxLines = 2
 
             if (review.rating > 0) {
-                itemHolder.rating.rating = review.rating.toFloat()
+                itemHolder.rating.numStars = review.rating
+                itemHolder.rating.rating = 100F // necessary to hide unfilled stars
                 itemHolder.rating.visibility = View.VISIBLE
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    val stars = itemHolder.rating.progressDrawable as? LayerDrawable
-                    stars?.getDrawable(2)?.setColorFilter(starTintColor, PorterDuff.Mode.SRC_ATOP)
-                }
             } else {
                 itemHolder.rating.visibility = View.GONE
             }
@@ -360,6 +354,7 @@ class ReviewListAdapter(
             itemHolder.title.text = context.getString(
                     R.string.review_list_item_title, review.reviewerName, review.product?.name)
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
+            itemHolder.divider.visibility = if (position < getContentItemsTotal() - 1) View.VISIBLE else View.GONE
 
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review)
@@ -377,18 +372,20 @@ class ReviewListAdapter(
                 TimeGroup.GROUP_OLDER_TWO_DAYS -> headerViewHolder.title.setText(R.string.date_timeframe_older_two_days)
                 TimeGroup.GROUP_YESTERDAY -> headerViewHolder.title.setText(R.string.date_timeframe_yesterday)
                 TimeGroup.GROUP_TODAY -> headerViewHolder.title.setText(R.string.date_timeframe_today)
+                TimeGroup.GROUP_FUTURE -> headerViewHolder.title.setText(R.string.date_timeframe_future)
             }
         }
     }
 
     private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var icon: ImageView = view.notif_icon
-        var title: TextView = view.notif_title
-        var desc: TextView = view.notif_desc
+        var title: TextView = view.notif_title as TextView
+        var desc: TextView = view.notif_desc as TextView
         var rating: RatingBar = view.notif_rating
+        val divider: View = view.notif_divider
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.orderListHeader
+        val title: TextView = view.orderListHeader as TextView
     }
 }
