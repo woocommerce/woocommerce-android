@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
@@ -21,14 +22,27 @@ class WCProductPropertyView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
     private var view: View? = null
     private var propertyGroupImg: ImageView? = null
+    private var propertyGroupIcon: ImageView? = null
     private var propertyNameText: TextView? = null
     private var propertyValueText: TextView? = null
     private var ratingBar: RatingBar? = null
 
-    fun show(orientation: Int, caption: String, detail: CharSequence?) {
+    fun show(
+        orientation: Int,
+        caption: String,
+        detail: CharSequence?,
+        @DrawableRes propertyIcon: Int? = null
+    ) {
         ensureViewCreated(orientation)
 
         propertyNameText?.text = caption
+
+        if (propertyIcon != null) {
+            propertyGroupIcon?.visibility = View.VISIBLE
+            propertyGroupIcon?.setImageDrawable(context.getDrawable(propertyIcon))
+        } else {
+            propertyGroupIcon?.visibility = View.GONE
+        }
 
         if (detail.isNullOrEmpty()) {
             propertyValueText?.visibility = View.GONE
@@ -74,6 +88,7 @@ class WCProductPropertyView @JvmOverloads constructor(
                 View.inflate(context, R.layout.product_property_view_horz, this)
             }
             propertyGroupImg = view?.findViewById(R.id.imgProperty)
+            propertyGroupIcon = view?.findViewById(R.id.imgPropertyIcon)
             propertyNameText = view?.findViewById(R.id.textPropertyName)
             propertyValueText = view?.findViewById(R.id.textPropertyValue)
             ratingBar = view?.findViewById(R.id.ratingBar)

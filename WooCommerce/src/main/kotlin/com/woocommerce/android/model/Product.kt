@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -49,7 +50,9 @@ data class Product(
     val purchaseNote: String,
     val numVariations: Int,
     val images: List<Image>,
-    val attributes: List<Attribute>
+    val attributes: List<Attribute>,
+    val dateOnSaleTo: Date?,
+    val dateOnSaleFrom: Date?
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -162,7 +165,9 @@ fun WCProductModel.toAppModel(): Product {
                     it.options,
                     it.visible
             )
-        }
+        },
+        this.dateOnSaleTo.formatDateToISO8601Format(),
+        this.dateOnSaleFrom.formatDateToISO8601Format()
     )
 }
 

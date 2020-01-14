@@ -17,6 +17,8 @@ fun Date.formatToDD(): String = SimpleDateFormat("d", Locale.getDefault()).forma
 
 fun Date.formatToMMMdd(): String = SimpleDateFormat("MMM d", Locale.getDefault()).format(this)
 
+fun Date.formatToMMMddYYYY(): String = SimpleDateFormat("MMM d, YYYY", Locale.getDefault()).format(this)
+
 fun Date.formatToEEEEMMMddhha(): String {
     val symbols = DateFormatSymbols(Locale.getDefault())
     symbols.amPmStrings = arrayOf("am", "pm")
