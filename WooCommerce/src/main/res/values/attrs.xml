@@ -40,6 +40,8 @@
     <declare-styleable name="WCSettingsOptionValueView">
         <attr name="optionTitle" format="reference|string"/>
         <attr name="optionValue" format="reference|string"/>
+        <attr name="tools_optionTitle" format="reference|string"/>
+        <attr name="tools_optionValue" format="reference|string"/>
     </declare-styleable>
 
     <declare-styleable name="WCProductImageGalleryView">

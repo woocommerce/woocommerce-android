@@ -26,8 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/major_100"
-            app:optionTitle="textPrimaryStoreDomain"
-            app:optionValue="textPrimaryStoreOption"/>
+            tools:optionTitle="testwooshop.mystagingwebsite.com"
+            tools:optionValue="Woo Tester"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
