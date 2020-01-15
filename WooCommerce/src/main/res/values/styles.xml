@@ -184,16 +184,6 @@ Use this file to override styles in the styles_base.xml file.
     <!--
         Base List Child Styles
     -->
-    <style name="Woo.ListItem">
-        <item name="android:paddingStart">@dimen/list_item_padding_start</item>
-        <item name="android:paddingEnd">@dimen/list_item_padding_end</item>
-        <item name="android:paddingTop">@dimen/list_item_padding_top</item>
-        <item name="android:paddingBottom">@dimen/list_item_padding_bottom</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">@style/Woo.TextAppearance.ListItem</item>
-    </style>
-
     <style name="Woo.TextAppearance.ListItem">
         <item name="android:textSize">@dimen/list_item_text_size</item>
     </style>
