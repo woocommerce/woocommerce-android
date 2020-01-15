@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
@@ -322,10 +323,11 @@ class MyStoreFragment : TopLevelFragment(),
         val dashboardVisibility: Int
         if (show) {
             dashboardVisibility = View.GONE
-            empty_view.show(
-                    EmptyViewType.DASHBOARD,
-                    selectedSite.get()
-            )
+            val onButtonClick = View.OnClickListener {
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
+            }
+            empty_view.show(EmptyViewType.DASHBOARD, onButtonClick = onButtonClick)
             empty_stats_view.visibility = View.VISIBLE
         } else {
             empty_view.hide()

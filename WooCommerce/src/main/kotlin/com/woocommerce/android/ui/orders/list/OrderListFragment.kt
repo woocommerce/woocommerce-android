@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.EmptyList
 import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.ErrorWithRetry
 import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.Loading
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
@@ -67,6 +68,8 @@ class OrderListFragment : TopLevelFragment(),
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
         private const val TAB_INDEX_ALL = 1
+
+        private const val URL_LEARN_MORE = "https://woocommerce.com/blog/"
 
         fun newInstance(orderStatus: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -424,14 +427,16 @@ class OrderListFragment : TopLevelFragment(),
     private fun showEmptyView(state: OrderListEmptyUiState) {
         when (state) {
             is DataShown -> {
-                // TODO hideEmptyView()
-                empty_view.show(EmptyViewType.ORDER_LIST)
+                hideEmptyView()
             }
             is EmptyList -> {
                 if (isSearching) {
                     empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = searchQuery)
                 } else {
-                    empty_view.show(EmptyViewType.ORDER_LIST)
+                    val onButtonClick = View.OnClickListener {
+                        ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
+                    }
+                    empty_view.show(EmptyViewType.ORDER_LIST, onButtonClick = onButtonClick)
                 }
             }
             is Loading -> {

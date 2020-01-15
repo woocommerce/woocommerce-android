@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -19,6 +20,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
@@ -216,7 +218,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued() == true) {
+        if (errorSnackbar?.isShownOrQueued == true) {
             return
         }
         errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
@@ -303,11 +305,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showEmptyView(show: Boolean) {
         if (show) {
+            val onButtonClick = OnClickListener {
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
+            }
             empty_view_container.show()
-            empty_view.show(
-                    EmptyViewType.DASHBOARD,
-                    selectedSite.get()
-            )
+            empty_view.show(EmptyViewType.DASHBOARD, onButtonClick = onButtonClick)
             dashboard_view.hide()
         } else {
             empty_view_container.hide()
