@@ -45,6 +45,13 @@
                     android:descendantFocusability="blocksDescendants"
                     android:orientation="vertical">
 
+                    <com.woocommerce.android.widgets.WCEmptyView
+                        android:id="@+id/empty_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
                     <!-- Date bar -->
                     <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
                         android:id="@+id/my_store_date_bar"
@@ -72,13 +79,6 @@
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
-
-        <com.woocommerce.android.widgets.WCEmptyView
-            android:id="@+id/empty_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="visible" />
 
     </FrameLayout>
 
