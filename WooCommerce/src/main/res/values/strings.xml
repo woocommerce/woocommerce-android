@@ -482,7 +482,7 @@
     <string name="get_the_word_out">Let\'s get the word out</string>
     <string name="share_your_store_message">Share your store on social media and by email with your contacts</string>
     <string name="empty_order_list_title">Waiting for your first order</string>
-    <string name="empty_order_list_message">We\’ll notify you when you receive a new order. In the meantime, explore how you can increase your store sales</string>
+    <string name="empty_order_list_message">We\’ll notify you when you receive a new order. In the meantime, explore how you can increase your store sales.</string>
 
     <string name="waiting_for_customers">Waiting for customers</string>
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>

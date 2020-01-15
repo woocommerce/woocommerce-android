@@ -62,7 +62,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         val title: String
         val message: String
         val buttonText: String?
-        val titleTypeface: Int
+        val isTitleBold: Boolean
         @DrawableRes val drawableId: Int
 
         when (type) {
@@ -73,7 +73,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = context.getString(R.string.share_your_store_message)
                 buttonText = context.getString(R.string.share_store_button)
                 drawableId = R.drawable.img_light_empty_my_store
-                titleTypeface = Typeface.BOLD
+                isTitleBold = true
             }
             ORDER_LIST -> {
                 showButton = true
@@ -82,7 +82,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = context.getString(R.string.empty_order_list_message)
                 buttonText = context.getString(R.string.learn_more)
                 drawableId = R.drawable.img_light_empty_orders_no_orders
-                titleTypeface = Typeface.BOLD
+                isTitleBold = true
             }
             ORDER_LIST_SEARCH -> {
                 showButton = false
@@ -92,13 +92,17 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = ""
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_search
-                titleTypeface = Typeface.NORMAL
+                isTitleBold = false
             }
         }
 
-        empty_view_title.setTypeface(empty_view_title.getTypeface(), titleTypeface)
+        val titleFmt = if (isTitleBold) {
+            "<strong>$title</strong>"
+        } else {
+            title
+        }
 
-        empty_view_title.text = HtmlCompat.fromHtml(title, FROM_HTML_MODE_LEGACY)
+        empty_view_title.text = HtmlCompat.fromHtml(titleFmt, FROM_HTML_MODE_LEGACY)
         empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
         empty_view_button.text = buttonText
         empty_view_image.setImageDrawable(context.getDrawable(drawableId))
