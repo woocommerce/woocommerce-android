@@ -321,7 +321,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun showEmptyView(show: Boolean) {
         val dashboardVisibility: Int
-        if (!show) { // TODO
+        if (show) {
             dashboardVisibility = View.GONE
             empty_view.show(
                     EmptyViewType.DASHBOARD,
@@ -335,6 +335,7 @@ class MyStoreFragment : TopLevelFragment(),
             empty_stats_view.visibility = View.GONE
         }
 
+        tab_layout.visibility = dashboardVisibility
         my_store_date_bar.visibility = dashboardVisibility
         my_store_stats.visibility = dashboardVisibility
         my_store_top_earners.visibility = dashboardVisibility

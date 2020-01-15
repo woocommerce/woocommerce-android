@@ -302,7 +302,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (!show) { // TODO
+        if (show) {
             empty_view_container.show()
             empty_view.show(
                     EmptyViewType.DASHBOARD,
