@@ -22,6 +22,6 @@
         android:layout_gravity="center"
         android:layout_marginTop="32dp"
         android:importantForAccessibility="no"
-        app:srcCompat="@drawable/ic_img_light_empty_search" />
+        app:srcCompat="@drawable/img_light_empty_search" />
 
 </LinearLayout>

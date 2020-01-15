@@ -70,7 +70,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 showShareButton = true
                 titleId = R.string.get_the_word_out
                 messageId = R.string.share_your_store_message
-                drawableId = R.drawable.ic_img_light_empty_my_store
+                drawableId = R.drawable.img_light_empty_my_store
             }
         }
 

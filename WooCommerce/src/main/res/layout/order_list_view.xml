@@ -26,7 +26,7 @@
             android:visibility="gone"
             tools:visibility="visible"
             app:aevTitle="@string/empty_message_with_search"
-            app:aevImage="@drawable/ic_img_light_empty_search"/>
+            app:aevImage="@drawable/img_light_empty_search"/>
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"

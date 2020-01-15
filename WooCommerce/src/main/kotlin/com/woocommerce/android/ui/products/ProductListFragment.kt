@@ -258,7 +258,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     if (new.isSearchActive == true) {
                         val queryText = "<strong>${viewModel.getSearchQuery()}</strong>"
                         message = String.format(getString(R.string.empty_message_with_search), queryText)
-                        imageId = R.drawable.ic_img_light_empty_search
+                        imageId = R.drawable.img_light_empty_search
                     } else {
                         message = getString(R.string.product_list_empty)
                         imageId = R.drawable.ic_woo_waiting_customers

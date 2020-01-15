@@ -77,7 +77,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/ic_img_light_empty_my_store" />
+            app:srcCompat="@drawable/img_light_empty_my_store" />
 
         <TextView
             android:id="@+id/empty_view_message"
