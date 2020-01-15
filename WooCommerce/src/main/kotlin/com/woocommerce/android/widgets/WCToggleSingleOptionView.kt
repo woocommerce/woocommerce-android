@@ -1,7 +1,9 @@
 package com.woocommerce.android.widgets
 
+import android.R.attr
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -28,6 +30,11 @@ class WCToggleSingleOptionView @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.view_toggle_single_option, this)
         orientation = VERTICAL
+
+        // Sets the selectable background
+        val outValue = TypedValue()
+        context.theme.resolveAttribute(attr.selectableItemBackground, outValue, true)
+        setBackgroundResource(outValue.resourceId)
 
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCToggleSingleOptionView)
