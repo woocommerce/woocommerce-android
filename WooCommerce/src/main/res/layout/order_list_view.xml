@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -17,16 +15,14 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ordersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
-        <com.woocommerce.android.widgets.ActionableEmptyView
+        <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:aevTitle="@string/empty_message_with_search"
-            app:aevImage="@drawable/img_light_empty_search"/>
+            tools:visibility="visible" />
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"
@@ -37,7 +33,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/margin_large"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </RelativeLayout>
 
 </merge>

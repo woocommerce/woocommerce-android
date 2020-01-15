@@ -324,8 +324,7 @@ class MyStoreFragment : TopLevelFragment(),
             dashboardVisibility = View.GONE
             empty_view.show(
                     EmptyViewType.DASHBOARD,
-                    selectedSite.get(),
-                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED
+                    selectedSite.get()
             )
             empty_stats_view.visibility = View.VISIBLE
         } else {

@@ -306,8 +306,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             empty_view_container.show()
             empty_view.show(
                     EmptyViewType.DASHBOARD,
-                    selectedSite.get(),
-                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED
+                    selectedSite.get()
             )
             dashboard_view.hide()
         } else {

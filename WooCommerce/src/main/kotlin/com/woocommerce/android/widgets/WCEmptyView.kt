@@ -5,20 +5,29 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
+import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
+    companion object {
+        private const val URL_LEARN_MORE = "https://woocommerce.com/blog/"
+    }
+
     enum class EmptyViewType {
-        DASHBOARD
+        DASHBOARD,
+        ORDER_LIST,
     }
 
     init {
@@ -40,34 +49,57 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
      */
     fun show(
         type: EmptyViewType,
-        site: SiteModel? = null,
-        stat: AnalyticsTracker.Stat? = null
+        site: SiteModel? = null
     ) {
         checkOrientation()
 
-        val showShareButton: Boolean
-        @StringRes val titleId: Int
-        @StringRes val messageId: Int
+        val tracksStat: Stat?
+        val showButton: Boolean
+        val title: String
+        val message: String
+        val buttonText: String?
         @DrawableRes val drawableId: Int
 
         when (type) {
             DASHBOARD -> {
-                showShareButton = true
-                titleId = R.string.get_the_word_out
-                messageId = R.string.share_your_store_message
+                showButton = true
+                tracksStat = Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED
+                title = context.getString(R.string.get_the_word_out)
+                message = context.getString(R.string.share_your_store_message)
+                buttonText = context.getString(R.string.share_store_button)
                 drawableId = R.drawable.img_light_empty_my_store
+            }
+            ORDER_LIST -> {
+                showButton = true
+                tracksStat = null // TODO
+                title = context.getString(R.string.empty_order_list_title)
+                message = context.getString(R.string.empty_order_list_message)
+                buttonText = context.getString(R.string.learn_more)
+                drawableId = R.drawable.img_light_empty_orders_no_orders
             }
         }
 
-        empty_view_title.text = context.getString(titleId)
-        empty_view_message.text = context.getString(messageId)
+        empty_view_title.text = HtmlCompat.fromHtml(title, FROM_HTML_MODE_LEGACY)
+        empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
+        empty_view_button.text = buttonText
         empty_view_image.setImageDrawable(context.getDrawable(drawableId))
 
-        if (showShareButton && site != null && stat != null) {
+        if (showButton) {
             empty_view_button.visibility = View.VISIBLE
             empty_view_button.setOnClickListener {
-                AnalyticsTracker.track(stat)
-                ActivityUtils.shareStoreUrl(context, site.url)
+                tracksStat?.let {
+                    AnalyticsTracker.track(it)
+                }
+                when (type) {
+                    DASHBOARD -> {
+                        site?.let {
+                            ActivityUtils.shareStoreUrl(context, it.url)
+                        }
+                    }
+                    ORDER_LIST -> {
+                        ChromeCustomTabUtils.launchUrl(context, URL_LEARN_MORE)
+                    }
+                }
             }
         } else {
             empty_view_button.visibility = View.GONE

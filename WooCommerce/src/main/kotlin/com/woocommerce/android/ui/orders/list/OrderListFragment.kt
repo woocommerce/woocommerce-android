@@ -30,15 +30,21 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.DataShown
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.EmptyList
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.ErrorWithRetry
+import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.Loading
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
+import kotlinx.android.synthetic.main.order_list_view.*
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
@@ -215,8 +221,7 @@ class OrderListFragment : TopLevelFragment(),
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                // Hide the empty view if visible
-                order_list_view.hideEmptyView()
+                hideEmptyView()
 
                 // Calculate the filter that should be active based on the selected
                 // tab and the state of the list.
@@ -410,16 +415,42 @@ class OrderListFragment : TopLevelFragment(),
         })
 
         viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
-            it?.let { emptyViewState ->
-                // when searching, pass the searu query so it can be included in the empty message
-                val fmtArgs = if (isSearching) {
-                    "<strong>$searchQuery</strong>"
-                } else {
-                    null
-                }
-                order_list_view?.updateEmptyViewForState(emptyViewState, fmtArgs)
+            it?.let { state ->
+                showEmptyView(state)
             }
         })
+    }
+
+    private fun showEmptyView(state: OrderListEmptyUiState) {
+        when (state) {
+            is DataShown -> {
+                // hideEmptyView()
+                empty_view.show(EmptyViewType.ORDER_LIST)
+            }
+            is EmptyList -> {
+                if (isSearching) {
+                    // TODO val fmtArgs = "<strong>$searchQuery</strong>"
+                } else {
+                    empty_view.show(EmptyViewType.ORDER_LIST)
+                }
+            }
+            is Loading -> {
+                // TODO
+            }
+            is ErrorWithRetry -> {
+                // TODO
+                /*showEmptyView(
+                        state.title,
+                        imgResId = state.imgResId,
+                        buttonText = state.buttonText,
+                        onButtonClick = state.onButtonClick()
+                )*/
+            }
+        }
+    }
+
+    private fun hideEmptyView() {
+        empty_view.hide()
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
@@ -655,7 +686,7 @@ class OrderListFragment : TopLevelFragment(),
      * 2. The order status list view is displayed by default
      */
     private fun enableSearchListeners() {
-        order_list_view?.hideEmptyView()
+        hideEmptyView()
 
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
         orderListMenu?.findItem(R.id.menu_support)?.isVisible = false
