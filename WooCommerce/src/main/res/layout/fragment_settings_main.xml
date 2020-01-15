@@ -24,18 +24,17 @@
         tools:optionTitle="testwooshop.mystagingwebsite.com"
         tools:optionValue="Woo Tester"/>
 
-    <View
-        style="@style/Woo.Divider"/>
+    <View style="@style/Woo.Divider"/>
 
     <!--
         Notifications (pre- API 26)
     -->
     <LinearLayout
-        android:id="@+id/notifsContainerOlder"
+        android:id="@+id/container_notifs_old"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <com.google.android.material.textview.MaterialTextView
             style="@style/Woo.Settings.CategoryHeader"
@@ -44,7 +43,7 @@
             android:text="@string/settings_notifs"/>
 
         <com.woocommerce.android.widgets.WCToggleSingleOptionView
-            android:id="@+id/switchNotifsOrders"
+            android:id="@+id/option_notifs_orders"
             style="@style/Woo.Settings.Option"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +51,7 @@
             app:switchTitle="@string/settings_notifs_orders"/>
 
         <com.woocommerce.android.widgets.WCToggleSingleOptionView
-            android:id="@+id/switchNotifsTone"
+            android:id="@+id/option_notifs_tone"
             style="@style/Woo.Settings.Option"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,12 +59,14 @@
             app:switchTitle="@string/settings_notifs_tone"/>
 
         <com.woocommerce.android.widgets.WCToggleSingleOptionView
-            android:id="@+id/switchNotifsReviews"
+            android:id="@+id/option_notifs_reviews"
             style="@style/Woo.Settings.Option"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:switchSummary="@string/settings_notifs_reviews_detail"
             app:switchTitle="@string/settings_notifs_reviews"/>
+
+        <View style="@style/Woo.Divider"/>
     </LinearLayout>
 
     <!--
@@ -77,10 +78,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:optionTitle="@string/settings_notifs_device"
-        app:optionValue="@string/settings_notifs_device_detail"/>
-
-    <View
-        style="@style/Woo.Divider"/>
+        app:optionValue="@string/settings_notifs_device_detail"
+        tools:visibility="gone"/>
 
     <!--
         Appearance (App Theme)
@@ -93,8 +92,16 @@
         app:optionTitle="@string/settings_app_theme_title"
         app:optionValue="@string/settings_app_theme_option_default"/>
 
-    <View
-        style="@style/Woo.Divider"/>
+    <!--
+        Image Optimization
+    -->
+    <com.woocommerce.android.widgets.WCToggleSingleOptionView
+        android:id="@+id/option_image_optimization"
+        style="@style/Woo.Settings.Option"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:switchSummary="@string/settings_image_optimization_message"
+        app:switchTitle="@string/settings_image_optimization_title"/>
 
     <!--
         Privacy
@@ -106,22 +113,7 @@
         android:layout_height="wrap_content"
         app:optionTitle="@string/privacy_settings"/>
 
-    <View
-        style="@style/Woo.Divider"/>
-
-    <!--
-        Image Optimization
-    -->
-    <com.woocommerce.android.widgets.WCToggleSingleOptionView
-        android:id="@+id/switchImageOptimizaton"
-        style="@style/Woo.Settings.Option"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:switchSummary="@string/settings_image_optimization_message"
-        app:switchTitle="@string/settings_image_optimization_title"/>
-
-    <View
-        style="@style/Woo.Divider"/>
+    <View style="@style/Woo.Divider"/>
 
     <!--
         Beta Features
@@ -139,14 +131,11 @@
     <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
         android:id="@+id/option_feature_request"
         style="@style/Woo.Settings.Option"
-        android:layout_margin="@dimen/minor_00"
-        android:padding="@dimen/major_100"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:optionTitle="@string/feature_requests"/>
 
-    <View
-        style="@style/Woo.Divider"/>
+    <View style="@style/Woo.Divider"/>
 
     <!--
         About
@@ -196,7 +185,7 @@
             android:layout_gravity="center"
             android:importantForAccessibility="no"
             android:tint="@color/wc_purple"
-        app:srcCompat="@drawable/ic_gridicons_heart_outline"/>
+            app:srcCompat="@drawable/ic_gridicons_heart_outline"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/settingsHiring"
