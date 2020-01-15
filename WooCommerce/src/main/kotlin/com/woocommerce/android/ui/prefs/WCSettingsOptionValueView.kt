@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.StyleAttrUtils
 import kotlinx.android.synthetic.main.view_option_with_active_setting.view.*
 
@@ -61,9 +62,17 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
         get() { return option_title.text.toString() }
         set(value) { option_title.text = value }
 
-    var optionValue: String
+    var optionValue: String?
         get() { return option_value.text.toString() }
-        set(value) { option_value.text = value }
+        set(value) {
+            if (value.isNullOrEmpty()) {
+                option_value.text = StringUtils.EMPTY
+                option_value.visibility = View.GONE
+            } else {
+                option_value.text = value
+                option_value.visibility = View.VISIBLE
+            }
+        }
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)

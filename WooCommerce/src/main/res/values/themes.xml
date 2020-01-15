@@ -23,6 +23,7 @@
         <item name="colorOnSurface">@color/woo_black</item>
         <item name="colorOnError">@color/woo_white</item>
 
+        <item name="android:colorControlActivated">@color/color_primary</item>
         <item name="scrimBackground">@color/woo_white_alpha_038</item>
         <item name="android:statusBarColor">@color/woo_purple_60</item>
         <item name="android:navigationBarColor">@color/nav_bar</item>
