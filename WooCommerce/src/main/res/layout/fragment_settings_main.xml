@@ -171,39 +171,41 @@
         android:layout_height="wrap_content"
         app:optionTitle="@string/settings_licenses"/>
 
-    <View
-        style="@style/Woo.Divider"/>
+    <View style="@style/Woo.Divider"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonLogout"
-        style="@style/Woo.Button.Purple"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_option_logout"
+        style="@style/Woo.Settings.Button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/settings_signout"
-        android:paddingTop="@dimen/settings_logout_button_vert"
-        android:paddingBottom="@dimen/settings_logout_button_vert"
-        android:paddingStart="@dimen/settings_logout_button_horz"
-        android:paddingEnd="@dimen/settings_logout_button_horz"
-        android:layout_marginTop="20dp"/>
+        android:text="@string/settings_signout"/>
 
-    <ImageView
-        android:id="@+id/imageHeart"
-        android:layout_width="wrap_content"
+    <View style="@style/Woo.Divider"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center"
-        android:importantForAccessibility="no"
-        android:tint="@color/wc_purple"
+        android:layout_margin="@dimen/major_100"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageHeart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:tint="@color/wc_purple"
         app:srcCompat="@drawable/ic_gridicons_heart_outline"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/settingsHiring"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_100"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_gravity="center"
-        android:textColor="@color/wc_grey_mid"
-        android:text="@string/settings_hiring"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/settingsHiring"
+            style="@style/Woo.Settings.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_200"
+            android:paddingEnd="@dimen/major_100"
+            android:text="@string/settings_hiring"
+            tools:text="Made for love by Automattic. We're hiring!"/>
+    </LinearLayout>
 </LinearLayout>
