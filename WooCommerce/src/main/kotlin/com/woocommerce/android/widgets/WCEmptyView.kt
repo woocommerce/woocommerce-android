@@ -1,7 +1,6 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
-import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -17,7 +16,8 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_SEARCH
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
@@ -30,7 +30,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     enum class EmptyViewType {
         DASHBOARD,
         ORDER_LIST,
-        ORDER_LIST_SEARCH,
+        PRODUCT_LIST,
+        SEARCH_RESULTS,
     }
 
     init {
@@ -84,7 +85,17 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_orders_no_orders
                 isTitleBold = true
             }
-            ORDER_LIST_SEARCH -> {
+            PRODUCT_LIST -> {
+                // TODO: once adding products is supported, this needs to be updated to match designs
+                showButton = false
+                tracksStat = null
+                title = context.getString(R.string.product_list_empty)
+                message = ""
+                buttonText = null
+                drawableId = R.drawable.img_light_empty_products
+                isTitleBold = false
+            }
+            SEARCH_RESULTS -> {
                 showButton = false
                 tracksStat = null
                 val fmtArgs = "<strong>$searchQuery</strong>"
@@ -96,13 +107,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
         }
 
-        val titleFmt = if (isTitleBold) {
+        val titleHtml = if (isTitleBold) {
             "<strong>$title</strong>"
         } else {
             title
         }
 
-        empty_view_title.text = HtmlCompat.fromHtml(titleFmt, FROM_HTML_MODE_LEGACY)
+        empty_view_title.text = HtmlCompat.fromHtml(titleHtml, FROM_HTML_MODE_LEGACY)
         empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
         empty_view_button.text = buttonText
         empty_view_image.setImageDrawable(context.getDrawable(drawableId))

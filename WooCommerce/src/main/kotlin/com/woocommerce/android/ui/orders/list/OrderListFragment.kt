@@ -429,7 +429,7 @@ class OrderListFragment : TopLevelFragment(),
             }
             is EmptyList -> {
                 if (isSearching) {
-                    empty_view.show(EmptyViewType.ORDER_LIST_SEARCH, searchQuery = searchQuery)
+                    empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = searchQuery)
                 } else {
                     empty_view.show(EmptyViewType.ORDER_LIST)
                 }
