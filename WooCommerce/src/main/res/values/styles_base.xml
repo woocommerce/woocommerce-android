@@ -294,4 +294,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:rating">0</item>
         <item name="android:stepSize">1</item>
     </style>
+
+
+    <!--
+        Settings
+    -->
+    <style name="Woo.Settings.Heading" parent="Woo.TextView.Subtitle2">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
 </resources>
