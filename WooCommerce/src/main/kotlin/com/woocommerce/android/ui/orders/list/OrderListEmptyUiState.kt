@@ -30,7 +30,7 @@ sealed class OrderListEmptyUiState : Parcelable {
      * or to display the orders fetched.
      */
     @Parcelize
-    data class Loading(val title: UiString = UiStringRes(R.string.orderlist_fetching)) : OrderListEmptyUiState()
+    data class Loading(val title: UiString = UiStringRes(R.string.orderlist_loading)) : OrderListEmptyUiState()
 
     /**
      * There was an error fetching orders. Display an error message along with a button

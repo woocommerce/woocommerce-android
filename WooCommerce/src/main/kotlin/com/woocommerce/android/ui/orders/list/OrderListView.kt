@@ -99,7 +99,7 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
-    // TODO remove this code
+    // TODO remove this commented-out code before merging feature branch
     /*fun updateEmptyViewForState(state: OrderListEmptyUiState, fmtArgs: String? = null) {
         when (state) {
             is DataShown -> { hideEmptyView() }

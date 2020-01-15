@@ -440,7 +440,7 @@ class OrderListFragment : TopLevelFragment(),
                 }
             }
             is Loading -> {
-                // TODO
+                empty_view.show(EmptyViewType.ORDER_LIST_LOADING)
             }
             is ErrorWithRetry -> {
                 // TODO

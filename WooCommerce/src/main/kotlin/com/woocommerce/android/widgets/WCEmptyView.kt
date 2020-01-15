@@ -12,6 +12,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
@@ -21,6 +22,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     enum class EmptyViewType {
         DASHBOARD,
         ORDER_LIST,
+        ORDER_LIST_LOADING,
         PRODUCT_LIST,
         SEARCH_RESULTS,
     }
@@ -72,6 +74,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = context.getString(R.string.empty_order_list_message)
                 buttonText = context.getString(R.string.learn_more)
                 drawableId = R.drawable.img_light_empty_orders_no_orders
+            }
+            ORDER_LIST_LOADING -> {
+                showButton = false
+                isTitleBold = true
+                title = context.getString(R.string.orderlist_loading)
+                message = ""
+                buttonText = null
+                drawableId = R.drawable.img_light_empty_orders_looking_up
             }
             PRODUCT_LIST -> {
                 // TODO: once adding products is supported, this needs to be updated to match designs
