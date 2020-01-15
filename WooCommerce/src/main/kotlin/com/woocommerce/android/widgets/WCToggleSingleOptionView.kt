@@ -11,7 +11,6 @@ import android.widget.Checkable
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.view_toggle_single_option.view.*
 
