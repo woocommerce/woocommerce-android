@@ -230,7 +230,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     }
 
     private fun updateStoreViews() {
-        option_store.optionTitle= presenter.getStoreDomainName()
+        option_store.optionTitle = presenter.getStoreDomainName()
         option_store.optionValue = presenter.getUserDisplayName()
     }
 
