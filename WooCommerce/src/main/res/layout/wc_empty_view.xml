@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
@@ -54,17 +55,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingStart="28dp"
-        android:paddingTop="28dp"
-        android:paddingEnd="28dp"
-        android:paddingBottom="28dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/empty_view_title"
             style="@style/Woo.TextAppearance.Title.Large.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             android:text="@string/get_the_word_out" />
 
         <ImageView
@@ -72,25 +70,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/img_light_empty_my_store" />
+            tools:srcCompat="@drawable/img_light_empty_my_store" />
 
         <TextView
             android:id="@+id/empty_view_message"
             style="@style/Woo.TextAppearance.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:text="@string/share_your_store_message" />
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/share_your_store_message"
+            android:textAlignment="center" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/empty_view_button"
             style="@style/Woo.Button.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
             android:text="@string/share_store_button" />
     </LinearLayout>
 
