@@ -299,8 +299,24 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         Settings
     -->
-    <style name="Woo.Settings.Heading" parent="Woo.TextView.Subtitle2">
+    <style name="Woo.Settings.Option">
+        <item name="android:paddingStart">@dimen/margin_app_title_aligned</item>
+        <item name="android:paddingTop">@dimen/major_75</item>
+        <item name="android:paddingBottom">@dimen/major_75</item>
+        <item name="android:paddingEnd">@dimen/major_75</item>
+    </style>
+
+    <style name="Woo.Settings.CategoryHeader" parent="Woo.TextView.Subtitle2">
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:layout_marginBottom">@dimen/minor_00</item>
+        <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
+    </style>
+
+    <style name="Woo.Settings.Option.Title" parent="@style/Woo.TextView.Subtitle1">
+        <item name="android:layout_margin">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.Settings.Option.Value" parent="@style/Woo.TextView.Body2">
+        <item name="android:layout_margin">@dimen/minor_00</item>
     </style>
 </resources>
