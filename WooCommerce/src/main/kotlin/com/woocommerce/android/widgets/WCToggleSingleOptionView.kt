@@ -20,11 +20,14 @@ import kotlinx.android.synthetic.main.view_toggle_single_option.view.*
  *
  * This class could eventually be further genericized for even more flexibility.
  */
-class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), Checkable {
+class WCToggleSingleOptionView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(ctx, attrs, defStyleAttr), Checkable {
     init {
         View.inflate(context, R.layout.view_toggle_single_option, this)
-        orientation = LinearLayout.VERTICAL
+        orientation = VERTICAL
 
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCToggleSingleOptionView)
@@ -67,7 +70,7 @@ class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: At
     private val checkable: CompoundButton by lazy {
         switchSetting_switch
     }
-    var listener: CompoundButton.OnCheckedChangeListener? = null
+    var listener: OnCheckedChangeListener? = null
 
     override fun isChecked() = checkable.isChecked
 
