@@ -126,14 +126,14 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifsContainerOlder.visibility = View.GONE
-            notifsContainerNewer.visibility = View.VISIBLE
-            notifsContainerNewer.setOnClickListener {
+            option_notifications.visibility = View.VISIBLE
+            option_notifications.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
                 showDeviceAppNotificationSettings()
             }
         } else {
             notifsContainerOlder.visibility = View.VISIBLE
-            notifsContainerNewer.visibility = View.GONE
+            option_notifications.visibility = View.GONE
 
             switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
             switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
@@ -156,42 +156,43 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             }
         }
 
-        textBetaFeatures.setOnClickListener {
+        option_beta_features.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        textPrivacySettings.setOnClickListener {
+        option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
-        textFeatureRequests.setOnClickListener {
+        option_feature_request.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
             context?.let { ChromeCustomTabUtils.launchUrl(it, getString(R.string.app_feature_request_link)) }
         }
 
-        textAbout.setOnClickListener {
+        option_about.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_aboutFragment)
         }
 
-        textLicenses.setOnClickListener {
+        option_licenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
         if (presenter.hasMultipleStores()) {
-            primaryStoreView.setOnClickListener {
+            option_store.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 SitePickerActivity.showSitePickerForResult(this)
             }
 
             // advertise the site switcher if we haven't already
-            WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
+            WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, option_store)
         }
-        settings_selectedTheme.text = getString(AppPrefs.getAppTheme().label)
-        settings_theme.setOnClickListener {
+
+        option_theme.optionValue = getString(AppPrefs.getAppTheme().label)
+        option_theme.setOnClickListener {
             // FIXME AMANDA tracks event
             showThemeChooser()
         }
@@ -229,8 +230,8 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     }
 
     private fun updateStoreViews() {
-        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
-        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
+        option_store.optionTitle= presenter.getStoreDomainName()
+        option_store.optionValue = presenter.getUserDisplayName()
     }
 
     /**
@@ -253,7 +254,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                 .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
                     val selectedTheme = ThemeOption.values()[which]
                     AppThemeUtils.setAppTheme(selectedTheme)
-                    settings_selectedTheme?.text = getString(selectedTheme.label)
+                    option_theme?.optionValue = getString(selectedTheme.label)
                     dialog.dismiss()
                 }
                 .setNegativeButton(R.string.cancel) { dialog, _ ->

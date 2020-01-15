@@ -15,32 +15,19 @@
         <!--
             Primary store
         -->
-        <LinearLayout
-            android:id="@+id/primaryStoreView"
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/Woo.Card.ListHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="@string/settings_selected_store"/>
 
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.Card.ListHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_selected_store"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textPrimaryStoreDomain"
-                style="@style/Woo.Settings.LabelWithDetail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="textPrimaryStoreDomain"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textPrimaryStoreUsername"
-                style="@style/Woo.Settings.Label.Detail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="textPrimaryStoreUsername"/>
-        </LinearLayout>
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_store"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/major_100"
+            app:optionTitle="textPrimaryStoreDomain"
+            app:optionValue="textPrimaryStoreOption"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
@@ -88,26 +75,13 @@
         <!--
             Notifications (API 26+)
         -->
-        <LinearLayout
-            android:id="@+id/notifsContainerNewer"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_notifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textDeviceNotifSettings"
-                style="@style/Woo.Settings.LabelWithDetail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_notifs_device"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.Settings.Label.Detail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_notifs_device_detail"/>
-
-        </LinearLayout>
+            android:padding="@dimen/major_100"
+            app:optionTitle="@string/settings_notifs_device"
+            app:optionValue="@string/settings_notifs_device_detail"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
@@ -115,25 +89,13 @@
         <!--
             Appearance (App Theme)
         -->
-        <LinearLayout
-            android:id="@+id/settings_theme"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_theme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.Settings.LabelWithDetail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_app_theme_title"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/settings_selectedTheme"
-                style="@style/Woo.Settings.Label.Detail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="@string/settings_app_theme_option_default"/>
-        </LinearLayout>
+            android:padding="@dimen/major_100"
+            app:optionTitle="@string/settings_app_theme_title"
+            app:optionValue="@string/settings_app_theme_option_default"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
@@ -141,12 +103,14 @@
         <!--
             Privacy
         -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textPrivacySettings"
-            style="@style/Woo.Settings.Label"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_privacy"
+            style="@style/Woo.TextView.Subtitle1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_settings"/>
+            android:layout_margin="@dimen/minor_00"
+            android:padding="@dimen/major_100"
+            app:optionTitle="@string/privacy_settings"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
@@ -168,33 +132,26 @@
         <!--
             Beta Features
         -->
-        <LinearLayout
-            android:id="@+id/betaFeaturesContainer"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_beta_features"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_margin="@dimen/minor_00"
+            android:padding="@dimen/major_100"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textBetaFeatures"
-                style="@style/Woo.Settings.Label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/beta_features"/>
-
-            <View
-                style="@style/Woo.Settings.Divider"/>
-
-        </LinearLayout>
+            app:optionTitle="@string/beta_features"/>
 
         <!--
             Feature Requests
         -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textFeatureRequests"
-            style="@style/Woo.Settings.Label"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_feature_request"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_margin="@dimen/minor_00"
+            android:padding="@dimen/major_100"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/feature_requests"/>
+            app:optionTitle="@string/feature_requests"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
@@ -208,19 +165,22 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_about"/>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textAbout"
-            style="@style/Woo.Settings.Label"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_about"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_margin="@dimen/minor_00"
+            android:padding="@dimen/major_100"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"/>
+            app:optionTitle="@string/app_name"/>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textLicenses"
-            style="@style/Woo.Settings.Label"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_licenses"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_licenses"/>
+            android:layout_margin="@dimen/minor_00"
+            android:padding="@dimen/major_100"
+            app:optionTitle="@string/settings_licenses"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
