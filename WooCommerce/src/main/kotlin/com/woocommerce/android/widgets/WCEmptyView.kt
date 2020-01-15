@@ -39,14 +39,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         empty_view_image.visibility = if (isLandscape) View.GONE else View.VISIBLE
     }
 
-    fun updateVisitorCount(visits: Int) {
-        visitors_value.text = visits.toString()
-
-        // The empty view is only shown when there are no orders, which means the revenue is also 0
-        orders_value.text = "0"
-        revenue_value.text = "0"
-    }
-
     /**
      * Pass the site to use when sharing the store's url along with the tracks event to record
      * when the share button is tapped
@@ -58,7 +50,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     ) {
         checkOrientation()
 
-        val showStats: Boolean
         val showShareButton: Boolean
         @StringRes val titleId: Int
         @StringRes val messageId: Int
@@ -66,7 +57,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
         when (type) {
             DASHBOARD -> {
-                showStats = true
                 showShareButton = true
                 titleId = R.string.get_the_word_out
                 messageId = R.string.share_your_store_message
@@ -86,13 +76,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
         } else {
             empty_view_button.visibility = View.GONE
-        }
-
-        if (showStats) {
-            empty_view_stats_row.show()
-            empty_view_date_title.text = DateUtils.getDayOfWeekWithMonthAndDayFromDate(Date())
-        } else {
-            empty_view_stats_row.hide()
         }
 
         if (visibility != View.VISIBLE) {

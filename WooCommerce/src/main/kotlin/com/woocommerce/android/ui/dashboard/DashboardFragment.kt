@@ -205,7 +205,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         if (granularity == StatsGranularity.DAYS) {
-            empty_view.updateVisitorCount(visitorStats.values.sum())
+            empty_stats_view.updateVisitorCount(visitorStats.values.sum())
         }
     }
 
@@ -302,7 +302,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) {
+        if (!show) { // TODO
+            empty_stats_view.visibility = View.VISIBLE
             empty_view.show(
                     EmptyViewType.DASHBOARD,
                     selectedSite.get(),
@@ -311,6 +312,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_view.hide()
         } else {
             dashboard_view.show()
+            empty_stats_view.visibility = View.GONE
             empty_view.hide()
         }
     }

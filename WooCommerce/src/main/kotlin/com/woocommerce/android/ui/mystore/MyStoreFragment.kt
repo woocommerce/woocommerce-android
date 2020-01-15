@@ -11,8 +11,6 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -228,7 +226,8 @@ class MyStoreFragment : TopLevelFragment(),
         if (activeGranularity == granularity) {
             my_store_stats.showVisitorStats(visitorStats)
             if (granularity == StatsGranularity.DAYS) {
-                empty_view.updateVisitorCount(visitorStats.values.sum())
+                empty_stats_view.
+                empty_stats_view.updateVisitorCount(visitorStats.values.sum())
             }
         }
     }
@@ -322,16 +321,18 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun showEmptyView(show: Boolean) {
         val dashboardVisibility: Int
-        if (show) {
+        if (!show) { // TODO
             dashboardVisibility = View.GONE
             empty_view.show(
                     EmptyViewType.DASHBOARD,
                     selectedSite.get(),
                     Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED
             )
+            empty_stats_view.visibility = View.VISIBLE
         } else {
             empty_view.hide()
             dashboardVisibility = View.VISIBLE
+            empty_stats_view.visibility = View.GONE
         }
 
         my_store_date_bar.visibility = dashboardVisibility

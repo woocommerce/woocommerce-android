@@ -4,93 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
+    android:gravity="center"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/empty_view_stats_row"
-        style="@style/Woo.Card.WithoutPadding"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/empty_view_title"
+        style="@style/Woo.TextAppearance.Title.Large.Bold"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_marginBottom="32dp"
+        tools:text="@string/get_the_word_out" />
 
-        <TextView
-            android:id="@+id/empty_view_date_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:text="@string/dashboard_stats_todays_stats"
-            android:textColor="@color/wc_grey_medium"
-            android:textSize="@dimen/text_medium"
-            android:textStyle="bold" />
+    <ImageView
+        android:id="@+id/empty_view_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:importantForAccessibility="no"
+        tools:srcCompat="@drawable/img_light_empty_my_store" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:background="@color/list_divider" />
+    <TextView
+        android:id="@+id/empty_view_message"
+        style="@style/Woo.TextAppearance.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:textAlignment="center"
+        tools:text="@string/share_your_store_message" />
 
-        <include
-            layout="@layout/dashboard_main_stats_row"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:paddingBottom="@dimen/card_padding_bottom"
-            android:text="@string/dashboard_stats_updated_now"
-            android:textColor="@color/wc_grey_mid"
-            android:textSize="@dimen/text_caption" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/empty_view_title"
-            style="@style/Woo.TextAppearance.Title.Large.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            tools:text="@string/get_the_word_out" />
-
-        <ImageView
-            android:id="@+id/empty_view_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="32dp"
-            android:importantForAccessibility="no"
-            tools:srcCompat="@drawable/img_light_empty_my_store" />
-
-        <TextView
-            android:id="@+id/empty_view_message"
-            style="@style/Woo.TextAppearance.Large"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="32dp"
-            android:textAlignment="center"
-            tools:text="@string/share_your_store_message" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/empty_view_button"
-            style="@style/Woo.Button.Purple"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:text="@string/share_store_button" />
-    </LinearLayout>
-
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/empty_view_button"
+        style="@style/Woo.Button.Purple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="@string/share_store_button" />
 </LinearLayout>
