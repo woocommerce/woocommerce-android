@@ -20,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
+        android:switchPadding="@dimen/major_100"
         android:clickable="false"
         tools:text="If disabled will add the note as private"/>
 </merge>
