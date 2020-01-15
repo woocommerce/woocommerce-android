@@ -424,12 +424,11 @@ class OrderListFragment : TopLevelFragment(),
     private fun showEmptyView(state: OrderListEmptyUiState) {
         when (state) {
             is DataShown -> {
-                // hideEmptyView()
-                empty_view.show(EmptyViewType.ORDER_LIST)
+                hideEmptyView()
             }
             is EmptyList -> {
                 if (isSearching) {
-                    // TODO val fmtArgs = "<strong>$searchQuery</strong>"
+                    empty_view.show(EmptyViewType.ORDER_LIST_SEARCH, searchQuery = searchQuery)
                 } else {
                     empty_view.show(EmptyViewType.ORDER_LIST)
                 }

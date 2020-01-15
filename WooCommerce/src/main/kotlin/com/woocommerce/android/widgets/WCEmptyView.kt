@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -16,6 +17,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_SEARCH
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
@@ -28,6 +30,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     enum class EmptyViewType {
         DASHBOARD,
         ORDER_LIST,
+        ORDER_LIST_SEARCH,
     }
 
     init {
@@ -49,7 +52,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
      */
     fun show(
         type: EmptyViewType,
-        site: SiteModel? = null
+        site: SiteModel? = null,
+        searchQuery: String? = null
     ) {
         checkOrientation()
 
@@ -58,6 +62,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         val title: String
         val message: String
         val buttonText: String?
+        val titleTypeface: Int
         @DrawableRes val drawableId: Int
 
         when (type) {
@@ -68,6 +73,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = context.getString(R.string.share_your_store_message)
                 buttonText = context.getString(R.string.share_store_button)
                 drawableId = R.drawable.img_light_empty_my_store
+                titleTypeface = Typeface.BOLD
             }
             ORDER_LIST -> {
                 showButton = true
@@ -76,8 +82,21 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = context.getString(R.string.empty_order_list_message)
                 buttonText = context.getString(R.string.learn_more)
                 drawableId = R.drawable.img_light_empty_orders_no_orders
+                titleTypeface = Typeface.BOLD
+            }
+            ORDER_LIST_SEARCH -> {
+                showButton = false
+                tracksStat = null
+                val fmtArgs = "<strong>$searchQuery</strong>"
+                title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
+                message = ""
+                buttonText = null
+                drawableId = R.drawable.img_light_empty_search
+                titleTypeface = Typeface.NORMAL
             }
         }
+
+        empty_view_title.setTypeface(empty_view_title.getTypeface(), titleTypeface)
 
         empty_view_title.text = HtmlCompat.fromHtml(title, FROM_HTML_MODE_LEGACY)
         empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
