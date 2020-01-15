@@ -226,7 +226,6 @@ class MyStoreFragment : TopLevelFragment(),
         if (activeGranularity == granularity) {
             my_store_stats.showVisitorStats(visitorStats)
             if (granularity == StatsGranularity.DAYS) {
-                empty_stats_view.
                 empty_stats_view.updateVisitorCount(visitorStats.values.sum())
             }
         }
