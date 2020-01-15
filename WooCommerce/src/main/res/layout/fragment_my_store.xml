@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dashboardStats_root"
@@ -19,7 +18,7 @@
             android:id="@+id/tab_layout"
             style="@style/Woo.TabLayout.MyStore"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -49,10 +48,10 @@
                     <!-- Date bar -->
                     <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
                         android:id="@+id/my_store_date_bar"
-                        android:background="@color/card_bgColor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
+                        android:background="@color/card_bgColor"
+                        android:orientation="vertical" />
 
                     <!-- Order stats -->
                     <com.woocommerce.android.ui.mystore.MyStoreStatsView
@@ -60,7 +59,7 @@
                         style="@style/Woo.Stats.Card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical" />
 
                     <!-- Top earner stats -->
                     <com.woocommerce.android.ui.mystore.MyStoreTopEarnersView
@@ -68,7 +67,7 @@
                         style="@style/Woo.Stats.Card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical" />
 
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
@@ -78,7 +77,8 @@
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </FrameLayout>
 

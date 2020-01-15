@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -63,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            android:text="@string/get_the_word_out" />
+            tools:text="@string/get_the_word_out" />
 
         <ImageView
             android:id="@+id/empty_view_image"
@@ -82,16 +81,16 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="32dp"
-            android:text="@string/share_your_store_message"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            tools:text="@string/share_your_store_message" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/empty_view_button"
             style="@style/Woo.Button.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             android:text="@string/share_store_button" />
     </LinearLayout>
-
 
 </LinearLayout>
