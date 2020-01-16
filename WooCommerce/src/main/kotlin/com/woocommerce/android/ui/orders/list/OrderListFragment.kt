@@ -417,10 +417,10 @@ class OrderListFragment : TopLevelFragment(),
             }
         })
 
-        viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
-            it?.let { state ->
-                showEmptyView(state)
-            }
+        viewModel.emptyViewType.observe(viewLifecycleOwner, Observer {
+            it?.let { emptyView ->
+                empty_view.show(emptyView, searchQuery = searchQuery)
+            } ?: hideEmptyView()
         })
     }
 

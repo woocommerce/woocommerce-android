@@ -29,6 +29,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -95,14 +96,14 @@ class OrderListViewModel @AssistedInject constructor(
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
-    private val _emptyViewState: ThrottleLiveData<OrderListEmptyUiState> by lazy {
-        ThrottleLiveData<OrderListEmptyUiState>(
+    private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
+        ThrottleLiveData<EmptyViewType?>(
                 offset = EMPTY_VIEW_THROTTLE,
                 coroutineScope = this,
                 mainDispatcher = coroutineDispatchers.main,
                 backgroundDispatcher = coroutineDispatchers.computation)
     }
-    val emptyViewState: LiveData<OrderListEmptyUiState> = _emptyViewState
+    val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
     var isSearching = false
     var searchQuery = ""
@@ -286,10 +287,10 @@ class OrderListViewModel @AssistedInject constructor(
     private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {
         pagedListWrapper?.apply {
             _pagedListData.removeSource(data)
-            _emptyViewState.removeSource(pagedListData)
-            _emptyViewState.removeSource(isEmpty)
-            _emptyViewState.removeSource(listError)
-            _emptyViewState.removeSource(isFetchingFirstPage)
+            _emptyViewType.removeSource(pagedListData)
+            _emptyViewType.removeSource(isEmpty)
+            _emptyViewType.removeSource(listError)
+            _emptyViewType.removeSource(isFetchingFirstPage)
             _isEmpty.removeSource(isEmpty)
             _isFetchingFirstPage.removeSource(isFetchingFirstPage)
             _isLoadingMore.removeSource(isLoadingMore)
@@ -298,12 +299,12 @@ class OrderListViewModel @AssistedInject constructor(
 
     /**
      * Builds the function for handling empty view state scenarios and links the various [LiveData] feeds as
-     * a source for the [_emptyViewState] LivData object.
+     * a source for the [_emptyViewType] LivData object.
      */
     private fun listenToEmptyViewStateLiveData(wrapper: PagedListWrapper<OrderListItemUIType>) {
-        _emptyViewState.addSource(wrapper.isEmpty) { createAndPostEmptyUiState(wrapper) }
-        _emptyViewState.addSource(wrapper.isFetchingFirstPage) { createAndPostEmptyUiState(wrapper) }
-        _emptyViewState.addSource(wrapper.listError) { createAndPostEmptyUiState(wrapper) }
+        _emptyViewType.addSource(wrapper.isEmpty) { createAndPostEmptyUiState(wrapper) }
+        _emptyViewType.addSource(wrapper.isFetchingFirstPage) { createAndPostEmptyUiState(wrapper) }
+        _emptyViewType.addSource(wrapper.listError) { createAndPostEmptyUiState(wrapper) }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -313,7 +314,52 @@ class OrderListViewModel @AssistedInject constructor(
             isShowingProcessingTab() -> OrderListType.PROCESSING
             else -> OrderListType.ALL
         }
-        val emptyView = createEmptyUiState(
+
+        val isNetworkAvailable = networkStatus.isConnected()
+        val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
+                wrapper.data.value == null
+        val isListEmpty = wrapper.isEmpty.value ?: true
+        val hasOrders = repository.hasCachedOrdersForSite()
+        val isError = wrapper.listError.value != null
+
+        val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
+            when {
+                isError -> null // TODO
+                isLoadingData -> {
+                    // don't show intermediate screen when loading search results
+                    if (isSearching) {
+                        null
+                    } else {
+                        EmptyViewType.ORDER_LIST_LOADING
+                    }
+                }
+                isSearching -> {
+                    EmptyViewType.SEARCH_RESULTS
+                }
+                isShowingProcessingTab() -> {
+                    if (hasOrders) {
+                        // User has processed all orders
+                        null // TODO
+                    } else {
+                        // Waiting for orders to process
+                        null // TODO
+                    }
+                }
+                else -> {
+                    if (isNetworkAvailable) {
+                        null // TODO
+                    } else {
+                        null // TODO
+                    }
+                }
+            }
+        } else {
+            null
+        }
+
+        _emptyViewType.postValue(newEmptyViewType)
+
+        /*val emptyView = createEmptyUiState(
                 orderListType = listType,
                 isNetworkAvailable = networkStatus.isConnected(),
                 isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
@@ -322,7 +368,7 @@ class OrderListViewModel @AssistedInject constructor(
                 hasOrders = repository.hasCachedOrdersForSite(),
                 isError = wrapper.listError.value != null,
                 fetchFirstPage = this::fetchOrdersAndOrderDependencies)
-        _emptyViewState.postValue(emptyView)
+        _emptyViewState.postValue(newEmptyViewType)*/
     }
 
     private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty() &&
