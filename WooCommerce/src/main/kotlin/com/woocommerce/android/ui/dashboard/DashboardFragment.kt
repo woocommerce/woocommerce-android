@@ -20,12 +20,12 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -99,8 +99,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         presenter.takeView(this)
-
-        empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         dashboard_stats.initView(
                 dashboard_stats.activeGranularity,
@@ -206,8 +204,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_stats.showVisitorStats(visitorStats)
         }
 
-        if (granularity == DAYS) {
-            empty_view.updateVisitorCount(visitorStats.values.sum())
+        if (granularity == StatsGranularity.DAYS) {
+            empty_stats_view.updateVisitorCount(visitorStats.values.sum())
         }
     }
 
@@ -305,11 +303,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showEmptyView(show: Boolean) {
         if (show) {
-            empty_view.show(R.string.waiting_for_customers, showShareButton = true, showStats = true)
+            empty_view_container.show()
+            empty_view.show(
+                    EmptyViewType.DASHBOARD,
+                    selectedSite.get(),
+                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED
+            )
             dashboard_view.hide()
         } else {
+            empty_view_container.hide()
             dashboard_view.show()
-            empty_view.hide()
         }
     }
 
