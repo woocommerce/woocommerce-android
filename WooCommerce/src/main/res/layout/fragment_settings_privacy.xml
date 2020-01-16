@@ -4,11 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="?attr/colorSurface">
 
     <ImageView
         android:id="@+id/imageSendStats"
-        style="@style/Woo.Settings.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
 
@@ -21,14 +23,11 @@
 
         <Switch
             android:id="@+id/switchSendStats"
-            style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_send_stats"/>
 
-        <View
-            style="@style/Woo.Settings.Divider"
-            android:layout_marginStart="@dimen/settings_padding"/>
+        <View style="@style/Woo.Divider"/>
 
         <TextView
             style="@style/Woo.Settings.LabelWithButton"
@@ -38,43 +37,34 @@
 
         <Button
             android:id="@+id/buttonLearnMore"
-            style="@style/Woo.Settings.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:text="@string/learn_more"/>
 
-        <View
-            style="@style/Woo.Settings.Divider"
-            android:layout_marginStart="@dimen/settings_padding"/>
+        <View style="@style/Woo.Divider"/>
 
         <TextView
-            style="@style/Woo.Settings.LabelWithButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_privacy_detail"/>
 
         <Button
             android:id="@+id/buttonPrivacyPolicy"
-            style="@style/Woo.Settings.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:text="@string/settings_privacy_policy"/>
 
-        <View
-            style="@style/Woo.Settings.Divider"
-            android:layout_marginStart="@dimen/settings_padding"/>
+        <View style="@style/Woo.Divider"/>
 
         <TextView
-            style="@style/Woo.Settings.LabelWithButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_tracking"/>
 
         <Button
             android:id="@+id/buttonTracking"
-            style="@style/Woo.Settings.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -89,22 +79,22 @@
         android:layout_below="@+id/firstGroup"
         android:orientation="vertical">
 
-        <View
-            style="@style/Woo.Settings.Divider"/>
+        <View style="@style/Woo.Divider"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/margin_extra_large"
             android:background="@color/default_window_background"/>
 
-        <View
-            style="@style/Woo.Settings.Divider"/>
+        <View style="@style/Woo.Divider"/>
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imageCrashReporting"
-        style="@style/Woo.Settings.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
         android:layout_below="@+id/groupSpacer"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_gridicons_bug"/>
@@ -119,7 +109,6 @@
 
         <Switch
             android:id="@+id/switchCrashReporting"
-            style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_crash_reporting"/>
@@ -131,14 +120,11 @@
 
         <TextView
             android:id="@+id/textCrashReporting"
-            style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_crash_reporting_detail"/>
     </LinearLayout>
 
-    <View
-        style="@style/Woo.Settings.Divider"
-        android:layout_below="@+id/secondGroup"/>
+    <View style="@style/Woo.Divider"/>
 
 </RelativeLayout>
