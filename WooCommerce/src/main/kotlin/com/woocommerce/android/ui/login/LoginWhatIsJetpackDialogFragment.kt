@@ -8,10 +8,11 @@ import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class LoginWhatIsJetpackDialogFragment : DialogFragment() {
     companion object {
@@ -29,7 +30,7 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
         dialogView.findViewById<Button>(R.id.btn_learn_more)?.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_LEARN_MORE_BUTTON_TAPPED)
 
-            ChromeCustomTabUtils.launchUrl(activity as Context, getString(R.string.jetpack_view_instructions_link))
+            ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.JETPACK_INSTRUCTIONS)
         }
 
         dialogView.findViewById<Button>(R.id.btn_ok)?.setOnClickListener {
