@@ -6,22 +6,22 @@
     android:layout_height="wrap_content"
     android:focusable="true">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/switchSetting_title"
-        style="@style/Woo.TextAppearance.Large"
+        style="@style/Woo.Settings.Option.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="viewStart"
         android:importantForAccessibility="no"
         tools:text="Email note to customer"/>
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchSetting_switch"
+        android:textAppearance="@style/TextAppearance.Woo.Body2"
+        android:textColor="@null"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="viewStart"
         android:importantForAccessibility="no"
+        android:switchPadding="@dimen/major_100"
         android:clickable="false"
-        android:lineSpacingExtra="4sp"
         tools:text="If disabled will add the note as private"/>
 </merge>

@@ -284,15 +284,6 @@ Use this file to override styles in the styles_base.xml file.
     -->
     <style name="Woo.Settings"/>
 
-    <style name="Woo.Settings.Caption" parent="Woo.TextAppearance">
-        <item name="android:textSize">@dimen/text_medium</item>
-        <item name="android:textColor">@color/wc_purple</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">@dimen/settings_padding</item>
-        <item name="android:paddingStart">@dimen/settings_padding</item>
-        <item name="android:paddingEnd">@dimen/settings_padding</item>
-    </style>
-
     <style name="Woo.Settings.Label" parent="Woo.TextAppearance">
         <item name="android:textColor">@color/wc_grey_dark</item>
         <item name="android:textSize">@dimen/text_large</item>
@@ -305,13 +296,6 @@ Use this file to override styles in the styles_base.xml file.
 
     <style name="Woo.Settings.LabelWithButton" parent="Woo.Settings.Label">
         <item name="android:paddingBottom">@dimen/margin_small</item>
-    </style>
-
-    <style name="Woo.Settings.Button" parent="Woo.Button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <style name="Woo.Settings.LabelWithDetail" parent="Woo.Settings.LabelWithButton"/>

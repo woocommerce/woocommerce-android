@@ -56,4 +56,6 @@ so that's the baseline as defined in `major_100`.
     <dimen name="image_minor_100">40dp</dimen>
     <dimen name="image_major_100">100dp</dimen>
 
+    <!-- Other literal dimensions -->
+    <dimen name="margin_app_title_aligned">72dp</dimen>
 </resources>

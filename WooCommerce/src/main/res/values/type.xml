@@ -69,7 +69,7 @@
         <item name="fontFamily">@font/roboto</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_125</item>
-        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:textColor">@color/color_on_surface_medium_selector</item>
         <item name="android:textStyle">normal</item>
         <item name="lineHeight">@dimen/line_height_minor_100</item>
     </style>
@@ -78,7 +78,7 @@
         <item name="fontFamily">@font/roboto</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_100</item>
-        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:textColor">@color/color_on_surface_medium_selector</item>
         <item name="android:textStyle">normal</item>
         <item name="lineHeight">@dimen/line_height_minor_80</item>
     </style>
