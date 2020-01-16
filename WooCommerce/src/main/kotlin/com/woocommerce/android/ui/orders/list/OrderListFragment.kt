@@ -433,10 +433,9 @@ class OrderListFragment : TopLevelFragment(),
                 if (isSearching) {
                     empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = searchQuery)
                 } else {
-                    val onButtonClick = View.OnClickListener {
+                    empty_view.show(EmptyViewType.ORDER_LIST) {
                         ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
                     }
-                    empty_view.show(EmptyViewType.ORDER_LIST, onButtonClick = onButtonClick)
                 }
             }
             is Loading -> {

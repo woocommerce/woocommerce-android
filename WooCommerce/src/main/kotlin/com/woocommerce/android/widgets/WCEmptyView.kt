@@ -47,7 +47,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     fun show(
         type: EmptyViewType,
         searchQuery: String? = null,
-        onButtonClick: OnClickListener? = null
+        onButtonClick: (() -> Unit)? = null
     ) {
         checkOrientation()
 
@@ -117,7 +117,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (showButton) {
             empty_view_button.visibility = View.VISIBLE
             empty_view_button.setOnClickListener {
-                onButtonClick?.onClick(this)
+                onButtonClick?.invoke()
             }
         } else {
             empty_view_button.visibility = View.GONE
