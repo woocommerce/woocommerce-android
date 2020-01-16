@@ -4,9 +4,6 @@ object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
     const val APP_FEATURE_REQUEST = "http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283"
 
-    const val JETPACK_INSTRUCTIONS = "https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/"
-    const val JETPACK_TROUBLESHOOTING = "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
-
     const val AUTOMATTIC_HOME = "https://www.automattic.com/"
     const val AUTOMATTIC_TOS = "https://woocommerce.com/terms-conditions/"
     const val AUTOMATTIC_PRIVACY_POLICY = "https://www.automattic.com/privacy"
@@ -15,4 +12,9 @@ object AppUrls {
 
     const val WOOCOMMERCE_UPGRADE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_ADMIN_PLUGIN = "https://wordpress.org/plugins/woocommerce-admin"
+
+    const val JETPACK_INSTRUCTIONS =
+            "https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/"
+    const val JETPACK_TROUBLESHOOTING =
+            "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
 }

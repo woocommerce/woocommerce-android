@@ -82,7 +82,11 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
 
     override fun onStart() {
         super.onStart()
-        ChromeCustomTabUtils.connect(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY, arrayOf(AppUrls.AUTOMATTIC_COOKIE_POLICY))
+        ChromeCustomTabUtils.connect(
+                activity as Context,
+                AppUrls.AUTOMATTIC_PRIVACY_POLICY,
+                arrayOf(AppUrls.AUTOMATTIC_COOKIE_POLICY)
+        )
     }
 
     override fun onStop() {
