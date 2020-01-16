@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -32,6 +33,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         checkOrientation()
     }
 
+    private var lastEmptyViewType: EmptyViewType? = null
+
     /**
      * Hide the image in landscape since there isn't enough room for it on most devices
      */
@@ -50,6 +53,16 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         onButtonClick: (() -> Unit)? = null
     ) {
         checkOrientation()
+
+        // if empty view is already showing and it's a different type, fade out the existing view before fading in
+        if (visibility == View.VISIBLE && type != lastEmptyViewType) {
+            WooAnimUtils.fadeOut(this, Duration.SHORT)
+            val durationMs = Duration.SHORT.toMillis(context) + 50L
+            Handler().postDelayed({
+                show(type, searchQuery, onButtonClick)
+            }, durationMs)
+            return
+        }
 
         val showButton: Boolean
         val title: String
@@ -126,6 +139,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(this, Duration.LONG)
         }
+
+        lastEmptyViewType = type
     }
 
     fun hide() {
