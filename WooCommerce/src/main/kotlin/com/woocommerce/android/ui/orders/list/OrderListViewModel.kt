@@ -302,20 +302,13 @@ class OrderListViewModel @AssistedInject constructor(
      * a source for the [_emptyViewType] LivData object.
      */
     private fun listenToEmptyViewStateLiveData(wrapper: PagedListWrapper<OrderListItemUIType>) {
-        _emptyViewType.addSource(wrapper.isEmpty) { createAndPostEmptyUiState(wrapper) }
-        _emptyViewType.addSource(wrapper.isFetchingFirstPage) { createAndPostEmptyUiState(wrapper) }
-        _emptyViewType.addSource(wrapper.listError) { createAndPostEmptyUiState(wrapper) }
+        _emptyViewType.addSource(wrapper.isEmpty) { createAndPostEmptyViewType(wrapper) }
+        _emptyViewType.addSource(wrapper.isFetchingFirstPage) { createAndPostEmptyViewType(wrapper) }
+        _emptyViewType.addSource(wrapper.listError) { createAndPostEmptyViewType(wrapper) }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun createAndPostEmptyUiState(wrapper: PagedListWrapper<OrderListItemUIType>) {
-        val listType = when {
-            isSearching -> OrderListType.SEARCH
-            isShowingProcessingTab() -> OrderListType.PROCESSING
-            else -> OrderListType.ALL
-        }
-
-        val isNetworkAvailable = networkStatus.isConnected()
+    fun createAndPostEmptyViewType(wrapper: PagedListWrapper<OrderListItemUIType>) {
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
                 wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
@@ -338,16 +331,15 @@ class OrderListViewModel @AssistedInject constructor(
                 }
                 isShowingProcessingTab() -> {
                     if (hasOrders) {
-                        // User has processed all orders
-                        null // TODO
+                        EmptyViewType.ORDER_LIST_ALL_PROCESSED
                     } else {
                         // Waiting for orders to process
-                        null // TODO
+                        EmptyViewType.ORDER_LIST
                     }
                 }
                 else -> {
-                    if (isNetworkAvailable) {
-                        null // TODO
+                    if (networkStatus.isConnected()) {
+                        EmptyViewType.ORDER_LIST
                     } else {
                         null // TODO
                     }
@@ -358,17 +350,6 @@ class OrderListViewModel @AssistedInject constructor(
         }
 
         _emptyViewType.postValue(newEmptyViewType)
-
-        /*val emptyView = createEmptyUiState(
-                orderListType = listType,
-                isNetworkAvailable = networkStatus.isConnected(),
-                isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
-                        wrapper.data.value == null,
-                isListEmpty = wrapper.isEmpty.value ?: true,
-                hasOrders = repository.hasCachedOrdersForSite(),
-                isError = wrapper.listError.value != null,
-                fetchFirstPage = this::fetchOrdersAndOrderDependencies)
-        _emptyViewState.postValue(newEmptyViewType)*/
     }
 
     private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty() &&

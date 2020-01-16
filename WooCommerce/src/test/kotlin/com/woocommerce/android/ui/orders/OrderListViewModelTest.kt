@@ -257,7 +257,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -292,7 +292,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -326,7 +326,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -358,7 +358,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(mock())
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -391,7 +391,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -420,7 +420,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -447,7 +447,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -474,7 +474,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value

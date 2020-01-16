@@ -12,6 +12,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
@@ -24,6 +25,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         DASHBOARD,
         ORDER_LIST,
         ORDER_LIST_LOADING,
+        ORDER_LIST_ALL_PROCESSED,
         PRODUCT_LIST,
         REVIEW_LIST,
         SEARCH_RESULTS,
@@ -59,6 +61,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         val buttonText: String?
         val isTitleBold: Boolean
         @DrawableRes val drawableId: Int
+        @DrawableRes var secondaryDrawableId: Int? = null
 
         when (type) {
             DASHBOARD -> {
@@ -84,6 +87,15 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = ""
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_orders_looking_up
+            }
+            ORDER_LIST_ALL_PROCESSED -> {
+                showButton = false
+                isTitleBold = true
+                title = context.getString(R.string.empty_order_list_all_processed)
+                message = ""
+                buttonText = null
+                drawableId = R.drawable.img_light_empty_orders_all_fulfilled
+                secondaryDrawableId = R.drawable.img_clapping_hands
             }
             PRODUCT_LIST -> {
                 // TODO: once adding products is supported, this needs to be updated to match designs
@@ -123,6 +135,11 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
         empty_view_button.text = buttonText
         empty_view_image.setImageDrawable(context.getDrawable(drawableId))
+
+        secondaryDrawableId?.let {
+            empty_view_secondary_image.visibility = View.VISIBLE
+            empty_view_secondary_image.setImageDrawable(context.getDrawable(secondaryDrawableId))
+        }
 
         if (showButton) {
             empty_view_button.visibility = View.VISIBLE

@@ -30,10 +30,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.DataShown
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.EmptyList
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.ErrorWithRetry
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.Loading
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -418,40 +414,23 @@ class OrderListFragment : TopLevelFragment(),
         })
 
         viewModel.emptyViewType.observe(viewLifecycleOwner, Observer {
-            it?.let { emptyView ->
-                empty_view.show(emptyView, searchQuery = searchQuery)
+            it?.let { emptyViewType ->
+                when (emptyViewType) {
+                    EmptyViewType.SEARCH_RESULTS -> {
+                        empty_view.show(emptyViewType, searchQuery = searchQuery)
+                    }
+                    EmptyViewType.ORDER_LIST -> {
+                        val onButtonClick = View.OnClickListener {
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
+                        }
+                        empty_view.show(emptyViewType, onButtonClick = onButtonClick)
+                    }
+                    else -> {
+                        empty_view.show(emptyViewType)
+                    }
+                }
             } ?: hideEmptyView()
         })
-    }
-
-    private fun showEmptyView(state: OrderListEmptyUiState) {
-        when (state) {
-            is DataShown -> {
-                hideEmptyView()
-            }
-            is EmptyList -> {
-                if (isSearching) {
-                    empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = searchQuery)
-                } else {
-                    val onButtonClick = View.OnClickListener {
-                        ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
-                    }
-                    empty_view.show(EmptyViewType.ORDER_LIST, onButtonClick = onButtonClick)
-                }
-            }
-            is Loading -> {
-                empty_view.show(EmptyViewType.ORDER_LIST_LOADING)
-            }
-            is ErrorWithRetry -> {
-                // TODO
-                /*showEmptyView(
-                        state.title,
-                        imgResId = state.imgResId,
-                        buttonText = state.buttonText,
-                        onButtonClick = state.onButtonClick()
-                )*/
-            }
-        }
     }
 
     private fun hideEmptyView() {
