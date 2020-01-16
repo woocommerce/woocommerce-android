@@ -17,7 +17,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -116,11 +115,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
             }
+            site_list_container.cardElevation = resources.getDimension(R.dimen.plane_01)
         } else {
             // Opened from settings to change active store.
-            site_picker_root.setBackgroundColor(
-                    ContextCompat.getColor(this, R.color.white))
-
             toolbar.visibility = View.VISIBLE
             setSupportActionBar(toolbar as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -131,11 +128,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             site_list_container.cardElevation = 0f
             (site_list_container.layoutParams as MarginLayoutParams).topMargin = 0
             (site_list_container.layoutParams as MarginLayoutParams).bottomMargin = 0
-            sites_recycler.setPadding(
-                    resources.getDimensionPixelSize(R.dimen.margin_extra_large),
-                    resources.getDimensionPixelSize(R.dimen.margin_large),
-                    resources.getDimensionPixelSize(R.dimen.margin_extra_large),
-                    resources.getDimensionPixelSize(R.dimen.margin_large))
+            site_list_container.cardElevation = resources.getDimension(R.dimen.plane_00)
         }
 
         presenter.takeView(this)
