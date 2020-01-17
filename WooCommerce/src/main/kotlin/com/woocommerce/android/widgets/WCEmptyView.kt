@@ -11,6 +11,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
@@ -29,6 +31,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         PRODUCT_LIST,
         REVIEW_LIST,
         SEARCH_RESULTS,
+        NETWORK_ERROR,
+        NETWORK_OFFLINE,
     }
 
     init {
@@ -55,7 +59,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     ) {
         checkOrientation()
 
-        val showButton: Boolean
         val title: String
         val message: String
         val buttonText: String?
@@ -65,7 +68,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
         when (type) {
             DASHBOARD -> {
-                showButton = true
                 isTitleBold = true
                 title = context.getString(R.string.get_the_word_out)
                 message = context.getString(R.string.share_your_store_message)
@@ -73,7 +75,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_my_store
             }
             ORDER_LIST -> {
-                showButton = true
                 isTitleBold = true
                 title = context.getString(R.string.empty_order_list_title)
                 message = context.getString(R.string.empty_order_list_message)
@@ -81,7 +82,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_orders_no_orders
             }
             ORDER_LIST_LOADING -> {
-                showButton = false
                 isTitleBold = true
                 title = context.getString(R.string.orderlist_loading)
                 message = ""
@@ -89,7 +89,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_orders_looking_up
             }
             ORDER_LIST_ALL_PROCESSED -> {
-                showButton = false
                 isTitleBold = true
                 title = context.getString(R.string.empty_order_list_all_processed)
                 message = ""
@@ -99,7 +98,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
             PRODUCT_LIST -> {
                 // TODO: once adding products is supported, this needs to be updated to match designs
-                showButton = false
                 isTitleBold = true
                 title = context.getString(R.string.product_list_empty)
                 message = ""
@@ -107,7 +105,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_products
             }
             REVIEW_LIST -> {
-                showButton = true
                 isTitleBold = true
                 title = context.getString(R.string.empty_review_list_title)
                 message = context.getString(R.string.empty_review_list_message)
@@ -115,13 +112,26 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_reviews
             }
             SEARCH_RESULTS -> {
-                showButton = false
                 isTitleBold = false
                 val fmtArgs = "<strong>$searchQuery</strong>"
                 title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
                 message = ""
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_search
+            }
+            NETWORK_ERROR -> {
+                isTitleBold = false
+                title = context.getString(R.string.error_generic_network)
+                message = ""
+                buttonText = context.getString(R.string.retry)
+                drawableId = R.drawable.ic_woo_error_state
+            }
+            NETWORK_OFFLINE -> {
+                isTitleBold = false
+                title = context.getString(R.string.offline_error)
+                message = ""
+                buttonText = context.getString(R.string.retry)
+                drawableId = R.drawable.ic_woo_error_state
             }
         }
 
@@ -133,15 +143,17 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
         empty_view_title.text = HtmlCompat.fromHtml(titleHtml, FROM_HTML_MODE_LEGACY)
         empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
-        empty_view_button.text = buttonText
         empty_view_image.setImageDrawable(context.getDrawable(drawableId))
 
-        secondaryDrawableId?.let {
+        if (secondaryDrawableId != null) {
             empty_view_secondary_image.visibility = View.VISIBLE
             empty_view_secondary_image.setImageDrawable(context.getDrawable(secondaryDrawableId))
+        } else {
+            empty_view_secondary_image.visibility = View.GONE
         }
 
-        if (showButton) {
+        if (onButtonClick != null) {
+            empty_view_button.text = buttonText
             empty_view_button.visibility = View.VISIBLE
             empty_view_button.setOnClickListener {
                 onButtonClick?.onClick(this)

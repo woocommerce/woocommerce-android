@@ -356,7 +356,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            // TODO assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
+            assertTrue(emptyView == EmptyViewType.NETWORK_ERROR)
         }
     }
 
@@ -387,7 +387,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            // TODO assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
+            assertTrue(emptyView == EmptyViewType.NETWORK_OFFLINE)
         }
     }
 

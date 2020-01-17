@@ -425,6 +425,12 @@ class OrderListFragment : TopLevelFragment(),
                         }
                         empty_view.show(emptyViewType, onButtonClick = onButtonClick)
                     }
+                    EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
+                        val onButtonClick = View.OnClickListener {
+                            viewModel.fetchOrders()
+                        }
+                        empty_view.show(emptyViewType, onButtonClick = onButtonClick)
+                    }
                     else -> {
                         empty_view.show(emptyViewType)
                     }

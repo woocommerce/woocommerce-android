@@ -200,6 +200,20 @@ class OrderListViewModel @AssistedInject constructor(
     }
 
     /**
+     * Similar to the above but doesn't fetch order dependencies
+     */
+    fun fetchOrders() {
+        if (networkStatus.isConnected()) {
+            launch(dispatchers.main) {
+                activePagedListWrapper?.fetchFirstPage()
+            }
+        } else {
+            viewState = viewState.copy(isRefreshPending = true)
+            showOfflineSnack()
+        }
+    }
+
+    /**
      * Refresh the order count by order status list with fresh data from the API
      */
     fun fetchOrderStatusOptions() {
@@ -317,7 +331,7 @@ class OrderListViewModel @AssistedInject constructor(
 
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
             when {
-                isError -> null // TODO
+                isError -> EmptyViewType.NETWORK_ERROR
                 isLoadingData -> {
                     // don't show intermediate screen when loading search results
                     if (isSearching) {
@@ -331,6 +345,7 @@ class OrderListViewModel @AssistedInject constructor(
                 }
                 isShowingProcessingTab() -> {
                     if (hasOrders) {
+                        // there are orders but none are processing
                         EmptyViewType.ORDER_LIST_ALL_PROCESSED
                     } else {
                         // Waiting for orders to process
@@ -341,7 +356,7 @@ class OrderListViewModel @AssistedInject constructor(
                     if (networkStatus.isConnected()) {
                         EmptyViewType.ORDER_LIST
                     } else {
-                        null // TODO
+                        EmptyViewType.NETWORK_OFFLINE
                     }
                 }
             }
