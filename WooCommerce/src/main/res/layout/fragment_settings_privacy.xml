@@ -27,8 +27,12 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_share_info"
+        style="@style/Woo.Settings.Option.Value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_00"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:text="@string/settings_send_stats_detail"
         app:layout_constraintStart_toStartOf="@+id/divider1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,9 +40,12 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLearnMore"
+        style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/minor_100"
         android:text="@string/learn_more"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privacy_share_info"/>
@@ -46,6 +53,7 @@
     <View
         android:id="@+id/divider2"
         style="@style/Woo.Divider"
+        android:layout_marginTop="@dimen/minor_100"
         android:layout_marginStart="@dimen/margin_app_title_aligned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,18 +61,26 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_policy_info"
+        style="@style/Woo.Settings.Option.Value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_00"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:text="@string/settings_privacy_detail"
         app:layout_constraintStart_toStartOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2"/>
+        app:layout_constraintTop_toBottomOf="@+id/divider2"
+        app:layout_constraintBottom_toTopOf="@+id/buttonPrivacyPolicy"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonPrivacyPolicy"
+        style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/minor_100"
         android:text="@string/settings_privacy_policy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privacy_policy_info"/>
@@ -72,6 +88,7 @@
     <View
         android:id="@+id/divider3"
         style="@style/Woo.Divider"
+        android:layout_marginTop="@dimen/minor_100"
         android:layout_marginStart="@dimen/margin_app_title_aligned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -79,8 +96,12 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_tracking_info"
+        style="@style/Woo.Settings.Option.Value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_00"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:text="@string/settings_tracking"
         app:layout_constraintStart_toStartOf="@+id/divider3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,9 +109,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonTracking"
+        style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/minor_100"
         android:text="@string/learn_more"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privacy_tracking_info"/>
@@ -98,6 +123,7 @@
     <View
         android:id="@+id/divider4"
         style="@style/Woo.Divider"
+        android:layout_marginTop="@dimen/minor_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonTracking"/>
@@ -122,16 +148,23 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textCrashReporting"
+        style="@style/Woo.Settings.Option.Value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_00"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:text="@string/settings_crash_reporting_detail"
         app:layout_constraintStart_toStartOf="@+id/divider5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider5"/>
+        app:layout_constraintTop_toBottomOf="@id/divider5"
+        app:layout_constraintBottom_toTopOf="@+id/divider6"/>
 
     <View
+        android:id="@+id/divider6"
         style="@style/Woo.Divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textCrashReporting"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
