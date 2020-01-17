@@ -320,13 +320,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
     </style>
 
-    <style name="Woo.Settings.Option.Title" parent="@style/Woo.TextView.Subtitle1">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
+    <style name="Woo.Settings.Option.Title" parent="@style/Woo.TextView.Subtitle1"/>
 
-    <style name="Woo.Settings.Option.Value" parent="@style/Woo.TextView.Body2">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
+    <style name="Woo.Settings.Option.Value" parent="@style/Woo.TextView.Body2"/>
 
     <style name="Woo.Settings.Button" parent="Woo.Button">
         <item name="android:textAlignment">textStart</item>
