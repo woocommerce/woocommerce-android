@@ -9,14 +9,11 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderFetcher
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -31,6 +28,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.TEST_DISPATCHER
 import com.woocommerce.android.viewmodel.test
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
@@ -44,6 +42,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @UseExperimental(InternalCoroutinesApi::class)
@@ -262,9 +261,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_filter))
-            assertEquals(emptyView.imgResId, R.drawable.ic_hourglass_empty)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST)
         }
     }
 
@@ -297,9 +294,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_processing))
-            assertEquals(emptyView.imgResId, R.drawable.ic_hourglass_empty)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST_ALL_PROCESSED)
         }
     }
 
@@ -331,9 +326,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.orders_processed_empty_message))
-            assertEquals(emptyView.imgResId, R.drawable.ic_gridicons_checkmark)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST_ALL_PROCESSED)
         }
     }
 
@@ -363,9 +356,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
-            assertEquals(emptyView.title, UiStringRes(string.orderlist_error_fetch_generic))
-            assertEquals(emptyView.buttonText, UiStringRes(string.retry))
+            // TODO assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
         }
     }
 
@@ -396,9 +387,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
-            assertEquals(emptyView.title, UiStringRes(string.error_generic_network))
-            assertEquals(emptyView.buttonText, UiStringRes(string.retry))
+            // TODO assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
         }
     }
 
@@ -425,8 +414,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertNotNull(emptyView.imgResId)
+            assertTrue(emptyView == EmptyViewType.SEARCH_RESULTS)
         }
     }
 
@@ -452,15 +440,13 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.Loading)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST_LOADING)
         }
     }
 
     /**
      * Test the logic that generates the Loading empty list view while in search mode
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
-     * Since search mode displays a list of order statuses, an empty view should not be shown
-     * so the logic should return the [OrderListEmptyUiState.DataShown] to hide the empty view.
+     * and verify the empty view is *not* shown in this situation
      *
      * This view gets generated when:
      * - viewModel.isSearching = true
@@ -478,8 +464,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
-            assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.DataShown)
+            assertNull(emptyView)
         }
     }
 

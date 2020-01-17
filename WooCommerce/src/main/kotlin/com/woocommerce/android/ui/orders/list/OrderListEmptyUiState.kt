@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.list.OrderListType.SEARCH
 import kotlinx.android.parcel.Parcelize
 import java.io.Serializable
 
+// TODO remove this unused class
 sealed class OrderListEmptyUiState : Parcelable {
     /**
      * Base class for displaying "empty" list results.
