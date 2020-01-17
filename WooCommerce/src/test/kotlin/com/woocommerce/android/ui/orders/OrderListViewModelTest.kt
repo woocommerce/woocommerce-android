@@ -282,7 +282,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `Display |No orders to process yet| empty view when no orders for site for PROCESSING tab`() = test {
         viewModel.isSearching = false
         viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-        doReturn(false).whenever(repository).hasCachedOrdersForSite()
+        doReturn(true).whenever(repository).hasCachedOrdersForSite()
 
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
