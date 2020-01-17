@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class WooUpgradeRequiredDialog : androidx.fragment.app.DialogFragment() {
     companion object {
         private const val TAG = "WooUpgradeRequiredDialog"
-        private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
 
         fun newInstance() = WooUpgradeRequiredDialog()
     }
@@ -22,7 +22,7 @@ class WooUpgradeRequiredDialog : androidx.fragment.app.DialogFragment() {
 
         context?.let { ctx ->
             view.findViewById<Button>(R.id.upgrade_instructions)?.setOnClickListener {
-                ChromeCustomTabUtils.launchUrl(ctx, URL_UPGRADE_WOOCOMMERCE)
+                ChromeCustomTabUtils.launchUrl(ctx, AppUrls.WOOCOMMERCE_UPGRADE)
             }
         }
         view.findViewById<Button>(R.id.upgrade_dismiss)?.setOnClickListener { dialog?.dismiss() }
