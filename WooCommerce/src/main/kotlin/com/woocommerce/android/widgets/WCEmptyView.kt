@@ -169,7 +169,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             empty_view_button.text = buttonText
             empty_view_button.visibility = View.VISIBLE
             empty_view_button.setOnClickListener {
-                onButtonClick?.invoke()
+                onButtonClick.invoke()
             }
         } else {
             empty_view_button.visibility = View.GONE
