@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
@@ -216,7 +217,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued() == true) {
+        if (errorSnackbar?.isShownOrQueued == true) {
             return
         }
         errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
@@ -304,11 +305,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun showEmptyView(show: Boolean) {
         if (show) {
             empty_view_container.show()
-            empty_view.show(
-                    EmptyViewType.DASHBOARD,
-                    selectedSite.get(),
-                    Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED
-            )
+            empty_view.show(EmptyViewType.DASHBOARD) {
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
+            }
             dashboard_view.hide()
         } else {
             empty_view_container.hide()

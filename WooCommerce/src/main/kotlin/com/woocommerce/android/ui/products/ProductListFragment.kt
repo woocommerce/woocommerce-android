@@ -30,6 +30,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
@@ -253,18 +254,11 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
-                    val message: String
-                    val imageId: Int
                     if (new.isSearchActive == true) {
-                        val queryText = "<strong>${viewModel.getSearchQuery()}</strong>"
-                        message = String.format(getString(R.string.empty_message_with_search), queryText)
-                        imageId = R.drawable.img_light_empty_search
+                        empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = viewModel.getSearchQuery())
                     } else {
-                        message = getString(R.string.product_list_empty)
-                        imageId = R.drawable.ic_woo_waiting_customers
+                        empty_view.show(EmptyViewType.PRODUCT_LIST)
                     }
-
-                    empty_view.show(message, imageId = imageId)
                 } else {
                     empty_view.hide()
                 }
