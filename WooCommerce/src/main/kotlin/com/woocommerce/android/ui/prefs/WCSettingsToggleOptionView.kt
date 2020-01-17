@@ -64,6 +64,8 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
                         R.styleable.WCSettingsToggleOptionView_toggleOptionChecked,
                         R.styleable.WCSettingsToggleOptionView_tools_toggleOptionIcon
                 )
+
+                setOnClickListener { toggle() }
             } finally {
                 a.recycle()
             }
@@ -91,6 +93,7 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
 
     override fun toggle() {
         checkable.toggle()
+        onCheckChanged()
     }
 
     override fun setChecked(checked: Boolean) {
