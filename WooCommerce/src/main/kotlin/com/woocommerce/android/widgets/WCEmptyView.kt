@@ -184,7 +184,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     fun hide() {
         if (visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(this, Duration.LONG)
+            WooAnimUtils.fadeOut(this, Duration.SHORT)
         }
     }
 }
