@@ -9,6 +9,9 @@
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchSendStats"
+        style="@style/Woo.Settings.Option.WithImage"
+        android:paddingTop="@dimen/minor_00"
+        android:paddingBottom="@dimen/minor_00"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:toggleOptionTitle="@string/settings_send_stats"
@@ -130,6 +133,9 @@
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchCrashReporting"
+        style="@style/Woo.Settings.Option.WithImage"
+        android:paddingTop="@dimen/minor_00"
+        android:paddingBottom="@dimen/minor_00"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:toggleOptionIcon="@drawable/ic_gridicons_bug"

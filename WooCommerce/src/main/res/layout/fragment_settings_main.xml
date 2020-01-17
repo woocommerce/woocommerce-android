@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <com.google.android.material.textview.MaterialTextView
             style="@style/Woo.Settings.CategoryHeader"
@@ -43,29 +43,29 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_notifs"/>
 
-        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
             android:id="@+id/option_notifs_orders"
-            style="@style/Woo.Settings.Option"
+            style="@style/Woo.Settings.Option.WithImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:switchSummary="@string/settings_notifs_orders_detail"
-            app:switchTitle="@string/settings_notifs_orders"/>
+            app:toggleOptionDesc="@string/settings_notifs_orders_detail"
+            app:toggleOptionTitle="@string/settings_notifs_orders"/>
 
-        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
             android:id="@+id/option_notifs_tone"
-            style="@style/Woo.Settings.Option"
+            style="@style/Woo.Settings.Option.WithImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:switchSummary="@string/settings_notifs_tone_detail"
-            app:switchTitle="@string/settings_notifs_tone"/>
+            app:toggleOptionDesc="@string/settings_notifs_tone_detail"
+            app:toggleOptionTitle="@string/settings_notifs_tone"/>
 
-        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
             android:id="@+id/option_notifs_reviews"
-            style="@style/Woo.Settings.Option"
+            style="@style/Woo.Settings.Option.WithImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:switchSummary="@string/settings_notifs_reviews_detail"
-            app:switchTitle="@string/settings_notifs_reviews"/>
+            app:toggleOptionDesc="@string/settings_notifs_reviews_detail"
+            app:toggleOptionTitle="@string/settings_notifs_reviews"/>
 
         <View style="@style/Woo.Divider"/>
     </LinearLayout>
@@ -96,13 +96,13 @@
     <!--
         Image Optimization
     -->
-    <com.woocommerce.android.widgets.WCToggleSingleOptionView
+    <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/option_image_optimization"
-        style="@style/Woo.Settings.Option"
+        style="@style/Woo.Settings.Option.WithImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:switchSummary="@string/settings_image_optimization_message"
-        app:switchTitle="@string/settings_image_optimization_title"/>
+        app:toggleOptionDesc="@string/settings_image_optimization_message"
+        app:toggleOptionTitle="@string/settings_image_optimization_title"/>
 
     <!--
         Privacy

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,10 +9,10 @@
 
     <ImageView
         android:id="@+id/toggleSetting_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
+        android:layout_width="@dimen/image_minor_50"
+        android:layout_height="@dimen/image_minor_50"
         android:importantForAccessibility="no"
+        android:layout_marginEnd="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/toggleSetting_title"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/minor_00"
         android:layout_marginTop="@dimen/minor_00"
+        android:paddingBottom="@dimen/minor_25"
         android:importantForAccessibility="no"
         app:layout_constraintBottom_toTopOf="@+id/toggleSetting_desc"
         app:layout_constraintEnd_toStartOf="@+id/toggleSetting_switch"
@@ -48,14 +49,13 @@
         app:layout_constraintStart_toStartOf="@+id/toggleSetting_title"
         app:layout_constraintTop_toBottomOf="@+id/toggleSetting_title"
         tools:text="Resize and compress because this is a really long message"
-        tools:visibility="go" />
+        tools:visibility="visible" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/toggleSetting_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
         android:clickable="false"
         android:importantForAccessibility="no"
         android:switchPadding="@dimen/major_100"
@@ -64,4 +64,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:showText="false" />
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>
