@@ -420,22 +420,20 @@ class OrderListFragment : TopLevelFragment(),
                         empty_view.show(emptyViewType, searchQuery = searchQuery)
                     }
                     EmptyViewType.ORDER_LIST -> {
-                        val onButtonClick = View.OnClickListener {
+                        empty_view.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
                         }
-                        empty_view.show(emptyViewType, onButtonClick = onButtonClick)
                     }
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
-                        val onButtonClick = View.OnClickListener {
-                            viewModel.fetchOrders()
+                        empty_view.show(emptyViewType) {
+                            refreshOrders()
                         }
-                        empty_view.show(emptyViewType, onButtonClick = onButtonClick)
                     }
                     else -> {
                         empty_view.show(emptyViewType)
                     }
                 }
-            } ?: hideEmptyView()
+            }
         })
     }
 

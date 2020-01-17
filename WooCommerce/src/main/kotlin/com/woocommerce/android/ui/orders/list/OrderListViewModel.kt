@@ -200,20 +200,6 @@ class OrderListViewModel @AssistedInject constructor(
     }
 
     /**
-     * Similar to the above but doesn't fetch order dependencies
-     */
-    fun fetchOrders() {
-        if (networkStatus.isConnected()) {
-            launch(dispatchers.main) {
-                activePagedListWrapper?.fetchFirstPage()
-            }
-        } else {
-            viewState = viewState.copy(isRefreshPending = true)
-            showOfflineSnack()
-        }
-    }
-
-    /**
      * Refresh the order count by order status list with fresh data from the API
      */
     fun fetchOrderStatusOptions() {

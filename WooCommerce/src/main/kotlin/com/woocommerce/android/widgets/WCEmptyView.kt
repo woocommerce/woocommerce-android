@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -40,6 +41,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         checkOrientation()
     }
 
+    private var lastEmptyViewType: EmptyViewType? = null
+
     /**
      * Hide the image in landscape since there isn't enough room for it on most devices
      */
@@ -55,9 +58,19 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     fun show(
         type: EmptyViewType,
         searchQuery: String? = null,
-        onButtonClick: OnClickListener? = null
+        onButtonClick: (() -> Unit)? = null
     ) {
         checkOrientation()
+
+        // if empty view is already showing and it's a different type, fade out the existing view before fading in
+        if (visibility == View.VISIBLE && type != lastEmptyViewType) {
+            WooAnimUtils.fadeOut(this, Duration.SHORT)
+            val durationMs = Duration.SHORT.toMillis(context) + 50L
+            Handler().postDelayed({
+                show(type, searchQuery, onButtonClick)
+            }, durationMs)
+            return
+        }
 
         val title: String
         val message: String
@@ -156,7 +169,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             empty_view_button.text = buttonText
             empty_view_button.visibility = View.VISIBLE
             empty_view_button.setOnClickListener {
-                onButtonClick?.onClick(this)
+                onButtonClick?.invoke()
             }
         } else {
             empty_view_button.visibility = View.GONE
@@ -165,6 +178,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(this, Duration.LONG)
         }
+
+        lastEmptyViewType = type
     }
 
     fun hide() {
