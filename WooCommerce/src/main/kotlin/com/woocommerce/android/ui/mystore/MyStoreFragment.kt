@@ -323,11 +323,10 @@ class MyStoreFragment : TopLevelFragment(),
         val dashboardVisibility: Int
         if (show) {
             dashboardVisibility = View.GONE
-            val onButtonClick = View.OnClickListener {
+            empty_view.show(EmptyViewType.DASHBOARD) {
                 AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
-            empty_view.show(EmptyViewType.DASHBOARD, onButtonClick = onButtonClick)
             empty_stats_view.visibility = View.VISIBLE
         } else {
             empty_view.hide()

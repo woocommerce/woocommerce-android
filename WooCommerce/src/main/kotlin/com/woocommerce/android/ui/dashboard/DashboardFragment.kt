@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -305,12 +304,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showEmptyView(show: Boolean) {
         if (show) {
-            val onButtonClick = OnClickListener {
+            empty_view_container.show()
+            empty_view.show(EmptyViewType.DASHBOARD) {
                 AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
-            empty_view_container.show()
-            empty_view.show(EmptyViewType.DASHBOARD, onButtonClick = onButtonClick)
             dashboard_view.hide()
         } else {
             empty_view_container.hide()

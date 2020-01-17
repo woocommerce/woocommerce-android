@@ -285,10 +285,9 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            val onButtonClick = OnClickListener {
+            empty_view.show(EmptyViewType.REVIEW_LIST) {
                 ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE_REVIEWS)
             }
-            empty_view.show(EmptyViewType.REVIEW_LIST, onButtonClick = onButtonClick)
         } else {
             empty_view.hide()
         }
