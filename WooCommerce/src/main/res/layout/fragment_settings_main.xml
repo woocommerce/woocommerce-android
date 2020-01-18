@@ -11,8 +11,7 @@
     <!--
         Primary store
     -->
-    <com.google.android.material.textview.MaterialTextView
-        style="@style/Woo.Settings.CategoryHeader"
+    <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_selected_store"/>
@@ -36,8 +35,7 @@
         android:orientation="vertical"
         tools:visibility="visible">
 
-        <com.google.android.material.textview.MaterialTextView
-            style="@style/Woo.Settings.CategoryHeader"
+        <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_notifs"/>
@@ -131,8 +129,7 @@
     <!--
         About
     -->
-    <com.google.android.material.textview.MaterialTextView
-        style="@style/Woo.Settings.CategoryHeader"
+    <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_about"/>

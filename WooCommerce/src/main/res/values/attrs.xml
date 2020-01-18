@@ -22,6 +22,7 @@
         <attr name="flowLayoutStyle" format="reference"/>
         <attr name="settingsToggleOptionStyle" format="reference"/>
         <attr name="settingsOptionValueStyle" format="reference"/>
+        <attr name="settingsCategoryHeaderStyle" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">
