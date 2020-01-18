@@ -1,69 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/wc_purple">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/color_primary_surface"
+    android:padding="@dimen/major_200">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/about_image"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/image_major_50"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="@dimen/minor_100"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/woo_bubble_white"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.Settings.About.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:text="@string/about_appname"/>
 
-        <ImageView
-            android:id="@+id/about_image"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:importantForAccessibility="no"
-            app:srcCompat="@drawable/woo_bubble_white"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_version"
+        style="@style/Woo.Settings.About.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/about_version"/>
 
-        <TextView
-            style="@style/Woo.About.Title"
-            android:layout_marginBottom="@dimen/margin_small"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:text="@string/about_appname"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_publisher"
+        style="@style/Woo.Settings.About.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/about_publisher"/>
 
-        <TextView
-            android:id="@+id/about_version"
-            style="@style/Woo.About.Label"
-            android:text="@string/about_version"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_copyright"
+        style="@style/Woo.Settings.About.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Copyright"/>
 
-        <TextView
-            android:id="@+id/about_publisher"
-            style="@style/Woo.About.Label"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:text="@string/about_publisher"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_privacy"
+        style="@style/Woo.Settings.About.Button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:layout_marginTop="@dimen/minor_100"
+        android:text="@string/settings_privacy_policy_header"/>
 
-        <TextView
-            android:id="@+id/about_copyright"
-            style="@style/Woo.About.Label"
-            tools:text="Copyright"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_tos"
+        style="@style/Woo.Settings.About.Button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:text="@string/about_tos"/>
 
-        <TextView
-            android:id="@+id/about_privacy"
-            style="@style/Woo.About.Button"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:text="@string/settings_privacy_policy_header"/>
-
-        <TextView
-            android:id="@+id/about_tos"
-            style="@style/Woo.About.Button"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:text="@string/about_tos"/>
-
-        <TextView
-            android:id="@+id/about_url"
-            style="@style/Woo.About.Label"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/about_url_text"/>
-    </LinearLayout>
-</FrameLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_url"
+        style="@style/Woo.Settings.About.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/about_url_text"/>
+</LinearLayout>
