@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -95,7 +96,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             spannable.setSpan(
                     WooClickableSpan {
                         AnalyticsTracker.track(SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED)
-                        ChromeCustomTabUtils.launchUrl(context, getString(R.string.settings_hiring_link))
+                        ChromeCustomTabUtils.launchUrl(context, AppUrls.AUTOMATTIC_HIRING)
                     },
                     (settingsFooterText.length - hiringText.length),
                     settingsFooterText.length,
@@ -165,7 +166,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         textFeatureRequests.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
-            context?.let { ChromeCustomTabUtils.launchUrl(it, getString(R.string.app_feature_request_link)) }
+            context?.let { ChromeCustomTabUtils.launchUrl(it, AppUrls.APP_FEATURE_REQUEST) }
         }
 
         textAbout.setOnClickListener {
