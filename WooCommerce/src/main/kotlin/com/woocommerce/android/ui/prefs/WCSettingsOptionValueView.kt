@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.StyleRes
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.StyleAttrUtils
@@ -19,7 +20,8 @@ import kotlinx.android.synthetic.main.view_option_with_active_setting.view.*
 class WCSettingsOptionValueView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = R.attr.settingsOptionValueStyle,
+    @StyleRes defStyleRes: Int = 0
 ) : LinearLayout(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.view_option_with_active_setting, this)
@@ -33,7 +35,8 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
         setBackgroundResource(outValue.resourceId)
 
         if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.WCSettingsOptionValueView)
+            val a = context
+                    .obtainStyledAttributes(attrs, R.styleable.WCSettingsOptionValueView, defStyleAttr, defStyleRes)
             try {
                 // Set the view title and style
                 option_title.text = StyleAttrUtils.getString(

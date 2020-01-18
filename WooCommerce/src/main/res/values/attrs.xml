@@ -21,6 +21,7 @@
         <attr name="tagViewStyle" format="reference"/>
         <attr name="flowLayoutStyle" format="reference"/>
         <attr name="settingsToggleOptionStyle" format="reference"/>
+        <attr name="settingsOptionValueStyle" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">
