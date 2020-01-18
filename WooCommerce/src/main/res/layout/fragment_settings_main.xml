@@ -45,7 +45,6 @@
 
         <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
             android:id="@+id/option_notifs_orders"
-            style="@style/Woo.Settings.Option.WithImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:toggleOptionDesc="@string/settings_notifs_orders_detail"
@@ -53,7 +52,6 @@
 
         <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
             android:id="@+id/option_notifs_tone"
-            style="@style/Woo.Settings.Option.WithImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:toggleOptionDesc="@string/settings_notifs_tone_detail"
@@ -61,7 +59,6 @@
 
         <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
             android:id="@+id/option_notifs_reviews"
-            style="@style/Woo.Settings.Option.WithImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:toggleOptionDesc="@string/settings_notifs_reviews_detail"
@@ -98,7 +95,6 @@
     -->
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/option_image_optimization"
-        style="@style/Woo.Settings.Option.WithImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:toggleOptionDesc="@string/settings_image_optimization_message"

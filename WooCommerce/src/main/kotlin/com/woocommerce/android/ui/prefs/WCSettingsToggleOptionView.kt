@@ -11,6 +11,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Checkable
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
+import androidx.annotation.StyleRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StyleAttrUtils
@@ -20,7 +21,8 @@ import kotlinx.android.synthetic.main.view_settings_toggle_option.view.*
 class WCSettingsToggleOptionView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = R.attr.settingsToggleOptionStyle,
+    @StyleRes defStyleRes: Int = 0
 ) : ConstraintLayout(ctx, attrs, defStyleAttr), Checkable {
     init {
         View.inflate(context, R.layout.view_settings_toggle_option, this)
@@ -31,7 +33,8 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
         setBackgroundResource(outValue.resourceId)
 
         if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.WCSettingsToggleOptionView)
+            val a = context
+                    .obtainStyledAttributes(attrs, R.styleable.WCSettingsToggleOptionView, defStyleAttr, defStyleRes)
             try {
                 // Set the view title
                 StyleAttrUtils.getString(
