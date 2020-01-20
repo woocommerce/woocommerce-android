@@ -18,7 +18,7 @@
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_stats_grey_min_24dp"
+        tools:src="@drawable/ic_stats_24dp"
         tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
