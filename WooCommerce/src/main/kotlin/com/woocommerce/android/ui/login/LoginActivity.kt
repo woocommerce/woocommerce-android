@@ -6,9 +6,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.automattic.android.tracks.CrashLogging.CrashLogging
 import androidx.fragment.app.Fragment
+import com.automattic.android.tracks.CrashLogging.CrashLogging
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -501,11 +502,11 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     //  -- END: GoogleListener implementation methods
 
     override fun showJetpackInstructions() {
-        ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_view_instructions_link))
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.JETPACK_INSTRUCTIONS)
     }
 
     override fun showJetpackTroubleshootingTips() {
-        ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_troubleshooting_link))
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.JETPACK_TROUBLESHOOTING)
     }
 
     override fun showWhatIsJetpackDialog() {
