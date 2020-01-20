@@ -15,6 +15,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.util.DisplayUtils
@@ -25,6 +26,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         ORDER_LIST,
         ORDER_LIST_LOADING,
         PRODUCT_LIST,
+        REVIEW_LIST,
         SEARCH_RESULTS,
     }
 
@@ -104,6 +106,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = ""
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_products
+            }
+            REVIEW_LIST -> {
+                showButton = true
+                isTitleBold = true
+                title = context.getString(R.string.empty_review_list_title)
+                message = context.getString(R.string.empty_review_list_message)
+                buttonText = context.getString(R.string.learn_more)
+                drawableId = R.drawable.img_light_empty_reviews
             }
             SEARCH_RESULTS -> {
                 showButton = false
