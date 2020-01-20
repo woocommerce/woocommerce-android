@@ -6,6 +6,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Woo"/>
+    <style name="Widget"/>
+    <style name="Widget.Woo"/>
 
     <!--
         Toolbar Style
@@ -303,30 +305,31 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:stepSize">1</item>
     </style>
 
-
     <!--
         Settings
     -->
-    <style name="Woo.Settings.Option">
+    <style name="Widget.Woo.Settings">
         <item name="android:paddingStart">@dimen/margin_app_title_aligned</item>
         <item name="android:paddingTop">@dimen/major_100</item>
         <item name="android:paddingBottom">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
     </style>
 
-    <style name="Woo.Settings.CategoryHeader" parent="Woo.TextView.Subtitle2">
+    <style name="Widget.Woo.Settings.OptionValue"/>
+
+    <style name="Widget.Woo.Settings.OptionToggle">
+        <item name="android:paddingStart">@dimen/major_100</item>
+    </style>
+
+    <style name="Widget.Woo.Settings.CategoryHeader">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:layout_marginBottom">@dimen/minor_00</item>
-        <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
+        <item name="android:paddingBottom">@dimen/minor_00</item>
     </style>
 
-    <style name="Woo.Settings.Option.Title" parent="@style/Woo.TextView.Subtitle1">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
+    <style name="Woo.Settings.Option.Title" parent="@style/Woo.TextView.Subtitle1"/>
 
-    <style name="Woo.Settings.Option.Value" parent="@style/Woo.TextView.Body2">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
+    <style name="Woo.Settings.Option.Value" parent="@style/Woo.TextView.Body2"/>
 
     <style name="Woo.Settings.Button" parent="Woo.Button">
         <item name="android:textAlignment">textStart</item>

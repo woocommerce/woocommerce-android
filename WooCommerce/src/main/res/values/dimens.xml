@@ -53,6 +53,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="line_height_major_200">112dp</dimen>
 
     <!-- Smaller image sizes (ex. icons) -->
+    <dimen name="image_minor_50">24dp</dimen>
     <dimen name="image_minor_100">40dp</dimen>
     <dimen name="image_major_100">100dp</dimen>
 

@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.WindowManager.LayoutParams
 import android.widget.ImageView
@@ -31,8 +32,12 @@ object UiHelpers {
                 is UiStringText -> uiString.text
             }
 
-    fun updateVisibility(view: View, visible: Boolean) {
-        view.visibility = if (visible) View.VISIBLE else View.GONE
+    fun updateVisibility(view: View, visible: Boolean, setInvisible: Boolean = false) {
+        view.visibility = if (visible) {
+            View.VISIBLE
+        } else {
+            if (setInvisible) View.INVISIBLE else View.GONE
+        }
     }
 
     fun setTextOrHide(view: TextView, uiString: UiString?) {
@@ -52,11 +57,16 @@ object UiHelpers {
         }
     }
 
-    fun setImageOrHide(imageView: ImageView, @DrawableRes resId: Int?) {
-        updateVisibility(imageView, resId != null)
+    fun setImageOrHide(imageView: ImageView, @DrawableRes resId: Int?, setInvisible: Boolean = false) {
+        updateVisibility(imageView, resId != null, setInvisible)
         resId?.let {
             imageView.setImageResource(resId)
         }
+    }
+
+    fun setDrawableOrHide(imageView: ImageView, image: Drawable?) {
+        updateVisibility(imageView, image != null)
+        image?.let { imageView.setImageDrawable(image) }
     }
 
     fun adjustDialogSize(dialog: Dialog) {

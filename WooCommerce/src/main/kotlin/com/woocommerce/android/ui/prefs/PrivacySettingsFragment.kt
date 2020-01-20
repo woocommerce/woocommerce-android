@@ -41,10 +41,10 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
         presenter.takeView(this)
 
         switchSendStats.isChecked = presenter.getSendUsageStats()
-        switchSendStats.setOnClickListener {
+        switchSendStats.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED, mapOf(
                     AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchSendStats.isChecked)))
-            presenter.setSendUsageStats(switchSendStats.isChecked)
+            presenter.setSendUsageStats(isChecked)
         }
 
         buttonLearnMore.setOnClickListener {
@@ -61,11 +61,11 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
         }
 
         switchCrashReporting.isChecked = presenter.getCrashReportingEnabled()
-        switchCrashReporting.setOnClickListener {
+        switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                     PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED, mapOf(
                     AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchCrashReporting.isChecked)))
-            presenter.setCrashReportingEnabled(activity!!, switchCrashReporting.isChecked)
+            presenter.setCrashReportingEnabled(activity!!, isChecked)
         }
     }
 

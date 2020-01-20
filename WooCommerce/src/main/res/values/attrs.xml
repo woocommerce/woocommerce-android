@@ -20,6 +20,9 @@
     <declare-styleable name="WooTheme">
         <attr name="tagViewStyle" format="reference"/>
         <attr name="flowLayoutStyle" format="reference"/>
+        <attr name="settingsToggleOptionStyle" format="reference"/>
+        <attr name="settingsOptionValueStyle" format="reference"/>
+        <attr name="settingsCategoryHeaderStyle" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">
@@ -40,6 +43,17 @@
         <attr name="optionValue" format="reference|string"/>
         <attr name="tools_optionTitle" format="reference|string"/>
         <attr name="tools_optionValue" format="reference|string"/>
+    </declare-styleable>
+
+    <declare-styleable name="WCSettingsToggleOptionView">
+        <attr name="toggleOptionTitle" format="reference|string"/>
+        <attr name="toggleOptionDesc" format="reference|string"/>
+        <attr name="toggleOptionIcon" format="reference"/>
+        <attr name="toggleOptionChecked" format="boolean"/>
+        <attr name="tools_toggleOptionTitle" format="reference|string"/>
+        <attr name="tools_toggleOptionDesc" format="reference|string"/>
+        <attr name="tools_toggleOptionIcon" format="reference"/>
+        <attr name="tools_toggleOptionChecked" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="WCProductImageGalleryView">
