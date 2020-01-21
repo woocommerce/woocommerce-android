@@ -416,6 +416,7 @@
     <string name="product_shipping">Shipping</string>
     <string name="product_weight">Weight</string>
     <string name="product_size">Size</string>
+    <string name="product_dimensions">Dimensions</string>
     <string name="product_shipping_class">Shipping class</string>
     <string name="product_total_orders">Total orders</string>
     <string name="product_reviews">Reviews</string>
