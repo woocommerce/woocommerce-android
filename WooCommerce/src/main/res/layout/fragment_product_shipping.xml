@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,7 +15,7 @@
         android:id="@+id/product_weight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_large"
         app:editTextHint="@string/product_weight"
         android:inputType="numberDecimal"/>
 
@@ -24,7 +23,7 @@
         android:id="@+id/product_length"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_large"
         app:editTextHint="@string/product_length"
         android:inputType="numberDecimal"/>
 
@@ -32,7 +31,7 @@
         android:id="@+id/product_width"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_large"
         app:editTextHint="@string/product_width"
         android:inputType="numberDecimal"/>
 
@@ -40,12 +39,12 @@
         android:id="@+id/product_height"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_large"
         app:editTextHint="@string/product_height"
         android:inputType="numberDecimal"/>
 
     <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-        android:id="@+id/product_shipping_class"
+        android:id="@+id/product_shipping_class_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:spinnerHint="@string/product_shipping_class"

@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
 import javax.inject.Inject
@@ -39,7 +40,8 @@ class ProductDetailRepository @Inject constructor(
     }
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
-    private var continuation: CancellableContinuation<Boolean>? = null
+    private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
+    private var continuationFetchShippingClasses: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -51,9 +53,9 @@ class ProductDetailRepository @Inject constructor(
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
         try {
-            continuation?.cancel()
+            continuationFetchProduct?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                continuation = it
+                continuationFetchProduct = it
 
                 val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
                 dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
@@ -62,7 +64,7 @@ class ProductDetailRepository @Inject constructor(
             WooLog.d(PRODUCTS, "CancellationException while fetching single product")
         }
 
-        continuation = null
+        continuationFetchProduct = null
         return getProduct(remoteProductId)
     }
 
@@ -87,6 +89,22 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchProductShippingClasses() {
+        try {
+            continuationFetchShippingClasses?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationFetchShippingClasses = it
+
+                val payload = FetchProductShippingClassListPayload(selectedSite.get())
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.d(PRODUCTS, "CancellationException while fetching product shipping classes")
+        }
+
+        continuationFetchShippingClasses = null
+    }
+
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
@@ -95,15 +113,18 @@ class ProductDetailRepository @Inject constructor(
     fun getCachedVariantCount(remoteProductId: Long) =
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
+    fun getCachedProductShippingClasses() =
+            productStore.getShippingClassListForSite(selectedSite.get())
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
             if (event.isError) {
-                continuation?.resume(false)
+                continuationFetchProduct?.resume(false)
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                continuation?.resume(true)
+                continuationFetchProduct?.resume(true)
             }
         }
     }
