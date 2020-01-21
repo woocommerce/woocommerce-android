@@ -345,17 +345,4 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.Settings.About.Title" parent="@style/Woo.TextView.Headline5">
         <item name="android:textColor">@color/color_on_primary_surface_high</item>
     </style>
-
-    <style name="Woo.Settings.About"/>
-    <style name="Woo.Settings.About.Body" parent="@style/Woo.TextView.Subtitle2">
-        <item name="android:textColor">@color/color_on_primary_surface_high</item>
-        <item name="android:layout_marginTop">@dimen/minor_00</item>
-        <item name="android:layout_marginBottom">@dimen/minor_00</item>
-    </style>
-
-    <style name="Woo.Settings.About.Button">
-        <item name="android:textColor">@color/color_primary_surface</item>
-        <item name="android:background">@drawable/about_button_selector</item>
-        <item name="android:gravity">center</item>
-    </style>
 </resources>

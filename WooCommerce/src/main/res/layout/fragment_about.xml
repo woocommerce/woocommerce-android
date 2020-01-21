@@ -6,70 +6,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:background="@color/color_primary_surface"
-    android:padding="@dimen/major_200">
+    android:background="@color/color_surface">
 
     <ImageView
         android:id="@+id/about_image"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/image_major_50"
-        android:scaleType="fitCenter"
-        android:layout_marginTop="@dimen/minor_100"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/woo_bubble_white"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        style="@style/Woo.Settings.About.Title"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/about_appname"/>
+        android:scaleType="fitCenter"
+        android:layout_marginTop="@dimen/major_200"
+        android:layout_marginBottom="@dimen/major_200"
+        android:contentDescription="@string/about_appname"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/img_woo_bubble_colored"/>
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/margin_app_title_aligned"/>
+
+    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+        android:id="@+id/about_privacy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:optionTitle="@string/settings_privacy_policy_header"/>
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/margin_app_title_aligned"/>
+
+    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+        android:id="@+id/about_tos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:optionTitle="@string/about_tos"/>
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/margin_app_title_aligned"
+        android:layout_marginBottom="@dimen/major_200"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_version"
-        style="@style/Woo.Settings.About.Body"
+        style="@style/Woo.Settings.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/about_version"/>
+        android:text="@string/about_version"
+        android:layout_gravity="center"
+        tools:text="Version 3.3-rc2" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_publisher"
-        style="@style/Woo.Settings.About.Body"
+        style="@style/Woo.Settings.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        android:text="@string/about_publisher"/>
+        android:text="@string/about_publisher"
+        android:layout_gravity="center"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_copyright"
-        style="@style/Woo.Settings.About.Body"
+        style="@style/Woo.Settings.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Copyright"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/about_privacy"
-        style="@style/Woo.Settings.About.Button"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/min_tap_target"
-        android:layout_marginBottom="@dimen/minor_100"
-        android:layout_marginTop="@dimen/minor_100"
-        android:text="@string/settings_privacy_policy_header"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/about_tos"
-        style="@style/Woo.Settings.About.Button"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/min_tap_target"
-        android:layout_marginBottom="@dimen/minor_100"
-        android:text="@string/about_tos"/>
+        android:layout_gravity="center"
+        tools:text="\@Automattic, Inc"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_url"
-        style="@style/Woo.Settings.About.Body"
+        style="@style/Woo.Settings.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
-        android:text="@string/about_url_text"/>
+        android:text="@string/about_url_text"
+        android:layout_gravity="center"/>
 </LinearLayout>
