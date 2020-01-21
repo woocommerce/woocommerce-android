@@ -7,9 +7,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductBackOrders
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductTaxStatus
 
 /**
  * Dialog displays a list of product shipping classes

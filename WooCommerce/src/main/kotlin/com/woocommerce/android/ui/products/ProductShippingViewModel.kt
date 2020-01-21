@@ -5,7 +5,6 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -13,8 +12,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class ProductShippingViewModel @AssistedInject constructor(
@@ -22,7 +19,6 @@ class ProductShippingViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
-    private val networkStatus: NetworkStatus,
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, dispatchers) {
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
