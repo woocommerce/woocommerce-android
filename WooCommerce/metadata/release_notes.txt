@@ -1,3 +1,4 @@
-- You’ll see a new “variants” section in the Product detail screen for your variable products.
-- The bottom navigation bar no longer disappears when scrolling — we think you’ll like it better.
-- We know a Products tab is high on people’s wish lists, and you can now preview the coming-soon Products tab — head to Settings in the app to enable it.
+- Minor design tweaks to the My Store tab.
+- Fixed a navigation bug that causing crashes when bringing the app back from background.
+- Other miscellaneous bug fixes.
+

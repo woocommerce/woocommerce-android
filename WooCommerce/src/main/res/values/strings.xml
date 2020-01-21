@@ -405,7 +405,7 @@
     <string name="product_sale_price">Sale price</string>
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
-    <string name="product_sale_date_from">From %1$s</string>
+    <string name="product_sale_date_from">from %1$s</string>
     <string name="product_sku">SKU</string>
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>

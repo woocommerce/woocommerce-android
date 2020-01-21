@@ -1,0 +1,3 @@
+3.3:
+- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
+- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.
