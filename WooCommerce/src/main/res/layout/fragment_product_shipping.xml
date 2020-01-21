@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/card_padding_start"
+    android:paddingEnd="@dimen/card_padding_end"
+    android:paddingTop="@dimen/card_padding_top"
+    android:paddingBottom="@dimen/card_padding_bottom"
+    android:background="@color/white">
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/product_weight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:editTextHint="@string/product_weight"
+        android:inputType="numberDecimal"/>
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/product_length"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:editTextHint="@string/product_length"
+        android:inputType="numberDecimal"/>
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/product_width"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:editTextHint="@string/product_width"
+        android:inputType="numberDecimal"/>
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/product_height"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:editTextHint="@string/product_height"
+        android:inputType="numberDecimal"/>
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+        android:id="@+id/product_shipping_class"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:spinnerHint="@string/product_shipping_class"
+        android:layout_marginTop="@dimen/margin_large"
+        android:paddingTop="@dimen/card_padding_top"
+        android:inputType="text" />
+</LinearLayout>
+

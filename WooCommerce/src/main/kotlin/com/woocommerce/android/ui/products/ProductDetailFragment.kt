@@ -448,7 +448,8 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 groupIconId = R.drawable.ic_gridicons_shipping
         )?.also {
             it.setClickListener{
-                // TODO
+                // TODO add event listener for click
+                showProductShipping(product.remoteId)
             }
         }
     }
@@ -802,6 +803,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         findNavController().navigate(
                 ProductDetailFragmentDirections
                         .actionProductDetailFragmentToProductInventoryFragment(remoteId)
+        )
+    }
+
+    private fun showProductShipping(remoteId: Long) {
+        findNavController().navigate(
+                ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductShippingFragment(remoteId)
         )
     }
 
