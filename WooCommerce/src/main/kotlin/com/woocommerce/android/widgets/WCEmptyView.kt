@@ -73,7 +73,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         }
 
         val title: String
-        val message: String
+        val message: String?
         val buttonText: String?
         val isTitleBold: Boolean
         @DrawableRes val drawableId: Int
@@ -97,14 +97,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             ORDER_LIST_LOADING -> {
                 isTitleBold = true
                 title = context.getString(R.string.orderlist_loading)
-                message = ""
+                message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_orders_looking_up
             }
             ORDER_LIST_ALL_PROCESSED -> {
                 isTitleBold = true
                 title = context.getString(R.string.empty_order_list_all_processed)
-                message = ""
+                message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_orders_all_fulfilled
                 secondaryDrawableId = R.drawable.img_clapping_hands
@@ -113,7 +113,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 // TODO: once adding products is supported, this needs to be updated to match designs
                 isTitleBold = true
                 title = context.getString(R.string.product_list_empty)
-                message = ""
+                message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_products
             }
@@ -128,21 +128,21 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 isTitleBold = false
                 val fmtArgs = "<strong>$searchQuery</strong>"
                 title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
-                message = ""
+                message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_search
             }
             NETWORK_ERROR -> {
                 isTitleBold = false
                 title = context.getString(R.string.error_generic_network)
-                message = ""
+                message = null
                 buttonText = context.getString(R.string.retry)
                 drawableId = R.drawable.ic_woo_error_state
             }
             NETWORK_OFFLINE -> {
                 isTitleBold = false
                 title = context.getString(R.string.offline_error)
-                message = ""
+                message = null
                 buttonText = context.getString(R.string.retry)
                 drawableId = R.drawable.ic_woo_error_state
             }
@@ -155,8 +155,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         }
 
         empty_view_title.text = HtmlCompat.fromHtml(titleHtml, FROM_HTML_MODE_LEGACY)
-        empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
         empty_view_image.setImageDrawable(context.getDrawable(drawableId))
+
+        if (message != null) {
+            empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
+            empty_view_message.visibility = View.VISIBLE
+        } else {
+            empty_view_message.visibility = View.GONE
+        }
 
         if (secondaryDrawableId != null) {
             empty_view_secondary_image.visibility = View.VISIBLE
