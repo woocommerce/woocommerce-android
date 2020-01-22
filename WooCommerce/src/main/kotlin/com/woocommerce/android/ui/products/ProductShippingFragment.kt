@@ -15,7 +15,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductShippingClassDialog.ProductShippingClassDialogListener
+import com.woocommerce.android.ui.products.ProductShippingClassDialog.ShippingClassDialogListener
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import javax.inject.Inject
 
-class ProductShippingFragment : BaseFragment(), ProductShippingClassDialogListener {
+class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     private val navArgs: ProductShippingFragmentArgs by navArgs()
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -105,11 +105,9 @@ class ProductShippingFragment : BaseFragment(), ProductShippingClassDialogListen
 
         product_shipping_class_spinner.setText(productData.product?.shippingClass ?: "")
         product_shipping_class_spinner.setClickListener {
-            shippingClassDialog = ProductShippingClassDialog.newInstance(
-                    this@ProductShippingFragment,
-                    RequestCodes.PRODUCT_SHIPPING_CLASS
-            ).also {
+            shippingClassDialog = ProductShippingClassDialog.newInstance(this@ProductShippingFragment).also {
                 it.show(parentFragmentManager, ProductShippingClassDialog.TAG)
+                it.setShippingClasses(viewModel.getProductShippingClasses())
             }
         }
     }
@@ -117,7 +115,7 @@ class ProductShippingFragment : BaseFragment(), ProductShippingClassDialogListen
     /**
      * User made a selection from the shipping class dialog
      */
-    override fun onShippingClassSelected(resultCode: Int, shippingClass: WCProductShippingClassModel) {
+    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel) {
         product_shipping_class_spinner.setText(shippingClass.name)
     }
 

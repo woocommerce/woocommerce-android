@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.products.ProductShippingClassAdapter.OnShippingClassClickListener
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
 /**
@@ -18,38 +17,31 @@ import org.wordpress.android.fluxc.model.WCProductShippingClassModel
  * This fragment should be instantiated using the [ProductShippingClassDialog.newInstance] method.
  * Calling classes can obtain the results of selection through the [onActivityResult]
  * via [ProductShippingClassDialog.getTargetFragment].
- *
- * The [resultCode] passed to this fragment is used to classify the product shipping class
  */
-class ProductShippingClassDialog : DialogFragment(), OnShippingClassClickListener {
+class ProductShippingClassDialog : DialogFragment() {
     companion object {
-        const val TAG: String = "ProductShippingSelectorDialog"
+        const val TAG: String = "ProductShippingClassDialog"
 
-        fun newInstance(
-            listener: Fragment,
-            resultCode: Int
-        ): ProductShippingClassDialog {
+        fun newInstance(listener: Fragment): ProductShippingClassDialog {
             return ProductShippingClassDialog().also { fragment ->
                 fragment.setTargetFragment(listener, RequestCodes.PRODUCT_SHIPPING_CLASS)
                 fragment.retainInstance = true
-                fragment.resultCode = resultCode
             }
         }
     }
 
-    interface ProductShippingClassDialogListener {
-        fun onShippingClassSelected(resultCode: Int, shippingClass: WCProductShippingClassModel)
+    interface ShippingClassDialogListener {
+        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel)
         fun onRequestShippingClasses(loadMore: Boolean = false)
     }
 
-    private var resultCode: Int = -1
     private var recycler: RecyclerView? = null
     private var adapter: ProductShippingClassAdapter? = null
-    private var listener: ProductShippingClassDialogListener? = null
+    private lateinit var listener: ShippingClassDialogListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        listener = targetFragment as ProductShippingClassDialogListener
+        listener = targetFragment as ShippingClassDialogListener
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -62,10 +54,10 @@ class ProductShippingClassDialog : DialogFragment(), OnShippingClassClickListene
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        adapter = ProductShippingClassAdapter(requireActivity(), this)
+        adapter = ProductShippingClassAdapter(requireActivity(), listener)
         recycler = dialog?.findViewById(R.id.recycler)
         recycler?.adapter = adapter
-        listener?.onRequestShippingClasses()
+        listener.onRequestShippingClasses()
     }
 
     override fun onResume() {
@@ -73,10 +65,7 @@ class ProductShippingClassDialog : DialogFragment(), OnShippingClassClickListene
         AnalyticsTracker.trackViewShown(this)
     }
 
-    /**
-     * User made a selection in the shipping class adapter
-     */
-    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel) {
-        listener?.onShippingClassSelected(resultCode, shippingClass)
+    fun setShippingClasses(shippingClasses: List<WCProductShippingClassModel>) {
+        adapter?.shippingClassList = shippingClasses
     }
 }

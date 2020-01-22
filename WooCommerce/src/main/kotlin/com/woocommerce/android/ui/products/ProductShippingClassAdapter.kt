@@ -8,10 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolder
+import com.woocommerce.android.ui.products.ProductShippingClassDialog.ShippingClassDialogListener
 import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
-class ProductShippingClassAdapter(context: Context, private val listener: OnShippingClassClickListener) :
+class ProductShippingClassAdapter(context: Context, private val listener: ShippingClassDialogListener) :
         RecyclerView.Adapter<ViewHolder>() {
     var shippingClassList: List<WCProductShippingClassModel> = ArrayList()
         set(value) {
@@ -29,10 +30,6 @@ class ProductShippingClassAdapter(context: Context, private val listener: OnShip
         }
 
     private val inflater: LayoutInflater
-
-    interface OnShippingClassClickListener {
-        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel)
-    }
 
     init {
         inflater = LayoutInflater.from(context)
@@ -54,6 +51,10 @@ class ProductShippingClassAdapter(context: Context, private val listener: OnShip
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val shippingClass = shippingClassList[position]
         holder.text.text = shippingClass.name
+
+        if (position == itemCount - 1) {
+            listener.onRequestShippingClasses(loadMore = true)
+        }
     }
 
     private fun isSameList(classes: List<WCProductShippingClassModel>): Boolean {
