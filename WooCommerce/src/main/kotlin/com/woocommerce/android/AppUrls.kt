@@ -13,6 +13,8 @@ object AppUrls {
     const val WOOCOMMERCE_UPGRADE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_ADMIN_PLUGIN = "https://wordpress.org/plugins/woocommerce-admin"
 
+    const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/posts/reviews-woocommerce-best-practices/"
+
     const val JETPACK_INSTRUCTIONS =
             "https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/"
     const val JETPACK_TROUBLESHOOTING =

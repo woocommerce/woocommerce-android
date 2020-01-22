@@ -12,7 +12,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
@@ -25,9 +28,12 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         DASHBOARD,
         ORDER_LIST,
         ORDER_LIST_LOADING,
+        ORDER_LIST_ALL_PROCESSED,
         PRODUCT_LIST,
         REVIEW_LIST,
         SEARCH_RESULTS,
+        NETWORK_ERROR,
+        NETWORK_OFFLINE,
     }
 
     init {
@@ -66,16 +72,15 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             return
         }
 
-        val showButton: Boolean
         val title: String
-        val message: String
+        val message: String?
         val buttonText: String?
         val isTitleBold: Boolean
         @DrawableRes val drawableId: Int
+        @DrawableRes var secondaryDrawableId: Int? = null
 
         when (type) {
             DASHBOARD -> {
-                showButton = true
                 isTitleBold = true
                 title = context.getString(R.string.get_the_word_out)
                 message = context.getString(R.string.share_your_store_message)
@@ -83,7 +88,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_my_store
             }
             ORDER_LIST -> {
-                showButton = true
                 isTitleBold = true
                 title = context.getString(R.string.empty_order_list_title)
                 message = context.getString(R.string.empty_order_list_message)
@@ -91,24 +95,29 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_orders_no_orders
             }
             ORDER_LIST_LOADING -> {
-                showButton = false
                 isTitleBold = true
                 title = context.getString(R.string.orderlist_loading)
-                message = ""
+                message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_orders_looking_up
             }
+            ORDER_LIST_ALL_PROCESSED -> {
+                isTitleBold = true
+                title = context.getString(R.string.empty_order_list_all_processed)
+                message = null
+                buttonText = null
+                drawableId = R.drawable.img_light_empty_orders_all_fulfilled
+                secondaryDrawableId = R.drawable.img_clapping_hands
+            }
             PRODUCT_LIST -> {
                 // TODO: once adding products is supported, this needs to be updated to match designs
-                showButton = false
                 isTitleBold = true
                 title = context.getString(R.string.product_list_empty)
-                message = ""
+                message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_products
             }
             REVIEW_LIST -> {
-                showButton = true
                 isTitleBold = true
                 title = context.getString(R.string.empty_review_list_title)
                 message = context.getString(R.string.empty_review_list_message)
@@ -116,13 +125,26 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_light_empty_reviews
             }
             SEARCH_RESULTS -> {
-                showButton = false
                 isTitleBold = false
                 val fmtArgs = "<strong>$searchQuery</strong>"
                 title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
-                message = ""
+                message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_search
+            }
+            NETWORK_ERROR -> {
+                isTitleBold = false
+                title = context.getString(R.string.error_generic_network)
+                message = null
+                buttonText = context.getString(R.string.retry)
+                drawableId = R.drawable.ic_woo_error_state
+            }
+            NETWORK_OFFLINE -> {
+                isTitleBold = false
+                title = context.getString(R.string.offline_error)
+                message = null
+                buttonText = context.getString(R.string.retry)
+                drawableId = R.drawable.ic_woo_error_state
             }
         }
 
@@ -133,14 +155,27 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         }
 
         empty_view_title.text = HtmlCompat.fromHtml(titleHtml, FROM_HTML_MODE_LEGACY)
-        empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
-        empty_view_button.text = buttonText
         empty_view_image.setImageDrawable(context.getDrawable(drawableId))
 
-        if (showButton) {
+        if (message != null) {
+            empty_view_message.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
+            empty_view_message.visibility = View.VISIBLE
+        } else {
+            empty_view_message.visibility = View.GONE
+        }
+
+        if (secondaryDrawableId != null) {
+            empty_view_secondary_image.visibility = View.VISIBLE
+            empty_view_secondary_image.setImageDrawable(context.getDrawable(secondaryDrawableId))
+        } else {
+            empty_view_secondary_image.visibility = View.GONE
+        }
+
+        if (onButtonClick != null) {
+            empty_view_button.text = buttonText
             empty_view_button.visibility = View.VISIBLE
             empty_view_button.setOnClickListener {
-                onButtonClick?.invoke()
+                onButtonClick.invoke()
             }
         } else {
             empty_view_button.visibility = View.GONE
@@ -155,7 +190,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     fun hide() {
         if (visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(this, Duration.LONG)
+            WooAnimUtils.fadeOut(this, Duration.SHORT)
         }
     }
 }

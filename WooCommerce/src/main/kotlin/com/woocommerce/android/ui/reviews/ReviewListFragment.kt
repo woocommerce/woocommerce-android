@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -49,8 +50,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         const val TAG = "ReviewListFragment"
         const val KEY_LIST_STATE = "list-state"
         const val KEY_NEW_DATA_AVAILABLE = "new-data-available"
-
-        private const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/posts/reviews-woocommerce-best-practices/"
 
         fun newInstance() = ReviewListFragment()
     }
@@ -286,7 +285,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private fun showEmptyView(show: Boolean) {
         if (show) {
             empty_view.show(EmptyViewType.REVIEW_LIST) {
-                ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE_REVIEWS)
+                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
             }
         } else {
             empty_view.hide()

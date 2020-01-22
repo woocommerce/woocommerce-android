@@ -30,10 +30,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.DataShown
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.EmptyList
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.ErrorWithRetry
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.Loading
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -417,40 +413,28 @@ class OrderListFragment : TopLevelFragment(),
             }
         })
 
-        viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
-            it?.let { state ->
-                showEmptyView(state)
-            }
-        })
-    }
-
-    private fun showEmptyView(state: OrderListEmptyUiState) {
-        when (state) {
-            is DataShown -> {
-                hideEmptyView()
-            }
-            is EmptyList -> {
-                if (isSearching) {
-                    empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = searchQuery)
-                } else {
-                    empty_view.show(EmptyViewType.ORDER_LIST) {
-                        ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
+        viewModel.emptyViewType.observe(viewLifecycleOwner, Observer {
+            it?.let { emptyViewType ->
+                when (emptyViewType) {
+                    EmptyViewType.SEARCH_RESULTS -> {
+                        empty_view.show(emptyViewType, searchQuery = searchQuery)
+                    }
+                    EmptyViewType.ORDER_LIST -> {
+                        empty_view.show(emptyViewType) {
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
+                        }
+                    }
+                    EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
+                        empty_view.show(emptyViewType) {
+                            refreshOrders()
+                        }
+                    }
+                    else -> {
+                        empty_view.show(emptyViewType)
                     }
                 }
             }
-            is Loading -> {
-                empty_view.show(EmptyViewType.ORDER_LIST_LOADING)
-            }
-            is ErrorWithRetry -> {
-                // TODO
-                /*showEmptyView(
-                        state.title,
-                        imgResId = state.imgResId,
-                        buttonText = state.buttonText,
-                        onButtonClick = state.onButtonClick()
-                )*/
-            }
-        }
+        })
     }
 
     private fun hideEmptyView() {

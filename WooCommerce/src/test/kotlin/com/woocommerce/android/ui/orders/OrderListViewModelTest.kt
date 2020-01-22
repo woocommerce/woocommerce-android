@@ -9,14 +9,11 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderFetcher
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -31,6 +28,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.TEST_DISPATCHER
 import com.woocommerce.android.viewmodel.test
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
@@ -44,6 +42,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @UseExperimental(InternalCoroutinesApi::class)
@@ -236,7 +235,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     /**
      * Test the logic that generates the "No orders yet" empty view for the ALL tab
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
+     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
      * - pagedListWrapper.isEmpty = true
@@ -257,20 +256,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
+            val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_filter))
-            assertEquals(emptyView.imgResId, R.drawable.ic_hourglass_empty)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST)
         }
     }
 
     /**
      * Test the logic that generates the "No orders to process yet" empty view for the PROCESSING tab
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
+     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
      * - viewModel.isSearching = false
@@ -285,27 +282,25 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `Display |No orders to process yet| empty view when no orders for site for PROCESSING tab`() = test {
         viewModel.isSearching = false
         viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-        doReturn(false).whenever(repository).hasCachedOrdersForSite()
+        doReturn(true).whenever(repository).hasCachedOrdersForSite()
 
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
+            val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.orders_empty_message_with_processing))
-            assertEquals(emptyView.imgResId, R.drawable.ic_hourglass_empty)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST_ALL_PROCESSED)
         }
     }
 
     /**
      * Test the logic that generates the "All orders processed" empty list view for the PROCESSING tab
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
+     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
      * - viewModel.isSearching = false
@@ -326,20 +321,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
+            val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertEquals(emptyView.title, UiStringRes(string.orders_processed_empty_message))
-            assertEquals(emptyView.imgResId, R.drawable.ic_gridicons_checkmark)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST_ALL_PROCESSED)
         }
     }
 
     /**
      * Test the logic that generates the "error fetching orders" empty list view for any tab
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
+     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
      * - viewModel.isSearching = false
@@ -358,20 +351,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(mock())
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
+            val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
-            assertEquals(emptyView.title, UiStringRes(string.orderlist_error_fetch_generic))
-            assertEquals(emptyView.buttonText, UiStringRes(string.retry))
+            assertTrue(emptyView == EmptyViewType.NETWORK_ERROR)
         }
     }
 
     /**
      * Test the logic that generates the "device offline" empty error list view for any tab
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
+     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
      * - networkStatus.isConnected = false
@@ -391,20 +382,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
+            val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.ErrorWithRetry)
-            assertEquals(emptyView.title, UiStringRes(string.error_generic_network))
-            assertEquals(emptyView.buttonText, UiStringRes(string.retry))
+            assertTrue(emptyView == EmptyViewType.NETWORK_OFFLINE)
         }
     }
 
     /**
      * Test the logic that generates the "No matching orders" empty list view for search/filter
-     * results is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
+     * results is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
      * - viewModel.isSearching = true
@@ -420,19 +409,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
+            val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.EmptyList)
-            assertNotNull(emptyView.imgResId)
+            assertTrue(emptyView == EmptyViewType.SEARCH_RESULTS)
         }
     }
 
     /**
      * Test the logic that generates the Loading empty list view for any tab of the order list
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
+     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
      * - viewModel.isSearching = false
@@ -447,20 +435,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
+            val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.Loading)
+            assertTrue(emptyView == EmptyViewType.ORDER_LIST_LOADING)
         }
     }
 
     /**
      * Test the logic that generates the Loading empty list view while in search mode
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewState].
-     * Since search mode displays a list of order statuses, an empty view should not be shown
-     * so the logic should return the [OrderListEmptyUiState.DataShown] to hide the empty view.
+     * and verify the empty view is *not* shown in this situation
      *
      * This view gets generated when:
      * - viewModel.isSearching = true
@@ -474,12 +460,11 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
-        viewModel.createAndPostEmptyUiState(pagedListWrapper)
-        viewModel.emptyViewState.observeForTesting {
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.emptyViewType.observeForTesting {
             // Verify
-            val emptyView = viewModel.emptyViewState.value
-            assertNotNull(emptyView)
-            assertTrue(emptyView is OrderListEmptyUiState.DataShown)
+            val emptyView = viewModel.emptyViewType.value
+            assertNull(emptyView)
         }
     }
 
