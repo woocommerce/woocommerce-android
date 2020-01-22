@@ -42,7 +42,8 @@ interface OrderDetailContract {
             OrderShipmentTrackingActionListener {
         var isRefreshPending: Boolean
         fun showSkeleton(show: Boolean)
-        fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean, refunds: List<Refund> = emptyList())
+        fun showRefunds(order: WCOrderModel, refunds: List<Refund> = emptyList())
+        fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)
         fun showAddOrderNoteScreen(order: WCOrderModel)

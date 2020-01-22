@@ -200,7 +200,39 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
 
-    override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean, refunds: List<Refund>) {
+    override fun showRefunds(order: WCOrderModel, refunds: List<Refund>) {
+        // populate the Order Product List Card if not all have been refunded
+        if (order.toAppModel().hasNonRefundedItems(refunds)) {
+            orderDetail_productList.initView(
+                    orderModel = order,
+                    productImageMap = productImageMap,
+                    expanded = false,
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    orderListener = this,
+                    productListener = this,
+                    refunds = refunds
+            )
+            orderDetail_productList.show()
+        } else {
+            orderDetail_productList.hide()
+        }
+
+        // show the refund products count if at least one refunded
+        if (refunds.any { refund -> refund.items.sumBy { it.quantity } > 0 }) {
+            orderDetail_refundsInfo.initView(refunds) { openRefundedProductList(order) }
+            orderDetail_refundsInfo.show()
+        } else {
+            orderDetail_refundsInfo.hide()
+        }
+
+        if (refunds.isNotEmpty()) {
+            orderDetail_paymentInfo.showRefunds(refunds)
+        } else {
+            orderDetail_paymentInfo.showRefundTotal()
+        }
+    }
+
+    override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
         order?.let {
             // set the title to the order number
             updateActivityTitle()
@@ -213,30 +245,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                             showOrderStatusSelector()
                         }
                     })
-
-            // populate the Order Product List Card if not all have been refunded
-            if (order.toAppModel().hasNonRefundedItems(refunds)) {
-                orderDetail_productList.initView(
-                        orderModel = order,
-                        productImageMap = productImageMap,
-                        expanded = false,
-                        formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-                        orderListener = this,
-                        productListener = this,
-                        refunds = refunds
-                )
-                orderDetail_productList.show()
-            } else {
-                orderDetail_productList.hide()
-            }
-
-            // show the refund products count if at least one refunded
-            if (refunds.any { refund -> refund.items.sumBy { it.quantity } > 0 }) {
-                orderDetail_refundsInfo.initView(refunds) { openRefundedProductList(order) }
-                orderDetail_refundsInfo.show()
-            } else {
-                orderDetail_refundsInfo.hide()
-            }
 
             // check if product is a virtual product. If it is, hide only the shipping details card
             val isVirtualProduct = presenter.isVirtualProduct(order)
@@ -253,12 +261,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     currencyFormatter.buildBigDecimalFormatter(order.currency),
                     this
             )
-
-            if (refunds.isNotEmpty()) {
-                orderDetail_paymentInfo.showRefunds(refunds)
-            } else {
-                orderDetail_paymentInfo.showRefundTotal(order.toAppModel().refundTotal)
-            }
 
             if (isFreshData) {
                 isRefreshPending = false
