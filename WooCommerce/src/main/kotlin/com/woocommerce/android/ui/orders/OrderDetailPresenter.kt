@@ -131,12 +131,25 @@ class OrderDetailPresenter @Inject constructor(
         if (orderIdentifier.isNotEmpty()) {
             orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
-                val refunds = loadRefundsFromDb(order)
-                orderView?.showOrderDetail(order, isFreshData = false, refunds = refunds)
+                orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
+                loadRefunds()
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
+        }
+    }
+
+    private fun loadRefunds() {
+        orderModel?.let {
+            val refunds = loadRefundsFromDb(it)
+            orderView?.showRefunds(it, refunds)
+
+            GlobalScope.launch(dispatchers.main) {
+                fetchRefunds(it.remoteOrderId)
+                val freshRefunds = awaitRefunds()
+                orderView?.showRefunds(it, freshRefunds)
+            }
         }
     }
 
@@ -362,8 +375,10 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
                 GlobalScope.launch(dispatchers.main) {
                     orderModel?.let { order ->
+                        fetchRefunds(order.remoteOrderId)
                         val refunds = awaitRefunds()
-                        orderView?.showOrderDetail(order, isFreshData = true, refunds = refunds)
+                        orderView?.showOrderDetail(order, isFreshData = true)
+                        orderView?.showRefunds(order, refunds)
                         orderView?.showSkeleton(false)
                         loadOrderNotes()
                         loadOrderShipmentTrackings()

@@ -126,15 +126,21 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             availableRefundQuantity -= refundedCount
         }
 
-        if (availableRefundQuantity == 0) {
+        if (availableRefundQuantity <= 0) {
             paymentInfo_issueRefundButtonSection.hide()
         }
     }
 
-    fun showRefundTotal(refundTotal: BigDecimal) {
-        paymentInfo_refundTotal.text = formatCurrency(refundTotal)
+    fun showRefundTotal() {
+        paymentInfo_refundTotal.text = formatCurrency(order.refundTotal)
 
         paymentInfo_refunds.hide()
         paymentInfo_refundTotalSection.show()
+
+        if (order.refundTotal < order.total) {
+            paymentInfo_issueRefundButtonSection.show()
+        } else {
+            paymentInfo_issueRefundButtonSection.hide()
+        }
     }
 }
