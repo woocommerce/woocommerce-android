@@ -17,9 +17,9 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 class ProductShippingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite,
-    private val productRepository: ProductDetailRepository,
-    private val wooCommerceStore: WooCommerceStore
+    selectedSite: SelectedSite,
+    wooCommerceStore: WooCommerceStore,
+    private val productRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
@@ -54,6 +54,12 @@ class ProductShippingViewModel @AssistedInject constructor(
     }
 
     fun getProductShippingClasses() = productRepository.getCachedProductShippingClasses()
+
+    fun fetchShippingClasses(loadMore: Boolean = false) {
+        launch {
+            productRepository.fetchProductShippingClasses(loadMore)
+        }
+    }
 
     @Parcelize
     data class ViewState(

@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
 import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
+import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import javax.inject.Inject
 
 class ProductShippingFragment : BaseFragment(), ProductShippingClassSelectorDialogListener {
@@ -104,16 +105,10 @@ class ProductShippingFragment : BaseFragment(), ProductShippingClassSelectorDial
 
         product_shipping_class_spinner.setText(productData.product?.shippingClass ?: "")
         product_shipping_class_spinner.setClickListener {
-            val items = HashMap<String, String>()
-            viewModel.getProductShippingClasses().forEach {
-                items[it.remoteShippingClassId.toString()] = it.name
-            }
-
             shippingClassSelectorDialog = ProductShippingClassSelectorDialog.newInstance(
                     this@ProductShippingFragment,
                     RequestCodes.PRODUCT_SHIPPING_CLASS,
                     getString(R.string.product_shipping_class),
-                    items,
                     product_shipping_class_spinner.getText()
             ).also {
                 it.show(parentFragmentManager, ProductShippingClassSelectorDialog.TAG)
@@ -121,9 +116,17 @@ class ProductShippingFragment : BaseFragment(), ProductShippingClassSelectorDial
         }
     }
 
-    override fun onProductShippingClassSelected(resultCode: Int, selectedItem: String?) {
-        selectedItem?.let {
-            product_shipping_class_spinner.setText(it)
-        }
+    /**
+     * User made a selection from the shipping class dialog
+     */
+    override fun onProductShippingClassSelected(resultCode: Int, shippingClass: WCProductShippingClassModel) {
+        product_shipping_class_spinner.setText(shippingClass.name)
+    }
+
+    /**
+     * Shipping class dialog is requesting data
+     */
+    override fun onRequestProductShippingClasses(loadMore: Boolean) {
+        viewModel.fetchShippingClasses(loadMore)
     }
 }

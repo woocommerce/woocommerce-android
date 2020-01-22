@@ -18,6 +18,7 @@ import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.FETCHED_PRODUCT_SHIPPING_CLASS_LIST
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
@@ -37,11 +38,14 @@ class ProductDetailRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
+        private const val SHIPPING_CLASS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_SHIPPING_CLASS_PAGE_SIZE
     }
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
     private var continuationFetchShippingClasses: CancellableContinuation<Boolean>? = null
+
+    private var lastShippingClassOffset = 0
 
     init {
         dispatcher.register(this)
@@ -89,13 +93,17 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchProductShippingClasses() {
+    suspend fun fetchProductShippingClasses(loadMore: Boolean = false) {
         try {
             continuationFetchShippingClasses?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationFetchShippingClasses = it
-
-                val payload = FetchProductShippingClassListPayload(selectedSite.get())
+                lastShippingClassOffset = if (loadMore) {
+                    lastShippingClassOffset + SHIPPING_CLASS_PAGE_SIZE
+                } else {
+                    0
+                }
+                val payload = FetchProductShippingClassListPayload(selectedSite.get(), lastShippingClassOffset)
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
             }
         } catch (e: CancellationException) {
@@ -125,6 +133,12 @@ class ProductDetailRepository @Inject constructor(
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
                 continuationFetchProduct?.resume(true)
+            }
+        } else if (event.causeOfChange == FETCHED_PRODUCT_SHIPPING_CLASS_LIST) {
+            if (event.isError) {
+                continuationFetchShippingClasses?.resume(false)
+            } else {
+                continuationFetchShippingClasses?.resume(true)
             }
         }
     }

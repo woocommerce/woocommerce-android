@@ -5,8 +5,12 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.products.ProductShippingClassAdapter.OnShippingClassClickListener
+import kotlinx.android.synthetic.main.dialog_product_shipping_class_list.*
+import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
 /**
  * Dialog displays a list of product shipping classes
@@ -17,7 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
  *
  * The [resultCode] passed to this fragment is used to classify the product shipping class
  */
-class ProductShippingClassSelectorDialog : DialogFragment() {
+class ProductShippingClassSelectorDialog : DialogFragment(), OnShippingClassClickListener {
     companion object {
         const val TAG: String = "ProductShippingSelectorDialog"
 
@@ -25,7 +29,6 @@ class ProductShippingClassSelectorDialog : DialogFragment() {
             listener: Fragment,
             resultCode: Int,
             dialogTitle: String,
-            listItemMap: Map<String, String>,
             selectedListItem: String?
         ): ProductShippingClassSelectorDialog {
             val fragment = ProductShippingClassSelectorDialog()
@@ -33,22 +36,21 @@ class ProductShippingClassSelectorDialog : DialogFragment() {
             fragment.retainInstance = true
             fragment.resultCode = resultCode
             fragment.dialogTitle = dialogTitle
-            fragment.listItemMap = listItemMap
             fragment.selectedListItem = selectedListItem
             return fragment
         }
     }
 
     interface ProductShippingClassSelectorDialogListener {
-        fun onProductShippingClassSelected(resultCode: Int, selectedItem: String?)
+        fun onProductShippingClassSelected(resultCode: Int, shippingClass: WCProductShippingClassModel)
+        fun onRequestProductShippingClasses(loadMore: Boolean = false)
     }
 
     private var resultCode: Int = -1
     private var selectedListItem: String? = null
 
     private var dialogTitle: String? = null
-    private var listItemMap: Map<String, String>? = null
-
+    private var adapter: ProductShippingClassAdapter? = null
     private var listener: ProductShippingClassSelectorDialogListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,23 +59,30 @@ class ProductShippingClassSelectorDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val selectedIndex = getCurrentProductShippingListIndex()
-
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(dialogTitle)
-                .setSingleChoiceItems(listItemMap?.values?.toTypedArray(), selectedIndex) { dialog, which ->
-                    listener?.onProductShippingClassSelected(resultCode, listItemMap?.keys?.toTypedArray()?.get(which))
-                    dialog.dismiss()
-                }
+                .setView(R.layout.dialog_product_shipping_class_list)
+
         return builder.create()
     }
 
-    private fun getCurrentProductShippingListIndex(): Int {
-        return listItemMap?.values?.indexOfFirst { it == selectedListItem } ?: 0
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        adapter = ProductShippingClassAdapter(requireActivity(), this)
+        recycler.adapter = adapter
+        listener?.onRequestProductShippingClasses()
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    /**
+     * User made a selection in the shipping class adapter
+     */
+    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel) {
+        listener?.onProductShippingClassSelected(resultCode, shippingClass)
     }
 }
