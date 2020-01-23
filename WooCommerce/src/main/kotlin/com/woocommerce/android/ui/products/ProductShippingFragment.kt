@@ -25,6 +25,9 @@ import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import javax.inject.Inject
 
+/**
+ * Fragment which enables updating product shipping data.
+ */
 class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     companion object {
         private const val KEY_IS_SHIPPING_CLASS_DLG_SHOWING = "shipping_class_dlg_showing"
@@ -60,6 +63,7 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
+
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_SHIPPING_CLASS_DLG_SHOWING)) {
                 showShippingClassDialog()
@@ -147,6 +151,7 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
         shippingClassDialog?.dismiss()
         shippingClassDialog = null
         isShippingClassDlgShowing = false
+        // TODO: update product draft in another PR
     }
 
     /**
