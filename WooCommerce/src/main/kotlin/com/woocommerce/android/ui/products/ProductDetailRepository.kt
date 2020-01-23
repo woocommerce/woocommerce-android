@@ -11,19 +11,17 @@ import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
+import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCHED_PRODUCT_SHIPPING_CLASS_LIST
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
 import javax.inject.Inject
@@ -38,14 +36,10 @@ class ProductDetailRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val SHIPPING_CLASS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_SHIPPING_CLASS_PAGE_SIZE
     }
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
-    private var continuationFetchShippingClasses: CancellableContinuation<Boolean>? = null
-
-    private var lastShippingClassOffset = 0
 
     init {
         dispatcher.register(this)
@@ -93,26 +87,6 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchProductShippingClasses(loadMore: Boolean = false) {
-        try {
-            continuationFetchShippingClasses?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                continuationFetchShippingClasses = it
-                lastShippingClassOffset = if (loadMore) {
-                    lastShippingClassOffset + SHIPPING_CLASS_PAGE_SIZE
-                } else {
-                    0
-                }
-                val payload = FetchProductShippingClassListPayload(selectedSite.get(), lastShippingClassOffset)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.d(PRODUCTS, "CancellationException while fetching product shipping classes")
-        }
-
-        continuationFetchShippingClasses = null
-    }
-
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
@@ -120,9 +94,6 @@ class ProductDetailRepository @Inject constructor(
 
     fun getCachedVariantCount(remoteProductId: Long) =
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
-
-    fun getCachedProductShippingClasses() =
-            productStore.getShippingClassListForSite(selectedSite.get())
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
@@ -133,18 +104,6 @@ class ProductDetailRepository @Inject constructor(
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
                 continuationFetchProduct?.resume(true)
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductShiopingClassesChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCHED_PRODUCT_SHIPPING_CLASS_LIST) {
-            if (event.isError) {
-                continuationFetchShippingClasses?.resume(false)
-            } else {
-                continuationFetchShippingClasses?.resume(true)
             }
         }
     }

@@ -19,7 +19,8 @@ class ProductShippingViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     selectedSite: SelectedSite,
     wooCommerceStore: WooCommerceStore,
-    private val productRepository: ProductDetailRepository
+    private val productRepository: ProductDetailRepository,
+    private val productShippingRepository: ProductShippingRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
@@ -41,7 +42,7 @@ class ProductShippingViewModel @AssistedInject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        productRepository.onCleanup()
+        productShippingRepository.onCleanup()
     }
 
     private fun loadProduct(remoteProductId: Long) {
@@ -53,11 +54,11 @@ class ProductShippingViewModel @AssistedInject constructor(
         }
     }
 
-    fun getProductShippingClasses() = productRepository.getCachedProductShippingClasses()
+    fun getProductShippingClasses() = productShippingRepository.getCachedProductShippingClasses()
 
     fun fetchShippingClasses(loadMore: Boolean = false) {
         launch {
-            productRepository.fetchProductShippingClasses(loadMore)
+            productShippingRepository.fetchProductShippingClasses(loadMore)
         }
     }
 
