@@ -10,7 +10,7 @@ import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCHED_PRODUCT_SHIPPING_CLASS_LIST
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SHIPPING_CLASS_LIST
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
@@ -50,7 +50,11 @@ class ProductShippingRepository @Inject constructor(
                 } else {
                     0
                 }
-                val payload = FetchProductShippingClassListPayload(selectedSite.get(), shippingClassOffset)
+                val payload = FetchProductShippingClassListPayload(
+                        selectedSite.get(),
+                        pageSize = SHIPPING_CLASS_PAGE_SIZE,
+                        offset = shippingClassOffset
+                )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
             }
         } catch (e: CancellationException) {
@@ -66,7 +70,7 @@ class ProductShippingRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductShiopingClassesChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCHED_PRODUCT_SHIPPING_CLASS_LIST) {
+        if (event.causeOfChange == FETCH_PRODUCT_SHIPPING_CLASS_LIST) {
             if (event.isError) {
                 continuation?.resume(false)
             } else {
