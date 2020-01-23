@@ -21,7 +21,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
-import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import javax.inject.Inject
 
@@ -110,9 +109,9 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
      */
     private fun showValue(view: WCMaterialOutlinedEditTextView, @StringRes hintRes: Int, value: Float?, unit: String?) {
         view.setText(value?.toString() ?: "")
-        view.edit_text_input.hint = getString(hintRes) + unit?.let {
+        view.setHint(getString(hintRes) + unit?.let {
             " ($it)"
-        }
+        })
     }
 
     private fun showProduct(productData: ViewState) {

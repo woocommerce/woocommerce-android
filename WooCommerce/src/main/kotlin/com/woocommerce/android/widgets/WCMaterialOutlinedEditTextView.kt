@@ -41,4 +41,8 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
     fun setText(selectedText: String) {
         edit_text.setText(selectedText)
     }
+
+    fun setHint(hintStr: String) {
+        edit_text_input.hint = hintStr
+    }
 }
