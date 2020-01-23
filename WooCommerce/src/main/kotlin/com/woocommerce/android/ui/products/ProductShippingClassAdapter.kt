@@ -12,6 +12,10 @@ import com.woocommerce.android.ui.products.ProductShippingClassDialog.ShippingCl
 import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
+/**
+ * RecyclerView adapter which shows a list of product shipping classes, the first of which will
+ * be "No shipping class" so the user can choose to clear this value.
+ */
 class ProductShippingClassAdapter(context: Context, private val listener: ShippingClassDialogListener) :
         RecyclerView.Adapter<ViewHolder>() {
     companion object {
@@ -34,12 +38,10 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
             }
         }
 
-    private val inflater: LayoutInflater
-    private val noShippingClassText: String
+    private val inflater: LayoutInflater = LayoutInflater.from(context)
+    private val noShippingClassText: String = context.getString(R.string.product_no_shipping_class)
 
     init {
-        inflater = LayoutInflater.from(context)
-        noShippingClassText = context.getString(R.string.product_no_shipping_class)
         setHasStableIds(true)
     }
 
@@ -47,7 +49,7 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
         return if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
             -1
         } else {
-            return shippingClassList[position - 1].remoteShippingClassId
+            return getShippingClassAtPosition(position)!!.remoteShippingClassId
         }
     }
 
@@ -71,8 +73,8 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
         if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
             holder.text.text = noShippingClassText
         } else {
-            val shippingClass = shippingClassList[position - 1]
-            holder.text.text = shippingClass.name
+            val shippingClass = getShippingClassAtPosition(position)
+            holder.text.text = shippingClass!!.name
         }
 
         if (position == itemCount - 1) {
@@ -103,6 +105,14 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
         return false
     }
 
+    private fun getShippingClassAtPosition(position: Int): WCProductShippingClassModel? {
+        return if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
+            null
+        } else {
+            shippingClassList[position - 1]
+        }
+    }
+
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val text: TextView = view.text
 
@@ -110,11 +120,7 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position > -1) {
-                    if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
-                        listener.onShippingClassClicked(null)
-                    } else {
-                        listener.onShippingClassClicked(shippingClassList[position - 1])
-                    }
+                    listener.onShippingClassClicked(getShippingClassAtPosition(position))
                 }
             }
         }
