@@ -84,7 +84,7 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
         val text: TextView = view.text
 
         init {
-            itemView.setOnClickListener{
+            itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position > -1) {
                     listener.onShippingClassClicked(shippingClassList[position])

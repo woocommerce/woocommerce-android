@@ -16,11 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
 /**
- * Dialog displays a list of product shipping classes
- *
- * This fragment should be instantiated using the [ProductShippingClassDialog.newInstance] method.
- * Calling classes can obtain the results of selection through the [onActivityResult]
- * via [ProductShippingClassDialog.getTargetFragment].
+ * Dialog which displays a list of product shipping classes
  */
 class ProductShippingClassDialog : DialogFragment() {
     companion object {
@@ -35,8 +31,8 @@ class ProductShippingClassDialog : DialogFragment() {
     }
 
     interface ShippingClassDialogListener {
-        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel)
         fun onRequestShippingClasses(loadMore: Boolean = false)
+        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel)
         fun onShippingClassDialogCancelled()
     }
 
