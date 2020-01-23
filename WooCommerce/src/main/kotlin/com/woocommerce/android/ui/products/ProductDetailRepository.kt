@@ -134,7 +134,13 @@ class ProductDetailRepository @Inject constructor(
                 AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
                 continuationFetchProduct?.resume(true)
             }
-        } else if (event.causeOfChange == FETCHED_PRODUCT_SHIPPING_CLASS_LIST) {
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductShiopingClassesChanged(event: OnProductChanged) {
+        if (event.causeOfChange == FETCHED_PRODUCT_SHIPPING_CLASS_LIST) {
             if (event.isError) {
                 continuationFetchShippingClasses?.resume(false)
             } else {
