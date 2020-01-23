@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -50,9 +51,14 @@ class ProductShippingClassDialog : DialogFragment() {
         val view = View.inflate(requireActivity(), R.layout.dialog_product_shipping_class_list, null)
         recycler = view.findViewById(R.id.recycler)
         recycler?.layoutManager = LinearLayoutManager(requireActivity())
+        recycler?.addItemDecoration(
+                DividerItemDecoration(
+                        requireActivity(),
+                        DividerItemDecoration.VERTICAL
+                )
+        )
 
         return AlertDialog.Builder(requireContext()).also { builder ->
-            builder.setTitle(R.string.product_shipping_class)
             builder.setView(view)
         }.create()
     }

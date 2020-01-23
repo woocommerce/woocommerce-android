@@ -4,5 +4,7 @@
     android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:padding="@dimen/margin_extra_large"
+    android:textAppearance="@style/Woo.TextView.Caption"
     tools:text="Shipping class name" />
