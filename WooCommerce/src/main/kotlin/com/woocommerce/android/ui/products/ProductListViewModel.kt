@@ -200,13 +200,13 @@ class ProductListViewModel @AssistedInject constructor(
                     } else {
                         WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                     }
-
-                    viewState = viewState.copy(
-                            canLoadMore = productRepository.canLoadMoreProducts,
-                            isEmptyViewVisible = _productList.value?.isEmpty() == true
-                    )
                 }
             }
+
+            viewState = viewState.copy(
+                    canLoadMore = productRepository.canLoadMoreProducts,
+                    isEmptyViewVisible = _productList.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
         }
