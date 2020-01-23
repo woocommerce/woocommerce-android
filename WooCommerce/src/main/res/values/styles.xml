@@ -349,7 +349,7 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:textColor">@color/white</item>
     </style>
     <style name="Woo.About.Button" parent="android:TextAppearance.DeviceDefault">
-        <item name="android:textColor">@color/wc_purple</item>
+        <item name="android:textColor">@color/color_primary_surface</item>
         <item name="android:textSize">@dimen/text_medium</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/min_tap_target</item>

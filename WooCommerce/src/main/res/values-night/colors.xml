@@ -13,6 +13,7 @@
     <color name="color_on_primary_high">@color/woo_black</color>
     <color name="color_on_primary_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_primary_disabled">@color/woo_black_90_alpha_038</color>
+    <color name="color_on_primary_surface_high">@color/color_on_surface_high</color>
     <!--
         App colors
     -->

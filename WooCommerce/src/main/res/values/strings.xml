@@ -527,6 +527,7 @@
     <string name="settings_app_theme_option_system">System default</string>
     <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
     <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
+    <string name="settings_about_title">About WooCommerce</string>
     <!--
         WCToggleSingleOptionView
     -->
