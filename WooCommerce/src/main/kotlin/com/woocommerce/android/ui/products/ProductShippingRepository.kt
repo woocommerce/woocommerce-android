@@ -14,7 +14,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SHIPPING
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -69,7 +69,7 @@ class ProductShippingRepository @Inject constructor(
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
-    fun onProductShiopingClassesChanged(event: OnProductChanged) {
+    fun onProductShiopingClassesChanged(event: OnProductShippingClassesChanged) {
         if (event.causeOfChange == FETCH_PRODUCT_SHIPPING_CLASS_LIST) {
             if (event.isError) {
                 continuation?.resume(false)
