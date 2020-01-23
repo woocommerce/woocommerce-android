@@ -28,7 +28,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_share_info"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"
@@ -61,7 +61,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_policy_info"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"
@@ -95,7 +95,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_tracking_info"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"
@@ -148,7 +148,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textCrashReporting"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"

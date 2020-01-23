@@ -28,7 +28,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/Woo.Settings.Caption"
+                    style="@style/Woo.TextView.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/support_subtitle"/>

@@ -148,9 +148,8 @@
 
     <View style="@style/Woo.Divider"/>
 
-    <com.google.android.material.button.MaterialButton
+    <com.woocommerce.android.ui.prefs.WCSettingsButton
         android:id="@+id/btn_option_logout"
-        style="@style/Woo.Settings.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_signout"/>
@@ -175,9 +174,11 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/settingsHiring"
-            style="@style/Woo.Settings.Caption"
+            style="@style/Woo.TextView.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            android:gravity="center_vertical"
             android:paddingStart="@dimen/major_200"
             android:paddingEnd="@dimen/major_100"
             android:text="@string/settings_hiring"

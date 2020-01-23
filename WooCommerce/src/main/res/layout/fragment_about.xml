@@ -41,34 +41,42 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_version"
-        style="@style/Woo.Settings.Caption"
+        style="@style/Woo.TextView.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_00"
+        android:gravity="center_vertical"
         android:text="@string/about_version"
         android:layout_gravity="center"
         tools:text="Version 3.3-rc2" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_publisher"
-        style="@style/Woo.Settings.Caption"
+        style="@style/Woo.TextView.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_00"
+        android:gravity="center_vertical"
         android:text="@string/about_publisher"
         android:layout_gravity="center"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_copyright"
-        style="@style/Woo.Settings.Caption"
+        style="@style/Woo.TextView.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_00"
+        android:gravity="center_vertical"
         android:layout_gravity="center"
         tools:text="\@Automattic, Inc"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_url"
-        style="@style/Woo.Settings.Caption"
+        style="@style/Woo.TextView.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_00"
+        android:gravity="center_vertical"
         android:clickable="true"
         android:focusable="true"
         android:text="@string/about_url_text"

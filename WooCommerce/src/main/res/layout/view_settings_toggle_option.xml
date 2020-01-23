@@ -23,7 +23,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/toggleSetting_title"
-        style="@style/Woo.Settings.Option.Title"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/minor_00"
@@ -38,7 +38,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/toggleSetting_desc"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/minor_00"
