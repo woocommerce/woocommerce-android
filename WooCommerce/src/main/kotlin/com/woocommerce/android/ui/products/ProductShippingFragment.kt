@@ -147,8 +147,8 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     /**
      * User made a selection from the shipping class dialog
      */
-    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel) {
-        product_shipping_class_spinner.setText(shippingClass.name)
+    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
+        product_shipping_class_spinner.setText(shippingClass?.name ?: "")
         shippingClassDialog?.dismiss()
         shippingClassDialog = null
         isShippingClassDlgShowing = false

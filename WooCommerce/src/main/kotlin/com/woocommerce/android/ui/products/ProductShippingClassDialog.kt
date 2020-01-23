@@ -32,7 +32,7 @@ class ProductShippingClassDialog : DialogFragment() {
 
     interface ShippingClassDialogListener {
         fun onRequestShippingClasses(loadMore: Boolean = false)
-        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel)
+        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?)
         fun onShippingClassDialogCancelled()
     }
 

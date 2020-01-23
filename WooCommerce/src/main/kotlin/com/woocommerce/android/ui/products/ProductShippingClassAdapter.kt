@@ -14,6 +14,11 @@ import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
 class ProductShippingClassAdapter(context: Context, private val listener: ShippingClassDialogListener) :
         RecyclerView.Adapter<ViewHolder>() {
+    companion object {
+        private const val VT_NO_SHIPPING_CLASS = 0
+        private const val VT_SHIPPING_CLASS = 1
+    }
+
     var shippingClassList: List<WCProductShippingClassModel> = ArrayList()
         set(value) {
             if (!isSameList(value)) {
@@ -30,18 +35,32 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
         }
 
     private val inflater: LayoutInflater
+    private val noShippingClassText: String
 
     init {
         inflater = LayoutInflater.from(context)
+        noShippingClassText = context.getString(R.string.product_no_shipping_class)
         setHasStableIds(true)
     }
 
     override fun getItemId(position: Int): Long {
-        return shippingClassList[position].remoteShippingClassId
+        return if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
+            -1
+        } else {
+            return shippingClassList[position - 1].remoteShippingClassId
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == 0) {
+            VT_NO_SHIPPING_CLASS
+        } else {
+            VT_SHIPPING_CLASS
+        }
     }
 
     override fun getItemCount(): Int {
-        return shippingClassList.size
+        return shippingClassList.size + 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,8 +68,12 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val shippingClass = shippingClassList[position]
-        holder.text.text = shippingClass.name
+        if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
+            holder.text.text = noShippingClassText
+        } else {
+            val shippingClass = shippingClassList[position - 1]
+            holder.text.text = shippingClass.name
+        }
 
         if (position == itemCount - 1) {
             listener.onRequestShippingClasses(loadMore = true)
@@ -87,7 +110,11 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position > -1) {
-                    listener.onShippingClassClicked(shippingClassList[position])
+                    if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
+                        listener.onShippingClassClicked(null)
+                    } else {
+                        listener.onShippingClassClicked(shippingClassList[position - 1])
+                    }
                 }
             }
         }
