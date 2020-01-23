@@ -186,6 +186,10 @@ class ProductListViewModel @AssistedInject constructor(
 
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
+            viewState = viewState.copy(
+                    isEmptyViewVisible = false,
+                    isSkeletonShown = true
+            )
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
             } else {
