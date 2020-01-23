@@ -48,6 +48,7 @@ class ProductShippingViewModel @AssistedInject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
+        fetchProductShippingClassesIfEmpty()
     }
 
     override fun onCleared() {
@@ -76,6 +77,17 @@ class ProductShippingViewModel @AssistedInject constructor(
 
             // then fetch an updated list
             _productShippingClasses.value = productShippingRepository.fetchProductShippingClasses(loadMore)
+        }
+    }
+
+    /**
+     * Fetches shipping classes if there are none in the local database
+     */
+    fun fetchProductShippingClassesIfEmpty() {
+        if (productShippingRepository.getProductShippingClasses().isEmpty()) {
+            launch {
+                productShippingRepository.fetchProductShippingClasses()
+            }
         }
     }
 

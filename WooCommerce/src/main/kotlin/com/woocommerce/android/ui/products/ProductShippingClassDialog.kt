@@ -22,9 +22,9 @@ class ProductShippingClassDialog : DialogFragment() {
     companion object {
         const val TAG: String = "ProductShippingClassDialog"
 
-        fun newInstance(listener: Fragment): ProductShippingClassDialog {
+        fun newInstance(targetFragment: Fragment): ProductShippingClassDialog {
             return ProductShippingClassDialog().also { fragment ->
-                fragment.setTargetFragment(listener, RequestCodes.PRODUCT_SHIPPING_CLASS)
+                fragment.setTargetFragment(targetFragment, RequestCodes.PRODUCT_SHIPPING_CLASS)
                 fragment.retainInstance = true
             }
         }

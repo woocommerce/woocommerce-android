@@ -109,8 +109,10 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
      */
     private fun showValue(view: WCMaterialOutlinedEditTextView, @StringRes hintRes: Int, value: Float?, unit: String?) {
         view.setText(value?.toString() ?: "")
-        view.setHint(getString(hintRes) + unit?.let {
-            " ($it)"
+        view.setHint(if (unit != null) {
+            getString(hintRes) + " ($unit)"
+        } else {
+            getString(hintRes)
         })
     }
 
