@@ -5,17 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -26,11 +26,11 @@ class ProductShippingViewModel @AssistedInject constructor(
     selectedSite: SelectedSite,
     wooCommerceStore: WooCommerceStore,
     private val productRepository: ProductDetailRepository,
-    private val productShippingRepository: ProductShippingRepository,
-    private val networkStatus: NetworkStatus
+    private val productShippingRepository: ProductShippingRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
+    private var shippingClassLoadJob: Job? = null
 
     private val _productShippingClasses = MutableLiveData<List<WCProductShippingClassModel>>()
     val productShippingClasses: LiveData<List<WCProductShippingClassModel>> = _productShippingClasses
@@ -48,9 +48,6 @@ class ProductShippingViewModel @AssistedInject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        if (_productShippingClasses.value == null) {
-            loadProductShippingClasses()
-        }
     }
 
     override fun onCleared() {
@@ -68,7 +65,9 @@ class ProductShippingViewModel @AssistedInject constructor(
     }
 
     fun loadProductShippingClasses(loadMore: Boolean = false) {
-        launch {
+        waitForExistingShippingClassLoad()
+
+        shippingClassLoadJob = launch {
             // first get the shipping classes from the db
             if (!loadMore) {
                 val shippingClasses = productShippingRepository.getProductShippingClasses()
@@ -76,17 +75,22 @@ class ProductShippingViewModel @AssistedInject constructor(
             }
 
             // then fetch an updated list
-            fetchProductShippingClasses(loadMore)
+            _productShippingClasses.value = productShippingRepository.fetchProductShippingClasses(loadMore)
         }
     }
 
-    fun getCachedShippingClasses() = productShippingRepository.getProductShippingClasses()
-
-    private suspend fun fetchProductShippingClasses(loadMore: Boolean = false) {
-        if (networkStatus.isConnected()) {
-            _productShippingClasses.value = productShippingRepository.fetchProductShippingClasses(loadMore)
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+    private fun waitForExistingShippingClassLoad() {
+        if (shippingClassLoadJob?.isActive == true) {
+            launch {
+                try {
+                    shippingClassLoadJob?.join()
+                } catch (e: CancellationException) {
+                    WooLog.d(
+                            WooLog.T.PRODUCTS,
+                            "CancellationException while waiting for existing shipping class list fetch"
+                    )
+                }
+            }
         }
     }
 

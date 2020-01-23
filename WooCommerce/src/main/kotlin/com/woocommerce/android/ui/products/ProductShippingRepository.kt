@@ -71,7 +71,7 @@ class ProductShippingRepository @Inject constructor(
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
-    fun onProductShiopingClassesChanged(event: OnProductShippingClassesChanged) {
+    fun onProductShippingClassesChanged(event: OnProductShippingClassesChanged) {
         if (event.causeOfChange == FETCH_PRODUCT_SHIPPING_CLASS_LIST) {
             if (event.isError) {
                 continuation?.resume(false)
