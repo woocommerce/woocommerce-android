@@ -8,8 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_extra_large"
-        android:layout_marginEnd="@dimen/margin_extra_large"
+        android:layout_margin="@dimen/margin_dialog"
         android:text="@string/product_shipping_class"
         android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold" />
 
