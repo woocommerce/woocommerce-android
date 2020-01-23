@@ -407,7 +407,10 @@
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
     <string name="product_sale_date_from">from %1$s</string>
     <string name="product_sku">SKU</string>
+    <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
+    <string name="product_manage_stock">Manage stock</string>
+    <string name="product_sold_individually">Limit one per order</string>
     <string name="product_stock_quantity">Stock quantity</string>
     <string name="product_backorders">Backorders</string>
     <string name="product_shipping">Shipping</string>
@@ -456,6 +459,8 @@
     <string name="product_detail_update_product_success">Product updated</string>
     <string name="product_detail_title_hint">Enter title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
+    <string name="product_inventory_quantity">Quantity</string>
+    <string name="product_inventory_quantity_summary">How many items are in stock</string>
 
     <!--
         Product images
