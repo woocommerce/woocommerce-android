@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
@@ -36,6 +37,7 @@ class ProductShippingClassDialog : DialogFragment() {
     interface ShippingClassDialogListener {
         fun onShippingClassClicked(shippingClass: WCProductShippingClassModel)
         fun onRequestShippingClasses(loadMore: Boolean = false)
+        fun onShippingClassDialogCancelled()
     }
 
     private var recycler: RecyclerView? = null
@@ -74,6 +76,11 @@ class ProductShippingClassDialog : DialogFragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        listener.onShippingClassDialogCancelled()
     }
 
     fun setShippingClasses(shippingClasses: List<WCProductShippingClassModel>) {

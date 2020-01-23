@@ -26,11 +26,15 @@ import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import javax.inject.Inject
 
 class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
-    private val navArgs: ProductShippingFragmentArgs by navArgs()
+    companion object {
+        private const val KEY_IS_SHIPPING_CLASS_DLG_SHOWING = "shipping_class_dlg_showing"
+    }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
+    private val navArgs: ProductShippingFragmentArgs by navArgs()
+    private var isShippingClassDlgShowing: Boolean = false
     private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory }
     private var shippingClassDialog: ProductShippingClassDialog? = null
 
@@ -56,6 +60,16 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
+        savedInstanceState?.let { bundle ->
+            if (bundle.getBoolean(KEY_IS_SHIPPING_CLASS_DLG_SHOWING)) {
+                showShippingClassDialog()
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_IS_SHIPPING_CLASS_DLG_SHOWING, isShippingClassDlgShowing)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
@@ -107,10 +121,22 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
 
         product_shipping_class_spinner.setText(productData.product?.shippingClass ?: "")
         product_shipping_class_spinner.setClickListener {
-            shippingClassDialog = ProductShippingClassDialog.newInstance(this@ProductShippingFragment).also {
-                it.show(parentFragmentManager, ProductShippingClassDialog.TAG)
-            }
+            showShippingClassDialog()
         }
+    }
+
+    private fun showShippingClassDialog() {
+        isShippingClassDlgShowing = true
+        shippingClassDialog = ProductShippingClassDialog.newInstance(this@ProductShippingFragment).also { dialog ->
+            dialog.show(parentFragmentManager, ProductShippingClassDialog.TAG)
+        }
+    }
+
+    /**
+     * Shipping class dialog is requesting data
+     */
+    override fun onRequestShippingClasses(loadMore: Boolean) {
+        viewModel.loadProductShippingClasses(loadMore)
     }
 
     /**
@@ -120,12 +146,13 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
         product_shipping_class_spinner.setText(shippingClass.name)
         shippingClassDialog?.dismiss()
         shippingClassDialog = null
+        isShippingClassDlgShowing = false
     }
 
     /**
-     * Shipping class dialog is requesting data
+     * Shipping class dialog was cancelled without making a selection
      */
-    override fun onRequestShippingClasses(loadMore: Boolean) {
-        viewModel.loadProductShippingClasses(loadMore)
+    override fun onShippingClassDialogCancelled() {
+        isShippingClassDlgShowing = false
     }
 }
