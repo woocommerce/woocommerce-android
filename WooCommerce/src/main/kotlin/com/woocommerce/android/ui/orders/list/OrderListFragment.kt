@@ -433,7 +433,7 @@ class OrderListFragment : TopLevelFragment(),
                         empty_view.show(emptyViewType)
                     }
                 }
-            }
+            } ?: hideEmptyView()
         })
     }
 
