@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SHIPPING_CLASS_LIST
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
@@ -40,7 +41,7 @@ class ProductShippingRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchProductShippingClasses(loadMore: Boolean = false) {
+    suspend fun fetchProductShippingClasses(loadMore: Boolean = false): List<WCProductShippingClassModel> {
         try {
             continuation?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -62,9 +63,10 @@ class ProductShippingRepository @Inject constructor(
         }
 
         continuation = null
+        return getProductShippingClasses()
     }
 
-    fun getCachedProductShippingClasses() =
+    fun getProductShippingClasses() =
             productStore.getShippingClassListForSite(selectedSite.get())
 
     @SuppressWarnings("unused")

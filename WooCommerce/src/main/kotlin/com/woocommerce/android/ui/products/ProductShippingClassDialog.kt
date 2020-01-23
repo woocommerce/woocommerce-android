@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.products
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -45,9 +47,13 @@ class ProductShippingClassDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val view = View.inflate(requireActivity(), R.layout.dialog_product_shipping_class_list, null)
+        recycler = view.findViewById(R.id.recycler)
+        recycler?.layoutManager = LinearLayoutManager(requireActivity())
+
         return AlertDialog.Builder(requireContext()).also { builder ->
             builder.setTitle(R.string.product_shipping_class)
-            builder.setView(R.layout.dialog_product_shipping_class_list)
+            builder.setView(view)
         }.create()
     }
 
@@ -55,7 +61,6 @@ class ProductShippingClassDialog : DialogFragment() {
         super.onActivityCreated(savedInstanceState)
 
         adapter = ProductShippingClassAdapter(requireActivity(), listener)
-        recycler = dialog?.findViewById(R.id.recycler)
         recycler?.adapter = adapter
         listener.onRequestShippingClasses()
     }

@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -33,7 +32,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory }
-
     private var shippingClassDialog: ProductShippingClassDialog? = null
 
     override fun onCreateView(
@@ -72,6 +70,10 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
             new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
         }
 
+        viewModel.productShippingClasses.observe(viewLifecycleOwner, Observer { shippingClasses ->
+            shippingClassDialog?.setShippingClasses(shippingClasses)
+        })
+
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -107,7 +109,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
         product_shipping_class_spinner.setClickListener {
             shippingClassDialog = ProductShippingClassDialog.newInstance(this@ProductShippingFragment).also {
                 it.show(parentFragmentManager, ProductShippingClassDialog.TAG)
-                it.setShippingClasses(viewModel.getProductShippingClasses())
             }
         }
     }
@@ -117,12 +118,14 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
      */
     override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel) {
         product_shipping_class_spinner.setText(shippingClass.name)
+        shippingClassDialog?.dismiss()
+        shippingClassDialog = null
     }
 
     /**
      * Shipping class dialog is requesting data
      */
     override fun onRequestShippingClasses(loadMore: Boolean) {
-        viewModel.fetchShippingClasses(loadMore)
+        viewModel.loadProductShippingClasses(loadMore)
     }
 }
