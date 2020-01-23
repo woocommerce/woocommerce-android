@@ -238,6 +238,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="Woo.Divider.TitleAligned">
+        <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
+    </style>
+
     <!--
         List Styles
     -->
