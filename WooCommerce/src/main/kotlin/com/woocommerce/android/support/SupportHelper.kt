@@ -3,11 +3,11 @@ package com.woocommerce.android.support
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.util.StringUtils
@@ -37,14 +37,14 @@ class SupportHelper {
         val (layout, emailEditText, nameEditText) =
                 supportIdentityInputDialogLayout(context, isNameInputHidden, email, name)
 
-        val dialog = AlertDialog.Builder(ContextThemeWrapper(context, style.Theme_Woo_DayNight))
+        val dialog = MaterialAlertDialogBuilder(ContextThemeWrapper(context, style.Theme_Woo_DayNight))
                 .setView(layout)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
                 .create()
         dialog.setOnShowListener {
-            val button = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
-            button.setOnClickListener { _ ->
+            val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener {
                 val newEmail = emailEditText.text.toString()
                 val newName = nameEditText.text.toString()
                 if (StringUtils.isValidEmail(newEmail)) {
@@ -110,7 +110,7 @@ private fun supportIdentityInputDialogLayout(
 
     val nameEditText = layout.findViewById<EditText>(R.id.support_identity_input_dialog_name_edit_text)
     nameEditText.setText(nameSuggestion)
-    nameEditText.visibility = if (isNameInputHidden) GONE else View.VISIBLE
+    nameEditText.visibility = if (isNameInputHidden) View.GONE else View.VISIBLE
 
     return Triple(layout, emailEditText, nameEditText)
 }
