@@ -40,4 +40,23 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
             super.onDowngrade(db, helper, oldVersion, newVersion)
         }
     }
+
+    /**
+     * Useful during development when we want to test features with a "fresh" database. This can be
+     * called from WooCommerce.onCreate() after we initialize the database. For safety, this has no
+     * effect when called from a release build.
+     */
+    fun resetDatabase() {
+        if (BuildConfig.DEBUG) {
+            val toast = Toast.makeText(
+                    context,
+                    "Resetting database",
+                    Toast.LENGTH_LONG
+            )
+            toast.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 0)
+            toast.show()
+            AppPrefs.setDatabaseDowngraded(true)
+            reset()
+        }
+    }
 }
