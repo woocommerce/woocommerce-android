@@ -86,7 +86,7 @@
         <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
 
         <!-- TODO: convert styles to material -->
-        <item name="android:listViewStyle">@style/Woo.List</item>
+<!--        <item name="android:listViewStyle"></item>-->
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 </resources>

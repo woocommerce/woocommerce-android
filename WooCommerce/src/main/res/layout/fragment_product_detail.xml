@@ -90,7 +90,7 @@
                 </FrameLayout>
 
                 <View
-                    style="@style/Woo.Settings.Divider"
+                    style="@style/Woo.Divider"
                     android:layout_gravity="bottom" />
 
             </FrameLayout>

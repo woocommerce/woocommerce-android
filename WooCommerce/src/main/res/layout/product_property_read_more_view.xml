@@ -58,7 +58,7 @@
 
     <View
         android:id="@+id/divider"
-        style="@style/Woo.Settings.Divider"
+        style="@style/Woo.Divider"
         android:layout_marginTop="@dimen/product_detail_property_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

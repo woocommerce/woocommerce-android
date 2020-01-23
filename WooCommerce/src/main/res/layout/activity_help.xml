@@ -54,7 +54,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/Woo.Settings.Divider"/>
+                    style="@style/Woo.Divider"/>
 
                 <LinearLayout
                     android:id="@+id/contactContainer"
@@ -118,7 +118,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/Woo.Settings.Divider"/>
+                    style="@style/Woo.Divider"/>
 
                 <LinearLayout
                     android:id="@+id/appLogContainer"
