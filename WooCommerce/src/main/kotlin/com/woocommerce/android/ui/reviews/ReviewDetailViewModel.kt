@@ -36,9 +36,10 @@ class ReviewDetailViewModel @AssistedInject constructor(
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+    private val navArgs: ReviewDetailFragmentArgs by savedState.navArgs()
 
-    fun start(remoteReviewId: Long) {
-        loadProductReview(remoteReviewId)
+    init {
+        loadProductReview(navArgs.remoteReviewId)
     }
 
     override fun onCleared() {
@@ -123,10 +124,16 @@ class ReviewDetailViewModel @AssistedInject constructor(
             // send request to mark notification as read to the server
             repository.markNotificationAsRead(it)
 
-            // Send the track event that a product review notification was opened
-            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
-                    AnalyticsTracker.KEY_ALREADY_READ to it.read))
+            if (navArgs.launchedFromNotification) {
+                // Send the track event that a product review notification was opened
+                AnalyticsTracker.track(
+                        Stat.NOTIFICATION_OPEN,
+                        mapOf(
+                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                            AnalyticsTracker.KEY_ALREADY_READ to it.read
+                        )
+                    )
+            }
         }
     }
 
