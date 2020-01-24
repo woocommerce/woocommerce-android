@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:52+0000
+Translation-Revision-Date: 2020-01-24 00:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">إدخال نص</string>
+    <string name="product_detail_title_hint">إدخال عنوان</string>
+    <string name="product_detail_update_product_success">تم تحديث المنتج</string>
+    <string name="product_detail_update_product_error">خطأ في أثناء تحرير المنتج</string>
+    <string name="product_update_dialog_message">يُرجى الانتظار…</string>
+    <string name="product_update_dialog_title">تحديث المنتج</string>
+    <string name="product_description_empty">وصف منتجك</string>
+    <string name="product_description">الوصف</string>
+    <string name="product_edit_description">تحرير الوصف</string>
+    <string name="product_description_hint">جارٍ بدء الكتابة…</string>
+    <string name="product_variant_list_empty">أضف خيارات مثل الحجم واللون من الويب. ستظهر هذه كخيارات على صفحة المنتج في موقعك.</string>
+    <string name="discard_message">هل ترغب في تجاهل تغييراتك؟</string>
+    <string name="update">تحديث</string>
+    <string name="done">تم</string>
+    <string name="order_refunds_refund_in_progress">استرداد الأموال قيد التقدُّم، يرجى الانتظار…</string>
+    <string name="order_refunds_refund_shipping">شحن الأموال المستردة</string>
+    <string name="order_refunds_select_quantity">تحديد الكمية</string>
+    <string name="order_refunds_shipping_refund">استرداد أموال الشحن</string>
+    <string name="order_refunds_products_refund">استرداد أموال المنتجات</string>
+    <string name="order_refunds_item_description">%d x %s لكل منتج</string>
+    <string name="order_refunds_items_selected">%d من العناصر المُحدَّدة</string>
+    <string name="order_refunds_items_select_none">عدم اختيار أي شيء</string>
+    <string name="order_refunds_items_select_all">اختيار الكل</string>
+    <string name="order_refunds_amount_refund_confirmation_message">جارٍ الانتظار لتأكيد استرداد الأموال…</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
@@ -16,7 +40,7 @@ Language: ar
     <string name="send_verification_email">إرسال رسالة تحقق عبر البريد الإلكتروني</string>
     <string name="settings_enable_product_teaser_message">اختبار قسم \"المنتجات\" الجديد عندما نصبح جاهزين للبدء</string>
     <string name="settings_enable_product_teaser_title">المنتجات</string>
-    <string name="product_wip_message">نبذل قصارى جهدنا في قسم المنتجات الجديد لكي تتمكن من رؤية بعض التغييرات عندما نصبح جاهزين للبدء &amp;#128640؛</string>
+    <string name="product_wip_message">نبذل قصارى جهدنا في قسم المنتجات الجديد لكي تتمكن من رؤية بعض التغييرات عندما نصبح جاهزين للبدء</string>
     <string name="product_wip_title">العمل قيد التنفيذ!</string>
     <string name="magic_link_fetch_account_error">كانت هناك بعض المشكلات في إحضار الحساب الخاص بك. يمكنك إعادة المحاولة الآن أو الإغلاق والمحاولة مرة أخرى لاحقًا.</string>
     <string name="magic_link_update_error">حدث خطأ. يرجى تسجيل الدخول مجددًا للمتابعة</string>
@@ -24,7 +48,6 @@ Language: ar
     <string name="product_variants">المتغيرات</string>
     <string name="product_property_edit">تحرير منتج</string>
     <string name="product_variants_fetch_product_variants_error">خطأ في إحضار أنواع المنتج</string>
-    <string name="my_store_stats_reverted_message">تم الإرجاع إلى الإحصاءات القديمة. لاستخدام إحصاءات بيتا، يرجى تنشيط المكون الإضافي مسؤول WooCommerce بإصدار 0.22 أو إصدار أحدث</string>
     <string name="login_discovery_error_option_select">حدد خيارًا</string>
     <string name="login_troubleshooting_tips">قراءة نصائح استكشاف المشكلات وإصلاحها</string>
     <string name="login_with_wordpress">تسجيل الدخول باستخدام ووردبريس.كوم</string>
@@ -106,7 +129,7 @@ Language: ar
     <string name="login_try_another_store">تجربة متجر آخر</string>
     <string name="database_downgraded">تم تخفيض قاعدة البيانات إلى المستوى الأدنى وإنشاء الجداول مجددًا وتحميل المتاجر</string>
     <string name="loading_stores">تحميل المتاجر</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">لم يتم العثور على أي مزوِّدين</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">لم يتم العثور على شركات نقل</string>
     <string name="login_invalid_site_url">يرجى إدخال عنوان موقع ويب كامل، مثل example.com.</string>
     <string name="reviews_empty_message">لا توجد مراجعات بعد!</string>
     <string name="review_notifications">مراجعات</string>
@@ -366,24 +389,24 @@ Language: ar
     <string name="country_mapping_AF">أفغانستان</string>
     <string name="country_mapping_AX">جزر آلاند</string>
     <string name="wc_review_title">مراجعة</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">مزوِّد مخصص</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">شركة نقل مخصصة</string>
     <string name="order_shipment_tracking_custom_provider_section_title">مخصص</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">يرجى إدخال اسم المزوِّد</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">يرجى إدخال اسم شركة النقل</string>
     <string name="order_shipment_tracking_empty_tracking_num">يرجى إدخال رقم التعقب</string>
-    <string name="order_shipment_tracking_empty_provider">يرجى تحديد المزوِّد</string>
+    <string name="order_shipment_tracking_empty_provider">يرجى تحديد شركة النقل</string>
     <string name="order_shipment_tracking_confirm_discard">هل تريد بالتأكيد تجاهل هذا التعقب؟</string>
     <string name="order_shipment_tracking_error">تعذرت إضافة التعقب</string>
     <string name="order_shipment_tracking_added">تمت إضافة تعقب الشحنة</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">حدث خطأ أثناء إحضار المزوِّدين</string>
-    <string name="order_shipment_tracking_provider_list_item">مزوِّد الشحنة المُحدَّد</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">مزوِّدو الشحن</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">خطأ في أثناء إحضار شركات النقل</string>
+    <string name="order_shipment_tracking_provider_list_item">شركة النقل المخصصة للشحن المُحدَّد</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">شركات النقل المخصصة للشحن</string>
     <string name="order_shipment_tracking_date_label">تاريخ الشحن</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">إدخال رابط التعقُّب</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">إدخال اسم المزوِّد</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">إدخال اسم شركة النقل</string>
     <string name="order_shipment_tracking_number_hint">إدخال رقم التعقب</string>
-    <string name="order_shipment_tracking_provider_hint">تحديد المزوِّد</string>
+    <string name="order_shipment_tracking_provider_hint">تحديد شركة النقل</string>
     <string name="order_shipment_tracking_custom_provider_url_label">رابط التعقُّب (اختياري)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">اسم المزوِّد</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">اسم شركة النقل</string>
     <string name="order_shipment_tracking_number_label">رقم التعقب</string>
     <string name="order_shipment_tracking_carrier_label">ناقل</string>
     <string name="order_shipment_tracking_toolbar_title">إضافة التعقب</string>
@@ -692,7 +715,6 @@ Language: ar
     <string name="orderstatus_failed">فشل</string>
     <string name="orderstatus_pending">تعليق السداد</string>
     <string name="orderstatus_processing">قيد المعالجة</string>
-    <string name="add_order_note_confirm_discard">هل تريد تجاهل هذه الملاحظة؟</string>
     <string name="add_order_note_error">لا يمكن إضافة ملاحظة</string>
     <string name="add_order_note_added">تمت إضافة ملاحظة الطلب</string>
     <string name="add_order_note_menu_item">إضافة</string>
