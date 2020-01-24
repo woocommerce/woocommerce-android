@@ -1,3 +1,0 @@
-3.3:
-– Prestandaförbättringar: Ordrar i orderlistan laddar nu snabbare och krascher som ibland kunde inträffa efter uppdatering av produktvarianter eller när man gick ut från en order efter att ha ändrat dess status har åtgärdats.
-– Buggkorrigeringar: etiketter i det nedre navigeringsfältet som var beskurna är nu hela, lodrät bläddring i dina statistikdiagram fungerar nu korrekt, recensioner med felaktiga tidsstämplar har korrigerats och sortering efter produktvarianter i appen matchar nu webben.
