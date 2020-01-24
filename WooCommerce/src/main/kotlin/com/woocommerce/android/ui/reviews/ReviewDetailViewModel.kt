@@ -36,10 +36,9 @@ class ReviewDetailViewModel @AssistedInject constructor(
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
-    private val navArgs: ReviewDetailFragmentArgs by savedState.navArgs()
 
-    init {
-        loadProductReview(navArgs.remoteReviewId)
+    fun start(remoteReviewId: Long, launchedFromNotification: Boolean) {
+        loadProductReview(remoteReviewId, launchedFromNotification)
     }
 
     override fun onCleared() {
@@ -66,10 +65,10 @@ class ReviewDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadProductReview(remoteReviewId: Long) {
+    private fun loadProductReview(remoteReviewId: Long, launchedFromNotification: Boolean) {
         // Mark the notification as read
         launch {
-            markAsRead(remoteReviewId)
+            markAsRead(remoteReviewId, launchedFromNotification)
         }
 
         val shouldFetch = remoteReviewId != this.remoteReviewId
@@ -116,7 +115,7 @@ class ReviewDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun markAsRead(remoteReviewId: Long) {
+    private suspend fun markAsRead(remoteReviewId: Long, launchedFromNotification: Boolean) {
         repository.getCachedNotificationForReview(remoteReviewId)?.let {
             // remove notification from the notification panel if it exists
             triggerEvent(MarkNotificationAsRead(it.remoteNoteId))
@@ -124,7 +123,7 @@ class ReviewDetailViewModel @AssistedInject constructor(
             // send request to mark notification as read to the server
             repository.markNotificationAsRead(it)
 
-            if (navArgs.launchedFromNotification) {
+            if (launchedFromNotification) {
                 // Send the track event that a product review notification was opened
                 AnalyticsTracker.track(
                         Stat.NOTIFICATION_OPEN,
