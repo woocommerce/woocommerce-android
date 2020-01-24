@@ -52,7 +52,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"
             android:inputType="text"
-            android:paddingTop="@dimen/card_padding_top"
             app:spinnerHint="@string/product_shipping_class" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
