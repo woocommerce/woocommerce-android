@@ -84,9 +84,10 @@
         <item name="settingsToggleOptionStyle">@style/Widget.Woo.Settings.OptionToggle</item>
         <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
         <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
+        <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
 
         <!-- TODO: convert styles to material -->
-        <item name="android:listViewStyle">@style/Woo.List</item>
+<!--        <item name="android:listViewStyle"></item>-->
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 </resources>

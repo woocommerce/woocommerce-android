@@ -28,7 +28,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/Woo.Settings.Caption"
+                    style="@style/Woo.TextView.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/support_subtitle"/>
@@ -54,7 +54,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/Woo.Settings.Divider"/>
+                    style="@style/Woo.Divider"/>
 
                 <LinearLayout
                     android:id="@+id/contactContainer"
@@ -118,7 +118,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/Woo.Settings.Divider"/>
+                    style="@style/Woo.Divider"/>
 
                 <LinearLayout
                     android:id="@+id/appLogContainer"

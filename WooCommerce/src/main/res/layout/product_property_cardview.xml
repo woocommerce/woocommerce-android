@@ -17,7 +17,7 @@
             android:id="@+id/cardCaptionText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Settings.Caption"
+            style="@style/Woo.TextView.Caption"
             android:visibility="gone"
             tools:text="cardCaptionText"
             tools:visibility="visible"/>

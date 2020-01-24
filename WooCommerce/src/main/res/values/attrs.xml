@@ -23,6 +23,7 @@
         <attr name="settingsToggleOptionStyle" format="reference"/>
         <attr name="settingsOptionValueStyle" format="reference"/>
         <attr name="settingsCategoryHeaderStyle" format="reference"/>
+        <attr name="settingsButtonStyle" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">

@@ -238,6 +238,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="Woo.Divider.TitleAligned">
+        <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
+    </style>
+
     <!--
         List Styles
     -->
@@ -327,22 +331,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingBottom">@dimen/minor_00</item>
     </style>
 
-    <style name="Woo.Settings.Option.Title" parent="@style/Woo.TextView.Subtitle1"/>
-
-    <style name="Woo.Settings.Option.Value" parent="@style/Woo.TextView.Body2"/>
-
-    <style name="Woo.Settings.Button" parent="Woo.Button">
+    <style name="Widget.Woo.Settings.Button" parent="Woo.Button">
         <item name="android:textAlignment">textStart</item>
         <item name="android:paddingStart">@dimen/margin_app_title_aligned</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
-    </style>
-
-    <style name="Woo.Settings.Caption" parent="@style/Woo.TextView.Caption">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="Woo.Settings.About.Title" parent="@style/Woo.TextView.Headline5">
-        <item name="android:textColor">@color/color_on_primary_surface_high</item>
     </style>
 </resources>

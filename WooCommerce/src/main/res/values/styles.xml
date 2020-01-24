@@ -3,14 +3,6 @@
 Use this file to override styles in the styles_base.xml file.
 -->
 <resources>
-    <!--
-        DateBar Style
-    -->
-    <style name="Woo.DateBar" parent="@style/Woo.TextView.Subtitle1">
-        <item name="android:gravity">start</item>
-    </style>
-
-
     <!---
         -
         -
@@ -21,7 +13,6 @@ Use this file to override styles in the styles_base.xml file.
         -
         -
     -->
-
 
     <!--
         Set a custom cursor for search views so they don't inherit colorAccent
@@ -192,45 +183,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:textColor">@color/list_item_text_title</item>
     </style>
 
-    <style name="Woo.TextAppearance.ListItem.Title.Bold">
-        <item name="android:textStyle">bold</item>
-    </style>
-    <!--
-        Default List Item Header Styles
-    -->
-
-    <style name="Woo.TextAppearance.ListHeader">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/List_header_text</item>
-        <item name="android:textSize">@dimen/list_header_text_size</item>
-    </style>
-    <!--
-        Order: List Style
-    -->
-    <style name="Woo.OrderList.TextAppearance.Header" parent="Woo.TextAppearance.ListHeader"/>
-    <style name="Woo.OrderList.TextAppearance.ListItem" parent="Woo.TextAppearance.ListItem"/>
-    <style name="Woo.OrderList.TextAppearance.ListItem.Date" parent="Woo.TextAppearance.ListItem">
-        <item name="tabTextColor">@color/wc_grey</item>
-        <item name="android:textSize">@dimen/text_small</item>
-    </style>
-    <style name="Woo.OrderList.TextAppearance.ListItem.Title" parent="Woo.TextAppearance.ListItem.Title"/>
-    <style name="Woo.OrderList.TextAppearance.ListItem.Title.Bold">
-        <item name="android:textStyle">bold</item>
-    </style>
-    <style name="Woo.OrderList.TabLayout" parent="Woo.TabLayout">
-        <item name="android:background">@color/colorPrimary</item>
-        <item name="android:elevation">@dimen/tablayout_elevation</item>
-        <item name="tabGravity">fill</item>
-        <item name="tabMaxWidth">0dp</item>
-        <item name="tabMode">fixed</item>
-        <item name="tabPaddingStart">25dp</item>
-        <item name="tabPaddingEnd">25dp</item>
-        <item name="tabIndicatorHeight">2.5dp</item>
-        <item name="tabTextColor">@color/white_translucent_65</item>
-        <item name="tabSelectedTextColor">@color/white</item>
-        <item name="tabIndicatorColor">@color/white</item>
-    </style>
-
     <!--
         OrderDetail Styles
     -->
@@ -262,8 +214,6 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <style name="Woo.Refunds.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
-
-    <style name="Woo.Refunds.TabLayout" parent="Woo.OrderList.TabLayout" />
 
     <style name="Woo.Refunds.Button" parent="Woo.Button">
         <item name="android:textAlignment">viewEnd</item>
@@ -299,20 +249,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="Woo.Settings.Icon">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/settings_padding</item>
-        <item name="android:tint">@color/wc_grey_dark</item>
-    </style>
-
-
-    <style name="Woo.Settings.Divider">
-        <item name="android:background">@color/wc_border_color</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-    </style>
-
     <!--
         Offline Status Bar
     -->
@@ -326,38 +262,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:textSize">@dimen/text_caption</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center</item>
-    </style>
-
-    <!--
-        About screen
-    -->
-    <style name="Woo.About"/>
-    <style name="Woo.About.Title">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">28sp</item>
-        <item name="android:lineSpacingExtra">-4sp</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-    <style name="Woo.About.Label">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_medium</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
-    <style name="Woo.About.Button" parent="android:TextAppearance.DeviceDefault">
-        <item name="android:textColor">@color/color_primary_surface</item>
-        <item name="android:textSize">@dimen/text_medium</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/min_tap_target</item>
-        <item name="android:gravity">center</item>
-        <item name="android:layout_marginStart">4dp</item>
-        <item name="android:layout_marginEnd">4dp</item>
-        <item name="android:background">@drawable/about_button_selector</item>
-
     </style>
 
     <!--
@@ -507,42 +411,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="codeTextColor">@color/wc_black_darker</item>
         <item name="codeBackgroundColor">@android:color/transparent</item>
         <item name="android:inputType">textNoSuggestions|textMultiLine</item>
-    </style>
-
-    <!--
-         Stats
-        -->
-    <style name="Woo.Stats.Card" parent="Woo.Card">
-        <item name="android:layout_marginBottom">@dimen/card_item_padding_intra_h</item>
-    </style>
-
-    <style name="Woo.Stats.Notice.Card" parent="Woo.Card">
-        <item name="android:paddingEnd">@dimen/margin_small</item>
-        <item name="android:paddingBottom">@dimen/default_padding</item>
-        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
-    </style>
-
-    <style name="Woo.Stats.Card.Expandable" parent="Woo.Card.Expandable">
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
-    </style>
-
-    <style name="Woo.Stats.Availability.CardExtenderButton" parent="Woo.CardExtenderButton">
-        <item name="android:background">@drawable/button_white_bg</item>
-        <item name="android:textColor">@color/wc_grey_dark</item>
-        <item name="android:drawableStart">@drawable/ic_gridicons_gift</item>
-        <item name="android:drawableEnd">@drawable/card_expander_selector</item>
-        <item name="android:paddingStart">@dimen/card_padding_start</item>
-        <item name="android:paddingTop">@dimen/card_padding_top</item>
-        <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
-        <item name="android:drawablePadding">@dimen/card_padding_start</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="Woo.Products.WIP.CardExtenderButton" parent="Woo.Stats.Availability.CardExtenderButton">
-        <item name="android:drawableStart">@drawable/ic_gridicons_tools</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/black_85</item>
     </style>
 
     <style name="Woo.Product"/>

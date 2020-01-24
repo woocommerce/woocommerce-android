@@ -21,15 +21,14 @@
 
     <View
         android:id="@+id/divider1"
-        style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/margin_app_title_aligned"
+        style="@style/Woo.Divider.TitleAligned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/switchSendStats"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_share_info"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"
@@ -54,16 +53,15 @@
 
     <View
         android:id="@+id/divider2"
-        style="@style/Woo.Divider"
+        style="@style/Woo.Divider.TitleAligned"
         android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginStart="@dimen/margin_app_title_aligned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonLearnMore"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_policy_info"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"
@@ -89,16 +87,15 @@
 
     <View
         android:id="@+id/divider3"
-        style="@style/Woo.Divider"
+        style="@style/Woo.Divider.TitleAligned"
         android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginStart="@dimen/margin_app_title_aligned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonPrivacyPolicy"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_tracking_info"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"
@@ -144,15 +141,14 @@
 
     <View
         android:id="@+id/divider5"
-        style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/margin_app_title_aligned"
+        style="@style/Woo.Divider.TitleAligned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/switchCrashReporting"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textCrashReporting"
-        style="@style/Woo.Settings.Option.Value"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_00"
