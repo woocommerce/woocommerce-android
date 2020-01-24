@@ -181,8 +181,13 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_action_bar, menu)
-        return true
+        // don't show the options menu unless we're at the root
+        if (isAtNavigationRoot()) {
+            menuInflater.inflate(R.menu.menu_action_bar, menu)
+            return true
+        } else {
+            return false
+        }
     }
 
     override fun onResume() {
