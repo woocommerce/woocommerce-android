@@ -1,58 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/white"
     tools:context=".ui.orders.list.OrderListFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/empty_view_text"
+            style="@style/Woo.TextAppearance.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:textAlignment="center"
+            tools:text="@string/error_generic_network" />
 
         <ImageView
             android:id="@+id/empty_view_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="100dp"
-            android:minWidth="100dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/margin_extra_large"
-            android:contentDescription="@string/waiting_for_customers_contentdesc"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
             android:importantForAccessibility="no"
-            app:layout_constraintBottom_toTopOf="@+id/empty_view_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:minWidth="100dp"
+            android:minHeight="100dp"
             app:srcCompat="@drawable/ic_woo_error_state" />
-
-        <TextView
-            android:id="@+id/empty_view_text"
-            style="@style/Woo.TextAppearance.Bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:textAlignment="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.52"
-            tools:text="@string/error_generic_network" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/empty_view_button"
             style="@style/Woo.Button.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/share_store_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/empty_view_text" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:text="@string/share_store_button" />
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

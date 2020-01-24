@@ -31,14 +31,17 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
+import kotlinx.android.synthetic.main.order_list_view.*
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
@@ -61,6 +64,8 @@ class OrderListFragment : TopLevelFragment(),
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
         private const val TAB_INDEX_ALL = 1
+
+        private const val URL_LEARN_MORE = "https://woocommerce.com/blog/"
 
         fun newInstance(orderStatus: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -215,8 +220,7 @@ class OrderListFragment : TopLevelFragment(),
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                // Hide the empty view if visible
-                order_list_view.hideEmptyView()
+                hideEmptyView()
 
                 // Calculate the filter that should be active based on the selected
                 // tab and the state of the list.
@@ -409,9 +413,32 @@ class OrderListFragment : TopLevelFragment(),
             }
         })
 
-        viewModel.emptyViewState.observe(viewLifecycleOwner, Observer {
-            it?.let { emptyViewState -> order_list_view?.updateEmptyViewForState(emptyViewState) }
+        viewModel.emptyViewType.observe(viewLifecycleOwner, Observer {
+            it?.let { emptyViewType ->
+                when (emptyViewType) {
+                    EmptyViewType.SEARCH_RESULTS -> {
+                        empty_view.show(emptyViewType, searchQuery = searchQuery)
+                    }
+                    EmptyViewType.ORDER_LIST -> {
+                        empty_view.show(emptyViewType) {
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
+                        }
+                    }
+                    EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
+                        empty_view.show(emptyViewType) {
+                            refreshOrders()
+                        }
+                    }
+                    else -> {
+                        empty_view.show(emptyViewType)
+                    }
+                }
+            } ?: hideEmptyView()
         })
+    }
+
+    private fun hideEmptyView() {
+        empty_view.hide()
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
@@ -647,7 +674,7 @@ class OrderListFragment : TopLevelFragment(),
      * 2. The order status list view is displayed by default
      */
     private fun enableSearchListeners() {
-        order_list_view?.hideEmptyView()
+        hideEmptyView()
 
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
         orderListMenu?.findItem(R.id.menu_support)?.isVisible = false
