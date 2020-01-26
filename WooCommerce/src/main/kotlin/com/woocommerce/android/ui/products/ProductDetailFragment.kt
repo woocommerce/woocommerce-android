@@ -58,6 +58,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
+import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import java.util.Date
@@ -278,7 +279,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
         if (isAddEditProductRelease1Enabled(product.type)) {
             val productDescription = product.description
-            val showCaption = !productDescription.isEmpty()
+            val showCaption = productDescription.isNotEmpty()
             val description = if (productDescription.isEmpty()) {
                 getString(R.string.product_description_empty)
             } else {
@@ -381,10 +382,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             }
             val saleDates = when {
                 (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
-                    getString(R.string.product_sale_date_from_to,
-                            dateOnSaleFrom.formatToMMMdd(),
-                            dateOnSaleTo.formatToMMMddYYYY()
-                    )
+                    getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
                 }
                 (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
                     getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
@@ -782,8 +780,19 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     }
 
     private fun showProductInventory(remoteId: Long) {
-        findNavController().navigate(ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductInventoryFragment(remoteId))
+        findNavController().navigate(
+                ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductInventoryFragment(remoteId)
+        )
+    }
+
+    private fun getProductSaleDates(dateOnSaleFrom: Date, dateOnSaleTo: Date): String {
+        val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
+            dateOnSaleFrom.formatToMMMdd()
+        } else {
+            dateOnSaleFrom.formatToMMMddYYYY()
+        }
+        return getString(R.string.product_sale_date_from_to, formattedFromDate, dateOnSaleTo.formatToMMMddYYYY())
     }
 
     /**

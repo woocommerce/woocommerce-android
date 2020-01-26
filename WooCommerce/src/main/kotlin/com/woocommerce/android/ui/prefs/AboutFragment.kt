@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -17,9 +18,6 @@ import java.util.Calendar
 class AboutFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "about"
-        private const val URL_AUTOMATTIC = "https://www.automattic.com/"
-        private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
-        private const val URL_TOS = "https://woocommerce.com/terms-conditions/"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,15 +41,15 @@ class AboutFragment : androidx.fragment.app.Fragment() {
         about_copyright.text = copyright
 
         about_url.setOnClickListener {
-            ChromeCustomTabUtils.launchUrl(activity as Context, URL_AUTOMATTIC)
+            ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_HOME)
         }
 
         about_privacy.setOnClickListener {
-            ChromeCustomTabUtils.launchUrl(activity as Context, URL_PRIVACY_POLICY)
+            ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
         }
 
         about_tos.setOnClickListener {
-            ChromeCustomTabUtils.launchUrl(activity as Context, URL_TOS)
+            ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_TOS)
         }
     }
 
@@ -68,7 +66,11 @@ class AboutFragment : androidx.fragment.app.Fragment() {
 
     override fun onStart() {
         super.onStart()
-        ChromeCustomTabUtils.connect(activity as Context, URL_PRIVACY_POLICY, arrayOf(URL_TOS, URL_AUTOMATTIC))
+        ChromeCustomTabUtils.connect(
+                activity as Context,
+                AppUrls.AUTOMATTIC_PRIVACY_POLICY,
+                arrayOf(AppUrls.AUTOMATTIC_TOS, AppUrls.AUTOMATTIC_HOME)
+        )
     }
 
     override fun onStop() {
