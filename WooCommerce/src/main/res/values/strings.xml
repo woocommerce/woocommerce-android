@@ -306,8 +306,8 @@
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
     <plurals name="order_refunds_refund_info_description">
-        <item quantity="one">%d product</item>
-        <item quantity="other">%d products</item>
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
     </plurals>
     <string name="order_refunds_refund_info_title">Refunded products</string>
     <!--
