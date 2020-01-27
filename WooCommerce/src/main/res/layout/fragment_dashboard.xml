@@ -85,6 +85,7 @@
 
                 <com.woocommerce.android.widgets.WCEmptyStatsView
                     android:id="@+id/empty_stats_view"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 

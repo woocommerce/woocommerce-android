@@ -29,6 +29,7 @@
 
                 <com.woocommerce.android.widgets.WCEmptyStatsView
                     android:id="@+id/empty_stats_view"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:visibility="gone"
@@ -40,14 +41,6 @@
                     android:layout_height="match_parent"
                     android:visibility="gone"
                     tools:visibility="visible" />
-
-                <!-- Date bar -->
-                <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
-                    android:id="@+id/my_store_date_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/card_bgColor"
-                    android:orientation="vertical" />
 
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.mystore.MyStoreStatsView
