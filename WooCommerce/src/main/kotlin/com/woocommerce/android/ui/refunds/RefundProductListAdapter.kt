@@ -33,7 +33,7 @@ class RefundProductListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
         return if (isProductDetailList)
-            RefundDetailViewHolder(parent, formatCurrency, onItemClicked, imageMap)
+            RefundDetailViewHolder(parent, formatCurrency, imageMap)
         else
             IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
     }
@@ -59,7 +59,6 @@ class RefundProductListAdapter(
     class RefundDetailViewHolder(
         parent: ViewGroup,
         private val formatCurrency: (BigDecimal) -> String,
-        private val onItemClicked: (Long) -> Unit,
         private val imageMap: ProductImageMap
     ) : RefundViewHolder(parent, R.layout.refunds_detail_product_list_item) {
         private val nameTextView: TextView = itemView.findViewById(R.id.refundItem_productName)
@@ -101,10 +100,6 @@ class RefundProductListAdapter(
                         .placeholder(R.drawable.ic_product)
                         .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
-
-            itemView.setOnClickListener {
-                onItemClicked(item.orderItem.uniqueId)
-            }
         }
     }
 
