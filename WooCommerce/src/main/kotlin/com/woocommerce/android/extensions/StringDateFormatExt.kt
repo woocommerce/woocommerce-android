@@ -2,6 +2,7 @@ package com.woocommerce.android.extensions
 
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
 
@@ -119,5 +120,22 @@ fun String.formatToMonthDateOnly(): String {
         date.formatToMMMdd()
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+    }
+}
+
+/**
+ * Method to convert month string from yyyy-MM-dd'T'hh:mm:ss format to MMM dd
+ * i.e. 2018-08-08T08:12:03 is formatted to Aug 08
+ */
+@Throws(IllegalArgumentException::class)
+fun String?.formatDateToISO8601Format(): Date? {
+    return try {
+        if (!this.isNullOrEmpty()) {
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            return originalFormat.parse(this)
+        }
+        null
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd'T'HH:mm:ss: $this")
     }
 }

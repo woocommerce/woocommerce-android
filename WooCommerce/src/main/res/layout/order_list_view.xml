@@ -22,14 +22,12 @@
             tools:listitem="@layout/order_list_item"
             tools:visibility="gone"/>
 
-        <com.woocommerce.android.widgets.ActionableEmptyView
+        <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            app:aevTitle="@string/orders_empty_message_with_filter"
-            app:aevImage="@drawable/ic_hourglass_empty"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"
@@ -40,7 +38,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/margin_large"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </RelativeLayout>
 
 </merge>

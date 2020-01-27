@@ -75,12 +75,25 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.woocommerce.android.widgets.WCEmptyView
-                android:id="@+id/empty_view"
+            <LinearLayout
+                android:id="@+id/empty_view_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:visibility="gone"
-                tools:visibility="gone"/>
+                tools:visibility="visible">
+
+                <com.woocommerce.android.widgets.WCEmptyStatsView
+                    android:id="@+id/empty_stats_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <com.woocommerce.android.widgets.WCEmptyView
+                    android:id="@+id/empty_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
 

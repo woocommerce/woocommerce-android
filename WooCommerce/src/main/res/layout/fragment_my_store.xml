@@ -27,13 +27,35 @@
                 android:descendantFocusability="blocksDescendants"
                 android:orientation="vertical">
 
+                <com.woocommerce.android.widgets.WCEmptyStatsView
+                    android:id="@+id/empty_stats_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <com.woocommerce.android.widgets.WCEmptyView
+                    android:id="@+id/empty_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <!-- Date bar -->
+                <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
+                    android:id="@+id/my_store_date_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/card_bgColor"
+                    android:orientation="vertical" />
+
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.mystore.MyStoreStatsView
                     android:id="@+id/my_store_stats"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"/>
+                    android:orientation="vertical" />
 
                 <!-- Top earner stats -->
                 <com.woocommerce.android.ui.mystore.MyStoreTopEarnersView
@@ -41,15 +63,9 @@
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"/>
+                    android:orientation="vertical" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
-
-    <com.woocommerce.android.widgets.WCEmptyView
-        android:id="@+id/empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
 </LinearLayout>
