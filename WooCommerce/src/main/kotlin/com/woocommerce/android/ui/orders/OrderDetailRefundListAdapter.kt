@@ -6,6 +6,7 @@ import android.text.SpannableString
 import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -52,32 +53,25 @@ class OrderDetailRefundListAdapter(
     ) {
         private val amountTextView: TextView = itemView.findViewById(R.id.refundsList_refundAmount)
         private val methodTextView: TextView = itemView.findViewById(R.id.refundsList_refundMethod)
+        private val itemRoot: View = itemView.findViewById(R.id.refundsList_itemRoot)
 
         @SuppressLint("SetTextI18n") fun bind(refund: Refund) {
             amountTextView.text = "-${formatCurrency(refund.amount)}"
 
-            val linkText = itemView.resources.getString(R.string.orderdetail_refund_view_details)
             val method = if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
                 order.paymentMethodTitle
             else
                 "${itemView.context.getString(R.string.order_refunds_manual_refund)} via ${order.paymentMethodTitle}"
             val methodText = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
                     DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
-                    method,
-                    linkText
+                    method
             )
-            val spannable = SpannableString(methodText)
-            val start = methodText.indexOf(linkText)
-            spannable.setSpan(
-                    WooClickableSpan {
-                        onRefundDetailsClicked(order.remoteId, refund.id)
-                    },
-                    start,
-                    start + linkText.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-            methodTextView.setText(spannable, TextView.BufferType.SPANNABLE)
-            methodTextView.movementMethod = LinkMovementMethod.getInstance()
+            itemRoot.setOnClickListener {
+                onRefundDetailsClicked(order.remoteId, refund.id)
+            }
+
+            methodTextView.text = methodText
         }
     }
 
