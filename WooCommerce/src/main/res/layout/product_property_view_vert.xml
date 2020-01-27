@@ -8,16 +8,28 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
+    <ImageView
+        android:id="@+id/imgPropertyIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_large"
+        android:contentDescription="@string/product_property_edit"
+        android:src="@drawable/ic_gridicons_list_checkmark"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/product_detail_property_margin"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/textPropertyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginStart="@dimen/product_detail_property_margin"
         android:layout_marginTop="@dimen/product_detail_property_margin"
         android:textColor="@color/wc_black_darker"
         android:textSize="@dimen/text_large"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="textPropertyName"/>
 
@@ -25,21 +37,21 @@
         android:id="@+id/textPropertyValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/product_detail_property_margin"
-        android:layout_marginEnd="@dimen/product_detail_property_margin"
+        android:layout_gravity="start"
         android:layout_marginStart="@dimen/product_detail_property_margin"
         android:layout_marginTop="@dimen/margin_small"
-        app:layout_goneMarginTop="@dimen/product_detail_property_margin"
+        android:layout_marginEnd="@dimen/product_detail_property_margin"
+        android:layout_marginBottom="@dimen/product_detail_property_margin"
         android:ellipsize="end"
         android:lineSpacingExtra="2dp"
+        android:textAlignment="viewStart"
         android:textColor="@color/wc_black_lighter"
         android:textSize="@dimen/text_medium"
-        android:layout_gravity="start"
-        android:textAlignment="viewStart"
-        app:layout_constraintBottom_toTopOf="@id/divider"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imgProperty"
+        app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
+        app:layout_goneMarginTop="@dimen/product_detail_property_margin"
+        app:layout_constraintBottom_toTopOf="@id/ratingBar"
         tools:text="textPropertyValue"/>
 
     <RatingBar
@@ -47,17 +59,17 @@
         style="@style/Base.Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
         android:isIndicator="true"
         android:numStars="5"
         android:progressTint="@color/grey_darken_30"
         android:rating="0"
         android:stepSize="1"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintStart_toStartOf="@+id/textPropertyName"
+        app:layout_constraintTop_toBottomOf="@+id/textPropertyValue"
         tools:rating="3"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/imgProperty"
@@ -67,9 +79,9 @@
         android:background="@drawable/ic_arrow_right_grey"
         android:contentDescription="@string/product_property_edit"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:visibility="visible" />
 
     <View
@@ -78,6 +90,6 @@
         android:layout_marginTop="@dimen/product_detail_property_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

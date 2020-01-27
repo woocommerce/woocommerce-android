@@ -414,6 +414,9 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <style name="Woo.Product"/>
+    <style name="Woo.Product.Label" parent="Woo.TextAppearance.Large">
+        <item name="android:textColor">@color/wc_black_darker</item>
+    </style>
     <style name="Woo.Product.Title" parent="@style/EditText">
         <item name="android:textColor">@color/wc_black_darker</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
@@ -426,6 +429,28 @@ Use this file to override styles in the styles_base.xml file.
         <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
         <item name="android:maxLines">1</item>
         <item name="android:inputType">textNoSuggestions|textVisiblePassword</item>
+    </style>
+
+    <style name="Woo.MaterialComponents.EditText" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColor">@color/wc_black_darker</item>
+        <item name="android:textColorHint">@color/wc_black_lighter</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="colorControlNormal">@color/list_divider</item>
+        <item name="android:colorAccent">@color/list_divider</item>
+        <item name="boxStrokeColor">@color/list_divider</item>
+        <item name="hintTextAppearance">@style/Woo.MaterialComponents.EditText.HintTextAppearance</item>
+        <item name="colorControlActivated">@color/list_divider</item>
+        <item name="colorControlHighlight">@color/list_divider</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="Woo.MaterialComponents.EditText.HintTextAppearance" parent="Woo.TextAppearance">
+        <item name="android:textColor">@color/wc_black_lighter</item>
+    </style>
+
+    <style name="Woo.MaterialComponents.EditText.Summary" parent="Woo.TextAppearance.Small">
+        <item name="android:textColor">@color/wc_black_lighter</item>
     </style>
 
 </resources>

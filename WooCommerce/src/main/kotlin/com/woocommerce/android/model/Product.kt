@@ -1,6 +1,8 @@
 package com.woocommerce.android.model
 
+import android.content.Context
 import android.os.Parcelable
+import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -49,7 +51,10 @@ data class Product(
     val purchaseNote: String,
     val numVariations: Int,
     val images: List<Image>,
-    val attributes: List<Attribute>
+    val attributes: List<Attribute>,
+    val dateOnSaleTo: Date?,
+    val dateOnSaleFrom: Date?,
+    var soldIndividually: Boolean
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -100,6 +105,27 @@ data class Product(
                 }
             }
         } ?: this.copy()
+    }
+
+    /**
+     * returns the product's stock status formatted for display
+     */
+    fun stockStatusToDisplayString(context: Context): String {
+        val status = this.stockStatus
+        return if (status.stringResource != 0) {
+            context.getString(status.stringResource)
+        } else {
+            status.value
+        }
+    }
+
+    fun backordersToDisplayString(context: Context): String {
+        val status = this.backorderStatus
+        return if (status.stringResource != 0) {
+            context.getString(status.stringResource)
+        } else {
+            status.value
+        }
     }
 }
 
@@ -162,7 +188,10 @@ fun WCProductModel.toAppModel(): Product {
                     it.options,
                     it.visible
             )
-        }
+        },
+        this.dateOnSaleTo.formatDateToISO8601Format(),
+        this.dateOnSaleFrom.formatDateToISO8601Format(),
+        this.soldIndividually
     )
 }
 

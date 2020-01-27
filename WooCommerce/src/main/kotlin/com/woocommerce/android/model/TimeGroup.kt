@@ -15,19 +15,18 @@ enum class TimeGroup(@StringRes val labelRes: Int) {
     GROUP_OLDER_MONTH(R.string.date_timeframe_older_month);
 
     companion object {
-        fun getTimeGroupForDate(date: Date): TimeGroup {
+        fun getTimeGroupForDate(localDate: Date): TimeGroup {
+            val utcDate = DateTimeUtils.localDateToUTC(localDate)
             val dateToday = DateTimeUtils.nowUTC()
 
             return when {
-                date < DateUtils.addMonths(dateToday, -1) -> GROUP_OLDER_MONTH
-                date < DateUtils.addWeeks(dateToday, -1) -> GROUP_OLDER_WEEK
-                date < DateUtils.addDays(dateToday, -2) -> GROUP_OLDER_TWO_DAYS
-                DateUtils.isSameDay(DateUtils.addDays(dateToday, -2), date) -> GROUP_OLDER_TWO_DAYS
-                DateUtils.isSameDay(DateUtils.addDays(dateToday, -1), date) -> GROUP_YESTERDAY
-                DateUtils.isSameDay(dateToday, date) -> GROUP_TODAY
-                else -> {
-                    GROUP_FUTURE
-                }
+                utcDate < DateUtils.addMonths(dateToday, -1) -> GROUP_OLDER_MONTH
+                utcDate < DateUtils.addWeeks(dateToday, -1) -> GROUP_OLDER_WEEK
+                utcDate < DateUtils.addDays(dateToday, -2) -> GROUP_OLDER_TWO_DAYS
+                DateUtils.isSameDay(DateUtils.addDays(dateToday, -2), utcDate) -> GROUP_OLDER_TWO_DAYS
+                DateUtils.isSameDay(DateUtils.addDays(dateToday, -1), utcDate) -> GROUP_YESTERDAY
+                DateUtils.isSameDay(dateToday, utcDate) -> GROUP_TODAY
+                else -> GROUP_FUTURE
             }
         }
     }

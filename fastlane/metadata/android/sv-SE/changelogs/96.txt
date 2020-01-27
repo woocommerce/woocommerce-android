@@ -1,4 +1,0 @@
-3.2:
-– Du ser en sektion med nya varianter i Produktinformation-skärmen för dina variabla produkter.
-– Det nedre navigeringsfältet döljs inte längre när du bläddrar – vi tror du kommer gilla det bättre.
-– Vi vet att Produkter-fliken ligger högt på allas önskelistor och du kan nu förhandsgranska Produkter-fliken som kommer snart – gå till Inställningar i appen för att aktivera den.
