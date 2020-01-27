@@ -99,7 +99,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = context.getString(R.string.orderlist_loading)
                 message = null
                 buttonText = null
-                drawableId = R.drawable.img_empty_orders_looking_up
+                drawableId = R.drawable.img_empty_orders_loading
             }
             ORDER_LIST_ALL_PROCESSED -> {
                 isTitleBold = true
