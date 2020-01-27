@@ -81,7 +81,7 @@ Language: ar
     <string name="order_refunds_available_for_refund">%s متوافر للاسترداد</string>
     <string name="orderdetail_issue_refund_button">نشر مبلغ الاسترداد</string>
     <string name="orderdetail_refund_view_details">عرض التفاصيل</string>
-    <string name="orderdetail_refund_detail">%1$s بواسطة %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s بواسطة %2$s</string>
     <string name="settings_enable_v4_stats_message">تجربة الإحصاءات الجديدة المتاحة مع\nإضافة مسؤول WooCommerce</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>

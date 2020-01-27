@@ -81,7 +81,7 @@ Language: pt_BR
     <string name="order_refunds_available_for_refund">Total de %s disponível para reembolso</string>
     <string name="orderdetail_issue_refund_button">Emitir reembolso</string>
     <string name="orderdetail_refund_view_details">Visualizar detalhes</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Experimente as novas estatísticas disponíveis com o\nplugin WooCommerce Admin</string>
     <string name="settings_enable_v4_stats_title">Estatísticas aprimoradas</string>
     <string name="beta_features">Funcionalidades Beta</string>
