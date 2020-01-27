@@ -123,7 +123,6 @@ class MyStoreFragment : TopLevelFragment(),
                 tab.select()
             }
         }
-        addTabLayoutToAppBar(tabLayout)
 
         my_store_date_bar.initView()
         my_store_stats.initView(
@@ -153,6 +152,11 @@ class MyStoreFragment : TopLevelFragment(),
             isStatsRefreshed = true
             refreshMyStoreStats(forced = this.isRefreshPending)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        addTabLayoutToAppBar(tabLayout)
     }
 
     override fun onResume() {
