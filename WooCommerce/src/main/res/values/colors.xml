@@ -1,71 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary">@color/wc_purple</color>
+    <color name="colorPrimaryDark">@color/wc_purple_status</color>
+    <color name="colorAccent">@color/wc_purple</color>
     <!--
-        General colors
+        Default Colors
     -->
-    <color name="color_primary">@color/woo_purple_60</color>
-    <color name="color_primary_surface">@color/woo_purple_60</color>
-    <color name="color_secondary">@color/woo_pink_50</color>
-    <color name="color_surface">@color/woo_white</color>
-    <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
-    <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
-    <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
-    <color name="color_on_primary_high">@color/woo_white</color>
-    <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
-    <color name="color_on_primary_disabled">@color/woo_white_alpha_038</color>
-    <color name="color_on_primary_surface_high">@color/color_on_primary_high</color>
+    <color name="default_text_color">@color/wc_grey_dark</color>
+    <color name="default_button_fg_color">@color/colorPrimary</color>
+    <color name="default_text_label_color">@color/colorPrimary</color>
+    <color name="default_card_heading_color">@color/colorPrimary</color>
     <!--
-        Custom widget tint
+        General Color Definitions
     -->
-    <color name="button_colored_bg_tint">@color/color_secondary</color>
-    <color name="ratings_bar_progress_tint">@color/color_on_surface_high</color>
-    <color name="unread_indicator_color">@color/color_primary</color>
+    <!-- Primary Greys -->
+    <!-- TODO: Consolidate with rest of wc_greys -->
+    <color name="wc_grey">#999999</color>
+    <color name="wc_grey_darker">#787878</color>
+    <color name="wc_grey_darkest">#2a2a2a</color>
+    <color name="wc_grey_lightest">#f7f7f7</color>
+    <color name="grey_dark_highlight">#333333</color>
+
+    <!-- Primary Blacks -->
+    <color name="wc_black_lighter">#99000000</color>
+    <color name="wc_black_darker">#DE000000</color>
+
+    <!-- Primary Greens -->
+    <color name="wc_green_light">#d1dcc7</color>
+    <color name="wc_green_lightest">#e9f4db</color>
+
+    <!-- Primary Reds -->
+    <color name="wc_red">#ff0000</color>
+    <color name="wc_red_light">#febdbb</color>
+    <color name="wc_red_lightest">#fededd</color>
+
+    <!-- Primary Blues -->
+    <color name="wc_blue_light">#BCDEEE</color>
+    <color name="wc_blue_lightest">#e8f2f9</color>
+
+    <!-- STUDIO 2.0.0 -->
+    <color name="blue_50">#2271b1</color>
+    <color name="black_85">#de000000</color>
 
     <!--
-        App colors
+        Default Global Colors
     -->
-    <color name="default_window_background">#F2F2F2</color>
-    <color name="list_divider">@color/woo_black_90_alpha_012</color>
-
+    <color name="default_window_bg">@color/wc_border_color</color>
+    <color name="default_text">@color/wc_grey_dark</color>
+    <color name="default_text_title">@color/grey_dark_highlight</color>
+    <color name="default_text_title_disabled">@color/wc_grey_17</color>
+    <color name="default_search_hint_text">#c5adc3</color>
     <!--
-        Badge colors
+        Default Widget Color Definitions
     -->
-    <color name="badge_border_color">@color/woo_white</color>
-    <color name="badge_background_color">@color/woo_purple_60</color>
+    <!-- Menu Text Colors -->
+    <color name="menu_title_text">#FFFFFFFF</color>
+    <color name="menu_action_text">#FFFFFFFF</color>
 
-    <!--
-        Default graph colors
-    -->
-    <color name="graph_data_color">@color/woo_pink_50</color>
-    <color name="graph_grid_color">@color/woo_black_90_alpha_012</color>
-    <color name="graph_highlight_color">@color/woo_pink_90</color>
-    <color name="graph_no_data_text_color">@color/color_on_surface</color>
-    <color name="graph_label_color">@color/color_on_surface_medium</color>
+    <!-- Default Card colors -->
+    <color name="card_bgColor">@color/white</color>
+    <color name="card_title_text">@color/default_text_title</color>
+    <color name="card_label_text">@color/default_text_label_color</color>
+    <color name="card_normal_text">@color/default_text_color</color>
 
-    <!--
-        TagView colors
-    -->
-    <color name="tagView_bg">@color/tag_bg_other</color>
-    <color name="tagView_text">@color/color_on_surface_high</color>
-    <color name="tagView_border_bg">@android:color/transparent</color>
-    <color name="tag_bg_processing">@color/woo_celadon_5</color>
-    <color name="tag_bg_failed">@color/woo_red_5</color>
-    <color name="tag_bg_on_hold">@color/woo_orange_5</color>
-    <color name="tag_bg_other">@color/woo_gray_5</color>
+    <!-- Tag View default colors -->
+    <color name="tagView_bgColor">#d2d2d2</color>
+    <color name="tagView_fgColor">#a7a7a7</color>
 
-    <!--
-        Nav bar color protection for behavior differences between Android P and Q. All sdk
-        levels should draw fullscreen. P should color the nav bar with a translucent background
-        to guard for contrast. Q should have a transparent nav bar as Q will automatically
-        handles contrast by either dynamically coloring the nav bar handle (gesture nav)
-        or automatically applying a translucent background (3-button mode).
-    -->
-    <color name="nav_bar">@color/woo_black_90_alpha_020</color>
+    <!-- Default List colors -->
+    <color name="list_item_text">@color/default_text</color>
+    <color name="list_item_text_title">@color/default_text_title</color>
+    <color name="list_item_bg">@color/white</color>
+    <color name="List_header_text">@color/wc_grey_mid</color>
+    <color name="list_header_bg">@color/wc_grey_light</color>
+    <color name="list_header_border">@color/wc_grey_17</color>
 
+    <!-- Default Edit Text -->
+    <color name="edit_text_color_control_activated">@color/grey_dark_highlight</color>
+    <color name="edit_text_color_control_highlight">@color/grey_dark_highlight</color>
+    <color name="edit_text_color_control_normal">@color/wc_grey_39</color>
+    <color name="edit_text_label_text_color">@color/wc_grey_dark</color>
+    <color name="edit_text_text_color">@color/wc_grey_dark</color>
+    <color name="edit_text_text_color_highlight">@color/wc_purple_highlight</color>
+    <color name="edit_text_text_hint_color">@color/wc_grey_dark</color>
+
+    <!-- Default Link Color -->
+    <color name="link_text_color">@color/wc_purple</color>
     <!--
-        Products List
+        Order: Order note icon colors
     -->
-    <color name="product_stock_fg">@color/color_on_surface_medium</color>
-    <color name="product_status_fg_other">@color/woo_blue_50</color>
-    <color name="product_status_fg_pending">@color/woo_orange_50</color>
+    <color name="orderNote_private">@color/wc_grey</color>
+    <color name="orderNote_public">@color/wc_blue_light</color>
+    <color name="orderNote_system">@color/wc_purple</color>
+
+    <!-- Login -->
+    <!-- Login uses snake_case instead of CamelCase for the main color palette,
+    this makes sure they're not used accidentally -->
+    <color name="color_primary_dark">@color/colorPrimaryDark</color>
+    <color name="color_accent">@color/colorAccent</color>
+
+    <color name="status_bar">@color/colorPrimaryDark</color>
+    <color name="login_theme_accent_color">@color/colorAccent</color>
+    <color name="login_background_color">@color/wc_grey_light</color>
+
+    <color name="login_toolbar_color">@color/colorPrimary</color>
+    <color name="login_primary_button_normal_color">@color/colorAccent</color>
+    <color name="login_primary_button_text_color">@color/white</color>
+    <color name="login_secondary_button_text_color">@color/colorPrimary</color>
+    <color name="login_google_button_text_color">@color/colorPrimary</color>
+    <color name="login_text_label_text_color">@color/edit_text_label_text_color</color>
+    <color name="login_input_label_static_text_color">@color/wc_grey_39</color>
+    <color name="login_edit_text_color_control_normal">@color/edit_text_color_control_normal</color>
+    <color name="login_edit_text_color_control_activated">@color/edit_text_color_control_activated</color>
+    <color name="login_edit_text_color_control_highlight">@color/edit_text_color_control_highlight</color>
+    <color name="login_edit_text_text_color">@color/edit_text_text_color</color>
+    <color name="login_edit_text_text_hint_color">@color/edit_text_text_hint_color</color>
+    <color name="login_heading_text_color">@color/wc_grey_17</color>
+    <color name="login_subhead_text_color">@color/wc_grey_dark</color>
+    <color name="login_username_text_color">@color/wc_grey_17</color>
+    <color name="login_footnote_text_color">@color/wc_grey_dark</color>
+
+    <color name="login_input_icon_color">@color/wc_grey_30</color>
+    <color name="login_input_password_icon_color">@color/wc_grey_30</color>
+    <color name="login_notification_accent_color">@color/colorPrimary</color>
+
+    <color name="skeleton_color">#16000000</color>
+    <color name="skeleton_color_light">@color/white</color>
 </resources>
