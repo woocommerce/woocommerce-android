@@ -125,7 +125,7 @@ class RefundProductListAdapter(
 
             descriptionTextView.text = itemView.context.getString(
                     R.string.order_refunds_item_description,
-                    item.orderItem.quantity,
+                    item.maxQuantity,
                     formatCurrency(item.orderItem.price)
             )
 
