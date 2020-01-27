@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.annotation.SuppressLint
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.format.DateFormat
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +14,6 @@ import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.widgets.WooClickableSpan
 import java.math.BigDecimal
 
 class OrderDetailRefundListAdapter(
