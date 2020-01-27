@@ -68,6 +68,8 @@ class ProductListViewModel @AssistedInject constructor(
 
     private fun isRefreshing() = viewState.isRefreshing == true
 
+    fun getSearchQuery() = viewState.query
+
     fun onSearchQueryChanged(query: String) {
         viewState = viewState.copy(query = query, isEmptyViewVisible = false)
 
@@ -184,6 +186,10 @@ class ProductListViewModel @AssistedInject constructor(
 
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
+            viewState = viewState.copy(
+                    isEmptyViewVisible = false,
+                    isSkeletonShown = true
+            )
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
             } else {
@@ -198,13 +204,13 @@ class ProductListViewModel @AssistedInject constructor(
                     } else {
                         WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                     }
-
-                    viewState = viewState.copy(
-                            canLoadMore = productRepository.canLoadMoreProducts,
-                            isEmptyViewVisible = _productList.value?.isEmpty() == true
-                    )
                 }
             }
+
+            viewState = viewState.copy(
+                    canLoadMore = productRepository.canLoadMoreProducts,
+                    isEmptyViewVisible = _productList.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
         }

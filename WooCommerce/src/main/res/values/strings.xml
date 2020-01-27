@@ -198,7 +198,7 @@
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
-    <string name="orderlist_fetching">Fetching orders…</string>
+    <string name="orderlist_loading">Looking up your orders…</string>
     <!--
         Order Detail Views
     -->
@@ -493,12 +493,21 @@
     <!--
         Empty list messages
     -->
+    <string name="get_the_word_out">Let\'s get the word out</string>
+    <string name="share_your_store_message">Share your store on social media and by email with your contacts</string>
+    <string name="empty_order_list_title">Waiting for your first order</string>
+    <string name="empty_order_list_message">We\’ll notify you when you receive a new order. In the meantime, explore how you can increase your store sales.</string>
+    <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
+    <string name="empty_review_list_title">Get your first reviews</string>
+    <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+
     <string name="waiting_for_customers">Waiting for customers</string>
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
     <string name="orders_empty_message_with_filter">No orders yet</string>
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
+    <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
         Settings

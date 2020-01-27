@@ -5,19 +5,10 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import androidx.annotation.DrawableRes
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.model.UiString
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.DataShown
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.EmptyList
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.ErrorWithRetry
-import com.woocommerce.android.ui.orders.list.OrderListEmptyUiState.Loading
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.WooAnimUtils.Duration
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
@@ -108,29 +99,32 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
-    fun hideEmptyView() {
-        empty_view?.visibility = View.GONE
-    }
-
-    fun updateEmptyViewForState(state: OrderListEmptyUiState) {
+    // TODO remove this commented-out code before merging feature branch
+    /*fun updateEmptyViewForState(state: OrderListEmptyUiState, fmtArgs: String? = null) {
         when (state) {
             is DataShown -> { hideEmptyView() }
-            is EmptyList -> { showEmptyView(state.title, state.imgResId) }
+            is EmptyList -> { showEmptyView(state.title, fmtArgs, state.imgResId) }
             is Loading -> { showEmptyView(state.title) }
             is ErrorWithRetry -> {
-                showEmptyView(state.title, state.imgResId, state.buttonText, state.onButtonClick())
+                showEmptyView(
+                        state.title,
+                        imgResId = state.imgResId,
+                        buttonText = state.buttonText,
+                        onButtonClick = state.onButtonClick()
+                )
             }
         }
     }
 
     private fun showEmptyView(
         title: UiString? = null,
+        fmtArgs: String? = null,
         @DrawableRes imgResId: Int? = null,
         buttonText: UiString? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
         empty_view?.let { emptyView ->
-            UiHelpers.setTextOrHide(emptyView.title, title)
+            UiHelpers.setTextOrHide(emptyView.title, title, fmtArgs)
             UiHelpers.setImageOrHide(emptyView.image, imgResId)
             UiHelpers.setTextOrHide(emptyView.button, buttonText)
             emptyView.button.setOnClickListener { onButtonClick?.invoke() }
@@ -138,5 +132,5 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
                 WooAnimUtils.fadeIn(emptyView, Duration.MEDIUM)
             }
         }
-    }
+    }*/
 }
