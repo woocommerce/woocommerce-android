@@ -30,6 +30,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         currencyFormatter,
         wooCommerceStore
 ) {
+    // FIXME: This is a temporary fix that allows the connected test to be built. It fails and should be fixed, though.
 //    override val viewStateData: LiveDataDelegate<ViewState> =
 //            LiveDataDelegate(arg0, ViewState(), "", onChange = {
 //                combineData(it.product!!, Parameters("$", "oz", "in"))
