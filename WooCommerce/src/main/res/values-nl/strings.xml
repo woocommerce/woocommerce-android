@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:53+0000
+Translation-Revision-Date: 2020-01-22 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">Voer tekst in</string>
+    <string name="product_detail_title_hint">Voer titel in</string>
+    <string name="product_detail_update_product_success">Product bijgewerkt</string>
+    <string name="product_detail_update_product_error">Bijwerken product mislukt</string>
+    <string name="product_update_dialog_message">Een moment geduld…</string>
+    <string name="product_update_dialog_title">Product wordt bijgewerkt</string>
+    <string name="product_description_empty">Beschrijf je product</string>
+    <string name="product_description">Beschrijving</string>
+    <string name="product_edit_description">Beschrijving bewerken</string>
+    <string name="product_description_hint">Begin met schrijven …</string>
+    <string name="product_variant_list_empty">Opties toevoegen vanaf web zoals grootte en kleur. Deze zullen als opties worden getoond op de productpagina van je site</string>
+    <string name="discard_message">Wil je de wijzigingen ongedaan maken?</string>
+    <string name="update">Bijwerken</string>
+    <string name="done">Klaar</string>
+    <string name="order_refunds_refund_in_progress">Bezig met de vergoeding, een moment geduld…</string>
+    <string name="order_refunds_refund_shipping">Verzendkosten vergoeden</string>
+    <string name="order_refunds_select_quantity">Selecteer hoeveelheid</string>
+    <string name="order_refunds_shipping_refund">Verzendkostenvergoeding</string>
+    <string name="order_refunds_products_refund">Productvergoeding</string>
+    <string name="order_refunds_item_description">%d x %s per stuk</string>
+    <string name="order_refunds_items_selected">%d items geselecteerd</string>
+    <string name="order_refunds_items_select_none">Niets selecteren</string>
+    <string name="order_refunds_items_select_all">Alles selecteren</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Wachten op bevestiging vergoeding…</string>
+    <string name="settings_image_optimization_message">Comprimeer en wijzig de formaten van afbeeldingen voor snellere uploadtijden</string>
+    <string name="settings_image_optimization_title">Afbeeldingoptimalisatie</string>
+    <string name="image_source_device_camera">Een foto maken</string>
+    <string name="image_source_device_chooser">Kiezen op apparaat</string>
+    <string name="image_source_title">Selecteer een uploadmethode</string>
+    <string name="product_images_upload_channel_title">Uploads</string>
+    <string name="product_images_uploading_multi_notif_message">Bezig met afbeeldingen uploaden…%d van %d</string>
+    <string name="product_images_uploading_single_notif_message">Bezig met afbeeldingen uploaden…</string>
+    <string name="product_images_camera_error">Geen toegang tot camera</string>
+    <string name="product_image_remove_confirmation">Weet je zeker dat je deze afbeelding wilt verwijderen?</string>
+    <string name="product_image_capture_failed">Afbeelding vastleggen mislukt</string>
+    <string name="product_image_service_busy">Wacht tot de huidige handeling voltooid is</string>
+    <string name="product_image_service_error_uploading">Fout bij uploaden van productafbeelding</string>
+    <string name="product_image_error_removing">Fout bij verwijderen van productafbeelding</string>
+    <string name="product_image_add">Voeg een productafbeelding toe</string>
+    <string name="product_remove_photo">Foto verwijderen</string>
+    <string name="product_add_photos">Foto\'s toevoegen</string>
+    <string name="product_images_title">Foto\'s</string>
+    <string name="product_add_image_content_description">Afbeelding toevoegen</string>
+    <string name="orderlist_fetching">Bestellingen ophalen…</string>
+    <string name="date_timeframe_future">Komende</string>
+    <string name="remove">Verwijderen</string>
+    <string name="product_variant_hidden">Verborgen</string>
     <string name="login_discovery_error_generic">We konden geen toegang krijgen tot je site. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b>SSL-certificaat&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b>HTTP-authenticatie is vereist&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
@@ -24,7 +71,6 @@ Language: nl
     <string name="product_variants">Varianten</string>
     <string name="product_property_edit">Product bewerken</string>
     <string name="product_variants_fetch_product_variants_error">Fout bij ophalen productvariaties</string>
-    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld. Om de bèta-statistieken te kunnen gebruiken, moet je de WooCommerce Admin-plugin met versie 0.22 of hoger activeren</string>
     <string name="login_discovery_error_option_select">Selecteer een optie</string>
     <string name="login_troubleshooting_tips">Bekijk onze tips voor probleemoplossing</string>
     <string name="login_with_wordpress">Aanmelden via WordPress.com</string>
@@ -100,13 +146,13 @@ Language: nl
     <string name="dashboard_stats_todays_stats">Statistieken van vandaag</string>
     <string name="login_sign_in">Aanmelden</string>
     <string name="login_jetpack_installed_sign_in">Heb je Jetpack al? %1$s</string>
-    <string name="login_refresh_app_progress_jetpack">Proberen in te loggen met Jetpack …</string>
+    <string name="login_refresh_app_progress_jetpack">Proberen in te loggen met Jetpack…</string>
     <string name="login_refresh_app_continue">vernieuw de app om door te gaan</string>
     <string name="login_not_connected_jetpack">Om deze app te gebruiken voor %1$s, moet de Jetpack-plugin ingesteld zijn en gekoppeld zijn aan dit account. \n\nZodra dit is ingesteld, %2$s</string>
     <string name="login_try_another_store">Probeer een andere winkel</string>
     <string name="database_downgraded">Database gedowngraded; tabellen worden opnieuw gemaakt en winkels worden geladen</string>
     <string name="loading_stores">Winkels worden geladen</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">Geen providers gevonden</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Geen bezorgservices gevonden</string>
     <string name="login_invalid_site_url">Voer een compleet websiteadres in, zoals example.com.</string>
     <string name="reviews_empty_message">Nog geen beoordelingen!</string>
     <string name="review_notifications">Beoordelingen</string>
@@ -366,24 +412,24 @@ Language: nl
     <string name="country_mapping_AF">Afghanistan</string>
     <string name="country_mapping_AX">Åland</string>
     <string name="wc_review_title">Controle</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">Aangepaste bezorgservice</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Aangepaste bezorger</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Aangepast</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">Voer een providernaam in</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Voer een bezorgernaam in</string>
     <string name="order_shipment_tracking_empty_tracking_num">Vul een volgnummer in</string>
-    <string name="order_shipment_tracking_empty_provider">Selecteer een provider</string>
+    <string name="order_shipment_tracking_empty_provider">Selecteer een bezorgservice</string>
     <string name="order_shipment_tracking_confirm_discard">Weet je zeker dat je deze tracking wilt verwijderen?</string>
     <string name="order_shipment_tracking_error">Kan geen tracking toevoegen</string>
     <string name="order_shipment_tracking_added">Tracking van verzending toegevoegd</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Fout bij ophalen van providers</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Fout bij ophalen van bezorgers</string>
     <string name="order_shipment_tracking_provider_list_item">Geselecteerde bezorgservice</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">Bezorgservices</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Bezorgservice</string>
     <string name="order_shipment_tracking_date_label">Datum van verzending</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Voer tracking-link in</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">Voer naam van provider in</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Voer naam van bezorgservice in</string>
     <string name="order_shipment_tracking_number_hint">Voer trackingnummer in</string>
-    <string name="order_shipment_tracking_provider_hint">Selecteer provider</string>
+    <string name="order_shipment_tracking_provider_hint">Bezorgservice selecteren</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Tracking-link (optioneel)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">Naam provider</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Naam bezorgservice</string>
     <string name="order_shipment_tracking_number_label">Volgnummer</string>
     <string name="order_shipment_tracking_carrier_label">Bezorgservice</string>
     <string name="order_shipment_tracking_toolbar_title">Tracking toevoegen</string>
@@ -692,7 +738,6 @@ Language: nl
     <string name="orderstatus_failed">Mislukt</string>
     <string name="orderstatus_pending">Betaling in behandeling</string>
     <string name="orderstatus_processing">Bezig met verwerken</string>
-    <string name="add_order_note_confirm_discard">Dit bericht verwijderen?</string>
     <string name="add_order_note_error">Kan geen bericht toevoegen</string>
     <string name="add_order_note_added">Bericht van bestelling toegevoegd</string>
     <string name="add_order_note_menu_item">Toevoegen</string>

@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:58+0000
+Translation-Revision-Date: 2020-01-21 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="done">Selesai</string>
+    <string name="order_refunds_refund_in_progress">Pengembalian dana sedang berlangsung, harap tunggu…</string>
+    <string name="order_refunds_refund_shipping">Kembalikan dana pengiriman</string>
+    <string name="order_refunds_select_quantity">Pilih jumlah</string>
+    <string name="order_refunds_shipping_refund">Pengembalian dana pengiriman</string>
+    <string name="order_refunds_products_refund">Pengembalian dana produk</string>
+    <string name="order_refunds_item_description">%d x %s masing-masing</string>
+    <string name="order_refunds_items_selected">%d item terpilih</string>
+    <string name="order_refunds_items_select_none">Tidak memilih</string>
+    <string name="order_refunds_items_select_all">Pilih semua</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Menunggu konfirmasi pengembalian dana…</string>
+    <string name="settings_image_optimization_message">Ubah ukuran dan kompres gambar agar pengunggahan lebih cepat</string>
+    <string name="settings_image_optimization_title">Optimasi gambar</string>
+    <string name="image_source_device_camera">Ambil foto</string>
+    <string name="image_source_device_chooser">Pilih dari perangkat</string>
+    <string name="image_source_title">Pilih metode pengunggahan</string>
+    <string name="product_images_upload_channel_title">Unggahan</string>
+    <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%d dari %d</string>
+    <string name="product_images_uploading_single_notif_message">Mengunggah gambar…</string>
+    <string name="product_images_camera_error">Tidak dapat mengakses kamera</string>
+    <string name="product_image_remove_confirmation">Anda yakin ingin menghapus gambar ini?</string>
+    <string name="product_image_capture_failed">Gagal mengambil gambar</string>
+    <string name="product_image_service_busy">Harap tunggu sampai operasi saat ini selesai</string>
+    <string name="product_image_service_error_uploading">Terjadi error saat mengunggah gambar produk</string>
+    <string name="product_image_error_removing">Terjadi error saat menghapus gambar produk</string>
+    <string name="product_image_add">Tambahkan gambar produk</string>
+    <string name="product_remove_photo">Hapus foto</string>
+    <string name="product_add_photos">Tambahkan foto</string>
+    <string name="product_images_title">Foto</string>
+    <string name="product_add_image_content_description">Tambahkan gambar</string>
+    <string name="orderlist_fetching">Mengambil pesanan…</string>
+    <string name="date_timeframe_future">Mendatang</string>
+    <string name="remove">Buang</string>
+    <string name="product_variant_hidden">Tersembunyi</string>
     <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b>Sertifikat SSL&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b>Autentikasi HTTP&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
@@ -24,7 +58,6 @@ Language: id
     <string name="product_variants">Varian</string>
     <string name="product_property_edit">Sunting produk</string>
     <string name="product_variants_fetch_product_variants_error">Terjadi error saat mengambil variasi produk</string>
-    <string name="my_store_stats_reverted_message">Kami telah mengembalikan ke statistik lama. Untuk menggunakan statistik beta, harap aktifkan plugin Admin WooCommerce Admin dengan versi 0.22 atau yang lebih tinggi</string>
     <string name="login_discovery_error_option_select">Tentukan pilihan</string>
     <string name="login_troubleshooting_tips">Baca tips pemecahan masalah kami</string>
     <string name="login_with_wordpress">Masuk dengan WordPress.com</string>
@@ -100,13 +133,11 @@ Language: id
     <string name="dashboard_stats_todays_stats">Statistik Hari Ini</string>
     <string name="login_sign_in">Masuk</string>
     <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
-    <string name="login_refresh_app_progress_jetpack">Mencoba login dengan Jetpack…</string>
     <string name="login_refresh_app_continue">segarkan aplikasi untuk melanjutkan</string>
     <string name="login_not_connected_jetpack">Untuk menggunakan aplikasi ini untuk %1$s Anda perlu melakukan penyiapan plugin Jetpack dan terhubung ke akun ini. \n\nSekali penyiapan, %2$s</string>
     <string name="login_try_another_store">Coba toko lain</string>
     <string name="database_downgraded">Database di-downgrade, membuat ulang tabel dan memuat toko</string>
     <string name="loading_stores">Memuat toko</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">Tidak ditemukan penyedia</string>
     <string name="login_invalid_site_url">Masukkan alamat situs web lengkap, seperti contoh.com.</string>
     <string name="reviews_empty_message">Belum ada ulasan!</string>
     <string name="review_notifications">Ulasan</string>
@@ -117,7 +148,6 @@ Language: id
     <string name="settings_hiring">Kami membuka lowongan!</string>
     <string name="feature_requests">Permintaan fitur</string>
     <string name="orderdetail_copy_tracking_number">Salin nomor pelacakan</string>
-    <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
     <string name="login_refresh_app">segarkan aplikasi</string>
     <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
     <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
@@ -366,24 +396,15 @@ Language: id
     <string name="country_mapping_AF">Afghanistan</string>
     <string name="country_mapping_AX">Kepulauan Åland</string>
     <string name="wc_review_title">Ulasan</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">Penyedia Kustom</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Kustom</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">Silakan masukkan nama penyedia</string>
     <string name="order_shipment_tracking_empty_tracking_num">Silakan masukkan nomor pelacakan</string>
-    <string name="order_shipment_tracking_empty_provider">Silakan pilih penyedia</string>
     <string name="order_shipment_tracking_confirm_discard">Anda yakin ingin membuang pelacakan ini?</string>
     <string name="order_shipment_tracking_error">Tidak dapat menambahkan pelacakan</string>
     <string name="order_shipment_tracking_added">Pelacakan pengiriman ditambahkan</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Terjadi error saat memuat penyedia</string>
-    <string name="order_shipment_tracking_provider_list_item">Penyedia Pengiriman Terpilih</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">Penyedia Pengiriman</string>
     <string name="order_shipment_tracking_date_label">Tanggal pengiriman</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Masukkan tautan pelacakan</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">Masukkan nama penyedia</string>
     <string name="order_shipment_tracking_number_hint">Masukkan nomor Pelacakan</string>
-    <string name="order_shipment_tracking_provider_hint">Pilih penyedia</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Tautan pelacakan (opsional)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">Nama penyedia</string>
     <string name="order_shipment_tracking_number_label">Nomor pelacakan</string>
     <string name="order_shipment_tracking_carrier_label">Carrier</string>
     <string name="order_shipment_tracking_toolbar_title">Tambahkan Pelacakan</string>
@@ -692,7 +713,6 @@ Language: id
     <string name="orderstatus_failed">Gagal</string>
     <string name="orderstatus_pending">Menunggu Pembayaran</string>
     <string name="orderstatus_processing">Memproses</string>
-    <string name="add_order_note_confirm_discard">Buang catatan ini?</string>
     <string name="add_order_note_error">Tidak dapat menambahkan catatan</string>
     <string name="add_order_note_added">Catatan pesanan ditambahkan</string>
     <string name="add_order_note_menu_item">Tambahkan</string>
