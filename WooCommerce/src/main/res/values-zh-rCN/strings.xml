@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:52+0000
+Translation-Revision-Date: 2020-01-16 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="done">完成</string>
+    <string name="order_refunds_refund_in_progress">正在处理退款，请稍候…</string>
+    <string name="order_refunds_refund_shipping">退还配送费用</string>
+    <string name="order_refunds_select_quantity">选择数量</string>
+    <string name="order_refunds_shipping_refund">配送费用退款</string>
+    <string name="order_refunds_products_refund">产品退款</string>
+    <string name="order_refunds_item_description">%d x %s 每个</string>
+    <string name="order_refunds_items_selected">已选择 %d 项</string>
+    <string name="order_refunds_items_select_none">全部不选</string>
+    <string name="order_refunds_items_select_all">全选</string>
+    <string name="order_refunds_amount_refund_confirmation_message">正在等待退款确认…</string>
+    <string name="settings_image_optimization_message">调整图片大小并压缩图片以加快上传速度</string>
+    <string name="settings_image_optimization_title">图片优化</string>
+    <string name="image_source_device_camera">拍照</string>
+    <string name="image_source_device_chooser">从设备中选择</string>
+    <string name="image_source_title">选择上传方法</string>
+    <string name="product_images_upload_channel_title">上传</string>
+    <string name="product_images_uploading_multi_notif_message">正在上传图片…已完成 %d，共 %d</string>
+    <string name="product_images_uploading_single_notif_message">正在上传图片…</string>
+    <string name="product_images_camera_error">无法访问摄像头</string>
+    <string name="product_image_remove_confirmation">是否确定要删除此图片？</string>
+    <string name="product_image_capture_failed">无法捕获图片</string>
+    <string name="product_image_service_busy">请等待当前操作完成</string>
+    <string name="product_image_service_error_uploading">上传产品图片时出现错误</string>
+    <string name="product_image_error_removing">删除产品图片时出现错误</string>
+    <string name="product_image_add">添加产品图片</string>
+    <string name="product_remove_photo">删除照片</string>
+    <string name="product_add_photos">添加照片</string>
+    <string name="product_images_title">照片</string>
+    <string name="product_add_image_content_description">添加图片</string>
+    <string name="orderlist_fetching">正在获取订单…</string>
+    <string name="date_timeframe_future">即将到来</string>
+    <string name="remove">删除</string>
+    <string name="product_variant_hidden">已隐藏</string>
     <string name="login_discovery_error_generic">我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_ssl">由于 &lt;b>SSL 证书&lt;/b>的问题，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_http_auth">由于需要 &lt;b>HTTP 验证&lt;/b>，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
@@ -24,7 +58,6 @@ Language: zh_CN
     <string name="product_variants">变体</string>
     <string name="product_property_edit">编辑产品</string>
     <string name="product_variants_fetch_product_variants_error">获取产品变体时出错</string>
-    <string name="my_store_stats_reverted_message">我们已还原为旧统计信息。要使用测试版统计信息，请激活 0.22 或更高版本的 WooCommerce Admin 插件</string>
     <string name="login_discovery_error_option_select">选择一个选项</string>
     <string name="login_troubleshooting_tips">了解我们的故障排除技巧</string>
     <string name="login_with_wordpress">通过 WordPress.com 登录</string>
@@ -100,13 +133,11 @@ Language: zh_CN
     <string name="dashboard_stats_todays_stats">今日统计</string>
     <string name="login_sign_in">登录</string>
     <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
-    <string name="login_refresh_app_progress_jetpack">正在尝试使用 Jetpack 帐户登录…</string>
     <string name="login_refresh_app_continue">刷新应用程序以继续操作</string>
     <string name="login_not_connected_jetpack">要以 %1$s 的价格使用此应用程序，您需要安装 Jetpack 插件并连接至此帐户。\n\n设置完成后，%2$s</string>
     <string name="login_try_another_store">尝试其他商店</string>
     <string name="database_downgraded">数据库降级、正在重新创建表格及正在加载商店</string>
     <string name="loading_stores">正在加载商店</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">未找到提供商</string>
     <string name="login_invalid_site_url">请输入完整网址（如 example.com）。</string>
     <string name="reviews_empty_message">尚无评论！</string>
     <string name="review_notifications">评论</string>
@@ -117,7 +148,6 @@ Language: zh_CN
     <string name="settings_hiring">我们正在招贤纳士！</string>
     <string name="feature_requests">功能请求</string>
     <string name="orderdetail_copy_tracking_number">复制跟踪编号</string>
-    <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>
     <string name="login_not_woo_store">%1$s似乎不是 WooCommerce 站点。请在您的站点上安装 WooCommerce 插件，然后 %2$s</string>
     <string name="orderdetail_empty_shipping_address">未指定地址。</string>
@@ -366,24 +396,15 @@ Language: zh_CN
     <string name="country_mapping_AF">阿富汗</string>
     <string name="country_mapping_AX">奥兰群岛</string>
     <string name="wc_review_title">评论</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">自定义提供商</string>
     <string name="order_shipment_tracking_custom_provider_section_title">自定义</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">请输入提供商名称</string>
     <string name="order_shipment_tracking_empty_tracking_num">请输入跟踪编号</string>
-    <string name="order_shipment_tracking_empty_provider">请选择提供商</string>
     <string name="order_shipment_tracking_confirm_discard">是否确定要放弃此跟踪？</string>
     <string name="order_shipment_tracking_error">无法添加跟踪</string>
     <string name="order_shipment_tracking_added">配送跟踪已添加</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">获取提供商时出错</string>
-    <string name="order_shipment_tracking_provider_list_item">已选的配送服务提供商</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">配送服务提供商</string>
     <string name="order_shipment_tracking_date_label">配送日期</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">输入跟踪链接</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">输入提供商名称</string>
     <string name="order_shipment_tracking_number_hint">输入跟踪编号</string>
-    <string name="order_shipment_tracking_provider_hint">选择提供商</string>
     <string name="order_shipment_tracking_custom_provider_url_label">跟踪链接（可选）</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">提供商名称</string>
     <string name="order_shipment_tracking_number_label">跟踪编号</string>
     <string name="order_shipment_tracking_carrier_label">承运商</string>
     <string name="order_shipment_tracking_toolbar_title">添加跟踪</string>
@@ -692,7 +713,6 @@ Language: zh_CN
     <string name="orderstatus_failed">失败</string>
     <string name="orderstatus_pending">待付款</string>
     <string name="orderstatus_processing">正在处理</string>
-    <string name="add_order_note_confirm_discard">放弃此备注？</string>
     <string name="add_order_note_error">无法添加备注</string>
     <string name="add_order_note_added">已添加订单备注</string>
     <string name="add_order_note_menu_item">添加</string>

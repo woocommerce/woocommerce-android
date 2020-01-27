@@ -3,7 +3,8 @@
  
 3.4
 -----
- 
+* Fixed a problem when the order list did not sync with the server
+
 3.3
 -----
 * In rare situations, the labels on the bottom navigation bar could be cut off

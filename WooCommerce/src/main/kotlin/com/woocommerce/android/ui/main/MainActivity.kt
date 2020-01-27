@@ -717,7 +717,7 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
-                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId())
+                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId(), true)
                 else -> { /* do nothing */ }
             }
         }
@@ -729,7 +729,7 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigate(action)
     }
 
-    override fun showReviewDetail(remoteReviewId: Long, tempStatus: String?) {
+    override fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String?) {
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS
 
@@ -738,7 +738,8 @@ class MainActivity : AppUpgradeActivity(),
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 remoteReviewId,
-                tempStatus)
+                tempStatus,
+                launchedFromNotification)
         navController.navigate(action)
     }
 

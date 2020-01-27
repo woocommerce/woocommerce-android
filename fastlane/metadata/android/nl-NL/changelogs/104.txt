@@ -1,0 +1,5 @@
+3.4:
+- Er zijn kleine aanpassingen aangebracht in het ontwerp van het tabblad Mijn winkel.
+- Er is een navigatiebug gerepareerd die crashes veroorzaakte wanneer de app vanuit de achtergrond werd teruggehaald.
+- Diverse andere bugfixes uitgevoerd.
+

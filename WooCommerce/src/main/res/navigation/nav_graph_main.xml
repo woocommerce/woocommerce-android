@@ -177,6 +177,9 @@
             android:defaultValue="null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="launchedFromNotification"
+            app:argType="boolean" />
     </fragment>
     <action
         android:id="@+id/action_global_reviewDetailFragment"
