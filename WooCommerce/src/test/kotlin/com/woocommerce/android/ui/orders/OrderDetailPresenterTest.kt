@@ -87,7 +87,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any(), any(), any())
+        verify(orderDetailView).showOrderDetail(any(), any())
     }
 
     @Test
@@ -438,7 +438,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any(), any(), any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertTrue(presenter.isVirtualProduct(order))
     }
@@ -454,7 +454,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any(), any(), any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order))
     }
@@ -480,7 +480,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any(), any(), any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order))
     }
@@ -495,7 +495,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any(), any(), any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         verify(productStore, times(0)).getProductsByRemoteIds(any(), any())
         assertFalse(presenter.isVirtualProduct(order))
@@ -512,7 +512,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any(), any(), any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order))
     }
