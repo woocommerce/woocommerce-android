@@ -51,23 +51,27 @@ class OrderDetailRefundListAdapter(
         private val methodTextView: TextView = itemView.findViewById(R.id.refundsList_refundMethod)
         private val itemRoot: View = itemView.findViewById(R.id.refundsList_itemRoot)
 
-        @SuppressLint("SetTextI18n") fun bind(refund: Refund) {
+        @SuppressLint("SetTextI18n")
+        fun bind(refund: Refund) {
             amountTextView.text = "-${formatCurrency(refund.amount)}"
-
-            val method = if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
-                order.paymentMethodTitle
-            else
-                "${itemView.context.getString(R.string.order_refunds_manual_refund)} via ${order.paymentMethodTitle}"
-            val methodText = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
+            methodTextView.text = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
                     DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
-                    method
+                    getRefundMethod(refund)
             )
 
             itemRoot.setOnClickListener {
                 onRefundDetailsClicked(order.remoteId, refund.id)
             }
+        }
 
-            methodTextView.text = methodText
+        private fun getRefundMethod(refund: Refund): String {
+            val manualRefund = itemView.context.getString(R.string.order_refunds_manual_refund)
+            return if (order.paymentMethodTitle.isBlank())
+                manualRefund
+            else if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
+                order.paymentMethodTitle
+            else
+                "$manualRefund - ${order.paymentMethodTitle}"
         }
     }
 
