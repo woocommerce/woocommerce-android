@@ -94,7 +94,10 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         if (product.sku.isNotEmpty()) {
             with(product_sku) {
                 setText(product.sku)
-                setOnTextChangedListener { viewModel.updateProductInventoryDraft(sku = it.toString()) }
+                setOnTextChangedListener {
+                    viewModel.updateProductInventoryDraft(sku = it.toString())
+                    viewModel.onSkuChanged(it.toString())
+                }
             }
         }
 

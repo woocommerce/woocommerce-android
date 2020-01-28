@@ -11,17 +11,25 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ProductInventoryViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
-    private val productRepository: ProductDetailRepository,
+    private val productRepository: ProductInventoryRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
+
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
+
+    private var skuVerificationJob: Job? = null
 
     fun start(remoteProductId: Long) {
         viewState.productInventoryParameters?.let {
@@ -77,6 +85,19 @@ class ProductInventoryViewModel @AssistedInject constructor(
             }
         }
         viewState = viewState.copy(isProductUpdated = true)
+    }
+
+    fun onSkuChanged(sku: String) {
+        if (sku.length > 2) {
+            // cancel any existing verification search, then start a new one after a brief delay
+            // so we don't actually perform the fetch until the user stops typing
+            skuVerificationJob?.cancel()
+            skuVerificationJob = launch {
+                delay(SEARCH_TYPING_DELAY_MS)
+                val isSkuAvailable = productRepository.verifySkuAvailability(sku)
+                // TODO: handle sku availability error in a different commit
+            }
+        }
     }
 
     private fun loadProduct(remoteProductId: Long) {
