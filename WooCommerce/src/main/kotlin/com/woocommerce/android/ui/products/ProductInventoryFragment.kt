@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
@@ -35,6 +38,8 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
     private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
     private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
 
+    private var publishMenuItem: MenuItem? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,6 +70,12 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
 
     override fun getFragmentTitle() = getString(R.string.product_inventory)
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+        publishMenuItem = menu.findItem(R.id.menu_done)
+    }
+
     private fun initializeViewModel() {
         setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
@@ -73,6 +84,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
     private fun setupObservers(viewModel: ProductInventoryViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.productInventoryParameters?.takeIfNotEqualTo(old?.productInventoryParameters) { showProduct(new) }
+            new.isProductUpdated.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -158,6 +170,10 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
             edit_product_stock_status.visibility = View.VISIBLE
             manageStock_morePanel.collapse()
         }
+    }
+
+    private fun showUpdateProductAction(show: Boolean) {
+        view?.post { publishMenuItem?.isVisible = show }
     }
 
     override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {

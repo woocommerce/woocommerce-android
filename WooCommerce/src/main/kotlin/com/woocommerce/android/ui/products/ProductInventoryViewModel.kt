@@ -32,9 +32,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
     private var skuVerificationJob: Job? = null
 
     fun start(remoteProductId: Long) {
-        viewState.productInventoryParameters?.let {
-            loadProductInventoryParameters(it)
-        } ?: loadProduct(remoteProductId)
+        loadProduct(remoteProductId)
     }
 
     override fun onCleared() {
@@ -84,7 +82,10 @@ class ProductInventoryViewModel @AssistedInject constructor(
                 viewState.productInventoryParameters?.backOrderStatus = it
             }
         }
-        viewState = viewState.copy(isProductUpdated = true)
+        viewState.productInventoryParameters?.let {
+            val isProductUpdated = viewState.storedProductInventoryParameters?.isSameInventory(it) == false
+            viewState = viewState.copy(isProductUpdated = isProductUpdated)
+        }
     }
 
     fun onSkuChanged(sku: String) {
@@ -104,23 +105,33 @@ class ProductInventoryViewModel @AssistedInject constructor(
         launch {
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
-                loadProductInventoryParameters(ProductInventoryParameters(
+                val storedProductInventoryParameters = ProductInventoryParameters(
                         productInDb.sku, productInDb.manageStock, productInDb.stockStatus,
                         productInDb.stockQuantity, productInDb.backorderStatus, productInDb.soldIndividually
-                ))
+                )
+                val updatedProductInventoryParameters = fetchUpdatedProductInventoryParameters(storedProductInventoryParameters)
+                viewState = viewState.copy(
+                        productInventoryParameters = updatedProductInventoryParameters,
+                        storedProductInventoryParameters = storedProductInventoryParameters
+                )
             }
         }
     }
 
-    private fun loadProductInventoryParameters(productInventoryParameters: ProductInventoryParameters?) {
-        viewState = viewState.copy(productInventoryParameters = productInventoryParameters)
+    private fun fetchUpdatedProductInventoryParameters(
+        storedProductInventoryParameters: ProductInventoryParameters
+    ): ProductInventoryParameters {
+        return if (viewState.isProductUpdated) {
+            storedProductInventoryParameters.merge(viewState.productInventoryParameters)
+        } else storedProductInventoryParameters.copy()
     }
 
     @Parcelize
     data class ViewState(
-        val isProductUpdated: Boolean? = null,
+        val isProductUpdated: Boolean = false,
         val shouldShowDiscardDialog: Boolean = true,
-        val productInventoryParameters: ProductInventoryParameters? = null
+        val productInventoryParameters: ProductInventoryParameters? = null,
+        val storedProductInventoryParameters: ProductInventoryParameters? = null
     ) : Parcelable
 
     @Parcelize
@@ -131,7 +142,40 @@ class ProductInventoryViewModel @AssistedInject constructor(
         var stockQuantity: Int,
         var backOrderStatus: ProductBackorderStatus,
         var soldIndividually: Boolean
-    ) : Parcelable
+    ) : Parcelable {
+        fun merge(newInventoryParameters: ProductInventoryParameters?): ProductInventoryParameters {
+            return newInventoryParameters?.let { updatedInventory ->
+                this.copy().apply {
+                    if (sku != updatedInventory.sku) {
+                        sku = updatedInventory.sku
+                    }
+                    if (manageStock != updatedInventory.manageStock) {
+                        manageStock = updatedInventory.manageStock
+                    }
+                    if (stockStatus != updatedInventory.stockStatus) {
+                        stockStatus = updatedInventory.stockStatus
+                    }
+                    if (stockQuantity != updatedInventory.stockQuantity) {
+                        stockQuantity = updatedInventory.stockQuantity
+                    }
+                    if (backOrderStatus != updatedInventory.backOrderStatus) {
+                        backOrderStatus = updatedInventory.backOrderStatus
+                    }
+                    if (soldIndividually != updatedInventory.soldIndividually) {
+                        soldIndividually = updatedInventory.soldIndividually
+                    }
+                }
+            } ?: this.copy()
+        }
+        fun isSameInventory(productInventoryParameters: ProductInventoryParameters): Boolean {
+            return sku == productInventoryParameters.sku &&
+                    stockQuantity == productInventoryParameters.stockQuantity &&
+                    stockStatus == productInventoryParameters.stockStatus &&
+                    manageStock == productInventoryParameters.manageStock &&
+                    backOrderStatus == productInventoryParameters.backOrderStatus &&
+                    soldIndividually == productInventoryParameters.soldIndividually
+        }
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductInventoryViewModel>
