@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_TAB_CHANGED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
@@ -61,9 +60,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlin.math.min
 
 @OpenClassOnDebug
@@ -107,7 +103,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     private var refundByItemsState by refundByItemsStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
     private var productsRefundState by productsRefundLiveData
-    private var refundContinuation: Continuation<Boolean>? = null
 
     private val order: Order
     private val refunds: List<Refund>
@@ -289,19 +284,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     fun onRefundConfirmed(wasConfirmed: Boolean) {
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
-                triggerEvent(
-                        ShowSnackbar(
-                                R.string.order_refunds_amount_refund_progress_message,
-                                arrayOf(formatCurrency(commonState.refundTotal)),
-                                undoAction = {
-                                    AnalyticsTracker.track(
-                                            CREATE_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
-                                            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
-                                    )
-                                    refundContinuation?.resume(true)
-                                })
-                )
-
                 isRefundInProgress = true
 
                 launch {
@@ -309,18 +291,15 @@ class IssueRefundViewModel @AssistedInject constructor(
                             isFormEnabled = false
                     )
 
-                    // pause here until the snackbar is dismissed to allow for undo action
-                    val wasRefundCanceled = waitForCancellation()
-                    if (!wasRefundCanceled) {
-                        triggerEvent(
-                                ShowSnackbar(
-                                        R.string.order_refunds_amount_refund_confirmation_message,
-                                        arrayOf(formatCurrency(commonState.refundTotal))
-                                )
-                        )
+                    triggerEvent(
+                            ShowSnackbar(
+                                    R.string.order_refunds_amount_refund_progress_message,
+                                    arrayOf(formatCurrency(commonState.refundTotal))
+                            )
+                    )
 
-                        AnalyticsTracker.track(
-                                REFUND_CREATE, mapOf(
+                    AnalyticsTracker.track(
+                            REFUND_CREATE, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                                 AnalyticsTracker.KEY_REFUND_IS_FULL to
                                         (commonState.refundTotal isEqualTo maxRefund).toString(),
@@ -328,65 +307,65 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
                                 AnalyticsTracker.KEY_REFUND_AMOUNT to commonState.refundTotal.toString()
                         )
+                    )
+
+                    val resultCall = async(dispatchers.io) {
+                        return@async when (commonState.refundType) {
+                            ITEMS -> {
+                                refundStore.createItemsRefund(
+                                        selectedSite.get(),
+                                        order.remoteId,
+                                        refundSummaryState.refundReason ?: "",
+                                        true,
+                                        gateway.supportsRefunds,
+                                        refundItems.value?.map { it.toDataModel() }
+                                                ?: emptyList()
+                                )
+                            }
+                            AMOUNT -> {
+                                refundStore.createAmountRefund(
+                                        selectedSite.get(),
+                                        order.remoteId,
+                                        commonState.refundTotal,
+                                        refundSummaryState.refundReason ?: "",
+                                        gateway.supportsRefunds
+                                )
+                            }
+                        }
+                    }
+
+                    val result = resultCall.await()
+                    if (result.isError) {
+                        AnalyticsTracker.track(
+                                REFUND_CREATE_FAILED, mapOf(
+                                AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
+                                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                                AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
+                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+                        )
                         )
 
-                        val resultCall = async(dispatchers.io) {
-                            return@async when (commonState.refundType) {
-                                ITEMS -> {
-                                    refundStore.createItemsRefund(
-                                            selectedSite.get(),
-                                            order.remoteId,
-                                            refundSummaryState.refundReason ?: "",
-                                            true,
-                                            gateway.supportsRefunds,
-                                            refundItems.value?.map { it.toDataModel() }
-                                                    ?: emptyList()
-                                    )
-                                }
-                                AMOUNT -> {
-                                    refundStore.createAmountRefund(
-                                            selectedSite.get(),
-                                            order.remoteId,
-                                            commonState.refundTotal,
-                                            refundSummaryState.refundReason ?: "",
-                                            gateway.supportsRefunds
-                                    )
-                                }
+                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+                    } else {
+                        AnalyticsTracker.track(
+                                REFUND_CREATE_SUCCESS, mapOf(
+                                AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
+                                AnalyticsTracker.KEY_ID to result.model?.id
+                        )
+                        )
+
+                        refundSummaryState.refundReason?.let { reason ->
+                            if (reason.isNotBlank()) {
+                                noteRepository.createOrderNote(order.identifier, reason, false)
                             }
                         }
 
-                        val result = resultCall.await()
-                        if (result.isError) {
-                            AnalyticsTracker.track(
-                                    REFUND_CREATE_FAILED, mapOf(
-                                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
-                                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                                    AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-                                    AnalyticsTracker.KEY_ERROR_DESC to result.error.message
-                            )
-                            )
-
-                            triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
-                        } else {
-                            AnalyticsTracker.track(
-                                    REFUND_CREATE_SUCCESS, mapOf(
-                                    AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
-                                    AnalyticsTracker.KEY_ID to result.model?.id
-                            )
-                            )
-
-                            refundSummaryState.refundReason?.let { reason ->
-                                if (reason.isNotBlank()) {
-                                    noteRepository.createOrderNote(order.identifier, reason, false)
-                                }
-                            }
-
-                            triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
-                            triggerEvent(Exit)
-                        }
-
-                        isRefundInProgress = false
+                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
+                        triggerEvent(Exit)
                     }
+
+                    isRefundInProgress = false
+
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
                 }
             } else {
@@ -412,10 +391,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                 resourceProvider.getString(R.string.order_refunds_confirmation),
                 resourceProvider.getString(R.string.order_refunds_refund))
         )
-    }
-
-    fun onProceedWithRefund() {
-        refundContinuation?.resume(false)
     }
 
     fun onRefundQuantityTapped(uniqueId: Long) {
@@ -538,14 +513,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                     selectedItems
                 )
         )
-    }
-
-    private suspend fun waitForCancellation(): Boolean {
-        val wasRefundCanceled = suspendCoroutine<Boolean> {
-            refundContinuation = it
-        }
-        refundContinuation = null
-        return wasRefundCanceled
     }
 
     private fun validateInput(): InputValidationState {

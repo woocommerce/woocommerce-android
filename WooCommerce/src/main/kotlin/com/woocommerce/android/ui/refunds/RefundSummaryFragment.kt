@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -52,23 +51,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> {
-                    if (event.undoAction == null) {
-                        uiMessageResolver.getSnack(event.message, *event.args).show()
-                    } else {
-                        val snackbar = uiMessageResolver.getUndoSnack(
-                                event.message,
-                                *event.args,
-                                actionListener = View.OnClickListener { event.undoAction.invoke() }
-                        )
-                        snackbar.addCallback(object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                viewModel.onProceedWithRefund()
-                            }
-                        })
-                        snackbar.show()
-                    }
-                }
+                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is Exit -> {
                     requireActivity().navigateBackWithResult(
                             RequestCodes.ORDER_REFUND,
