@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-11 00:54:04+0000
+Translation-Revision-Date: 2020-01-21 00:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">Введите текст</string>
+    <string name="product_detail_title_hint">Введите заголовок</string>
+    <string name="product_detail_update_product_success">Продукт обновлен</string>
+    <string name="product_detail_update_product_error">Ошибка обновления продукта</string>
+    <string name="product_update_dialog_message">Пожалуйста, подождите…</string>
+    <string name="product_update_dialog_title">Обновление продукта</string>
+    <string name="product_description_empty">Опишите продукт</string>
+    <string name="product_description">Описание</string>
+    <string name="product_edit_description">Редактировать описание</string>
+    <string name="product_description_hint">Начните писать…</string>
+    <string name="product_variant_list_empty">Добавьте варианты из Интернета, например размер и цвет. Эти варианты будут показаны на странице продукта на вашем сайте</string>
+    <string name="discard_message">Отменить изменения?</string>
+    <string name="update">Обновить</string>
+    <string name="done">Готово</string>
+    <string name="order_refunds_refund_in_progress">Идет возврат средств, подождите…</string>
+    <string name="order_refunds_refund_shipping">Верните средства за доставку</string>
+    <string name="order_refunds_select_quantity">Выбрать количество</string>
+    <string name="order_refunds_shipping_refund">Возврат средств за доставку</string>
+    <string name="order_refunds_products_refund">Возврат средств за продукты</string>
+    <string name="order_refunds_item_description">%d x %s каждый</string>
+    <string name="order_refunds_items_selected">Выбрано элементов: %d</string>
+    <string name="order_refunds_items_select_none">Ничего не выбирать</string>
+    <string name="order_refunds_items_select_all">Выбрать все</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Ожидается подтверждение возврата средств…</string>
+    <string name="settings_image_optimization_message">Изменять размер и сжимать изображения для ускорения загрузки</string>
+    <string name="settings_image_optimization_title">Оптимизация изображений</string>
+    <string name="image_source_device_camera">Сделать фото</string>
+    <string name="image_source_device_chooser">Выбрать с устройства</string>
+    <string name="image_source_title">Выберите способ загрузки</string>
+    <string name="product_images_upload_channel_title">Загрузки</string>
+    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%d из %d</string>
+    <string name="product_images_uploading_single_notif_message">Загрузка изображения…</string>
+    <string name="product_images_camera_error">Нет доступа к камере</string>
+    <string name="product_image_remove_confirmation">Вы уверены, что хотите удалить это изображение?</string>
+    <string name="product_image_capture_failed">Не удалось получить изображение</string>
+    <string name="product_image_service_busy">Дождитесь завершения текущей операции</string>
+    <string name="product_image_service_error_uploading">Ошибка при загрузке изображения продукта</string>
+    <string name="product_image_error_removing">Ошибка при удалении изображения продукта</string>
+    <string name="product_image_add">Добавить изображение продукта</string>
+    <string name="product_remove_photo">Удалить фото</string>
+    <string name="product_add_photos">Добавить фото</string>
+    <string name="product_images_title">Фотографии</string>
+    <string name="product_add_image_content_description">Добавить изображение</string>
+    <string name="orderlist_fetching">Получение заказов…</string>
+    <string name="date_timeframe_future">Ближайшие</string>
+    <string name="remove">Удалить</string>
+    <string name="product_variant_hidden">Скрыто</string>
     <string name="login_discovery_error_generic">Не удалось получить доступ к вашему сайту. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b>сертификатом SSL&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b>проверку подлинности HTTP&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
@@ -24,7 +71,6 @@ Language: ru
     <string name="product_variants">Варианты</string>
     <string name="product_property_edit">Изменить продукт</string>
     <string name="product_variants_fetch_product_variants_error">Ошибка при получении вариантов продукта</string>
-    <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин администратора WooCommerce 0.22 или более поздней версии.</string>
     <string name="login_discovery_error_option_select">Выберите вариант.</string>
     <string name="login_troubleshooting_tips">Просмотрите советы по устранению неполадок</string>
     <string name="login_with_wordpress">Войти с помощью WordPress.com</string>
@@ -106,7 +152,7 @@ Language: ru
     <string name="login_try_another_store">Попробуйте другой магазин</string>
     <string name="database_downgraded">База данных переведена на более раннюю версию, идет повторное создание таблиц и загрузка магазинов</string>
     <string name="loading_stores">Загрузка магазинов</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">Поставщики услуг не найдены</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Перевозчики не найдены</string>
     <string name="login_invalid_site_url">Введите адрес сайта полностью, например example.com.</string>
     <string name="reviews_empty_message">Нет обзоров!</string>
     <string name="review_notifications">Обзоры</string>
@@ -366,24 +412,24 @@ Language: ru
     <string name="country_mapping_AF">Афганистан</string>
     <string name="country_mapping_AX">Аландские острова</string>
     <string name="wc_review_title">Обзор</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">Другая служба</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Другой перевозчик</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Другая</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">Введите название службы</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Пожалуйста, введите название компании-перевозчика</string>
     <string name="order_shipment_tracking_empty_tracking_num">Введите номер отслеживания</string>
-    <string name="order_shipment_tracking_empty_provider">Выберите службу</string>
+    <string name="order_shipment_tracking_empty_provider">Пожалуйста, выберите перевозчика</string>
     <string name="order_shipment_tracking_confirm_discard">Отменить отслеживание?</string>
     <string name="order_shipment_tracking_error">Не удалось добавить отслеживание</string>
     <string name="order_shipment_tracking_added">Отслеживание посылки добавлено</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Ошибка получения данных о службах</string>
-    <string name="order_shipment_tracking_provider_list_item">Выберите службу доставки</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">Службы доставки</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Ошибка получения данных о перевозчиках</string>
+    <string name="order_shipment_tracking_provider_list_item">Выбранный перевозчик</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Перевозчики</string>
     <string name="order_shipment_tracking_date_label">Дата отправки</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Введите ссылку на отслеживание</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">Введите название службы доставки</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Введите название компании-перевозчика</string>
     <string name="order_shipment_tracking_number_hint">Введите номер отслеживания</string>
-    <string name="order_shipment_tracking_provider_hint">Выберите службу доставки</string>
+    <string name="order_shipment_tracking_provider_hint">Выберите перевозчика</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Ссылка на отслеживание (не обязательно)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">Название службы доставки</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Название компании-перевозчика</string>
     <string name="order_shipment_tracking_number_label">Номер отслеживания</string>
     <string name="order_shipment_tracking_carrier_label">Компания-перевозчик</string>
     <string name="order_shipment_tracking_toolbar_title">Добавить отслеживание</string>
@@ -692,7 +738,6 @@ Language: ru
     <string name="orderstatus_failed">Сбой</string>
     <string name="orderstatus_pending">В ожидании оплаты</string>
     <string name="orderstatus_processing">В обработке</string>
-    <string name="add_order_note_confirm_discard">Удалить это примечание?</string>
     <string name="add_order_note_error">Не удалось добавить примечание</string>
     <string name="add_order_note_added">Добавлено примечание к заказу</string>
     <string name="add_order_note_menu_item">Добавить</string>

@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:52+0000
+Translation-Revision-Date: 2020-01-16 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="done">Klart</string>
+    <string name="order_refunds_refund_in_progress">Återbetalning pågår, vänta …</string>
+    <string name="order_refunds_refund_shipping">Återbetala frakt</string>
+    <string name="order_refunds_select_quantity">Välj kvantitet</string>
+    <string name="order_refunds_shipping_refund">Fraktåterbetalning</string>
+    <string name="order_refunds_products_refund">Produktåterbetalning</string>
+    <string name="order_refunds_item_description">%d x %s vardera</string>
+    <string name="order_refunds_items_selected">%d artiklar valda</string>
+    <string name="order_refunds_items_select_none">Välj ingen</string>
+    <string name="order_refunds_items_select_all">Välj alla</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Väntar på återbetalningsbekräftelse …</string>
+    <string name="settings_image_optimization_message">Ändra storlek på och komprimera bilder för snabbare uppladdning</string>
+    <string name="settings_image_optimization_title">Bildoptimering</string>
+    <string name="image_source_device_camera">Ta ett foto</string>
+    <string name="image_source_device_chooser">Välj från enheten</string>
+    <string name="image_source_title">Välj en uppladdningsmetod</string>
+    <string name="product_images_upload_channel_title">Uppladdningar</string>
+    <string name="product_images_uploading_multi_notif_message">Laddar upp bilder…%d av %d</string>
+    <string name="product_images_uploading_single_notif_message">Laddar upp bild…</string>
+    <string name="product_images_camera_error">Det går inte att komma åt kameran</string>
+    <string name="product_image_remove_confirmation">Är du säker på att du vill ta bort den här bilden?</string>
+    <string name="product_image_capture_failed">Det gick inte att ta bilden</string>
+    <string name="product_image_service_busy">Vänta tills den aktuella åtgärden har slutförts</string>
+    <string name="product_image_service_error_uploading">Det gick inte att ladda upp produktbilden</string>
+    <string name="product_image_error_removing">Det gick inte att ta bort produktbilden</string>
+    <string name="product_image_add">Lägg till en produktbild</string>
+    <string name="product_remove_photo">Ta bort foto</string>
+    <string name="product_add_photos">Lägg till foton</string>
+    <string name="product_images_title">Foton</string>
+    <string name="product_add_image_content_description">Lägg till bild</string>
+    <string name="orderlist_fetching">Hämtar ordrar…</string>
+    <string name="date_timeframe_future">Kommande</string>
+    <string name="remove">Ta bort</string>
+    <string name="product_variant_hidden">Dold</string>
     <string name="login_discovery_error_generic">Vi kunde inte komma åt din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b>SSL-certifikatet&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b>HTTP-autentisering&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
@@ -24,7 +58,6 @@ Language: sv_SE
     <string name="product_variants">Varianter</string>
     <string name="product_property_edit">Redigera produkt</string>
     <string name="product_variants_fetch_product_variants_error">Ett fel uppstod när produktvarianterna skulle hämtas</string>
-    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.22 eller senare</string>
     <string name="login_discovery_error_option_select">Välj ett alternativ</string>
     <string name="login_troubleshooting_tips">Läs våra felsökningstips</string>
     <string name="login_with_wordpress">Logga in med WordPress.com</string>
@@ -100,13 +133,11 @@ Language: sv_SE
     <string name="dashboard_stats_todays_stats">Dagens statistik</string>
     <string name="login_sign_in">Logga in</string>
     <string name="login_jetpack_installed_sign_in">Har du redan Jetpack? %1$s</string>
-    <string name="login_refresh_app_progress_jetpack">Försöker logga in med Jetpack…</string>
     <string name="login_refresh_app_continue">uppdatera appen för att fortsätta</string>
     <string name="login_not_connected_jetpack">För att använda den här appen för %1$s behöver du installera Jetpack-tillägget och ansluta det till det här kontot. \n\nEfter installationen %2$s</string>
     <string name="login_try_another_store">Försök med en annan butik</string>
     <string name="database_downgraded">Databasen har nedgraderats, återskapar tabeller och läser in butiker</string>
     <string name="loading_stores">Läser in butiker</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">Inga leverantörer hittades</string>
     <string name="login_invalid_site_url">Ange en fullständig webbplatsadress som example.com.</string>
     <string name="reviews_empty_message">Inga omdömen än!</string>
     <string name="review_notifications">Omdömen</string>
@@ -117,7 +148,6 @@ Language: sv_SE
     <string name="settings_hiring">Vi letar efter medarbetare!</string>
     <string name="feature_requests">Funktionsbegäran</string>
     <string name="orderdetail_copy_tracking_number">Kopiera spårningsnummer</string>
-    <string name="login_refresh_app_progress">Kollar efter WooCommerce…</string>
     <string name="login_refresh_app">uppdatera appen</string>
     <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-pluginet på din webbplats och därefter %2$s</string>
     <string name="orderdetail_empty_shipping_address">Ingen adress angiven.</string>
@@ -366,24 +396,15 @@ Language: sv_SE
     <string name="country_mapping_AF">Afghanistan</string>
     <string name="country_mapping_AX">Åland</string>
     <string name="wc_review_title">Recension</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">Anpassad leverantör</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Anpassad</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">Vänligen ange ett leverantörnamn</string>
     <string name="order_shipment_tracking_empty_tracking_num">Ange ett spårningsnummer</string>
-    <string name="order_shipment_tracking_empty_provider">Välj en leverantör</string>
     <string name="order_shipment_tracking_confirm_discard">Vill du ta bort den här spårningen?</string>
     <string name="order_shipment_tracking_error">Det gick inte att lägga till spårning</string>
     <string name="order_shipment_tracking_added">Spårning av försändelse har lagts till</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Fel vid hämtning av leverantörer</string>
-    <string name="order_shipment_tracking_provider_list_item">Vald fraktleverantör</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">Transportleverantörer</string>
     <string name="order_shipment_tracking_date_label">Datum skickat</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Ange spårningslänk</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">Ange leverantörens namn</string>
     <string name="order_shipment_tracking_number_hint">Ange spårningsnummer</string>
-    <string name="order_shipment_tracking_provider_hint">Välj leverantör</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Spårningslänk (tillval)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">Namn på leverantör</string>
     <string name="order_shipment_tracking_number_label">Spårningsnummer</string>
     <string name="order_shipment_tracking_carrier_label">Fraktbolag</string>
     <string name="order_shipment_tracking_toolbar_title">Lägg till spårning</string>
@@ -692,7 +713,6 @@ Language: sv_SE
     <string name="orderstatus_failed">Misslyckades</string>
     <string name="orderstatus_pending">Inväntar betalning</string>
     <string name="orderstatus_processing">Behandlas</string>
-    <string name="add_order_note_confirm_discard">Kasta den här noteringen?</string>
     <string name="add_order_note_error">Kunde inte lägga till notering</string>
     <string name="add_order_note_added">Ordernotering tillagd</string>
     <string name="add_order_note_menu_item">Lägg till</string>

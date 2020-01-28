@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:55:01+0000
+Translation-Revision-Date: 2020-01-22 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">Introduce texto</string>
+    <string name="product_detail_title_hint">Introduce el título</string>
+    <string name="product_detail_update_product_success">Se ha actualizado el producto</string>
+    <string name="product_detail_update_product_error">Se ha producido un error al actualizar el producto</string>
+    <string name="product_update_dialog_message">Por favor, espera…</string>
+    <string name="product_update_dialog_title">Actualizando el producto</string>
+    <string name="product_description_empty">Describe tu producto</string>
+    <string name="product_description">Descripción</string>
+    <string name="product_edit_description">Editar descripción</string>
+    <string name="product_description_hint">Empieza a escribir…</string>
+    <string name="product_variant_list_empty">Añade opciones como el tamaño y el color desde la Web. Se mostrarán como opciones en la página de producto de tu sitio</string>
+    <string name="discard_message">¿Quieres descartar los cambios?</string>
+    <string name="update">Actualizar</string>
+    <string name="done">Listo</string>
+    <string name="order_refunds_refund_in_progress">Reembolso en curso. Espera…</string>
+    <string name="order_refunds_refund_shipping">Reembolsar envío</string>
+    <string name="order_refunds_select_quantity">Seleccionar cantidad</string>
+    <string name="order_refunds_shipping_refund">Reembolso del envío</string>
+    <string name="order_refunds_products_refund">Reembolso de productos</string>
+    <string name="order_refunds_item_description">%d x %s cada uno</string>
+    <string name="order_refunds_items_selected">%d elementos seleccionados</string>
+    <string name="order_refunds_items_select_none">Borrar selección</string>
+    <string name="order_refunds_items_select_all">Seleccionar todo</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Esperando confirmación de reembolso…</string>
+    <string name="settings_image_optimization_message">Cambia el tamaño y comprime imágenes para que se carguen más rápido</string>
+    <string name="settings_image_optimization_title">Optimización de imagen</string>
+    <string name="image_source_device_camera">Hacer una foto</string>
+    <string name="image_source_device_chooser">Elegir del dispositivo</string>
+    <string name="image_source_title">Elegir un método de carga</string>
+    <string name="product_images_upload_channel_title">Cargas</string>
+    <string name="product_images_uploading_multi_notif_message">Cargando imágenes…%d de %d</string>
+    <string name="product_images_uploading_single_notif_message">Cargando imagen…</string>
+    <string name="product_images_camera_error">No se puede acceder a la cámara</string>
+    <string name="product_image_remove_confirmation">¿Seguro que quieres eliminar esta imagen?</string>
+    <string name="product_image_capture_failed">No se ha podido capturar la imagen</string>
+    <string name="product_image_service_busy">Espera a que finalice la operación actual</string>
+    <string name="product_image_service_error_uploading">Error al cargar la imagen de producto</string>
+    <string name="product_image_error_removing">Error al recuperar la imagen de producto</string>
+    <string name="product_image_add">Añadir una imagen de producto</string>
+    <string name="product_remove_photo">Eliminar foto</string>
+    <string name="product_add_photos">Añadir fotos</string>
+    <string name="product_images_title">Fotos</string>
+    <string name="product_add_image_content_description">Añadir imagen</string>
+    <string name="orderlist_fetching">Obteniendo pedidos…</string>
+    <string name="date_timeframe_future">Próximo</string>
+    <string name="remove">Eliminar</string>
+    <string name="product_variant_hidden">Oculto</string>
     <string name="login_discovery_error_generic">No hemos podido acceder a tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_ssl">No hemos podido acceder a tu sitio debido a un problema con el &lt;b>Certificado SSL&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_http_auth">No hemos podido acceder a tu sitio porque requiere &lt;b>Autentificación con HTTP&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
@@ -24,7 +71,6 @@ Language: es
     <string name="product_variants">Variantes</string>
     <string name="product_property_edit">Editar producto</string>
     <string name="product_variants_fetch_product_variants_error">Error al obtener las reseñas de los productos</string>
-    <string name="my_store_stats_reverted_message">Hemos cambiado a las antiguas estadísticas. Para usar las estadísticas beta, activa el plugin Administración de WooCommerce con la versión 0.22 o una posterior</string>
     <string name="login_discovery_error_option_select">Elige una opción</string>
     <string name="login_troubleshooting_tips">Lee nuestros consejos de solución de problemas</string>
     <string name="login_with_wordpress">Inicia sesión con WordPress.com</string>
@@ -106,7 +152,7 @@ Language: es
     <string name="login_try_another_store">Probar con otra tienda</string>
     <string name="database_downgraded">La base de datos se ha cambiado a una versión inferior, reproduciendo tablas y cargando tiendas</string>
     <string name="loading_stores">Cargando tiendas</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">No se han encontrado proveedores</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">No se han encontrado operadores</string>
     <string name="login_invalid_site_url">Introduce una dirección de sitio web completa, como ejemplo.com.</string>
     <string name="reviews_empty_message">Aún no has recibido ninguna reseña</string>
     <string name="review_notifications">Reseñas</string>
@@ -117,7 +163,7 @@ Language: es
     <string name="settings_hiring">¡Buscamos personal!</string>
     <string name="feature_requests">Solicitud de función</string>
     <string name="orderdetail_copy_tracking_number">Copiar número de seguimiento</string>
-    <string name="login_refresh_app_progress">Comprobando eCommerce…</string>
+    <string name="login_refresh_app_progress">Comprobando WooCommerce…</string>
     <string name="login_refresh_app">actualizar la aplicación</string>
     <string name="login_not_woo_store">Parece que %1$s no es un sitio de WooCommerce. Instala el plugin de WooCommerce en tu sitio y luego %2$s</string>
     <string name="orderdetail_empty_shipping_address">No se ha indicado ninguna dirección.</string>
@@ -366,24 +412,24 @@ Language: es
     <string name="country_mapping_AF">Afganistán</string>
     <string name="country_mapping_AX">Islas Aland</string>
     <string name="wc_review_title">Crítica</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">Personalizar proveedor</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Operador personalizado</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Personalizado</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">Introduce un nombre de proveedor</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Introduce el nombre de un operador</string>
     <string name="order_shipment_tracking_empty_tracking_num">Introduce un número de seguimiento</string>
-    <string name="order_shipment_tracking_empty_provider">Elige un proveedor</string>
+    <string name="order_shipment_tracking_empty_provider">Elige un operador</string>
     <string name="order_shipment_tracking_confirm_discard">¿Estás seguro de que quieres descartar este seguimiento?</string>
     <string name="order_shipment_tracking_error">No se ha podido añadir el seguimiento</string>
     <string name="order_shipment_tracking_added">Se ha añadido el seguimiento de envíos</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Error al obtener los proveedores</string>
-    <string name="order_shipment_tracking_provider_list_item">Proveedor de envío elegido</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">Proveedores de envío</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Se ha producido un error al obtener los operadores</string>
+    <string name="order_shipment_tracking_provider_list_item">Operador de envío elegido</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Operadores de envío</string>
     <string name="order_shipment_tracking_date_label">Fecha de envío</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Introducir enlace de seguimiento</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">Introducir nombre de proveedor</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Introduce el nombre del operador</string>
     <string name="order_shipment_tracking_number_hint">Introduce el número de seguimiento</string>
-    <string name="order_shipment_tracking_provider_hint">Elige un proveedor</string>
+    <string name="order_shipment_tracking_provider_hint">Elige operador</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Enlace de seguimiento (opcional)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">Nombre de proveedor</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Nombre del operador</string>
     <string name="order_shipment_tracking_number_label">Número de seguimiento</string>
     <string name="order_shipment_tracking_carrier_label">Empresa de transportes</string>
     <string name="order_shipment_tracking_toolbar_title">Añadir seguimiento</string>
@@ -692,7 +738,6 @@ Language: es
     <string name="orderstatus_failed">Se ha producido un error</string>
     <string name="orderstatus_pending">Pago pendiente</string>
     <string name="orderstatus_processing">Se está procesando</string>
-    <string name="add_order_note_confirm_discard">¿Quieres descartar esta nota?</string>
     <string name="add_order_note_error">No se ha podido añadir la nota</string>
     <string name="add_order_note_added">Se ha añadido la nota del pedido</string>
     <string name="add_order_note_menu_item">Añadir</string>
