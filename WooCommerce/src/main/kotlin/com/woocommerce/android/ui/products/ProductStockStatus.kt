@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.products
 
+import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 
 sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
     object InStock : ProductStockStatus(R.string.product_stock_status_instock)
@@ -31,6 +33,12 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
                 else -> Custom(value)
             }
         }
+
+        fun toStringResource(value: String) = fromString(value).stringResource
+
+        fun toMap(context: Context) = CoreProductStockStatus.values()
+                .map { it.value to context.getString(fromString(it.value).stringResource) }
+                .toMap()
 
         @JvmField
         val CREATOR = object : Creator<ProductStockStatus > {

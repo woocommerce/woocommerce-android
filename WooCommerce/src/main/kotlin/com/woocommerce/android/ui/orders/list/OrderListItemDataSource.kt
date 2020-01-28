@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier.SectionHea
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
+import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -114,7 +115,7 @@ class OrderListItemDataSource(
             // Check if future-dated orders should be excluded from the results list.
             if (listDescriptor.excludeFutureOrders) {
                 val currentUtcDate = DateTimeUtils.nowUTC()
-                if (date.after(currentUtcDate)) {
+                if (DateUtils.isAfterDate(currentUtcDate, date)) {
                     // This order is dated for the future so skip adding it to the list
                     return@forEach
                 }

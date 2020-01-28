@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -73,7 +74,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        ChromeCustomTabUtils.connect(this, HELP_CENTER_URL)
+        ChromeCustomTabUtils.connect(this, AppUrls.APP_HELP_CENTER)
     }
 
     override fun onStop() {
@@ -141,7 +142,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showZendeskFaq() {
         AnalyticsTracker.track(Stat.SUPPORT_HELP_CENTER_VIEWED)
-        ChromeCustomTabUtils.launchUrl(this, HELP_CENTER_URL)
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.APP_HELP_CENTER)
         /* TODO: for now we simply link to the online woo mobile support documentation, but we should show the
         Zendesk FAQ once it's ready
         zendeskHelper
@@ -178,7 +179,6 @@ class HelpActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
-        private const val HELP_CENTER_URL = "https://docs.woocommerce.com/document/android/"
 
         @JvmStatic
         fun createIntent(

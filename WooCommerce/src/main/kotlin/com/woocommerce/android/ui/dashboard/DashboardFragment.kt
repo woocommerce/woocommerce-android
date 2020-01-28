@@ -18,7 +18,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -97,8 +99,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         presenter.takeView(this)
-
-        empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         dashboard_stats.initView(
                 dashboard_stats.activeGranularity,
@@ -205,7 +205,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         if (granularity == StatsGranularity.DAYS) {
-            empty_view.updateVisitorCount(visitorStats.values.sum())
+            empty_stats_view.updateVisitorCount(visitorStats.values.sum())
         }
     }
 
@@ -216,7 +216,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued() == true) {
+        if (errorSnackbar?.isShownOrQueued == true) {
             return
         }
         errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
@@ -303,11 +303,15 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showEmptyView(show: Boolean) {
         if (show) {
-            empty_view.show(R.string.waiting_for_customers, showStats = true)
+            empty_view_container.show()
+            empty_view.show(EmptyViewType.DASHBOARD) {
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
+            }
             dashboard_view.hide()
         } else {
+            empty_view_container.hide()
             dashboard_view.show()
-            empty_view.hide()
         }
     }
 

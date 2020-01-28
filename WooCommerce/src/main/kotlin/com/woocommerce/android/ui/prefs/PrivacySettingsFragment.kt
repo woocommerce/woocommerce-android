@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED
@@ -21,8 +22,6 @@ import javax.inject.Inject
 class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySettingsContract.View {
     companion object {
         const val TAG = "privacy-settings"
-        private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
-        private const val URL_COOKIE_POLICY = "https://www.automattic.com/cookies"
     }
 
     @Inject lateinit var presenter: PrivacySettingsContract.Presenter
@@ -83,7 +82,11 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
 
     override fun onStart() {
         super.onStart()
-        ChromeCustomTabUtils.connect(activity as Context, URL_PRIVACY_POLICY, arrayOf(URL_COOKIE_POLICY))
+        ChromeCustomTabUtils.connect(
+                activity as Context,
+                AppUrls.AUTOMATTIC_PRIVACY_POLICY,
+                arrayOf(AppUrls.AUTOMATTIC_COOKIE_POLICY)
+        )
     }
 
     override fun onStop() {
@@ -92,10 +95,10 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
     }
 
     override fun showCookiePolicy() {
-        ChromeCustomTabUtils.launchUrl(activity as Context, URL_COOKIE_POLICY)
+        ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_COOKIE_POLICY)
     }
 
     override fun showPrivacyPolicy() {
-        ChromeCustomTabUtils.launchUrl(activity as Context, URL_PRIVACY_POLICY)
+        ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
     }
 }

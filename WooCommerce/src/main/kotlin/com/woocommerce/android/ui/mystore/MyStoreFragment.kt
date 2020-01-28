@@ -19,7 +19,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
@@ -108,8 +110,6 @@ class MyStoreFragment : TopLevelFragment(),
 
         presenter.takeView(this)
 
-        empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-
         // Create tabs and add to appbar
         StatsGranularity.values().forEach { granularity ->
             val tab = tabLayout.newTab().apply {
@@ -123,7 +123,6 @@ class MyStoreFragment : TopLevelFragment(),
                 tab.select()
             }
         }
-        addTabLayoutToAppBar(tabLayout)
 
         my_store_date_bar.initView()
         my_store_stats.initView(
@@ -153,6 +152,11 @@ class MyStoreFragment : TopLevelFragment(),
             isStatsRefreshed = true
             refreshMyStoreStats(forced = this.isRefreshPending)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        addTabLayoutToAppBar(tabLayout)
     }
 
     override fun onResume() {
@@ -237,6 +241,9 @@ class MyStoreFragment : TopLevelFragment(),
     override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_stats.showVisitorStats(visitorStats)
+            if (granularity == StatsGranularity.DAYS) {
+                empty_stats_view.updateVisitorCount(visitorStats.values.sum())
+            }
         }
     }
 
@@ -328,7 +335,24 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
+        val dashboardVisibility: Int
+        if (show) {
+            dashboardVisibility = View.GONE
+            empty_view.show(EmptyViewType.DASHBOARD) {
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
+            }
+            empty_stats_view.visibility = View.VISIBLE
+        } else {
+            empty_view.hide()
+            dashboardVisibility = View.VISIBLE
+            empty_stats_view.visibility = View.GONE
+        }
+
+        tabLayout.visibility = dashboardVisibility
+        my_store_date_bar.visibility = dashboardVisibility
+        my_store_stats.visibility = dashboardVisibility
+        my_store_top_earners.visibility = dashboardVisibility
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {

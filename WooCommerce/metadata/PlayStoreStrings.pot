@@ -11,18 +11,20 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_032"
+msgctxt "release_note_034"
 msgid ""
-"3.2:\n"
-"- You’ll see a new “variants” section in the Product detail screen for your variable products.\n"
-"- The bottom navigation bar no longer disappears when scrolling — we think you’ll like it better.\n"
-"- We know a Products tab is high on people’s wish lists, and you can now preview the coming-soon Products tab — head to Settings in the app to enable it.\n"
+"3.4:\n"
+"- Minor design tweaks to the My Store tab.\n"
+"- Fixed a navigation bug that causing crashes when bringing the app back from background.\n"
+"- Other miscellaneous bug fixes.\n"
+"\n"
 msgstr ""
 
-msgctxt "release_note_031"
+msgctxt "release_note_033"
 msgid ""
-"3.1:\n"
-"- Can’t remember your WordPress.com credentials? No problem! We’ve added a new option that allows a user to log in using their site credentials. If these credentials work, the app will fetch the connected WordPress.com account information and allow the user to complete the login process using a magic link.\n"
+"3.3:\n"
+"- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.\n"
+"- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
