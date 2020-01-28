@@ -110,8 +110,8 @@ class WooLogViewerActivity : AppCompatActivity() {
     }
 
     private inner class LogAdapter constructor(context: Context) : RecyclerView.Adapter<LogViewHolder>() {
-        private val entries: ArrayList<String>
-                = WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity))
+        private val entries: ArrayList<String> =
+                WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity))
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
         override fun getItemCount() = entries.size
