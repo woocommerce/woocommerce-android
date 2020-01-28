@@ -11,7 +11,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.wc_empty_view.view.*
+import kotlinx.android.synthetic.main.wc_simple_empty_view.view.*
 import org.wordpress.android.util.DisplayUtils
 
 class ActionableEmptyView : LinearLayout {

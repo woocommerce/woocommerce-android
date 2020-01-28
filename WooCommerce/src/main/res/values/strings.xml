@@ -197,7 +197,7 @@
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
-    <string name="orderlist_fetching">Fetching orders…</string>
+    <string name="orderlist_loading">Looking up your orders…</string>
     <!--
         Order Detail Views
     -->
@@ -397,12 +397,20 @@
     <string name="product_property_variant_formatter" translatable="false">%1$s (%2$s options)</string>
     <string name="product_property_edit">Edit product</string>
     <string name="product_inventory">Inventory</string>
+    <string name="product_inventory_empty">Add inventory</string>
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
+    <string name="product_price_empty">Add price</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
+    <string name="product_sale_dates">Sale dates</string>
+    <string name="product_sale_date_from_to">%1$s - %2$s</string>
+    <string name="product_sale_date_from">from %1$s</string>
     <string name="product_sku">SKU</string>
+    <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
+    <string name="product_manage_stock">Manage stock</string>
+    <string name="product_sold_individually">Limit one per order</string>
     <string name="product_stock_quantity">Stock quantity</string>
     <string name="product_backorders">Backorders</string>
     <string name="product_shipping">Shipping</string>
@@ -451,6 +459,8 @@
     <string name="product_detail_update_product_success">Product updated</string>
     <string name="product_detail_title_hint">Enter title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
+    <string name="product_inventory_quantity">Quantity</string>
+    <string name="product_inventory_quantity_summary">How many items are in stock</string>
 
     <!--
         Product images
@@ -474,12 +484,21 @@
     <!--
         Empty list messages
     -->
+    <string name="get_the_word_out">Let\'s get the word out</string>
+    <string name="share_your_store_message">Share your store on social media and by email with your contacts</string>
+    <string name="empty_order_list_title">Waiting for your first order</string>
+    <string name="empty_order_list_message">We\’ll notify you when you receive a new order. In the meantime, explore how you can increase your store sales.</string>
+    <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
+    <string name="empty_review_list_title">Get your first reviews</string>
+    <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+
     <string name="waiting_for_customers">Waiting for customers</string>
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
     <string name="orders_empty_message_with_filter">No orders yet</string>
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
+    <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
         Settings
@@ -1028,4 +1047,5 @@
     <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
     <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
     <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
+    <string name="sign_up">Sign Up for WordPress.com</string>
 </resources>
