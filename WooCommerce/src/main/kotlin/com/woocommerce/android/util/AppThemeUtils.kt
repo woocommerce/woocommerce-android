@@ -1,6 +1,8 @@
 package com.woocommerce.android.util
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -30,6 +32,13 @@ object AppThemeUtils {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }
             }
+        }
+    }
+
+    fun isDarkThemeActive(activity: Activity): Boolean {
+        return when (activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            else -> false
         }
     }
 }
