@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -35,7 +34,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val navArgs: ProductShippingFragmentArgs by navArgs()
     private var isShippingClassDlgShowing: Boolean = false
     private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory }
     private var shippingClassDialog: ProductShippingClassDialog? = null
@@ -61,7 +59,7 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViewModel()
+        setupObservers(viewModel)
 
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_SHIPPING_CLASS_DLG_SHOWING)) {
@@ -76,11 +74,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
-
-    private fun initializeViewModel() {
-        setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
-    }
 
     private fun setupObservers(viewModel: ProductShippingViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->

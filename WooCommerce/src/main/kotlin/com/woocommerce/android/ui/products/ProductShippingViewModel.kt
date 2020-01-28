@@ -35,6 +35,8 @@ class ProductShippingViewModel @AssistedInject constructor(
     private val _productShippingClasses = MutableLiveData<List<WCProductShippingClassModel>>()
     val productShippingClasses: LiveData<List<WCProductShippingClassModel>> = _productShippingClasses
 
+    private val navArgs: ProductShippingFragmentArgs by savedState.navArgs()
+
     var weightUnit: String? = null
         private set
     var dimensionUnit: String? = null
@@ -44,10 +46,8 @@ class ProductShippingViewModel @AssistedInject constructor(
         val settings = wooCommerceStore.getProductSettings(selectedSite.get())
         weightUnit = settings?.weightUnit
         dimensionUnit = settings?.dimensionUnit
-    }
 
-    fun start(remoteProductId: Long) {
-        loadProduct(remoteProductId)
+        loadProduct(navArgs.remoteProductId)
         fetchProductShippingClassesIfEmpty()
     }
 
