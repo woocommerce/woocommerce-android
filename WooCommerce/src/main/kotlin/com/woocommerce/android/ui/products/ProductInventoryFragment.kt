@@ -19,15 +19,19 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.ViewState
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogListener {
+class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogListener,
+        BackPressListener {
     private val navArgs: ProductInventoryFragmentArgs by navArgs()
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -63,6 +67,14 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
+        activity?.let {
+            ActivityUtils.hideKeyboard(it)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
@@ -96,6 +108,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
                         event.positiveBtnAction,
                         event.negativeBtnAction
                 )
+                is Exit -> requireActivity().onBackPressed()
             }
         })
     }
@@ -202,5 +215,9 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
                 }
             }
         }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked()
     }
 }

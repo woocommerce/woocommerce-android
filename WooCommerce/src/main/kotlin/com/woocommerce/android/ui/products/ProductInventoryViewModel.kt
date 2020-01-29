@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.DialogInterface
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -7,6 +8,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -105,6 +108,23 @@ class ProductInventoryViewModel @AssistedInject constructor(
                 } else 0
                 viewState = viewState.copy(skuErrorMessage = skuErrorMessage)
             }
+        }
+    }
+
+    fun onBackButtonClicked(): Boolean {
+        return if (viewState.isProductUpdated && viewState.shouldShowDiscardDialog) {
+            triggerEvent(ShowDiscardDialog(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState = viewState.copy(shouldShowDiscardDialog = false)
+                        triggerEvent(Exit)
+                    },
+                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState = viewState.copy(shouldShowDiscardDialog = true)
+                    }
+            ))
+            false
+        } else {
+            true
         }
     }
 
