@@ -108,7 +108,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             ORDER_LIST_FILTERED -> {
                 isTitleBold = false
                 val fmtArgs = "<strong>$searchQueryOrFilter</strong>"
-                title = String.format(context.getString(R.string.orders_empty_message_with_filter), fmtArgs)
+                title = String.format(context.getString(R.string.orders_empty_message_with_order_status_filter), fmtArgs)
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_search

@@ -501,7 +501,7 @@
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
-    <string name="orders_empty_message_with_filter">We\'re sorry, we couldn\'t find any \"%s\" orders</string>
+    <string name="orders_empty_message_with_order_status_filter">We\'re sorry, we couldn\'t find any \"%s\" orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
