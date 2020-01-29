@@ -203,7 +203,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
                 paymentTitle = if (gateway.title.isNotBlank())
-                    "$manualRefundMethod via ${gateway.title}"
+                    resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, gateway.title)
                 else
                     manualRefundMethod
                 isManualRefund = true

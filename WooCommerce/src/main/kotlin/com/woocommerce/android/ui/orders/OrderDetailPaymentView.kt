@@ -51,7 +51,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_paymentMsg.hide()
             paymentInfo_total_paid_divider.hide()
             paymentInfo_paidSection.hide()
-            paymentInfo_issueRefundButtonSection.hide()
         } else {
             paymentInfo_paymentMsg.show()
             paymentInfo_total_paid_divider.show()
@@ -63,11 +62,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                 paymentInfo_paymentMsg.text = context.getString(
                         R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
                 )
-
-                // Can't refund if we haven't received the money yet
-                paymentInfo_issueRefundButtonSection.hide()
             } else {
-                paymentInfo_issueRefundButtonSection.show()
                 paymentInfo_paid.text = formatCurrencyForDisplay(order.total)
 
                 val dateStr = DateFormat.getMediumDateFormat(context).format(order.datePaid)
@@ -126,7 +121,9 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             availableRefundQuantity -= refundedCount
         }
 
-        if (availableRefundQuantity <= 0) {
+        if (availableRefundQuantity > 0) {
+            paymentInfo_issueRefundButtonSection.show()
+        } else {
             paymentInfo_issueRefundButtonSection.hide()
         }
     }

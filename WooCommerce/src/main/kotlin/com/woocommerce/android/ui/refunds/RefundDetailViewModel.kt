@@ -84,11 +84,6 @@ class RefundDetailViewModel @AssistedInject constructor(
     }
 
     private fun displayRefundDetails(refund: Refund, order: Order) {
-        val method = if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
-            order.paymentMethodTitle
-        else
-            "${resourceProvider.getString(R.string.order_refunds_manual_refund)} via ${order.paymentMethodTitle}"
-
         if (refund.items.isNotEmpty()) {
             val items = refund.items.map { refundItem ->
                 RefundListItem(
@@ -113,10 +108,23 @@ class RefundDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(
                 screenTitle = "${resourceProvider.getString(R.string.order_refunds_refund)} #${refund.id}",
                 refundAmount = formatCurrency(refund.amount),
-                refundMethod = resourceProvider.getString(R.string.order_refunds_refunded_via).format(method),
+                refundMethod = resourceProvider.getString(
+                        R.string.order_refunds_refunded_via,
+                        getRefundMethod(order, refund)),
                 refundReason = refund.reason,
                 areDetailsVisible = true
         )
+    }
+
+    private fun getRefundMethod(order: Order, refund: Refund): String {
+        val manualRefund = resourceProvider.getString(R.string.order_refunds_manual_refund)
+        return if (order.paymentMethodTitle.isNotBlank() &&
+                (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment))
+            order.paymentMethodTitle
+        else if (order.paymentMethodTitle.isNotBlank())
+            "$manualRefund - ${order.paymentMethodTitle}"
+        else
+            manualRefund
     }
 
     @Parcelize
