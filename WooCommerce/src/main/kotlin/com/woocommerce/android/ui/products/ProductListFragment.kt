@@ -261,10 +261,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     } else {
                         empty_view.show(EmptyViewType.PRODUCT_LIST)
                     }
-                    productsRecycler.hide()
                 } else {
                     empty_view.hide()
-                    productsRecycler.show()
                 }
             }
         }
