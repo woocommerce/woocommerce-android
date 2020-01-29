@@ -52,6 +52,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -119,8 +120,9 @@ class IssueRefundViewModel @AssistedInject constructor(
         quantities
     }
 
-    final var isRefundInProgress: Boolean = false
-        private set
+    private var refundJob: Job? = null
+    final val isRefundInProgress: Boolean
+        get() = refundJob?.isActive ?: false
 
     init {
         order = loadOrder(arguments.orderId)
@@ -284,9 +286,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     fun onRefundConfirmed(wasConfirmed: Boolean) {
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
-                isRefundInProgress = true
-
-                launch {
+                refundJob = launch {
                     refundSummaryState = refundSummaryState.copy(
                             isFormEnabled = false
                     )
@@ -363,8 +363,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                         triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
                         triggerEvent(Exit)
                     }
-
-                    isRefundInProgress = false
 
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
                 }
