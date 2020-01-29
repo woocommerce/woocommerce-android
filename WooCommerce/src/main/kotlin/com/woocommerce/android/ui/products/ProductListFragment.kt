@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -259,8 +261,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     } else {
                         empty_view.show(EmptyViewType.PRODUCT_LIST)
                     }
+                    productsRecycler.hide()
                 } else {
                     empty_view.hide()
+                    productsRecycler.show()
                 }
             }
         }
