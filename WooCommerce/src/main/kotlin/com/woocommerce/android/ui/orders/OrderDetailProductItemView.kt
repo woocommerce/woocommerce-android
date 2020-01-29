@@ -43,7 +43,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val maxLinesInName = if (expanded) Int.MAX_VALUE else 2
         productInfo_name.maxLines = maxLinesInName
 
-        if (item.sku.isNullOrEmpty() || !expanded) {
+        if (item.sku.isEmpty() || !expanded) {
             productInfo_lblSku.visibility = View.GONE
             productInfo_sku.visibility = View.GONE
         } else {
@@ -58,7 +58,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             val orderTotal = formatCurrencyForDisplay(item.total)
             val productPrice = formatCurrencyForDisplay(item.price)
 
-            item.quantity?.takeIf { it > 1 }?.let {
+            item.quantity.takeIf { it > 1 }?.let {
                 val itemQty = numberFormatter.format(it)
                 productInfo_productTotal.text = res.getString(
                         R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, itemQty

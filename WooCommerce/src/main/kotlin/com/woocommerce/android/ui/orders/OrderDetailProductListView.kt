@@ -67,7 +67,14 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         val order = orderModel.toAppModel()
         val leftoverProducts = order.getMaxRefundQuantities(refunds).filter { it.value > 0 }
         val filteredItems = order.items.filter { leftoverProducts.contains(it.uniqueId) }
-                .map { it.copy(quantity = leftoverProducts[it.uniqueId] ?: error("Missing product")) }
+                .map {
+                    val newQuantity = leftoverProducts[it.uniqueId]
+                    it.copy(
+                            quantity = newQuantity ?: error("Missing product"),
+                            total = it.price.times(newQuantity.toBigDecimal()),
+                            totalTax = it.totalTax.divide(it.quantity.toBigDecimal())
+                    )
+                }
 
         viewAdapter = ProductListAdapter(
                 filteredItems,
