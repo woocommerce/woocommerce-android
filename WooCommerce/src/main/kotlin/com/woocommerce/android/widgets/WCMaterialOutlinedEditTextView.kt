@@ -20,14 +20,19 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
     init {
         View.inflate(context, R.layout.view_material_outlined_edittext, this)
         if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.WCMaterialOutlinedEditTextView)
+            val a = context.obtainStyledAttributes(
+                    attrs,
+                    R.styleable.WCMaterialOutlinedEditTextView
+            )
             try {
                 // Set the edit text hint
-                edit_text_input.hint = a.getString(R.styleable.WCMaterialOutlinedEditTextView_editTextHint).orEmpty()
+                edit_text_input.hint = a.getString(R.styleable.WCMaterialOutlinedEditTextView_editTextHint)
+                        .orEmpty()
 
                 // Set the edit text summary
                 edit_text_summary.text =
-                        a.getString(R.styleable.WCMaterialOutlinedEditTextView_editTextSummary).orEmpty()
+                        a.getString(R.styleable.WCMaterialOutlinedEditTextView_editTextSummary)
+                                .orEmpty()
 
                 // Set the edit text input type
                 edit_text.inputType = a.getInt(
@@ -47,6 +52,20 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
     fun getText() = edit_text.text.toString()
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
-        edit_text.doAfterTextChanged { cb(it) }
+        edit_text.doAfterTextChanged {
+            clearError()
+            cb(it)
+        }
+    }
+
+    fun setError(error: String) {
+        edit_text_input.error = error
+        edit_text_summary.visibility = View.GONE
+    }
+
+    private fun clearError() {
+        edit_text_input.error = null
+        edit_text_input.isErrorEnabled = false
+        edit_text_summary.visibility = View.VISIBLE
     }
 }

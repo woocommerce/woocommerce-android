@@ -85,6 +85,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.productInventoryParameters?.takeIfNotEqualTo(old?.productInventoryParameters) { showProduct(new) }
             new.isProductUpdated.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
+            new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -174,6 +175,10 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
 
     private fun showUpdateProductAction(show: Boolean) {
         view?.post { publishMenuItem?.isVisible = show }
+    }
+
+    private fun displaySkuError(messageId: Int) {
+        product_sku.setError(getString(messageId))
     }
 
     override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {

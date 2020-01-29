@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -89,14 +90,19 @@ class ProductInventoryViewModel @AssistedInject constructor(
     }
 
     fun onSkuChanged(sku: String) {
-        if (sku.length > 2) {
+        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
+        if (sku.length > 2 &&
+                viewState.storedProductInventoryParameters?.sku != viewState.productInventoryParameters?.sku) {
             // cancel any existing verification search, then start a new one after a brief delay
             // so we don't actually perform the fetch until the user stops typing
             skuVerificationJob?.cancel()
             skuVerificationJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
                 val isSkuAvailable = productRepository.verifySkuAvailability(sku)
-                // TODO: handle sku availability error in a different commit
+
+                // if the sku is not available display error
+                val skuErrorMessage = if (!isSkuAvailable) R.string.product_inventory_update_sku_error else null
+                viewState = viewState.copy(skuErrorMessage = skuErrorMessage)
             }
         }
     }
@@ -109,7 +115,8 @@ class ProductInventoryViewModel @AssistedInject constructor(
                         productInDb.sku, productInDb.manageStock, productInDb.stockStatus,
                         productInDb.stockQuantity, productInDb.backorderStatus, productInDb.soldIndividually
                 )
-                val updatedProductInventoryParameters = fetchUpdatedProductInventoryParameters(storedProductInventoryParameters)
+                val updatedProductInventoryParameters =
+                        fetchUpdatedProductInventoryParameters(storedProductInventoryParameters)
                 viewState = viewState.copy(
                         productInventoryParameters = updatedProductInventoryParameters,
                         storedProductInventoryParameters = storedProductInventoryParameters
@@ -131,7 +138,8 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isProductUpdated: Boolean = false,
         val shouldShowDiscardDialog: Boolean = true,
         val productInventoryParameters: ProductInventoryParameters? = null,
-        val storedProductInventoryParameters: ProductInventoryParameters? = null
+        val storedProductInventoryParameters: ProductInventoryParameters? = null,
+        val skuErrorMessage: Int? = null
     ) : Parcelable
 
     @Parcelize
