@@ -31,8 +31,10 @@ class ProductInventoryViewModel @AssistedInject constructor(
 
     private var skuVerificationJob: Job? = null
 
-    fun start(remoteProductId: Long) {
-        loadProduct(remoteProductId)
+    private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
+
+    init {
+        loadProduct(navArgs.remoteProductId)
     }
 
     override fun onCleared() {

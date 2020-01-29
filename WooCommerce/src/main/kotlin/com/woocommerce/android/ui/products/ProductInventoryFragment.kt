@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -32,8 +31,6 @@ import javax.inject.Inject
 
 class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogListener,
         BackPressListener {
-    private val navArgs: ProductInventoryFragmentArgs by navArgs()
-
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -77,7 +74,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViewModel()
+        setupObservers(viewModel)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_inventory)
@@ -86,11 +83,6 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         publishMenuItem = menu.findItem(R.id.menu_done)
-    }
-
-    private fun initializeViewModel() {
-        setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: ProductInventoryViewModel) {
