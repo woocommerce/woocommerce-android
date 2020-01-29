@@ -226,7 +226,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         }
 
         if (refunds.isNotEmpty()) {
-            orderDetail_paymentInfo.showRefunds(refunds.sortedBy { it.dateCreated })
+            orderDetail_paymentInfo.showRefunds(refunds.sortedBy { it.id })
         } else {
             orderDetail_paymentInfo.showRefundTotal()
         }
