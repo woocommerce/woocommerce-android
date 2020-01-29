@@ -47,7 +47,7 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
     private val navArgs: OrderFulfillmentFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(layout.fragment_order_fulfillment, container, false)
+        return inflater.inflate(R.layout.fragment_order_fulfillment, container, false)
     }
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_order_fulfillment, navArgs.orderNumber)
