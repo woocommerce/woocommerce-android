@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -52,7 +51,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_paymentMsg.hide()
             paymentInfo_total_paid_divider.hide()
             paymentInfo_paidSection.hide()
-            paymentInfo_issueRefundButtonSection.hide()
         } else {
             paymentInfo_paymentMsg.show()
             paymentInfo_total_paid_divider.show()
@@ -64,9 +62,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                 paymentInfo_paymentMsg.text = context.getString(
                         R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
                 )
-
-                // Can't refund if we haven't received the money yet
-                paymentInfo_issueRefundButtonSection.hide()
             } else {
                 paymentInfo_paid.text = formatCurrencyForDisplay(order.total)
 
@@ -100,10 +95,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             )
         }
 
-        if (FeatureFlag.REFUNDS.isEnabled()) {
-            paymentInfo_issueRefundButton.setOnClickListener {
-                actionListener.issueOrderRefund(order)
-            }
+        paymentInfo_issueRefundButton.setOnClickListener {
+            actionListener.issueOrderRefund(order)
         }
     }
 
@@ -128,17 +121,23 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             availableRefundQuantity -= refundedCount
         }
 
-        if (availableRefundQuantity > 0 && FeatureFlag.REFUNDS.isEnabled()) {
+        if (availableRefundQuantity > 0) {
             paymentInfo_issueRefundButtonSection.show()
         } else {
             paymentInfo_issueRefundButtonSection.hide()
         }
     }
 
-    fun showRefundTotal(refundTotal: BigDecimal) {
-        paymentInfo_refundTotal.text = formatCurrency(refundTotal)
+    fun showRefundTotal() {
+        paymentInfo_refundTotal.text = formatCurrency(order.refundTotal)
 
         paymentInfo_refunds.hide()
         paymentInfo_refundTotalSection.show()
+
+        if (order.refundTotal < order.total) {
+            paymentInfo_issueRefundButtonSection.show()
+        } else {
+            paymentInfo_issueRefundButtonSection.hide()
+        }
     }
 }

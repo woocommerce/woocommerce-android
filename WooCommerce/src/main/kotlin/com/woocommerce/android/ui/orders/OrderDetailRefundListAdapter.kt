@@ -1,21 +1,19 @@
 package com.woocommerce.android.ui.orders
 
 import android.annotation.SuppressLint
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.format.DateFormat
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.widgets.WooClickableSpan
 import java.math.BigDecimal
 
 class OrderDetailRefundListAdapter(
@@ -51,32 +49,29 @@ class OrderDetailRefundListAdapter(
     ) {
         private val amountTextView: TextView = itemView.findViewById(R.id.refundsList_refundAmount)
         private val methodTextView: TextView = itemView.findViewById(R.id.refundsList_refundMethod)
+        private val itemRoot: View = itemView.findViewById(R.id.refundsList_itemRoot)
 
-        @SuppressLint("SetTextI18n") fun bind(refund: Refund) {
+        @SuppressLint("SetTextI18n")
+        fun bind(refund: Refund) {
             amountTextView.text = "-${formatCurrency(refund.amount)}"
+            methodTextView.text = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
+                    DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
+                    getRefundMethod(refund)
+            )
 
-            val linkText = itemView.resources.getString(R.string.orderdetail_refund_view_details)
-            val method = if (refund.automaticGatewayRefund)
+            itemRoot.setOnClickListener {
+                onRefundDetailsClicked(order.remoteId, refund.id)
+            }
+        }
+
+        private fun getRefundMethod(refund: Refund): String {
+            val manualRefund = itemView.context.getString(R.string.order_refunds_manual_refund)
+            return if (order.paymentMethodTitle.isBlank())
+                manualRefund
+            else if (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
                 order.paymentMethodTitle
             else
-                itemView.context.getString(R.string.order_refunds_manual_refund)
-            val methodText = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
-                    DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
-                    method,
-                    linkText
-            )
-            val spannable = SpannableString(methodText)
-            val start = methodText.indexOf(linkText)
-            spannable.setSpan(
-                    WooClickableSpan {
-                        onRefundDetailsClicked(order.remoteId, refund.id)
-                    },
-                    start,
-                    start + linkText.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-            methodTextView.setText(spannable, TextView.BufferType.SPANNABLE)
-            methodTextView.movementMethod = LinkMovementMethod.getInstance()
+                "$manualRefund - ${order.paymentMethodTitle}"
         }
     }
 

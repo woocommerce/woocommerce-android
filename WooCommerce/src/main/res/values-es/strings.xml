@@ -127,7 +127,7 @@ Language: es
     <string name="order_refunds_available_for_refund">%s disponible para el reembolso</string>
     <string name="orderdetail_issue_refund_button">Emitir reembolso</string>
     <string name="orderdetail_refund_view_details">Ver detalles</string>
-    <string name="orderdetail_refund_detail">%1$s a través de %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s a través de %2$s</string>
     <string name="settings_enable_v4_stats_message">Prueba las nuevas estadísticas disponibles con el\nPlugin de administración de WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Mejora de las estadísticas</string>
     <string name="beta_features">Funciones beta</string>

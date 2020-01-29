@@ -19,6 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
@@ -39,7 +41,6 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
@@ -199,6 +200,38 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
 
+    override fun showRefunds(order: WCOrderModel, refunds: List<Refund>) {
+        // populate the Order Product List Card if not all have been refunded
+        if (order.toAppModel().hasNonRefundedItems(refunds)) {
+            orderDetail_productList.initView(
+                    orderModel = order,
+                    productImageMap = productImageMap,
+                    expanded = false,
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    orderListener = this,
+                    productListener = this,
+                    refunds = refunds
+            )
+            orderDetail_productList.show()
+        } else {
+            orderDetail_productList.hide()
+        }
+
+        // show the refund products count if at least one refunded
+        if (refunds.any { refund -> refund.items.sumBy { it.quantity } > 0 }) {
+            orderDetail_refundsInfo.initView(refunds) { openRefundedProductList(order) }
+            orderDetail_refundsInfo.show()
+        } else {
+            orderDetail_refundsInfo.hide()
+        }
+
+        if (refunds.isNotEmpty()) {
+            orderDetail_paymentInfo.showRefunds(refunds.sortedBy { it.id })
+        } else {
+            orderDetail_paymentInfo.showRefundTotal()
+        }
+    }
+
     override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
         order?.let {
             // set the title to the order number
@@ -212,16 +245,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                             showOrderStatusSelector()
                         }
                     })
-
-            // Populate the Order Product List Card
-            orderDetail_productList.initView(
-                    order = order,
-                    productImageMap = productImageMap,
-                    expanded = false,
-                    formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
-                    orderListener = this,
-                    productListener = this
-            )
 
             // check if product is a virtual product. If it is, hide only the shipping details card
             val isVirtualProduct = presenter.isVirtualProduct(order)
@@ -314,6 +337,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderProductListFragment(
                 order.getIdentifier(),
                 order.number
+        )
+        findNavController().navigate(action)
+    }
+
+    override fun openRefundedProductList(order: WCOrderModel) {
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundDetailFragment(
+                order.remoteOrderId
         )
         findNavController().navigate(action)
     }
@@ -454,14 +484,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         } else {
             activity?.onBackPressed()
         }
-    }
-
-    override fun showOrderRefunds(refunds: List<Refund>) {
-        orderDetail_paymentInfo.showRefunds(refunds)
-    }
-
-    override fun showOrderRefundTotal(refundTotal: BigDecimal) {
-        orderDetail_paymentInfo.showRefundTotal(refundTotal)
     }
 
     override fun showAddOrderNoteScreen(order: WCOrderModel) {

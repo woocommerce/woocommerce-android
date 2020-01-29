@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,6 +18,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -51,23 +51,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> {
-                    if (event.undoAction == null) {
-                        uiMessageResolver.getSnack(event.message, *event.args).show()
-                    } else {
-                        val snackbar = uiMessageResolver.getUndoSnack(
-                                event.message,
-                                *event.args,
-                                actionListener = View.OnClickListener { event.undoAction.invoke() }
-                        )
-                        snackbar.addCallback(object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                viewModel.onProceedWithRefund()
-                            }
-                        })
-                        snackbar.show()
-                    }
-                }
+                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is Exit -> {
                     requireActivity().navigateBackWithResult(
                             RequestCodes.ORDER_REFUND,
@@ -75,6 +59,12 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
                             R.id.nav_host_fragment_main,
                             R.id.orderDetailFragment
                     )
+                }
+                is ShowRefundConfirmation -> {
+                    val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
+                            event.title, event.message, event.confirmButtonTitle
+                    )
+                    findNavController().navigate(action)
                 }
                 else -> event.isHandled = false
             }
@@ -101,7 +91,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
 
     private fun initializeViews() {
         refundSummary_btnRefund.setOnClickListener {
-            viewModel.onRefundConfirmed(refundSummary_reason.text.toString())
+            viewModel.onRefundIssued(refundSummary_reason.text.toString())
         }
     }
 

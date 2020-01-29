@@ -7,9 +7,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.model.Order
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.PhotonUtils
+import java.math.BigDecimal
 import java.text.NumberFormat
 
 class OrderDetailProductItemView @JvmOverloads constructor(
@@ -21,10 +22,10 @@ class OrderDetailProductItemView @JvmOverloads constructor(
     }
 
     fun initView(
-        item: WCOrderModel.LineItem,
+        item: Order.Item,
         productImage: String?,
         expanded: Boolean,
-        formatCurrencyForDisplay: (String?) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
         productInfo_name.text = item.name
 
@@ -42,7 +43,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val maxLinesInName = if (expanded) Int.MAX_VALUE else 2
         productInfo_name.maxLines = maxLinesInName
 
-        if (item.sku.isNullOrEmpty() || !expanded) {
+        if (item.sku.isEmpty() || !expanded) {
             productInfo_lblSku.visibility = View.GONE
             productInfo_sku.visibility = View.GONE
         } else {
@@ -57,7 +58,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             val orderTotal = formatCurrencyForDisplay(item.total)
             val productPrice = formatCurrencyForDisplay(item.price)
 
-            item.quantity?.takeIf { it > 1 }?.let {
+            item.quantity.takeIf { it > 1 }?.let {
                 val itemQty = numberFormatter.format(it)
                 productInfo_productTotal.text = res.getString(
                         R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, itemQty

@@ -127,7 +127,6 @@ Language: ko_KR
     <string name="order_refunds_available_for_refund">%s 환불 가능</string>
     <string name="orderdetail_issue_refund_button">환불 발행</string>
     <string name="orderdetail_refund_view_details">상세 보기</string>
-    <string name="orderdetail_refund_detail">%2$s – %3$s을(를) 통한 %1$s</string>
     <string name="settings_enable_v4_stats_message">WooCommerce 관리자 플러그인으로\n사용할 수 있는 새 통계를 확인해 보세요.</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>

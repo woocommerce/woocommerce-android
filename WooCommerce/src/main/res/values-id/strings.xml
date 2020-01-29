@@ -114,7 +114,7 @@ Language: id
     <string name="order_refunds_available_for_refund">%s tersedia untuk pengembalian dana</string>
     <string name="orderdetail_issue_refund_button">Keluarkan pengembalian dana</string>
     <string name="orderdetail_refund_view_details">Lihat rincian</string>
-    <string name="orderdetail_refund_detail">%1$s melalui %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
     <string name="settings_enable_v4_stats_message">Cobalah statistik baru yang tersedia bersama\nPlugin admin WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
