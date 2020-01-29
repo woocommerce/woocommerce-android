@@ -1,62 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_window_background"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:background="@color/default_window_background">
 
-    <TextView
-        android:id="@+id/empty_view_title"
-        style="@style/Woo.TextAppearance.Title.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="32dp"
-        android:maxWidth="260dp"
-        android:textAlignment="center"
-        tools:text="@string/get_the_word_out" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/empty_view_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="32dp"
-        android:importantForAccessibility="no"
-        tools:srcCompat="@drawable/img_light_empty_my_store" />
+        <TextView
+            android:id="@+id/empty_view_title"
+            style="@style/Woo.TextAppearance.Title.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            android:maxWidth="260dp"
+            android:textAlignment="center"
+            tools:text="@string/get_the_word_out" />
 
-    <TextView
-        android:id="@+id/empty_view_message"
-        style="@style/Woo.TextAppearance.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="32dp"
-        android:maxWidth="260dp"
-        android:textAlignment="center"
-        tools:text="@string/share_your_store_message" />
+        <ImageView
+            android:id="@+id/empty_view_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:importantForAccessibility="no"
+            tools:srcCompat="@drawable/img_light_empty_my_store" />
 
-    <ImageView
-        android:id="@+id/empty_view_secondary_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="32dp"
-        android:importantForAccessibility="no"
-        android:visibility="gone"
-        tools:srcCompat="@drawable/img_clapping_hands"
-        tools:visibility="visible" />
+        <TextView
+            android:id="@+id/empty_view_message"
+            style="@style/Woo.TextAppearance.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            android:maxWidth="260dp"
+            android:textAlignment="center"
+            tools:text="@string/share_your_store_message" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/empty_view_button"
-        style="@style/Woo.Button.Purple"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="@string/share_store_button" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/empty_view_secondary_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:importantForAccessibility="no"
+            android:visibility="gone"
+            tools:srcCompat="@drawable/img_clapping_hands"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/empty_view_button"
+            style="@style/Woo.Button.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/share_store_button" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
