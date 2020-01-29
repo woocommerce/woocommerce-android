@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="@dimen/card_padding_top"
-        android:paddingBottom="@dimen/card_padding_bottom"
         android:paddingStart="@dimen/card_padding_start"
         android:paddingEnd="@dimen/card_padding_end">
 
@@ -206,6 +205,7 @@
             android:textAlignment="viewStart"
             android:textSize="@dimen/text_caption"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            android:layout_marginBottom="@dimen/card_item_padding_intra_double"
             android:textColor="@color/wc_grey_medium"
             tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 
@@ -234,7 +234,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
+                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -276,7 +276,6 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
                 android:background="@color/list_divider"
                 app:srcCompat="@drawable/list_divider"/>
 
@@ -286,6 +285,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
                 android:layout_marginTop="@dimen/card_item_padding_intra_double">
 
                 <TextView
@@ -316,7 +316,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
         tools:visibility="visible">
 
         <!-- Divider -->
