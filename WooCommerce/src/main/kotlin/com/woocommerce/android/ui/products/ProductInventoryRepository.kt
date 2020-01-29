@@ -27,7 +27,7 @@ class ProductInventoryRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
+        private const val ACTION_TIMEOUT = 20L * 1000
     }
 
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
@@ -45,7 +45,7 @@ class ProductInventoryRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun verifySkuAvailability(sku: String): Boolean {
+    suspend fun verifySkuAvailability(sku: String): Boolean? {
         continuationVerifySku?.cancel()
         return try {
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -53,10 +53,10 @@ class ProductInventoryRepository @Inject constructor(
 
                 val payload = FetchProductSkuAvailabilityPayload(selectedSite.get(), sku)
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductSkuAvailabilityAction(payload))
-            } ?: false // request timed out
+            } // request timed out
         } catch (e: CancellationException) {
             WooLog.e(PRODUCTS, "Exception encountered while verifying product sku availability", e)
-            false
+            null
         }
     }
 

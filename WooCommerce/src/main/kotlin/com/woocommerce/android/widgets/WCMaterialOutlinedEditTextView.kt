@@ -63,7 +63,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
         edit_text_summary.visibility = View.GONE
     }
 
-    private fun clearError() {
+    fun clearError() {
         edit_text_input.error = null
         edit_text_input.isErrorEnabled = false
         edit_text_summary.visibility = View.VISIBLE

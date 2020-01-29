@@ -5,8 +5,6 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -19,9 +17,7 @@ import kotlinx.coroutines.launch
 class ProductInventoryViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite,
-    private val productRepository: ProductInventoryRepository,
-    private val networkStatus: NetworkStatus
+    private val productRepository: ProductInventoryRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -93,15 +89,20 @@ class ProductInventoryViewModel @AssistedInject constructor(
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2 &&
                 viewState.storedProductInventoryParameters?.sku != viewState.productInventoryParameters?.sku) {
+            // reset the error message when the user starts typing again
+            viewState = viewState.copy(skuErrorMessage = 0)
+
             // cancel any existing verification search, then start a new one after a brief delay
             // so we don't actually perform the fetch until the user stops typing
             skuVerificationJob?.cancel()
             skuVerificationJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
-                val isSkuAvailable = productRepository.verifySkuAvailability(sku)
 
                 // if the sku is not available display error
-                val skuErrorMessage = if (!isSkuAvailable) R.string.product_inventory_update_sku_error else null
+                val isSkuAvailable = productRepository.verifySkuAvailability(sku)
+                val skuErrorMessage = if (isSkuAvailable == false) {
+                    R.string.product_inventory_update_sku_error
+                } else 0
                 viewState = viewState.copy(skuErrorMessage = skuErrorMessage)
             }
         }

@@ -178,7 +178,13 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
     }
 
     private fun displaySkuError(messageId: Int) {
-        product_sku.setError(getString(messageId))
+        if (messageId != 0) {
+            product_sku.setError(getString(messageId))
+            publishMenuItem?.isEnabled = false
+        } else {
+            product_sku.clearError()
+            publishMenuItem?.isEnabled = true
+        }
     }
 
     override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {
