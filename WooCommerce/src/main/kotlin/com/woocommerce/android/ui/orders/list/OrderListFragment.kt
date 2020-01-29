@@ -417,12 +417,15 @@ class OrderListFragment : TopLevelFragment(),
             it?.let { emptyViewType ->
                 when (emptyViewType) {
                     EmptyViewType.SEARCH_RESULTS -> {
-                        empty_view.show(emptyViewType, searchQuery = searchQuery)
+                        empty_view.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
                     EmptyViewType.ORDER_LIST -> {
                         empty_view.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
                         }
+                    }
+                    EmptyViewType.ORDER_LIST_FILTERED -> {
+                        empty_view.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
                     }
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
                         empty_view.show(emptyViewType) {

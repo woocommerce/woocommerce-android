@@ -336,7 +336,7 @@ class OrderListViewModel @AssistedInject constructor(
                     }
                 }
                 orderStatusFilter.isNotEmpty() -> {
-                    EmptyViewType.ORDER_LIST // TODO - different text to reflect the order status
+                    EmptyViewType.ORDER_LIST_FILTERED // TODO - different text to reflect the order status
                 }
                 isSearching -> {
                     EmptyViewType.SEARCH_RESULTS

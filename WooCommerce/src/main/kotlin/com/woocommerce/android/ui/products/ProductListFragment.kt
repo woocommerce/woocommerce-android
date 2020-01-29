@@ -255,7 +255,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     if (new.isSearchActive == true) {
-                        empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = viewModel.getSearchQuery())
+                        empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQueryOrFilter = viewModel.getSearchQuery())
                     } else {
                         empty_view.show(EmptyViewType.PRODUCT_LIST)
                     }

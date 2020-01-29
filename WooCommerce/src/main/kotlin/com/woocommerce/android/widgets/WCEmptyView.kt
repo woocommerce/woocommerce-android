@@ -16,6 +16,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
@@ -29,6 +30,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         ORDER_LIST,
         ORDER_LIST_LOADING,
         ORDER_LIST_ALL_PROCESSED,
+        ORDER_LIST_FILTERED,
         PRODUCT_LIST,
         REVIEW_LIST,
         SEARCH_RESULTS,
@@ -51,13 +53,9 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         empty_view_image.visibility = if (isLandscape) View.GONE else View.VISIBLE
     }
 
-    /**
-     * Pass the site to use when sharing the store's url along with the tracks event to record
-     * when the share button is tapped
-     */
     fun show(
         type: EmptyViewType,
-        searchQuery: String? = null,
+        searchQueryOrFilter: String? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
         checkOrientation()
@@ -67,7 +65,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             WooAnimUtils.fadeOut(this, Duration.SHORT)
             val durationMs = Duration.SHORT.toMillis(context) + 50L
             Handler().postDelayed({
-                show(type, searchQuery, onButtonClick)
+                show(type, searchQueryOrFilter, onButtonClick)
             }, durationMs)
             return
         }
@@ -107,6 +105,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_orders_all_fulfilled
             }
+            ORDER_LIST_FILTERED -> {
+                isTitleBold = false
+                val fmtArgs = "<strong>$searchQueryOrFilter</strong>"
+                title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
+                message = null
+                buttonText = null
+                drawableId = R.drawable.img_light_empty_search
+            }
             PRODUCT_LIST -> {
                 // TODO: once adding products is supported, this needs to be updated to match designs
                 isTitleBold = true
@@ -124,7 +130,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
             SEARCH_RESULTS -> {
                 isTitleBold = false
-                val fmtArgs = "<strong>$searchQuery</strong>"
+                val fmtArgs = "<strong>$searchQueryOrFilter</strong>"
                 title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
                 message = null
                 buttonText = null
