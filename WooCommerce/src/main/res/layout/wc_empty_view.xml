@@ -44,17 +44,6 @@
             android:textAlignment="center"
             tools:text="@string/share_your_store_message" />
 
-        <ImageView
-            android:id="@+id/empty_view_secondary_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
-            android:importantForAccessibility="no"
-            android:visibility="gone"
-            tools:srcCompat="@drawable/img_clapping_hands"
-            tools:visibility="visible" />
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/empty_view_button"
             style="@style/Woo.Button.Purple"

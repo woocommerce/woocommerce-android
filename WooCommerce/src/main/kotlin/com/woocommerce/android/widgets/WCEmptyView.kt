@@ -77,7 +77,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         val buttonText: String?
         val isTitleBold: Boolean
         @DrawableRes val drawableId: Int
-        @DrawableRes var secondaryDrawableId: Int? = null
 
         when (type) {
             DASHBOARD -> {
@@ -107,7 +106,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_light_empty_orders_all_fulfilled
-                secondaryDrawableId = R.drawable.img_clapping_hands
             }
             PRODUCT_LIST -> {
                 // TODO: once adding products is supported, this needs to be updated to match designs
@@ -162,13 +160,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             empty_view_message.visibility = View.VISIBLE
         } else {
             empty_view_message.visibility = View.GONE
-        }
-
-        if (secondaryDrawableId != null) {
-            empty_view_secondary_image.visibility = View.VISIBLE
-            empty_view_secondary_image.setImageDrawable(context.getDrawable(secondaryDrawableId))
-        } else {
-            empty_view_secondary_image.visibility = View.GONE
         }
 
         if (onButtonClick != null) {
