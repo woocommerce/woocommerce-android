@@ -416,7 +416,13 @@
     <string name="product_shipping">Shipping</string>
     <string name="product_weight">Weight</string>
     <string name="product_size">Size</string>
+    <string name="product_length">Length</string>
+    <string name="product_width">Width</string>
+    <string name="product_height">Height</string>
+    <string name="product_dimensions">Dimensions</string>
     <string name="product_shipping_class">Shipping class</string>
+    <string name="product_no_shipping_class">No shipping class</string>
+    <string name="product_shipping_settings">Shipping settings</string>
     <string name="product_total_orders">Total orders</string>
     <string name="product_reviews">Reviews</string>
     <string name="product_downloads">Downloads</string>
@@ -461,6 +467,7 @@
     <string name="product_detail_editable_text_hint">Enter text</string>
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
+    <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
 
     <!--
         Product images
@@ -492,12 +499,10 @@
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
 
-    <string name="waiting_for_customers">Waiting for customers</string>
-    <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
-    <string name="orders_empty_message_with_filter">No orders yet</string>
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
+    <string name="orders_empty_message_with_order_status_filter">We\'re sorry, we couldn\'t find any \"%s\" orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
@@ -1054,4 +1059,5 @@
     <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
     <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
     <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
+    <string name="sign_up">Sign Up for WordPress.com</string>
 </resources>

@@ -1,3 +1,0 @@
-3.3:
-- Performans iyileştirmeleri: Artık sipariş listesindeki siparişler daha hızlı yükleniyor. Ürün varyasyonları güncellenirken veya sipariş durumu değiştirildikten sonra sayfadan ayrılırken yaşanan kilitlenmeler giderildi.
-- Hata düzeltmeleri: Alt gezinme çubuğundaki kesilmiş etiketler artık tam görünüyor, istatistik grafiklerinde dikey kaydırma sırasında yaşanan sorunlar ve zaman damgası yanlış olan yorumlar düzeltildi, uygulamadaki ürün varyasyonu sınıflandırması ile web uyumlu hale getirildi.

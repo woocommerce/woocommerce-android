@@ -78,7 +78,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         var markAsRead: Long? = null
         viewModel.event.observeForever { if (it is MarkNotificationAsRead) markAsRead = it.remoteNoteId }
 
-        viewModel.start(REVIEW_ID)
+        viewModel.start(REVIEW_ID, false)
 
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
         Assertions.assertThat(markAsRead).isEqualTo(NOTIF_ID)
@@ -109,7 +109,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             }
         }
 
-        viewModel.start(REVIEW_ID)
+        viewModel.start(REVIEW_ID, false)
 
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
         assertEquals(NOTIF_ID, markAsRead)
@@ -130,7 +130,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
         // first we must load the product review so the viewmodel will have
         // a reference to it.
-        viewModel.start(REVIEW_ID)
+        viewModel.start(REVIEW_ID, false)
 
         var exitCalled = false
         viewModel.event.observeForever {
@@ -156,7 +156,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
         // first we must load the product review so the viewmodel will have
         // a reference to it.
-        viewModel.start(REVIEW_ID)
+        viewModel.start(REVIEW_ID, false)
 
         var snackbar: ShowSnackbar? = null
         var exitCalled = false

@@ -32,9 +32,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         MyStoreStatsAvailabilityListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
-        const val STATE_KEY_TAB_STATS = "tab-stats-state"
-        const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
-        const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        private const val STATE_KEY_TAB_STATS = "tab-stats-state"
+        private const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
+        private const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        private const val STATE_KEY_IS_EMPTY_VIEW_SHOWING = "is-empty-view-showing"
+
         fun newInstance() = DashboardFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
@@ -96,6 +98,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
             dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
+            if (bundle.getBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING)) {
+                showEmptyView(true)
+            }
         }
 
         presenter.takeView(this)
@@ -162,6 +167,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
+        outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewShowing())
     }
 
     override fun showStats(
@@ -314,6 +320,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_view.show()
         }
     }
+
+    private fun isEmptyViewShowing() = empty_view_container.visibility == View.VISIBLE
 
     /**
      * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard] banner is dismissed.

@@ -104,7 +104,7 @@ class ReviewDetailFragment : BaseFragment() {
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteReviewId)
+        viewModel.start(navArgs.remoteReviewId, navArgs.launchedFromNotification)
     }
 
     private fun setupObservers(viewModel: ReviewDetailViewModel) {

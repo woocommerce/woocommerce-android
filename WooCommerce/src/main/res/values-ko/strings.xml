@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:59+0000
+Translation-Revision-Date: 2020-01-23 03:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">텍스트 입력</string>
+    <string name="product_detail_title_hint">제목 입력</string>
+    <string name="product_detail_update_product_success">제품 업데이트됨</string>
+    <string name="product_detail_update_product_error">제품을 업데이트하는 중 오류 발생</string>
+    <string name="product_update_dialog_message">기다려주세요…</string>
+    <string name="product_update_dialog_title">제품을 업데이트하는 중</string>
+    <string name="product_description_empty">제품 설명</string>
+    <string name="product_description">설명</string>
+    <string name="product_edit_description">설명 수정</string>
+    <string name="product_description_hint">글쓰기 시작…</string>
+    <string name="product_variant_list_empty">웹에서 크기 및 색상과 같은 옵션을 추가하세요. 이러한 항목은 사이트의 제품 페이지에 옵션으로 표시됩니다.</string>
+    <string name="discard_message">변경 사항을 삭제하시겠습니까?</string>
+    <string name="update">업데이트</string>
+    <string name="done">완료</string>
+    <string name="order_refunds_refund_in_progress">환불이 진행 중입니다. 잠시 기다려 주세요…</string>
+    <string name="order_refunds_refund_shipping">배송비 환불</string>
+    <string name="order_refunds_select_quantity">수량 선택</string>
+    <string name="order_refunds_shipping_refund">배송비 환불</string>
+    <string name="order_refunds_products_refund">제품 환불</string>
+    <string name="order_refunds_item_description">각각 %d x %s</string>
+    <string name="order_refunds_items_selected">%d개 항목 선택됨</string>
+    <string name="order_refunds_items_select_none">아무것도 선택하지 않음</string>
+    <string name="order_refunds_items_select_all">모두 선택</string>
+    <string name="order_refunds_amount_refund_confirmation_message">환불 확인을 기다리는 중…</string>
+    <string name="settings_image_optimization_message">빠른 업로드를 위해 이미지 크기 조정 및 압축</string>
+    <string name="settings_image_optimization_title">이미지 최적화</string>
+    <string name="image_source_device_camera">사진 촬영</string>
+    <string name="image_source_device_chooser">기기에서 선택</string>
+    <string name="image_source_title">업로드 방법 선택</string>
+    <string name="product_images_upload_channel_title">업로드</string>
+    <string name="product_images_uploading_multi_notif_message">이미지 업로드 중…%d/%d</string>
+    <string name="product_images_uploading_single_notif_message">이미지 업로드 중…</string>
+    <string name="product_images_camera_error">카메라에 액세스할 수 없습니다.</string>
+    <string name="product_image_remove_confirmation">이 이미지를 제거하시겠습니까?</string>
+    <string name="product_image_capture_failed">이미지 캡처 실패</string>
+    <string name="product_image_service_busy">현재 작업이 완료될 때까지 기다려 주세요.</string>
+    <string name="product_image_service_error_uploading">제품 이미지 업로드 오류</string>
+    <string name="product_image_error_removing">제품 이미지 제거 오류</string>
+    <string name="product_image_add">제품 이미지 추가</string>
+    <string name="product_remove_photo">사진 제거</string>
+    <string name="product_add_photos">사진 추가</string>
+    <string name="product_images_title">사진</string>
+    <string name="product_add_image_content_description">이미지 추가</string>
+    <string name="orderlist_fetching">주문 가져오는 중…</string>
+    <string name="date_timeframe_future">다음</string>
+    <string name="remove">제거</string>
+    <string name="product_variant_hidden">숨김</string>
     <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 인증서&lt;/b> 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 인증&lt;/b>이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
@@ -24,7 +71,6 @@ Language: ko_KR
     <string name="product_variants">변형</string>
     <string name="product_property_edit">제품 편집</string>
     <string name="product_variants_fetch_product_variants_error">제품 변경을 가져오는 중에 오류 발생</string>
-    <string name="my_store_stats_reverted_message">이전 통계로 되돌렸습니다. 베타 통계를 사용하려면 버전 0.22 이상으로 WooCommerce Admin 플러그인을 활성화하세요.</string>
     <string name="login_discovery_error_option_select">옵션 선택</string>
     <string name="login_troubleshooting_tips">문제 해결 팁 읽기</string>
     <string name="login_with_wordpress">워드프레스닷컴으로 로그인</string>
@@ -106,7 +152,7 @@ Language: ko_KR
     <string name="login_try_another_store">다른 스토어 시도</string>
     <string name="database_downgraded">데이터베이스 다운그레이드됨, 테이블 다시 생성 및 스토어 로드 중</string>
     <string name="loading_stores">스토어 로드 중</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">공급자를 찾을 수 없음</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">이동 통신사를 찾을 수 없음</string>
     <string name="login_invalid_site_url">example.com과 같은 완전한 웹사이트 주소를 입력하세요.</string>
     <string name="reviews_empty_message">아직 리뷰가 없습니다!</string>
     <string name="review_notifications">검토</string>
@@ -366,24 +412,24 @@ Language: ko_KR
     <string name="country_mapping_AF">아프가니스탄</string>
     <string name="country_mapping_AX">올란드 제도</string>
     <string name="wc_review_title">검토</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">사용자 정의 공급업체</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">지역 이동 통신사</string>
     <string name="order_shipment_tracking_custom_provider_section_title">사용자 정의</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">공급업체 이름을 입력하세요.</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">이동 통신사 이름을 입력하세요.</string>
     <string name="order_shipment_tracking_empty_tracking_num">추적 번호를 입력하세요.</string>
-    <string name="order_shipment_tracking_empty_provider">공급업체를 선택하세요.</string>
+    <string name="order_shipment_tracking_empty_provider">이동 통신사를 선택하세요.</string>
     <string name="order_shipment_tracking_confirm_discard">이 추적을 취소하시겠습니까?</string>
     <string name="order_shipment_tracking_error">추적을 추가할 수 없음</string>
     <string name="order_shipment_tracking_added">배송 추적이 추가됨</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">공급업체를 가져오는 중 오류 발생</string>
-    <string name="order_shipment_tracking_provider_list_item">배송 업체를 선택함</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">배송 업체</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">이동 통신사를 가져오는 중 오류 발생</string>
+    <string name="order_shipment_tracking_provider_list_item">선택한 운송업체</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">운송업체</string>
     <string name="order_shipment_tracking_date_label">배송일</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">추적 링크 입력</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">공급업체 이름 입력</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">이동 통신사 이름 입력</string>
     <string name="order_shipment_tracking_number_hint">추적 번호 입력</string>
-    <string name="order_shipment_tracking_provider_hint">공급업체 선택</string>
+    <string name="order_shipment_tracking_provider_hint">이동 통신사 선택</string>
     <string name="order_shipment_tracking_custom_provider_url_label">추적 링크(옵션)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">공급업체 이름</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">이동 통신사 이름</string>
     <string name="order_shipment_tracking_number_label">추적 번호</string>
     <string name="order_shipment_tracking_carrier_label">배송업체</string>
     <string name="order_shipment_tracking_toolbar_title">추적 추가</string>
@@ -692,7 +738,6 @@ Language: ko_KR
     <string name="orderstatus_failed">실패</string>
     <string name="orderstatus_pending">결제 대기 중</string>
     <string name="orderstatus_processing">처리 중</string>
-    <string name="add_order_note_confirm_discard">이 메모를 삭제하시겠습니까?</string>
     <string name="add_order_note_error">메모를 추가 할 수 없음</string>
     <string name="add_order_note_added">주문 메모가 추가됨</string>
     <string name="add_order_note_menu_item">추가</string>

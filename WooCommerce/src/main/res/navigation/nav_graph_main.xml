@@ -32,6 +32,11 @@
             app:destination="@id/productInventoryFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productShippingFragment"
+            app:destination="@id/productShippingFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/rootFragment"
@@ -177,6 +182,9 @@
             android:defaultValue="null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="launchedFromNotification"
+            app:argType="boolean" />
     </fragment>
     <action
         android:id="@+id/action_global_reviewDetailFragment"
@@ -233,6 +241,15 @@
         android:id="@+id/productInventoryFragment"
         android:name="com.woocommerce.android.ui.products.ProductInventoryFragment"
         tools:layout="@layout/fragment_product_inventory">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/productShippingFragment"
+        android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
+        tools:layout="@layout/fragment_product_shipping">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"

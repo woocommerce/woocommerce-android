@@ -189,6 +189,8 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         // s it can be processed immediately, otherwise silently refresh
         if (hidden) {
             changeReviewStatusSnackbar?.dismiss()
+        } else {
+            checkForNewDataAvailable()
         }
     }
 
@@ -271,7 +273,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private fun showSkeleton(show: Boolean) {
         if (isActive) {
             when (show) {
-                true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+                true -> {
+                    skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+                    showEmptyView(false)
+                }
                 false -> skeletonView.hide()
             }
         }
@@ -294,7 +299,11 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     private fun openReviewDetail(review: ProductReview) {
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId, tempStatus = pendingModerationNewStatus)
+        (activity as? MainNavigationRouter)?.showReviewDetail(
+                review.remoteId,
+                launchedFromNotification = false,
+                tempStatus = pendingModerationNewStatus
+        )
     }
 
     /**
@@ -404,13 +413,16 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun onReturnedFromChildFragment() {
-        if (newDataAvailable) {
+        checkForNewDataAvailable()
+        showOptionsMenu(true)
+    }
+
+    private fun checkForNewDataAvailable() {
+        if (newDataAvailable && isActive) {
             viewModel.reloadReviewsFromCache()
             viewModel.checkForUnreadReviews()
             newDataAvailable = false
         }
-
-        showOptionsMenu(true)
     }
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)

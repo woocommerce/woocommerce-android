@@ -1,3 +1,0 @@
-3.3:
-- Mejoras de rendimiento: Los pedidos de la lista de pedidos ahora se cargan más rápido y se han solucionado los errores que a veces se producían después de actualizar las variantes de productos o al salir de un pedido, después de cambiar su estado.
-- Corrección de errores: Las etiquetas de la barra de navegación inferior que estaban cortadas ya aparecen enteras, el desplazamiento vertical en la tabla de estadísticas funciona correctamente, las valoraciones con marcas de tiempo incorrectas tienen las correctas, y la clasificación de las variaciones de productos en la aplicación coincide con la web.

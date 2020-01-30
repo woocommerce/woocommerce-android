@@ -11,8 +11,8 @@ import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
+import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
@@ -39,7 +39,7 @@ class ProductDetailRepository @Inject constructor(
     }
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
-    private var continuation: CancellableContinuation<Boolean>? = null
+    private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -51,9 +51,9 @@ class ProductDetailRepository @Inject constructor(
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
         try {
-            continuation?.cancel()
+            continuationFetchProduct?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                continuation = it
+                continuationFetchProduct = it
 
                 val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
                 dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
@@ -62,7 +62,7 @@ class ProductDetailRepository @Inject constructor(
             WooLog.d(PRODUCTS, "CancellationException while fetching single product")
         }
 
-        continuation = null
+        continuationFetchProduct = null
         return getProduct(remoteProductId)
     }
 
@@ -100,10 +100,10 @@ class ProductDetailRepository @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
             if (event.isError) {
-                continuation?.resume(false)
+                continuationFetchProduct?.resume(false)
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                continuation?.resume(true)
+                continuationFetchProduct?.resume(true)
             }
         }
     }
