@@ -40,6 +40,14 @@ sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val 
                 .map { it.value to context.getString(fromString(it.value).stringResource)
                 }.toMap()
 
+        fun backordersToDisplayString(context: Context, backorderStatus: ProductBackorderStatus): String {
+            return if (backorderStatus.stringResource != 0) {
+                context.getString(backorderStatus.stringResource)
+            } else {
+                backorderStatus.value
+            }
+        }
+
         @JvmField
         val CREATOR = object : Creator<ProductBackorderStatus> {
             override fun createFromParcel(parcel: Parcel): ProductBackorderStatus {
