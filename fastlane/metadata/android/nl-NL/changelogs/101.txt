@@ -1,3 +1,0 @@
-3.3:
-- Prestatieverbeteringen: Bestellingen in de bestellijst worden nu sneller geladen en crashes die soms plaatsvonden na het bijwerken van productvarianten of het afsluiten van een bestelling na het wijzigen van de status zijn opgelost.
-- Bugfixes: Labels op de navigatiebalk onderaan die afgebroken werden, worden nu in het geheel weergegeven; verticaal scrollen in je statistiekengrafiek werkt nu goed; beoordelingen met onjuiste tijden hebben nu de juiste tijden; en het sorteren van productvariaties in de app komt nu overeen met dat van de webbrowser.

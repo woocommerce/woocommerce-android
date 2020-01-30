@@ -1,3 +1,0 @@
-3.3:
-- Migliori prestazioni: caricamento più rapido degli ordini nell'elenco e correzione degli arresti imprevisti dopo l'aggiornamento di varianti di prodotto o all'uscita da un ordine dopo averne modificato lo stato.
-- Correzioni di bug: le etichette troncate nella barra di navigazione inferiore ora sono intere, lo scorrimento verticale nelle statistiche funziona, le recensioni con data e ora errate ora sono corrette e l'ordinamento delle varianti di prodotto nell'app ora corrisponde al web.

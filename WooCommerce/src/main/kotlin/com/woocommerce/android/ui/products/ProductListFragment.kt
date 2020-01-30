@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -247,7 +249,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     if (new.isSearchActive == true) {
-                        empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQuery = viewModel.getSearchQuery())
+                        empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQueryOrFilter = viewModel.getSearchQuery())
                     } else {
                         empty_view.show(EmptyViewType.PRODUCT_LIST)
                     }

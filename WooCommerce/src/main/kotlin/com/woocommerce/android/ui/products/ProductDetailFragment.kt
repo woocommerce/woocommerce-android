@@ -435,6 +435,23 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 showProductInventory(product.remoteId)
             }
         }
+
+        val shippingGroup = mapOf(
+                Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
+                Pair(getString(R.string.product_shipping_class), product.shippingClass)
+        )
+        addPropertyGroup(
+                DetailCard.Secondary,
+                R.string.product_shipping,
+                shippingGroup,
+                groupIconId = R.drawable.ic_gridicons_shipping
+        )?.also {
+            it.setClickListener {
+                // TODO add event tracking for click
+                showProductShipping(product.remoteId)
+            }
+        }
     }
 
     /**
@@ -483,12 +500,15 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun addPurchaseDetailsCard(productData: ViewState) {
         val product = requireNotNull(productData.product)
 
-        val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
-                Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
-                Pair(getString(R.string.product_shipping_class), product.shippingClass)
-        )
-        addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
+        // shipping group is part of the secondary card if edit product is enabled
+        if (!isAddEditProductRelease1Enabled(product.type)) {
+            val shippingGroup = mapOf(
+                    Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                    Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
+                    Pair(getString(R.string.product_shipping_class), product.shippingClass)
+            )
+            addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
+        }
 
         if (product.isDownloadable) {
             val limit = if (product.downloadLimit > 0) String.format(
@@ -783,6 +803,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         findNavController().navigate(
                 ProductDetailFragmentDirections
                         .actionProductDetailFragmentToProductInventoryFragment(remoteId)
+        )
+    }
+
+    private fun showProductShipping(remoteId: Long) {
+        findNavController().navigate(
+                ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductShippingFragment(remoteId)
         )
     }
 

@@ -181,8 +181,13 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_action_bar, menu)
-        return true
+        // don't show the options menu unless we're at the root
+        if (isAtNavigationRoot()) {
+            menuInflater.inflate(R.menu.menu_action_bar, menu)
+            return true
+        } else {
+            return false
+        }
     }
 
     override fun onResume() {
@@ -717,7 +722,7 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
-                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId())
+                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId(), true)
                 else -> { /* do nothing */ }
             }
         }
@@ -729,7 +734,7 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigate(action)
     }
 
-    override fun showReviewDetail(remoteReviewId: Long, tempStatus: String?) {
+    override fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String?) {
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS
 
@@ -738,7 +743,8 @@ class MainActivity : AppUpgradeActivity(),
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 remoteReviewId,
-                tempStatus)
+                tempStatus,
+                launchedFromNotification)
         navController.navigate(action)
     }
 

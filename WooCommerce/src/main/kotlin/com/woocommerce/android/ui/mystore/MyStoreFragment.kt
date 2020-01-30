@@ -36,8 +36,10 @@ class MyStoreFragment : TopLevelFragment(),
         DashboardStatsListener {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
-        const val STATE_KEY_TAB_POSITION = "tab-stats-position"
-        const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
+        private const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        private const val STATE_KEY_IS_EMPTY_VIEW_SHOWING = "is-empty-view-showing"
+
         fun newInstance() = MyStoreFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
@@ -106,6 +108,9 @@ class MyStoreFragment : TopLevelFragment(),
         savedInstanceState?.let { bundle ->
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             tabStatsPosition = bundle.getInt(STATE_KEY_TAB_POSITION)
+            if (bundle.getBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING)) {
+                showEmptyView(true)
+            }
         }
 
         presenter.takeView(this)
@@ -201,6 +206,7 @@ class MyStoreFragment : TopLevelFragment(),
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putInt(STATE_KEY_TAB_POSITION, tabLayout.selectedTabPosition)
+        outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewShowing())
     }
 
     override fun showStats(
@@ -365,4 +371,6 @@ class MyStoreFragment : TopLevelFragment(),
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
+
+    private fun isEmptyViewShowing() = empty_view.visibility == View.VISIBLE
 }
