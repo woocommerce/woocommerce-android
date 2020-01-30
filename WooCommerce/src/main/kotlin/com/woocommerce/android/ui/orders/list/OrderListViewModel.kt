@@ -326,10 +326,10 @@ class OrderListViewModel @AssistedInject constructor(
                         EmptyViewType.ORDER_LIST_LOADING
                     }
                 }
-                isSearching -> {
+                isSearching && searchQuery.isNotEmpty() -> {
                     EmptyViewType.SEARCH_RESULTS
                 }
-                isShowingProcessingTab() -> {
+                isShowingProcessingOrders() -> {
                     if (hasOrders) {
                         // there are orders but none are processing
                         EmptyViewType.ORDER_LIST_ALL_PROCESSED
@@ -337,6 +337,9 @@ class OrderListViewModel @AssistedInject constructor(
                         // Waiting for orders to process
                         EmptyViewType.ORDER_LIST
                     }
+                }
+                orderStatusFilter.isNotEmpty() -> {
+                    EmptyViewType.ORDER_LIST_FILTERED
                 }
                 else -> {
                     if (networkStatus.isConnected()) {
@@ -353,7 +356,7 @@ class OrderListViewModel @AssistedInject constructor(
         _emptyViewType.postValue(newEmptyViewType)
     }
 
-    private fun isShowingProcessingTab() = orderStatusFilter.isNotEmpty() &&
+    private fun isShowingProcessingOrders() = orderStatusFilter.isNotEmpty() &&
             orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
 
     private fun showOfflineSnack() {

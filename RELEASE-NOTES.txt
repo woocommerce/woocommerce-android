@@ -1,5 +1,6 @@
 3.6
 -----
+* Fixed a few problems with the new "empty states," such as being cut off on smaller screens in landscape
 * Fixed a bug that could cause the reviews list to be empty when returning to it after rotating the device
  
 3.5
