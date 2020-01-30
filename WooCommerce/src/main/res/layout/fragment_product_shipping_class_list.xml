@@ -5,13 +5,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_dialog"
-        android:text="@string/product_shipping_class"
-        android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"

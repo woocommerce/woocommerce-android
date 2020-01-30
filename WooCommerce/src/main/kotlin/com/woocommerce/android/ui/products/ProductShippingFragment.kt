@@ -7,13 +7,14 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductShippingClassDialog.ShippingClassDialogListener
+import com.woocommerce.android.ui.products.ProductShippingClassFragment.ShippingClassFragmentListener
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -26,17 +27,11 @@ import javax.inject.Inject
 /**
  * Fragment which enables updating product shipping data.
  */
-class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
-    companion object {
-        private const val KEY_IS_SHIPPING_CLASS_DLG_SHOWING = "shipping_class_dlg_showing"
-    }
-
+class ProductShippingFragment : BaseFragment(), ShippingClassFragmentListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private var isShippingClassDlgShowing: Boolean = false
     private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory }
-    private var shippingClassDialog: ProductShippingClassDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,11 +42,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
         return inflater.inflate(R.layout.fragment_product_shipping, container, false)
     }
 
-    override fun onPause() {
-        shippingClassDialog?.dismiss()
-        super.onPause()
-    }
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -60,17 +50,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-
-        savedInstanceState?.let { bundle ->
-            if (bundle.getBoolean(KEY_IS_SHIPPING_CLASS_DLG_SHOWING)) {
-                showShippingClassDialog()
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(KEY_IS_SHIPPING_CLASS_DLG_SHOWING, isShippingClassDlgShowing)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
@@ -81,7 +60,7 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
         }
 
         viewModel.productShippingClasses.observe(viewLifecycleOwner, Observer { shippingClasses ->
-            shippingClassDialog?.setShippingClasses(shippingClasses)
+            // TODO mShippingClassFragment?.setShippingClasses(shippingClasses)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -124,10 +103,8 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
     }
 
     private fun showShippingClassDialog() {
-        isShippingClassDlgShowing = true
-        shippingClassDialog = ProductShippingClassDialog.newInstance(this@ProductShippingFragment).also { dialog ->
-            dialog.show(parentFragmentManager, ProductShippingClassDialog.TAG)
-        }
+        val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment()
+        findNavController().navigate(action)
     }
 
     /**
@@ -142,16 +119,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassDialogListener {
      */
     override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
         product_shipping_class_spinner.setText(shippingClass?.name ?: "")
-        shippingClassDialog?.dismiss()
-        shippingClassDialog = null
-        isShippingClassDlgShowing = false
         // TODO: update product draft in another PR
-    }
-
-    /**
-     * Shipping class dialog was cancelled without making a selection
-     */
-    override fun onShippingClassDialogCancelled() {
-        isShippingClassDlgShowing = false
     }
 }
