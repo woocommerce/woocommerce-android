@@ -549,7 +549,10 @@ class OrderListFragment : TopLevelFragment(),
     override fun onQueryTextChange(newText: String): Boolean {
         // only display the order status list if the search query is empty
         when {
-            newText.isEmpty() -> displayOrderStatusListView()
+            newText.isEmpty() -> {
+                displayOrderStatusListView()
+                searchQuery = ""
+            }
             else -> hideOrderStatusListView()
         }
 

@@ -326,12 +326,8 @@ class OrderListViewModel @AssistedInject constructor(
                         EmptyViewType.ORDER_LIST_LOADING
                     }
                 }
-                isSearching -> {
-                    if (orderStatusFilter.isEmpty() || isShowingProcessingOrders()) {
-                        EmptyViewType.SEARCH_RESULTS
-                    } else {
-                        EmptyViewType.ORDER_LIST_FILTERED
-                    }
+                isSearching && searchQuery.isNotEmpty() -> {
+                    EmptyViewType.SEARCH_RESULTS
                 }
                 isShowingProcessingOrders() -> {
                     if (hasOrders) {
@@ -341,6 +337,9 @@ class OrderListViewModel @AssistedInject constructor(
                         // Waiting for orders to process
                         EmptyViewType.ORDER_LIST
                     }
+                }
+                orderStatusFilter.isNotEmpty() -> {
+                    EmptyViewType.ORDER_LIST_FILTERED
                 }
                 else -> {
                     if (networkStatus.isConnected()) {
