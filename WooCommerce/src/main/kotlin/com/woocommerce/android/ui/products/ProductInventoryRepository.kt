@@ -65,6 +65,8 @@ class ProductInventoryRepository @Inject constructor(
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
+    fun geProductExistsBySku(sku: String) = productStore.geProductExistsBySku(selectedSite.get(), sku)
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductSkuAvailabilityChanged(event: OnProductSkuAvailabilityChanged) {

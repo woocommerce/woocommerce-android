@@ -103,12 +103,12 @@ class ProductInventoryViewModel @AssistedInject constructor(
             skuVerificationJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
 
-                // if the sku is not available display error
-                val isSkuAvailable = productRepository.verifySkuAvailability(sku)
-                val skuErrorMessage = if (isSkuAvailable == false) {
-                    R.string.product_inventory_update_sku_error
-                } else 0
-                viewState = viewState.copy(skuErrorMessage = skuErrorMessage)
+                // check if sku is available from local cache
+                if (productRepository.geProductExistsBySku(sku)) {
+                    viewState = viewState.copy(skuErrorMessage = R.string.product_inventory_update_sku_error)
+                } else {
+                    verifyProductExistsBySkuRemotely(sku)
+                }
             }
         }
     }
@@ -154,6 +154,15 @@ class ProductInventoryViewModel @AssistedInject constructor(
         return if (viewState.isProductUpdated) {
             storedProductInventoryParameters.merge(viewState.productInventoryParameters)
         } else storedProductInventoryParameters.copy()
+    }
+
+    private suspend fun verifyProductExistsBySkuRemotely(sku: String) {
+        // if the sku is not available display error
+        val isSkuAvailable = productRepository.verifySkuAvailability(sku)
+        val skuErrorMessage = if (isSkuAvailable == false) {
+            R.string.product_inventory_update_sku_error
+        } else 0
+        viewState = viewState.copy(skuErrorMessage = skuErrorMessage)
     }
 
     @Parcelize
