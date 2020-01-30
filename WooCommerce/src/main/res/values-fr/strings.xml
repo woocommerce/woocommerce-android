@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 16:28:52+0000
+Translation-Revision-Date: 2020-01-22 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">Saisissez du texte</string>
+    <string name="product_detail_title_hint">Saisissez un titre</string>
+    <string name="product_detail_update_product_success">Produit mis à jour</string>
+    <string name="product_detail_update_product_error">Erreur lors de la mise à jour du produit</string>
+    <string name="product_update_dialog_message">Veuillez patienter…</string>
+    <string name="product_update_dialog_title">Mise à jour du produit</string>
+    <string name="product_description_empty">Décrivez votre produit</string>
+    <string name="product_description">Description</string>
+    <string name="product_edit_description">Modifier la description</string>
+    <string name="product_description_hint">Commencez à écrire…</string>
+    <string name="product_variant_list_empty">Ajoutez des options telles que la taille et la couleur depuis le Web. Ces options apparaîtront sur la page de produit de votre site.</string>
+    <string name="discard_message">Voulez-vous annuler les modifications ?</string>
+    <string name="update">Mettre à jour</string>
+    <string name="done">Terminé</string>
+    <string name="order_refunds_refund_in_progress">Remboursement en cours, veuillez patienter…</string>
+    <string name="order_refunds_refund_shipping">Rembourser les frais d’expédition</string>
+    <string name="order_refunds_select_quantity">Sélectionner une quantité</string>
+    <string name="order_refunds_shipping_refund">Remboursement des frais d’expédition</string>
+    <string name="order_refunds_products_refund">Remboursement des produits</string>
+    <string name="order_refunds_item_description">%d x %s chacun</string>
+    <string name="order_refunds_items_selected">%d articles sélectionnés</string>
+    <string name="order_refunds_items_select_none">Ne rien sélectionner</string>
+    <string name="order_refunds_items_select_all">Sélectionner tout</string>
+    <string name="order_refunds_amount_refund_confirmation_message">En attente de confirmation du remboursement…</string>
+    <string name="settings_image_optimization_message">Redimensionnez et compressez les images pour accélérer le chargement</string>
+    <string name="settings_image_optimization_title">Optimisation des images</string>
+    <string name="image_source_device_camera">Prendre une photo</string>
+    <string name="image_source_device_chooser">Choisir depuis l’appareil</string>
+    <string name="image_source_title">Sélectionner une méthode de chargement</string>
+    <string name="product_images_upload_channel_title">Chargements</string>
+    <string name="product_images_uploading_multi_notif_message">Chargement des images…%d of %d</string>
+    <string name="product_images_uploading_single_notif_message">Chargement de l’image…</string>
+    <string name="product_images_camera_error">Impossible d’accéder à l’appareil photo</string>
+    <string name="product_image_remove_confirmation">Voulez-vous vraiment supprimer cette image ?</string>
+    <string name="product_image_capture_failed">Échec de la capture de l’image</string>
+    <string name="product_image_service_busy">Veuillez atteindre la fin de l’opération en cours</string>
+    <string name="product_image_service_error_uploading">Erreur lors du chargement de l’image du produit</string>
+    <string name="product_image_error_removing">Erreur lors de la suppression de l’image du produit</string>
+    <string name="product_image_add">Ajouter une image du produit</string>
+    <string name="product_remove_photo">Supprimer la photo</string>
+    <string name="product_add_photos">Ajouter des photos</string>
+    <string name="product_images_title">Photos</string>
+    <string name="product_add_image_content_description">Ajouter une image</string>
+    <string name="orderlist_fetching">Récupération des commandes…</string>
+    <string name="date_timeframe_future">À venir</string>
+    <string name="remove">Supprimer</string>
+    <string name="product_variant_hidden">Masqué</string>
     <string name="login_discovery_error_generic">Nous n\'avons pas pu accéder à votre site. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
     <string name="login_discovery_error_ssl">Nous n\'avons pas pu accéder à votre site à cause d\'un problème avec le &lt;b>certificat SSL&lt;/b>. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
     <string name="login_discovery_error_http_auth">Nous n\'avons pas pu accéder à votre site car il requiert une &lt;b>authentification HTTP&lt;/b>. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
@@ -24,7 +71,6 @@ Language: fr
     <string name="product_variants">Variantes</string>
     <string name="product_property_edit">Modifier le produit</string>
     <string name="product_variants_fetch_product_variants_error">Erreur lors de la récupération des variations du produit</string>
-    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques. Pour utiliser les statistiques en version bêta, veuillez activer l\'extension d\'administration WooCommerce version 0.22 ou ultérieure.</string>
     <string name="login_discovery_error_option_select">Sélectionner une option</string>
     <string name="login_troubleshooting_tips">Lire les astuces de résolution de problème</string>
     <string name="login_with_wordpress">Se connecter avec WordPress.com</string>
@@ -106,7 +152,7 @@ Language: fr
     <string name="login_try_another_store">Essayer une autre boutique</string>
     <string name="database_downgraded">Retour à une base de données inférieure, recréation des tables et chargement des boutiques</string>
     <string name="loading_stores">Chargement des boutiques</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">Aucun fournisseur n\'a été trouvé</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Aucun transporteur trouvé</string>
     <string name="login_invalid_site_url">Veuillez entrer une adresse de site Web complète, telle que exemple.com.</string>
     <string name="reviews_empty_message">Pas encore d’avis !</string>
     <string name="review_notifications">Avis</string>
@@ -366,24 +412,24 @@ Language: fr
     <string name="country_mapping_AF">Afghanistan</string>
     <string name="country_mapping_AX">Åland</string>
     <string name="wc_review_title">Avis</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">Prestataire personnalisé</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Transporteur personnalisé</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Personnaliser</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">Veuillez saisir un nom de fournisseur</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Veuillez saisir un nom de transporteur</string>
     <string name="order_shipment_tracking_empty_tracking_num">Veuillez saisir un numéro de suivi</string>
-    <string name="order_shipment_tracking_empty_provider">Veuillez sélectionner un fournisseur</string>
+    <string name="order_shipment_tracking_empty_provider">Veuillez sélectionner un transporteur</string>
     <string name="order_shipment_tracking_confirm_discard">Voulez-vous vraiment annuler ce suivi ?</string>
     <string name="order_shipment_tracking_error">Impossible d\'ajouter le suivi</string>
     <string name="order_shipment_tracking_added">Suivi de l\'expédition ajouté</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Erreur lors de l\'extraction des fournisseurs</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Erreur lors de la récupération des transporteurs</string>
     <string name="order_shipment_tracking_provider_list_item">Transporteur sélectionné</string>
     <string name="order_shipment_tracking_provider_toolbar_title">Transporteurs</string>
     <string name="order_shipment_tracking_date_label">Date d\'expédition</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Saisir le lien de suivi</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">Saisir le nom du fournisseur</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Saisissez le nom du transporteur</string>
     <string name="order_shipment_tracking_number_hint">Saisir le numéro de suivi</string>
-    <string name="order_shipment_tracking_provider_hint">Sélectionner le fournisseur</string>
+    <string name="order_shipment_tracking_provider_hint">Sélectionnez un transporteur</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Lien de suivi (facultatif)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">Nom du fournisseur</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Nom du transporteur</string>
     <string name="order_shipment_tracking_number_label">Numéro de suivi</string>
     <string name="order_shipment_tracking_carrier_label">Transporteur</string>
     <string name="order_shipment_tracking_toolbar_title">Ajouter le suivi</string>
@@ -692,7 +738,6 @@ Language: fr
     <string name="orderstatus_failed">Échec</string>
     <string name="orderstatus_pending">Paiement en attente</string>
     <string name="orderstatus_processing">En cours</string>
-    <string name="add_order_note_confirm_discard">Supprimer cette note ?</string>
     <string name="add_order_note_error">Impossible d’ajouter la note</string>
     <string name="add_order_note_added">Note de la commande ajoutée</string>
     <string name="add_order_note_menu_item">Ajouter</string>

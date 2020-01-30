@@ -1,85 +1,77 @@
 <ar>
-3.3:
-- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
-- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.
+3.4:
+- يُضيف التصميم تعديلات طفيفة على علامة تبويب "المخزن الخاص بي".
+- تم إصلاح خطأ التنقل الذي يتسبب في حدوث أعطال عند إعادة التطبيق من الخلفية.
+- الأخطاء الأخرى المتنوعة.
+
 </ar>
-<de-DE>
-3.3:
-- Verbesserungen an der Performance: Die Bestellungen in der Bestellliste laden jetzt schneller und die gelegentlichen Abstürze nach der Aktualisierung von Produktvarianten oder beim Verlassen einer Bestellung nach einer Statusänderung kommen nun nicht mehr vor.
-- Fehlerkorrekturen: Abgeschnittene Labels in der unteren Navigationsleiste werden jetzt vollständig angezeigt, das vertikale Scrollen in deinen Statistiken funktioniert jetzt richtig, es gibt keine Bewertungen mit falschen Zeitstempeln mehr und die Sortierung von Produktvarianten funktioniert nun in der App genauso wie im Web.
-</de-DE>
 <es-ES>
-3.3:
-- Mejoras de rendimiento: Los pedidos de la lista de pedidos ahora se cargan más rápido y se han solucionado los errores que a veces se producían después de actualizar las variantes de productos o al salir de un pedido, después de cambiar su estado.
-- Corrección de errores: Las etiquetas de la barra de navegación inferior que estaban cortadas ya aparecen enteras, el desplazamiento vertical en la tabla de estadísticas funciona correctamente, las valoraciones con marcas de tiempo incorrectas tienen las correctas, y la clasificación de las variaciones de productos en la aplicación coincide con la web.
+3.4:
+- Pequeños cambios de diseño en la pestaña Mi tienda.
+- Se ha corregido un error de navegación que provocaba fallos cuando se volvía a la aplicación desde segundo plano.
+- Otras correcciones de errores misceláneos.
+
 </es-ES>
 <fr-FR>
-3.3 :
-- Amélioration des performances : Les commandes de la liste des commandes se chargent désormais plus vite. Nous avons par ailleurs résolu les plantages qui se produisaient après avoir mis à jour les variantes d’un produit ou après avoir quitté une commande à la suite de modifications apportées à son état.
-- Résolution de bugs : Dans le fond de la barre de navigation, les étiquettes qui étaient tronquées sont affichées en intégralité, le défilement vertical dans le tableau de vos statistiques fonctionne correctement, les horodatages incorrects des avis sont corrigés, et le triage des variantes de produit dans l’application correspond à la version Web.
+3.4 :
+- Modifications mineures apportées à la mise en page de l'onglet Ma boutique.
+- Correction d'un bug de navigation qui provoquait des plantages lors de la réouverture de l'application après qu'elle avait été mise en arrière-plan.
+- Correction d'autres bugs divers.
+
 </fr-FR>
-<iw-IL>
-3.3:
-- שיפורים בביצועים: הזמנות ברשימת ההזמנות נטענות כעת מהר יותר וטיפלנו בקריסות שלפעמים התרחשו לאחר העדכון של משתני המוצר או של הזמנה קיימת אחרי שינוי המצב שלה.
-- תיקוני באגים: תוויות בתחתית של סרגל הניווט שנחתכו בעבר כעת מופיעות בצורה שלמה, הגלילה האנרכית בטבלה של הנתונים הסטטיסטיים כעת עובדת באופן תקין, ביקורות עם חותמות זמן שגויות מופיעות כעת עם חותמת הזמן הנכונה, המיון לפי סוג מוצר באפליקציה כעת תואם לתצוגה ברשת.
-</iw-IL>
-<id>
-3.3:
-- Peningkatan performa: Pesanan dalam daftar pesanan kini dimuat lebih cepat, dan terkadang terjadi crash setelah memperbarui varian produk atau keluar dari pesanan setelah mengubah status.
-- Memperbaiki bug: label di bilah navigasi bawah yang terpotong kini sudah terlihat, pengguliran vertikal di bagan statistik berfungsi dengan semestinya, ulasan dengan stempel waktu yang salah sudah memiliki stempel waktu yang benar, dan pengurutan variasi produk di aplikasi cocok dengan yang ada di web.
-</id>
-<it-IT>
-3.3:
-- Migliori prestazioni: caricamento più rapido degli ordini nell'elenco e correzione degli arresti imprevisti dopo l'aggiornamento di varianti di prodotto o all'uscita da un ordine dopo averne modificato lo stato.
-- Correzioni di bug: le etichette troncate nella barra di navigazione inferiore ora sono intere, lo scorrimento verticale nelle statistiche funziona, le recensioni con data e ora errate ora sono corrette e l'ordinamento delle varianti di prodotto nell'app ora corrisponde al web.
-</it-IT>
 <ja-JP>
-3.3:
-- Performance improvements:Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
-- Bug fixes:labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.
+3.4:
+- 「自分のストア」タブのデザインの微調整。
+- バックグラウンドからアプリを戻すときにクラッシュする原因となっていたナビゲーションバグを修正しました。
+- 他のさまざまなバグの修正。
+
 </ja-JP>
 <ko-KR>
-3.3:
-- 성능 개선 사항: 이제 주문 목록의 주문이 더 빨리 로드되며, 제품 변형을 업데이트하거나 상태 변경 후 주문을 종료하면 때때로 발생하던 충돌 문제가 해결되었습니다.
-- 버그 수정: 하단 탐색 표시줄에서 잘려서 표시되던 레이블이 이제 온전하게 표시됩니다. 통계 차트에서 세로 스크롤이 정상적으로 작동하며, 리뷰의 잘못된 타임스탬프가 올바르게 수정되었고, 앱에서 정렬되는 제품 변형이 웹과 일치합니다.
+3.4:
+- My Store 탭에 소소한 디자인 변경이 이루어졌습니다.
+- 앱을 백그라운드에서 다시 가져올 때 충돌을 일으키는 탐색 버그가 수정되었습니다.
+- 기타 버그가 수정되었습니다.
+
 </ko-KR>
 <nl-NL>
-3.3:
-- Prestatieverbeteringen: Bestellingen in de bestellijst worden nu sneller geladen en crashes die soms plaatsvonden na het bijwerken van productvarianten of het afsluiten van een bestelling na het wijzigen van de status zijn opgelost.
-- Bugfixes: Labels op de navigatiebalk onderaan die afgebroken werden, worden nu in het geheel weergegeven; verticaal scrollen in je statistiekengrafiek werkt nu goed; beoordelingen met onjuiste tijden hebben nu de juiste tijden; en het sorteren van productvariaties in de app komt nu overeen met dat van de webbrowser.
+3.4:
+- Er zijn kleine aanpassingen aangebracht in het ontwerp van het tabblad Mijn winkel.
+- Er is een navigatiebug gerepareerd die crashes veroorzaakte wanneer de app vanuit de achtergrond werd teruggehaald.
+- Diverse andere bugfixes uitgevoerd.
+
 </nl-NL>
 <pt-BR>
-3.3:
-- Melhorias de desempenho: pedidos na lista agora carregam mais depressa. Erros ocasionais após atualizar variantes de produtos ou sair de um pedido após alterar seu status foram resolvidos.
-- Correções de bugs: rótulos na barra de navegação inferior foram totalmente eliminados, rolagem vertical no gráfico de estatísticas funciona corretamente, carimbos de data/hora incorretos em avaliações foram corrigidos e a classificação da variação de produtos no aplicativo corresponde à classificação na Web.
+3.4:
+- Pequenas alterações no design da guia Minha loja.
+- Correção de um erro de navegação que causava travamentos ao trazer o aplicativo de volta do segundo plano.
+- Outras correções de bugs.
+
 </pt-BR>
 <ru-RU>
-Версия 3.3
-— Улучшена производительность. Элементы списка заказов теперь загружаются быстрее, а сбои, которые иногда возникали при обновлении вариантов продуктов или при выходе из заказа после изменения его статуса, устранены.
-— Исправлены ошибки. Обрезанные ярлыки на нижней панели навигации теперь отображаются целиком, вертикальная прокрутка таблицы статистики работает нормально, исправлены отзывы с неверными метками, а сортировка вариантов продуктов в приложении совпадает с сортировкой на сайте.
+3.4
+– Немного изменен дизайн вкладки «Мой магазин».
+– Исправлена ошибка навигации, которая вызывала сбои при выводе приложения из фонового режима.
+– Исправлены другие ошибки.
+
 </ru-RU>
-<sv-SE>
-3.3:
-– Prestandaförbättringar: Ordrar i orderlistan laddar nu snabbare och krascher som ibland kunde inträffa efter uppdatering av produktvarianter eller när man gick ut från en order efter att ha ändrat dess status har åtgärdats.
-– Buggkorrigeringar: etiketter i det nedre navigeringsfältet som var beskurna är nu hela, lodrät bläddring i dina statistikdiagram fungerar nu korrekt, recensioner med felaktiga tidsstämplar har korrigerats och sortering efter produktvarianter i appen matchar nu webben.
-</sv-SE>
 <tr-TR>
-3.3:
-- Performans iyileştirmeleri: Artık sipariş listesindeki siparişler daha hızlı yükleniyor. Ürün varyasyonları güncellenirken veya sipariş durumu değiştirildikten sonra sayfadan ayrılırken yaşanan kilitlenmeler giderildi.
-- Hata düzeltmeleri: Alt gezinme çubuğundaki kesilmiş etiketler artık tam görünüyor, istatistik grafiklerinde dikey kaydırma sırasında yaşanan sorunlar ve zaman damgası yanlış olan yorumlar düzeltildi, uygulamadaki ürün varyasyonu sınıflandırması ile web uyumlu hale getirildi.
+3.4:
+- Mağazam sekmesinde ufak tasarım değişiklikleri.
+- Uygulamayı arka plandan getirirken kilitlenmelere sebep olan gezinme hatası düzeltildi.
+- Diğer çeşitli hata düzeltmeleri.
+
 </tr-TR>
-<zh-CN>
-3.3：
-– 性能改进：现在，订单列表中的订单加载速度更快，另外，在更新产品变体后，或者在更改了订单状态退出后，有时会发生的崩溃现已解决。
-– 错误修复：底部导航栏上被切断的标签已恢复完整，在统计信息图表中垂直滚动现已恢复正常，带有错误时间戳的评论已更改为正确的时间戳，并且在应用程序中排列的产品变体现已与 Web 匹配。
-</zh-CN>
 <zh-TW>
-3.3：
-- 效能改善：訂單清單現在會更快載入訂單，且我們已解決更新產品型號或在變更訂單狀態後離開訂單時，偶爾會發生的當機問題。
-- 故障修正：底部導覽列被截斷的標籤已恢復完整，統計資料圖表的垂直捲動功能已可正常運作，時間戳記錯誤的評論已改為顯示正確時間戳記，以及應用城市中的產品型號排序已符合網站上的排序。
+3.4：
+- 微調「我的商店」索引標籤設計。
+- 修正了一個瀏覽錯誤，這個錯誤會在你從背景叫回應用程式時，導致應用程式毀損。
+- 修正其他錯誤。
+
 </zh-TW>
 <en-US>
-3.3:
-- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.
-- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.
+3.4:
+- Minor design tweaks to the My Store tab.
+- Fixed a navigation bug that causing crashes when bringing the app back from background.
+- Other miscellaneous bug fixes.
+
 </en-US>

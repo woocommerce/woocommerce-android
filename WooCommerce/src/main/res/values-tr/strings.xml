@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-12-12 00:54:53+0000
+Translation-Revision-Date: 2020-01-22 00:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">Metin girin</string>
+    <string name="product_detail_title_hint">Başlık girin</string>
+    <string name="product_detail_update_product_success">Ürün güncellendi</string>
+    <string name="product_detail_update_product_error">Ürün güncellenirken hata oluştu</string>
+    <string name="product_update_dialog_message">Lütfen bekleyin…</string>
+    <string name="product_update_dialog_title">Ürün güncelleniyor</string>
+    <string name="product_description_empty">Ürününüzü tanımlayın</string>
+    <string name="product_description">Tanım</string>
+    <string name="product_edit_description">Tanımı düzenle</string>
+    <string name="product_description_hint">Yazmaya başlayın…</string>
+    <string name="product_variant_list_empty">Web’den boyut ve renk gibi seçenekler ekleyin. Sitenizin ürün sayfasında seçenekler olarak gözükür</string>
+    <string name="discard_message">Değişikliklerinizi iptal etmek mi istiyorsunuz?</string>
+    <string name="update">Güncelle</string>
+    <string name="done">Bitti</string>
+    <string name="order_refunds_refund_in_progress">Para iadesi yapılıyor, lütfen bekleyin…</string>
+    <string name="order_refunds_refund_shipping">Para iadesi gönderimi</string>
+    <string name="order_refunds_select_quantity">Miktar seçin</string>
+    <string name="order_refunds_shipping_refund">Gönderim para iadesi</string>
+    <string name="order_refunds_products_refund">Ürün para iadesi</string>
+    <string name="order_refunds_item_description">Her biri %d x %s</string>
+    <string name="order_refunds_items_selected">%d öge seçildi</string>
+    <string name="order_refunds_items_select_none">Hiçbirini seçme</string>
+    <string name="order_refunds_items_select_all">Tümünü seç</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Para iadesi onayı bekleniyor…</string>
+    <string name="settings_image_optimization_message">Daha hızlı yükleme için görsellerin boyutlarını değiştirip sıkıştırın</string>
+    <string name="settings_image_optimization_title">Görsel optimizasyonu</string>
+    <string name="image_source_device_camera">Fotoğraf çek</string>
+    <string name="image_source_device_chooser">Cihazdan seç</string>
+    <string name="image_source_title">Karşıya yükleme yöntemi seçin</string>
+    <string name="product_images_upload_channel_title">Yüklemeler</string>
+    <string name="product_images_uploading_multi_notif_message">Görseller yükleniyor…%d/%d</string>
+    <string name="product_images_uploading_single_notif_message">Görsel yükleniyor…</string>
+    <string name="product_images_camera_error">Kameraya erişilemedi</string>
+    <string name="product_image_remove_confirmation">Bu görseli kaldırmak istediğinizden emin misiniz?</string>
+    <string name="product_image_capture_failed">Görsel yakalanamadı</string>
+    <string name="product_image_service_busy">Lütfen devam eden işlemin tamamlanmasını bekleyin</string>
+    <string name="product_image_service_error_uploading">Ürün görseli yüklenirken hata oluştu</string>
+    <string name="product_image_error_removing">Ürün görseli kaldırılırken hata oluştu</string>
+    <string name="product_image_add">Bir ürün görseli ekle</string>
+    <string name="product_remove_photo">Fotoğrafı kaldır</string>
+    <string name="product_add_photos">Fotoğraf ekle</string>
+    <string name="product_images_title">Fotoğraflar</string>
+    <string name="product_add_image_content_description">Görsel ekle</string>
+    <string name="orderlist_fetching">Siparişler alınıyor…</string>
+    <string name="date_timeframe_future">Yakında</string>
+    <string name="remove">Kaldır</string>
+    <string name="product_variant_hidden">Gizli</string>
     <string name="login_discovery_error_generic">Sitenize erişimi başaramadık. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL Sertifikası&lt;/b> ile ilgili bir sorun nedeniyle sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP Kimlik Doğrulaması&lt;/b> gerektiğinden sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
@@ -24,7 +71,6 @@ Language: tr
     <string name="product_variants">Varyasyonlar</string>
     <string name="product_property_edit">Ürünü düzenle</string>
     <string name="product_variants_fetch_product_variants_error">Ürün varyasyonları alınırken bir hata oluştu</string>
-    <string name="my_store_stats_reverted_message">Eski istatistiklere geri döndük. Beta istatistiklerini kullanmak için lütfen 0.22 veya daha üst sürüm WooCommerce Yönetici eklentisini etkinleştirin</string>
     <string name="login_discovery_error_option_select">Bir seçenek seçin</string>
     <string name="login_troubleshooting_tips">Sorun giderme ipuçlarımızı okuyun</string>
     <string name="login_with_wordpress">WordPress.com ile Giriş Yap</string>
@@ -106,7 +152,7 @@ Language: tr
     <string name="login_try_another_store">Başka bir mağaza deneyin</string>
     <string name="database_downgraded">Veri tabanının sürümü düşürüldü, tablolar yeniden oluşturuluyor ve mağazalar yükleniyor</string>
     <string name="loading_stores">Mağazalar yükleniyor</string>
-    <string name="order_shipment_tracking_provider_list_error_empty_list">Sağlayıcı bulunamadı</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Kargo şirketi bulunamadı</string>
     <string name="login_invalid_site_url">Lütfen example.com gibi eksiksiz bir web sitesi adresi girin.</string>
     <string name="reviews_empty_message">Henüz inceleme yok!</string>
     <string name="review_notifications">İncelemeler</string>
@@ -366,24 +412,24 @@ Language: tr
     <string name="country_mapping_AF">Afganistan</string>
     <string name="country_mapping_AX">Åland Adaları</string>
     <string name="wc_review_title">İnceleme</string>
-    <string name="order_shipment_tracking_custom_provider_section_name">Özel Sağlayıcı</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Özel Kargo Şirketi</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Özel</string>
-    <string name="order_shipment_tracking_empty_custom_provider_name">Lütfen bir sağlayıcı adı girin</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Lütfen bir kargo şirketi adı girin</string>
     <string name="order_shipment_tracking_empty_tracking_num">Lütfen bir takip numarası girin</string>
-    <string name="order_shipment_tracking_empty_provider">Lütfen bir sağlayıcı seçin</string>
+    <string name="order_shipment_tracking_empty_provider">Lütfen bir kargo şirketi seçin</string>
     <string name="order_shipment_tracking_confirm_discard">Bu takibi atmak istediğinizden emin misiniz?</string>
     <string name="order_shipment_tracking_error">Takip eklenemedi</string>
     <string name="order_shipment_tracking_added">Gönderim takibi eklendi</string>
-    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Sağlayıcılar alınırken hata oluştu</string>
-    <string name="order_shipment_tracking_provider_list_item">Seçilen Gönderim Sağlayıcısı</string>
-    <string name="order_shipment_tracking_provider_toolbar_title">Gönderim Sağlayıcıları</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Kargo şirketleri alınırken hata oluştu</string>
+    <string name="order_shipment_tracking_provider_list_item">Seçilen Kargo Şirketi</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Kargo Şirketleri</string>
     <string name="order_shipment_tracking_date_label">Gönderim tarihi</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Takip bağlantısını girin</string>
-    <string name="order_shipment_tracking_custom_provider_name_hint">Sağlayıcı adını girin</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Kargo şirketi adını girin</string>
     <string name="order_shipment_tracking_number_hint">Takip numarasını girin</string>
-    <string name="order_shipment_tracking_provider_hint">Sağlayıcı seçin</string>
+    <string name="order_shipment_tracking_provider_hint">Kargo şirketi seçin</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Takip bağlantısı (isteğe bağlı)</string>
-    <string name="order_shipment_tracking_custom_provider_name_label">Sağlayıcı adı</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Kargo şirketi adı</string>
     <string name="order_shipment_tracking_number_label">Takip numarası</string>
     <string name="order_shipment_tracking_carrier_label">Kargo Şirketi</string>
     <string name="order_shipment_tracking_toolbar_title">Takip Ekle</string>
@@ -692,7 +738,6 @@ Language: tr
     <string name="orderstatus_failed">Başarısız</string>
     <string name="orderstatus_pending">Ödeme Bekleniyor</string>
     <string name="orderstatus_processing">İşlemde</string>
-    <string name="add_order_note_confirm_discard">Bu notu görmezden gelmek mi istiyorsunuz?</string>
     <string name="add_order_note_error">Not eklenemedi</string>
     <string name="add_order_note_added">Sipariş notu eklendi</string>
     <string name="add_order_note_menu_item">Ekle</string>

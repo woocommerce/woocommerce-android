@@ -1,3 +1,0 @@
-3.3:
-- Melhorias de desempenho: pedidos na lista agora carregam mais depressa. Erros ocasionais após atualizar variantes de produtos ou sair de um pedido após alterar seu status foram resolvidos.
-- Correções de bugs: rótulos na barra de navegação inferior foram totalmente eliminados, rolagem vertical no gráfico de estatísticas funciona corretamente, carimbos de data/hora incorretos em avaliações foram corrigidos e a classificação da variação de produtos no aplicativo corresponde à classificação na Web.

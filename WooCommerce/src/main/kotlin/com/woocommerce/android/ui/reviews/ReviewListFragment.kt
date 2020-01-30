@@ -299,7 +299,11 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     private fun openReviewDetail(review: ProductReview) {
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId, tempStatus = pendingModerationNewStatus)
+        (activity as? MainNavigationRouter)?.showReviewDetail(
+                review.remoteId,
+                launchedFromNotification = false,
+                tempStatus = pendingModerationNewStatus
+        )
     }
 
     /**

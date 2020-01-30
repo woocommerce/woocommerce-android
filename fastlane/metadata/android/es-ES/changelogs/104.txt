@@ -1,0 +1,5 @@
+3.4:
+- Pequeños cambios de diseño en la pestaña Mi tienda.
+- Se ha corregido un error de navegación que provocaba fallos cuando se volvía a la aplicación desde segundo plano.
+- Otras correcciones de errores misceláneos.
+

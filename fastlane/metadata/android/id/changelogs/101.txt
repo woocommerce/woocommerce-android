@@ -1,3 +1,0 @@
-3.3:
-- Peningkatan performa: Pesanan dalam daftar pesanan kini dimuat lebih cepat, dan terkadang terjadi crash setelah memperbarui varian produk atau keluar dari pesanan setelah mengubah status.
-- Memperbaiki bug: label di bilah navigasi bawah yang terpotong kini sudah terlihat, pengguliran vertikal di bagan statistik berfungsi dengan semestinya, ulasan dengan stempel waktu yang salah sudah memiliki stempel waktu yang benar, dan pengurutan variasi produk di aplikasi cocok dengan yang ada di web.

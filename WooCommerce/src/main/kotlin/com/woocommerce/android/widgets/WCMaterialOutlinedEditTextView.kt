@@ -51,6 +51,10 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
 
     fun getText() = edit_text.text.toString()
 
+    fun setHint(hintStr: String) {
+        edit_text_input.hint = hintStr
+    }
+
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
         edit_text.doAfterTextChanged {
             clearError()
