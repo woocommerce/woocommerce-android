@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -22,7 +23,7 @@ import javax.inject.Inject
  */
 class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListener {
     companion object {
-        const val TAG: String = "ProductShippingClassDialog"
+        const val TAG = "ProductShippingClassDialog"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -67,7 +68,8 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
     override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
     override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
-        // TODO
+        // TODO: a future PR should return the selected shipping class to the shipping fragment
+        findNavController().navigateUp()
     }
 
     override fun onRequestLoadMore() {

@@ -20,7 +20,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
-import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import javax.inject.Inject
 
 /**
@@ -100,13 +99,5 @@ class ProductShippingFragment : BaseFragment() {
     private fun showShippingClassFragment() {
         val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment()
         findNavController().navigate(action)
-    }
-
-    /**
-     * TODO
-     */
-    fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
-        product_shipping_class_spinner.setText(shippingClass?.name ?: "")
-        // TODO: update product draft in another PR
     }
 }
