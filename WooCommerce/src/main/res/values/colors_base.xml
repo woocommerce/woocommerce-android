@@ -4,7 +4,7 @@
         General colors
     -->
     <color name="color_primary">@color/woo_purple_60</color>
-    <color name="color_primary_surface">@color/color_primary</color>
+    <color name="color_primary_surface">@color/woo_purple_60</color>
     <color name="color_secondary">@color/woo_pink_50</color>
     <color name="color_surface">@color/woo_white</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>

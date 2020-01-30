@@ -117,7 +117,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun refreshContactEmailText() {
         val supportEmail = AppPrefs.getSupportEmail()
-        identityEmail.text = if (!supportEmail.isEmpty()) {
+        identityContainer.optionValue = if (supportEmail.isNotEmpty()) {
             supportEmail
         } else {
             getString(R.string.support_contact_email_not_set)

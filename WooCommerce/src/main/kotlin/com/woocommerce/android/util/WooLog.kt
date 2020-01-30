@@ -184,7 +184,7 @@ object WooLog {
         return errors.toString()
     }
 
-    fun toHtmlList() = logEntries.toHtmlList()
+    fun toHtmlList(isDarkTheme: Boolean) = logEntries.toHtmlList(isDarkTheme)
 
     override fun toString() = logEntries.toString()
 
@@ -231,11 +231,13 @@ object WooLog {
          * Returns the log entries as an array of html-formatted strings - this enables us to display
          * a formatted log in [com.woocommerce.android.support.WooLogViewerActivity]
          */
-        fun toHtmlList(): ArrayList<String> {
+        fun toHtmlList(isDarkTheme: Boolean): ArrayList<String> {
             val list = ArrayList<String>()
             for (entry in this) {
                 // same colors as WPAndroid
-                val color = when (entry.level) {
+                val color = if (isDarkTheme) {
+                    "white"
+                } else when (entry.level) {
                     LogLevel.v -> "grey"
                     LogLevel.d -> "teal"
                     LogLevel.i -> "black"

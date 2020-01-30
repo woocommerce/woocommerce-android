@@ -1,159 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/default_window_background"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/view_toolbar"/>
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+
+        <include
+            layout="@layout/view_toolbar"
+            android:id="@+id/toolbar"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textVersion"
-        android:layout_below="@+id/toolbar">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:text="@string/support_subtitle"/>
 
-                <TextView
-                    style="@style/Woo.TextView.Caption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/support_subtitle"/>
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/faqContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/support_help_center"
+                app:optionValue="@string/support_faq_detail"/>
 
-                <LinearLayout
-                    android:id="@+id/faqContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+            <View style="@style/Woo.Divider"/>
 
-                    <TextView
-                        style="@style/Woo.Settings.LabelWithDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_help_center"/>
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/contactContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/support_contact"
+                app:optionValue="@string/support_contact_detail"/>
 
-                    <TextView
-                        style="@style/Woo.Settings.Label.Detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_faq_detail"/>
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/myTicketsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/support_my_tickets"
+                app:optionValue="@string/support_my_tickets_detail"/>
 
-                </LinearLayout>
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/identityContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/support_contact_email"
+                app:optionValue="@string/support_contact_email_not_set"/>
 
-                <View
-                    style="@style/Woo.Divider"/>
+            <View style="@style/Woo.Divider"/>
 
-                <LinearLayout
-                    android:id="@+id/contactContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/Woo.Settings.LabelWithDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_contact"/>
-
-                    <TextView
-                        style="@style/Woo.Settings.Label.Detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_contact_detail"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/myTicketsContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/Woo.Settings.LabelWithDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_my_tickets"/>
-
-                    <TextView
-                        style="@style/Woo.Settings.Label.Detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_my_tickets_detail"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/identityContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/Woo.Settings.LabelWithDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_contact_email"/>
-
-                    <TextView
-                        android:id="@+id/identityEmail"
-                        style="@style/Woo.Settings.Label.Detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_contact_email_not_set"/>
-
-                </LinearLayout>
-
-                <View
-                    style="@style/Woo.Divider"/>
-
-                <LinearLayout
-                    android:id="@+id/appLogContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/Woo.Settings.LabelWithDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_application_log"/>
-
-                    <TextView
-                        style="@style/Woo.Settings.Label.Detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/support_application_log_detail"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/appLogContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/support_application_log"
+                app:optionValue="@string/support_application_log_detail"/>
+        </LinearLayout>
     </ScrollView>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textVersion"
-        style="@style/Woo.TextAppearance.Small"
+        style="@style/Woo.TextView.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:gravity="center"
         android:textAlignment="gravity"
-        android:paddingBottom="@dimen/margin_extra_large"
-        android:paddingTop="@dimen/margin_extra_large"
-        tools:text="Version"/>
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        tools:text="Version 3.3-rc-1"/>
 
-</RelativeLayout>
+</LinearLayout>
