@@ -194,6 +194,8 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         // s it can be processed immediately, otherwise silently refresh
         if (hidden) {
             changeReviewStatusSnackbar?.dismiss()
+        } else {
+            checkForNewDataAvailable()
         }
     }
 
@@ -413,13 +415,16 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun onReturnedFromChildFragment() {
-        if (newDataAvailable) {
+        checkForNewDataAvailable()
+        showOptionsMenu(true)
+    }
+
+    private fun checkForNewDataAvailable() {
+        if (newDataAvailable && isActive) {
             viewModel.reloadReviewsFromCache()
             viewModel.checkForUnreadReviews()
             newDataAvailable = false
         }
-
-        showOptionsMenu(true)
     }
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
