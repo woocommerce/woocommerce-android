@@ -14,7 +14,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductShippingClassFragment.ShippingClassFragmentListener
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -27,7 +26,7 @@ import javax.inject.Inject
 /**
  * Fragment which enables updating product shipping data.
  */
-class ProductShippingFragment : BaseFragment(), ShippingClassFragmentListener {
+class ProductShippingFragment : BaseFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -58,10 +57,6 @@ class ProductShippingFragment : BaseFragment(), ShippingClassFragmentListener {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
         }
-
-        viewModel.productShippingClasses.observe(viewLifecycleOwner, Observer { shippingClasses ->
-            // TODO mShippingClassFragment?.setShippingClasses(shippingClasses)
-        })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -98,26 +93,19 @@ class ProductShippingFragment : BaseFragment(), ShippingClassFragmentListener {
 
         product_shipping_class_spinner.setText(productData.product?.shippingClass ?: "")
         product_shipping_class_spinner.setClickListener {
-            showShippingClassDialog()
+            showShippingClassFragment()
         }
     }
 
-    private fun showShippingClassDialog() {
+    private fun showShippingClassFragment() {
         val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment()
         findNavController().navigate(action)
     }
 
     /**
-     * Shipping class dialog is requesting data
+     * TODO
      */
-    override fun onRequestShippingClasses(loadMore: Boolean) {
-        viewModel.loadProductShippingClasses(loadMore)
-    }
-
-    /**
-     * User made a selection from the shipping class dialog
-     */
-    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
+    fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
         product_shipping_class_spinner.setText(shippingClass?.name ?: "")
         // TODO: update product draft in another PR
     }

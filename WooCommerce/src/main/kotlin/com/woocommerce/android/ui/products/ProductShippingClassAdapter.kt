@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolder
-import com.woocommerce.android.ui.products.ProductShippingClassFragment.ShippingClassFragmentListener
 import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
@@ -16,11 +15,16 @@ import org.wordpress.android.fluxc.model.WCProductShippingClassModel
  * RecyclerView adapter which shows a list of product shipping classes, the first of which will
  * be "No shipping class" so the user can choose to clear this value.
  */
-class ProductShippingClassAdapter(context: Context, private val listener: ShippingClassFragmentListener) :
+class ProductShippingClassAdapter(context: Context, private val listener: ShippingClassAdapterListener) :
         RecyclerView.Adapter<ViewHolder>() {
     companion object {
         private const val VT_NO_SHIPPING_CLASS = 0
         private const val VT_SHIPPING_CLASS = 1
+    }
+
+    interface ShippingClassAdapterListener {
+        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?)
+        fun onRequestLoadMore()
     }
 
     var shippingClassList: List<WCProductShippingClassModel> = ArrayList()
@@ -78,7 +82,7 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
         }
 
         if (position == itemCount - 1) {
-            listener.onRequestShippingClasses(loadMore = true)
+            listener.onRequestLoadMore()
         }
     }
 

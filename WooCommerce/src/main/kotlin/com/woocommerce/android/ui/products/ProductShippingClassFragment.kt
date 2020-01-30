@@ -4,41 +4,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_shipping_class_list.*
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
+import javax.inject.Inject
 
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseFragment() {
+class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListener {
     companion object {
         const val TAG: String = "ProductShippingClassDialog"
-
-        fun newInstance(targetFragment: Fragment): ProductShippingClassFragment {
-            return ProductShippingClassFragment().also { fragment ->
-                fragment.setTargetFragment(targetFragment, RequestCodes.PRODUCT_SHIPPING_CLASS)
-            }
-        }
     }
 
-    interface ShippingClassFragmentListener {
-        fun onRequestShippingClasses(loadMore: Boolean = false)
-        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?)
-    }
+    @Inject lateinit var viewModelFactory: ViewModelFactory
+    private val viewModel: ProductShippingClassViewModel by viewModels { viewModelFactory }
 
     private var adapter: ProductShippingClassAdapter? = null
-    private lateinit var listener: ShippingClassFragmentListener
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        listener = targetFragment as ShippingClassFragmentListener
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_shipping_class_list, container, false)
@@ -47,9 +37,20 @@ class ProductShippingClassFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        adapter = ProductShippingClassAdapter(requireActivity(), listener)
+        recycler?.addItemDecoration(
+                DividerItemDecoration(
+                        requireActivity(),
+                        DividerItemDecoration.VERTICAL
+                )
+        )
+        recycler.layoutManager = LinearLayoutManager(requireActivity())
+        adapter = ProductShippingClassAdapter(requireActivity(), this)
         recycler.adapter = adapter
-        listener.onRequestShippingClasses()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
     }
 
     override fun onResume() {
@@ -57,9 +58,19 @@ class ProductShippingClassFragment : BaseFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    private fun setupObservers() {
+        viewModel.productShippingClasses.observe(viewLifecycleOwner, Observer { shippingClasses ->
+            adapter?.shippingClassList = shippingClasses
+        })
+    }
+
     override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
-    fun setShippingClasses(shippingClasses: List<WCProductShippingClassModel>) {
-        adapter?.shippingClassList = shippingClasses
+    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
+        // TODO
+    }
+
+    override fun onRequestLoadMore() {
+        viewModel.loadProductShippingClasses(loadMore = true)
     }
 }

@@ -20,7 +20,7 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
-class ProductShippingRepository @Inject constructor(
+class ProductShippingClassRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
