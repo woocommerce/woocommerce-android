@@ -109,13 +109,13 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         if (!isAdded) return
 
         val product = requireNotNull(productData.productInventoryParameters)
-        if (product.sku.isNotEmpty()) {
-            with(product_sku) {
+        with(product_sku) {
+            if (product.sku.isNotEmpty()) {
                 setText(product.sku)
-                setOnTextChangedListener {
-                    viewModel.updateProductInventoryDraft(sku = it.toString())
-                    viewModel.onSkuChanged(it.toString())
-                }
+            }
+            setOnTextChangedListener {
+                viewModel.updateProductInventoryDraft(sku = it.toString())
+                viewModel.onSkuChanged(it.toString())
             }
         }
 
