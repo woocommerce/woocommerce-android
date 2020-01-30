@@ -119,7 +119,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             availableRefundQuantity -= refundedCount
         }
 
-        if (availableRefundQuantity > 0) {
+        // TODO: Once the refund by amount is supported again, this condition will need to be updated
+        if (availableRefundQuantity > 0 && order.refundTotal < order.total) {
             paymentInfo_issueRefundButtonSection.show()
         } else {
             paymentInfo_issueRefundButtonSection.hide()
