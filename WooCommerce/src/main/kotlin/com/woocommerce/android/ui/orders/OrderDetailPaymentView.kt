@@ -49,11 +49,9 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
 
         if (order.paymentMethodTitle.isEmpty()) {
             paymentInfo_paymentMsg.hide()
-            paymentInfo_total_paid_divider.hide()
             paymentInfo_paidSection.hide()
         } else {
             paymentInfo_paymentMsg.show()
-            paymentInfo_total_paid_divider.show()
 
             if (order.status == CoreOrderStatus.PENDING ||
                     order.status == CoreOrderStatus.ON_HOLD ||
