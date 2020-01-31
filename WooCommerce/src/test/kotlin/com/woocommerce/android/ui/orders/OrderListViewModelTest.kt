@@ -404,6 +404,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Display empty view for empty search result`() = test {
         viewModel.isSearching = true
+        viewModel.searchQuery = "query"
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
