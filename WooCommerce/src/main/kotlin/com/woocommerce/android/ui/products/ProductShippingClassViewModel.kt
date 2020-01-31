@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
@@ -7,8 +8,10 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -24,6 +27,9 @@ class ProductShippingClassViewModel @AssistedInject constructor(
     private val _productShippingClasses = MutableLiveData<List<WCProductShippingClassModel>>()
     val productShippingClasses: LiveData<List<WCProductShippingClassModel>> = _productShippingClasses
 
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateLiveData
+
     init {
         loadProductShippingClasses()
     }
@@ -37,15 +43,21 @@ class ProductShippingClassViewModel @AssistedInject constructor(
         waitForExistingShippingClassLoad()
 
         shippingClassLoadJob = launch {
-            // first get the shipping classes from the db
-            if (!loadMore) {
+            if (loadMore) {
+                viewState = viewState.copy(showLoadingMoreProgress = true)
+            } else {
+                // first get the shipping classes from the db before fetching from backend
                 val shippingClasses = productShippingClassRepository.getProductShippingClasses()
                 _productShippingClasses.value = shippingClasses
+                if (shippingClasses.isEmpty()) {
+                    viewState = viewState.copy(showLoadingProgress = true)
+                }
             }
 
-            // then fetch an updated list
             _productShippingClasses.value = productShippingClassRepository.fetchProductShippingClasses(loadMore)
         }
+
+        viewState = viewState.copy(showLoadingProgress = false, showLoadingMoreProgress = false)
     }
 
     private fun waitForExistingShippingClassLoad() {
@@ -62,6 +74,12 @@ class ProductShippingClassViewModel @AssistedInject constructor(
             }
         }
     }
+
+    @Parcelize
+    data class ViewState(
+        val showLoadingProgress: Boolean = false,
+        val showLoadingMoreProgress: Boolean = false
+    ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductShippingClassViewModel>

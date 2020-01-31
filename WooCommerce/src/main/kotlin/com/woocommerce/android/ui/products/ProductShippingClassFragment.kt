@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -60,6 +63,15 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
     }
 
     private fun setupObservers() {
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.showLoadingProgress.takeIfNotEqualTo(old?.showLoadingProgress) {
+                showLoadingProgress(new.showLoadingProgress)
+            }
+            new.showLoadingMoreProgress.takeIfNotEqualTo(old?.showLoadingProgress) {
+                showLoadingMoreProgress(new.showLoadingMoreProgress)
+            }
+        }
+
         viewModel.productShippingClasses.observe(viewLifecycleOwner, Observer { shippingClasses ->
             adapter?.shippingClassList = shippingClasses
         })
@@ -74,5 +86,21 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
 
     override fun onRequestLoadMore() {
         viewModel.loadProductShippingClasses(loadMore = true)
+    }
+
+    private fun showLoadingProgress(show: Boolean) {
+        if (show) {
+            loadingProgress.show()
+        } else {
+            loadingProgress.hide()
+        }
+    }
+
+    private fun showLoadingMoreProgress(show: Boolean) {
+        if (show) {
+            loadingMoreProgress.show()
+        } else {
+            loadingMoreProgress.hide()
+        }
     }
 }
