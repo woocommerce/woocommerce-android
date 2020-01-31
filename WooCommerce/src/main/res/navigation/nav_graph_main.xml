@@ -261,5 +261,10 @@
     <fragment
         android:id="@+id/productShippingClassFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingClassFragment"
-        android:label="ProductShippingClassFragment" />
+        android:label="ProductShippingClassFragment">
+        <argument
+            android:name="shippingClassSlug"
+            android:defaultValue='""'
+            app:argType="string" />
+    </fragment>
 </navigation>

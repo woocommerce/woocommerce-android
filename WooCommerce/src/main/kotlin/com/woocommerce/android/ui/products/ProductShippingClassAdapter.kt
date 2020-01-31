@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckedTextView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -15,8 +16,11 @@ import org.wordpress.android.fluxc.model.WCProductShippingClassModel
  * RecyclerView adapter which shows a list of product shipping classes, the first of which will
  * be "No shipping class" so the user can choose to clear this value.
  */
-class ProductShippingClassAdapter(context: Context, private val listener: ShippingClassAdapterListener) :
-        RecyclerView.Adapter<ViewHolder>() {
+class ProductShippingClassAdapter(
+    context: Context,
+    private val listener: ShippingClassAdapterListener,
+    private var selectedShippingClassSlug: String
+) : RecyclerView.Adapter<ViewHolder>() {
     companion object {
         private const val VT_NO_SHIPPING_CLASS = 0
         private const val VT_SHIPPING_CLASS = 1
@@ -30,14 +34,6 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
     var shippingClassList: List<WCProductShippingClassModel> = ArrayList()
         set(value) {
             if (!isSameList(value)) {
-                field = value
-                notifyDataSetChanged()
-            }
-        }
-
-    var selectedClassId: Long = 0
-        set(value) {
-            if (field != value) {
                 field = value
                 notifyDataSetChanged()
             }
@@ -77,9 +73,11 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
             holder.text.text = noShippingClassText
+            holder.text.isChecked = selectedShippingClassSlug.isEmpty()
         } else {
-            val shippingClass = getShippingClassAtPosition(position)
-            holder.text.text = shippingClass!!.name
+            val shippingClass = getShippingClassAtPosition(position)!!
+            holder.text.text = shippingClass.name
+            holder.text.isChecked = shippingClass.slug == selectedShippingClassSlug
         }
 
         if (position > 0 && position == itemCount - 1) {
@@ -119,13 +117,16 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val text: TextView = view.text
+        val text: CheckedTextView = view.text
 
         init {
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position > -1) {
-                    listener.onShippingClassClicked(getShippingClassAtPosition(position))
+                    getShippingClassAtPosition(position)?.let { shippingClass ->
+                        selectedShippingClassSlug = shippingClass.slug
+                        listener.onShippingClassClicked(shippingClass)
+                    } ?: listener.onShippingClassClicked(null)
                 }
             }
         }

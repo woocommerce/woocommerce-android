@@ -23,6 +23,7 @@ class ProductShippingClassViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val productShippingClassRepository: ProductShippingClassRepository
 ) : ScopedViewModel(savedState, dispatchers) {
+    private val navArgs: ProductShippingClassFragmentArgs by savedState.navArgs()
     private var shippingClassLoadJob: Job? = null
 
     private val _productShippingClasses = MutableLiveData<List<WCProductShippingClassModel>>()
@@ -30,6 +31,9 @@ class ProductShippingClassViewModel @AssistedInject constructor(
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
+
+    val selectedShippingClassSlug: String
+        get() = navArgs.shippingClassSlug
 
     init {
         loadProductShippingClasses()

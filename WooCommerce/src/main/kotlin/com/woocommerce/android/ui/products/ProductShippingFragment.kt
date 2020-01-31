@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
+import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
 import javax.inject.Inject
 
 /**
@@ -97,7 +98,9 @@ class ProductShippingFragment : BaseFragment() {
     }
 
     private fun showShippingClassFragment() {
-        val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment()
+        val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment(
+                shippingClassSlug = product_shipping_class_spinner.getText()
+        )
         findNavController().navigate(action)
     }
 }

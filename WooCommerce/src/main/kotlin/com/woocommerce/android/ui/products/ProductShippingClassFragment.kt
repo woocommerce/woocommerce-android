@@ -48,7 +48,7 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
                 )
         )
         recycler.layoutManager = LinearLayoutManager(requireActivity())
-        adapter = ProductShippingClassAdapter(requireActivity(), this)
+        adapter = ProductShippingClassAdapter(requireActivity(), this, viewModel.selectedShippingClassSlug)
         recycler.adapter = adapter
     }
 
