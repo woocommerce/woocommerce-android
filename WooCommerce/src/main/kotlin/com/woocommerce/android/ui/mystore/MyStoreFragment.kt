@@ -162,9 +162,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onStart() {
         super.onStart()
-        if (!isHidden) {
-            addTabLayoutToAppBar(tabLayout)
-        }
+        addTabLayoutToAppBar(tabLayout)
     }
 
     override fun onResume() {
@@ -366,7 +364,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (!appBar.children.contains(tabLayout)) {
+            if (!isHidden && !appBar.children.contains(tabLayout)) {
                 appBar.addView(
                         tabLayout,
                         LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
