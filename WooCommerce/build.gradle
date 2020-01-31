@@ -231,9 +231,9 @@ dependencies {
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
-    implementation "androidx.fragment:fragment-ktx:1.2.0-rc03"
-    implementation "androidx.activity:activity-ktx:1.1.0-rc03"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0-rc03"
+    implementation "androidx.fragment:fragment-ktx:1.2.0"
+    implementation "androidx.activity:activity-ktx:1.1.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
