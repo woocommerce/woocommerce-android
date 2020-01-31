@@ -365,7 +365,7 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let {appBar ->
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
             if (!appBar.children.contains(tabLayout)) {
                 appBar.addView(
                         tabLayout,
