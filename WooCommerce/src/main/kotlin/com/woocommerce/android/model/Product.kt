@@ -77,6 +77,9 @@ data class Product(
                 stockStatus == product.stockStatus &&
                 status == product.status &&
                 manageStock == product.manageStock &&
+                backorderStatus == product.backorderStatus &&
+                soldIndividually == product.soldIndividually &&
+                sku == product.sku &&
                 type == product.type &&
                 numVariations == product.numVariations &&
                 name == product.name &&

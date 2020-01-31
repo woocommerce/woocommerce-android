@@ -62,6 +62,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().register(this)
     }
 
+    fun getProduct() = commonState
+
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
         checkUploads()

@@ -7,20 +7,19 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.ProductDetailViewModel.CommonViewState
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
-import com.woocommerce.android.ui.products.ProductInventoryViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -29,12 +28,12 @@ import kotlinx.android.synthetic.main.fragment_product_inventory.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogListener,
+class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelectorDialogListener,
         BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_main) { viewModelFactory }
 
     private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
     private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
@@ -85,10 +84,8 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         publishMenuItem = menu.findItem(R.id.menu_done)
     }
 
-    private fun setupObservers(viewModel: ProductInventoryViewModel) {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.productInventoryParameters?.takeIfNotEqualTo(old?.productInventoryParameters) { showProduct(new) }
-            new.isProductUpdated.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
+    override fun setupObservers(viewModel: ProductDetailViewModel) {
+        viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
         }
 
@@ -103,19 +100,21 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
                 is Exit -> requireActivity().onBackPressed()
             }
         })
+        updateProductView(viewModel.getProduct())
     }
 
-    private fun showProduct(productData: ViewState) {
+    override fun updateProductView(productData: CommonViewState) {
         if (!isAdded) return
 
-        val product = requireNotNull(productData.productInventoryParameters)
+        val product = requireNotNull(productData.product)
         with(product_sku) {
             if (product.sku.isNotEmpty()) {
                 setText(product.sku)
             }
             setOnTextChangedListener {
-                viewModel.updateProductInventoryDraft(sku = it.toString())
-                viewModel.onSkuChanged(it.toString())
+                viewModel.updateProductDraft(sku = it.toString())
+                // TODO: migrate sku verification logic to ProductDetailViewModel
+//                viewModel.onSkuChanged(it.toString())
             }
         }
 
@@ -125,7 +124,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
             isChecked = manageStock
             setOnCheckedChangeListener { _, b ->
                 enableManageStockStatus(b)
-                viewModel.updateProductInventoryDraft(manageStock = b)
+                viewModel.updateProductDraft(manageStock = b)
             }
         }
 
@@ -133,13 +132,13 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
             setText(product.stockQuantity.toString())
             setOnTextChangedListener {
                 if (it.toString().isNotEmpty()) {
-                    viewModel.updateProductInventoryDraft(stockQuantity = it.toString())
+                    viewModel.updateProductDraft(stockQuantity = it.toString())
                 }
             }
         }
 
         with(edit_product_backorders) {
-            setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), product.backOrderStatus))
+            setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), product.backorderStatus))
             setClickListener {
                 productBackOrderSelectorDialog = ProductInventorySelectorDialog.newInstance(
                         this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_BACKORDERS,
@@ -163,7 +162,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         with(soldIndividually_switch) {
             isChecked = product.soldIndividually
             setOnCheckedChangeListener { _, b ->
-                viewModel.updateProductInventoryDraft(soldIndividually = b)
+                viewModel.updateProductDraft(soldIndividually = b)
             }
         }
     }
@@ -178,7 +177,7 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
         }
     }
 
-    private fun showUpdateProductAction(show: Boolean) {
+    override fun showUpdateProductAction(show: Boolean) {
         view?.post { publishMenuItem?.isVisible = show }
     }
 
@@ -197,13 +196,13 @@ class ProductInventoryFragment : BaseFragment(), ProductInventorySelectorDialogL
             RequestCodes.PRODUCT_INVENTORY_BACKORDERS -> {
                 selectedItem?.let {
                     edit_product_backorders.setText(getString(ProductBackorderStatus.toStringResource(it)))
-                    viewModel.updateProductInventoryDraft(backorderStatus = ProductBackorderStatus.fromString(it))
+                    viewModel.updateProductDraft(backorderStatus = ProductBackorderStatus.fromString(it))
                 }
             }
             RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS -> {
                 selectedItem?.let {
                     edit_product_stock_status.setText(getString(ProductStockStatus.toStringResource(it)))
-                    viewModel.updateProductInventoryDraft(stockStatus = ProductStockStatus.fromString(it))
+                    viewModel.updateProductDraft(stockStatus = ProductStockStatus.fromString(it))
                 }
             }
         }
