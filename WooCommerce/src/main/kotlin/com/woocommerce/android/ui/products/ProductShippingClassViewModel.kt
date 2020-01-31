@@ -61,9 +61,8 @@ class ProductShippingClassViewModel @AssistedInject constructor(
             }
 
             _productShippingClasses.value = productShippingClassRepository.fetchProductShippingClasses(loadMore)
+            viewState = viewState.copy(showLoadingProgress = false, showLoadingMoreProgress = false)
         }
-
-        viewState = viewState.copy(showLoadingProgress = false, showLoadingMoreProgress = false)
     }
 
     private fun waitForExistingShippingClassLoad() {

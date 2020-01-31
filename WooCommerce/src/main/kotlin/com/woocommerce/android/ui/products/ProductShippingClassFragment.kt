@@ -67,7 +67,7 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
             new.showLoadingProgress.takeIfNotEqualTo(old?.showLoadingProgress) {
                 showLoadingProgress(new.showLoadingProgress)
             }
-            new.showLoadingMoreProgress.takeIfNotEqualTo(old?.showLoadingProgress) {
+            new.showLoadingMoreProgress.takeIfNotEqualTo(old?.showLoadingMoreProgress) {
                 showLoadingMoreProgress(new.showLoadingMoreProgress)
             }
         }

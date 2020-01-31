@@ -34,6 +34,7 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
                 notifyDataSetChanged()
             }
         }
+
     var selectedClassId: Long = 0
         set(value) {
             if (field != value) {
