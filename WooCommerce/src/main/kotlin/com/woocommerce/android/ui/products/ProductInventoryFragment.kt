@@ -33,7 +33,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_main) { viewModelFactory }
+    private val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
 
     private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
     private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
