@@ -49,8 +49,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
 
+    final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
+    private var commonState by commonStateLiveData
+
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
     private var viewState by productDetailViewStateData
+
+    final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
+    private var productInventoryViewState by productInventoryViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -62,14 +68,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onShareButtonClicked() {
-        viewState.product?.let {
+        commonState.product?.let {
             triggerEvent(ShareProduct(it))
         }
     }
 
     fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.product?.let {
+        commonState.product?.let {
             triggerEvent(ShowImages(it, image))
         }
     }
@@ -80,21 +86,21 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onUpdateButtonClicked() {
-        viewState.product?.let {
+        commonState.product?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
         }
     }
 
     fun onBackButtonClicked(): Boolean {
-        return if (viewState.isProductUpdated == true && viewState.shouldShowDiscardDialog) {
+        return if (commonState.isProductUpdated == true && commonState.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        viewState = viewState.copy(shouldShowDiscardDialog = false)
+                        commonState = commonState.copy(shouldShowDiscardDialog = false)
                         triggerEvent(Exit)
                     },
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        viewState = viewState.copy(shouldShowDiscardDialog = true)
+                        commonState = commonState.copy(shouldShowDiscardDialog = true)
                     }
             ))
             false
@@ -106,21 +112,61 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Update all product fields that are edited by the user
      */
-    fun updateProductDraft(description: String? = null, title: String? = null) {
+    fun updateProductDraft(
+        description: String? = null,
+        title: String? = null,
+        sku: String? = null,
+        manageStock: Boolean? = null,
+        stockStatus: ProductStockStatus? = null,
+        soldIndividually: Boolean? = null,
+        stockQuantity: String? = null,
+        backorderStatus: ProductBackorderStatus? = null
+    ) {
         description?.let {
-            if (it != viewState.product?.description) {
-                viewState.product?.description = it
+            if (it != commonState.product?.description) {
+                commonState.product?.description = it
             }
         }
         title?.let {
-            if (it != viewState.product?.name) {
-                viewState.product?.name = it
+            if (it != commonState.product?.name) {
+                commonState.product?.name = it
+            }
+        }
+        sku?.let {
+            if (it != commonState.product?.sku) {
+                commonState.product?.sku = it
+            }
+        }
+        manageStock?.let {
+            if (it != commonState.product?.manageStock) {
+                commonState.product?.manageStock = it
+            }
+        }
+        stockStatus?.let {
+            if (it != commonState.product?.stockStatus) {
+                commonState.product?.stockStatus = it
+            }
+        }
+        soldIndividually?.let {
+            if (it != commonState.product?.soldIndividually) {
+                commonState.product?.soldIndividually = it
+            }
+        }
+        stockQuantity?.let {
+            val quantity = it.toInt()
+            if (quantity != commonState.product?.stockQuantity) {
+                commonState.product?.stockQuantity = quantity
+            }
+        }
+        backorderStatus?.let {
+            if (it != commonState.product?.backorderStatus) {
+                commonState.product?.backorderStatus = it
             }
         }
 
-        viewState.product?.let {
-            val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
-            viewState = viewState.copy(isProductUpdated = isProductUpdated)
+        commonState.product?.let {
+            val isProductUpdated = commonState.storedProduct?.isSameProduct(it) == false
+            commonState = commonState.copy(isProductUpdated = isProductUpdated)
         }
     }
 
@@ -188,7 +234,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
-                viewState = viewState.copy(isProgressDialogShown = false, isProductUpdated = false, product = null)
+                viewState = viewState.copy(isProgressDialogShown = false)
+                commonState = commonState.copy(product = null, isProductUpdated = false)
                 loadProduct(remoteProductId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
@@ -217,14 +264,14 @@ class ProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
-        viewState = viewState.copy(
-                product = storedProduct.mergeProduct(viewState.product),
+        commonState = commonState.copy(
+                product = storedProduct.mergeProduct(commonState.product),
+                storedProduct = storedProduct,
                 weightWithUnits = weight,
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(storedProduct.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(storedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode),
-                storedProduct = storedProduct
+                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode)
         )
     }
 
@@ -273,18 +320,27 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductDetailViewState(
+        val isSkeletonShown: Boolean? = null,
+        val uploadingImageUris: List<Uri>? = null,
+        val isProgressDialogShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductInventoryViewState(
+        val skuErrorMessage: Int? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class CommonViewState(
         val product: Product? = null,
+        var storedProduct: Product? = null,
         val weightWithUnits: String? = null,
         val sizeWithUnits: String? = null,
         val priceWithCurrency: String? = null,
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
-        val isSkeletonShown: Boolean? = null,
-        val uploadingImageUris: List<Uri>? = null,
-        val isProgressDialogShown: Boolean? = null,
         val isProductUpdated: Boolean? = null,
-        val shouldShowDiscardDialog: Boolean = true,
-        var storedProduct: Product? = null
+        val shouldShowDiscardDialog: Boolean = true
     ) : Parcelable
 
     @AssistedInject.Factory

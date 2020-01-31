@@ -16,10 +16,10 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -34,16 +34,15 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.products.ProductDetailViewModel.CommonViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -64,7 +63,7 @@ import java.lang.ref.WeakReference
 import java.util.Date
 import javax.inject.Inject
 
-class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, NavigationResult,
+class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult,
         BackPressListener {
     private enum class DetailCard {
         Primary,
@@ -77,7 +76,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: ProductDetailViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_main) { viewModelFactory }
 
     private var productTitle = ""
     private var isVariation = false
@@ -121,12 +120,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         viewModel.start(navArgs.remoteProductId)
     }
 
-    private fun setupObservers(viewModel: ProductDetailViewModel) {
+    override fun setupObservers(viewModel: ProductDetailViewModel) {
+        super.setupObservers(viewModel)
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
-            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
@@ -185,7 +183,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
     }
 
-    private fun showUpdateProductAction(show: Boolean) {
+    override fun showUpdateProductAction(show: Boolean) {
         view?.post { publishMenuItem?.isVisible = show }
     }
 
@@ -195,7 +193,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             progressDialog = CustomProgressDialog.show(
                     getString(R.string.product_update_dialog_title),
                     getString(R.string.product_update_dialog_message)
-            ).also { it.show(requireFragmentManager(), CustomProgressDialog.TAG) }
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
             progressDialog?.isCancelable = false
         } else {
             hideProgressDialog()
@@ -209,7 +207,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
     override fun getFragmentTitle() = productTitle
 
-    private fun showProduct(productData: ProductDetailViewState) {
+    override fun updateProductView(productData: CommonViewState) {
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
@@ -266,7 +264,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         addPurchaseDetailsCard(productData)
     }
 
-    private fun addPrimaryCard(productData: ProductDetailViewState) {
+    private fun addPrimaryCard(productData: CommonViewState) {
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
@@ -358,7 +356,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     /**
      * New product detail card UI slated for new products release 1
      */
-    private fun addSecondaryCard(productData: ProductDetailViewState) {
+    private fun addSecondaryCard(productData: CommonViewState) {
         val product = requireNotNull(productData.product)
 
         // If we have pricing info, show price & sales price as a group,
@@ -458,7 +456,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
      * Existing product detail card UI which that will be replaced by the new design once
      * Product Release 1 changes are completed.
      */
-    private fun addPricingAndInventoryCard(productData: ProductDetailViewState) {
+    private fun addPricingAndInventoryCard(productData: CommonViewState) {
         val product = requireNotNull(productData.product)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
@@ -497,7 +495,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
     }
 
-    private fun addPurchaseDetailsCard(productData: ProductDetailViewState) {
+    private fun addPurchaseDetailsCard(productData: CommonViewState) {
         val product = requireNotNull(productData.product)
 
         // shipping group is part of the secondary card if edit product is enabled
