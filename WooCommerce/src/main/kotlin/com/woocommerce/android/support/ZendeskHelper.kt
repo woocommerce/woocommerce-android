@@ -26,7 +26,7 @@ import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
-import zendesk.commonui.UiConfig
+import zendesk.configurations.Configuration
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.PushRegistrationProvider
@@ -353,7 +353,7 @@ private fun buildZendeskConfig(
     origin: Origin?,
     selectedSite: SiteModel? = null,
     extraTags: List<String>? = null
-): UiConfig {
+): Configuration {
     val customFields = buildZendeskCustomFields(context, allSites, selectedSite)
     return RequestActivity.builder()
             .withTicketForm(TicketFieldIds.form, customFields)
