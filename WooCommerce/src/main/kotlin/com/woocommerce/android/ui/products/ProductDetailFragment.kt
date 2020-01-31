@@ -43,7 +43,7 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -122,7 +122,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
@@ -209,7 +209,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
     override fun getFragmentTitle() = productTitle
 
-    private fun showProduct(productData: ViewState) {
+    private fun showProduct(productData: ProductDetailViewState) {
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
@@ -266,7 +266,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         addPurchaseDetailsCard(productData)
     }
 
-    private fun addPrimaryCard(productData: ViewState) {
+    private fun addPrimaryCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
@@ -358,7 +358,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     /**
      * New product detail card UI slated for new products release 1
      */
-    private fun addSecondaryCard(productData: ViewState) {
+    private fun addSecondaryCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         // If we have pricing info, show price & sales price as a group,
@@ -458,7 +458,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
      * Existing product detail card UI which that will be replaced by the new design once
      * Product Release 1 changes are completed.
      */
-    private fun addPricingAndInventoryCard(productData: ViewState) {
+    private fun addPricingAndInventoryCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
@@ -497,7 +497,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
     }
 
-    private fun addPurchaseDetailsCard(productData: ViewState) {
+    private fun addPurchaseDetailsCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         // shipping group is part of the secondary card if edit product is enabled

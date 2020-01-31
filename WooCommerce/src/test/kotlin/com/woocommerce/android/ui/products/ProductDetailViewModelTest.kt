@@ -12,7 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -45,7 +45,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productRemoteId = product.remoteId
     private lateinit var viewModel: ProductDetailViewModel
 
-    private val productWithParameters = ViewState(
+    private val productWithParameters = ProductDetailViewState(
             product,
             "10kg",
             "1 x 2 x 3 cm",
@@ -59,7 +59,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
+        doReturn(MutableLiveData(ProductDetailViewState()))
+                .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
 
         viewModel = spy(
                 ProductDetailViewModel(
@@ -90,10 +91,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Displays the product detail view correctly`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        var productData: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> productData = new }
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        assertThat(productData).isEqualTo(ViewState())
+        assertThat(productData).isEqualTo(ProductDetailViewState())
 
         viewModel.start(productRemoteId)
 
@@ -140,7 +141,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(null).whenever(productRepository).getProduct(any())
 
         val isSkeletonShown = ArrayList<Boolean>()
-        viewModel.viewStateData.observeForever {
+        viewModel.productDetailViewStateData.observeForever {
             old, new -> new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
         }
 
@@ -153,10 +154,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Displays the updated product detail view correctly`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        var productData: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> productData = new }
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        assertThat(productData).isEqualTo(ViewState())
+        assertThat(productData).isEqualTo(ProductDetailViewState())
 
         viewModel.start(productRemoteId)
         assertThat(productData).isEqualTo(productWithParameters)
@@ -172,8 +173,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Displays update menu action if product is edited`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        var productData: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> productData = new }
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start(productRemoteId)
         assertThat(productData?.isProductUpdated).isNull()
@@ -191,7 +192,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(false).whenever(productRepository).updateProduct(any())
 
         val isProgressDialogShown = ArrayList<Boolean>()
-        viewModel.viewStateData.observeForever { old, new ->
+        viewModel.productDetailViewStateData.observeForever { old, new ->
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 isProgressDialogShown.add(it)
             } }
@@ -212,8 +213,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        var productData: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> productData = new }
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start(productRemoteId)
         viewModel.onUpdateButtonClicked()
@@ -233,8 +234,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        var productData: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> productData = new }
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start(productRemoteId)
         viewModel.onUpdateButtonClicked()
@@ -254,8 +255,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        var productData: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> productData = new }
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start(productRemoteId)
         viewModel.onUpdateButtonClicked()
@@ -275,7 +276,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
         val shouldShowDiscard = ArrayList<Boolean>()
-        viewModel.viewStateData.observeForever { old, new ->
+        viewModel.productDetailViewStateData.observeForever { old, new ->
             new.shouldShowDiscardDialog.takeIfNotEqualTo(old?.shouldShowDiscardDialog) {
                 shouldShowDiscard.add(it)
             } }

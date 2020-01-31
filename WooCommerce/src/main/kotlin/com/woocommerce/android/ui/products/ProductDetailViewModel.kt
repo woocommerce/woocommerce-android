@@ -49,8 +49,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
-    private var viewState by viewStateData
+    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
+    private var viewState by productDetailViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -272,7 +272,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @Parcelize
-    data class ViewState(
+    data class ProductDetailViewState(
         val product: Product? = null,
         val weightWithUnits: String? = null,
         val sizeWithUnits: String? = null,
