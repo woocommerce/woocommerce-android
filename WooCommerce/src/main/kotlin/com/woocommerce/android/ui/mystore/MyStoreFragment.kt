@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -161,7 +162,9 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onStart() {
         super.onStart()
-        addTabLayoutToAppBar(tabLayout)
+        if (!isHidden) {
+            addTabLayoutToAppBar(tabLayout)
+        }
     }
 
     override fun onResume() {
@@ -362,10 +365,14 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.addView(
-                tabLayout,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        )
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let {appBar ->
+            if (!appBar.children.contains(tabLayout)) {
+                appBar.addView(
+                        tabLayout,
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                )
+            }
+        }
     }
 
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
