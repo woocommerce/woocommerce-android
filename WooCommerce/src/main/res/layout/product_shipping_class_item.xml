@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+    android:checkMark="?android:attr/listChoiceIndicatorSingle"
     android:gravity="center_vertical"
     android:paddingStart="@dimen/margin_dialog"
     android:paddingTop="@dimen/margin_extra_large"
