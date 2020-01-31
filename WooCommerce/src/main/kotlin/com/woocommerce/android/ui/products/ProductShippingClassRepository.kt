@@ -33,6 +33,9 @@ class ProductShippingClassRepository @Inject constructor(
     private var shippingClassOffset = 0
     private var continuation: CancellableContinuation<Boolean>? = null
 
+    final var canLoadMoreShippingClasses = true
+        private set
+
     init {
         dispatcher.register(this)
     }
@@ -73,6 +76,7 @@ class ProductShippingClassRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductShippingClassesChanged(event: OnProductShippingClassesChanged) {
         if (event.causeOfChange == FETCH_PRODUCT_SHIPPING_CLASS_LIST) {
+            canLoadMoreShippingClasses = event.canLoadMore
             if (event.isError) {
                 continuation?.resume(false)
             } else {

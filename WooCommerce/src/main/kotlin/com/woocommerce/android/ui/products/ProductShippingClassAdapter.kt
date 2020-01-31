@@ -81,7 +81,7 @@ class ProductShippingClassAdapter(context: Context, private val listener: Shippi
             holder.text.text = shippingClass!!.name
         }
 
-        if (position == itemCount - 1) {
+        if (position > 0 && position == itemCount - 1) {
             listener.onRequestLoadMore()
         }
     }

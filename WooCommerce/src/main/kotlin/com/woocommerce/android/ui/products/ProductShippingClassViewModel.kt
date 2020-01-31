@@ -8,6 +8,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -40,6 +41,11 @@ class ProductShippingClassViewModel @AssistedInject constructor(
     }
 
     fun loadProductShippingClasses(loadMore: Boolean = false) {
+        if (loadMore && !productShippingClassRepository.canLoadMoreShippingClasses) {
+            WooLog.d(T.PRODUCTS, "Can't load more product shipping classes")
+            return
+        }
+
         waitForExistingShippingClassLoad()
 
         shippingClassLoadJob = launch {
@@ -67,7 +73,7 @@ class ProductShippingClassViewModel @AssistedInject constructor(
                     shippingClassLoadJob?.join()
                 } catch (e: CancellationException) {
                     WooLog.d(
-                            WooLog.T.PRODUCTS,
+                            T.PRODUCTS,
                             "CancellationException while waiting for existing shipping class list fetch"
                     )
                 }
