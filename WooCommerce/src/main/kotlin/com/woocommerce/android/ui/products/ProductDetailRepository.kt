@@ -35,7 +35,7 @@ class ProductDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 20L * 1000
+        private const val ACTION_TIMEOUT = 10L * 1000
     }
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null

@@ -105,6 +105,24 @@ data class Product(
                 if (updatedProduct.name != this.name) {
                     name = updatedProduct.name
                 }
+                if (sku != updatedProduct.sku) {
+                    sku = updatedProduct.sku
+                }
+                if (manageStock != updatedProduct.manageStock) {
+                    manageStock = updatedProduct.manageStock
+                }
+                if (stockStatus != updatedProduct.stockStatus) {
+                    stockStatus = updatedProduct.stockStatus
+                }
+                if (stockQuantity != updatedProduct.stockQuantity) {
+                    stockQuantity = updatedProduct.stockQuantity
+                }
+                if (backorderStatus != updatedProduct.backorderStatus) {
+                    backorderStatus = updatedProduct.backorderStatus
+                }
+                if (soldIndividually != updatedProduct.soldIndividually) {
+                    soldIndividually = updatedProduct.soldIndividually
+                }
             }
         } ?: this.copy()
     }
@@ -115,6 +133,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.remoteProductId = remoteId
         it.description = description
         it.name = name
+        it.sku = sku
+        it.manageStock = manageStock
+        it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
+        it.stockQuantity = stockQuantity
+        it.soldIndividually = soldIndividually
+        it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
     }
 }
 
