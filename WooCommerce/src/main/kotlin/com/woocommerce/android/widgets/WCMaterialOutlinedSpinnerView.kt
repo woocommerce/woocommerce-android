@@ -20,7 +20,8 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(ctx: Context, attr
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCMaterialOutlinedSpinnerView)
             try {
                 // Set the edit text spinner hint
-                spinner_edit_text_input.hint = a.getString(R.styleable.WCMaterialOutlinedSpinnerView_spinnerHint).orEmpty()
+                spinner_edit_text_input.hint =
+                        a.getString(R.styleable.WCMaterialOutlinedSpinnerView_spinnerHint).orEmpty()
             } finally {
                 a.recycle()
             }
