@@ -80,6 +80,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         Card Styles
     -->
     <style name="Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="android:background">@color/card_bgColor</item>
         <item name="cardCornerRadius">@dimen/minor_00</item>
         <item name="android:checkable">false</item>
         <item name="contentPaddingTop">@dimen/minor_25</item>

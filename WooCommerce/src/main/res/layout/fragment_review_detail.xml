@@ -12,13 +12,13 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_window_bg">
+        android:background="@color/default_window_background">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/review_open_product"
@@ -70,11 +70,9 @@
 
             <View
                 android:id="@+id/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
+                style="@style/Woo.Divider"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:layout_marginTop="@dimen/margin_small"
-                android:background="@color/wc_border_color"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/review_open_product"/>
