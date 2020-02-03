@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.CommonViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -46,21 +47,24 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
-            product,
-            "10kg",
-            "1 x 2 x 3 cm",
-            "CZK20.00",
-            "CZK10.00",
-            "CZK30.00",
-            false,
+            product = product,
+            storedProduct = product,
+            isSkeletonShown = false,
             uploadingImageUris = emptyList(),
-            storedProduct = product
+            weightWithUnits = "10kg",
+            sizeWithUnits = "1 x 2 x 3 cm",
+            priceWithCurrency = "CZK20.00",
+            salePriceWithCurrency = "CZK10.00",
+            regularPriceWithCurrency = "CZK30.00"
     )
 
     @Before
     fun setup() {
         doReturn(MutableLiveData(ProductDetailViewState()))
                 .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
+
+        doReturn(MutableLiveData(CommonViewState()))
+                .whenever(savedState).getLiveData<CommonViewState>(any(), any())
 
         viewModel = spy(
                 ProductDetailViewModel(
@@ -276,10 +280,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
         val shouldShowDiscard = ArrayList<Boolean>()
-        viewModel.productDetailViewStateData.observeForever { old, new ->
-            new.shouldShowDiscardDialog.takeIfNotEqualTo(old?.shouldShowDiscardDialog) {
-                shouldShowDiscard.add(it)
-            } }
+        viewModel.commonStateLiveData.observeForever { old, new ->
+            new.shouldShowDiscardDialog.takeIfNotEqualTo(old?.shouldShowDiscardDialog) { shouldShowDiscard.add(it) }
+        }
 
         viewModel.start(productRemoteId)
 
