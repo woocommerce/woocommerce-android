@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -15,14 +14,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ProductDetailViewModel.CommonViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
 import org.wordpress.android.util.ActivityUtils
@@ -31,7 +25,6 @@ import javax.inject.Inject
 class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelectorDialogListener,
         BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
 
@@ -65,7 +58,6 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
@@ -85,25 +77,15 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     }
 
     override fun setupObservers(viewModel: ProductDetailViewModel) {
+        super.setupObservers(viewModel)
         viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction
-                )
-                is Exit -> requireActivity().onBackPressed()
-            }
-        })
         updateProductView(viewModel.getProduct())
     }
 
-    override fun updateProductView(productData: CommonViewState) {
+    private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
@@ -113,7 +95,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             }
             setOnTextChangedListener {
                 viewModel.updateProductDraft(sku = it.toString())
-                // TODO: migrate sku verification logic to ProductDetailViewModel
+                // TODO: migrate sku  logic to ProductDetailViewModel
 //                viewModel.onSkuChanged(it.toString())
             }
         }
@@ -209,6 +191,6 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked()
+        return viewModel.onBackButtonClicked(ProductFieldType.PRODUCT_INVENTORY)
     }
 }
