@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.view_material_outlined_edittext.view.*
+import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
 
 /**
  * Custom View that mimics a TextInputEditText with a spinner that opens a selector dialog it.
@@ -20,7 +20,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(ctx: Context, attr
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCMaterialOutlinedSpinnerView)
             try {
                 // Set the edit text spinner hint
-                edit_text_input.hint = a.getString(R.styleable.WCMaterialOutlinedSpinnerView_spinnerHint).orEmpty()
+                spinner_edit_text_input.hint = a.getString(R.styleable.WCMaterialOutlinedSpinnerView_spinnerHint).orEmpty()
             } finally {
                 a.recycle()
             }
@@ -28,12 +28,12 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(ctx: Context, attr
     }
 
     fun setClickListener(onClickListener: ((view: View) -> Unit)) {
-        edit_text.setOnClickListener(onClickListener)
+        spinner_edit_text.setOnClickListener(onClickListener)
     }
 
     fun setText(selectedText: String) {
-        edit_text.setText(selectedText)
+        spinner_edit_text.post { spinner_edit_text.setText(selectedText) }
     }
 
-    fun getText() = edit_text.text.toString()
+    fun getText() = spinner_edit_text.text.toString()
 }
