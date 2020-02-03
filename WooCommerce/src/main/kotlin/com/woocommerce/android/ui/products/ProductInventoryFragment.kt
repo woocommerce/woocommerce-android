@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -17,21 +16,13 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
 import org.wordpress.android.util.ActivityUtils
-import javax.inject.Inject
 
 class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelectorDialogListener,
         BackPressListener {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    private val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
-
     private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
     private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
-
-    private var publishMenuItem: MenuItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,7 +64,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
-        publishMenuItem = menu.findItem(R.id.menu_done)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -170,17 +161,13 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         }
     }
 
-    override fun showUpdateProductAction(show: Boolean) {
-        view?.post { publishMenuItem?.isVisible = show }
-    }
-
     private fun displaySkuError(messageId: Int) {
         if (messageId != 0) {
             product_sku.setError(getString(messageId))
-            publishMenuItem?.isEnabled = false
+            enablePublishMenuItem(false)
         } else {
             product_sku.clearError()
-            publishMenuItem?.isEnabled = true
+            enablePublishMenuItem(true)
         }
     }
 

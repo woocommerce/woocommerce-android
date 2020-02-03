@@ -19,7 +19,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -46,7 +45,6 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -56,7 +54,6 @@ import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import java.util.Date
-import javax.inject.Inject
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult,
         BackPressListener {
@@ -68,16 +65,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         PurchaseDetails
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    private val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
-
     private var productTitle = ""
     private var isVariation = false
     private val skeletonView = SkeletonView()
     private var clickedImage = WeakReference<View>(null)
-
-    private var publishMenuItem: MenuItem? = null
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -126,6 +117,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 is ShowImages -> showProductImages(event.product, event.image)
                 is ShowImageChooser -> showImageChooser()
                 is ShareProduct -> shareProduct(event.product)
+                else -> event.isHandled = false
             }
         })
     }
@@ -133,7 +125,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-        publishMenuItem = menu.findItem(R.id.menu_update)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -144,7 +136,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 true
             }
 
-            R.id.menu_update -> {
+            R.id.menu_done -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
@@ -165,10 +157,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         } else {
             skeletonView.hide()
         }
-    }
-
-    override fun showUpdateProductAction(show: Boolean) {
-        view?.post { publishMenuItem?.isVisible = show }
     }
 
     private fun showProgressDialog(show: Boolean) {
