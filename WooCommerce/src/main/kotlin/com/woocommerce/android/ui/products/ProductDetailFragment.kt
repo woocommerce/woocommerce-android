@@ -100,8 +100,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewModel.start(navArgs.remoteProductId)
     }
 
-    override fun setupObservers(viewModel: ProductDetailViewModel) {
-        super.setupObservers(viewModel)
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }

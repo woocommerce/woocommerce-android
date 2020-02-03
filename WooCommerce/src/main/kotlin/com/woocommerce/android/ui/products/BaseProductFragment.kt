@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products
 
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
@@ -28,7 +30,12 @@ abstract class BaseProductFragment : BaseFragment() {
 
     private var publishMenuItem: MenuItem? = null
 
-    open fun setupObservers(viewModel: ProductDetailViewModel) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers(viewModel)
+    }
+
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)

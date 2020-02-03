@@ -79,8 +79,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         }
     }
 
-    override fun setupObservers(viewModel: ProductDetailViewModel) {
-        super.setupObservers(viewModel)
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
         }
