@@ -76,6 +76,18 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         publishMenuItem = menu.findItem(R.id.menu_done)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                // TODO: add track event for click
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.redirectToProductDetailScreen()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun setupObservers(viewModel: ProductDetailViewModel) {
         super.setupObservers(viewModel)
         viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->

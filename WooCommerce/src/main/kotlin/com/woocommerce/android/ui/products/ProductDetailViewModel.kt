@@ -88,6 +88,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(ShowImageChooser)
     }
 
+    fun redirectToProductDetailScreen() {
+        commonState = commonState.copy(shouldShowDiscardDialog = false)
+        triggerEvent(Exit)
+
+        // enable discard dialog once exit is triggered
+        commonState = commonState.copy(shouldShowDiscardDialog = true)
+    }
+
     fun onUpdateButtonClicked() {
         viewState.product?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -99,12 +107,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         return if (viewState.isProductUpdated == true && commonState.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        commonState = commonState.copy(shouldShowDiscardDialog = false)
                         discardEditChanges(productFieldType)
-                        triggerEvent(Exit)
-
-                        // enable discard dialog once exit is triggered
-                        commonState = commonState.copy(shouldShowDiscardDialog = true)
+                        redirectToProductDetailScreen()
                     },
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
                         commonState = commonState.copy(shouldShowDiscardDialog = true)
