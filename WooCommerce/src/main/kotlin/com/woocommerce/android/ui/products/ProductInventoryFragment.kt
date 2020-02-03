@@ -13,14 +13,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
 import org.wordpress.android.util.ActivityUtils
 
-class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelectorDialogListener,
-        BackPressListener {
+class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelectorDialogListener {
     private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
     private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
 
@@ -83,7 +81,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
         }
-
+        viewModel.initialiseProductFieldState(ProductFieldType.PRODUCT_INVENTORY)
         updateProductView(viewModel.getProduct())
     }
 
@@ -185,9 +183,5 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
                 }
             }
         }
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ProductFieldType.PRODUCT_INVENTORY)
     }
 }

@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -21,7 +22,7 @@ import javax.inject.Inject
  * All product related fragments should extend this class to provide a consistent method
  * of displaying snackbar and discard dialogs
  */
-abstract class BaseProductFragment : BaseFragment() {
+abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -53,6 +54,10 @@ abstract class BaseProductFragment : BaseFragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         publishMenuItem = menu.findItem(R.id.menu_done)
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked()
     }
 
     protected fun showUpdateProductAction(show: Boolean) {

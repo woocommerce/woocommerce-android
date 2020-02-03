@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
@@ -55,8 +54,7 @@ import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import java.util.Date
 
-class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult,
-        BackPressListener {
+class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     private enum class DetailCard {
         Primary,
         Secondary,
@@ -143,10 +141,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked()
     }
 
     private fun showSkeleton(show: Boolean) {

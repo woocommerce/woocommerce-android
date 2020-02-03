@@ -78,6 +78,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         checkUploads()
     }
 
+    fun initialiseProductFieldState(productFieldType: ProductFieldType) {
+        commonState = commonState.copy(productFieldType = productFieldType)
+    }
+
     fun onShareButtonClicked() {
         viewState.product?.let {
             triggerEvent(ShareProduct(it))
@@ -102,6 +106,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         // enable discard dialog once exit is triggered
         commonState = commonState.copy(shouldShowDiscardDialog = true)
+        commonState = commonState.copy(productFieldType = null)
     }
 
     fun onUpdateButtonClicked() {
@@ -111,11 +116,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onBackButtonClicked(productFieldType: ProductFieldType? = null): Boolean {
+    fun onBackButtonClicked(): Boolean {
         return if (viewState.isProductUpdated == true && commonState.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        discardEditChanges(productFieldType)
+                        discardEditChanges()
                         redirectToProductDetailScreen()
                     },
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
@@ -216,8 +221,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    private fun discardEditChanges(productFieldType: ProductFieldType? = null) {
-        when (productFieldType) {
+    private fun discardEditChanges() {
+        when (commonState.productFieldType) {
             // discard inventory screen changes
             PRODUCT_INVENTORY -> {
                 viewState.storedProduct?.let {
@@ -417,7 +422,8 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class CommonViewState(
-        val shouldShowDiscardDialog: Boolean = true
+        val shouldShowDiscardDialog: Boolean = true,
+        val productFieldType: ProductFieldType? = null
     ) : Parcelable
 
     @AssistedInject.Factory
