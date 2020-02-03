@@ -29,6 +29,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -47,8 +49,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
+
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
+
+    private var skuVerificationJob: Job? = null
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     private var commonState by commonStateLiveData
@@ -117,6 +125,30 @@ class ProductDetailViewModel @AssistedInject constructor(
             false
         } else {
             true
+        }
+    }
+
+    fun onSkuChanged(sku: String) {
+        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
+        if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
+            // reset the error message when the user starts typing again
+            productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
+
+            // cancel any existing verification search, then start a new one after a brief delay
+            // so we don't actually perform the fetch until the user stops typing
+            skuVerificationJob?.cancel()
+            skuVerificationJob = launch {
+                delay(SEARCH_TYPING_DELAY_MS)
+
+                // check if sku is available from local cache
+                if (productRepository.geProductExistsBySku(sku)) {
+                    productInventoryViewState = productInventoryViewState.copy(
+                            skuErrorMessage = string.product_inventory_update_sku_error
+                    )
+                } else {
+                    verifyProductExistsBySkuRemotely(sku)
+                }
+            }
         }
     }
 
@@ -281,6 +313,15 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.offline_error))
             viewState = viewState.copy(isProgressDialogShown = false)
         }
+    }
+
+    private suspend fun verifyProductExistsBySkuRemotely(sku: String) {
+        // if the sku is not available display error
+        val isSkuAvailable = productRepository.verifySkuAvailability(sku)
+        val skuErrorMessage = if (isSkuAvailable == false) {
+            string.product_inventory_update_sku_error
+        } else 0
+        productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = skuErrorMessage)
     }
 
     private fun updateProductState(storedProduct: Product) {

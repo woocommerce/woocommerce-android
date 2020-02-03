@@ -107,8 +107,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             }
             setOnTextChangedListener {
                 viewModel.updateProductDraft(sku = it.toString())
-                // TODO: migrate sku  logic to ProductDetailViewModel
-//                viewModel.onSkuChanged(it.toString())
+                viewModel.onSkuChanged(it.toString())
             }
         }
 
