@@ -4,27 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="@dimen/margin_extra_large"
-    android:paddingTop="@dimen/margin_large">
+    android:padding="@dimen/major_100">
 
     <View
-        android:layout_width="@dimen/product_icon_sz"
-        android:layout_height="@dimen/product_icon_sz"
+        android:layout_width="@dimen/skeleton_list_item_icon_200"
+        android:layout_height="@dimen/skeleton_list_item_icon_200"
         android:layout_gravity="center_vertical"
         android:background="@drawable/skeleton_background"/>
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/product_icon_sz"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="@dimen/margin_large"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/major_75"
+        android:layout_marginStart="@dimen/major_75"
         android:layout_weight="5"
         android:background="@drawable/skeleton_background"/>
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/product_icon_sz"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:background="@drawable/skeleton_background"/>
