@@ -4,9 +4,8 @@
     android:shape="rectangle">
 
     <solid
-        android:color="@color/skeleton_color_light"/>
+        android:color="@color/skeleton_color_inverse"/>
 
     <corners
         android:radius="8dp"/>
-
 </shape>
