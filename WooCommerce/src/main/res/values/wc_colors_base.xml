@@ -20,6 +20,8 @@
     <color name="woo_orange_30">#E68B28</color>
     <color name="woo_orange_50">#B26200</color>
 
+    <color name="woo_brown_50">#907300</color>
+
     <color name="woo_white">@android:color/white</color>
     <color name="woo_white_alpha_012">#1FFFFFFF</color>
     <color name="woo_white_alpha_038">#61FFFFFF</color>
