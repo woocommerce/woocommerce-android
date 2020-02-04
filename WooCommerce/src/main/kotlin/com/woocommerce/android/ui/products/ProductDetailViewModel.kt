@@ -100,7 +100,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(ShowImageChooser)
     }
 
-    fun redirectToProductDetailScreen() {
+    fun onDoneButtonClicked() {
         commonState = commonState.copy(shouldShowDiscardDialog = false)
         triggerEvent(Exit)
 
@@ -119,8 +119,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         return if (viewState.isProductUpdated == true && commonState.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        // discard changes made to the current screen and redirect to the Product Detail screen
                         discardEditChanges()
-                        redirectToProductDetailScreen()
+                        onDoneButtonClicked()
                     },
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
                         commonState = commonState.copy(shouldShowDiscardDialog = true)

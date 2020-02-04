@@ -70,7 +70,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             R.id.menu_done -> {
                 // TODO: add track event for click
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.redirectToProductDetailScreen()
+                viewModel.onDoneButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
