@@ -213,15 +213,16 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
+        val productName = HtmlUtils.fastStripHtml(product.name)
         productTitle = when (product.type) {
-            EXTERNAL -> getString(R.string.product_name_external, product.name)
-            GROUPED -> getString(R.string.product_name_grouped, product.name)
-            VARIABLE -> getString(R.string.product_name_variable, product.name)
+            EXTERNAL -> getString(R.string.product_name_external, productName)
+            GROUPED -> getString(R.string.product_name_grouped, productName)
+            VARIABLE -> getString(R.string.product_name_variable, productName)
             else -> {
                 if (product.isVirtual) {
-                    getString(R.string.product_name_virtual, product.name)
+                    getString(R.string.product_name_virtual, productName)
                 } else {
-                    product.name
+                    productName
                 }
             }
         }
@@ -270,7 +271,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
-            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productTitle)?.also { view ->
                 view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
             }
         } else {
@@ -778,7 +779,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     private fun shareProduct(product: Product) {
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_SUBJECT, product.name)
+            putExtra(Intent.EXTRA_SUBJECT, productTitle)
             putExtra(Intent.EXTRA_TEXT, product.permalink)
             type = "text/plain"
         }
