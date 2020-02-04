@@ -56,10 +56,6 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
         publishMenuItem = menu.findItem(R.id.menu_done)
     }
 
-    override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked()
-    }
-
     protected fun showUpdateProductAction(show: Boolean) {
         view?.post { publishMenuItem?.isVisible = show }
     }

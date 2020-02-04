@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailE
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -114,6 +115,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 is ShowImages -> showProductImages(event.product, event.image)
                 is ShowImageChooser -> showImageChooser()
                 is ShareProduct -> shareProduct(event.product)
+                is ExitProductDetail -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         })
@@ -812,6 +814,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 }
             }
         }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked(ExitProductDetail())
     }
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {

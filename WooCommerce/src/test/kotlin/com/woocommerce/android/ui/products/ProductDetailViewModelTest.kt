@@ -12,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.CommonViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -62,9 +61,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ProductDetailViewState()))
                 .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
-
-        doReturn(MutableLiveData(CommonViewState()))
-                .whenever(savedState).getLiveData<CommonViewState>(any(), any())
 
         viewModel = spy(
                 ProductDetailViewModel(
@@ -273,23 +269,5 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(productData?.isProgressDialogShown).isFalse()
         assertThat(productData?.isProductUpdated).isFalse()
         assertThat(productData?.product).isEqualTo(product)
-    }
-
-    @Test
-    fun `Displays discard dialog if product is edited and back button is pressed`() = test {
-        doReturn(product).whenever(productRepository).getProduct(any())
-
-        val shouldShowDiscard = ArrayList<Boolean>()
-        viewModel.commonStateLiveData.observeForever { old, new ->
-            new.shouldShowDiscardDialog.takeIfNotEqualTo(old?.shouldShowDiscardDialog) { shouldShowDiscard.add(it) }
-        }
-
-        viewModel.start(productRemoteId)
-
-        val updatedDescription = "Updated product description"
-        viewModel.updateProductDraft(updatedDescription)
-        viewModel.onBackButtonClicked()
-
-        assertThat(shouldShowDiscard).containsExactly(true)
     }
 }

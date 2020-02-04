@@ -19,7 +19,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
-import com.woocommerce.android.ui.products.ProductFieldType.PRODUCT_INVENTORY
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -58,9 +59,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private var skuVerificationJob: Job? = null
 
-    final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
-    private var commonState by commonStateLiveData
-
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
     private var viewState by productDetailViewStateData
 
@@ -76,10 +74,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
         checkUploads()
-    }
-
-    fun initialiseProductFieldState(productFieldType: ProductFieldType) {
-        commonState = commonState.copy(productFieldType = productFieldType)
     }
 
     fun onShareButtonClicked() {
@@ -100,12 +94,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(ShowImageChooser)
     }
 
-    fun onDoneButtonClicked() {
-        commonState = commonState.copy(shouldShowDiscardDialog = false)
-        triggerEvent(Exit)
-
-        // enable discard dialog once exit is triggered
-        commonState = commonState.copy(shouldShowDiscardDialog = true, productFieldType = null)
+    fun onDoneButtonClicked(event: ProductExitEvent) {
+        triggerEvent(event)
     }
 
     fun onUpdateButtonClicked() {
@@ -115,16 +105,20 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onBackButtonClicked(): Boolean {
-        return if (viewState.isProductUpdated == true && commonState.shouldShowDiscardDialog) {
+    fun onBackButtonClicked(event: ProductExitEvent): Boolean {
+        return if (viewState.isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen and redirect to the Product Detail screen
-                        discardEditChanges()
-                        onDoneButtonClicked()
-                    },
-                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        commonState = commonState.copy(shouldShowDiscardDialog = true)
+                        // discard changes made to the current screen
+                        discardEditChanges(event)
+
+                        // If user in Product detail screen, exit product detail,
+                        // otherwise, redirect to Product Detail screen
+                        if (event is ExitProductDetail) {
+                            triggerEvent(ExitProductDetail(false))
+                        } else {
+                            triggerEvent(Exit)
+                        }
                     }
             ))
             false
@@ -221,10 +215,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    private fun discardEditChanges() {
-        when (commonState.productFieldType) {
+    private fun discardEditChanges(event: ProductExitEvent) {
+        when (event) {
             // discard inventory screen changes
-            PRODUCT_INVENTORY -> {
+            is ExitInventory -> {
                 viewState.storedProduct?.let {
                     viewState = viewState.copy(
                             product = viewState.product?.copy(
@@ -393,6 +387,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         object ShowImageChooser : ProductDetailEvent()
     }
 
+    sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
+        class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+    }
+
     @Parcelize
     data class Parameters(
         val currencyCode: String?,
@@ -418,12 +417,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductInventoryViewState(
         val skuErrorMessage: Int? = null
-    ) : Parcelable
-
-    @Parcelize
-    data class CommonViewState(
-        val shouldShowDiscardDialog: Boolean = true,
-        val productFieldType: ProductFieldType? = null
     ) : Parcelable
 
     @AssistedInject.Factory

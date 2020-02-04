@@ -7,6 +7,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -14,6 +16,7 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
 import org.wordpress.android.util.ActivityUtils
@@ -70,7 +73,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             R.id.menu_done -> {
                 // TODO: add track event for click
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked()
+                viewModel.onDoneButtonClicked(ExitInventory(shouldShowDiscardDialog = false))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -81,7 +84,13 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
         }
-        viewModel.initialiseProductFieldState(ProductFieldType.PRODUCT_INVENTORY)
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ExitInventory -> findNavController().navigateUp()
+                else -> event.isHandled = false
+            }
+        })
         updateProductView(viewModel.getProduct())
     }
 
@@ -183,5 +192,9 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
                 }
             }
         }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked(ExitInventory())
     }
 }
