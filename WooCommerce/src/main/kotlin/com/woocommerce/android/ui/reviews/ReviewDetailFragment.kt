@@ -71,7 +71,7 @@ class ReviewDetailFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val dimen = activity!!.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+        val dimen = activity!!.resources.getDimensionPixelSize(R.dimen.image_minor_50)
         productIconSize = DisplayUtils.dpToPx(activity, dimen)
     }
 
@@ -130,7 +130,7 @@ class ReviewDetailFragment : BaseFragment() {
     private fun setReview(review: ProductReview) {
         // adjust the gravatar url so it's requested at the desired size and a has default image of 404 (this causes the
         // request to return a 404 rather than an actual default image URL, so we can stick with our default avatar)
-        val size = activity?.resources?.getDimensionPixelSize(R.dimen.avatar_sz_large) ?: 256
+        val size = activity?.resources?.getDimensionPixelSize(R.dimen.image_major_64) ?: 256
         val avatarUrl = UrlUtils.removeQuery(review.reviewerAvatarUrl) + "?s=" + size + "&d=404"
 
         // Populate reviewer section
