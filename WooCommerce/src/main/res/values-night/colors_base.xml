@@ -46,5 +46,5 @@
     <!--
         Loading Skeletons
     -->
-    <color name="skeleton_color">@color/woo_black_90_alpha_038</color>
+    <color name="skeleton_color">@color/woo_white_alpha_012</color>
 </resources>
