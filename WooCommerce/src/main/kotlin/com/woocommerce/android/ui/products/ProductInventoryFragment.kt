@@ -103,9 +103,9 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         enableManageStockStatus(manageStock)
         with(manageStock_switch) {
             isChecked = manageStock
-            setOnCheckedChangeListener { _, b ->
-                enableManageStockStatus(b)
-                viewModel.updateProductDraft(manageStock = b)
+            setOnCheckedChangeListener { _, isChecked ->
+                enableManageStockStatus(isChecked)
+                viewModel.updateProductDraft(manageStock = isChecked)
             }
         }
 
@@ -142,8 +142,8 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
 
         with(soldIndividually_switch) {
             isChecked = product.soldIndividually
-            setOnCheckedChangeListener { _, b ->
-                viewModel.updateProductDraft(soldIndividually = b)
+            setOnCheckedChangeListener { _, isChecked ->
+                viewModel.updateProductDraft(soldIndividually = isChecked)
             }
         }
     }

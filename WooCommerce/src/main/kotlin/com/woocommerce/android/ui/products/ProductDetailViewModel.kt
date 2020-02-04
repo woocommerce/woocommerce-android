@@ -105,8 +105,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(Exit)
 
         // enable discard dialog once exit is triggered
-        commonState = commonState.copy(shouldShowDiscardDialog = true)
-        commonState = commonState.copy(productFieldType = null)
+        commonState = commonState.copy(shouldShowDiscardDialog = true, productFieldType = null)
     }
 
     fun onUpdateButtonClicked() {
