@@ -20,8 +20,8 @@ data class Product(
     var description: String,
     val type: ProductType,
     val status: ProductStatus?,
-    val stockStatus: ProductStockStatus,
-    val backorderStatus: ProductBackorderStatus,
+    var stockStatus: ProductStockStatus,
+    var backorderStatus: ProductBackorderStatus,
     val dateCreated: Date,
     val firstImageUrl: String?,
     val totalSales: Int,
@@ -35,9 +35,9 @@ data class Product(
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
-    val manageStock: Boolean,
-    val stockQuantity: Int,
-    val sku: String,
+    var manageStock: Boolean,
+    var stockQuantity: Int,
+    var sku: String,
     val length: Float,
     val width: Float,
     val height: Float,
@@ -77,6 +77,9 @@ data class Product(
                 stockStatus == product.stockStatus &&
                 status == product.status &&
                 manageStock == product.manageStock &&
+                backorderStatus == product.backorderStatus &&
+                soldIndividually == product.soldIndividually &&
+                sku == product.sku &&
                 type == product.type &&
                 numVariations == product.numVariations &&
                 name == product.name &&
@@ -102,6 +105,24 @@ data class Product(
                 if (updatedProduct.name != this.name) {
                     name = updatedProduct.name
                 }
+                if (sku != updatedProduct.sku) {
+                    sku = updatedProduct.sku
+                }
+                if (manageStock != updatedProduct.manageStock) {
+                    manageStock = updatedProduct.manageStock
+                }
+                if (stockStatus != updatedProduct.stockStatus) {
+                    stockStatus = updatedProduct.stockStatus
+                }
+                if (stockQuantity != updatedProduct.stockQuantity) {
+                    stockQuantity = updatedProduct.stockQuantity
+                }
+                if (backorderStatus != updatedProduct.backorderStatus) {
+                    backorderStatus = updatedProduct.backorderStatus
+                }
+                if (soldIndividually != updatedProduct.soldIndividually) {
+                    soldIndividually = updatedProduct.soldIndividually
+                }
             }
         } ?: this.copy()
     }
@@ -112,6 +133,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.remoteProductId = remoteId
         it.description = description
         it.name = name
+        it.sku = sku
+        it.manageStock = manageStock
+        it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
+        it.stockQuantity = stockQuantity
+        it.soldIndividually = soldIndividually
+        it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
     }
 }
 

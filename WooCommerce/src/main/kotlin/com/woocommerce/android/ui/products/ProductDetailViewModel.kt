@@ -19,6 +19,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -28,6 +30,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -46,15 +50,26 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
+
     private var remoteProductId = 0L
     private var parameters: Parameters? = null
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
-    private var viewState by viewStateData
+    private var skuVerificationJob: Job? = null
+
+    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
+    private var viewState by productDetailViewStateData
+
+    final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
+    private var productInventoryViewState by productInventoryViewStateData
 
     init {
         EventBus.getDefault().register(this)
     }
+
+    fun getProduct() = viewState
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
@@ -79,6 +94,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(ShowImageChooser)
     }
 
+    fun onDoneButtonClicked(event: ProductExitEvent) {
+        triggerEvent(event)
+    }
+
     fun onUpdateButtonClicked() {
         viewState.product?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -86,15 +105,20 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onBackButtonClicked(): Boolean {
-        return if (viewState.isProductUpdated == true && viewState.shouldShowDiscardDialog) {
+    fun onBackButtonClicked(event: ProductExitEvent): Boolean {
+        return if (viewState.isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        viewState = viewState.copy(shouldShowDiscardDialog = false)
-                        triggerEvent(Exit)
-                    },
-                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        viewState = viewState.copy(shouldShowDiscardDialog = true)
+                        // discard changes made to the current screen
+                        discardEditChanges(event)
+
+                        // If user in Product detail screen, exit product detail,
+                        // otherwise, redirect to Product Detail screen
+                        if (event is ExitProductDetail) {
+                            triggerEvent(ExitProductDetail(false))
+                        } else {
+                            triggerEvent(Exit)
+                        }
                     }
             ))
             false
@@ -103,10 +127,43 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onSkuChanged(sku: String) {
+        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
+        if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
+            // reset the error message when the user starts typing again
+            productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
+
+            // cancel any existing verification search, then start a new one after a brief delay
+            // so we don't actually perform the fetch until the user stops typing
+            skuVerificationJob?.cancel()
+            skuVerificationJob = launch {
+                delay(SEARCH_TYPING_DELAY_MS)
+
+                // check if sku is available from local cache
+                if (productRepository.geProductExistsBySku(sku)) {
+                    productInventoryViewState = productInventoryViewState.copy(
+                            skuErrorMessage = string.product_inventory_update_sku_error
+                    )
+                } else {
+                    verifyProductExistsBySkuRemotely(sku)
+                }
+            }
+        }
+    }
+
     /**
      * Update all product fields that are edited by the user
      */
-    fun updateProductDraft(description: String? = null, title: String? = null) {
+    fun updateProductDraft(
+        description: String? = null,
+        title: String? = null,
+        sku: String? = null,
+        manageStock: Boolean? = null,
+        stockStatus: ProductStockStatus? = null,
+        soldIndividually: Boolean? = null,
+        stockQuantity: String? = null,
+        backorderStatus: ProductBackorderStatus? = null
+    ) {
         description?.let {
             if (it != viewState.product?.description) {
                 viewState.product?.description = it
@@ -117,17 +174,67 @@ class ProductDetailViewModel @AssistedInject constructor(
                 viewState.product?.name = it
             }
         }
-
-        viewState.product?.let {
-            val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
-            viewState = viewState.copy(isProductUpdated = isProductUpdated)
+        sku?.let {
+            if (it != viewState.product?.sku) {
+                viewState.product?.sku = it
+            }
         }
+        manageStock?.let {
+            if (it != viewState.product?.manageStock) {
+                viewState.product?.manageStock = it
+            }
+        }
+        stockStatus?.let {
+            if (it != viewState.product?.stockStatus) {
+                viewState.product?.stockStatus = it
+            }
+        }
+        soldIndividually?.let {
+            if (it != viewState.product?.soldIndividually) {
+                viewState.product?.soldIndividually = it
+            }
+        }
+        stockQuantity?.let {
+            val quantity = it.toInt()
+            if (quantity != viewState.product?.stockQuantity) {
+                viewState.product?.stockQuantity = quantity
+            }
+        }
+        backorderStatus?.let {
+            if (it != viewState.product?.backorderStatus) {
+                viewState.product?.backorderStatus = it
+            }
+        }
+
+        updateProductEditAction()
     }
 
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
         EventBus.getDefault().unregister(this)
+    }
+
+    private fun discardEditChanges(event: ProductExitEvent) {
+        when (event) {
+            // discard inventory screen changes
+            is ExitInventory -> {
+                viewState.storedProduct?.let {
+                    viewState = viewState.copy(
+                            product = viewState.product?.copy(
+                                    sku = it.sku,
+                                    manageStock = it.manageStock,
+                                    stockStatus = it.stockStatus,
+                                    backorderStatus = it.backorderStatus,
+                                    soldIndividually = it.soldIndividually,
+                                    stockQuantity = it.stockQuantity
+                            )
+                    )
+                }
+            }
+        }
+
+        updateProductEditAction()
     }
 
     private fun loadProduct(remoteProductId: Long) {
@@ -179,6 +286,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
 
+    private fun updateProductEditAction() {
+        viewState.product?.let {
+            val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
+            viewState = viewState.copy(isProductUpdated = isProductUpdated)
+        }
+    }
+
     private fun checkUploads() {
         val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
         viewState = viewState.copy(uploadingImageUris = uris)
@@ -188,7 +302,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
-                viewState = viewState.copy(isProgressDialogShown = false, isProductUpdated = false, product = null)
+                viewState = viewState.copy(product = null, isProductUpdated = false, isProgressDialogShown = false)
                 loadProduct(remoteProductId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
@@ -198,6 +312,15 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.offline_error))
             viewState = viewState.copy(isProgressDialogShown = false)
         }
+    }
+
+    private suspend fun verifyProductExistsBySkuRemotely(sku: String) {
+        // if the sku is not available display error
+        val isSkuAvailable = productRepository.verifySkuAvailability(sku)
+        val skuErrorMessage = if (isSkuAvailable == false) {
+            string.product_inventory_update_sku_error
+        } else 0
+        productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = skuErrorMessage)
     }
 
     private fun updateProductState(storedProduct: Product) {
@@ -219,12 +342,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(
                 product = storedProduct.mergeProduct(viewState.product),
+                storedProduct = storedProduct,
                 weightWithUnits = weight,
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(storedProduct.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(storedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode),
-                storedProduct = storedProduct
+                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode)
         )
     }
 
@@ -264,6 +387,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         object ShowImageChooser : ProductDetailEvent()
     }
 
+    sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
+        class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+    }
+
     @Parcelize
     data class Parameters(
         val currencyCode: String?,
@@ -272,19 +400,23 @@ class ProductDetailViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @Parcelize
-    data class ViewState(
+    data class ProductDetailViewState(
         val product: Product? = null,
+        var storedProduct: Product? = null,
+        val isSkeletonShown: Boolean? = null,
+        val uploadingImageUris: List<Uri>? = null,
+        val isProgressDialogShown: Boolean? = null,
         val weightWithUnits: String? = null,
         val sizeWithUnits: String? = null,
         val priceWithCurrency: String? = null,
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
-        val isSkeletonShown: Boolean? = null,
-        val uploadingImageUris: List<Uri>? = null,
-        val isProgressDialogShown: Boolean? = null,
-        val isProductUpdated: Boolean? = null,
-        val shouldShowDiscardDialog: Boolean = true,
-        var storedProduct: Product? = null
+        val isProductUpdated: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductInventoryViewState(
+        val skuErrorMessage: Int? = null
     ) : Parcelable
 
     @AssistedInject.Factory

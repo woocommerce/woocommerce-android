@@ -16,7 +16,6 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -34,25 +33,18 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -62,10 +54,8 @@ import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import java.util.Date
-import javax.inject.Inject
 
-class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, NavigationResult,
-        BackPressListener {
+class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     private enum class DetailCard {
         Primary,
         Secondary,
@@ -74,17 +64,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         PurchaseDetails
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
-    private val viewModel: ProductDetailViewModel by viewModels { viewModelFactory }
-
     private var productTitle = ""
     private var isVariation = false
     private val skeletonView = SkeletonView()
     private var clickedImage = WeakReference<View>(null)
-
-    private var publishMenuItem: MenuItem? = null
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -99,11 +82,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        CustomDiscardDialog.onCleared()
     }
 
     override fun onResume() {
@@ -122,11 +100,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+        viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
@@ -134,16 +112,11 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowImages -> showProductImages(event.product, event.image)
                 is ShowImageChooser -> showImageChooser()
                 is ShareProduct -> shareProduct(event.product)
-                is Exit -> requireActivity().onBackPressed()
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction
-                )
+                is ExitProductDetail -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
         })
     }
@@ -151,7 +124,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-        publishMenuItem = menu.findItem(R.id.menu_update)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -162,7 +135,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 true
             }
 
-            R.id.menu_update -> {
+            R.id.menu_done -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
@@ -170,10 +143,6 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked()
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -185,17 +154,13 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
     }
 
-    private fun showUpdateProductAction(show: Boolean) {
-        view?.post { publishMenuItem?.isVisible = show }
-    }
-
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
             progressDialog = CustomProgressDialog.show(
                     getString(R.string.product_update_dialog_title),
                     getString(R.string.product_update_dialog_message)
-            ).also { it.show(requireFragmentManager(), CustomProgressDialog.TAG) }
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
             progressDialog?.isCancelable = false
         } else {
             hideProgressDialog()
@@ -209,7 +174,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
 
     override fun getFragmentTitle() = productTitle
 
-    private fun showProduct(productData: ViewState) {
+    private fun showProduct(productData: ProductDetailViewState) {
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
@@ -267,7 +232,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         addPurchaseDetailsCard(productData)
     }
 
-    private fun addPrimaryCard(productData: ViewState) {
+    private fun addPrimaryCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
@@ -359,7 +324,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
     /**
      * New product detail card UI slated for new products release 1
      */
-    private fun addSecondaryCard(productData: ViewState) {
+    private fun addSecondaryCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         // If we have pricing info, show price & sales price as a group,
@@ -459,7 +424,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
      * Existing product detail card UI which that will be replaced by the new design once
      * Product Release 1 changes are completed.
      */
-    private fun addPricingAndInventoryCard(productData: ViewState) {
+    private fun addPricingAndInventoryCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
@@ -498,7 +463,7 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
         }
     }
 
-    private fun addPurchaseDetailsCard(productData: ViewState) {
+    private fun addPurchaseDetailsCard(productData: ProductDetailViewState) {
         val product = requireNotNull(productData.product)
 
         // shipping group is part of the secondary card if edit product is enabled
@@ -850,6 +815,10 @@ class ProductDetailFragment : BaseFragment(), OnGalleryImageClickListener, Navig
                 }
             }
         }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked(ExitProductDetail())
     }
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {

@@ -5,40 +5,6 @@
     android:id="@+id/nav_graph_main"
     app:startDestination="@id/rootFragment">
     <fragment
-        android:id="@+id/productDetailFragment"
-        android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
-        tools:layout="@layout/fragment_product_detail">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <action
-            android:id="@+id/action_productDetailFragment_to_productVariantsFragment"
-            app:destination="@id/productVariantsFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
-        <action
-            android:id="@+id/action_productDetailFragment_to_aztecEditorFragment"
-            app:destination="@id/aztecEditorFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
-        <action
-            android:id="@+id/action_productDetailFragment_to_productImagesFragment"
-            app:destination="@id/productImagesFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
-            app:destination="@id/productInventoryFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
-        <action
-            android:id="@+id/action_productDetailFragment_to_productShippingFragment"
-            app:destination="@id/productShippingFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
-    </fragment>
-    <fragment
         android:id="@+id/rootFragment"
         android:name="com.woocommerce.android.ui.main.RootFragment"
         tools:layout="@layout/fragment_root" />
@@ -161,9 +127,14 @@
     </fragment>
     <action
         android:id="@+id/action_global_productDetailFragment"
-        app:destination="@id/productDetailFragment"
+        app:destination="@id/nav_graph_products"
         app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:popExitAnim="@anim/activity_fade_out">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </action>
     <action
         android:id="@+id/action_global_orderDetailFragment"
         app:destination="@id/orderDetailFragment"
@@ -192,6 +163,7 @@
         app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_fade_out" />
     <include app:graph="@navigation/nav_graph_refunds" />
+    <include app:graph="@navigation/nav_graph_products" />
     <fragment
         android:id="@+id/refundDetailFragment"
         android:name="com.woocommerce.android.ui.refunds.RefundDetailFragment"
@@ -204,67 +176,5 @@
             android:name="refundId"
             android:defaultValue="0L"
             app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/productImagesFragment"
-        android:name="com.woocommerce.android.ui.products.ProductImagesFragment"
-        android:label="ProductImagesFragment"
-        tools:layout="@layout/fragment_product_images">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/productVariantsFragment"
-        android:name="com.woocommerce.android.ui.products.ProductVariantsFragment"
-        tools:layout="@layout/fragment_product_variants">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/aztecEditorFragment"
-        android:name="com.woocommerce.android.ui.aztec.AztecEditorFragment"
-        tools:layout="@layout/fragment_aztec_editor">
-        <argument
-            android:name="aztecText"
-            app:argType="string"
-            android:defaultValue='""'/>
-        <argument
-            android:name="aztecTitle"
-            app:argType="string"
-            android:defaultValue='""'/>
-    </fragment>
-    <fragment
-        android:id="@+id/productInventoryFragment"
-        android:name="com.woocommerce.android.ui.products.ProductInventoryFragment"
-        tools:layout="@layout/fragment_product_inventory">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/productShippingFragment"
-        android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
-        tools:layout="@layout/fragment_product_shipping">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <action
-            android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
-            app:destination="@id/productShippingClassFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/productShippingClassFragment"
-        android:name="com.woocommerce.android.ui.products.ProductShippingClassFragment"
-        android:label="ProductShippingClassFragment">
-        <argument
-            android:name="shippingClassSlug"
-            android:defaultValue='""'
-            app:argType="string" />
     </fragment>
 </navigation>
