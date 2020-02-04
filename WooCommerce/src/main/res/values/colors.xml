@@ -123,9 +123,6 @@
     <color name="login_input_icon_color">@color/wc_grey_30</color>
     <color name="login_input_password_icon_color">@color/wc_grey_30</color>
     <color name="login_notification_accent_color">@color/colorPrimary</color>
-
-    <color name="skeleton_color">#16000000</color>
-    <color name="skeleton_color_light">@color/white</color>
-
+    
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#1F000000</color>
 </resources>

@@ -68,4 +68,10 @@
     <color name="product_stock_fg">@color/color_on_surface_medium</color>
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
+
+    <!--
+        Loading Skeletons
+    -->
+    <color name="skeleton_color">@color/woo_black_90_alpha_012</color>
+    <color name="skeleton_color_inverse">@color/color_surface</color>
 </resources>
