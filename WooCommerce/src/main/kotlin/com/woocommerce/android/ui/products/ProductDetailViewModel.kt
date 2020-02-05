@@ -164,49 +164,25 @@ class ProductDetailViewModel @AssistedInject constructor(
         stockQuantity: String? = null,
         backorderStatus: ProductBackorderStatus? = null
     ) {
-        description?.let {
-            if (it != viewState.product?.description) {
-                viewState.product?.description = it
-            }
-        }
-        title?.let {
-            if (it != viewState.product?.name) {
-                viewState.product?.name = it
-            }
-        }
-        sku?.let {
-            if (it != viewState.product?.sku) {
-                viewState.product?.sku = it
-            }
-        }
-        manageStock?.let {
-            if (it != viewState.product?.manageStock) {
-                viewState.product?.manageStock = it
-            }
-        }
-        stockStatus?.let {
-            if (it != viewState.product?.stockStatus) {
-                viewState.product?.stockStatus = it
-            }
-        }
-        soldIndividually?.let {
-            if (it != viewState.product?.soldIndividually) {
-                viewState.product?.soldIndividually = it
-            }
-        }
-        stockQuantity?.let {
-            val quantity = it.toInt()
-            if (quantity != viewState.product?.stockQuantity) {
-                viewState.product?.stockQuantity = quantity
-            }
-        }
-        backorderStatus?.let {
-            if (it != viewState.product?.backorderStatus) {
-                viewState.product?.backorderStatus = it
-            }
-        }
+        viewState.product?.let { product ->
+            val currentProduct = product.copy()
+            val updatedProduct = product.copy(
+                    description = description.takeIf { it != null && it != product.description } ?: product.description,
+                    name = title.takeIf { it != null && it != product.name } ?: product.name,
+                    sku = sku.takeIf { it != null && it != product.sku } ?: product.sku,
+                    manageStock = manageStock.takeIf { it != null && it != product.manageStock } ?: product.manageStock,
+                    stockStatus = stockStatus.takeIf { it != null && it != product.stockStatus } ?: product.stockStatus,
+                    soldIndividually = soldIndividually.takeIf { it != null && it != product.soldIndividually }
+                            ?: product.soldIndividually,
+                    backorderStatus = backorderStatus.takeIf { it != null && it != product.backorderStatus }
+                            ?: product.backorderStatus,
+                    stockQuantity = stockQuantity?.toInt().takeIf { it != null && it != product.stockQuantity }
+                            ?: product.stockQuantity
+            )
+            viewState = viewState.copy(storedProduct = currentProduct, product = updatedProduct)
 
-        updateProductEditAction()
+            updateProductEditAction()
+        }
     }
 
     override fun onCleared() {

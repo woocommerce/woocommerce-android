@@ -16,12 +16,12 @@ import java.util.Date
 @Parcelize
 data class Product(
     val remoteId: Long,
-    var name: String,
-    var description: String,
+    val name: String,
+    val description: String,
     val type: ProductType,
     val status: ProductStatus?,
-    var stockStatus: ProductStockStatus,
-    var backorderStatus: ProductBackorderStatus,
+    val stockStatus: ProductStockStatus,
+    val backorderStatus: ProductBackorderStatus,
     val dateCreated: Date,
     val firstImageUrl: String?,
     val totalSales: Int,
@@ -35,9 +35,9 @@ data class Product(
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
-    var manageStock: Boolean,
-    var stockQuantity: Int,
-    var sku: String,
+    val manageStock: Boolean,
+    val stockQuantity: Int,
+    val sku: String,
     val length: Float,
     val width: Float,
     val height: Float,
@@ -53,7 +53,7 @@ data class Product(
     val attributes: List<Attribute>,
     val dateOnSaleTo: Date?,
     val dateOnSaleFrom: Date?,
-    var soldIndividually: Boolean
+    val soldIndividually: Boolean
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -98,32 +98,19 @@ data class Product(
      */
     fun mergeProduct(newProduct: Product?): Product {
         return newProduct?.let { updatedProduct ->
-            this.copy().apply {
-                if (updatedProduct.description != this.description) {
-                    description = updatedProduct.description
-                }
-                if (updatedProduct.name != this.name) {
-                    name = updatedProduct.name
-                }
-                if (sku != updatedProduct.sku) {
-                    sku = updatedProduct.sku
-                }
-                if (manageStock != updatedProduct.manageStock) {
-                    manageStock = updatedProduct.manageStock
-                }
-                if (stockStatus != updatedProduct.stockStatus) {
-                    stockStatus = updatedProduct.stockStatus
-                }
-                if (stockQuantity != updatedProduct.stockQuantity) {
-                    stockQuantity = updatedProduct.stockQuantity
-                }
-                if (backorderStatus != updatedProduct.backorderStatus) {
-                    backorderStatus = updatedProduct.backorderStatus
-                }
-                if (soldIndividually != updatedProduct.soldIndividually) {
-                    soldIndividually = updatedProduct.soldIndividually
-                }
-            }
+            this.copy(
+                    description = updatedProduct.description.takeIf { it != updatedProduct.description } ?: description,
+                    name = updatedProduct.name.takeIf { it != updatedProduct.name } ?: name,
+                    sku = updatedProduct.sku.takeIf { it != updatedProduct.sku } ?: sku,
+                    manageStock = updatedProduct.manageStock.takeIf { it != updatedProduct.manageStock } ?: manageStock,
+                    stockStatus = updatedProduct.stockStatus.takeIf { it != updatedProduct.stockStatus } ?: stockStatus,
+                    stockQuantity = updatedProduct.stockQuantity.takeIf { it != updatedProduct.stockQuantity }
+                            ?: stockQuantity,
+                    backorderStatus = updatedProduct.backorderStatus.takeIf { it != updatedProduct.backorderStatus }
+                            ?: backorderStatus,
+                    soldIndividually = updatedProduct.soldIndividually.takeIf { it != updatedProduct.soldIndividually }
+                            ?: soldIndividually
+            )
         } ?: this.copy()
     }
 }
