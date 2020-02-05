@@ -223,6 +223,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Button.Toggle">
         <item name="android:textColor">@color/toggle_button_text_color</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="Woo.Button.Colored" parent="@style/Widget.MaterialComponents.Button">
