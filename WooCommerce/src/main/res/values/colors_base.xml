@@ -45,7 +45,7 @@
     <!--
         Rating widget colors
     -->
-    <color name="rating_star_color">@color/woo_brown_50</color>
+    <color name="rating_star_color">@color/woo_yellow_50</color>
 
     <!--
         TagView colors

@@ -314,6 +314,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:stepSize">1</item>
     </style>
 
+    <style name="Woo.RatingsBar.Small.Colored">
+        <item name="android:progressTint">@color/rating_star_color</item>
+    </style>
+
     <!--
         Settings
     -->

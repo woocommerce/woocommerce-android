@@ -34,7 +34,7 @@
     <!--
         Rating widget colors
     -->
-    <color name="rating_star_color">@color/woo_orange_30</color>
+    <color name="rating_star_color">@color/woo_yellow_30</color>
 
     <!--
         TagView colors

@@ -109,14 +109,12 @@
 
             <RatingBar
                 android:id="@+id/review_rating_bar"
-                style="@style/Widget.AppCompat.RatingBar.Small"
+                style="@style/Woo.RatingsBar.Small.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
                 android:isIndicator="true"
-                android:numStars="5"
-                android:progressTint="@color/rating_star_color"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/review_gravatar"
