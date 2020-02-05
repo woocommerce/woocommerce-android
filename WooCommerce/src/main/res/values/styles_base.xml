@@ -4,7 +4,7 @@ Base Woo Styles. Use these styles as a base for custom component styles and over
 properties necessary. The goal is to make as few modifications as possible to keep a consistent
 theme across the entire app. Overridden versions should be added to the styles.xml file.
 -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <style name="Woo"/>
     <style name="Widget"/>
     <style name="Widget.Woo"/>
@@ -80,7 +80,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
         Card Styles
     -->
     <style name="Woo.Card" parent="@style/Widget.MaterialComponents.CardView">
-        <item name="android:background">@color/card_bgColor</item>
         <item name="cardCornerRadius">@dimen/minor_00</item>
         <item name="android:checkable">false</item>
         <item name="contentPaddingTop">@dimen/minor_25</item>
