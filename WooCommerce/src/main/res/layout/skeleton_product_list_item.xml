@@ -18,7 +18,7 @@
     <View
         android:id="@+id/productName"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/skeleton_default_text_height"
+        android:layout_height="@dimen/skeleton_text_height_100"
         android:layout_marginEnd="@dimen/margin_extra_large"
         android:layout_marginStart="@dimen/margin_extra_large"
         android:background="@color/skeleton_color"
@@ -36,7 +36,7 @@
     <View
         android:id="@+id/productStockAndStatus"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/skeleton_default_text_height"
+        android:layout_height="@dimen/skeleton_text_height_100"
         android:background="@color/skeleton_color"
         app:layout_constraintEnd_toEndOf="@+id/productName"
         app:layout_constraintHorizontal_bias="0.0"
