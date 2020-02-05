@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -133,10 +134,16 @@ class ReviewDetailFragment : BaseFragment() {
         val size = activity?.resources?.getDimensionPixelSize(R.dimen.image_major_64) ?: 256
         val avatarUrl = UrlUtils.removeQuery(review.reviewerAvatarUrl) + "?s=" + size + "&d=404"
 
+        val placeholder = if (AppThemeUtils.isDarkThemeActive(requireActivity())) {
+            R.drawable.ic_user_circle_dark_24dp
+        } else {
+            R.drawable.ic_user_circle_24dp
+        }
+
         // Populate reviewer section
         GlideApp.with(review_gravatar.context)
                 .load(avatarUrl)
-                .placeholder(R.drawable.ic_user_circle_grey_24dp)
+                .placeholder(placeholder)
                 .circleCrop()
                 .into(review_gravatar)
         review_user_name.text = review.reviewerName

@@ -79,7 +79,7 @@
                 android:importantForAccessibility="no"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider"
-                tools:srcCompat="@drawable/ic_user_circle_24dp"/>
+                tools:srcCompat="@drawable/ic_user_circle_dark_24dp"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/review_user_name"
