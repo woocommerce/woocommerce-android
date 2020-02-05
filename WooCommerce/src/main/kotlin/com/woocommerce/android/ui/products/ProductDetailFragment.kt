@@ -341,11 +341,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
 
             // display product sale dates, if available
-            var dateOnSaleFrom = product.dateOnSaleFrom
-            val dateOnSaleTo = product.dateOnSaleTo
+            var dateOnSaleFrom = product.dateOnSaleFromGmt
+            val dateOnSaleTo = product.dateOnSaleToGmt
             if (dateOnSaleTo != null && dateOnSaleFrom == null) {
                 dateOnSaleFrom = Date()
             }
+            // TODO: convert from GMT
             val saleDates = when {
                 (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
                     getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
