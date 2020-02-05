@@ -31,21 +31,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <com.woocommerce.android.widgets.BorderedImageView
+                    android:id="@+id/review_product_icon"
+                    android:layout_width="@dimen/image_minor_100"
+                    android:layout_height="@dimen/image_minor_100"
                     android:layout_marginStart="@dimen/minor_100"
+                    android:scaleType="centerCrop"
                     android:background="@drawable/picture_frame"
-                    android:padding="1dp">
-
-                    <ImageView
-                        android:id="@+id/review_product_icon"
-                        android:layout_width="@dimen/image_minor_100"
-                        android:layout_height="@dimen/image_minor_100"
-                        android:importantForAccessibility="no"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_product"/>
-                </FrameLayout>
+                    android:contentDescription="@string/product_image_content_description"
+                    tools:src="@drawable/ic_product" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/review_product_name"
