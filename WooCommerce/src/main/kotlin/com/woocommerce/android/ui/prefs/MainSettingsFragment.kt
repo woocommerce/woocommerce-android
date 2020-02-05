@@ -258,9 +258,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                     option_theme?.optionValue = getString(selectedTheme.label)
                     dialog.dismiss()
                 }
-                .setNegativeButton(R.string.cancel) { dialog, _ ->
-                    dialog.cancel()
-                }
                 .show()
     }
 }
