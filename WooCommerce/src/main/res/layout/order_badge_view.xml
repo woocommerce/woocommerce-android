@@ -13,14 +13,11 @@
    -->
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textOrderCount"
+        style="@style/Woo.TextView.Badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
-        android:layout_marginStart="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_small"
         android:background="@drawable/badge_orders"
         android:gravity="center"
-        android:textAppearance="?attr/textAppearanceBadge"
         tools:text="99+" />
-
 </FrameLayout>

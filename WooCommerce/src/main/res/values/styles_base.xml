@@ -210,6 +210,15 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceOverline</item>
     </style>
 
+    <style name="Woo.TextView.Badge">
+        <item name="android:textAppearance">?attr/textAppearanceBadge</item>
+        <item name="android:textColor">@color/color_surface</item>
+        <item name="android:layout_marginStart">@dimen/major_75</item>
+        <item name="android:layout_marginEnd">@dimen/minor_00</item>
+        <item name="android:layout_marginTop">@dimen/minor_50</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
+
     <!--
         Button Styles
     -->
