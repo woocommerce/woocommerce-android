@@ -9,14 +9,13 @@
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.reviews.ReviewDetailFragment">
 
-    <FrameLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_window_background">
+        style="@style/Woo.Card">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container"
-            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -177,6 +176,9 @@
                 android:text="@string/wc_trash"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/review_spam" />
+            
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
 </androidx.core.widget.NestedScrollView>
