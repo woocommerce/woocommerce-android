@@ -56,6 +56,7 @@ so that's the baseline as defined in `major_100`.
 
     <!-- Smaller image sizes (ex. icons) -->
     <dimen name="image_minor_50">24dp</dimen>
+    <dimen name="image_minor_60">26dp</dimen>
     <dimen name="image_minor_100">40dp</dimen>
     <dimen name="image_major_50">50dp</dimen>
     <dimen name="image_major_64">64dp</dimen>
@@ -68,6 +69,16 @@ so that's the baseline as defined in `major_100`.
     <dimen name="skeleton_list_header_text_height_100">@dimen/major_100</dimen>
     <dimen name="skeleton_list_item_title_text_height_100">@dimen/major_110</dimen>
     <dimen name="skeleton_list_item_body_text_height_100">@dimen/major_100</dimen>
+
+    <!--
+        Skeletons
+    -->
+    <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_spacing">@dimen/minor_100</dimen>
+    <dimen name="skeleton_default_text_height">@dimen/text_major_25</dimen>
 
     <!-- Other literal dimensions -->
     <dimen name="margin_app_title_aligned">72dp</dimen>
