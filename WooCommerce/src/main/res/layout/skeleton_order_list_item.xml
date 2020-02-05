@@ -3,31 +3,33 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginStart="@dimen/major_100"
+    android:layout_marginEnd="@dimen/major_100"
+    android:layout_marginTop="@dimen/major_75"
+    android:layout_marginBottom="@dimen/major_75">
 
     <View
         android:layout_width="80dp"
-        android:layout_height="@dimen/skeleton_text_height_100"
-        android:layout_marginEnd="@dimen/list_item_padding_intra_h"
-        android:layout_marginTop="8dp"
+        android:layout_height="@dimen/skeleton_text_height_75"
         android:background="@drawable/skeleton_background" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/minor_100"
         android:orientation="horizontal">
 
         <View
             android:layout_width="0dp"
-            android:layout_height="@dimen/text_extra_large"
-            android:layout_marginEnd="@dimen/list_item_padding_intra_h"
+            android:layout_height="@dimen/skeleton_text_height_100"
+            android:layout_marginEnd="@dimen/minor_100"
             android:layout_weight="4"
             android:background="@drawable/skeleton_background"/>
 
         <View
             android:layout_width="0dp"
-            android:layout_height="@dimen/text_extra_large"
+            android:layout_height="@dimen/skeleton_text_height_100"
             android:layout_weight="1"
             android:background="@drawable/skeleton_background"/>
 
@@ -35,8 +37,7 @@
 
     <View
         android:layout_width="100dp"
-        android:layout_height="@dimen/text_extra_large"
-        android:layout_marginBottom="@dimen/margin_medium"
-        android:layout_marginTop="8dp"
+        android:layout_height="@dimen/skeleton_tagview_height"
+        android:layout_marginTop="@dimen/minor_100"
         android:background="@drawable/skeleton_background"/>
 </LinearLayout>
