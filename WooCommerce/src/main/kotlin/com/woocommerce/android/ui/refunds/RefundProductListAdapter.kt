@@ -22,6 +22,7 @@ import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.math.RoundingMode.HALF_UP
 
 class RefundProductListAdapter(
     private val formatCurrency: (BigDecimal) -> String,
@@ -151,7 +152,8 @@ class RefundProductListAdapter(
                     orderItem.itemId,
                     quantity,
                     quantity.toBigDecimal().times(orderItem.price),
-                    orderItem.totalTax.divide(orderItem.quantity.toBigDecimal()).times(quantity.toBigDecimal())
+                    orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
+                            .times(quantity.toBigDecimal())
             )
         }
     }

@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
+import java.math.RoundingMode.HALF_UP
 
 class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
@@ -72,7 +73,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                     it.copy(
                             quantity = newQuantity ?: error("Missing product"),
                             total = it.price.times(newQuantity.toBigDecimal()),
-                            totalTax = it.totalTax.divide(it.quantity.toBigDecimal())
+                            totalTax = it.totalTax.divide(it.quantity.toBigDecimal(), 2, HALF_UP)
                     )
                 }
 
