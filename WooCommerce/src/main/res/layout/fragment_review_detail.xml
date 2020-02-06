@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
-    android:fillViewport="true"
     android:layout_height="wrap_content"
+    android:fillViewport="true"
     tools:context="com.woocommerce.android.ui.reviews.ReviewDetailFragment">
 
     <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Woo.Card">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container"
@@ -35,40 +34,40 @@
                     android:id="@+id/review_product_icon"
                     android:layout_width="@dimen/image_minor_100"
                     android:layout_height="@dimen/image_minor_100"
+                    app:srcCompat="@drawable/ic_product"
                     android:layout_marginStart="@dimen/minor_100"
-                    android:scaleType="centerCrop"
                     android:background="@drawable/picture_frame"
                     android:contentDescription="@string/product_image_content_description"
-                    tools:src="@drawable/ic_product" />
+                    android:scaleType="centerInside" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/review_product_name"
+                    style="@style/Woo.TextView.Subtitle1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/major_100"
                     android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
                     android:layout_weight="1"
-                    style="@style/Woo.TextView.Subtitle1"
-                    tools:text="Left Handed Candlestick"/>
+                    tools:text="Left Handed Candlestick" />
 
                 <ImageView
                     style="@style/Base.Widget.AppCompat.ActionButton"
                     android:layout_width="@dimen/image_minor_50"
                     android:layout_height="@dimen/image_minor_50"
-                    android:contentDescription="@string/wc_view_the_product_external"
                     android:layout_marginEnd="@dimen/minor_100"
+                    android:contentDescription="@string/wc_view_the_product_external"
                     android:tint="@color/color_secondary"
-                    app:srcCompat="@drawable/ic_external"/>
+                    app:srcCompat="@drawable/ic_external" />
             </LinearLayout>
 
             <View
                 android:id="@+id/divider"
                 style="@style/Woo.Divider"
-                android:layout_marginBottom="@dimen/minor_50"
                 android:layout_marginTop="@dimen/minor_50"
+                android:layout_marginBottom="@dimen/minor_50"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/review_open_product"/>
+                app:layout_constraintTop_toBottomOf="@+id/review_open_product" />
 
             <ImageView
                 android:id="@+id/review_gravatar"
@@ -79,30 +78,30 @@
                 android:importantForAccessibility="no"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider"
-                tools:srcCompat="@drawable/ic_user_circle_dark_24dp"/>
+                tools:srcCompat="@drawable/ic_user_circle_24dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/review_user_name"
+                style="@style/Woo.TextView.Headline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constrainedWidth="true"
-                app:layout_constraintHorizontal_bias="0.0"
-                android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
-                style="@style/Woo.TextView.Headline6"
+                android:layout_marginEnd="@dimen/major_100"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/review_gravatar"
                 app:layout_constraintTop_toBottomOf="@+id/divider"
-                tools:text="Ursula K. LeGuin"/>
+                tools:text="Ursula K. LeGuin" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/review_time"
                 style="@style/Woo.TextView.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_100"
                 android:layout_marginStart="@dimen/minor_00"
+                android:layout_marginTop="@dimen/minor_100"
                 app:layout_constraintStart_toStartOf="@+id/review_user_name"
                 app:layout_constraintTop_toBottomOf="@+id/review_user_name"
                 tools:text="23 hrs ago" />
@@ -119,7 +118,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/review_gravatar"
                 tools:rating="4"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/review_description"
@@ -131,15 +130,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/review_rating_bar"
-                tools:text="Great product! Definitely what I was looking for. Great quality, and looks exactly like the product image on the website. Would highly recommend to anyone who is looking for something like this!"/>
+                tools:text="Great product! Definitely what I was looking for. Great quality, and looks exactly like the product image on the website. Would highly recommend to anyone who is looking for something like this!" />
 
             <ToggleButton
                 android:id="@+id/review_approve"
                 style="@style/Woo.Button.Toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_100"
                 android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/minor_100"
                 android:textOff="@string/wc_approve"
                 android:textOn="@string/wc_approved"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -150,8 +149,8 @@
                 style="@style/Woo.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_medium"
                 android:layout_marginEnd="@dimen/margin_extra_large"
+                android:layout_marginBottom="@dimen/margin_medium"
                 android:text="@string/wc_spam"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/review_approve" />
@@ -161,8 +160,8 @@
                 style="@style/Woo.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_100"
                 android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/minor_100"
                 android:text="@string/wc_trash"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/review_spam" />
