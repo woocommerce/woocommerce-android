@@ -138,7 +138,8 @@ class ProductListViewModel @AssistedInject constructor(
                 delay(SEARCH_TYPING_DELAY_MS)
                 viewState = viewState.copy(
                         isLoadingMore = loadMore,
-                        isSkeletonShown = !loadMore
+                        isSkeletonShown = !loadMore,
+                        isEmptyViewVisible = false
                 )
                 fetchProductList(viewState.query, loadMore)
             }
@@ -153,7 +154,7 @@ class ProductListViewModel @AssistedInject constructor(
                     // them immediately, otherwise make sure the skeleton shows
                     val productsInDb = productRepository.getProductList()
                     if (productsInDb.isEmpty()) {
-                        viewState = viewState.copy(isSkeletonShown = true)
+                        viewState = viewState.copy(isSkeletonShown = true, isEmptyViewVisible = false)
                     } else {
                         _productList.value = productsInDb
                     }
@@ -186,10 +187,6 @@ class ProductListViewModel @AssistedInject constructor(
 
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            viewState = viewState.copy(
-                    isEmptyViewVisible = false,
-                    isSkeletonShown = true
-            )
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
             } else {
