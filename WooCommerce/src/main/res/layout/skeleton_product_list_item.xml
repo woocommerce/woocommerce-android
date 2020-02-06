@@ -4,13 +4,13 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/list_item_bg"
-    android:padding="@dimen/margin_extra_large">
+    android:background="@color/color_surface"
+    android:padding="@dimen/major_100">
 
     <View
         android:id="@+id/productImage"
-        android:layout_width="@dimen/product_icon_sz"
-        android:layout_height="@dimen/product_icon_sz"
+        android:layout_width="@dimen/skeleton_list_item_icon_200"
+        android:layout_height="@dimen/skeleton_list_item_icon_200"
         android:background="@color/skeleton_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -18,9 +18,9 @@
     <View
         android:id="@+id/productName"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/skeleton_default_text_height"
-        android:layout_marginEnd="@dimen/margin_extra_large"
-        android:layout_marginStart="@dimen/margin_extra_large"
+        android:layout_height="@dimen/skeleton_text_height_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_100"
         android:background="@color/skeleton_color"
         app:layout_constrainedWidth="true"
         app:layout_constraintHorizontal_bias="0.0"
@@ -30,13 +30,13 @@
     <Space
         android:id="@+id/spacer"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_small"
+        android:layout_height="@dimen/minor_50"
         app:layout_constraintTop_toBottomOf="@+id/productName" />
 
     <View
         android:id="@+id/productStockAndStatus"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/skeleton_default_text_height"
+        android:layout_height="@dimen/skeleton_text_height_100"
         android:background="@color/skeleton_color"
         app:layout_constraintEnd_toEndOf="@+id/productName"
         app:layout_constraintHorizontal_bias="0.0"

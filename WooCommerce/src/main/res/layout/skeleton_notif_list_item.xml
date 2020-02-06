@@ -3,60 +3,59 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="match_parent">
 
     <View
         android:id="@+id/view"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/skeleton_background_oval"
+        android:layout_width="@dimen/skeleton_list_item_icon_100"
+        android:layout_height="@dimen/skeleton_list_item_icon_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:background="@drawable/skeleton_background"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <View
         android:id="@+id/view4"
         android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="@dimen/skeleton_list_item_title_text_height_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
         android:background="@drawable/skeleton_background"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toEndOf="@+id/view"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <View
         android:id="@+id/view2"
         android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="@dimen/skeleton_list_item_body_text_height_100"
+        android:layout_marginEnd="@dimen/minor_100"
+        android:layout_marginTop="@dimen/minor_100"
         android:background="@drawable/skeleton_background"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="@+id/view4"
         app:layout_constraintTop_toBottomOf="@+id/view4"/>
 
     <View
         android:id="@+id/view3"
         android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="@dimen/skeleton_list_item_body_text_height_100"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/major_100"
         android:background="@drawable/skeleton_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@+id/view2"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.54744524"/>
+        app:layout_constraintGuide_percent="0.67" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
@@ -70,5 +69,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="299dp"/>
+        app:layout_constraintGuide_percent="0.33" />
 </androidx.constraintlayout.widget.ConstraintLayout>

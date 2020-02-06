@@ -8,7 +8,11 @@
 
     <include layout="@layout/skeleton_dashboard_top_earner_list_item"/>
 
+    <View style="@style/Woo.Divider.TitleAligned"/>
+
     <include layout="@layout/skeleton_dashboard_top_earner_list_item"/>
+
+    <View style="@style/Woo.Divider.TitleAligned"/>
 
     <include layout="@layout/skeleton_dashboard_top_earner_list_item"/>
 

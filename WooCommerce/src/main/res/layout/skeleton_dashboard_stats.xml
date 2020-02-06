@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/chart_skeleton"
     android:layout_width="match_parent"
     android:layout_height="@dimen/chart_height"
     android:orientation="horizontal"
-    android:padding="@dimen/skeleton_bar_chart_padding">
+    android:paddingTop="@dimen/major_200"
+    android:paddingBottom="@dimen/major_300"
+    android:paddingStart="@dimen/major_200"
+    android:paddingEnd="@dimen/major_200">
 
     <View
         android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
