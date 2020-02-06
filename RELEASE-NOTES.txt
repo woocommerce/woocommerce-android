@@ -4,6 +4,7 @@
 3.5
 -----
 * Refunds are back! Select individual order items and the refund amount will be automatically calculated for you
+* Fixed a crash when opening the app from a new order notification
  
 3.4
 -----
