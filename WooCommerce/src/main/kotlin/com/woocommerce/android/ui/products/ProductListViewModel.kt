@@ -141,28 +141,31 @@ class ProductListViewModel @AssistedInject constructor(
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false
                 )
-                fetchProductList(viewState.query, loadMore)
+                fetchProductList(viewState.query, loadMore = loadMore)
             }
         } else {
             // if a fetch is already active, wait for it to finish before we start another one
             waitForExistingLoad()
 
             loadJob = launch {
-                viewState = viewState.copy(isLoadingMore = loadMore)
-                if (!loadMore) {
-                    // if this is the initial load, first get the products from the db and show them immediately.
-                    // if there aren't any cached products we show the skeleton, otherwise we only show the
-                    // skeleton if the user pulled to refresh
+                val showSkeleton: Boolean
+                if (loadMore) {
+                    showSkeleton = false
+                } else {
+                    // if this is the initial load, first get the products from the db and show them immediately
                     val productsInDb = productRepository.getProductList()
-                    val showSkeleton = if (productsInDb.isEmpty()) {
-                        true
+                    if (productsInDb.isEmpty()) {
+                        showSkeleton = true
                     } else {
                         _productList.value = productsInDb
-                        viewState.isRefreshing
+                        showSkeleton = viewState.isRefreshing == true
                     }
-                    viewState = viewState.copy(isSkeletonShown = showSkeleton, isEmptyViewVisible = false)
                 }
-
+                viewState = viewState.copy(
+                        isSkeletonShown = showSkeleton,
+                        isEmptyViewVisible = false,
+                        isLoadingMore = loadMore
+                )
                 fetchProductList(loadMore = loadMore)
             }
         }
