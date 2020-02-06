@@ -150,14 +150,17 @@ class ProductListViewModel @AssistedInject constructor(
             loadJob = launch {
                 viewState = viewState.copy(isLoadingMore = loadMore)
                 if (!loadMore) {
-                    // if this is the initial load, first get the products from the db and if there are any show
-                    // them immediately, otherwise make sure the skeleton shows
+                    // if this is the initial load, first get the products from the db and show them immediately.
+                    // if there aren't any cached products we show the skeleton, otherwise we only show the
+                    // skeleton if the user pulled to refresh
                     val productsInDb = productRepository.getProductList()
-                    if (productsInDb.isEmpty()) {
-                        viewState = viewState.copy(isSkeletonShown = true, isEmptyViewVisible = false)
+                    val showSkeleton = if (productsInDb.isEmpty()) {
+                        true
                     } else {
                         _productList.value = productsInDb
+                        viewState.isRefreshing
                     }
+                    viewState = viewState.copy(isSkeletonShown = showSkeleton, isEmptyViewVisible = false)
                 }
 
                 fetchProductList(loadMore = loadMore)
