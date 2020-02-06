@@ -99,17 +99,20 @@ data class Product(
     fun mergeProduct(newProduct: Product?): Product {
         return newProduct?.let { updatedProduct ->
             this.copy(
-                    description = updatedProduct.description.takeIf { this.description != updatedProduct.description } ?: this.description,
+                    description = updatedProduct.description
+                            .takeIf { this.description != updatedProduct.description } ?: this.description,
                     name = updatedProduct.name.takeIf { name != updatedProduct.name } ?: name,
                     sku = updatedProduct.sku.takeIf { sku != updatedProduct.sku } ?: sku,
-                    manageStock = updatedProduct.manageStock.takeIf { manageStock != updatedProduct.manageStock } ?: manageStock,
-                    stockStatus = updatedProduct.stockStatus.takeIf { stockStatus != updatedProduct.stockStatus } ?: stockStatus,
-                    stockQuantity = updatedProduct.stockQuantity.takeIf { stockQuantity != updatedProduct.stockQuantity }
-                            ?: stockQuantity,
-                    backorderStatus = updatedProduct.backorderStatus.takeIf { backorderStatus != updatedProduct.backorderStatus }
-                            ?: backorderStatus,
-                    soldIndividually = updatedProduct.soldIndividually.takeIf { soldIndividually != updatedProduct.soldIndividually }
-                            ?: soldIndividually
+                    manageStock = updatedProduct.manageStock
+                            .takeIf { manageStock != updatedProduct.manageStock } ?: manageStock,
+                    stockStatus = updatedProduct.stockStatus
+                            .takeIf { stockStatus != updatedProduct.stockStatus } ?: stockStatus,
+                    stockQuantity = updatedProduct.stockQuantity
+                            .takeIf { stockQuantity != updatedProduct.stockQuantity } ?: stockQuantity,
+                    backorderStatus = updatedProduct.backorderStatus
+                            .takeIf { backorderStatus != updatedProduct.backorderStatus } ?: backorderStatus,
+                    soldIndividually = updatedProduct.soldIndividually
+                            .takeIf { soldIndividually != updatedProduct.soldIndividually } ?: soldIndividually
             )
         } ?: this.copy()
     }
