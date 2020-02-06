@@ -32,6 +32,11 @@
     <color name="graph_highlight_color">@color/woo_white</color>
 
     <!--
+        Rating widget colors
+    -->
+    <color name="rating_star_color">@color/woo_yellow_30</color>
+
+    <!--
         TagView colors
     -->
     <color name="tagView_text">@color/color_on_primary_high</color>

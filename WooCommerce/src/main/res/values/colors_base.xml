@@ -43,6 +43,11 @@
     <color name="graph_label_color">@color/color_on_surface_medium</color>
 
     <!--
+        Rating widget colors
+    -->
+    <color name="rating_star_color">@color/woo_yellow_50</color>
+
+    <!--
         TagView colors
     -->
     <color name="tagView_bg">@color/tag_bg_other</color>
