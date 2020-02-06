@@ -181,9 +181,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                     backorderStatus = backorderStatus.takeIf { it != null && it != product.backorderStatus }
                             ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt().takeIf { it != null && it != product.stockQuantity }
-                            ?: product.stockQuantity
+                            ?: product.stockQuantity,
+                    images = viewState.storedProduct?.images ?: product.images
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
+
+            updateProductEditAction()
         }
     }
 
