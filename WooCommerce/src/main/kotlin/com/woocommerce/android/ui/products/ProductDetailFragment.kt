@@ -372,6 +372,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             if (!hasPricingInfo) {
                 it.showPropertyName(false)
             }
+            it.setClickListener {
+                // TODO: add event listener for click
+                showProductPricing()
+            }
         }
 
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
@@ -398,7 +402,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             it.setClickListener {
                 // TODO: add event listener for click
-                showProductInventory(product.remoteId)
+                showProductInventory()
             }
         }
 
@@ -765,10 +769,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 )))
     }
 
-    private fun showProductInventory(remoteId: Long) {
+    private fun showProductInventory() {
         findNavController().navigate(
                 ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment(remoteId)
+                        .actionProductDetailFragmentToProductInventoryFragment()
+        )
+    }
+
+    private fun showProductPricing() {
+        findNavController().navigate(
+                ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductPricingFragment()
         )
     }
 
