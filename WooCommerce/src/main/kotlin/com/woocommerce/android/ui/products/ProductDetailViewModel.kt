@@ -106,7 +106,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        return if (viewState.isProductUpdated == true && event.shouldShowDiscardDialog) {
+        val isProductUpdated = when (event) {
+            is ExitProductDetail -> viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
+            else -> viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
+        }
+        return if (isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
@@ -179,9 +183,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     stockQuantity = stockQuantity?.toInt().takeIf { it != null && it != product.stockQuantity }
                             ?: product.stockQuantity
             )
-            viewState = viewState.copy(storedProduct = currentProduct, product = updatedProduct)
-
-            updateProductEditAction()
+            viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
         }
     }
 
@@ -196,15 +198,17 @@ class ProductDetailViewModel @AssistedInject constructor(
             // discard inventory screen changes
             is ExitInventory -> {
                 viewState.storedProduct?.let {
+                    val product = viewState.product?.copy(
+                            sku = it.sku,
+                            manageStock = it.manageStock,
+                            stockStatus = it.stockStatus,
+                            backorderStatus = it.backorderStatus,
+                            soldIndividually = it.soldIndividually,
+                            stockQuantity = it.stockQuantity
+                    )
                     viewState = viewState.copy(
-                            product = viewState.product?.copy(
-                                    sku = it.sku,
-                                    manageStock = it.manageStock,
-                                    stockStatus = it.stockStatus,
-                                    backorderStatus = it.backorderStatus,
-                                    soldIndividually = it.soldIndividually,
-                                    stockQuantity = it.stockQuantity
-                            )
+                            product = product,
+                            cachedProduct = product
                     )
                 }
             }
@@ -316,8 +320,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
+        val updatedProduct = storedProduct.mergeProduct(viewState.product)
         viewState = viewState.copy(
-                product = storedProduct.mergeProduct(viewState.product),
+                product = viewState.product ?: updatedProduct,
+                cachedProduct = viewState.cachedProduct ?: updatedProduct,
                 storedProduct = storedProduct,
                 weightWithUnits = weight,
                 sizeWithUnits = size,
@@ -378,6 +384,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductDetailViewState(
         val product: Product? = null,
+        var cachedProduct: Product? = null,
         var storedProduct: Product? = null,
         val isSkeletonShown: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
