@@ -14,7 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -126,6 +126,10 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        navController = navHostFragment.navController
+        navController.addOnDestinationChangedListener(this)
+
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
@@ -162,13 +166,6 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-
-        navController = findNavController(R.id.nav_host_fragment_main)
-        navController.addOnDestinationChangedListener(this)
     }
 
     override fun hideProgressDialog() {
