@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.gmtDateWithOffset
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -340,11 +341,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 pricingGroup[getString(R.string.product_sale_price)] = requireNotNull(productData.salePriceWithCurrency)
             }
 
-            // display product sale dates, if available
-            var dateOnSaleFrom = product.dateOnSaleFromGmt
-            val dateOnSaleTo = product.dateOnSaleToGmt
+            // display product sale dates using the site's timezone, if available
+            val gmtOffset = productData.gmtOffset
+            var dateOnSaleFrom = product.dateOnSaleFromGmt?.gmtDateWithOffset(gmtOffset)
+            val dateOnSaleTo = product.dateOnSaleToGmt?.gmtDateWithOffset(gmtOffset)
             if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                dateOnSaleFrom = Date()
+                dateOnSaleFrom = Date().gmtDateWithOffset(gmtOffset)
             }
             // TODO: convert from GMT
             val saleDates = when {

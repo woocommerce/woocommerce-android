@@ -348,7 +348,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(storedProduct.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(storedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode)
+                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode),
+                gmtOffset = parameters?.gmtOffset ?: 0
         )
     }
 
@@ -413,7 +414,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val priceWithCurrency: String? = null,
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
-        val isProductUpdated: Boolean? = null
+        val isProductUpdated: Boolean? = null,
+        val gmtOffset: Int = 0
     ) : Parcelable
 
     @Parcelize

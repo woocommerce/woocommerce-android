@@ -19,6 +19,14 @@ fun Date.formatToMMMdd(): String = SimpleDateFormat("MMM d", Locale.getDefault()
 
 fun Date.formatToMMMddYYYY(): String = SimpleDateFormat("MMM d, YYYY", Locale.getDefault()).format(this)
 
+/**
+ * Returns a date with the passed GMT offset applied - note that this assumes the current date is GMT
+ */
+fun Date.gmtDateWithOffset(gmtOffset: Int): Date {
+    val secondsOffset = 3600 * gmtOffset // 3600 is the number of seconds in an hour
+    return Date(this.time + secondsOffset)
+}
+
 fun Date.formatToEEEEMMMddhha(): String {
     val symbols = DateFormatSymbols(Locale.getDefault())
     symbols.amPmStrings = arrayOf("am", "pm")
