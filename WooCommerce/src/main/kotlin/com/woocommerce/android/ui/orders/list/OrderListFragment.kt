@@ -285,16 +285,12 @@ class OrderListFragment : TopLevelFragment(),
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        if (!hidden) {
-            // silently refresh if this fragment is no longer hidden
-            val isChildFragmentShowing = isChildFragmentShowing()
-            if (!isChildFragmentShowing) {
-                showOptionsMenu(true)
-                addTabLayoutToAppBar(tabLayout)
+        if (isActive) {
+            showOptionsMenu(true)
+            addTabLayoutToAppBar(tabLayout)
 
-                if (isSearching) {
-                    clearSearchResults()
-                }
+            if (isSearching) {
+                clearSearchResults()
             }
         } else {
             removeTabLayoutFromAppBar(tabLayout)
