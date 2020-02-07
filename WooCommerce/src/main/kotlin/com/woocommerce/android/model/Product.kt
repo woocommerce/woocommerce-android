@@ -53,7 +53,7 @@ data class Product(
     val attributes: List<Attribute>,
     val dateOnSaleToGmt: Date?,
     val dateOnSaleFromGmt: Date?,
-    var soldIndividually: Boolean
+    val soldIndividually: Boolean
 ) : Parcelable {
     @Parcelize
     data class Image(
