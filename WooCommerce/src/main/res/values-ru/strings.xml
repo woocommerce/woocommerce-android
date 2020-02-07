@@ -146,7 +146,7 @@ Language: ru
     <string name="order_refunds_available_for_refund">%s доступно для возврата</string>
     <string name="orderdetail_issue_refund_button">Оформить возврат</string>
     <string name="orderdetail_refund_view_details">Подробности</string>
-    <string name="orderdetail_refund_detail">%1$s через %2$s — %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Оцените новую страницу статистики в\nплагине администратора WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
