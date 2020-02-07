@@ -200,7 +200,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         when (event) {
             // discard inventory screen changes
             is ExitInventory -> {
-                viewState.storedProduct?.let {
+                viewState.cachedProduct?.let {
                     val product = viewState.product?.copy(
                             sku = it.sku,
                             manageStock = it.manageStock,
