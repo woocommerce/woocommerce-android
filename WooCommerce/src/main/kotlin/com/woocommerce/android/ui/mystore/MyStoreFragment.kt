@@ -160,13 +160,9 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        addTabLayoutToAppBar(tabLayout)
-    }
-
     override fun onResume() {
         super.onResume()
+        addTabLayoutToAppBar(tabLayout)
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -364,7 +360,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (!isHidden && !appBar.children.contains(tabLayout)) {
+            if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(
                         tabLayout,
                         LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)

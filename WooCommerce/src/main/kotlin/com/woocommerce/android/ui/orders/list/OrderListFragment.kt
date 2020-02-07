@@ -192,6 +192,7 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onResume() {
         super.onResume()
+        addTabLayoutToAppBar(tabLayout)
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -217,7 +218,6 @@ class OrderListFragment : TopLevelFragment(),
                         tab.select()
                     }
                 }
-        addTabLayoutToAppBar(tabLayout)
 
         listState?.let {
             order_list_view.onFragmentRestoreInstanceState(it)
@@ -770,7 +770,7 @@ class OrderListFragment : TopLevelFragment(),
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (!isHidden && !appBar.children.contains(tabLayout)) {
+            if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(tabLayout)
             }
         }
