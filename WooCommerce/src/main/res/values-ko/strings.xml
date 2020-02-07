@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-23 03:54:04+0000
+Translation-Revision-Date: 2020-02-07 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="sign_up">워드프레스닷컴 가입</string>
+    <string name="empty_message_with_search">죄송합니다. \"%s\" 검색 결과를 찾을 수 없습니다.</string>
+    <string name="empty_review_list_message">내 매장의 고품질 제품 리뷰 캡처</string>
+    <string name="empty_review_list_title">첫 리뷰 받기</string>
+    <string name="empty_order_list_all_processed">모든 주문이 이행되었습니다.</string>
+    <string name="empty_order_list_message">새로운 주문을 받으면 알려드리겠습니다. 그동안 매장 판매를 늘리는 방법을 알아보세요.</string>
+    <string name="empty_order_list_title">첫 주문을 기다리는 중</string>
+    <string name="share_your_store_message">소셜 미디어와 내 연락처를 통한 이메일로 매장 공유</string>
+    <string name="get_the_word_out">홍보하기</string>
+    <string name="product_inventory_quantity_summary">재고 있는 제품 수</string>
+    <string name="product_inventory_quantity">수량</string>
+    <string name="product_sold_individually">주문당 1개 제한</string>
+    <string name="product_manage_stock">재고 관리</string>
+    <string name="product_sku_summary">이 제품을 쉽게 식별할 수 있습니다.</string>
+    <string name="product_sale_date_from">시작: %1$s</string>
+    <string name="product_sale_date_from_to">%1$s~%2$s</string>
+    <string name="product_sale_dates">판매 날짜</string>
+    <string name="product_price_empty">가격 추가</string>
+    <string name="product_inventory_empty">재고 추가</string>
+    <string name="orderlist_loading">주문 검색 중…</string>
     <string name="product_detail_editable_text_hint">텍스트 입력</string>
     <string name="product_detail_title_hint">제목 입력</string>
     <string name="product_detail_update_product_success">제품 업데이트됨</string>
@@ -49,7 +69,6 @@ Language: ko_KR
     <string name="product_add_photos">사진 추가</string>
     <string name="product_images_title">사진</string>
     <string name="product_add_image_content_description">이미지 추가</string>
-    <string name="orderlist_fetching">주문 가져오는 중…</string>
     <string name="date_timeframe_future">다음</string>
     <string name="remove">제거</string>
     <string name="product_variant_hidden">숨김</string>
@@ -127,6 +146,7 @@ Language: ko_KR
     <string name="order_refunds_available_for_refund">%s 환불 가능</string>
     <string name="orderdetail_issue_refund_button">환불 발행</string>
     <string name="orderdetail_refund_view_details">상세 보기</string>
+    <string name="orderdetail_refund_detail">%2$s – %3$s을(를) 통한 %1$s</string>
     <string name="settings_enable_v4_stats_message">WooCommerce 관리자 플러그인으로\n사용할 수 있는 새 통계를 확인해 보세요.</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>

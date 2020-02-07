@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-23 00:54:03+0000
+Translation-Revision-Date: 2020-02-05 04:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="sign_up">註冊 WordPress.com</string>
+    <string name="empty_message_with_search">很抱歉，我們找不到「%s」的搜尋結果</string>
+    <string name="empty_review_list_message">為你的商店擷取高品質的產品評論</string>
+    <string name="empty_review_list_title">取得你的第一批評論</string>
+    <string name="empty_order_list_all_processed">所有訂單均已完成</string>
+    <string name="empty_order_list_message">我們會在收到新訂單時通知你。在此期間，請探索如何提高商店銷售量。</string>
+    <string name="empty_order_list_title">等候你的第一筆訂單</string>
+    <string name="share_your_store_message">透過社群媒體和電子郵件與聯絡人分享你的商店</string>
+    <string name="get_the_word_out">讓我們宣傳你的商店資訊</string>
+    <string name="product_inventory_quantity_summary">庫存商品數量</string>
+    <string name="product_inventory_quantity">數量</string>
+    <string name="product_sold_individually">每筆訂單限購一個</string>
+    <string name="product_manage_stock">庫存管理</string>
+    <string name="product_sku_summary">有助於輕鬆識別此產品</string>
+    <string name="product_sale_date_from">自 %1$s 起</string>
+    <string name="product_sale_date_from_to">%1$s 至 %2$s</string>
+    <string name="product_sale_dates">銷售日期</string>
+    <string name="product_price_empty">新增價格</string>
+    <string name="product_inventory_empty">新增庫存</string>
+    <string name="orderlist_loading">查詢你的訂單…</string>
     <string name="product_detail_editable_text_hint">輸入文字</string>
     <string name="product_detail_title_hint">輸入標題</string>
     <string name="product_detail_update_product_success">商品已更新</string>
@@ -49,7 +69,6 @@ Language: zh_TW
     <string name="product_add_photos">新增相片</string>
     <string name="product_images_title">相片</string>
     <string name="product_add_image_content_description">新增圖片</string>
-    <string name="orderlist_fetching">正在擷取訂單…</string>
     <string name="date_timeframe_future">即將到來</string>
     <string name="remove">移除</string>
     <string name="product_variant_hidden">隱藏</string>
@@ -127,7 +146,7 @@ Language: zh_TW
     <string name="order_refunds_available_for_refund">%s 可退款</string>
     <string name="orderdetail_issue_refund_button">核發退款</string>
     <string name="orderdetail_refund_view_details">檢視詳細資訊</string>
-    <string name="orderdetail_refund_detail">%1$s，退款方式：%2$s</string>
+    <string name="orderdetail_refund_detail">%1$s，退款方式：%2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">體驗下列外掛程式提供的全新統計資料：\nWooCommerce 管理員外掛程式</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
     <string name="beta_features">Beta 功能</string>

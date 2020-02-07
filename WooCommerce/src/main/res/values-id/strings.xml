@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-21 00:54:04+0000
+Translation-Revision-Date: 2020-01-28 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">Masukkan teks</string>
+    <string name="product_detail_title_hint">Masukkan judul</string>
+    <string name="product_detail_update_product_success">Produk diperbarui</string>
+    <string name="product_detail_update_product_error">Error saat memperbarui produk</string>
+    <string name="product_update_dialog_message">Harap tunggu…</string>
+    <string name="product_update_dialog_title">Memperbarui produk</string>
+    <string name="product_description_empty">Deskripsikan produk Anda</string>
+    <string name="product_description">Deskripsi</string>
+    <string name="product_edit_description">Sunting deskripsi</string>
+    <string name="product_description_hint">Mulai menulis…</string>
+    <string name="product_variant_list_empty">Tambahkan opsi seperti ukuran dan warna dari web. Ini akan muncul sebagai opsi di halaman produk situs Anda</string>
+    <string name="discard_message">Ingin membuang perubahan?</string>
+    <string name="update">Perbarui</string>
     <string name="done">Selesai</string>
     <string name="order_refunds_refund_in_progress">Pengembalian dana sedang berlangsung, harap tunggu…</string>
     <string name="order_refunds_refund_shipping">Kembalikan dana pengiriman</string>
@@ -36,7 +49,6 @@ Language: id
     <string name="product_add_photos">Tambahkan foto</string>
     <string name="product_images_title">Foto</string>
     <string name="product_add_image_content_description">Tambahkan gambar</string>
-    <string name="orderlist_fetching">Mengambil pesanan…</string>
     <string name="date_timeframe_future">Mendatang</string>
     <string name="remove">Buang</string>
     <string name="product_variant_hidden">Tersembunyi</string>
@@ -114,7 +126,7 @@ Language: id
     <string name="order_refunds_available_for_refund">%s tersedia untuk pengembalian dana</string>
     <string name="orderdetail_issue_refund_button">Keluarkan pengembalian dana</string>
     <string name="orderdetail_refund_view_details">Lihat rincian</string>
-    <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
+    <string name="orderdetail_refund_detail">%1$s melalui %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Cobalah statistik baru yang tersedia bersama\nPlugin admin WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
@@ -133,11 +145,13 @@ Language: id
     <string name="dashboard_stats_todays_stats">Statistik Hari Ini</string>
     <string name="login_sign_in">Masuk</string>
     <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Mencoba login dengan Jetpack…</string>
     <string name="login_refresh_app_continue">segarkan aplikasi untuk melanjutkan</string>
     <string name="login_not_connected_jetpack">Untuk menggunakan aplikasi ini untuk %1$s Anda perlu melakukan penyiapan plugin Jetpack dan terhubung ke akun ini. \n\nSekali penyiapan, %2$s</string>
     <string name="login_try_another_store">Coba toko lain</string>
     <string name="database_downgraded">Database di-downgrade, membuat ulang tabel dan memuat toko</string>
     <string name="loading_stores">Memuat toko</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Tidak ditemukan operator</string>
     <string name="login_invalid_site_url">Masukkan alamat situs web lengkap, seperti contoh.com.</string>
     <string name="reviews_empty_message">Belum ada ulasan!</string>
     <string name="review_notifications">Ulasan</string>
@@ -148,6 +162,7 @@ Language: id
     <string name="settings_hiring">Kami membuka lowongan!</string>
     <string name="feature_requests">Permintaan fitur</string>
     <string name="orderdetail_copy_tracking_number">Salin nomor pelacakan</string>
+    <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
     <string name="login_refresh_app">segarkan aplikasi</string>
     <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
     <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
@@ -396,15 +411,24 @@ Language: id
     <string name="country_mapping_AF">Afghanistan</string>
     <string name="country_mapping_AX">Kepulauan Åland</string>
     <string name="wc_review_title">Ulasan</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Operator Kustom</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Kustom</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Silakan masukkan nama operator</string>
     <string name="order_shipment_tracking_empty_tracking_num">Silakan masukkan nomor pelacakan</string>
+    <string name="order_shipment_tracking_empty_provider">Silakan pilih operator</string>
     <string name="order_shipment_tracking_confirm_discard">Anda yakin ingin membuang pelacakan ini?</string>
     <string name="order_shipment_tracking_error">Tidak dapat menambahkan pelacakan</string>
     <string name="order_shipment_tracking_added">Pelacakan pengiriman ditambahkan</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Error saat memuat operator</string>
+    <string name="order_shipment_tracking_provider_list_item">Operator Pengiriman Terpilih</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Operator Pengiriman</string>
     <string name="order_shipment_tracking_date_label">Tanggal pengiriman</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Masukkan tautan pelacakan</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Masukkan nama operator</string>
     <string name="order_shipment_tracking_number_hint">Masukkan nomor Pelacakan</string>
+    <string name="order_shipment_tracking_provider_hint">Pilih operator</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Tautan pelacakan (opsional)</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Nama operator</string>
     <string name="order_shipment_tracking_number_label">Nomor pelacakan</string>
     <string name="order_shipment_tracking_carrier_label">Carrier</string>
     <string name="order_shipment_tracking_toolbar_title">Tambahkan Pelacakan</string>

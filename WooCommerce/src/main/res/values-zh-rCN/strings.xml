@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-16 00:54:04+0000
+Translation-Revision-Date: 2020-02-03 02:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">输入文本</string>
+    <string name="product_detail_title_hint">输入标题</string>
+    <string name="product_detail_update_product_success">产品已更新</string>
+    <string name="product_detail_update_product_error">更新产品时出错</string>
+    <string name="product_update_dialog_message">请稍候…</string>
+    <string name="product_update_dialog_title">正在更新产品</string>
+    <string name="product_description_empty">描述您的产品</string>
+    <string name="product_description">描述</string>
+    <string name="product_edit_description">编辑描述</string>
+    <string name="product_description_hint">开始撰写…</string>
+    <string name="product_variant_list_empty">通过 Web 添加大小和颜色等选项。这些选项将在站点的产品页面上显示</string>
+    <string name="discard_message">要放弃您所做的更改吗？</string>
+    <string name="update">更新</string>
     <string name="done">完成</string>
     <string name="order_refunds_refund_in_progress">正在处理退款，请稍候…</string>
     <string name="order_refunds_refund_shipping">退还配送费用</string>
@@ -36,7 +49,6 @@ Language: zh_CN
     <string name="product_add_photos">添加照片</string>
     <string name="product_images_title">照片</string>
     <string name="product_add_image_content_description">添加图片</string>
-    <string name="orderlist_fetching">正在获取订单…</string>
     <string name="date_timeframe_future">即将到来</string>
     <string name="remove">删除</string>
     <string name="product_variant_hidden">已隐藏</string>
@@ -114,7 +126,7 @@ Language: zh_CN
     <string name="order_refunds_available_for_refund">%s 可用于退款</string>
     <string name="orderdetail_issue_refund_button">发放退款</string>
     <string name="orderdetail_refund_view_details">查看详细信息</string>
-    <string name="orderdetail_refund_detail">%1$s，通过 %2$s</string>
+    <string name="orderdetail_refund_detail">%1$s，通过 %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">试用新的统计页面（适用于\nWooCommerce Admin 插件）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
     <string name="beta_features">测试版功能</string>
@@ -133,11 +145,13 @@ Language: zh_CN
     <string name="dashboard_stats_todays_stats">今日统计</string>
     <string name="login_sign_in">登录</string>
     <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
+    <string name="login_refresh_app_progress_jetpack">正在尝试使用 Jetpack 帐户登录…</string>
     <string name="login_refresh_app_continue">刷新应用程序以继续操作</string>
     <string name="login_not_connected_jetpack">要以 %1$s 的价格使用此应用程序，您需要安装 Jetpack 插件并连接至此帐户。\n\n设置完成后，%2$s</string>
     <string name="login_try_another_store">尝试其他商店</string>
     <string name="database_downgraded">数据库降级、正在重新创建表格及正在加载商店</string>
     <string name="loading_stores">正在加载商店</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">未找到承运商</string>
     <string name="login_invalid_site_url">请输入完整网址（如 example.com）。</string>
     <string name="reviews_empty_message">尚无评论！</string>
     <string name="review_notifications">评论</string>
@@ -148,6 +162,7 @@ Language: zh_CN
     <string name="settings_hiring">我们正在招贤纳士！</string>
     <string name="feature_requests">功能请求</string>
     <string name="orderdetail_copy_tracking_number">复制跟踪编号</string>
+    <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>
     <string name="login_not_woo_store">%1$s似乎不是 WooCommerce 站点。请在您的站点上安装 WooCommerce 插件，然后 %2$s</string>
     <string name="orderdetail_empty_shipping_address">未指定地址。</string>
@@ -396,15 +411,24 @@ Language: zh_CN
     <string name="country_mapping_AF">阿富汗</string>
     <string name="country_mapping_AX">奥兰群岛</string>
     <string name="wc_review_title">评论</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">自定义承运商</string>
     <string name="order_shipment_tracking_custom_provider_section_title">自定义</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">请输入承运商名称</string>
     <string name="order_shipment_tracking_empty_tracking_num">请输入跟踪编号</string>
+    <string name="order_shipment_tracking_empty_provider">请选择承运商</string>
     <string name="order_shipment_tracking_confirm_discard">是否确定要放弃此跟踪？</string>
     <string name="order_shipment_tracking_error">无法添加跟踪</string>
     <string name="order_shipment_tracking_added">配送跟踪已添加</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">获取承运商时出错</string>
+    <string name="order_shipment_tracking_provider_list_item">所选的承运商</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">承运商</string>
     <string name="order_shipment_tracking_date_label">配送日期</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">输入跟踪链接</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">输入承运商名称</string>
     <string name="order_shipment_tracking_number_hint">输入跟踪编号</string>
+    <string name="order_shipment_tracking_provider_hint">选择承运商</string>
     <string name="order_shipment_tracking_custom_provider_url_label">跟踪链接（可选）</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">承运商名称</string>
     <string name="order_shipment_tracking_number_label">跟踪编号</string>
     <string name="order_shipment_tracking_carrier_label">承运商</string>
     <string name="order_shipment_tracking_toolbar_title">添加跟踪</string>

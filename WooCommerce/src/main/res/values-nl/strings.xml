@@ -49,7 +49,6 @@ Language: nl
     <string name="product_add_photos">Foto\'s toevoegen</string>
     <string name="product_images_title">Foto\'s</string>
     <string name="product_add_image_content_description">Afbeelding toevoegen</string>
-    <string name="orderlist_fetching">Bestellingen ophalen…</string>
     <string name="date_timeframe_future">Komende</string>
     <string name="remove">Verwijderen</string>
     <string name="product_variant_hidden">Verborgen</string>
@@ -127,7 +126,7 @@ Language: nl
     <string name="order_refunds_available_for_refund">%s restitueerbaar</string>
     <string name="orderdetail_issue_refund_button">Restitueren</string>
     <string name="orderdetail_refund_view_details">Gegevens weergeven</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
     <string name="settings_enable_v4_stats_message">Probeer de nieuwe statistieken die beschikbaar zijn met de\nWooCommerce Admin-plugin</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
     <string name="beta_features">Bèta-functies</string>

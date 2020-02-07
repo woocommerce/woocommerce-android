@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-21 00:54:04+0000
+Translation-Revision-Date: 2020-02-05 00:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="sign_up">Подписаться на WordPress.com</string>
+    <string name="empty_message_with_search">К сожалению, результаты по запросу \"%s\" не найдены</string>
+    <string name="empty_review_list_message">Получайте высококачественные отзывы о продуктах в вашем магазине</string>
+    <string name="empty_review_list_title">Получить первые отзывы</string>
+    <string name="empty_order_list_all_processed">Все заказы выполнены</string>
+    <string name="empty_order_list_message">Мы уведомим вас о поступлении нового заказа. Тем временем вы можете почитать о том, как увеличить продажи своего магазина.</string>
+    <string name="empty_order_list_title">Ожидание первого заказа</string>
+    <string name="share_your_store_message">Поделитесь информацией о своем магазине в социальных сетях и по электронной почте со своими контактами</string>
+    <string name="get_the_word_out">Дайте знать о себе</string>
+    <string name="product_inventory_quantity_summary">Количество товара в наличии</string>
+    <string name="product_inventory_quantity">Количество</string>
+    <string name="product_sold_individually">Ограничить одной единицей на заказ</string>
+    <string name="product_manage_stock">Управление запасами</string>
+    <string name="product_sku_summary">Удобный источник информации о продукте</string>
+    <string name="product_sale_date_from">с %1$s</string>
+    <string name="product_sale_date_from_to">%1$s–%2$s</string>
+    <string name="product_sale_dates">Даты продажи</string>
+    <string name="product_price_empty">Добавить цену</string>
+    <string name="product_inventory_empty">Добавить запасы</string>
+    <string name="orderlist_loading">Просмотр информации о ваших заказах…</string>
     <string name="product_detail_editable_text_hint">Введите текст</string>
     <string name="product_detail_title_hint">Введите заголовок</string>
     <string name="product_detail_update_product_success">Продукт обновлен</string>
@@ -49,7 +69,6 @@ Language: ru
     <string name="product_add_photos">Добавить фото</string>
     <string name="product_images_title">Фотографии</string>
     <string name="product_add_image_content_description">Добавить изображение</string>
-    <string name="orderlist_fetching">Получение заказов…</string>
     <string name="date_timeframe_future">Ближайшие</string>
     <string name="remove">Удалить</string>
     <string name="product_variant_hidden">Скрыто</string>
@@ -127,7 +146,7 @@ Language: ru
     <string name="order_refunds_available_for_refund">%s доступно для возврата</string>
     <string name="orderdetail_issue_refund_button">Оформить возврат</string>
     <string name="orderdetail_refund_view_details">Подробности</string>
-    <string name="orderdetail_refund_detail">%1$s через %2$s</string>
+    <string name="orderdetail_refund_detail">%1$s через %2$s — %3$s</string>
     <string name="settings_enable_v4_stats_message">Оцените новую страницу статистики в\nплагине администратора WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
