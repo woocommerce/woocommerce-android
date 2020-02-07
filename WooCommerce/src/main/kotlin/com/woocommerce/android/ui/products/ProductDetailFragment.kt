@@ -28,7 +28,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
-import com.woocommerce.android.extensions.gmtDateWithOffset
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -44,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -343,12 +343,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
             // display product sale dates using the site's timezone, if available
             val gmtOffset = productData.gmtOffset
-            var dateOnSaleFrom = product.dateOnSaleFromGmt?.gmtDateWithOffset(gmtOffset)
-            val dateOnSaleTo = product.dateOnSaleToGmt?.gmtDateWithOffset(gmtOffset)
-            if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                dateOnSaleFrom = Date().gmtDateWithOffset(gmtOffset)
+            var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
+                DateUtils.offsetGmtDate(it, gmtOffset)
             }
-            // TODO: convert from GMT
+            val dateOnSaleTo = product.dateOnSaleToGmt?.let {
+                DateUtils.offsetGmtDate(it, gmtOffset)
+            }
+            if (dateOnSaleTo != null && dateOnSaleFrom == null) {
+                dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), gmtOffset)
+            }
             val saleDates = when {
                 (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
                     getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
