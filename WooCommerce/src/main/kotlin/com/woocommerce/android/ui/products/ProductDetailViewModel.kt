@@ -323,9 +323,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
-        val updatedProduct = storedProduct.mergeProduct(viewState.product)
+        val updatedProduct = viewState.product?.let {
+            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
+        } ?: storedProduct
         viewState = viewState.copy(
-                product = viewState.product ?: updatedProduct,
+                product = updatedProduct,
                 cachedProduct = viewState.cachedProduct ?: updatedProduct,
                 storedProduct = storedProduct,
                 weightWithUnits = weight,
