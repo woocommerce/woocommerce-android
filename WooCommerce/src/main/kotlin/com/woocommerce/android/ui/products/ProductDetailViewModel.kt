@@ -262,11 +262,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private fun loadParameters() {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+        val gmtOffset = selectedSite.get().timezone?.toInt() ?: 0
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
 
-        parameters = Parameters(currencyCode, weightUnit, dimensionUnit)
+        parameters = Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
@@ -396,7 +397,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class Parameters(
         val currencyCode: String?,
         val weightUnit: String?,
-        val dimensionUnit: String?
+        val dimensionUnit: String?,
+        val gmtOffset: Int
     ) : Parcelable
 
     @Parcelize
