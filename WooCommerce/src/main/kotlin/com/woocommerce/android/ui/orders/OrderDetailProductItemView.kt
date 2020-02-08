@@ -14,8 +14,9 @@ import java.text.NumberFormat
 
 class OrderDetailProductItemView @JvmOverloads constructor(
     ctx: Context,
-    attrs: AttributeSet? = null
-) : ConstraintLayout(ctx, attrs) {
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : ConstraintLayout(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
