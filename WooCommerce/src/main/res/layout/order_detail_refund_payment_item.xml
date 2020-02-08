@@ -9,44 +9,40 @@
     <!-- Divider -->
     <View
         android:id="@+id/refundsList_refundDivider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/list_divider"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        style="@style/Woo.Divider"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/minor_00"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/list_divider" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/refundsList_lblRefund"
+        style="@style/Woo.Card.Body.Bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
         android:layout_weight="1"
+        android:layout_marginTop="@dimen/major_100"
         android:text="@string/orderdetail_refunded"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/refundsList_refundDivider" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/refundsList_refundAmount"
+        style="@style/Woo.Card.Body.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/refundsList_lblRefund"
         tools:text="-$15.00" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/refundsList_refundMethod"
+        style="@style/Woo.Card.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:textColor="@color/wc_grey_medium"
+        android:layout_marginTop="@dimen/minor_50"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/refundsList_lblRefund"
         tools:text="Jan 28 via Stripe - View Details" />

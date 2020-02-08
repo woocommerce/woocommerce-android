@@ -1,341 +1,324 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/card_padding_top"
-        android:paddingBottom="@dimen/card_padding_bottom"
-        android:paddingStart="@dimen/card_padding_start"
-        android:paddingEnd="@dimen/card_padding_end">
+        android:orientation="vertical">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/paymentInfo_lblTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/card_item_padding_intra_h"
-            android:text="@string/payment"
-            android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"/>
-
-        <!-- Subtotal -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="true"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/paymentInfo_lblProductsTotal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/products_total"
-                android:textAlignment="viewStart"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
-
-            <TextView
-                android:id="@+id/paymentInfo_productsTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                tools:text="$45.00"/>
-        </LinearLayout>
-
-        <!-- Discounts -->
-        <LinearLayout
-            android:id="@+id/paymentInfo_discountSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h"
-            android:visibility="gone"
+            android:orientation="vertical"
             tools:visibility="visible">
 
-            <TextView
-                android:id="@+id/paymentInfo_lblDiscount"
+            <!-- Title -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/paymentInfo_lblTitle"
+                style="@style/Woo.Card.Header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/discount"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+                android:text="@string/payment"/>
 
-            <TextView
-                android:id="@+id/paymentInfo_discountItems"
-                android:layout_width="0dp"
+            <!-- Subtotal -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-                android:layout_marginStart="@dimen/card_item_padding_intra_h"
-                android:layout_weight="1"
-                android:textAlignment="viewStart"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
+                android:focusable="true"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/paymentInfo_discountTotal"
-                android:layout_width="wrap_content"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblProductsTotal"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/products_total"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_productsTotal"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="$45.00"/>
+            </LinearLayout>
+
+            <!-- Discounts -->
+            <LinearLayout
+                android:id="@+id/paymentInfo_discountSection"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                tools:text="-$4.00"/>
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/minor_50"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblDiscount"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/minor_100"
+                    android:text="@string/discount"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_discountItems"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/minor_00"
+                    android:layout_marginEnd="@dimen/minor_00"
+                    tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_discountTotal"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/minor_100"
+                    tools:text="-$4.00"/>
+            </LinearLayout>
+
+            <!-- Shipping -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/minor_50">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblShipping"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/shipping"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_shippingTotal"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="$7.00"/>
+            </LinearLayout>
+
+            <!-- Taxes -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/minor_50">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblTaxes"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/taxes"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_taxesTotal"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="$1.00"/>
+            </LinearLayout>
+
+            <!-- Total -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:layout_marginTop="@dimen/major_100"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblTotal"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/order_total"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_total"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="$49.00"/>
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:id="@+id/paymentInfo_total-paid_divider"
+                style="@style/Woo.Divider"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"/>
+
+            <!-- Paid by customer -->
+            <LinearLayout
+                android:id="@+id/paymentInfo_paidSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100"
+                android:focusable="true"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblPaid"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/orderdetail_payment_paid_by_customer"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_paid"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="$45.00"/>
+            </LinearLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/paymentInfo_paymentMsg"
+                style="@style/Woo.Card.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                tools:text="Payment of $49.00 received via credit card (PayPal)"/>
+
+            <!-- Refund and New Total Section -->
+            <LinearLayout
+                android:id="@+id/paymentInfo_refundSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <!-- List: Refunds -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/paymentInfo_refunds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/order_detail_refund_payment_item"
+                    tools:targetApi="lollipop" />
+
+                <!-- Refund total -->
+                <LinearLayout
+                    android:id="@+id/paymentInfo_refundTotalSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <!-- Divider -->
+                    <View
+                        style="@style/Woo.Divider"
+                        android:layout_marginStart="@dimen/major_100"
+                        android:layout_marginEnd="@dimen/minor_00"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:layout_marginTop="@dimen/major_100"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/paymentInfo_lblRefund"
+                            style="@style/Woo.Card.Body.Bold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/orderdetail_refunded"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/paymentInfo_refundTotal"
+                            style="@style/Woo.Card.Body.Bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="-$15.00"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"/>
+
+                <!-- Net (after refund deducted) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/major_100">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/paymentInfo_lblNet"
+                        style="@style/Woo.Card.Body.Bold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/orderdetail_net"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/paymentInfo_newTotal"
+                        style="@style/Woo.Card.Body.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="$34.00"/>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Shipping -->
+        <!-- Refund button section -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h">
-
-            <TextView
-                android:id="@+id/paymentInfo_lblShipping"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/shipping"
-                android:textAlignment="viewStart"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
-
-            <TextView
-                android:id="@+id/paymentInfo_shippingTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                tools:text="$7.00"/>
-        </LinearLayout>
-
-        <!-- Taxes -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h">
-
-            <TextView
-                android:id="@+id/paymentInfo_lblTaxes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/taxes"
-                android:textAlignment="viewStart"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
-
-            <TextView
-                android:id="@+id/paymentInfo_taxesTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                tools:text="$1.00"/>
-        </LinearLayout>
-
-        <!-- Total -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/paymentInfo_lblTotal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/order_total"
-                android:textAlignment="viewStart"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
-
-            <TextView
-                android:id="@+id/paymentInfo_total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
-                tools:text="$49.00"/>
-        </LinearLayout>
-
-        <!-- Divider -->
-        <View
-            android:id="@+id/paymentInfo_total-paid_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
-            android:background="@color/list_divider"
-            app:srcCompat="@drawable/list_divider"/>
-
-        <!-- Paid by customer -->
-        <LinearLayout
-            android:id="@+id/paymentInfo_paidSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
-            android:focusable="true"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/paymentInfo_lblPaid"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/orderdetail_payment_paid_by_customer"
-                android:textAlignment="viewStart"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
-
-            <TextView
-                android:id="@+id/paymentInfo_paid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
-                tools:text="$45.00"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/paymentInfo_paymentMsg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:textColor="@color/wc_grey_medium"
-            tools:text="Payment of $49.00 received via credit card (PayPal)"/>
-
-        <!-- Refund and New Total Section -->
-        <LinearLayout
-            android:id="@+id/paymentInfo_refundSection"
+            android:id="@+id/paymentInfo_issueRefundButtonSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
             tools:visibility="visible">
 
-            <!-- List: Refunds -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/paymentInfo_refunds"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                tools:itemCount="3"
-                tools:listitem="@layout/order_detail_refund_payment_item"
-                tools:targetApi="lollipop" />
-
-            <!-- Refund total -->
-            <LinearLayout
-                android:id="@+id/paymentInfo_refundTotalSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/list_divider"
-                    app:srcCompat="@drawable/list_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="true"
-                    android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/paymentInfo_lblRefund"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/orderdetail_refunded"
-                        android:textAlignment="viewStart"
-                        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
-
-                    <TextView
-                        android:id="@+id/paymentInfo_refundTotal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
-                        tools:text="-$15.00"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
             <!-- Divider -->
             <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                android:background="@color/list_divider"
-                app:srcCompat="@drawable/list_divider"/>
+                style="@style/Woo.Divider"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"/>
 
-            <!-- Net (after refund deducted) -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <!-- Refund button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/paymentInfo_issueRefundButton"
+                style="@style/Woo.Button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:focusable="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double">
-
-                <TextView
-                    android:id="@+id/paymentInfo_lblNet"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/orderdetail_net"
-                    android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
-
-                <TextView
-                    android:id="@+id/paymentInfo_newTotal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
-                    tools:text="$34.00"/>
-
-            </LinearLayout>
+                android:layout_marginEnd="@dimen/minor_50"
+                android:layout_gravity="end|center_vertical"
+                android:text="@string/orderdetail_issue_refund_button"/>
 
         </LinearLayout>
-
     </LinearLayout>
-
-    <!-- Refund button section -->
-    <LinearLayout
-        android:id="@+id/paymentInfo_issueRefundButtonSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/list_divider"
-            android:layout_marginStart="@dimen/card_padding_start"
-            android:layout_marginEnd="@dimen/card_padding_end"
-            app:srcCompat="@drawable/list_divider"/>
-
-        <!-- Refund button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/paymentInfo_issueRefundButton"
-            style="@style/Woo.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:text="@string/orderdetail_issue_refund_button"/>
-
-    </LinearLayout>
-
 </merge>
