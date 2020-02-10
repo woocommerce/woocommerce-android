@@ -171,17 +171,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.product?.let { product ->
             val currentProduct = product.copy()
             val updatedProduct = product.copy(
-                    description = description.takeIf { it != null && it != product.description } ?: product.description,
-                    name = title.takeIf { it != null && it != product.name } ?: product.name,
-                    sku = sku.takeIf { it != null && it != product.sku } ?: product.sku,
-                    manageStock = manageStock.takeIf { it != null && it != product.manageStock } ?: product.manageStock,
-                    stockStatus = stockStatus.takeIf { it != null && it != product.stockStatus } ?: product.stockStatus,
-                    soldIndividually = soldIndividually.takeIf { it != null && it != product.soldIndividually }
-                            ?: product.soldIndividually,
-                    backorderStatus = backorderStatus.takeIf { it != null && it != product.backorderStatus }
-                            ?: product.backorderStatus,
-                    stockQuantity = stockQuantity?.toInt().takeIf { it != null && it != product.stockQuantity }
-                            ?: product.stockQuantity,
+                    description = description ?: product.description,
+                    name = title ?: product.name,
+                    sku = sku ?: product.sku,
+                    manageStock = manageStock ?: product.manageStock,
+                    stockStatus = stockStatus ?: product.stockStatus,
+                    soldIndividually = soldIndividually ?: product.soldIndividually,
+                    backorderStatus = backorderStatus ?: product.backorderStatus,
+                    stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
                     images = viewState.storedProduct?.images ?: product.images
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
@@ -200,7 +197,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         when (event) {
             // discard inventory screen changes
             is ExitInventory -> {
-                viewState.storedProduct?.let {
+                viewState.cachedProduct?.let {
                     val product = viewState.product?.copy(
                             sku = it.sku,
                             manageStock = it.manageStock,
@@ -323,9 +320,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
-        val updatedProduct = storedProduct.mergeProduct(viewState.product)
+        val updatedProduct = viewState.product?.let {
+            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
+        } ?: storedProduct
         viewState = viewState.copy(
-                product = viewState.product ?: updatedProduct,
+                product = updatedProduct,
                 cachedProduct = viewState.cachedProduct ?: updatedProduct,
                 storedProduct = storedProduct,
                 weightWithUnits = weight,
