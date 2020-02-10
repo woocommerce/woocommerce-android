@@ -51,8 +51,8 @@ data class Product(
     val numVariations: Int,
     val images: List<Image>,
     val attributes: List<Attribute>,
-    val dateOnSaleTo: Date?,
-    val dateOnSaleFrom: Date?,
+    val dateOnSaleToGmt: Date?,
+    val dateOnSaleFromGmt: Date?,
     val soldIndividually: Boolean
 ) : Parcelable {
     @Parcelize
@@ -178,8 +178,8 @@ fun WCProductModel.toAppModel(): Product {
                     it.visible
             )
         },
-        this.dateOnSaleTo.formatDateToISO8601Format(),
-        this.dateOnSaleFrom.formatDateToISO8601Format(),
+        this.dateOnSaleToGmt.formatDateToISO8601Format(),
+        this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         this.soldIndividually
     )
 }

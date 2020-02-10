@@ -242,11 +242,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private fun loadParameters() {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
 
-        parameters = Parameters(currencyCode, weightUnit, dimensionUnit)
+        parameters = Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
@@ -331,7 +332,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(storedProduct.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(storedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode)
+                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode),
+                gmtOffset = parameters?.gmtOffset ?: 0f
         )
     }
 
@@ -380,7 +382,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class Parameters(
         val currencyCode: String?,
         val weightUnit: String?,
-        val dimensionUnit: String?
+        val dimensionUnit: String?,
+        val gmtOffset: Float
     ) : Parcelable
 
     @Parcelize
@@ -396,7 +399,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val priceWithCurrency: String? = null,
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
-        val isProductUpdated: Boolean? = null
+        val isProductUpdated: Boolean? = null,
+        val gmtOffset: Float = 0f
     ) : Parcelable
 
     @Parcelize
