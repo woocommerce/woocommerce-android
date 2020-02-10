@@ -334,12 +334,12 @@ object DateUtils {
     /**
      * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
      */
-    fun offsetGmtDate(dateGmt: Date, gmtOffset: Int): Date {
-        if (gmtOffset == 0) {
+    fun offsetGmtDate(dateGmt: Date, gmtOffset: Float): Date {
+        if (gmtOffset == 0f) {
             return dateGmt
         }
 
-        val secondsOffset = 3600 * gmtOffset // 3600 is the number of seconds in an hour
+        val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
         val calendar = Calendar.getInstance()
         calendar.setTime(dateGmt)
         calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + secondsOffset)
