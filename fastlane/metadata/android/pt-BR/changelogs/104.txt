@@ -1,5 +1,0 @@
-3.4:
-- Pequenas alterações no design da guia Minha loja.
-- Correção de um erro de navegação que causava travamentos ao trazer o aplicativo de volta do segundo plano.
-- Outras correções de bugs.
-

@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="@dimen/card_padding_top"
-        android:paddingBottom="@dimen/card_padding_bottom"
         android:paddingStart="@dimen/card_padding_start"
         android:paddingEnd="@dimen/card_padding_end">
 
@@ -135,6 +134,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
                 tools:text="$1.00"/>
+
         </LinearLayout>
 
         <!-- Total -->
@@ -143,6 +143,7 @@
             android:layout_height="wrap_content"
             android:focusable="true"
             android:layout_marginTop="@dimen/card_item_padding_intra_double"
+            android:layout_marginBottom="@dimen/card_item_padding_intra_double"
             android:orientation="horizontal">
 
             <TextView
@@ -162,51 +163,60 @@
                 tools:text="$49.00"/>
         </LinearLayout>
 
-        <!-- Divider -->
-        <View
-            android:id="@+id/paymentInfo_total-paid_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
-            android:background="@color/list_divider"
-            app:srcCompat="@drawable/list_divider"/>
 
-        <!-- Paid by customer -->
-        <LinearLayout
-            android:id="@+id/paymentInfo_paidSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
-            android:focusable="true"
-            android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/paymentInfo_paidSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+            <!-- Divider -->
+            <View
+                android:id="@+id/paymentInfo_total-paid_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/list_divider"
+                app:srcCompat="@drawable/list_divider"/>
+
+            <!-- Paid by customer -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_item_padding_intra_double"
+                android:focusable="true"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/paymentInfo_lblPaid"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/orderdetail_payment_paid_by_customer"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
+
+                <TextView
+                    android:id="@+id/paymentInfo_paid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
+                    tools:text="$45.00"/>
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/paymentInfo_lblPaid"
-                android:layout_width="0dp"
+                android:id="@+id/paymentInfo_paymentMsg"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/orderdetail_payment_paid_by_customer"
+                android:layout_marginTop="@dimen/card_item_padding_intra_h"
                 android:textAlignment="viewStart"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
-
-            <TextView
-                android:id="@+id/paymentInfo_paid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
-                tools:text="$45.00"/>
+                android:textSize="@dimen/text_caption"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
+                android:textColor="@color/wc_grey_medium"
+                tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/paymentInfo_paymentMsg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:textColor="@color/wc_grey_medium"
-            tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 
         <!-- Refund and New Total Section -->
         <LinearLayout
@@ -233,7 +243,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
+                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -275,7 +285,6 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
                 android:background="@color/list_divider"
                 app:srcCompat="@drawable/list_divider"/>
 
@@ -285,6 +294,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
                 android:layout_marginTop="@dimen/card_item_padding_intra_double">
 
                 <TextView
@@ -315,7 +325,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
         tools:visibility="visible">
 
         <!-- Divider -->

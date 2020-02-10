@@ -121,6 +121,36 @@ end
   end
 
   #####################################################################################
+  # upload_beta_build_to_play_store
+  # -----------------------------------------------------------------------------------
+  # This lane ships the app to Beta lane in the Play Store (but does not release it)
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane upload_beta_build_to_play_store
+  #####################################################################################
+  desc "Uploads the release build to the Play Store (without releasing it)"
+  lane :upload_beta_build_to_play_store do | options |
+    version=android_get_release_version()
+    
+    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
+    aab_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }.aab")
+
+    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
+
+    upload_to_play_store(
+      package_name: 'com.woocommerce.android',
+      aab: aab_file_path,
+      track: 'beta',
+      release_status: 'draft',
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      json_key: './google-upload-credentials.json',
+    )
+  end
+
+  #####################################################################################
   # new_hotfix_release
   # -----------------------------------------------------------------------------------
   # This lane updates the release branch for a new hotix release. 

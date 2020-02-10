@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -45,14 +46,15 @@ class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
         super.onDestroyView()
     }
 
-    override fun showOrderProducts(order: WCOrderModel) {
+    override fun showOrderProducts(order: WCOrderModel, refunds: List<Refund>) {
         orderProducts_list.initView(
-                order = order,
+                orderModel = order,
                 productImageMap = productImageMap,
                 expanded = true,
-                formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
                 orderListener = null,
-                productListener = this
+                productListener = this,
+                refunds = refunds
         )
     }
 

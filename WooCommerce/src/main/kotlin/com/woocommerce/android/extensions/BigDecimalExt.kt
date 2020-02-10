@@ -7,4 +7,4 @@ infix fun BigDecimal.isEqualTo(x: BigDecimal) = this.compareTo(x) == 0
 
 infix fun BigDecimal.isNotEqualTo(x: BigDecimal) = this.compareTo(x) != 0
 
-fun BigDecimal.roundError() = this.setScale(2, HALF_UP)
+fun BigDecimal.roundError(): BigDecimal = this.setScale(2, HALF_UP)
