@@ -55,7 +55,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
                 product = product,
                 storedProduct = product,
                 cachedProduct = product,
-                weightWithUnits =  weight,
+                weightWithUnits = weight,
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(product.price, parameters.currencyCode),
                 salePriceWithCurrency = formatCurrency(product.salePrice, parameters.currencyCode),
