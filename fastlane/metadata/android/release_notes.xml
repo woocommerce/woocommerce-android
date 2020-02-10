@@ -1,77 +1,32 @@
-<ar>
-3.4:
-- يُضيف التصميم تعديلات طفيفة على علامة تبويب "المخزن الخاص بي".
-- تم إصلاح خطأ التنقل الذي يتسبب في حدوث أعطال عند إعادة التطبيق من الخلفية.
-- الأخطاء الأخرى المتنوعة.
-
-</ar>
-<es-ES>
-3.4:
-- Pequeños cambios de diseño en la pestaña Mi tienda.
-- Se ha corregido un error de navegación que provocaba fallos cuando se volvía a la aplicación desde segundo plano.
-- Otras correcciones de errores misceláneos.
-
-</es-ES>
+<de-DE>
+3.5:
+Wenn du gerade erst angefangen hast und in der App noch keine Listeneinträge vorhanden sind (z. B. solange noch keine Bestellungen und Bewertungen eingegangen sind), wird eine freundliche Nachricht angezeigt, um dir bei deinem Einstieg zu helfen.
+</de-DE>
 <fr-FR>
-3.4 :
-- Modifications mineures apportées à la mise en page de l'onglet Ma boutique.
-- Correction d'un bug de navigation qui provoquait des plantages lors de la réouverture de l'application après qu'elle avait été mise en arrière-plan.
-- Correction d'autres bugs divers.
-
+3.5 :
+Lorsque vous débutez et que l'application n’a rien à afficher sous forme de liste (par ex. avant votre première commande ou votre premier avis), un message convivial vous aide à démarrer.
 </fr-FR>
-<ja-JP>
-3.4:
-- 「自分のストア」タブのデザインの微調整。
-- バックグラウンドからアプリを戻すときにクラッシュする原因となっていたナビゲーションバグを修正しました。
-- 他のさまざまなバグの修正。
-
-</ja-JP>
 <ko-KR>
-3.4:
-- My Store 탭에 소소한 디자인 변경이 이루어졌습니다.
-- 앱을 백그라운드에서 다시 가져올 때 충돌을 일으키는 탐색 버그가 수정되었습니다.
-- 기타 버그가 수정되었습니다.
-
+3.5:
+새로 시작하여 앱에 표시할 항목이 목록에 없는 경우(예: 첫 주문 및 리뷰를 받기 전 주문 및 리뷰), 시작을 지원하는 도움말 메시지가 표시됩니다.
 </ko-KR>
-<nl-NL>
-3.4:
-- Er zijn kleine aanpassingen aangebracht in het ontwerp van het tabblad Mijn winkel.
-- Er is een navigatiebug gerepareerd die crashes veroorzaakte wanneer de app vanuit de achtergrond werd teruggehaald.
-- Diverse andere bugfixes uitgevoerd.
-
-</nl-NL>
 <pt-BR>
-3.4:
-- Pequenas alterações no design da guia Minha loja.
-- Correção de um erro de navegação que causava travamentos ao trazer o aplicativo de volta do segundo plano.
-- Outras correções de bugs.
-
+3.5:
+Quando você está apenas começando e não há nada para o aplicativo exibir em uma lista, como pedidos e avaliações, você verá uma mensagem para ajudá-lo a começar.
 </pt-BR>
 <ru-RU>
-3.4
-– Немного изменен дизайн вкладки «Мой магазин».
-– Исправлена ошибка навигации, которая вызывала сбои при выводе приложения из фонового режима.
-– Исправлены другие ошибки.
-
+Версия 3.5.
+Если вы только начинаете и у вас пока нет информации для отображения в списке приложения (например, в списке заказов и отзывов), там будет отображаться приветственное сообщение.
 </ru-RU>
 <tr-TR>
-3.4:
-- Mağazam sekmesinde ufak tasarım değişiklikleri.
-- Uygulamayı arka plandan getirirken kilitlenmelere sebep olan gezinme hatası düzeltildi.
-- Diğer çeşitli hata düzeltmeleri.
-
+3.5:
+Yeni başlıyorsanız ve uygulamanın listede göstereceği herhangi bir şey yoksa (ör. ilk siparişinizi ve yorumunuzu almadan önce) başlangıç yapmanıza yardımcı olabilecek bir mesaj görürsünüz.
 </tr-TR>
 <zh-TW>
-3.4：
-- 微調「我的商店」索引標籤設計。
-- 修正了一個瀏覽錯誤，這個錯誤會在你從背景叫回應用程式時，導致應用程式毀損。
-- 修正其他錯誤。
-
+3.5：
+若你剛開始使用，而應用程式尚未在清單中顯示任何內容 (例如：收到第一筆訂單前沒有任何訂單和評論)，你會看到一則協助你開始使用的友善訊息。
 </zh-TW>
 <en-US>
-3.4:
-- Minor design tweaks to the My Store tab.
-- Fixed a navigation bug that causing crashes when bringing the app back from background.
-- Other miscellaneous bug fixes.
-
+3.5:
+When you’re just getting started and there’s nothing for the app to display in a list (e.g., for orders and reviews, before you get your first one), you’ll see a friendly message to help you get started.
 </en-US>

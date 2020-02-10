@@ -11,6 +11,12 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_035"
+msgid ""
+"3.5:\n"
+"When you’re just getting started and there’s nothing for the app to display in a list (e.g., for orders and reviews, before you get your first one), you’ll see a friendly message to help you get started.\n"
+msgstr ""
+
 msgctxt "release_note_034"
 msgid ""
 "3.4:\n"
@@ -18,13 +24,6 @@ msgid ""
 "- Fixed a navigation bug that causing crashes when bringing the app back from background.\n"
 "- Other miscellaneous bug fixes.\n"
 "\n"
-msgstr ""
-
-msgctxt "release_note_033"
-msgid ""
-"3.3:\n"
-"- Performance improvements: Orders in the orders list now load faster, and crashes that sometimes happened after updating product variants or exiting an order after changing its status have been dealt with.\n"
-"- Bug fixes: labels on the bottom navigation bar that were cut off are whole, vertical scrolling in your stats chart works properly, reviews with incorrect timestamps have correct ones, and product variation sorting in the app matches the web.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

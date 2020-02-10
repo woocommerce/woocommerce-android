@@ -55,6 +55,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="refunds">Refunds</string>
     <string name="product_variations">Variations</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
@@ -224,8 +225,8 @@
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
     <string name="orderdetail_payment_paid_by_customer">Paid by customer</string>
     <string name="orderdetail_refunded">Refunded</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
-    <string name="orderdetail_refund_view_details">View details</string>
+    <string name="orderdetail_refunded_products">Refunded products</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
@@ -273,6 +274,7 @@
     -->
     <string name="order_refunds_available_for_refund">%s available for refund</string>
     <string name="order_refunds_title_with_amount">Refund %s</string>
+    <string name="order_refunds_confirmation">Are you sure you want to issue a refund? This can’t be undone.</string>
     <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
     <string name="order_refunds_next_button_title">Next</string>
     <string name="order_refunds_refund">Refund</string>
@@ -284,6 +286,7 @@
     <string name="order_refunds_reason_hint">Reason for refund (optional)</string>
     <string name="order_refunds_refund_via">Refund via</string>
     <string name="order_refunds_refunded_via">Refunded via %s</string>
+    <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_refund_details">Refund details</string>
     <string name="order_refunds_manual_refund">Manual refund</string>
     <string name="order_refunds_quote_image_description">Quotation icon</string>
@@ -296,11 +299,17 @@
     <string name="order_refunds_items_select_none">Select none</string>
     <string name="order_refunds_items_selected">%d items selected</string>
     <string name="order_refunds_item_description">%d x %s each</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
+    <plurals name="order_refunds_refund_info_description">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="order_refunds_refund_info_title">Refunded products</string>
     <!--
         Add Order Note
     -->
