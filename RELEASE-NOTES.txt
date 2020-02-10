@@ -5,6 +5,8 @@
  
 3.5
 -----
+* Refunds are back! Select individual order items and the refund amount will be automatically calculated for you
+* Fixed a crash when opening the app from a new order notification
  
 3.4
 -----
@@ -15,7 +17,6 @@
 * In rare situations, the labels on the bottom navigation bar could be cut off
 * Fixed a rare crash when updating a product variant in wp-admin and refreshing the same in the app.
 * Fixed bug that could cause stats chart to prevent scrolling vertically
-* Refunds are back! Select individual order items and the refund amount will be automatically calculated for you.
 * Fixed bug that caused reviews to show an incorrect timestamp
 * Fixed rare crash when backing out of an order immediately after changing order status
 * Fixed the sorting in product variations to match the sorting displayed on the web.
