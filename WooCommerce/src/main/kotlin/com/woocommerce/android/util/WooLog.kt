@@ -233,7 +233,9 @@ object WooLog {
          */
         fun toHtmlList(): ArrayList<String> {
             val list = ArrayList<String>()
-            for (entry in this) {
+            // work with a copy of the log entries in case they're modified while traversing them
+            val entries = ArrayList<LogEntry>().also { it.addAll(this) }
+            for (entry in entries) {
                 // same colors as WPAndroid
                 val color = when (entry.level) {
                     LogLevel.v -> "grey"
