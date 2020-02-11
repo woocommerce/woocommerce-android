@@ -254,7 +254,8 @@ object WooLog {
          */
         override fun toString(): String {
             val sb = StringBuilder()
-            for (entry in this) {
+            val entries = ArrayList<LogEntry>().also { it.addAll(this) }
+            for (entry in entries) {
                 sb.append("${entry}\n")
             }
             return sb.toString()
