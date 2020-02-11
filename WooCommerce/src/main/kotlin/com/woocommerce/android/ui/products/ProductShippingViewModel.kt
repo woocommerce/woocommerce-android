@@ -5,7 +5,6 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -13,24 +12,31 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
-class ProductInventoryViewModel @AssistedInject constructor(
+class ProductShippingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite,
-    private val productRepository: ProductDetailRepository,
-    private val networkStatus: NetworkStatus
+    selectedSite: SelectedSite,
+    wooCommerceStore: WooCommerceStore,
+    private val productRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    fun start(remoteProductId: Long) {
-        loadProduct(remoteProductId)
-    }
+    private val navArgs: ProductShippingFragmentArgs by savedState.navArgs()
 
-    override fun onCleared() {
-        super.onCleared()
-        productRepository.onCleanup()
+    var weightUnit: String? = null
+        private set
+    var dimensionUnit: String? = null
+        private set
+
+    init {
+        val settings = wooCommerceStore.getProductSettings(selectedSite.get())
+        weightUnit = settings?.weightUnit
+        dimensionUnit = settings?.dimensionUnit
+
+        loadProduct(navArgs.remoteProductId)
     }
 
     private fun loadProduct(remoteProductId: Long) {
@@ -50,5 +56,5 @@ class ProductInventoryViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<ProductInventoryViewModel>
+    interface Factory : ViewModelAssistedFactory<ProductShippingViewModel>
 }

@@ -36,7 +36,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
 //                combineData(it.product!!, Parameters("$", "oz", "in"))
 //            })
 
-    private fun combineData(product: Product, parameters: Parameters): ViewState {
+    private fun combineData(product: Product, parameters: Parameters): ProductDetailViewState {
         val weight = if (product.weight > 0) "${product.weight.roundToInt()}${parameters.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
@@ -51,13 +51,15 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
-        return ViewState(
-                product,
-                weight,
-                size,
-                formatCurrency(product.price, parameters.currencyCode),
-                formatCurrency(product.salePrice, parameters.currencyCode),
-                formatCurrency(product.regularPrice, parameters.currencyCode)
+        return ProductDetailViewState(
+                product = product,
+                storedProduct = product,
+                cachedProduct = product,
+                weightWithUnits = weight,
+                sizeWithUnits = size,
+                priceWithCurrency = formatCurrency(product.price, parameters.currencyCode),
+                salePriceWithCurrency = formatCurrency(product.salePrice, parameters.currencyCode),
+                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters.currencyCode)
         )
     }
 

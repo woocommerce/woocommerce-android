@@ -34,11 +34,27 @@ sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val 
             }
         }
 
+        fun fromBackorderStatus(backorderStatus: ProductBackorderStatus): String {
+            return when (backorderStatus) {
+                Yes -> CoreProductBackOrders.YES.value
+                Notify -> CoreProductBackOrders.NOTIFY.value
+                else -> CoreProductBackOrders.NO.value
+            }
+        }
+
         fun toStringResource(value: String) = fromString(value).stringResource
 
         fun toMap(context: Context) = CoreProductBackOrders.values()
                 .map { it.value to context.getString(fromString(it.value).stringResource)
                 }.toMap()
+
+        fun backordersToDisplayString(context: Context, backorderStatus: ProductBackorderStatus): String {
+            return if (backorderStatus.stringResource != 0) {
+                context.getString(backorderStatus.stringResource)
+            } else {
+                backorderStatus.value
+            }
+        }
 
         @JvmField
         val CREATOR = object : Creator<ProductBackorderStatus> {

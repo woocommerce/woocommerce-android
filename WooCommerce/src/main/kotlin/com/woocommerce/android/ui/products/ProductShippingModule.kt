@@ -11,21 +11,21 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class ProductInventoryModule {
+abstract class ProductShippingModule {
     @Module
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(fragment: ProductInventoryFragment): Bundle? {
+        fun provideDefaultArgs(fragment: ProductShippingFragment): Bundle? {
             return fragment.arguments
         }
     }
 
     @Binds
     @IntoMap
-    @ViewModelKey(ProductDetailViewModel::class)
-    abstract fun bindFactory(factory: ProductDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(ProductShippingViewModel::class)
+    abstract fun bindFactory(factory: ProductShippingViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
-    abstract fun bindSavedStateRegistryOwner(fragment: ProductInventoryFragment): SavedStateRegistryOwner
+    abstract fun bindSavedStateRegistryOwner(fragment: ProductShippingFragment): SavedStateRegistryOwner
 }

@@ -34,11 +34,27 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
             }
         }
 
+        fun fromStockStatus(stockStatus: ProductStockStatus): String {
+            return when (stockStatus) {
+                OnBackorder -> CoreProductStockStatus.ON_BACK_ORDER.value
+                OutOfStock -> CoreProductStockStatus.OUT_OF_STOCK.value
+                else -> CoreProductStockStatus.IN_STOCK.value
+            }
+        }
+
         fun toStringResource(value: String) = fromString(value).stringResource
 
         fun toMap(context: Context) = CoreProductStockStatus.values()
                 .map { it.value to context.getString(fromString(it.value).stringResource) }
                 .toMap()
+
+        fun stockStatusToDisplayString(context: Context, status: ProductStockStatus): String {
+            return if (status.stringResource != 0) {
+                context.getString(status.stringResource)
+            } else {
+                status.value
+            }
+        }
 
         @JvmField
         val CREATOR = object : Creator<ProductStockStatus > {

@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "3.5"
+            versionName "3.6-rc-1"
         }
-        versionCode 107
+        versionCode 108
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -127,7 +127,9 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "com.google.android.material:material:1.0.0"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation "androidx.browser:browser:1.0.0"
+    implementation ("androidx.browser:browser:1.2.0") {
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
     implementation "androidx.preference:preference:1.1.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
@@ -225,15 +227,15 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation(group: 'com.zendesk', name: 'support', version: '3.0.3') {
+    implementation(group: 'com.zendesk', name: 'support', version: '4.0.0') {
         exclude group: 'com.google.dagger'
     }
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
-    implementation "androidx.fragment:fragment-ktx:1.2.0-rc03"
-    implementation "androidx.activity:activity-ktx:1.1.0-rc03"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0-rc03"
+    implementation "androidx.fragment:fragment-ktx:1.2.0"
+    implementation "androidx.activity:activity-ktx:1.1.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

@@ -17,6 +17,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -44,7 +45,6 @@ import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
@@ -178,8 +178,13 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_action_bar, menu)
-        return true
+        // don't show the options menu unless we're at the root
+        if (isAtNavigationRoot()) {
+            menuInflater.inflate(R.menu.menu_action_bar, menu)
+            return true
+        } else {
+            return false
+        }
     }
 
     override fun onResume() {
@@ -327,6 +332,7 @@ class MainActivity : AppUpgradeActivity(),
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
+                R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment -> {
@@ -723,7 +729,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        val action = ProductDetailFragmentDirections.actionGlobalProductDetailFragment(remoteProductId)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(remoteProductId)
         navController.navigate(action)
     }
 
