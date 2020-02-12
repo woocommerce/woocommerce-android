@@ -234,7 +234,7 @@ object WooLog {
         fun toHtmlList(): ArrayList<String> {
             val list = ArrayList<String>()
             // work with a copy of the log entries in case they're modified while traversing them
-            val entries = ArrayList<LogEntry>().also { it.addAll(this) }
+            val entries = mutableListOf<LogEntry>().also { it.addAll(this) }
             for (entry in entries) {
                 // same colors as WPAndroid
                 val color = when (entry.level) {
@@ -254,7 +254,7 @@ object WooLog {
          */
         override fun toString(): String {
             val sb = StringBuilder()
-            val entries = ArrayList<LogEntry>().also { it.addAll(this) }
+            val entries = mutableListOf<LogEntry>().also { it.addAll(this) }
             for (entry in entries) {
                 sb.append("${entry}\n")
             }
