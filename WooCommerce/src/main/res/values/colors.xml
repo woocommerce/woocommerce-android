@@ -87,6 +87,10 @@
     <!-- Default Link Color -->
     <color name="link_text_color">@color/wc_purple</color>
     <!--
+        Dialog colors
+    -->
+    <color name="dialog_content_text_color">@color/wc_grey_medium</color>
+    <!--
         Order: Order note icon colors
     -->
     <color name="orderNote_private">@color/wc_grey</color>
