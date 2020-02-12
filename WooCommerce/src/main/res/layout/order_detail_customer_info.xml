@@ -243,11 +243,8 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
-        <View
-            style="@style/Woo.Divider"/>
-
         <!-- VIEW MORE Button -->
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/customerInfo_viewMore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -256,9 +253,14 @@
             android:focusable="true"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/orderdetail_show_billing"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/customerInfo_card">
+            tools:visibility="visible">
+
+            <View
+                android:id="@+id/customerInfo_divider4"
+                style="@style/Woo.Divider"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_viewMoreButtonTitle"
@@ -272,7 +274,11 @@
                 android:paddingStart="@dimen/major_100"
                 android:paddingEnd="@dimen/major_100"
                 android:importantForAccessibility="no"
-                android:text="@string/orderdetail_show_billing" />
+                android:text="@string/orderdetail_show_billing"
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/customerInfo_viewMoreButtonImage"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <ImageView
                 android:id="@+id/customerInfo_viewMoreButtonImage"
@@ -283,10 +289,11 @@
                 android:clickable="false"
                 android:focusable="false"
                 android:importantForAccessibility="no"
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider4"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:src="@drawable/ic_arrow_down" />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 </merge>
