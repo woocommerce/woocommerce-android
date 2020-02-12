@@ -1,5 +1,0 @@
-3.4:
-- Mağazam sekmesinde ufak tasarım değişiklikleri.
-- Uygulamayı arka plandan getirirken kilitlenmelere sebep olan gezinme hatası düzeltildi.
-- Diğer çeşitli hata düzeltmeleri.
-
