@@ -80,6 +80,7 @@
                 <!-- Order Notes -->
                 <com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView
                     android:id="@+id/orderDetail_noteList"
+                    style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
