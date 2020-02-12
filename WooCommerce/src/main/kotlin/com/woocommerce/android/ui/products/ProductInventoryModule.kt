@@ -23,8 +23,8 @@ abstract class ProductInventoryModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ProductInventoryViewModel::class)
-    abstract fun bindFactory(factory: ProductInventoryViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(ProductDetailViewModel::class)
+    abstract fun bindFactory(factory: ProductDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
     abstract fun bindSavedStateRegistryOwner(fragment: ProductInventoryFragment): SavedStateRegistryOwner

@@ -23,6 +23,7 @@ import androidx.paging.PagedList
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -65,8 +66,6 @@ class OrderListFragment : TopLevelFragment(),
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
         private const val TAB_INDEX_ALL = 1
-
-        private const val URL_LEARN_MORE = "https://woocommerce.com/blog/"
 
         fun newInstance(orderStatus: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -425,7 +424,7 @@ class OrderListFragment : TopLevelFragment(),
                     }
                     EmptyViewType.ORDER_LIST -> {
                         empty_view.show(emptyViewType) {
-                            ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
                     }
                     EmptyViewType.ORDER_LIST_FILTERED -> {

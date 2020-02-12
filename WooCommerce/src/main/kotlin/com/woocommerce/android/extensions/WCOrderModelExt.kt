@@ -5,6 +5,8 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.store.WCProductStore
 
+val CASH_PAYMENTS = listOf("cod", "bacs", "cheque")
+
 /**
  * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
  * and if product exists in the local cache.
@@ -32,3 +34,6 @@ fun isVirtualProduct(
 
     return productModels.filter { !it.virtual }.isEmpty()
 }
+
+val String.isCashPayment: Boolean
+    get() = CASH_PAYMENTS.contains(this)

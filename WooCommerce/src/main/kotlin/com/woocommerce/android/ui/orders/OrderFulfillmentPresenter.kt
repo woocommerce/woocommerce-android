@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -30,6 +31,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackin
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -37,6 +39,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
+    private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus
@@ -67,7 +70,8 @@ class OrderFulfillmentPresenter @Inject constructor(
         orderView?.let { view ->
             orderModel = getOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
-                view.showOrderDetail(order)
+                val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteOrderId).map { it.toAppModel() }
+                view.showOrderDetail(order, refunds)
             }
         }
     }

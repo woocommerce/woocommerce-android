@@ -1,5 +1,0 @@
-3.4 :
-- Modifications mineures apportées à la mise en page de l'onglet Ma boutique.
-- Correction d'un bug de navigation qui provoquait des plantages lors de la réouverture de l'application après qu'elle avait été mise en arrière-plan.
-- Correction d'autres bugs divers.
-

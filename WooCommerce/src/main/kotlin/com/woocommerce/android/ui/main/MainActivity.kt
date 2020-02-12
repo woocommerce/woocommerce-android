@@ -14,9 +14,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -44,7 +45,6 @@ import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
@@ -126,6 +126,10 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        navController = navHostFragment.navController
+        navController.addOnDestinationChangedListener(this)
+
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
@@ -162,13 +166,6 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-
-        navController = findNavController(R.id.nav_host_fragment_main)
-        navController.addOnDestinationChangedListener(this)
     }
 
     override fun hideProgressDialog() {
@@ -335,6 +332,7 @@ class MainActivity : AppUpgradeActivity(),
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
+                R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment -> {
@@ -349,6 +347,7 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderNoteFragment,
                 R.id.issueRefundFragment,
                 R.id.refundAmountDialog,
+                R.id.refundConfirmationDialog,
                 R.id.refundItemsPickerDialog,
                 R.id.refundSummaryFragment -> {
                     false
@@ -730,7 +729,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        val action = ProductDetailFragmentDirections.actionGlobalProductDetailFragment(remoteProductId)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(remoteProductId)
         navController.navigate(action)
     }
 

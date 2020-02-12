@@ -5,8 +5,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/card_padding_top"
-    android:layout_marginBottom="@dimen/card_padding_bottom">
+    android:paddingStart="@dimen/card_padding_start"
+    android:paddingEnd="@dimen/card_padding_end"
+    android:paddingTop="@dimen/card_padding_top"
+    android:paddingBottom="@dimen/card_padding_bottom">
 
     <FrameLayout
         android:id="@+id/refundItem_iconFrame"
@@ -52,6 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
+        android:textSize="@dimen/text_caption"
         android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
         app:layout_constraintEnd_toEndOf="@+id/refundItem_productName"
         app:layout_constraintHorizontal_bias="0.0"

@@ -11,10 +11,12 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 
 class OrderProductListPresenterTest {
     private val view: OrderProductListContract.View = mock()
     private val orderStore: WCOrderStore = mock()
+    private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
 
     private val order = OrderTestUtils.generateOrder()
@@ -22,7 +24,7 @@ class OrderProductListPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderProductListPresenter(orderStore))
+        presenter = spy(OrderProductListPresenter(orderStore, refundStore, selectedSite))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
     }
@@ -32,6 +34,6 @@ class OrderProductListPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail("1-2-3")
-        verify(view).showOrderProducts(any())
+        verify(view).showOrderProducts(any(), any())
     }
 }

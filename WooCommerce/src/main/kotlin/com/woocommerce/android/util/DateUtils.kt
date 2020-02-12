@@ -330,4 +330,19 @@ object DateUtils {
         val dateOnly2 = DateUtils.round(date2, Calendar.DATE)
         return dateOnly2.after(dateOnly1)
     }
+
+    /**
+     * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
+     */
+    fun offsetGmtDate(dateGmt: Date, gmtOffset: Float): Date {
+        if (gmtOffset == 0f) {
+            return dateGmt
+        }
+
+        val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
+        val calendar = Calendar.getInstance()
+        calendar.setTime(dateGmt)
+        calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + secondsOffset)
+        return calendar.time
+    }
 }

@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-22 00:54:04+0000
+Translation-Revision-Date: 2020-02-06 00:54:12+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="sign_up">WordPress.com\'a Kaydolun</string>
+    <string name="empty_message_with_search">Üzgünüz, \"%s\" için sonuç bulamadık</string>
+    <string name="empty_review_list_message">Mağazanız için yüksek kalitede ürün yorumları alın</string>
+    <string name="empty_review_list_title">İlk yorumlarınızı alın</string>
+    <string name="empty_order_list_all_processed">Tüm siparişler gönderildi</string>
+    <string name="empty_order_list_message">Yeni bir sipariş aldığınızda sizi bilgilendireceğiz. Bu sırada siz de mağaza satışlarınızı nasıl artırabileceğiniz keşfedebilirsiniz.</string>
+    <string name="empty_order_list_title">İlk siparişiniz bekleniyor</string>
+    <string name="share_your_store_message">Mağazanızı sosyal medyada ve e-posta yoluyla kişilerinizle paylaşın</string>
+    <string name="get_the_word_out">Şimdi sesimizi duyurma zamanı</string>
+    <string name="product_inventory_quantity_summary">Stokta kalan ürün sayısı</string>
+    <string name="product_inventory_quantity">Miktar</string>
+    <string name="product_sold_individually">Her sipariş için limiti bir olarak belirle</string>
+    <string name="product_manage_stock">Stok yönet</string>
+    <string name="product_sku_summary">Bu ürünün kolayca tanımlanmasına yardımcı olur</string>
+    <string name="product_sale_date_from">%1$s değerinden itibaren</string>
+    <string name="product_sale_date_from_to">%1$s - %2$s</string>
+    <string name="product_sale_dates">İndirim tarihleri</string>
+    <string name="product_price_empty">Fiyat ekle</string>
+    <string name="product_inventory_empty">Envanter ekle</string>
+    <string name="orderlist_loading">Siparişleriniz aranıyor…</string>
     <string name="product_detail_editable_text_hint">Metin girin</string>
     <string name="product_detail_title_hint">Başlık girin</string>
     <string name="product_detail_update_product_success">Ürün güncellendi</string>
@@ -49,7 +69,6 @@ Language: tr
     <string name="product_add_photos">Fotoğraf ekle</string>
     <string name="product_images_title">Fotoğraflar</string>
     <string name="product_add_image_content_description">Görsel ekle</string>
-    <string name="orderlist_fetching">Siparişler alınıyor…</string>
     <string name="date_timeframe_future">Yakında</string>
     <string name="remove">Kaldır</string>
     <string name="product_variant_hidden">Gizli</string>
@@ -127,7 +146,7 @@ Language: tr
     <string name="order_refunds_available_for_refund">%s para iadesi için kullanılabilir</string>
     <string name="orderdetail_issue_refund_button">Para iadesi düzenle</string>
     <string name="orderdetail_refund_view_details">Detayları görüntüle</string>
-    <string name="orderdetail_refund_detail">%1$s, %2$s – %3$s aracılığıyla</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Mevcut yeni istatistikleri deneyin:\nWooCommerce yönetici eklentisi</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
     <string name="beta_features">Beta özellikler</string>
