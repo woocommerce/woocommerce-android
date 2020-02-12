@@ -160,22 +160,20 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        addTabLayoutToAppBar(tabLayout)
-    }
-
     override fun onResume() {
         super.onResume()
+        addTabLayoutToAppBar(tabLayout)
         AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // silently refresh if this fragment is no longer hidden
-        if (!isHidden && !isStatsRefreshed) {
-            refreshMyStoreStats(forced = false)
+        if (!isHidden) {
+            if (!isStatsRefreshed) {
+                // silently refresh if this fragment is no longer hidden
+                refreshMyStoreStats(forced = false)
+            }
             addTabLayoutToAppBar(tabLayout)
         } else {
             isStatsRefreshed = false
@@ -189,6 +187,7 @@ class MyStoreFragment : TopLevelFragment(),
         if (!deferInit) {
             refreshMyStoreStats(forced = this.isRefreshPending)
         }
+        addTabLayoutToAppBar(tabLayout)
     }
 
     override fun onStop() {
@@ -330,6 +329,7 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
+        removeTabLayoutFromAppBar(tabLayout)
         (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
     }
 
@@ -364,7 +364,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (!isHidden && !appBar.children.contains(tabLayout)) {
+            if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(
                         tabLayout,
                         LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
