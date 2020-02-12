@@ -196,6 +196,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_50"
+                android:layout_marginBottom="@dimen/major_100"
                 tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 
             <!-- Refund and New Total Section -->
@@ -223,7 +224,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="@dimen/major_100"
                     android:visibility="gone"
                     tools:visibility="visible">
 
@@ -256,24 +256,22 @@
                             tools:text="-$15.00"/>
                     </LinearLayout>
 
+                    <!-- Divider -->
+                    <View
+                        style="@style/Woo.Divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/major_100"
+                        android:layout_marginStart="@dimen/major_100"
+                        android:layout_marginEnd="@dimen/minor_00"/>
                 </LinearLayout>
-
-                <!-- Divider -->
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/major_100"
-                    android:layout_marginStart="@dimen/major_100"
-                    android:layout_marginEnd="@dimen/minor_00"/>
 
                 <!-- Net (after refund deducted) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="true"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/major_100">
+                    android:orientation="horizontal">
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/paymentInfo_lblNet"
@@ -281,6 +279,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_marginTop="@dimen/major_100"
+                        android:layout_marginBottom="@dimen/major_100"
                         android:text="@string/orderdetail_net"/>
 
                     <com.google.android.material.textview.MaterialTextView
@@ -288,6 +288,8 @@
                         style="@style/Woo.Card.Body.Bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/major_100"
+                        android:layout_marginBottom="@dimen/major_100"
                         tools:text="$34.00"/>
                 </LinearLayout>
             </LinearLayout>
@@ -305,7 +307,7 @@
             <!-- Divider -->
             <View
                 style="@style/Woo.Divider"
-                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_00"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/minor_00"/>
 
