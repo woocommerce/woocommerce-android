@@ -6,28 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/customerInfo_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="@dimen/card_padding_end"
-            android:paddingStart="@dimen/card_padding_start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
 
             <!-- Card Title -->
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_label"
+                style="@style/Woo.Card.Header"
+                android:layout_marginBottom="@dimen/minor_00"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/customer_information"
-                android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"/>
+                android:text="@string/customer_information"/>
 
             <!-- Label: Customer note -->
             <LinearLayout
@@ -35,33 +36,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="true"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:visibility="visible">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_customerNoteTitle"
+                    style="@style/Woo.Card.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/orderdetail_customer_provided_note"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
+                    android:layout_marginBottom="@dimen/minor_50"
+                    android:text="@string/orderdetail_customer_provided_note"/>
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_customerNote"
+                    style="@style/Woo.Card.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/card_item_padding_intra_h"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                    android:textAlignment="viewStart"
                     android:textIsSelectable="true"
                     tools:text="This is a nice note from the customer"/>
 
                 <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                    android:background="@color/list_divider"
-                    app:srcCompat="@drawable/list_divider"/>
-
+                    style="@style/Woo.Divider"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"/>
             </LinearLayout>
 
             <!-- Label: Shipping -->
@@ -70,27 +68,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="true"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
                 android:orientation="vertical">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_shippingLabel"
+                    style="@style/Woo.Card.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/orderdetail_shipping_details"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
+                    android:layout_marginBottom="@dimen/minor_50"
+                    android:text="@string/orderdetail_shipping_details"/>
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_shippingAddr"
-                    android:layout_width="wrap_content"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/card_item_padding_intra_h"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                    android:textAlignment="viewStart"
                     android:textIsSelectable="true"
                     tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
-
             </LinearLayout>
 
             <!-- Label: Shipping method -->
@@ -98,35 +92,32 @@
                 android:id="@+id/customerInfo_shippingMethodSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/card_item_padding_intra_double"
                 android:focusable="true"
                 android:orientation="vertical"
                 tools:visibility="visible"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="@dimen/card_item_padding_intra_double"
-                    android:background="@color/list_divider"
-                    app:srcCompat="@drawable/list_divider"/>
+                    style="@style/Woo.Divider"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"/>
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_shippingMethodLabel"
+                    style="@style/Woo.Card.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/orderdetail_shipping_method"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
+                    android:layout_marginBottom="@dimen/minor_50"
+                    android:text="@string/orderdetail_shipping_method"/>
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_shippingMethod"
+                    style="@style/Woo.Card.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/card_item_padding_intra_h"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                    android:textAlignment="viewStart"
+                    android:layout_marginBottom="@dimen/major_100"
                     tools:text="International Priority Mail Express Flat Rate"/>
-
             </LinearLayout>
 
             <!-- Billing Section -->
@@ -138,64 +129,58 @@
                 tools:visibility="visible">
 
                 <!-- Divider -->
-                <FrameLayout
+                <View
                     android:id="@+id/customerInfo_divider"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="@dimen/card_item_padding_intra_h"
-                    android:background="@color/list_divider"
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/list_divider"/>
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <!-- Label: Billing Details -->
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_billingLabel"
-                    android:layout_width="wrap_content"
+                    style="@style/Woo.Card.Title"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/card_section_padding_h"
-                    android:paddingTop="@dimen/card_section_padding_h"
                     android:text="@string/orderdetail_billing_details"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"/>
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <!-- Billing Address -->
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_billingAddr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/card_padding_bottom"
-                    android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                    android:textIsSelectable="true"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
-                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
-
-                <!-- Divider -->
-                <FrameLayout
-                    android:id="@+id/customerInfo_divider2"
+                    style="@style/Woo.Card.Body"
                     android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:background="@color/list_divider"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true"
+                    android:layout_marginTop="@dimen/minor_50"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddr"
-                    app:srcCompat="@drawable/list_divider"/>
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
+                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+
+                <!-- Divider -->
+                <View
+                    android:id="@+id/customerInfo_divider2"
+                    style="@style/Woo.Divider"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddr"/>
 
                 <!-- Billing Phone -->
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_phone"
+                    style="@style/Woo.Card.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/card_item_padding_intra_h"
-                    android:paddingTop="@dimen/card_item_padding_intra_h"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
                     android:textIsSelectable="true"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toTopOf="@+id/customerInfo_divider3"
@@ -209,8 +194,8 @@
                 <ImageButton
                     android:id="@+id/customerInfo_callOrMessageBtn"
                     style="@android:style/Widget.ActionButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="@dimen/image_major_50"
+                    android:layout_height="@dimen/image_major_50"
                     android:contentDescription="@string/orderdetail_call_or_message_contentdesc"
                     android:scaleType="center"
                     android:src="@drawable/ic_menu_more_vert_compat"
@@ -218,26 +203,21 @@
                     app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider2"/>
 
                 <!-- Divider -->
-                <FrameLayout
+                <View
                     android:id="@+id/customerInfo_divider3"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="@dimen/card_item_padding_intra_h"
-                    android:background="@color/list_divider"
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_callOrMessageBtn"
-                    app:srcCompat="@drawable/list_divider"/>
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_callOrMessageBtn"/>
 
                 <!-- Email Address -->
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/customerInfo_emailAddr"
+                    style="@style/Woo.Card.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:paddingBottom="@dimen/card_item_padding_intra_h"
-                    android:paddingTop="@dimen/card_item_padding_intra_h"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
                     android:textIsSelectable="true"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -250,9 +230,9 @@
                 <!-- Email Button -->
                 <ImageButton
                     android:id="@+id/customerInfo_emailBtn"
-                    style="@android:style/Widget.ActionButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    style="@style/Woo.Button"
+                    android:layout_width="@dimen/min_tap_target"
+                    android:layout_height="@dimen/min_tap_target"
                     android:clickable="true"
                     android:contentDescription="@string/orderdetail_email_contentdesc"
                     android:focusable="true"
@@ -263,43 +243,50 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
+        <View
+            style="@style/Woo.Divider"/>
+
         <!-- VIEW MORE Button -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/customerInfo_viewMore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:clickable="true"
             android:focusable="true"
-            style="@style/Woo.CardExtenderButton"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/orderdetail_show_billing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/customerInfo_card">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_viewMoreButtonTitle"
-                android:layout_width="wrap_content"
+                style="@style/Woo.Button"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/orderdetail_show_billing"
-                android:textAllCaps="true"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/text_large"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_weight="1"
+                android:clickable="false"
+                android:focusable="false"
+                android:textAlignment="textStart"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
+                android:importantForAccessibility="no"
+                android:text="@string/orderdetail_show_billing" />
 
             <ImageView
                 android:id="@+id/customerInfo_viewMoreButtonImage"
-                style="@android:style/Widget.ActionButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                style="@style/Woo.Button"
+                android:layout_width="@dimen/min_tap_target"
+                android:layout_height="@dimen/min_tap_target"
                 android:background="@null"
-                android:contentDescription="@string/orderdetail_show_billing"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:src="@drawable/ic_arrow_down" />
+        </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </merge>
