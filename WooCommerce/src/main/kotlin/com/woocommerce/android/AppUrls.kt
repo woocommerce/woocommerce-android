@@ -14,6 +14,7 @@ object AppUrls {
     const val WOOCOMMERCE_ADMIN_PLUGIN = "https://wordpress.org/plugins/woocommerce-admin"
 
     const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/posts/reviews-woocommerce-best-practices/"
+    const val URL_LEARN_MORE_ORDERS = "https://woocommerce.com/blog/"
 
     const val JETPACK_INSTRUCTIONS =
             "https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/"

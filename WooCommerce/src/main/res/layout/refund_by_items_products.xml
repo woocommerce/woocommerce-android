@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,8 +9,6 @@
         android:id="@+id/issueRefund_products"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginEnd="@dimen/card_padding_end"
         android:nestedScrollingEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,11 +58,11 @@
         android:id="@+id/issueRefund_lblTaxes"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_padding_start"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:layout_weight="1"
         android:text="@string/taxes"
         android:textAlignment="viewStart"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:textAppearance="@style/Woo.Refunds.TextAppearance"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
@@ -105,29 +102,36 @@
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.Refunds.TextAppearance.Bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes" />
 
     <TextView
         android:id="@+id/issueRefund_productsTotal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
         android:layout_marginStart="@dimen/card_padding_start"
         android:layout_marginEnd="@dimen/card_padding_end"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/issueRefund_lblProductsTotal"
-        tools:text="$1.00"/>
+        tools:text="$1.00" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/issueRefund_totalsGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="issueRefund_dividerBelowList,issueRefund_dividerBelowTaxes,issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_productsTotal,issueRefund_lblProductsTotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
+
 
     <!-- TODO: Temporarily disabled, this will be used in a future release - do not remove -->
-<!--    <androidx.appcompat.widget.AppCompatButton-->
-<!--        android:id="@+id/issueRefund_productsTotalButton"-->
-<!--        style="@style/Woo.Refunds.Button"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textAllCaps="false"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"-->
-<!--        tools:text="$49.00" />-->
+    <!--    <androidx.appcompat.widget.AppCompatButton-->
+    <!--        android:id="@+id/issueRefund_productsTotalButton"-->
+    <!--        style="@style/Woo.Refunds.Button"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:textAllCaps="false"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"-->
+    <!--        tools:text="$49.00" />-->
 
-</androidx.constraintlayout.widget.ConstraintLayout >
+</androidx.constraintlayout.widget.ConstraintLayout>
