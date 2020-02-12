@@ -24,7 +24,7 @@
         <LinearLayout
             android:id="@+id/noteList_addNoteContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/min_tap_target"
             android:background="?attr/selectableItemBackground"
             android:descendantFocusability="blocksDescendants"
             android:contentDescription="@string/orderdetail_addnote_contentdesc"
@@ -35,14 +35,18 @@
             app:layout_constraintTop_toBottomOf="@+id/notesList_lblNotes">
 
             <ImageView
-                android:layout_width="@dimen/min_tap_target"
-                android:layout_height="@dimen/min_tap_target"
-                android:scaleType="center"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_gravity="center"
                 android:importantForAccessibility="no"
                 app:srcCompat="@drawable/ic_add"/>
 
             <com.google.android.material.textview.MaterialTextView
                 style="@style/Woo.Button"
+                android:paddingStart="@dimen/minor_00"
+                android:paddingEnd="@dimen/minor_00"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:importantForAccessibility="no"
@@ -52,18 +56,22 @@
 
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/notesList_notes"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
             app:layout_constraintTop_toBottomOf="@+id/noteList_addNoteContainer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:itemCount="4"
-            tools:listitem="@layout/order_detail_note_list_note"
-            tools:targetApi="lollipop" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/notesList_notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="4"
+                tools:listitem="@layout/order_detail_note_list_note" />
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
