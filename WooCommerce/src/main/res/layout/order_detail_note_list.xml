@@ -39,7 +39,7 @@
                 android:layout_height="@dimen/min_tap_target"
                 android:scaleType="center"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_add_purple"/>
+                app:srcCompat="@drawable/ic_add"/>
 
             <com.google.android.material.textview.MaterialTextView
                 style="@style/Woo.Button"
