@@ -1,4 +1,1 @@
-- Minor design tweaks to the My Store tab.
-- Fixed a navigation bug that causing crashes when bringing the app back from background.
-- Other miscellaneous bug fixes.
-
+When you’re just getting started and there’s nothing for the app to display in a list (e.g., for orders and reviews, before you get your first one), you’ll see a friendly message to help you get started.

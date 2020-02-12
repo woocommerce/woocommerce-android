@@ -11,13 +11,11 @@ enum class FeatureFlag {
     PRODUCT_RELEASE_TEASER,
     ADD_EDIT_PRODUCT_RELEASE_1,
     DB_DOWNGRADE,
-    PRODUCT_IMAGE_CHOOSER,
-    REFUNDS;
+    PRODUCT_IMAGE_CHOOSER;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             ADD_EDIT_PRODUCT_RELEASE_1 -> BuildConfig.DEBUG
             PRODUCT_RELEASE_TEASER -> AppPrefs.isProductsFeatureEnabled()
-            REFUNDS -> BuildConfig.DEBUG
             PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG && AppPrefs.isProductsFeatureEnabled()
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)

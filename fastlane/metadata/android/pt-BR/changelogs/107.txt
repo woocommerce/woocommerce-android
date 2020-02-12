@@ -1,0 +1,2 @@
+3.5:
+Quando você está apenas começando e não há nada para o aplicativo exibir em uma lista, como pedidos e avaliações, você verá uma mensagem para ajudá-lo a começar.

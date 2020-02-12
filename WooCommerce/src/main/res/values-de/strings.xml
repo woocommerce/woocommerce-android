@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-15 00:54:47+0000
+Translation-Revision-Date: 2020-02-06 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="sign_up">Registriere dich bei WordPress.com</string>
+    <string name="empty_message_with_search">Leider konnten für „%s“ keine Ergebnisse gefunden werden.</string>
+    <string name="empty_review_list_message">Sammle hochwertige Produktbewertungen für deinen Shop.</string>
+    <string name="empty_review_list_title">Erhalte deine ersten Bewertungen</string>
+    <string name="empty_order_list_all_processed">Alle Bestellungen wurden ausgeführt</string>
+    <string name="empty_order_list_message">Wir benachrichtigen dich, wenn du eine neue Bestellung erhältst. Erkundige dich in der Zwischenzeit, wie du deine Shop-Verkäufe steigern kannst.</string>
+    <string name="empty_order_list_title">Warten auf deine ersten Bestellung</string>
+    <string name="share_your_store_message">Teile deinen Shop mit deinen Kontakten in den sozialen Medien und per E-Mail.</string>
+    <string name="get_the_word_out">Sorge für mehr Bekanntheit</string>
+    <string name="product_inventory_quantity_summary">Wie viele Artikel sind vorrätig?</string>
+    <string name="product_inventory_quantity">Menge</string>
+    <string name="product_sold_individually">Auf 1 pro Bestellung begrenzen</string>
+    <string name="product_manage_stock">Bestand verwalten</string>
+    <string name="product_sku_summary">Einfaches Erkennen des Produkts</string>
+    <string name="product_sale_date_from">vom %1$s</string>
+    <string name="product_sale_date_from_to">%1$s bis %2$s</string>
+    <string name="product_sale_dates">Verkaufsdaten</string>
+    <string name="product_price_empty">Preis hinzufügen</string>
+    <string name="product_inventory_empty">Inventar hinzufügen</string>
+    <string name="orderlist_loading">Deine Bestellungen werden abgerufen …</string>
+    <string name="product_detail_editable_text_hint">Text eingeben</string>
+    <string name="product_detail_title_hint">Titel eingeben</string>
+    <string name="product_detail_update_product_success">Produkt aktualisiert</string>
+    <string name="product_detail_update_product_error">Fehler beim Aktualisieren des Produkts</string>
+    <string name="product_update_dialog_message">Bitte warten …</string>
+    <string name="product_update_dialog_title">Produkt aktualisieren</string>
+    <string name="product_description_empty">Produkt beschreiben</string>
+    <string name="product_description">Beschreibung</string>
+    <string name="product_edit_description">Beschreibung bearbeiten</string>
+    <string name="product_description_hint">Beginne zu schreiben …</string>
+    <string name="product_variant_list_empty">Füge vom Web Optionen wie Größe und Farbe hinzu. Dies wird als Optionen auf der Produktseite deiner Website angezeigt.</string>
+    <string name="discard_message">Möchtest du deine Änderungen verwerfen?</string>
+    <string name="update">Aktualisieren</string>
     <string name="done">Fertig</string>
     <string name="order_refunds_refund_in_progress">Die Rückerstattung wird bearbeitet, bitte warten …</string>
     <string name="order_refunds_refund_shipping">Rückerstattung für Versand</string>
@@ -36,7 +69,6 @@ Language: de
     <string name="product_add_photos">Fotos hinzufügen</string>
     <string name="product_images_title">Fotos</string>
     <string name="product_add_image_content_description">Bild hinzufügen</string>
-    <string name="orderlist_fetching">Bestellungen werden abgerufen …</string>
     <string name="date_timeframe_future">Bevorstehend</string>
     <string name="remove">Entfernen</string>
     <string name="product_variant_hidden">Versteckt</string>
@@ -114,7 +146,7 @@ Language: de
     <string name="order_refunds_available_for_refund">%s zur Rückerstattung verfügbar</string>
     <string name="orderdetail_issue_refund_button">Rückerstattung ausstellen</string>
     <string name="orderdetail_refund_view_details">Details anzeigen</string>
-    <string name="orderdetail_refund_detail">%1$s per %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Teste die neuen Statistiken, die im\nWooCommerce Admin-Plugin verfügbar ist</string>
     <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
     <string name="beta_features">Betafunktionen</string>
@@ -133,11 +165,13 @@ Language: de
     <string name="dashboard_stats_todays_stats">Statistiken von heute</string>
     <string name="login_sign_in">Anmelden</string>
     <string name="login_jetpack_installed_sign_in">Du hast Jetpack bereits? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Es wird versucht, dich mit Jetpack anzumelden …</string>
     <string name="login_refresh_app_continue">Zum Fortfahren die App aktualisieren</string>
     <string name="login_not_connected_jetpack">Um diese App für %1$s zu verwenden, muss das Jetpack-Plugin eingerichtet und mit diesem Konto verbunden sein. \n\nNach dem Einrichten %2$s</string>
     <string name="login_try_another_store">Es mit einem anderen Shop versuchen</string>
     <string name="database_downgraded">Datenbank herabgestuft, Tabellen werden neu erstellt und Shops werden geladen</string>
     <string name="loading_stores">Shops werden geladen</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Keine Versanddienstleister gefunden</string>
     <string name="login_invalid_site_url">Bitte gib eine vollständige Website-Adresse wie „example.com“ an.</string>
     <string name="reviews_empty_message">Noch keine Rezensionen vorhanden!</string>
     <string name="review_notifications">Rezensionen</string>
@@ -148,6 +182,7 @@ Language: de
     <string name="settings_hiring">Wir stellen weitere Mitarbeiter ein!</string>
     <string name="feature_requests">Feature-Request</string>
     <string name="orderdetail_copy_tracking_number">Sendungsverfolgungsnummer kopieren</string>
+    <string name="login_refresh_app_progress">WooCommerce wird gesucht …</string>
     <string name="login_refresh_app">App aktualisieren</string>
     <string name="login_not_woo_store">%1$s ist offenbar keine WooCommerce-Website. Installiere das WooCommerce-Plugin auf deiner Website und %2$s</string>
     <string name="orderdetail_empty_shipping_address">Keine Adresse angegeben.</string>
@@ -396,15 +431,24 @@ Language: de
     <string name="country_mapping_AF">Afghanistan</string>
     <string name="country_mapping_AX">Åland</string>
     <string name="wc_review_title">Überprüfen</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Individueller Versanddienstleister</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Individuell</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Gib bitte den Namen des Versanddienstleisters ein</string>
     <string name="order_shipment_tracking_empty_tracking_num">Gib bitte eine Sendungsverfolgungsnummer ein</string>
+    <string name="order_shipment_tracking_empty_provider">Wähle bitte einen Versanddienstleister aus</string>
     <string name="order_shipment_tracking_confirm_discard">Bist du sicher, dass du diese Sendungsverfolgung verwerfen möchtest?</string>
     <string name="order_shipment_tracking_error">Sendungsverfolgung kann nicht hinzugefügt werden</string>
     <string name="order_shipment_tracking_added">Sendungsverfolgung hinzugefügt</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Fehler beim Abrufen der Versanddienstleister</string>
+    <string name="order_shipment_tracking_provider_list_item">Ausgewählter Versanddienstleister</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Versanddienstleister</string>
     <string name="order_shipment_tracking_date_label">Versanddatum</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">Sendungsverfolgungslink eingeben</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Name des Versanddienstleisters eingeben</string>
     <string name="order_shipment_tracking_number_hint">Sendungsverfolgungsnummer eingeben</string>
+    <string name="order_shipment_tracking_provider_hint">Versanddienstleister auswählen</string>
     <string name="order_shipment_tracking_custom_provider_url_label">Sendungsverfolgungslink (optional)</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Name des Versanddienstleisters</string>
     <string name="order_shipment_tracking_number_label">Sendungsverfolgungsnummer</string>
     <string name="order_shipment_tracking_carrier_label">Versanddienstleister</string>
     <string name="order_shipment_tracking_toolbar_title">Verfolgung hinzufügen</string>

@@ -1,0 +1,2 @@
+3.5:
+Wenn du gerade erst angefangen hast und in der App noch keine Listeneinträge vorhanden sind (z. B. solange noch keine Bestellungen und Bewertungen eingegangen sind), wird eine freundliche Nachricht angezeigt, um dir bei deinem Einstieg zu helfen.
