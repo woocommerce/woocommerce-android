@@ -56,12 +56,14 @@ class MainBottomNavigationView @JvmOverloads constructor(
         navAdapter = NavAdapter()
         addTopDivider()
 
-        // create the badges
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.setVisible(false)
+        ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
         ordersBadge.maxCharacterCount = 3 // this includes the plus sign
+
         reviewsBadge = getOrCreateBadge(R.id.reviews)
         reviewsBadge.setVisible(false)
+        reviewsBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
 
         assignNavigationListeners(true)
 
