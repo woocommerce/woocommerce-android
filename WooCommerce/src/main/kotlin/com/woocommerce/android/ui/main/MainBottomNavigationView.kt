@@ -6,14 +6,11 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.SparseArray
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
@@ -22,11 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
-import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
-import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.WooAnimUtils.Duration
 import org.wordpress.android.util.DisplayUtils
 import kotlin.math.min
 
@@ -38,14 +31,11 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private lateinit var navAdapter: NavAdapter
     private lateinit var fragmentManager: FragmentManager
     private lateinit var listener: MainNavigationListener
-    private lateinit var reviewsBadgeView: View
-    private lateinit var ordersBadgeView: View
-    private lateinit var ordersBadgeTextView: TextView
+    private lateinit var ordersBadge: BadgeDrawable
+    private lateinit var reviewsBadge: BadgeDrawable
 
     companion object {
         private var previousNavPos: BottomNavigationPosition? = null
-        private const val ORDER_BADGE_MAX = 99
-        private const val ORDER_BADGE_MAX_LABEL = "$ORDER_BADGE_MAX+"
     }
 
     interface MainNavigationListener {
@@ -66,18 +56,12 @@ class MainBottomNavigationView @JvmOverloads constructor(
         navAdapter = NavAdapter()
         addTopDivider()
 
-        // set up the bottom bar and add the badge views
-        val menuView = getChildAt(0) as BottomNavigationMenuView
-        val inflater = LayoutInflater.from(context)
-
-        val ordersItemView = menuView.getChildAt(ORDERS.position) as BottomNavigationItemView
-        ordersBadgeView = inflater.inflate(R.layout.order_badge_view, menuView, false)
-        ordersBadgeTextView = ordersBadgeView.findViewById(R.id.textOrderCount)
-        ordersItemView.addView(ordersBadgeView)
-
-        val reviewsItemView = menuView.getChildAt(REVIEWS.position) as BottomNavigationItemView
-        reviewsBadgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
-        reviewsItemView.addView(reviewsBadgeView)
+        // create the badges
+        ordersBadge = getOrCreateBadge(R.id.orders)
+        ordersBadge.setVisible(false)
+        ordersBadge.maxCharacterCount = 3 // this includes the plus sign
+        reviewsBadge = getOrCreateBadge(R.id.reviews)
+        reviewsBadge.setVisible(false)
 
         assignNavigationListeners(true)
 
@@ -166,13 +150,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun showReviewsBadge(show: Boolean) {
-        with(reviewsBadgeView) {
-            if (show && visibility != View.VISIBLE) {
-                WooAnimUtils.fadeIn(this, Duration.MEDIUM)
-            } else if (!show && visibility == View.VISIBLE) {
-                WooAnimUtils.fadeOut(this, Duration.MEDIUM)
-            }
-        }
+        reviewsBadge.setVisible(show)
     }
 
     fun showOrderBadge(count: Int) {
@@ -181,26 +159,16 @@ class MainBottomNavigationView @JvmOverloads constructor(
             return
         }
 
-        val label = if (count > ORDER_BADGE_MAX) ORDER_BADGE_MAX_LABEL else count.toString()
-        ordersBadgeTextView.text = label
-        if (ordersBadgeView.visibility != View.VISIBLE) {
-            WooAnimUtils.fadeIn(ordersBadgeView, Duration.MEDIUM)
-        }
+        ordersBadge.number = count
+        ordersBadge.setVisible(true)
     }
 
-    /**
-     * If the order badge is showing, hide the TextView which shows the order count
-     */
     fun hideOrderBadgeCount() {
-        if (ordersBadgeView.visibility == View.VISIBLE) {
-            ordersBadgeTextView.text = null
-        }
+        ordersBadge.clearNumber()
     }
 
     fun hideOrderBadge() {
-        if (ordersBadgeView.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(ordersBadgeView, Duration.MEDIUM)
-        }
+        ordersBadge.setVisible(true)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
