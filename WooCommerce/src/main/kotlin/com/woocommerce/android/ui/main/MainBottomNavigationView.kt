@@ -170,7 +170,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun hideOrderBadge() {
-        ordersBadge.setVisible(true)
+        ordersBadge.setVisible(false)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
