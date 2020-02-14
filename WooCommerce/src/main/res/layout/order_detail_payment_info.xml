@@ -52,9 +52,9 @@
                 android:id="@+id/paymentInfo_discountSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
                 android:focusable="true"
                 android:orientation="horizontal"
-                android:layout_marginTop="@dimen/minor_50"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -71,9 +71,9 @@
                     style="@style/Woo.Card.Body"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginStart="@dimen/minor_00"
                     android:layout_marginEnd="@dimen/minor_00"
+                    android:layout_weight="1"
                     tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
 
                 <com.google.android.material.textview.MaterialTextView
@@ -89,9 +89,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
                 android:focusable="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="@dimen/minor_50">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_lblShipping"
@@ -113,9 +113,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
                 android:focusable="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="@dimen/minor_50">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_lblTaxes"
@@ -137,8 +137,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="true"
                 android:layout_marginTop="@dimen/major_100"
+                android:focusable="true"
                 android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
@@ -157,55 +157,54 @@
                     tools:text="$49.00"/>
             </LinearLayout>
 
-
-    <LinearLayout
-        android:id="@+id/paymentInfo_paidSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-            <!-- Divider -->
-            <View
-                android:id="@+id/paymentInfo_total-paid_divider"
-                style="@style/Woo.Divider"
-                android:layout_marginTop="@dimen/major_100"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/minor_00"/>
-
-            <!-- Paid by customer -->
             <LinearLayout
+                android:id="@+id/paymentInfo_paidSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                android:focusable="true"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+
+                <!-- Divider -->
+                <View
+                    android:id="@+id/paymentInfo_total-paid_divider"
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"/>
+
+                <!-- Paid by customer -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:focusable="true"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/paymentInfo_lblPaid"
+                        style="@style/Woo.Card.Body.Bold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/orderdetail_payment_paid_by_customer"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/paymentInfo_paid"
+                        style="@style/Woo.Card.Body.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="$45.00"/>
+                </LinearLayout>
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/paymentInfo_lblPaid"
-                    style="@style/Woo.Card.Body.Bold"
-                    android:layout_width="0dp"
+                    android:id="@+id/paymentInfo_paymentMsg"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/orderdetail_payment_paid_by_customer"/>
+                    android:layout_marginTop="@dimen/minor_50"
+                    android:layout_marginBottom="@dimen/major_100"
+                    tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/paymentInfo_paid"
-                    style="@style/Woo.Card.Body.Bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="$45.00"/>
             </LinearLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/paymentInfo_paymentMsg"
-                style="@style/Woo.Card.Body"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_50"
-                android:layout_marginBottom="@dimen/major_100"
-                tools:text="Payment of $49.00 received via credit card (PayPal)"/>
-
-        </LinearLayout>
 
             <!-- Refund and New Total Section -->
             <LinearLayout
@@ -231,6 +230,7 @@
                     android:id="@+id/paymentInfo_refundTotalSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/major_100"
                     android:orientation="vertical"
                     android:visibility="gone"
                     tools:visibility="visible">
@@ -244,8 +244,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:focusable="true"
                         android:layout_marginTop="@dimen/major_100"
+                        android:focusable="true"
                         android:orientation="horizontal">
 
                         <com.google.android.material.textview.MaterialTextView
@@ -263,16 +263,15 @@
                             android:layout_height="wrap_content"
                             tools:text="-$15.00"/>
                     </LinearLayout>
-
-                    <!-- Divider -->
-                    <View
-                        style="@style/Woo.Divider"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="@dimen/major_100"
-                        android:layout_marginStart="@dimen/major_100"
-                        android:layout_marginEnd="@dimen/minor_00"/>
                 </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"/>
 
                 <!-- Net (after refund deducted) -->
                 <LinearLayout
@@ -286,9 +285,9 @@
                         style="@style/Woo.Card.Body.Bold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginTop="@dimen/major_100"
                         android:layout_marginBottom="@dimen/major_100"
+                        android:layout_weight="1"
                         android:text="@string/orderdetail_net"/>
 
                     <com.google.android.material.textview.MaterialTextView
@@ -314,8 +313,8 @@
             <!-- Divider -->
             <View
                 style="@style/Woo.Divider"
-                android:layout_marginTop="@dimen/minor_00"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_00"
                 android:layout_marginEnd="@dimen/minor_00"/>
 
             <!-- Refund button -->
@@ -324,8 +323,8 @@
                 style="@style/Woo.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/minor_50"
                 android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="@dimen/minor_50"
                 android:text="@string/orderdetail_issue_refund_button"/>
 
         </LinearLayout>
