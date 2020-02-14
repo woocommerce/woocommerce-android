@@ -521,19 +521,19 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
-            bottomNavView.hideOrderBadgeCount()
+            bottomNavView.clearOrderBadgeCount()
         }
         presenter.fetchUnfilledOrderCount()
     }
 
     override fun showOrderBadge(count: Int) {
         unfilledOrderCount = count
-        bottomNavView.showOrderBadge(count)
+        bottomNavView.setOrderBadgeCount(count)
     }
 
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
-        bottomNavView.hideOrderBadge()
+        bottomNavView.setOrderBadgeCount(0)
     }
 
     override fun fetchRevenueStatsAvailability(site: SiteModel) {
