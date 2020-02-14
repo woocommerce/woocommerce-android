@@ -155,22 +155,17 @@ class MainBottomNavigationView @JvmOverloads constructor(
         reviewsBadge.setVisible(show)
     }
 
-    fun showOrderBadge(count: Int) {
-        if (count <= 0) {
-            hideOrderBadge()
-            return
+    fun setOrderBadgeCount(count: Int) {
+        if (count > 0) {
+            ordersBadge.number = count
+            ordersBadge.setVisible(true)
+        } else {
+            ordersBadge.setVisible(false)
         }
-
-        ordersBadge.number = count
-        ordersBadge.setVisible(true)
     }
 
-    fun hideOrderBadgeCount() {
+    fun clearOrderBadgeCount() {
         ordersBadge.clearNumber()
-    }
-
-    fun hideOrderBadge() {
-        ordersBadge.setVisible(false)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
