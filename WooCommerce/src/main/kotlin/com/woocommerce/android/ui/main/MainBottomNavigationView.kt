@@ -57,12 +57,12 @@ class MainBottomNavigationView @JvmOverloads constructor(
         addTopDivider()
 
         ordersBadge = getOrCreateBadge(R.id.orders)
-        ordersBadge.setVisible(false)
+        ordersBadge.isVisible = false
         ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
         ordersBadge.maxCharacterCount = 3 // this includes the plus sign
 
         reviewsBadge = getOrCreateBadge(R.id.reviews)
-        reviewsBadge.setVisible(false)
+        reviewsBadge.isVisible = false
         reviewsBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
 
         assignNavigationListeners(true)
@@ -152,15 +152,15 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun showReviewsBadge(show: Boolean) {
-        reviewsBadge.setVisible(show)
+        reviewsBadge.isVisible = show
     }
 
     fun setOrderBadgeCount(count: Int) {
         if (count > 0) {
             ordersBadge.number = count
-            ordersBadge.setVisible(true)
+            ordersBadge.isVisible = true
         } else {
-            ordersBadge.setVisible(false)
+            ordersBadge.isVisible = false
         }
     }
 
