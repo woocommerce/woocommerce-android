@@ -138,27 +138,34 @@ class ProductListViewModel @AssistedInject constructor(
                 delay(SEARCH_TYPING_DELAY_MS)
                 viewState = viewState.copy(
                         isLoadingMore = loadMore,
-                        isSkeletonShown = !loadMore
+                        isSkeletonShown = !loadMore,
+                        isEmptyViewVisible = false
                 )
-                fetchProductList(viewState.query, loadMore)
+                fetchProductList(viewState.query, loadMore = loadMore)
             }
         } else {
             // if a fetch is already active, wait for it to finish before we start another one
             waitForExistingLoad()
 
             loadJob = launch {
-                viewState = viewState.copy(isLoadingMore = loadMore)
-                if (!loadMore) {
-                    // if this is the initial load, first get the products from the db and if there are any show
-                    // them immediately, otherwise make sure the skeleton shows
+                val showSkeleton: Boolean
+                if (loadMore) {
+                    showSkeleton = false
+                } else {
+                    // if this is the initial load, first get the products from the db and show them immediately
                     val productsInDb = productRepository.getProductList()
                     if (productsInDb.isEmpty()) {
-                        viewState = viewState.copy(isSkeletonShown = true)
+                        showSkeleton = true
                     } else {
                         _productList.value = productsInDb
+                        showSkeleton = viewState.isRefreshing == true
                     }
                 }
-
+                viewState = viewState.copy(
+                        isSkeletonShown = showSkeleton,
+                        isEmptyViewVisible = false,
+                        isLoadingMore = loadMore
+                )
                 fetchProductList(loadMore = loadMore)
             }
         }
@@ -186,10 +193,6 @@ class ProductListViewModel @AssistedInject constructor(
 
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            viewState = viewState.copy(
-                    isEmptyViewVisible = false,
-                    isSkeletonShown = true
-            )
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
             } else {

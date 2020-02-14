@@ -43,21 +43,23 @@ object ChromeCustomTabUtils {
             return false
         }
 
-        connection = object : CustomTabsServiceConnection() {
+        val thisConnection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
                 client.warmup(0)
                 session = client.newSession(null)
 
-                val uriToPreload: Uri? = preloadUrl?.let { Uri.parse(it) }
+                val otherLikelyBundles = ArrayList<Bundle>()
                 otherLikelyUrls?.let { urlList ->
-                    val otherLikelyBundles = ArrayList<Bundle>()
                     for (url in urlList) {
                         val bundle = Bundle()
                         bundle.putParcelable(KEY_URL, Uri.parse(url))
                         otherLikelyBundles.add(bundle)
                     }
-                    session?.mayLaunchUrl(uriToPreload, null, otherLikelyBundles)
-                } ?: session?.mayLaunchUrl(uriToPreload, null, null)
+                }
+
+                preloadUrl?.let {
+                    session?.mayLaunchUrl(Uri.parse(it), null, otherLikelyBundles)
+                }
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
@@ -65,7 +67,9 @@ object ChromeCustomTabUtils {
                 connection = null
             }
         }
-        CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, connection)
+        CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, thisConnection)
+        connection = thisConnection
+
         return true
     }
 

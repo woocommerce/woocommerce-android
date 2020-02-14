@@ -157,6 +157,13 @@
                     tools:text="$49.00"/>
             </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/paymentInfo_paidSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
             <!-- Divider -->
             <View
                 android:id="@+id/paymentInfo_total-paid_divider"
@@ -167,7 +174,6 @@
 
             <!-- Paid by customer -->
             <LinearLayout
-                android:id="@+id/paymentInfo_paidSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
@@ -198,6 +204,8 @@
                 android:layout_marginTop="@dimen/minor_50"
                 android:layout_marginBottom="@dimen/major_100"
                 tools:text="Payment of $49.00 received via credit card (PayPal)"/>
+
+        </LinearLayout>
 
             <!-- Refund and New Total Section -->
             <LinearLayout
@@ -301,7 +309,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
             tools:visibility="visible">
 
             <!-- Divider -->

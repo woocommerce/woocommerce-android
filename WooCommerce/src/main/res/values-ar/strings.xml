@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-24 00:54:04+0000
+Translation-Revision-Date: 2020-01-28 16:01:02+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -30,6 +30,28 @@ Language: ar
     <string name="order_refunds_items_select_none">عدم اختيار أي شيء</string>
     <string name="order_refunds_items_select_all">اختيار الكل</string>
     <string name="order_refunds_amount_refund_confirmation_message">جارٍ الانتظار لتأكيد استرداد الأموال…</string>
+    <string name="settings_image_optimization_message">تغيير حجم الصور وضغطها لرفعها بشكل أسرع</string>
+    <string name="settings_image_optimization_title">تحسين الصور</string>
+    <string name="image_source_device_camera">التقاط صورة</string>
+    <string name="image_source_device_chooser">الاختيار من جهاز</string>
+    <string name="image_source_title">اختيار طريقة الرفع</string>
+    <string name="product_images_upload_channel_title">عمليات الرفع</string>
+    <string name="product_images_uploading_multi_notif_message">جارٍ رفع الصور…%d من أصل %d</string>
+    <string name="product_images_uploading_single_notif_message">جارٍ رفع الصورة…</string>
+    <string name="product_images_camera_error">يتعذر الوصول إلى الكاميرا</string>
+    <string name="product_image_remove_confirmation">هل تريد بالتأكيد إزالة هذه الصورة؟</string>
+    <string name="product_image_capture_failed">فشل التقاط الصورة</string>
+    <string name="product_image_service_busy">يرجى الانتظار حتى تكتمل العملية الحالية</string>
+    <string name="product_image_service_error_uploading">حدث خطأ في أثناء رفع صورة المنتج</string>
+    <string name="product_image_error_removing">حدث خطأ في أثناء إزالة صورة المنتج</string>
+    <string name="product_image_add">إضافة صورة منتج</string>
+    <string name="product_remove_photo">إزالة صورة</string>
+    <string name="product_add_photos">إضافة صور</string>
+    <string name="product_images_title">الصور</string>
+    <string name="product_add_image_content_description">إضافة صورة</string>
+    <string name="date_timeframe_future">القادم</string>
+    <string name="remove">إزالة</string>
+    <string name="product_variant_hidden">مخفي</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
@@ -104,7 +126,7 @@ Language: ar
     <string name="order_refunds_available_for_refund">%s متوافر للاسترداد</string>
     <string name="orderdetail_issue_refund_button">نشر مبلغ الاسترداد</string>
     <string name="orderdetail_refund_view_details">عرض التفاصيل</string>
-    <string name="orderdetail_refund_detail">%1$s بواسطة %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">تجربة الإحصاءات الجديدة المتاحة مع\nإضافة مسؤول WooCommerce</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>

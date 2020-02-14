@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers.Unconfined
+import kotlinx.coroutines.delay
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -539,6 +540,8 @@ class OrderDetailPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(1).apply {
             causeOfChange = FETCH_SINGLE_ORDER
         })
+
+        delay(200)
 
         // verify skeleton view is no longer displayed
         verify(orderDetailView, times(1)).showSkeleton(false)

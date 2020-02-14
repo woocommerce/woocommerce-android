@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -12,10 +13,15 @@
         style="@style/Woo.Divider"
         android:layout_marginTop="@dimen/minor_00"
         android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/minor_00"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_marginEnd="@dimen/minor_00"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/refundsList_itemRoot"
+        android:background="?attr/selectableItemBackground"
+        android:paddingTop="@dimen/card_item_padding_intra_double"
+        android:paddingBottom="@dimen/card_item_padding_intra_double"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/refundsList_lblRefund"
@@ -26,10 +32,10 @@
         android:layout_marginTop="@dimen/major_100"
         android:text="@string/orderdetail_refunded"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/refundsList_refundDivider" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/refundsList_refundAmount"
+            android:id="@+id/refundsList_refundAmount"
         style="@style/Woo.Card.Body.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,4 +55,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="Jan 28 via Stripe - View Details" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
