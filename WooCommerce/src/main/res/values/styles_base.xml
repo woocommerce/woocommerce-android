@@ -134,8 +134,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Card.Body" parent="@style/Woo.TextView.Body2"/>
 
+    <style name="Woo.Card.Body.High" parent="@style/Woo.TextView.Body2">
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
     <style name="Woo.Card.Body.Bold">
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
     </style>
 
     <style name="Woo.Card.StatusMessage" parent="@style/Woo.TextView.Subtitle1"/>

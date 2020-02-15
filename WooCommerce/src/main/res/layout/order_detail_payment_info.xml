@@ -27,7 +27,7 @@
             <View
                 style="@style/Woo.Divider"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_100"/>
+                android:layout_marginBottom="@dimen/major_75"/>
 
             <!-- Subtotal -->
             <LinearLayout
@@ -38,7 +38,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_lblProductsTotal"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -46,7 +46,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_productsTotal"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="$45.00"/>
@@ -65,7 +65,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_lblDiscount"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/minor_100"
@@ -73,7 +73,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_discountItems"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/minor_00"
@@ -83,7 +83,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_discountTotal"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/minor_100"
@@ -100,7 +100,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_lblShipping"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -108,7 +108,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_shippingTotal"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="$7.00"/>
@@ -124,7 +124,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_lblTaxes"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -132,7 +132,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_taxesTotal"
-                    style="@style/Woo.Card.Body"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="$1.00"/>
@@ -142,7 +142,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
                 android:focusable="true"
                 android:orientation="horizontal">
 
@@ -173,14 +173,14 @@
                     android:id="@+id/paymentInfo_total-paid_divider"
                     style="@style/Woo.Divider"
                     android:layout_marginStart="@dimen/major_100"
-                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
                     android:layout_marginEnd="@dimen/minor_00"/>
 
                 <!-- Paid by customer -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
                     android:focusable="true"
                     android:orientation="horizontal">
 
@@ -206,7 +206,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_50"
-                    android:layout_marginBottom="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_75"
                     tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 
             </LinearLayout>
@@ -235,7 +235,7 @@
                     android:id="@+id/paymentInfo_refundTotalSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_75"
                     android:orientation="vertical"
                     android:visibility="gone"
                     tools:visibility="visible">
@@ -249,7 +249,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/major_100"
+                        android:layout_marginTop="@dimen/major_75"
                         android:focusable="true"
                         android:orientation="horizontal">
 
@@ -290,8 +290,8 @@
                         style="@style/Woo.Card.Body.Bold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/major_100"
-                        android:layout_marginBottom="@dimen/major_100"
+                        android:layout_marginTop="@dimen/major_75"
+                        android:layout_marginBottom="@dimen/major_75"
                         android:layout_weight="1"
                         android:text="@string/orderdetail_net"/>
 
@@ -300,8 +300,8 @@
                         style="@style/Woo.Card.Body.Bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/major_100"
-                        android:layout_marginBottom="@dimen/major_100"
+                        android:layout_marginTop="@dimen/major_75"
+                        android:layout_marginBottom="@dimen/major_75"
                         tools:text="$34.00"/>
                 </LinearLayout>
             </LinearLayout>
