@@ -58,6 +58,10 @@
         <attr name="spinnerHint" format="string"/>
     </declare-styleable>
 
+    <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
+        <attr name="currencyHint" format="string"/>
+    </declare-styleable>
+
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
         <attr name="aevButton" format="string"/>
