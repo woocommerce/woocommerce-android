@@ -23,6 +23,7 @@ import androidx.paging.PagedList
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -65,8 +66,6 @@ class OrderListFragment : TopLevelFragment(),
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
         private const val TAB_INDEX_ALL = 1
-
-        private const val URL_LEARN_MORE = "https://woocommerce.com/blog/"
 
         fun newInstance(orderStatus: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -192,6 +191,7 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onResume() {
         super.onResume()
+        addTabLayoutToAppBar(tabLayout)
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -217,7 +217,6 @@ class OrderListFragment : TopLevelFragment(),
                         tab.select()
                     }
                 }
-        addTabLayoutToAppBar(tabLayout)
 
         listState?.let {
             order_list_view.onFragmentRestoreInstanceState(it)
@@ -285,16 +284,12 @@ class OrderListFragment : TopLevelFragment(),
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        if (!hidden) {
-            // silently refresh if this fragment is no longer hidden
-            val isChildFragmentShowing = isChildFragmentShowing()
-            if (!isChildFragmentShowing) {
-                showOptionsMenu(true)
-                addTabLayoutToAppBar(tabLayout)
+        if (isActive) {
+            showOptionsMenu(true)
+            addTabLayoutToAppBar(tabLayout)
 
-                if (isSearching) {
-                    clearSearchResults()
-                }
+            if (isSearching) {
+                clearSearchResults()
             }
         } else {
             removeTabLayoutFromAppBar(tabLayout)
@@ -425,7 +420,7 @@ class OrderListFragment : TopLevelFragment(),
                     }
                     EmptyViewType.ORDER_LIST -> {
                         empty_view.show(emptyViewType) {
-                            ChromeCustomTabUtils.launchUrl(requireActivity(), URL_LEARN_MORE)
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
                     }
                     EmptyViewType.ORDER_LIST_FILTERED -> {
@@ -770,7 +765,7 @@ class OrderListFragment : TopLevelFragment(),
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (!isHidden && !appBar.children.contains(tabLayout)) {
+            if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(tabLayout)
             }
         }

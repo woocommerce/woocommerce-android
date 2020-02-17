@@ -124,7 +124,24 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAlignment">viewStart</item>
     </style>
 
+    <style name="Woo.Card.Header" parent="@style/Woo.TextView.Subtitle2">
+        <item name="android:layout_marginTop">@dimen/major_100</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:textColor">@color/color_on_surface_disabled</item>
+    </style>
+
     <style name="Woo.Card.Body" parent="@style/Woo.TextView.Body2"/>
+
+    <style name="Woo.Card.Body.High" parent="@style/Woo.TextView.Body2">
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
+    <style name="Woo.Card.Body.Bold">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
 
     <style name="Woo.Card.StatusMessage" parent="@style/Woo.TextView.Subtitle1"/>
 
