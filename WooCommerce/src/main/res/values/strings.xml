@@ -412,9 +412,16 @@
     <string name="product_price_empty">Add price</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
+    <string name="product_schedule_sale_label">Schedule sale</string>
+    <string name="product_schedule_sale_sublabel">Automatically start and end a sale</string>
+    <string name="product_schedule_sale_from_label">From</string>
+    <string name="product_schedule_sale_to_label">To</string>
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
     <string name="product_sale_date_from">from %1$s</string>
+    <string name="product_tax_settings">Tax settings</string>
+    <string name="product_tax_status">Tax status</string>
+    <string name="product_tax_class">Tax class</string>
     <string name="product_sku">SKU</string>
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>

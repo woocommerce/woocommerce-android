@@ -51,6 +51,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
+        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
 
@@ -65,6 +66,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
 
+    final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
+    private var productPricingViewState by productPricingViewStateData
+
     init {
         EventBus.getDefault().register(this)
     }
@@ -74,6 +78,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
         checkUploads()
+    }
+
+    fun initialisePricing() {
+        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+                ?: DEFAULT_DECIMAL_PRECISION
+        productPricingViewState = productPricingViewState.copy(
+                currency = parameters?.currencyCode,
+                decimals = decimals
+        )
     }
 
     fun onShareButtonClicked() {
@@ -406,6 +419,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductInventoryViewState(
         val skuErrorMessage: Int? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductPricingViewState(
+        val currency: String? = null,
+        val decimals: Int = DEFAULT_DECIMAL_PRECISION
     ) : Parcelable
 
     @AssistedInject.Factory
