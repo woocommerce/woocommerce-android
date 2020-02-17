@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -22,6 +23,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var productTaxStatusSelectorDialog: ProductInventorySelectorDialog? = null
+    private var productTaxClassSelectorDialog: ProductInventorySelectorDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,6 +38,9 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         super.onPause()
         productTaxStatusSelectorDialog?.dismiss()
         productTaxStatusSelectorDialog = null
+
+        productTaxClassSelectorDialog?.dismiss()
+        productTaxClassSelectorDialog = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,6 +52,9 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         viewModel.productPricingViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 updateProductView(new.currency, new.decimals, viewModel.getProduct())
+            }
+            new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
+                updateProductTaxClassList(it)
             }
         }
 
@@ -105,9 +113,18 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
         }
 
-        // TODO: need to fetch the tax class list for a site and update UI. This will take place in a subsequent PR
-        with(product_tax_class) {
-            setText(product.taxClass)
+        product_tax_class.setText(product.taxClass)
+    }
+
+    private fun updateProductTaxClassList(taxClassList: List<TaxClass>?) {
+        taxClassList?.let { taxClasses ->
+            product_tax_class.setClickListener {
+                productTaxClassSelectorDialog = ProductInventorySelectorDialog.newInstance(
+                        this@ProductPricingFragment, RequestCodes.PRODUCT_TAX_CLASS,
+                        getString(R.string.product_tax_class), taxClasses.map { it.slug to it.name }.toMap(),
+                        product_tax_class.getText()
+                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+            }
         }
     }
 
@@ -124,6 +141,13 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             RequestCodes.PRODUCT_TAX_STATUS -> {
                 selectedItem?.let {
                     product_tax_status.setText(getString(ProductTaxStatus.toStringResource(it)))
+                }
+            }
+            RequestCodes.PRODUCT_TAX_CLASS -> {
+                selectedItem?.let { selectedTaxClass ->
+                    // Fetch the display name of the selected tax class slug
+                    val selectedProductTaxClass = viewModel.getSelectedTaxClass(selectedTaxClass)
+                    selectedProductTaxClass?.let { product_tax_class.setText(it.name) }
                 }
             }
         }

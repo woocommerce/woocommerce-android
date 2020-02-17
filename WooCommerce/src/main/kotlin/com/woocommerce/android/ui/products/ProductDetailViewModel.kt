@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -14,6 +13,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
@@ -28,6 +28,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
@@ -75,6 +76,10 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProduct() = viewState
 
+    fun getSelectedTaxClass(slug: String): TaxClass? {
+        return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
+    }
+
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
         checkUploads()
@@ -85,7 +90,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 ?: DEFAULT_DECIMAL_PRECISION
         productPricingViewState = productPricingViewState.copy(
                 currency = parameters?.currencyCode,
-                decimals = decimals
+                decimals = decimals,
+                taxClassList = productRepository.getTaxClassesForSite()
         )
     }
 
@@ -232,6 +238,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private fun loadProduct(remoteProductId: Long) {
         loadParameters()
+
+        // Pre-load tax class list for a site. This is used in the product pricing screen
+        launch(dispatchers.main) {
+            productRepository.loadTaxClassesForSite()
+        }
 
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
@@ -424,7 +435,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductPricingViewState(
         val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION
+        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
+        val taxClassList: List<TaxClass>? = null
     ) : Parcelable
 
     @AssistedInject.Factory
