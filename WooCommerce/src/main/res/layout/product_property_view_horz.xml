@@ -7,62 +7,50 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textPropertyName"
+        style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
-        android:textColor="@color/wc_grey_dark"
-        android:textSize="@dimen/text_large"
+        android:layout_margin="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="textCaption"/>
 
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textPropertyValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        style="@style/Woo.ListItem.Title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ratingBar"
+        app:layout_constraintTop_toTopOf="parent"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="textDetail"/>
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        style="@style/Woo.RatingsBar.Small.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/major_100"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="0"
+        android:stepSize="1"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/textPropertyValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:layout_gravity="start"
-            android:textAlignment="viewStart"
-            android:textColor="@color/wc_grey_medium"
-            android:textSize="@dimen/text_medium"
-            tools:text="textDetail"/>
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="@style/Woo.RatingsBar.Small.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/minor_100"
-            android:isIndicator="true"
-            android:visibility="gone"
-            android:numStars="5"
-            android:stepSize="1"
-            android:rating="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/review_gravatar"
-            tools:rating="4"
-            tools:visibility="visible" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:rating="4"
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
-        android:layout_marginTop="@dimen/product_detail_property_margin"
+        android:layout_marginTop="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
