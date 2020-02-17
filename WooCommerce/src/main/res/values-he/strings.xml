@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-16 00:54:04+0000
+Translation-Revision-Date: 2020-01-29 00:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_detail_editable_text_hint">להזין טקסט</string>
+    <string name="product_detail_title_hint">להזין כותרת</string>
+    <string name="product_detail_update_product_success">המוצר עודכן</string>
+    <string name="product_detail_update_product_error">שגיאה בעדכון המוצר</string>
+    <string name="product_update_dialog_message">נא להמתין…</string>
+    <string name="product_update_dialog_title">מעדכן את המוצר</string>
+    <string name="product_description_empty">יש לתאר את המוצר שלך</string>
+    <string name="product_description">תיאור</string>
+    <string name="product_edit_description">לערוך את התיאור</string>
+    <string name="product_description_hint">להתחיל לכתוב…</string>
+    <string name="product_variant_list_empty">להוסיף אפשרות כגון גודל וצבע מהאינטרנט. האפשרויות האלו יוצגו כאפשרויות בעמוד המוצר של האתר שלך</string>
+    <string name="discard_message">האם למחוק את השינויים שביצעת?</string>
+    <string name="update">לעדכן</string>
     <string name="done">בוצע</string>
     <string name="order_refunds_refund_in_progress">ההחזר הכספי נמצא בתהליך, יש להמתין…</string>
     <string name="order_refunds_refund_shipping">לבצע החזר כספי על דמי המשלוח</string>
@@ -36,7 +49,6 @@ Language: he_IL
     <string name="product_add_photos">להוסיף תמונות</string>
     <string name="product_images_title">תמונות</string>
     <string name="product_add_image_content_description">להוסיף תמונה</string>
-    <string name="orderlist_fetching">מביא הזמנות…</string>
     <string name="date_timeframe_future">אירועים קרובים</string>
     <string name="remove">הסרה</string>
     <string name="product_variant_hidden">מוסתר</string>
@@ -114,7 +126,7 @@ Language: he_IL
     <string name="order_refunds_available_for_refund">סכום של %s זמין להחזר כספי</string>
     <string name="orderdetail_issue_refund_button">נמצאה בעיה</string>
     <string name="orderdetail_refund_view_details">להציג פרטים</string>
-    <string name="orderdetail_refund_detail">%1$s באמצעות %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">נסה את הנתונים הסטטיסטיים שזמינים\nבתוסף הניהול החדש של WooCommerce</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
     <string name="beta_features">תכונות ביתא</string>
@@ -133,11 +145,13 @@ Language: he_IL
     <string name="dashboard_stats_todays_stats">הנתונים הסטטיסטיים של היום</string>
     <string name="login_sign_in">התחברות</string>
     <string name="login_jetpack_installed_sign_in">כבר יש לך חשבון ב-Jetpack? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">מנסה להתחבר אל Jetpack…</string>
     <string name="login_refresh_app_continue">יש לרענן את האפליקציה כדי להמשיך</string>
     <string name="login_not_connected_jetpack">כדי להשתמש באפליקציה להפעלה של %1$s עליך להגדיר את התוסף של Jetpack ולהתחבר לחשבון. \n\nלאחר שההגדרה בוצעה, %2$s</string>
     <string name="login_try_another_store">יש לנסות חנות אחרת</string>
     <string name="database_downgraded">בסיס הנתונים עודכן לגרסה פחות מתקדמת, אנחנו יוצרים את הטבלאות מחדש וטוענים את החנויות</string>
     <string name="loading_stores">מעדכן את החנויות</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">לא נמצאו ספקים</string>
     <string name="login_invalid_site_url">יש להזין את כתובת האתר המלאה, לדוגמה example.com.</string>
     <string name="reviews_empty_message">עוד אין ביקורות!</string>
     <string name="review_notifications">ביקורות</string>
@@ -148,6 +162,7 @@ Language: he_IL
     <string name="settings_hiring">אנחנו מחפשים עובדים!</string>
     <string name="feature_requests">בקשת תכונה</string>
     <string name="orderdetail_copy_tracking_number">להעתקת מספר המעקב</string>
+    <string name="login_refresh_app_progress">מנסה לאתר את WooCommerce…</string>
     <string name="login_refresh_app">יש לרענן את האפליקציה</string>
     <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן %2$s</string>
     <string name="orderdetail_empty_shipping_address">לא צוינה כתובת.</string>
@@ -396,15 +411,24 @@ Language: he_IL
     <string name="country_mapping_AF">אפגניסטן</string>
     <string name="country_mapping_AX">איי אולנד</string>
     <string name="wc_review_title">ביקורת</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">ספק מותאם</string>
     <string name="order_shipment_tracking_custom_provider_section_title">התאמה אישית</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">יש להזין את שם הספק</string>
     <string name="order_shipment_tracking_empty_tracking_num">יש להזין את מספר המעקב</string>
+    <string name="order_shipment_tracking_empty_provider">יש לבחור ספק</string>
     <string name="order_shipment_tracking_confirm_discard">האם ברצונך לבטל את המעקב הזה?</string>
     <string name="order_shipment_tracking_error">אין אפשרות להוסיף מעקב</string>
     <string name="order_shipment_tracking_added">מעקב המשלוח נוסף</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">שגיאה בהבאת הספקים</string>
+    <string name="order_shipment_tracking_provider_list_item">יש לבחור את הספק למשלוח</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">ספקי משלוח</string>
     <string name="order_shipment_tracking_date_label">תאריך משלוח</string>
     <string name="order_shipment_tracking_custom_provider_url_hint">יש להזין קישור מעקב</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">יש להזין את שם הספק</string>
     <string name="order_shipment_tracking_number_hint">יש להזין מספר מעקב</string>
+    <string name="order_shipment_tracking_provider_hint">יש לבחור ספק</string>
     <string name="order_shipment_tracking_custom_provider_url_label">קישור מעקב (אופציונלי)</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">שם הספק</string>
     <string name="order_shipment_tracking_number_label">מספר מעקב</string>
     <string name="order_shipment_tracking_carrier_label">חברת שילוח</string>
     <string name="order_shipment_tracking_toolbar_title">הוספת מעקב</string>

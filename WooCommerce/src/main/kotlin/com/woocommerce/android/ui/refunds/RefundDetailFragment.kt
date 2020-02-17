@@ -15,6 +15,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.refund_by_items_products.*
@@ -71,7 +72,10 @@ class RefundDetailFragment : BaseFragment() {
                 issueRefund_products.adapter = RefundProductListAdapter(
                         currencyFormatter.buildBigDecimalFormatter(new.currency),
                         imageMap,
-                        true
+                        isProductDetailList = true,
+                        onItemClicked = { uniqueId ->
+                            (activity as? MainNavigationRouter)?.showProductDetail(uniqueId)
+                        }
                 )
             }
             new.areItemsVisible?.takeIfNotEqualTo(old?.areItemsVisible) { isVisible ->
@@ -79,6 +83,17 @@ class RefundDetailFragment : BaseFragment() {
                     refundDetail_refundItems.show()
                 } else {
                     refundDetail_refundItems.hide()
+                }
+            }
+            new.areDetailsVisible?.takeIfNotEqualTo(old?.areDetailsVisible) { isVisible ->
+                if (isVisible) {
+                    refundDetail_detailsCard.show()
+                    refundDetail_reasonCard.show()
+                    issueRefund_totalsGroup.show()
+                } else {
+                    refundDetail_detailsCard.hide()
+                    refundDetail_reasonCard.hide()
+                    issueRefund_totalsGroup.hide()
                 }
             }
 

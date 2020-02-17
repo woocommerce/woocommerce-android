@@ -37,6 +37,7 @@
         android:id="@+id/currencyAmount_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/dialog_content_text_color"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
