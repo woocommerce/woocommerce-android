@@ -5,19 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.fragment_product_pricing.*
 import java.util.Date
 import javax.inject.Inject
 
-class ProductPricingFragment : BaseProductFragment() {
+class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDialogListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+
+    private var productTaxStatusSelectorDialog: ProductInventorySelectorDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,6 +30,12 @@ class ProductPricingFragment : BaseProductFragment() {
     ): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_pricing, container, false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        productTaxStatusSelectorDialog?.dismiss()
+        productTaxStatusSelectorDialog = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,14 +94,20 @@ class ProductPricingFragment : BaseProductFragment() {
             setText(dateOnSaleTo.formatToMMMddYYYY())
         }
 
-        // TODO: update with correct product info in the next commit
         with(product_tax_status) {
-            setText("Taxable")
+            setText(ProductTaxStatus.taxStatusToDisplayString(requireContext(), product.taxStatus))
+            setClickListener {
+                productTaxStatusSelectorDialog = ProductInventorySelectorDialog.newInstance(
+                        this@ProductPricingFragment, RequestCodes.PRODUCT_TAX_STATUS,
+                        getString(R.string.product_tax_status), ProductTaxStatus.toMap(requireContext()),
+                        getText()
+                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+            }
         }
 
-        // TODO: update with correct product info in the next commit
+        // TODO: need to fetch the tax class list for a site and update UI. This will take place in a subsequent PR
         with(product_tax_class) {
-            setText("Standard")
+            setText(product.taxClass)
         }
     }
 
@@ -100,6 +116,16 @@ class ProductPricingFragment : BaseProductFragment() {
             scheduleSale_morePanel.expand()
         } else {
             scheduleSale_morePanel.collapse()
+        }
+    }
+
+    override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {
+        when (resultCode) {
+            RequestCodes.PRODUCT_TAX_STATUS -> {
+                selectedItem?.let {
+                    product_tax_status.setText(getString(ProductTaxStatus.toStringResource(it)))
+                }
+            }
         }
     }
 

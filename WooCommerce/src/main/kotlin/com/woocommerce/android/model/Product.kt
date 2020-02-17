@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -53,7 +54,8 @@ data class Product(
     val attributes: List<Attribute>,
     val dateOnSaleToGmt: Date?,
     val dateOnSaleFromGmt: Date?,
-    val soldIndividually: Boolean
+    val soldIndividually: Boolean,
+    val taxStatus: ProductTaxStatus
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -180,7 +182,8 @@ fun WCProductModel.toAppModel(): Product {
         },
         this.dateOnSaleToGmt.formatDateToISO8601Format(),
         this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        this.soldIndividually
+        this.soldIndividually,
+        ProductTaxStatus.fromString(this.taxStatus)
     )
 }
 

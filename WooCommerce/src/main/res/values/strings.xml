@@ -422,6 +422,9 @@
     <string name="product_tax_settings">Tax settings</string>
     <string name="product_tax_status">Tax status</string>
     <string name="product_tax_class">Tax class</string>
+    <string name="product_tax_status_none">None</string>
+    <string name="product_tax_status_taxable">Taxable</string>
+    <string name="product_tax_status_shipping">Shipping</string>
     <string name="product_sku">SKU</string>
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
