@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.text.format.DateFormat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.model.TimeGroup
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
@@ -344,5 +345,19 @@ object DateUtils {
         calendar.setTime(dateGmt)
         calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + secondsOffset)
         return calendar.time
+    }
+
+    /**
+     * Method to convert month string from yyyy-MM-dd format to dd
+     * i.e. 2019-08-08 is formatted to 8
+     */
+    @Throws(IllegalArgumentException::class)
+    fun formatToYYYYmmDD(year: Int, month: Int, day: Int): String {
+        return try {
+            val date = GregorianCalendar(year, month, day).time
+            date.formatToMMMddYYYY()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+        }
     }
 }

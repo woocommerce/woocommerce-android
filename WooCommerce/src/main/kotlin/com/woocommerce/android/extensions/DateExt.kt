@@ -7,6 +7,8 @@ import java.util.Locale
 
 fun Date.formatToYYYYmm(): String = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(this)
 
+fun Date.formatToYYYYmmDD(): String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(this)
+
 fun Date.formatToYYYY(): String = SimpleDateFormat("yyyy", Locale.getDefault()).format(this)
 
 fun Date.formatToYYYYWmm(): String = SimpleDateFormat("yyyy-'W'ww", Locale.getDefault()).format(this)
