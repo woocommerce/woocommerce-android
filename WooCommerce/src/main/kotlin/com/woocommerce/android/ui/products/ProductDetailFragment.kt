@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -340,11 +341,16 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 pricingGroup[getString(R.string.product_sale_price)] = requireNotNull(productData.salePriceWithCurrency)
             }
 
-            // display product sale dates, if available
-            var dateOnSaleFrom = product.dateOnSaleFrom
-            val dateOnSaleTo = product.dateOnSaleTo
+            // display product sale dates using the site's timezone, if available
+            val gmtOffset = productData.gmtOffset
+            var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
+                DateUtils.offsetGmtDate(it, gmtOffset)
+            }
+            val dateOnSaleTo = product.dateOnSaleToGmt?.let {
+                DateUtils.offsetGmtDate(it, gmtOffset)
+            }
             if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                dateOnSaleFrom = Date()
+                dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), gmtOffset)
             }
             val saleDates = when {
                 (dateOnSaleFrom != null && dateOnSaleTo != null) -> {

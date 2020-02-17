@@ -40,7 +40,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun v(tag: T, message: String) {
-        System.out.println("v - " + TAG + "-" + tag.toString() + " - " + message)
+        System.out.println("v - $TAG-$tag - $message")
         addEntry(tag, LogLevel.v, message)
     }
 
@@ -51,7 +51,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun d(tag: T, message: String) {
-        System.out.println("d - " + TAG + "-" + tag.toString() + " - " + message)
+        System.out.println("d - $TAG-$tag - $message")
         addEntry(tag, LogLevel.d, message)
     }
 
@@ -62,7 +62,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun i(tag: T, message: String) {
-        System.out.println("i - " + TAG + "-" + tag.toString() + " - " + message)
+        System.out.println("i - $TAG-$tag - $message")
         addEntry(tag, LogLevel.i, message)
     }
 
@@ -73,7 +73,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun w(tag: T, message: String) {
-        System.out.println("w - " + TAG + "-" + tag.toString() + " - " + message)
+        System.out.println("w - $TAG-$tag - $message")
         addEntry(tag, LogLevel.w, message)
     }
 
@@ -84,7 +84,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun e(tag: T, message: String) {
-        System.out.println("e - " + TAG + "-" + tag.toString() + " - " + message)
+        System.out.println("e - $TAG-$tag - $message")
         addEntry(tag, LogLevel.e, message)
     }
 
@@ -96,7 +96,7 @@ object WooLog {
      * @param tr An exception to log
      */
     fun e(tag: T, message: String, tr: Throwable) {
-        System.out.println("e - " + TAG + "-" + tag.toString() + " - " + message)
+        System.out.println("e - $TAG-$tag - $message")
         System.out.println(tr)
         addEntry(tag, LogLevel.e, message + " - exception: " + tr.message)
         addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
@@ -130,7 +130,7 @@ object WooLog {
         } else {
             "$volleyErrorMsg, status $statusCode"
         }
-        System.out.println("e - " + TAG + "-" + tag.toString() + " - " + logText)
+        System.out.println("e - $TAG-$tag - $logText")
         addEntry(tag, LogLevel.w, logText)
     }
 

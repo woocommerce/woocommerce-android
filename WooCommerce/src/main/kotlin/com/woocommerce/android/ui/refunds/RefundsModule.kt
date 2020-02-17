@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.refunds.RefundsModule.IssueRefundFragmentModul
 import com.woocommerce.android.ui.refunds.RefundsModule.RefundAmountDialogModule
 import com.woocommerce.android.ui.refunds.RefundsModule.RefundByAmountFragmentModule
 import com.woocommerce.android.ui.refunds.RefundsModule.RefundByItemsFragmentModule
+import com.woocommerce.android.ui.refunds.RefundsModule.RefundConfirmationDialogModule
 import com.woocommerce.android.ui.refunds.RefundsModule.RefundDetailFragmentModule
 import com.woocommerce.android.ui.refunds.RefundsModule.RefundItemsPickerDialogModule
 import com.woocommerce.android.ui.refunds.RefundsModule.RefundSummaryFragmentModule
@@ -18,6 +19,7 @@ import dagger.android.ContributesAndroidInjector
     RefundSummaryFragmentModule::class,
     RefundDetailFragmentModule::class,
     RefundItemsPickerDialogModule::class,
+    RefundConfirmationDialogModule::class,
     RefundAmountDialogModule::class
 ])
 object RefundsModule {
@@ -61,6 +63,13 @@ object RefundsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [RefundItemsPickerModule::class])
         abstract fun itemsPickerDialog(): RefundItemsPickerDialog
+    }
+
+    @Module
+    abstract class RefundConfirmationDialogModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [RefundConfirmationModule::class])
+        abstract fun refundConfirmationDialog(): RefundConfirmationDialog
     }
 
     @Module
