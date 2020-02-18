@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatDateToYYYYMMDDFormat
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
@@ -214,10 +214,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     taxClass = taxClass ?: product.taxClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (product.isSaleScheduled) {
-                        dateOnSaleTo?.formatDateToISO8601Format() ?: product.dateOnSaleToGmt
+                        dateOnSaleTo?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleToGmt
                     } else null,
                     dateOnSaleFromGmt = if (product.isSaleScheduled) {
-                        dateOnSaleFrom?.formatDateToISO8601Format() ?: product.dateOnSaleFromGmt
+                        dateOnSaleFrom?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleFromGmt
                     } else null
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
@@ -392,9 +392,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                 storedProduct = storedProduct,
                 weightWithUnits = weight,
                 sizeWithUnits = size,
-                priceWithCurrency = formatCurrency(storedProduct.price, parameters?.currencyCode),
-                salePriceWithCurrency = formatCurrency(storedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode),
+                priceWithCurrency = formatCurrency(updatedProduct.price, parameters?.currencyCode),
+                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters?.currencyCode),
+                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters?.currencyCode),
                 gmtOffset = parameters?.gmtOffset ?: 0f
         )
     }

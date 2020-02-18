@@ -116,7 +116,14 @@ data class Product(
                     stockStatus = updatedProduct.stockStatus,
                     stockQuantity = updatedProduct.stockQuantity,
                     backorderStatus = updatedProduct.backorderStatus,
-                    soldIndividually = updatedProduct.soldIndividually
+                    soldIndividually = updatedProduct.soldIndividually,
+                    regularPrice = updatedProduct.regularPrice,
+                    salePrice = updatedProduct.salePrice,
+                    isSaleScheduled = updatedProduct.isSaleScheduled,
+                    dateOnSaleFromGmt = updatedProduct.dateOnSaleFromGmt,
+                    dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
+                    taxStatus = updatedProduct.taxStatus,
+                    taxClass = updatedProduct.taxClass
             )
         } ?: this.copy()
     }
