@@ -124,7 +124,8 @@ data class Product(
                     dateOnSaleFromGmt = updatedProduct.dateOnSaleFromGmt,
                     dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
                     taxStatus = updatedProduct.taxStatus,
-                    taxClass = updatedProduct.taxClass
+                    taxClass = updatedProduct.taxClass,
+                    shippingClass = updatedProduct.shippingClass
             )
         } ?: this.copy()
     }
@@ -143,6 +144,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
         it.regularPrice = regularPrice.toString()
         it.salePrice = salePrice.toString()
+        it.shippingClass = shippingClass
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
         if (isSaleScheduled) {
