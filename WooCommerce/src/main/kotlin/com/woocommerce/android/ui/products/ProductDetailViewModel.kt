@@ -292,6 +292,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         // Pre-load tax class list for a site. This is used in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
+            productRepository.loadShippingClassesForSite()
         }
 
         val shouldFetch = remoteProductId != this.remoteProductId
@@ -378,7 +379,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = skuErrorMessage)
     }
 
-    fun loadProductShippingClasses(loadMore: Boolean = false) {
+    fun loadShippingClasses(loadMore: Boolean = false) {
         if (loadMore && !productRepository.canLoadMoreShippingClasses) {
             WooLog.d(T.PRODUCTS, "Can't load more product shipping classes")
             return
@@ -390,15 +391,15 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (loadMore) {
                 productShippingClassViewState = productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
             } else {
-                if (productRepository.getProductShippingClasses().isEmpty()) {
+                if (productRepository.getProductShippingClassesForSite().isEmpty()) {
                     productShippingClassViewState = productShippingClassViewState.copy(isLoadingProgressShown = true)
                 }
             }
 
-            productRepository.loadShippingClasses(loadMore)
             productShippingClassViewState = productShippingClassViewState.copy(
                     isLoadingProgressShown = false,
-                    isLoadingMoreProgressShown = false
+                    isLoadingMoreProgressShown = false,
+                    shippingClassList = productRepository.loadShippingClassesForSite(loadMore)
             )
         }
     }

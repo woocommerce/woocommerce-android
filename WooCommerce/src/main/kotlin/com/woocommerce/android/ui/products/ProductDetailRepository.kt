@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
@@ -27,7 +28,6 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAI
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
@@ -149,7 +149,10 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun loadShippingClasses(loadMore: Boolean = false): List<WCProductShippingClassModel> {
+    /**
+     * Fetches the list of shipping classes for the [selectedSite]
+     */
+    suspend fun loadShippingClassesForSite(loadMore: Boolean = false): List<ShippingClass> {
         try {
             continuationShippingClasses?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -171,11 +174,8 @@ class ProductDetailRepository @Inject constructor(
         }
 
         continuationShippingClasses = null
-        return getProductShippingClasses()
+        return getProductShippingClassesForSite()
     }
-
-    fun getProductShippingClasses() =
-            productStore.getShippingClassListForSite(selectedSite.get())
 
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
@@ -189,6 +189,9 @@ class ProductDetailRepository @Inject constructor(
 
     fun getTaxClassesForSite(): List<TaxClass> =
             taxStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
+
+    fun getProductShippingClassesForSite(): List<ShippingClass> =
+            productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

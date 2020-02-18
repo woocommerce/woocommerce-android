@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,12 +13,8 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_shipping_class_list.*
-import org.wordpress.android.fluxc.model.WCProductShippingClassModel
-import javax.inject.Inject
 
 /**
  * Dialog which displays a list of product shipping classes
@@ -46,8 +40,13 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
                 )
         )
         recycler.layoutManager = LinearLayoutManager(requireActivity())
-        adapter = ProductShippingClassAdapter(requireActivity(), this, viewModel.getProduct().shippingClass)
+        adapter = ProductShippingClassAdapter(
+                requireActivity(),
+                this,
+                viewModel.getProduct().shippingClass
+        )
         recycler.adapter = adapter
+        viewModel.loadShippingClasses()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,12 +77,11 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
 
     override fun onShippingClassClicked(shippingClass: ShippingClass?) {
         viewModel.onShippingClassChanged(shippingClass)
-        // TODO: a future PR should return the selected shipping class to the shipping fragment
         findNavController().navigateUp()
     }
 
     override fun onRequestLoadMore() {
-        viewModel.loadProductShippingClasses(loadMore = true)
+        viewModel.loadShippingClasses(loadMore = true)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
