@@ -78,7 +78,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProduct() = viewState
 
-    fun getSelectedTaxClass(slug: String): TaxClass? {
+    fun getTaxClassBySlug(slug: String): TaxClass? {
         return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
     }
 

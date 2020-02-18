@@ -146,10 +146,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
         if (isSaleScheduled) {
-            dateOnSaleFromGmt?.let {dateOnSaleFrom ->
+            dateOnSaleFromGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDD()
             }
-            dateOnSaleToGmt?.let {dateOnSaleTo ->
+            dateOnSaleToGmt?.let { dateOnSaleTo ->
                 it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDD()
             }
         } else {

@@ -105,7 +105,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                 updateProductView(new.currency, new.decimals, viewModel.getProduct())
             }
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
-                updateProductTaxClassList(it)
+                updateProductTaxClassList(it, viewModel.getProduct())
             }
         }
 
@@ -119,7 +119,11 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         viewModel.initialisePricing()
     }
 
-    private fun updateProductView(currency: String, decimals: Int, productData: ProductDetailViewState) {
+    private fun updateProductView(
+        currency: String,
+        decimals: Int,
+        productData: ProductDetailViewState
+    ) {
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
@@ -197,11 +201,21 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                 ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
             }
         }
-
-        product_tax_class.setText(product.taxClass)
     }
 
-    private fun updateProductTaxClassList(taxClassList: List<TaxClass>?) {
+    private fun updateProductTaxClassList(
+        taxClassList: List<TaxClass>?,
+        productData: ProductDetailViewState
+    ) {
+        if (!isAdded) return
+
+        val product = requireNotNull(productData.product)
+
+        val productTaxClass = if (product.taxClass.isEmpty()) {
+            getString(R.string.product_tax_class_standard)
+        } else viewModel.getTaxClassBySlug(product.taxClass)?.name ?: product.taxClass
+        product_tax_class.setText(productTaxClass)
+
         taxClassList?.let { taxClasses ->
             product_tax_class.setClickListener {
                 productTaxClassSelectorDialog = ProductInventorySelectorDialog.newInstance(
@@ -246,7 +260,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             RequestCodes.PRODUCT_TAX_CLASS -> {
                 selectedItem?.let { selectedTaxClass ->
                     // Fetch the display name of the selected tax class slug
-                    val selectedProductTaxClass = viewModel.getSelectedTaxClass(selectedTaxClass)
+                    val selectedProductTaxClass = viewModel.getTaxClassBySlug(selectedTaxClass)
                     selectedProductTaxClass?.let {
                         product_tax_class.setText(it.name)
                         viewModel.updateProductDraft(taxClass = it.slug)
