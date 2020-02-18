@@ -22,13 +22,17 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SHIPPING_CLASS_LIST
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
 import org.wordpress.android.fluxc.store.WCTaxStore
@@ -45,13 +49,20 @@ class ProductDetailRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
+        private const val SHIPPING_CLASS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_SHIPPING_CLASS_PAGE_SIZE
     }
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
+    private var continuationShippingClasses: CancellableContinuation<Boolean>? = null
 
     private var isFetchingTaxClassList = false
+
+    private var shippingClassOffset = 0
+    final var canLoadMoreShippingClasses = true
+        private set
+
 
     init {
         dispatcher.register(this)
@@ -138,6 +149,34 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun loadShippingClasses(loadMore: Boolean = false): List<WCProductShippingClassModel> {
+        try {
+            continuationShippingClasses?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationShippingClasses = it
+                shippingClassOffset = if (loadMore) {
+                    shippingClassOffset + SHIPPING_CLASS_PAGE_SIZE
+                } else {
+                    0
+                }
+                val payload = FetchProductShippingClassListPayload(
+                        selectedSite.get(),
+                        pageSize = SHIPPING_CLASS_PAGE_SIZE,
+                        offset = shippingClassOffset
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.d(PRODUCTS, "CancellationException while fetching product shipping classes")
+        }
+
+        continuationShippingClasses = null
+        return getProductShippingClasses()
+    }
+
+    fun getProductShippingClasses() =
+            productStore.getShippingClassListForSite(selectedSite.get())
+
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
@@ -189,6 +228,19 @@ class ProductDetailRepository @Inject constructor(
             // TODO: add event to track sku availability success
             continuationVerifySku?.resume(event.available)
             continuationVerifySku = null
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductShippingClassesChanged(event: OnProductShippingClassesChanged) {
+        if (event.causeOfChange == FETCH_PRODUCT_SHIPPING_CLASS_LIST) {
+            canLoadMoreShippingClasses = event.canLoadMore
+            if (event.isError) {
+                continuationShippingClasses?.resume(false)
+            } else {
+                continuationShippingClasses?.resume(true)
+            }
         }
     }
 }
