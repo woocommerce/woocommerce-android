@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailE
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -184,10 +185,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onShippingClassChanged(shippingClass: ShippingClass?) {
-        viewState = viewState.copy(shippingClassSlug = shippingClass?.slug)
-    }
-
     /**
      * Update all product fields that are edited by the user
      */
@@ -206,7 +203,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         dateOnSaleFrom: String? = null,
         dateOnSaleTo: String? = null,
         taxStatus: ProductTaxStatus? = null,
-        taxClass: String? = null
+        taxClass: String? = null,
+        shippingClass: String? = null
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -224,6 +222,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     salePrice = salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
+                    shippingClass = shippingClass ?: product.shippingClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (product.isSaleScheduled) {
                         dateOnSaleTo?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleToGmt
@@ -274,6 +273,22 @@ class ProductDetailViewModel @AssistedInject constructor(
                             taxStatus = it.taxStatus,
                             regularPrice = it.regularPrice,
                             salePrice = it.salePrice
+                    )
+                    viewState = viewState.copy(
+                            product = product,
+                            cachedProduct = product
+                    )
+                }
+            }
+            // discard shipping screen changes
+            is ExitShipping -> {
+                viewState.cachedProduct?.let {
+                    val product = viewState.product?.copy(
+                            shippingClass = it.shippingClass,
+                            weight = it.weight,
+                            height = it.height,
+                            width = it.width,
+                            length = it.length
                     )
                     viewState = viewState.copy(
                             product = product,
@@ -499,6 +514,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
