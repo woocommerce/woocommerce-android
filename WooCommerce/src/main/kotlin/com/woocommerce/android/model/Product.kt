@@ -2,6 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -140,6 +141,21 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.stockQuantity = stockQuantity
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
+        it.regularPrice = regularPrice.toString()
+        it.salePrice = salePrice.toString()
+        it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
+        it.taxClass = taxClass
+        if (isSaleScheduled) {
+            dateOnSaleFromGmt?.let {dateOnSaleFrom ->
+                it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDD()
+            }
+            dateOnSaleToGmt?.let {dateOnSaleTo ->
+                it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDD()
+            }
+        } else {
+            it.dateOnSaleFromGmt = ""
+            it.dateOnSaleToGmt = ""
+        }
     }
 }
 
