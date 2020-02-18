@@ -9,7 +9,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textPropertyName"
-        style="@style/Woo.ListItem.Title"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/major_100"
@@ -21,7 +21,7 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textPropertyValue"
         android:layout_width="wrap_content"
-        style="@style/Woo.ListItem.Title"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ratingBar"

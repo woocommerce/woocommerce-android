@@ -22,7 +22,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textPropertyName"
-        style="@style/Woo.ListItem.Title"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
@@ -33,7 +33,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textPropertyValue"
-        style="@style/TextAppearance.Woo.Body2"
+        style="@style/Woo.Card.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
