@@ -7,61 +7,59 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textCaption"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/product_detail_property_margin"
-        android:layout_marginTop="@dimen/product_detail_property_margin"
-        android:textColor="@color/wc_grey_dark"
-        android:textSize="@dimen/text_large"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="textCaption"/>
+        tools:text="textCaption" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textContent"
+        style="@style/Woo.Card.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/product_detail_property_margin"
-        android:layout_marginStart="@dimen/product_detail_property_margin"
-        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginEnd="@dimen/major_100"
         android:ellipsize="end"
-        android:lineSpacingExtra="2dp"
-        android:textColor="@color/wc_grey_medium"
-        android:textSize="@dimen/text_medium"
+        android:lineSpacingExtra="@dimen/minor_25"
         android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@id/textReadMore"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textCaption"
-        tools:text="textContent"/>
+        tools:text="textContent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textReadMore"
+        style="@style/Woo.Card.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/product_detail_property_margin"
-        android:layout_marginEnd="@dimen/product_detail_property_margin"
-        android:layout_marginStart="@dimen/product_detail_property_margin"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
         android:background="?attr/selectableItemBackground"
-        android:paddingBottom="@dimen/margin_small"
-        android:paddingTop="@dimen/margin_small"
+        android:paddingTop="@dimen/minor_50"
+        android:paddingBottom="@dimen/minor_50"
         android:text="@string/read_more"
-        android:textColor="@color/wc_purple"
-        android:textSize="@dimen/text_medium"
+        android:textColor="@color/color_secondary"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textContent"
-        app:layout_goneMarginBottom="@dimen/product_detail_property_margin"
-        tools:visibility="visible"/>
+        app:layout_goneMarginBottom="@dimen/major_100"
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
-        android:layout_marginTop="@dimen/product_detail_property_margin"
+        android:layout_marginTop="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
