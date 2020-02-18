@@ -43,7 +43,7 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
         adapter = ProductShippingClassAdapter(
                 requireActivity(),
                 this,
-                viewModel.getProduct().shippingClass
+                viewModel.getProduct().shippingClassSlug
         )
         recycler.adapter = adapter
         viewModel.loadShippingClasses()

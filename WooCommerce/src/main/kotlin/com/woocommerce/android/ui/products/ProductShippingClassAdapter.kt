@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
 class ProductShippingClassAdapter(
     context: Context,
     private val listener: ShippingClassAdapterListener,
-    private var shippingClass: ShippingClass?
+    private var shippingClassSlug: String?
 ) : RecyclerView.Adapter<ViewHolder>() {
     companion object {
         private const val VT_NO_SHIPPING_CLASS = 0
@@ -72,11 +72,11 @@ class ProductShippingClassAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
             holder.text.text = noShippingClassText
-            holder.text.isChecked = shippingClass == null
+            holder.text.isChecked = shippingClassSlug.isNullOrEmpty()
         } else {
             getShippingClassAtPosition(position)?.let {
                 holder.text.text = it.name
-                holder.text.isChecked = it.remoteShippingClassId == shippingClass?.remoteShippingClassId
+                holder.text.isChecked = it.slug == shippingClassSlug
             }
         }
 
@@ -124,7 +124,7 @@ class ProductShippingClassAdapter(
                 val position = adapterPosition
                 if (position > -1) {
                     getShippingClassAtPosition(position)?.let {
-                        shippingClass = it
+                        shippingClassSlug = it.slug
                         listener.onShippingClassClicked(it)
                     } ?: listener.onShippingClassClicked(null)
                 }

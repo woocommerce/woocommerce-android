@@ -185,7 +185,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onShippingClassChanged(shippingClass: ShippingClass?) {
-        viewState = viewState.copy(shippingClass = shippingClass)
+        viewState = viewState.copy(shippingClassSlug = shippingClass?.slug)
     }
 
     /**
@@ -454,7 +454,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 priceWithCurrency = formatCurrency(updatedProduct.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters?.currencyCode),
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters?.currencyCode),
-                gmtOffset = parameters?.gmtOffset ?: 0f
+                gmtOffset = parameters?.gmtOffset ?: 0f,
+                shippingClassSlug = updatedProduct.shippingClass
         )
     }
 
@@ -523,7 +524,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
         val gmtOffset: Float = 0f,
-        val shippingClass: ShippingClass? = null
+        val shippingClassSlug: String? = null
     ) : Parcelable
 
     @Parcelize
