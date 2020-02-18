@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.formatDateToYYYYMMDDFormat
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -25,6 +26,8 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -33,6 +36,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,6 +66,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var parameters: Parameters? = null
 
     private var skuVerificationJob: Job? = null
+    private var shippingClassLoadJob: Job? = null
 
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
     private var viewState by productDetailViewStateData
@@ -71,6 +76,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
+
+    final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassesViewState())
+    private var productShippingClassViewState by productShippingClassViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -174,6 +182,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                 }
             }
         }
+    }
+
+    fun onShippingClassChanged(shippingClass: ShippingClass?) {
+        viewState = viewState.copy(shippingClass = shippingClass)
     }
 
     /**
@@ -366,6 +378,52 @@ class ProductDetailViewModel @AssistedInject constructor(
         productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = skuErrorMessage)
     }
 
+    fun loadProductShippingClasses(loadMore: Boolean = false) {
+        if (loadMore && !productRepository.canLoadMoreShippingClasses) {
+            WooLog.d(T.PRODUCTS, "Can't load more product shipping classes")
+            return
+        }
+
+        waitForExistingShippingClassLoad()
+
+        shippingClassLoadJob = launch {
+            if (loadMore) {
+                productShippingClassViewState = productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
+            } else {
+                if (productRepository.getProductShippingClasses().isEmpty()) {
+                    productShippingClassViewState = productShippingClassViewState.copy(isLoadingProgressShown = true)
+                }
+            }
+
+            productRepository.loadShippingClasses(loadMore)
+            productShippingClassViewState = productShippingClassViewState.copy(
+                    isLoadingProgressShown = false,
+                    isLoadingMoreProgressShown = false
+            )
+        }
+    }
+
+    private fun waitForExistingShippingClassLoad() {
+        if (shippingClassLoadJob?.isActive == true) {
+            launch {
+                try {
+                    shippingClassLoadJob?.join()
+                } catch (e: CancellationException) {
+                    WooLog.d(
+                            T.PRODUCTS,
+                            "CancellationException while waiting for existing shipping class list fetch"
+                    )
+                }
+            }
+        }
+    }
+
+    @Parcelize
+    data class ViewState(
+        val showLoadingProgress: Boolean = false,
+        val showLoadingMoreProgress: Boolean = false
+    ) : Parcelable
+
     private fun updateProductState(storedProduct: Product) {
         val weight = if (storedProduct.weight > 0) {
             "${format(storedProduct.weight)}${parameters?.weightUnit ?: ""}"
@@ -463,7 +521,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f
+        val gmtOffset: Float = 0f,
+        val shippingClass: ShippingClass? = null
     ) : Parcelable
 
     @Parcelize
@@ -476,6 +535,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductShippingClassesViewState(
+        val isLoadingProgressShown: Boolean = false,
+        val isLoadingMoreProgressShown: Boolean = false,
+        val shippingClassList: List<ShippingClass>? = null
     ) : Parcelable
 
     @AssistedInject.Factory

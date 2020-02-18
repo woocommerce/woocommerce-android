@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import android.widget.CheckedTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolder
 import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
-import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 
 /**
  * RecyclerView adapter which shows a list of product shipping classes, the first of which will
@@ -18,7 +18,7 @@ import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 class ProductShippingClassAdapter(
     context: Context,
     private val listener: ShippingClassAdapterListener,
-    private var selectedShippingClassSlug: String
+    private var shippingClass: ShippingClass?
 ) : RecyclerView.Adapter<ViewHolder>() {
     companion object {
         private const val VT_NO_SHIPPING_CLASS = 0
@@ -26,11 +26,11 @@ class ProductShippingClassAdapter(
     }
 
     interface ShippingClassAdapterListener {
-        fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?)
+        fun onShippingClassClicked(shippingClass: ShippingClass?)
         fun onRequestLoadMore()
     }
 
-    var shippingClassList: List<WCProductShippingClassModel> = ArrayList()
+    var shippingClassList: List<ShippingClass> = ArrayList()
         set(value) {
             if (!isSameList(value)) {
                 field = value
@@ -72,11 +72,12 @@ class ProductShippingClassAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
             holder.text.text = noShippingClassText
-            holder.text.isChecked = selectedShippingClassSlug.isEmpty()
+            holder.text.isChecked = shippingClass == null
         } else {
-            val shippingClass = getShippingClassAtPosition(position)!!
-            holder.text.text = shippingClass.name
-            holder.text.isChecked = shippingClass.slug == selectedShippingClassSlug
+            getShippingClassAtPosition(position)?.let {
+                holder.text.text = it.name
+                holder.text.isChecked = it.remoteShippingClassId == shippingClass?.remoteShippingClassId
+            }
         }
 
         if (position > 0 && position == itemCount - 1) {
@@ -84,7 +85,7 @@ class ProductShippingClassAdapter(
         }
     }
 
-    private fun isSameList(classes: List<WCProductShippingClassModel>): Boolean {
+    private fun isSameList(classes: List<ShippingClass>): Boolean {
         if (classes.size != shippingClassList.size) {
             return false
         }
@@ -98,7 +99,7 @@ class ProductShippingClassAdapter(
         return true
     }
 
-    private fun containsShippingClass(shippingClass: WCProductShippingClassModel): Boolean {
+    private fun containsShippingClass(shippingClass: ShippingClass): Boolean {
         shippingClassList.forEach {
             if (it.remoteShippingClassId == shippingClass.remoteShippingClassId) {
                 return true
@@ -107,7 +108,7 @@ class ProductShippingClassAdapter(
         return false
     }
 
-    private fun getShippingClassAtPosition(position: Int): WCProductShippingClassModel? {
+    private fun getShippingClassAtPosition(position: Int): ShippingClass? {
         return if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
             null
         } else {
@@ -122,9 +123,9 @@ class ProductShippingClassAdapter(
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position > -1) {
-                    getShippingClassAtPosition(position)?.let { shippingClass ->
-                        selectedShippingClassSlug = shippingClass.slug
-                        listener.onShippingClassClicked(shippingClass)
+                    getShippingClassAtPosition(position)?.let {
+                        shippingClass = it
+                        listener.onShippingClassClicked(it)
                     } ?: listener.onShippingClassClicked(null)
                 }
             }

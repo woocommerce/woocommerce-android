@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -24,13 +25,10 @@ import javax.inject.Inject
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListener {
+class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapterListener {
     companion object {
-        const val TAG = "ProductShippingClassDialog"
+        const val TAG = "ProductShippingClassFragment"
     }
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    private val viewModel: ProductShippingClassViewModel by viewModels { viewModelFactory }
 
     private var adapter: ProductShippingClassAdapter? = null
 
@@ -48,7 +46,7 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
                 )
         )
         recycler.layoutManager = LinearLayoutManager(requireActivity())
-        adapter = ProductShippingClassAdapter(requireActivity(), this, viewModel.selectedShippingClassSlug)
+        adapter = ProductShippingClassAdapter(requireActivity(), this, viewModel.getProduct().shippingClass)
         recycler.adapter = adapter
     }
 
@@ -63,29 +61,33 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
     }
 
     private fun setupObservers() {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.showLoadingProgress.takeIfNotEqualTo(old?.showLoadingProgress) {
-                showLoadingProgress(new.showLoadingProgress)
+        viewModel.productShippingClassViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isLoadingProgressShown.takeIfNotEqualTo(old?.isLoadingProgressShown) {
+                showLoadingProgress(new.isLoadingProgressShown)
             }
-            new.showLoadingMoreProgress.takeIfNotEqualTo(old?.showLoadingMoreProgress) {
-                showLoadingMoreProgress(new.showLoadingMoreProgress)
+            new.isLoadingMoreProgressShown.takeIfNotEqualTo(old?.isLoadingMoreProgressShown) {
+                showLoadingMoreProgress(new.isLoadingMoreProgressShown)
+            }
+            new.shippingClassList.takeIfNotEqualTo(old?.shippingClassList) {
+                adapter?.shippingClassList = it!!
             }
         }
-
-        viewModel.productShippingClasses.observe(viewLifecycleOwner, Observer { shippingClasses ->
-            adapter?.shippingClassList = shippingClasses
-        })
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
-    override fun onShippingClassClicked(shippingClass: WCProductShippingClassModel?) {
+    override fun onShippingClassClicked(shippingClass: ShippingClass?) {
+        viewModel.onShippingClassChanged(shippingClass)
         // TODO: a future PR should return the selected shipping class to the shipping fragment
         findNavController().navigateUp()
     }
 
     override fun onRequestLoadMore() {
         viewModel.loadProductShippingClasses(loadMore = true)
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return true
     }
 
     private fun showLoadingProgress(show: Boolean) {
