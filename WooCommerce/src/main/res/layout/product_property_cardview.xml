@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card.WithoutPadding"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:elevation="@dimen/card_elevation">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/cardContainerView"
@@ -13,14 +12,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/cardCaptionText"
+            style="@style/Woo.Card.Header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.TextView.Caption"
+            android:layout_marginBottom="0dp"
             android:visibility="gone"
             tools:text="cardCaptionText"
             tools:visibility="visible"/>
 
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+    
+</com.google.android.material.card.MaterialCardView>
