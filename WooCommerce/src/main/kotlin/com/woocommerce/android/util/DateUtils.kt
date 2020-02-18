@@ -3,7 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.text.format.DateFormat
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.TimeGroup
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
@@ -347,17 +347,28 @@ object DateUtils {
         return calendar.time
     }
 
-    /**
-     * Method to convert month string from yyyy-MM-dd format to dd
-     * i.e. 2019-08-08 is formatted to 8
-     */
     @Throws(IllegalArgumentException::class)
-    fun formatToYYYYmmDD(year: Int, month: Int, day: Int): String {
+    fun getOffsetGmtDate(year: Int, month: Int, day: Int, gmtOffset: Float): Date {
         return try {
             val date = GregorianCalendar(year, month, day).time
-            date.formatToMMMddYYYY()
+            offsetGmtDate(date, gmtOffset)
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+        }
+    }
+
+    /**
+     * Method to convert date string from MMM dd, yyyy format to yyyy-MM-dd format
+     * i.e. Dec 02, 2020 is formatted to 2020-12-02
+     */
+    @Throws(IllegalArgumentException::class)
+    fun formatToYYYYmmDD(dateString: String): String {
+        return try {
+            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.US)
+            val date = dateFormat.parse(dateString) ?: Date()
+            date.formatToYYYYmmDD()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMM dd, yyyy: $this")
         }
     }
 }

@@ -1,12 +1,19 @@
 package com.woocommerce.android.ui.products
 
 import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
@@ -14,11 +21,13 @@ import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import kotlinx.android.synthetic.main.fragment_product_pricing.*
+import org.wordpress.android.util.ActivityUtils
 import java.util.Date
 import javax.inject.Inject
 
@@ -55,9 +64,39 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         endDatePickerDialog = null
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activity?.let {
+            ActivityUtils.hideKeyboard(it)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                // TODO: add track event for click
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onDoneButtonClicked(ExitPricing(shouldShowDiscardDialog = false))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -70,6 +109,13 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
         }
 
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ExitPricing -> findNavController().navigateUp()
+                else -> event.isHandled = false
+            }
+        })
+
         viewModel.initialisePricing()
     }
 
@@ -79,23 +125,27 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         val product = requireNotNull(productData.product)
         with(product_regular_price) {
             initialiseCurrencyEditText(currency, decimals, currencyFormatter)
-            product.price?.let { setText(it) }
-            // TODO: update viewmodel
+            product.regularPrice?.let { setText(it) }
+            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
+                viewModel.updateProductDraft(regularPrice = it)
+            })
         }
 
         with(product_sale_price) {
             initialiseCurrencyEditText(currency, decimals, currencyFormatter)
             product.salePrice?.let { setText(it) }
-            // TODO: update viewmodel
+            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
+                viewModel.updateProductDraft(salePrice = it)
+            })
         }
 
-        val scheduleSale = product.dateOnSaleFromGmt != null || product.dateOnSaleToGmt != null
+        val scheduleSale = product.isSaleScheduled
         enableScheduleSale(scheduleSale)
         with(scheduleSale_switch) {
             isChecked = scheduleSale
             setOnCheckedChangeListener { _, isChecked ->
                 enableScheduleSale(isChecked)
-                // TODO: update viewmodel
+                viewModel.updateProductDraft(isSaleScheduled = isChecked)
             }
         }
 
@@ -108,8 +158,14 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
             setText(dateOnSaleFrom.formatToMMMddYYYY())
             setClickListener {
-                startDatePickerDialog = displayDatePickerDialog(dateOnSaleFrom, scheduleSale_startDate)
-                // TODO: update viewmodel
+                startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
+                    _, selectedYear, selectedMonth, dayOfMonth ->
+                    val selectedDate = DateUtils.getOffsetGmtDate(
+                            selectedYear, selectedMonth, dayOfMonth, gmtOffset
+                    )
+                    setText(selectedDate.formatToMMMddYYYY())
+                    viewModel.updateProductDraft(dateOnSaleFrom = selectedDate.formatToYYYYmmDD())
+                })
             }
         }
 
@@ -120,8 +176,14 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
             setText(dateOnSaleTo.formatToMMMddYYYY())
             setClickListener {
-                endDatePickerDialog = displayDatePickerDialog(dateOnSaleTo, scheduleSale_endDate)
-                // TODO: update viewmodel
+                endDatePickerDialog = displayDatePickerDialog(scheduleSale_endDate, OnDateSetListener {
+                    _, selectedYear, selectedMonth, dayOfMonth ->
+                    val selectedDate = DateUtils.getOffsetGmtDate(
+                            selectedYear, selectedMonth, dayOfMonth, gmtOffset
+                    )
+                    setText(selectedDate.formatToMMMddYYYY())
+                    viewModel.updateProductDraft(dateOnSaleTo = selectedDate.formatToYYYYmmDD())
+                })
             }
         }
 
@@ -160,14 +222,14 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     }
 
     private fun displayDatePickerDialog(
-        date: Date,
-        spinnerEditText: WCMaterialOutlinedSpinnerView
+        spinnerEditText: WCMaterialOutlinedSpinnerView,
+        dateSetListener: OnDateSetListener
     ): DatePickerDialog {
-        val (year, month, day) = date.formatToYYYYmmDD().split("-")
-        val datePicker = DatePickerDialog(requireActivity(),
-                DatePickerDialog.OnDateSetListener { _, selectedYear, selectedMonth, dayOfMonth ->
-                    spinnerEditText.setText(DateUtils.formatToYYYYmmDD(selectedYear, selectedMonth, dayOfMonth))
-                }, year.toInt(), month.toInt() - 1, day.toInt())
+        val dateString = DateUtils.formatToYYYYmmDD(spinnerEditText.getText())
+        val (year, month, day) = dateString.split("-")
+        val datePicker = DatePickerDialog(
+                requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
+        )
 
         datePicker.show()
         return datePicker
@@ -178,21 +240,23 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             RequestCodes.PRODUCT_TAX_STATUS -> {
                 selectedItem?.let {
                     product_tax_status.setText(getString(ProductTaxStatus.toStringResource(it)))
-                    // TODO: update viewmodel
+                    viewModel.updateProductDraft(taxStatus = ProductTaxStatus.fromString(it))
                 }
             }
             RequestCodes.PRODUCT_TAX_CLASS -> {
                 selectedItem?.let { selectedTaxClass ->
                     // Fetch the display name of the selected tax class slug
                     val selectedProductTaxClass = viewModel.getSelectedTaxClass(selectedTaxClass)
-                    selectedProductTaxClass?.let { product_tax_class.setText(it.name) }
-                    // TODO: update viewmodel
+                    selectedProductTaxClass?.let {
+                        product_tax_class.setText(it.name)
+                        viewModel.updateProductDraft(taxClass = it.slug)
+                    }
                 }
             }
         }
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return true
+        return viewModel.onBackButtonClicked(ExitPricing())
     }
 }

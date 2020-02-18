@@ -50,7 +50,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(ctx: Cont
     }
 
     fun setText(currentValue: BigDecimal) {
-        currency_edit_text.post { currency_edit_text.setValue(currentValue) }
+        currency_edit_text.setValue(currentValue)
     }
 
     fun getCurrencyEditText() = currency_edit_text

@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
@@ -20,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailE
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -185,7 +187,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
         stockQuantity: String? = null,
-        backorderStatus: ProductBackorderStatus? = null
+        backorderStatus: ProductBackorderStatus? = null,
+        regularPrice: BigDecimal? = null,
+        salePrice: BigDecimal? = null,
+        isSaleScheduled: Boolean? = null,
+        dateOnSaleFrom: String? = null,
+        dateOnSaleTo: String? = null,
+        taxStatus: ProductTaxStatus? = null,
+        taxClass: String? = null
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -198,7 +207,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                     soldIndividually = soldIndividually ?: product.soldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = viewState.storedProduct?.images ?: product.images
+                    images = viewState.storedProduct?.images ?: product.images,
+                    regularPrice = regularPrice ?: product.regularPrice,
+                    salePrice = salePrice ?: product.salePrice,
+                    taxStatus = taxStatus ?: product.taxStatus,
+                    taxClass = taxClass ?: product.taxClass,
+                    isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                    dateOnSaleToGmt = if (product.isSaleScheduled) {
+                        dateOnSaleTo?.formatDateToISO8601Format() ?: product.dateOnSaleToGmt
+                    } else null,
+                    dateOnSaleFromGmt = if (product.isSaleScheduled) {
+                        dateOnSaleFrom?.formatDateToISO8601Format() ?: product.dateOnSaleFromGmt
+                    } else null
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
@@ -224,6 +244,24 @@ class ProductDetailViewModel @AssistedInject constructor(
                             backorderStatus = it.backorderStatus,
                             soldIndividually = it.soldIndividually,
                             stockQuantity = it.stockQuantity
+                    )
+                    viewState = viewState.copy(
+                            product = product,
+                            cachedProduct = product
+                    )
+                }
+            }
+            // discard pricing screen changes
+            is ExitPricing -> {
+                viewState.cachedProduct?.let {
+                    val product = viewState.product?.copy(
+                            dateOnSaleFromGmt = it.dateOnSaleFromGmt,
+                            dateOnSaleToGmt = it.dateOnSaleToGmt,
+                            isSaleScheduled = it.isSaleScheduled,
+                            taxClass = it.taxClass,
+                            taxStatus = it.taxStatus,
+                            regularPrice = it.regularPrice,
+                            salePrice = it.salePrice
                     )
                     viewState = viewState.copy(
                             product = product,
@@ -400,6 +438,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize

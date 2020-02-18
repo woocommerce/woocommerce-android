@@ -55,7 +55,8 @@ data class Product(
     val dateOnSaleToGmt: Date?,
     val dateOnSaleFromGmt: Date?,
     val soldIndividually: Boolean,
-    val taxStatus: ProductTaxStatus
+    val taxStatus: ProductTaxStatus,
+    val isSaleScheduled: Boolean
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -86,7 +87,14 @@ data class Product(
                 numVariations == product.numVariations &&
                 name == product.name &&
                 description == product.description &&
-                images == product.images
+                images == product.images &&
+                taxClass == product.taxClass &&
+                taxStatus == product.taxStatus &&
+                isSaleScheduled == product.isSaleScheduled &&
+                dateOnSaleToGmt == product.dateOnSaleToGmt &&
+                dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
+                regularPrice == product.regularPrice &&
+                salePrice == product.salePrice
     }
 
     /**
@@ -183,7 +191,8 @@ fun WCProductModel.toAppModel(): Product {
         this.dateOnSaleToGmt.formatDateToISO8601Format(),
         this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         this.soldIndividually,
-        ProductTaxStatus.fromString(this.taxStatus)
+        ProductTaxStatus.fromString(this.taxStatus),
+        this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()
     )
 }
 
