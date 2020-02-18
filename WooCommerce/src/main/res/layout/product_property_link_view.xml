@@ -7,38 +7,38 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textLink"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
+        android:layout_margin="@dimen/major_100"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@color/wc_purple"
-        android:textSize="@dimen/text_large"
+        android:textColor="@color/color_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="textLink"/>
+        tools:text="textLink" />
 
     <ImageView
         android:id="@+id/iconExternal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
+        android:layout_margin="@dimen/major_100"
         android:importantForAccessibility="no"
-        android:tint="@color/wc_purple"
+        android:tint="@color/color_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_external"/>
+        app:srcCompat="@drawable/ic_external" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
-        android:layout_marginTop="@dimen/product_detail_property_margin"
+        android:layout_marginTop="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
