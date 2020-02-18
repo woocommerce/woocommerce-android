@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <EditText
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/editText"
+        style="@style/TextAppearance.Woo.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
-        style="@style/Woo.Product.Title"
+        android:layout_margin="@dimen/major_100"
         android:ellipsize="end"
         android:imeOptions="actionDone"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -21,7 +22,7 @@
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
-        android:layout_marginTop="@dimen/product_detail_property_margin"
+        android:layout_marginTop="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
