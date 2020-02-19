@@ -8,33 +8,22 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
 import org.wordpress.android.util.ActivityUtils
-import javax.inject.Inject
 
 /**
  * Fragment which enables updating product shipping data.
  */
-class ProductShippingFragment : BaseFragment() {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
-    private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory }
-
+class ProductShippingFragment : BaseProductFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,11 +62,12 @@ class ProductShippingFragment : BaseFragment() {
         }
     }
 
-    private fun setupObservers(viewModel: ProductShippingViewModel) {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
-        }
+    override fun onRequestAllowBackPress(): Boolean {
+        // TODO
+        return true
+    }
 
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -88,6 +78,8 @@ class ProductShippingFragment : BaseFragment() {
                 )
             }
         })
+
+        updateProductView(viewModel.getProduct())
     }
 
     /**
@@ -103,13 +95,16 @@ class ProductShippingFragment : BaseFragment() {
         })
     }
 
-    private fun showProduct(productData: ViewState) {
+    private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
-        showValue(product_weight, R.string.product_weight, productData.product?.weight, viewModel.weightUnit)
-        showValue(product_length, R.string.product_length, productData.product?.length, viewModel.dimensionUnit)
-        showValue(product_height, R.string.product_height, productData.product?.height, viewModel.dimensionUnit)
-        showValue(product_width, R.string.product_width, productData.product?.width, viewModel.dimensionUnit)
+        val weightUnit = viewModel.parameters?.weightUnit
+        val dimensionUnit = viewModel.parameters?.dimensionUnit
+
+        showValue(product_weight, R.string.product_weight, productData.product?.weight, weightUnit)
+        showValue(product_length, R.string.product_length, productData.product?.length, dimensionUnit)
+        showValue(product_height, R.string.product_height, productData.product?.height, dimensionUnit)
+        showValue(product_width, R.string.product_width, productData.product?.width, dimensionUnit)
 
         product_shipping_class_spinner.setText(productData.product?.shippingClass ?: "")
         product_shipping_class_spinner.setClickListener {

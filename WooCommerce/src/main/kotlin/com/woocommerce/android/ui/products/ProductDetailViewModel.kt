@@ -64,7 +64,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private var remoteProductId = 0L
-    private var parameters: Parameters? = null
+    final var parameters: Parameters? = null
+        private set
 
     private var skuVerificationJob: Job? = null
     private var shippingClassLoadJob: Job? = null
@@ -78,7 +79,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
-    final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassesViewState())
+    final val productShippingViewStateData = LiveDataDelegate(savedState, ProductShippingViewState())
+    private var productShippingViewState by productShippingViewStateData
+
+    final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
     private var productShippingClassViewState by productShippingClassViewStateData
 
     init {
@@ -284,11 +288,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitShipping -> {
                 viewState.cachedProduct?.let {
                     val product = viewState.product?.copy(
-                            shippingClass = it.shippingClass,
                             weight = it.weight,
                             height = it.height,
                             width = it.width,
-                            length = it.length
+                            length = it.length,
+                            shippingClass = it.shippingClass
                     )
                     viewState = viewState.copy(
                             product = product,
@@ -556,7 +560,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @Parcelize
-    data class ProductShippingClassesViewState(
+    data class ProductShippingViewState(
+        val isProductUpdated: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductShippingClassViewState(
         val isLoadingProgressShown: Boolean = false,
         val isLoadingMoreProgressShown: Boolean = false,
         val shippingClassList: List<ShippingClass>? = null
