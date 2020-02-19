@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -92,28 +93,37 @@ class ProductShippingFragment : BaseProductFragment() {
         val weightUnit = viewModel.parameters?.weightUnit
         val dimensionUnit = viewModel.parameters?.dimensionUnit
 
+        fun toFloatOrNull(editable: Editable?): Float? {
+            val str = editable?.toString() ?: ""
+            return if (str.isEmpty()) {
+                null
+            } else {
+                str.toFloat()
+            }
+        }
+
         with(product_weight) {
             showValue(this, R.string.product_weight, productData.product?.weight, weightUnit)
             setOnTextChangedListener {
-                viewModel.updateProductDraft(weight = it.toString().toFloat())
+                viewModel.updateProductDraft(weight = toFloatOrNull(it))
             }
         }
         with(product_length) {
             showValue(this, R.string.product_length, productData.product?.length, dimensionUnit)
             setOnTextChangedListener {
-                viewModel.updateProductDraft(length = it.toString().toFloat())
+                viewModel.updateProductDraft(length = toFloatOrNull(it))
             }
         }
         with(product_height) {
             showValue(this, R.string.product_height, productData.product?.height, dimensionUnit)
             setOnTextChangedListener {
-                viewModel.updateProductDraft(height = it.toString().toFloat())
+                viewModel.updateProductDraft(height = toFloatOrNull(it))
             }
         }
         with(product_width) {
             showValue(this, R.string.product_width, productData.product?.width, dimensionUnit)
             setOnTextChangedListener {
-                viewModel.updateProductDraft(width = it.toString().toFloat())
+                viewModel.updateProductDraft(width = toFloatOrNull(it))
             }
         }
         with(product_shipping_class_spinner) {
