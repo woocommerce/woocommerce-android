@@ -15,6 +15,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
 import org.wordpress.android.util.ActivityUtils
@@ -90,6 +92,12 @@ class ProductShippingFragment : BaseProductFragment() {
     private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
+        val product = productData.product
+        if (product == null) {
+            WooLog.w(T.PRODUCTS, "product shipping > productData.product is null")
+            return
+        }
+
         val weightUnit = viewModel.parameters?.weightUnit
         val dimensionUnit = viewModel.parameters?.dimensionUnit
 
@@ -103,31 +111,31 @@ class ProductShippingFragment : BaseProductFragment() {
         }
 
         with(product_weight) {
-            showValue(this, R.string.product_weight, productData.product?.weight, weightUnit)
+            showValue(this, R.string.product_weight, product.weight, weightUnit)
             setOnTextChangedListener {
                 viewModel.updateProductDraft(weight = toFloatOrNull(it))
             }
         }
         with(product_length) {
-            showValue(this, R.string.product_length, productData.product?.length, dimensionUnit)
+            showValue(this, R.string.product_length, product.length, dimensionUnit)
             setOnTextChangedListener {
                 viewModel.updateProductDraft(length = toFloatOrNull(it))
             }
         }
         with(product_height) {
-            showValue(this, R.string.product_height, productData.product?.height, dimensionUnit)
+            showValue(this, R.string.product_height, product.height, dimensionUnit)
             setOnTextChangedListener {
                 viewModel.updateProductDraft(height = toFloatOrNull(it))
             }
         }
         with(product_width) {
-            showValue(this, R.string.product_width, productData.product?.width, dimensionUnit)
+            showValue(this, R.string.product_width, product.width, dimensionUnit)
             setOnTextChangedListener {
                 viewModel.updateProductDraft(width = toFloatOrNull(it))
             }
         }
         with(product_shipping_class_spinner) {
-            setText(productData.product?.shippingClass ?: "")
+            setText(product.shippingClass)
             setClickListener {
                 showShippingClassFragment()
             }
