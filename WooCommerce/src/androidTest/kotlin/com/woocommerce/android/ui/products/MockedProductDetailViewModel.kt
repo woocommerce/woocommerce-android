@@ -9,7 +9,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.LiveDataDelegate
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.math.roundToInt
@@ -31,12 +30,13 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         currencyFormatter,
         wooCommerceStore
 ) {
-    override val viewStateData: LiveDataDelegate<ViewState> =
-            LiveDataDelegate(arg0, ViewState(), "", onChange = {
-                combineData(it.product!!, Parameters("$", "oz", "in"))
-            })
+    // FIXME: This is a temporary fix that allows the connected test to be built. It fails and should be fixed, though.
+//    override val viewStateData: LiveDataDelegate<ViewState> =
+//            LiveDataDelegate(arg0, ViewState(), "", onChange = {
+//                combineData(it.product!!, Parameters("$", "oz", "in"))
+//            })
 
-    private fun combineData(product: Product, parameters: Parameters): ViewState {
+    private fun combineData(product: Product, parameters: Parameters): ProductDetailViewState {
         val weight = if (product.weight > 0) "${product.weight.roundToInt()}${parameters.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
@@ -51,13 +51,15 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
             ""
         }.trim()
 
-        return ViewState(
-                product,
-                weight,
-                size,
-                formatCurrency(product.price, parameters.currencyCode),
-                formatCurrency(product.salePrice, parameters.currencyCode),
-                formatCurrency(product.regularPrice, parameters.currencyCode)
+        return ProductDetailViewState(
+                product = product,
+                storedProduct = product,
+                cachedProduct = product,
+                weightWithUnits = weight,
+                sizeWithUnits = size,
+                priceWithCurrency = formatCurrency(product.price, parameters.currencyCode),
+                salePriceWithCurrency = formatCurrency(product.salePrice, parameters.currencyCode),
+                regularPriceWithCurrency = formatCurrency(product.regularPrice, parameters.currencyCode)
         )
     }
 

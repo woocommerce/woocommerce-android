@@ -16,8 +16,8 @@ import java.util.Date
 @Parcelize
 data class Product(
     val remoteId: Long,
-    var name: String,
-    var description: String,
+    val name: String,
+    val description: String,
     val type: ProductType,
     val status: ProductStatus?,
     val stockStatus: ProductStockStatus,
@@ -51,9 +51,9 @@ data class Product(
     val numVariations: Int,
     val images: List<Image>,
     val attributes: List<Attribute>,
-    val dateOnSaleTo: Date?,
-    val dateOnSaleFrom: Date?,
-    var soldIndividually: Boolean
+    val dateOnSaleToGmt: Date?,
+    val dateOnSaleFromGmt: Date?,
+    val soldIndividually: Boolean
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -77,6 +77,9 @@ data class Product(
                 stockStatus == product.stockStatus &&
                 status == product.status &&
                 manageStock == product.manageStock &&
+                backorderStatus == product.backorderStatus &&
+                soldIndividually == product.soldIndividually &&
+                sku == product.sku &&
                 type == product.type &&
                 numVariations == product.numVariations &&
                 name == product.name &&
@@ -95,14 +98,16 @@ data class Product(
      */
     fun mergeProduct(newProduct: Product?): Product {
         return newProduct?.let { updatedProduct ->
-            this.copy().apply {
-                if (updatedProduct.description != this.description) {
-                    description = updatedProduct.description
-                }
-                if (updatedProduct.name != this.name) {
-                    name = updatedProduct.name
-                }
-            }
+            this.copy(
+                    description = updatedProduct.description,
+                    name = updatedProduct.name,
+                    sku = updatedProduct.sku,
+                    manageStock = updatedProduct.manageStock,
+                    stockStatus = updatedProduct.stockStatus,
+                    stockQuantity = updatedProduct.stockQuantity,
+                    backorderStatus = updatedProduct.backorderStatus,
+                    soldIndividually = updatedProduct.soldIndividually
+            )
         } ?: this.copy()
     }
 }
@@ -112,6 +117,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.remoteProductId = remoteId
         it.description = description
         it.name = name
+        it.sku = sku
+        it.manageStock = manageStock
+        it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
+        it.stockQuantity = stockQuantity
+        it.soldIndividually = soldIndividually
+        it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
     }
 }
 
@@ -167,8 +178,8 @@ fun WCProductModel.toAppModel(): Product {
                     it.visible
             )
         },
-        this.dateOnSaleTo.formatDateToISO8601Format(),
-        this.dateOnSaleFrom.formatDateToISO8601Format(),
+        this.dateOnSaleToGmt.formatDateToISO8601Format(),
+        this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         this.soldIndividually
     )
 }

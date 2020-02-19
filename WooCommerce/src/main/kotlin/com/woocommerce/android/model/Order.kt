@@ -78,6 +78,20 @@ data class Order(
             SHIPPING
         }
     }
+
+    /*
+     * Calculates the max quantity for each item by subtracting the number of already-refunded items
+     */
+    fun getMaxRefundQuantities(refunds: List<Refund>): Map<Long, Int> {
+        val map = mutableMapOf<Long, Int>()
+        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
+        items.map { item ->
+            map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
+        }
+        return map
+    }
+
+    fun hasNonRefundedItems(refunds: List<Refund>): Boolean = getMaxRefundQuantities(refunds).values.any { it > 0 }
 }
 
 fun WCOrderModel.toAppModel(): Order {
