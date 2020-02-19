@@ -318,11 +318,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun loadProduct(remoteProductId: Long) {
         loadParameters()
 
-        // Pre-load tax and shipping class lists for a site. There are used in the product
-        // pricing & shipping screens.
+        // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
-            productRepository.fetchShippingClassesForSite()
         }
 
         val shouldFetch = remoteProductId != this.remoteProductId
