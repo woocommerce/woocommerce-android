@@ -77,7 +77,7 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
     override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
     override fun onShippingClassClicked(shippingClass: ShippingClass?) {
-        viewModel.updateProductDraft(shippingClass = shippingClass?.slug)
+        viewModel.updateProductDraft(shippingClass = shippingClass?.slug ?: "")
         findNavController().navigateUp()
     }
 
