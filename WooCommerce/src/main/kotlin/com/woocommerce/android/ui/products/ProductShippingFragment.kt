@@ -77,27 +77,10 @@ class ProductShippingFragment : BaseProductFragment() {
         updateProductView(viewModel.getProduct())
     }
 
-    /**
-     * Shows the passed weight or dimension value in the passed view and sets the hint so it
-     * includes the weight or dimension unit, ex: "Width (in)"
-     */
-    private fun showValue(view: WCMaterialOutlinedEditTextView, @StringRes hintRes: Int, value: Float?, unit: String?) {
-        view.setText(value?.toString() ?: "")
-        view.setHint(if (unit != null) {
-            getString(hintRes) + " ($unit)"
-        } else {
-            getString(hintRes)
-        })
-    }
-
     private fun initListeners() {
         fun toFloatOrNull(editable: Editable?): Float? {
             val str = editable?.toString() ?: ""
-            return if (str.isEmpty()) {
-                null
-            } else {
-                str.toFloat()
-            }
+            return if (str.isEmpty()) null else str.toFloat()
         }
 
         product_weight.setOnTextChangedListener {
@@ -115,6 +98,21 @@ class ProductShippingFragment : BaseProductFragment() {
         product_shipping_class_spinner.setClickListener {
             showShippingClassFragment()
         }
+    }
+
+    /**
+     * Shows the passed weight or dimension value in the passed view and sets the hint so it
+     * includes the weight or dimension unit, ex: "Width (in)"
+     */
+    private fun showValue(view: WCMaterialOutlinedEditTextView, @StringRes hintRes: Int, value: Float?, unit: String?) {
+        view.setText(value?.toString() ?: "")
+        view.setHint(
+                if (unit != null) {
+                    getString(hintRes) + " ($unit)"
+                } else {
+                    getString(hintRes)
+                }
+        )
     }
 
     private fun updateProductView(productData: ProductDetailViewState) {
