@@ -2,9 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
@@ -16,10 +13,8 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
 import kotlinx.android.synthetic.main.fragment_product_shipping_class_list.*
-import org.wordpress.android.util.ActivityUtils
 
 /**
  * Dialog which displays a list of product shipping classes
@@ -65,22 +60,6 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(ExitShipping(shouldShowDiscardDialog = false))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
     private fun setupObservers() {
         viewModel.productShippingClassViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isLoadingProgressShown.takeIfNotEqualTo(old?.isLoadingProgressShown) {

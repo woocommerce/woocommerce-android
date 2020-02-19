@@ -63,7 +63,6 @@ class ProductDetailRepository @Inject constructor(
     final var canLoadMoreShippingClasses = true
         private set
 
-
     init {
         dispatcher.register(this)
     }

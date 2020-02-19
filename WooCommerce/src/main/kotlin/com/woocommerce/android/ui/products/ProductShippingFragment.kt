@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
@@ -20,7 +23,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
-import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 /**
@@ -52,6 +55,23 @@ class ProductShippingFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                ActivityUtils.hideKeyboard(activity)
+                // TODO viewModel.onDoneButtonClicked(ExitShipping(shouldShowDiscardDialog = false))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     private fun setupObservers(viewModel: ProductShippingViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
