@@ -149,7 +149,7 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
-     * Fetches the list of shipping classes for the [selectedSite]
+     * Fetches the list of shipping classes for the [selectedSite], optionally loading the next page of classes
      */
     suspend fun fetchShippingClassesForSite(loadMore: Boolean = false): List<ShippingClass> {
         try {
@@ -189,6 +189,9 @@ class ProductDetailRepository @Inject constructor(
     fun getTaxClassesForSite(): List<TaxClass> =
             taxStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
+    /**
+     * Returns a list of cached (SQLite) shipping classes for the current site
+     */
     fun getProductShippingClassesForSite(): List<ShippingClass> =
             productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
@@ -233,6 +236,9 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
+    /**
+     * The list of shipping classes has been fetched for the current site
+     */
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductShippingClassesChanged(event: OnProductShippingClassesChanged) {

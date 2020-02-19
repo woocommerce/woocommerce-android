@@ -319,7 +319,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         loadParameters()
 
         // Pre-load tax and shipping class lists for a site. There are used in the product
-        // pricing & shipping screens
+        // pricing & shipping screens.
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
             productRepository.fetchShippingClassesForSite()
@@ -419,13 +419,14 @@ class ProductDetailViewModel @AssistedInject constructor(
             return
         }
 
-        waitForExistingShippingClassLoad()
+        waitForExistingShippingClassFetch()
 
         shippingClassLoadJob = launch {
             if (loadMore) {
                 productShippingClassViewState = productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
             } else {
-                // only show loading progress if cached list is empty, otherwise show cached list right away
+                // get cached shipping classes and only show loading progress the list is empty, otherwise show
+                // them right away
                 val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
                 if (cachedShippingClasses.isEmpty()) {
                     productShippingClassViewState =
@@ -447,10 +448,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * If shipping classes are already being loaded, wait for the current load to complete - this is
-     * used above to avoid loading multiple pages of shipping classes in unison
+     * If shipping classes are already being fetch, wait for the current fetch to complete - this is
+     * used above to avoid fetching multiple pages of shipping classes in unison
      */
-    private fun waitForExistingShippingClassLoad() {
+    private fun waitForExistingShippingClassFetch() {
         if (shippingClassLoadJob?.isActive == true) {
             launch {
                 try {
