@@ -208,6 +208,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         dateOnSaleTo: String? = null,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null,
+        length: Float? = null,
+        width: Float? = null,
+        height: Float? = null,
+        weight: Float? = null,
         shippingClass: String? = null
     ) {
         viewState.product?.let { product ->
@@ -226,6 +230,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     salePrice = salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
+                    length = length ?: product.length,
+                    width = width ?: product.width,
+                    height = height ?: product.height,
+                    weight = weight ?: product.weight,
                     shippingClass = shippingClass ?: product.shippingClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (product.isSaleScheduled) {

@@ -12,11 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import kotlinx.android.synthetic.main.fragment_product_shipping.*
 import org.wordpress.android.util.ActivityUtils
@@ -63,22 +60,9 @@ class ProductShippingFragment : BaseProductFragment() {
         }
     }
 
-    override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitShipping())
-    }
+    override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitShipping())
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction
-                )
-            }
-        })
-
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ExitShipping -> findNavController().navigateUp()
@@ -108,14 +92,35 @@ class ProductShippingFragment : BaseProductFragment() {
         val weightUnit = viewModel.parameters?.weightUnit
         val dimensionUnit = viewModel.parameters?.dimensionUnit
 
-        showValue(product_weight, R.string.product_weight, productData.product?.weight, weightUnit)
-        showValue(product_length, R.string.product_length, productData.product?.length, dimensionUnit)
-        showValue(product_height, R.string.product_height, productData.product?.height, dimensionUnit)
-        showValue(product_width, R.string.product_width, productData.product?.width, dimensionUnit)
-
-        product_shipping_class_spinner.setText(productData.product?.shippingClass ?: "")
-        product_shipping_class_spinner.setClickListener {
-            showShippingClassFragment()
+        with(product_weight) {
+            showValue(this, R.string.product_weight, productData.product?.weight, weightUnit)
+            setOnTextChangedListener {
+                viewModel.updateProductDraft(weight = it.toString().toFloat())
+            }
+        }
+        with(product_length) {
+            showValue(this, R.string.product_length, productData.product?.length, dimensionUnit)
+            setOnTextChangedListener {
+                viewModel.updateProductDraft(length = it.toString().toFloat())
+            }
+        }
+        with(product_height) {
+            showValue(this, R.string.product_height, productData.product?.height, dimensionUnit)
+            setOnTextChangedListener {
+                viewModel.updateProductDraft(height = it.toString().toFloat())
+            }
+        }
+        with(product_width) {
+            showValue(this, R.string.product_width, productData.product?.width, dimensionUnit)
+            setOnTextChangedListener {
+                viewModel.updateProductDraft(width = it.toString().toFloat())
+            }
+        }
+        with(product_shipping_class_spinner) {
+            setText(productData.product?.shippingClass ?: "")
+            setClickListener {
+                showShippingClassFragment()
+            }
         }
     }
 
