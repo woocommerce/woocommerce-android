@@ -153,6 +153,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
         it.regularPrice = regularPrice.toString()
         it.salePrice = salePrice.toString()
+        it.length = length.toString()
+        it.width = width.toString()
+        it.weight = weight.toString()
+        it.height = height.toString()
         it.shippingClass = shippingClass
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
