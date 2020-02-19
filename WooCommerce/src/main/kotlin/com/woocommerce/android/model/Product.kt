@@ -95,7 +95,12 @@ data class Product(
                 dateOnSaleToGmt == product.dateOnSaleToGmt &&
                 dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
                 regularPrice == product.regularPrice &&
-                salePrice == product.salePrice
+                salePrice == product.salePrice &&
+                weight == product.weight &&
+                length == product.length &&
+                height == product.height &&
+                width == product.width &&
+                shippingClass == product.shippingClass
     }
 
     /**

@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -55,7 +56,7 @@ class ProductShippingFragment : BaseProductFragment() {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                // TODO viewModel.onDoneButtonClicked(ExitShipping(shouldShowDiscardDialog = false))
+                viewModel.onDoneButtonClicked(ExitShipping(shouldShowDiscardDialog = false))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -63,8 +64,7 @@ class ProductShippingFragment : BaseProductFragment() {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        // TODO
-        return true
+        return viewModel.onBackButtonClicked(ExitShipping())
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -76,6 +76,13 @@ class ProductShippingFragment : BaseProductFragment() {
                         event.positiveBtnAction,
                         event.negativeBtnAction
                 )
+            }
+        })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ExitShipping -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
         })
 
