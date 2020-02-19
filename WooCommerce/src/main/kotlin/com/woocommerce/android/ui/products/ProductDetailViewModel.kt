@@ -191,8 +191,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         isSaleScheduled: Boolean? = null,
-        dateOnSaleFrom: String? = null,
-        dateOnSaleTo: String? = null,
+        dateOnSaleFromGmt: String? = null,
+        dateOnSaleToGmt: String? = null,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null
     ) {
@@ -214,10 +214,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     taxClass = taxClass ?: product.taxClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (product.isSaleScheduled) {
-                        dateOnSaleTo?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleToGmt
+                        dateOnSaleToGmt?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleToGmt
                     } else null,
                     dateOnSaleFromGmt = if (product.isSaleScheduled) {
-                        dateOnSaleFrom?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleFromGmt
+                        dateOnSaleFromGmt?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleFromGmt
                     } else null
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)

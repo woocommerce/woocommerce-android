@@ -168,7 +168,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset
                     )
                     setText(selectedDate.formatToMMMddYYYY())
-                    viewModel.updateProductDraft(dateOnSaleFrom = selectedDate.formatToYYYYmmDD())
+                    viewModel.updateProductDraft(dateOnSaleFromGmt = selectedDate.formatToYYYYmmDD())
                 })
             }
         }
@@ -186,7 +186,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset
                     )
                     setText(selectedDate.formatToMMMddYYYY())
-                    viewModel.updateProductDraft(dateOnSaleTo = selectedDate.formatToYYYYmmDD())
+                    viewModel.updateProductDraft(dateOnSaleToGmt = selectedDate.formatToYYYYmmDD())
                 })
             }
         }
