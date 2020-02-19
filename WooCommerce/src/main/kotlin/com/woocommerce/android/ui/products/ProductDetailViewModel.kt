@@ -79,11 +79,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
-    // viewState for the shipping screen
-    final val productShippingViewStateData = LiveDataDelegate(savedState, ProductShippingViewState())
-    private var productShippingViewState by productShippingViewStateData
-
-    // viewState for the shipping class screen
+    // view state for the shipping class screen
     final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
     private var productShippingClassViewState by productShippingClassViewStateData
 
@@ -477,14 +473,18 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val weightWithUnits = if (updatedProduct.weight > 0) {
             "${format(updatedProduct.weight)}${parameters?.weightUnit ?: ""}"
-        } else ""
+        } else {
+            ""
+        }
 
         val hasLength = updatedProduct.length > 0
         val hasWidth = updatedProduct.width > 0
         val hasHeight = updatedProduct.height > 0
         val unit = parameters?.dimensionUnit ?: ""
         val sizeWithUnits = if (hasLength && hasWidth && hasHeight) {
-            "${format(updatedProduct.length)} x ${format(updatedProduct.width)} x ${format(updatedProduct.height)} $unit"
+            "${format(updatedProduct.length)} " +
+                    "x ${format(updatedProduct.width)} " +
+                    "x ${format(updatedProduct.height)} $unit"
         } else if (hasWidth && hasHeight) {
             "${format(updatedProduct.width)} x ${format(updatedProduct.height)} $unit"
         } else {
@@ -592,11 +592,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null
-    ) : Parcelable
-
-    @Parcelize
-    data class ProductShippingViewState(
-        val isProductUpdated: Boolean? = null
     ) : Parcelable
 
     @Parcelize
