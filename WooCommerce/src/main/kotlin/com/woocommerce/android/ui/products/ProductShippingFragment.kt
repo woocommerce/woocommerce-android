@@ -42,6 +42,7 @@ class ProductShippingFragment : BaseProductFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+        initListeners()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
@@ -89,6 +90,33 @@ class ProductShippingFragment : BaseProductFragment() {
         })
     }
 
+    private fun initListeners() {
+        fun toFloatOrNull(editable: Editable?): Float? {
+            val str = editable?.toString() ?: ""
+            return if (str.isEmpty()) {
+                null
+            } else {
+                str.toFloat()
+            }
+        }
+
+        product_weight.setOnTextChangedListener {
+            viewModel.updateProductDraft(weight = toFloatOrNull(it))
+        }
+        product_length.setOnTextChangedListener {
+            viewModel.updateProductDraft(length = toFloatOrNull(it))
+        }
+        product_height.setOnTextChangedListener {
+            viewModel.updateProductDraft(height = toFloatOrNull(it))
+        }
+        product_width.setOnTextChangedListener {
+            viewModel.updateProductDraft(width = toFloatOrNull(it))
+        }
+        product_shipping_class_spinner.setClickListener {
+            showShippingClassFragment()
+        }
+    }
+
     private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
@@ -101,45 +129,11 @@ class ProductShippingFragment : BaseProductFragment() {
         val weightUnit = viewModel.parameters?.weightUnit
         val dimensionUnit = viewModel.parameters?.dimensionUnit
 
-        fun toFloatOrNull(editable: Editable?): Float? {
-            val str = editable?.toString() ?: ""
-            return if (str.isEmpty()) {
-                null
-            } else {
-                str.toFloat()
-            }
-        }
-
-        with(product_weight) {
-            showValue(this, R.string.product_weight, product.weight, weightUnit)
-            setOnTextChangedListener {
-                viewModel.updateProductDraft(weight = toFloatOrNull(it))
-            }
-        }
-        with(product_length) {
-            showValue(this, R.string.product_length, product.length, dimensionUnit)
-            setOnTextChangedListener {
-                viewModel.updateProductDraft(length = toFloatOrNull(it))
-            }
-        }
-        with(product_height) {
-            showValue(this, R.string.product_height, product.height, dimensionUnit)
-            setOnTextChangedListener {
-                viewModel.updateProductDraft(height = toFloatOrNull(it))
-            }
-        }
-        with(product_width) {
-            showValue(this, R.string.product_width, product.width, dimensionUnit)
-            setOnTextChangedListener {
-                viewModel.updateProductDraft(width = toFloatOrNull(it))
-            }
-        }
-        with(product_shipping_class_spinner) {
-            setText(product.shippingClass)
-            setClickListener {
-                showShippingClassFragment()
-            }
-        }
+        showValue(product_weight, R.string.product_weight, product.weight, weightUnit)
+        showValue(product_length, R.string.product_length, product.length, dimensionUnit)
+        showValue(product_height, R.string.product_height, product.height, dimensionUnit)
+        showValue(product_width, R.string.product_width, product.width, dimensionUnit)
+        product_shipping_class_spinner.setText(product.shippingClass)
     }
 
     private fun showShippingClassFragment() {
