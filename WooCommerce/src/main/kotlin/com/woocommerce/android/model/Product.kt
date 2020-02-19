@@ -130,6 +130,10 @@ data class Product(
                     dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
                     taxStatus = updatedProduct.taxStatus,
                     taxClass = updatedProduct.taxClass,
+                    length = updatedProduct.length,
+                    width = updatedProduct.width,
+                    height = updatedProduct.height,
+                    weight = updatedProduct.weight,
                     shippingClass = updatedProduct.shippingClass
             )
         } ?: this.copy()
