@@ -471,25 +471,25 @@ class ProductDetailViewModel @AssistedInject constructor(
     ) : Parcelable
 
     private fun updateProductState(storedProduct: Product) {
-        val weightWithUnits = if (storedProduct.weight > 0) {
-            "${format(storedProduct.weight)}${parameters?.weightUnit ?: ""}"
-        } else ""
-
-        val hasLength = storedProduct.length > 0
-        val hasWidth = storedProduct.width > 0
-        val hasHeight = storedProduct.height > 0
-        val unit = parameters?.dimensionUnit ?: ""
-        val sizeWithUnits = if (hasLength && hasWidth && hasHeight) {
-            "${format(storedProduct.length)} x ${format(storedProduct.width)} x ${format(storedProduct.height)} $unit"
-        } else if (hasWidth && hasHeight) {
-            "${format(storedProduct.width)} x ${format(storedProduct.height)} $unit"
-        } else {
-            ""
-        }.trim()
-
         val updatedProduct = viewState.product?.let {
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
         } ?: storedProduct
+
+        val weightWithUnits = if (updatedProduct.weight > 0) {
+            "${format(updatedProduct.weight)}${parameters?.weightUnit ?: ""}"
+        } else ""
+
+        val hasLength = updatedProduct.length > 0
+        val hasWidth = updatedProduct.width > 0
+        val hasHeight = updatedProduct.height > 0
+        val unit = parameters?.dimensionUnit ?: ""
+        val sizeWithUnits = if (hasLength && hasWidth && hasHeight) {
+            "${format(updatedProduct.length)} x ${format(updatedProduct.width)} x ${format(updatedProduct.height)} $unit"
+        } else if (hasWidth && hasHeight) {
+            "${format(updatedProduct.width)} x ${format(updatedProduct.height)} $unit"
+        } else {
+            ""
+        }.trim()
 
         viewState = viewState.copy(
                 product = updatedProduct,
