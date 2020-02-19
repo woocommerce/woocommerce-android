@@ -19,6 +19,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -52,9 +54,11 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageC
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import java.util.Date
+import kotlin.math.abs
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     private enum class DetailCard {
@@ -93,6 +97,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
+
+        val content = view.findViewById<View>(R.id.collapsing_content)
+        val appBar = view.findViewById<AppBarLayout>(R.id.app_bar_layout)
+        appBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val scrollRange = (appBarLayout.totalScrollRange - DisplayUtils.dpToPx(context, 64)).toFloat()
+            content.alpha = 1.0f - abs(verticalOffset / scrollRange)
+        })
     }
 
     private fun initializeViewModel() {
