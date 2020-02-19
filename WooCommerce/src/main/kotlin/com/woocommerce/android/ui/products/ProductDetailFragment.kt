@@ -754,7 +754,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 MATCH_PARENT,
                 resources.getDimensionPixelSize(R.dimen.product_detail_card_divider_height)
         )
-        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.default_window_background))
+        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.card_divider_color))
         productDetail_container.addView(divider)
     }
 
