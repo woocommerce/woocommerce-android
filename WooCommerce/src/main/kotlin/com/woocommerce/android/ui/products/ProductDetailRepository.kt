@@ -151,7 +151,7 @@ class ProductDetailRepository @Inject constructor(
     /**
      * Fetches the list of shipping classes for the [selectedSite]
      */
-    suspend fun loadShippingClassesForSite(loadMore: Boolean = false): List<ShippingClass> {
+    suspend fun fetchShippingClassesForSite(loadMore: Boolean = false): List<ShippingClass> {
         try {
             continuationShippingClasses?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
