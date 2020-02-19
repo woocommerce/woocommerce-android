@@ -149,7 +149,7 @@ class ProductDetailRepository @Inject constructor(
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
     fun getTaxClassesForSite(): List<TaxClass> =
-            taxStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
+            taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
