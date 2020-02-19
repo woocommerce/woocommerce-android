@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toStartOf="@+id/imgProperty"
         app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
-        app:layout_goneMarginTop="@dimen/product_detail_property_margin"
+        app:layout_goneMarginTop="@dimen/major_100"
         tools:text="textPropertyValue" />
 
     <RatingBar
