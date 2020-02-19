@@ -176,41 +176,41 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
 
 fun WCProductModel.toAppModel(): Product {
     return Product(
-        this.remoteProductId,
-        this.name,
-        this.description,
-        ProductType.fromString(this.type),
-        ProductStatus.fromString(this.status),
-        ProductStockStatus.fromString(this.stockStatus),
-        ProductBackorderStatus.fromString(this.backorders),
-        DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
-        this.getFirstImageUrl(),
-        this.totalSales,
-        this.reviewsAllowed,
-        this.virtual,
-        this.ratingCount,
-        this.averageRating.toFloatOrNull() ?: 0f,
-        this.permalink,
-        this.externalUrl,
-        this.price.toBigDecimalOrNull()?.roundError(),
-        this.salePrice.toBigDecimalOrNull()?.roundError(),
-        this.regularPrice.toBigDecimalOrNull()?.roundError(),
-        this.taxClass,
-        this.manageStock,
-        this.stockQuantity,
-        this.sku,
-        this.length.toFloatOrNull() ?: 0f,
-        this.width.toFloatOrNull() ?: 0f,
-        this.height.toFloatOrNull() ?: 0f,
-        this.weight.toFloatOrNull() ?: 0f,
-        this.shippingClass,
-        this.downloadable,
-        this.getDownloadableFiles().size,
-        this.downloadLimit,
-        this.downloadExpiry,
-        this.purchaseNote,
-        this.getNumVariations(),
-        this.getImages().map {
+        remoteId = this.remoteProductId,
+        name = this.name,
+        description = this.description,
+        type = ProductType.fromString(this.type),
+        status = ProductStatus.fromString(this.status),
+        stockStatus = ProductStockStatus.fromString(this.stockStatus),
+        backorderStatus = ProductBackorderStatus.fromString(this.backorders),
+        dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
+        firstImageUrl = this.getFirstImageUrl(),
+        totalSales = this.totalSales,
+        reviewsAllowed = this.reviewsAllowed,
+        isVirtual = this.virtual,
+        ratingCount = this.ratingCount,
+        averageRating = this.averageRating.toFloatOrNull() ?: 0f,
+        permalink = this.permalink,
+        externalUrl = this.externalUrl,
+        price = this.price.toBigDecimalOrNull()?.roundError(),
+        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
+        taxClass = this.taxClass,
+        manageStock = this.manageStock,
+        stockQuantity = this.stockQuantity,
+        sku = this.sku,
+        length = this.length.toFloatOrNull() ?: 0f,
+        width = this.width.toFloatOrNull() ?: 0f,
+        height = this.height.toFloatOrNull() ?: 0f,
+        weight = this.weight.toFloatOrNull() ?: 0f,
+        shippingClass = this.shippingClass,
+        isDownloadable = this.downloadable,
+        fileCount = this.getDownloadableFiles().size,
+        downloadLimit = this.downloadLimit,
+        downloadExpiry = this.downloadExpiry,
+        purchaseNote = this.purchaseNote,
+        numVariations = this.getNumVariations(),
+        images = this.getImages().map {
             Product.Image(
                     it.id,
                     it.name,
@@ -218,7 +218,7 @@ fun WCProductModel.toAppModel(): Product {
                     DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
-        this.getAttributes().map {
+        attributes = this.getAttributes().map {
             Product.Attribute(
                     it.id,
                     it.name,
@@ -226,11 +226,11 @@ fun WCProductModel.toAppModel(): Product {
                     it.visible
             )
         },
-        this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        this.soldIndividually,
-        ProductTaxStatus.fromString(this.taxStatus),
-        this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()
+        dateOnSaleToGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
+        dateOnSaleFromGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        soldIndividually = this.soldIndividually,
+        taxStatus = ProductTaxStatus.fromString(this.taxStatus),
+        isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()
     )
 }
 
