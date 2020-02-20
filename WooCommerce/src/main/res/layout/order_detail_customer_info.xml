@@ -25,10 +25,14 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_label"
                 style="@style/Woo.Card.Header"
-                android:layout_marginBottom="@dimen/minor_00"
+                android:layout_marginBottom="@dimen/major_75"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/customer_information"/>
+
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100"/>
 
             <!-- Label: Customer note -->
             <LinearLayout
