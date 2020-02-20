@@ -149,7 +149,11 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             isChecked = scheduleSale
             setOnCheckedChangeListener { _, isChecked ->
                 enableScheduleSale(isChecked)
-                viewModel.updateProductDraft(isSaleScheduled = isChecked)
+                viewModel.updateProductDraft(
+                        isSaleScheduled = isChecked,
+                        dateOnSaleFromGmt = DateUtils.formatToYYYYmmDD(scheduleSale_startDate.getText()),
+                        dateOnSaleToGmt = DateUtils.formatToYYYYmmDD(scheduleSale_endDate.getText())
+                )
             }
         }
 
