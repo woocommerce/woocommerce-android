@@ -1,9 +1,13 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -13,10 +17,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
 import kotlinx.android.synthetic.main.refund_by_items_products.*
 import java.math.BigDecimal
@@ -65,6 +72,20 @@ class RefundByItemsFragment : BaseFragment() {
 //        issueRefund_productsTotal.setOnClickListener {
 //            viewModel.onProductRefundAmountTapped()
 //        }
+
+        val linkText = getString(R.string.order_refunds_store_admin_link_text)
+        val noticeText = getString(R.string.order_refunds_shipping_refund_notice, linkText)
+        val spannable = SpannableString(noticeText)
+        val span = WooClickableSpan { viewModel.onOpenStoreAdminLinkClicked() }
+        span.useCustomStyle = false
+        spannable.setSpan(
+                span,
+                (noticeText.length - linkText.length),
+                noticeText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        issueRefund_shippingRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
+        issueRefund_shippingRefundNotice.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun setupObservers() {
@@ -130,6 +151,9 @@ class RefundByItemsFragment : BaseFragment() {
                             event.message
                     )
                     findNavController().navigate(action)
+                }
+                is OpenUrl -> {
+                    ActivityUtils.openUrlExternal(requireContext(), event.url)
                 }
                 else -> event.isHandled = false
             }
