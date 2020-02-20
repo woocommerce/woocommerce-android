@@ -15,6 +15,14 @@ sealed class ProductTaxStatus(@StringRes val stringResource: Int = 0, val value:
     object NotAvailable : ProductTaxStatus()
     class Custom(value: String) : ProductTaxStatus(value = value)
 
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(value)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
     companion object {
         fun fromString(value: String?): ProductTaxStatus {
             return when (value) {
@@ -47,24 +55,16 @@ sealed class ProductTaxStatus(@StringRes val stringResource: Int = 0, val value:
                 status.value
             }
         }
-    }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(value)
-    }
+        @JvmField
+        val CREATOR = object : Creator<ProductTaxStatus> {
+            override fun createFromParcel(parcel: Parcel): ProductTaxStatus {
+                return fromString(parcel.readString())
+            }
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    @JvmField
-    val CREATOR = object : Creator<ProductTaxStatus> {
-        override fun createFromParcel(parcel: Parcel): ProductTaxStatus {
-            return fromString(parcel.readString())
-        }
-
-        override fun newArray(size: Int): Array<ProductTaxStatus?> {
-            return arrayOfNulls(size)
+            override fun newArray(size: Int): Array<ProductTaxStatus?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 }
