@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.formatDateToYYYYMMDDFormat
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
@@ -42,6 +41,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.Date
 import kotlin.math.roundToInt
 
 @OpenClassOnDebug
@@ -208,8 +208,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         isSaleScheduled: Boolean? = null,
-        dateOnSaleFromGmt: String? = null,
-        dateOnSaleToGmt: String? = null,
+        dateOnSaleFromGmt: Date? = null,
+        dateOnSaleToGmt: Date? = null,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null
     ) {
@@ -232,10 +232,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     taxClass = taxClass ?: product.taxClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true || product.isSaleScheduled) {
-                        dateOnSaleToGmt?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleToGmt
+                        dateOnSaleToGmt ?: product.dateOnSaleToGmt
                     } else null,
                     dateOnSaleFromGmt = if (isSaleScheduled == true || product.isSaleScheduled) {
-                        dateOnSaleFromGmt?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleFromGmt
+                        dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
                     } else null
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)

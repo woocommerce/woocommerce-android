@@ -1,5 +1,6 @@
 package com.woocommerce.android.extensions
 
+import com.woocommerce.android.util.DateUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -28,3 +29,5 @@ fun Date.formatToEEEEMMMddhha(): String {
     dateFormat.dateFormatSymbols = symbols
     return dateFormat.format(this)
 }
+
+fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils.offsetGmtDate(it, gmtOffset) }

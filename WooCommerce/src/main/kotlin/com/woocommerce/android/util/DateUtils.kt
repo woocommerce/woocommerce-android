@@ -347,13 +347,26 @@ object DateUtils {
         return calendar.time
     }
 
-    @Throws(IllegalArgumentException::class)
+    /**
+     * Converts the given [year] [month] [day] to a [Date] object
+     * and applies the passed [gmtOffset] to the date
+     */
     fun getOffsetGmtDate(year: Int, month: Int, day: Int, gmtOffset: Float): Date {
+        val date = GregorianCalendar(year, month, day, 23, 59, 59).time
+        return offsetGmtDate(date, gmtOffset)
+    }
+
+    /**
+     * Converts the given [dateString] to a [Date] object
+     * and applies the passed [gmtOffset] to the date
+     */
+    fun getOffsetGmtDate(dateString: String, gmtOffset: Float): Date {
         return try {
-            val date = GregorianCalendar(year, month, day).time
+            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            val date = dateFormat.parse(dateString) ?: Date()
             offsetGmtDate(date, gmtOffset)
         } catch (e: Exception) {
-            throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+            throw IllegalArgumentException("Date string argument is not of format MMM dd, yyyy: $this")
         }
     }
 
@@ -364,7 +377,7 @@ object DateUtils {
     @Throws(IllegalArgumentException::class)
     fun formatToYYYYmmDD(dateString: String): String {
         return try {
-            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.US)
+            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
             val date = dateFormat.parse(dateString) ?: Date()
             date.formatToYYYYmmDD()
         } catch (e: Exception) {
