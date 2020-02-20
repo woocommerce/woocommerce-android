@@ -210,8 +210,8 @@ end
   # bundle exec fastlane build_release 
   # bundle exec fastlane build_release skip_confirm:true 
   #####################################################################################
-  desc "Builds and updates for distribution"
-  lane :build_release do | options |
+  desc "Builds and uploads release for distribution"
+  lane :build_and_upload_release do | options |
     android_build_prechecks(skip_confirm: options[:skip_confirm], 
       alpha: false,
       beta: false,
@@ -221,6 +221,25 @@ end
     # Create the file names
     version=android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
+
+    version=android_get_release_version()
+
+    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
+    aab_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }.aab")
+
+    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
+
+    upload_to_play_store(
+      package_name: 'com.woocommerce.android',
+      aab: aab_file_path,
+      track: 'production',
+      release_status: 'draft',
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      json_key: './google-upload-credentials.json',
+    )
   end
 
   #####################################################################################
