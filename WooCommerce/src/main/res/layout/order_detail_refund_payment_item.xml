@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:id="@+id/refundsList_itemRoot">
 
     <!-- Divider -->
     <View
@@ -23,7 +25,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
         android:text="@string/orderdetail_refunded"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/refundsList_refundDivider" />
@@ -43,7 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_50"
-        android:layout_marginBottom="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_75"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/refundsList_lblRefund"
         app:layout_constraintBottom_toBottomOf="parent"

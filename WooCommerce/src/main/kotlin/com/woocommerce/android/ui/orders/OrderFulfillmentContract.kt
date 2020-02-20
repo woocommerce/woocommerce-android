@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -23,7 +24,7 @@ interface OrderFulfillmentContract {
     }
 
     interface View : BaseView<Presenter>, OrderProductActionListener, OrderShipmentTrackingActionListener {
-        fun showOrderDetail(order: WCOrderModel)
+        fun showOrderDetail(order: WCOrderModel, refunds: List<Refund>)
         fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>)
         fun showAddShipmentTrackingSnack()
         fun showAddAddShipmentTrackingErrorSnack()

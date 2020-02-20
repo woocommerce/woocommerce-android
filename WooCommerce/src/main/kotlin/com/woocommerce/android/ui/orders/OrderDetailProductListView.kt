@@ -13,12 +13,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import java.math.BigDecimal
+import java.math.RoundingMode.HALF_UP
 
 class OrderDetailProductListView @JvmOverloads constructor(
     ctx: Context,
@@ -35,19 +40,22 @@ class OrderDetailProductListView @JvmOverloads constructor(
     /**
      * Initialize and format this view.
      *
-     * @param [order] The order containing the product list to display.
+     * @param [orderModel] The order containing the product list to display.
+     * @param [productImageMap] Images for products.
      * @param [expanded] If true, expanded view will be shown, else collapsed view.
      * @param [formatCurrencyForDisplay] Function to use for formatting currencies for display.
      * @param [orderListener] Listener for routing order click actions. If null, the buttons will be hidden.
      * @param [productListener] Listener for routing product click actions.
+     * @param [refunds] List of refunds order the order.
      */
     fun initView(
-        order: WCOrderModel,
+        orderModel: WCOrderModel,
         productImageMap: ProductImageMap,
         expanded: Boolean,
-        formatCurrencyForDisplay: (String?) -> String,
+        formatCurrencyForDisplay: (BigDecimal) -> String,
         orderListener: OrderActionListener? = null,
-        productListener: OrderProductActionListener? = null
+        productListener: OrderProductActionListener? = null,
+        refunds: List<Refund>
     ) {
         isExpanded = expanded
 
@@ -59,8 +67,21 @@ class OrderDetailProductListView @JvmOverloads constructor(
         }
 
         val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+
+        val order = orderModel.toAppModel()
+        val leftoverProducts = order.getMaxRefundQuantities(refunds).filter { it.value > 0 }
+        val filteredItems = order.items.filter { leftoverProducts.contains(it.uniqueId) }
+                .map {
+                    val newQuantity = leftoverProducts[it.uniqueId]
+                    it.copy(
+                            quantity = newQuantity ?: error("Missing product"),
+                            total = it.price.times(newQuantity.toBigDecimal()),
+                            totalTax = it.totalTax.divide(it.quantity.toBigDecimal(), 2, HALF_UP)
+                    )
+                }
+
         viewAdapter = ProductListAdapter(
-                order.getLineItemList(),
+                filteredItems,
                 productImageMap,
                 formatCurrencyForDisplay,
                 isExpanded,
@@ -68,20 +89,20 @@ class OrderDetailProductListView @JvmOverloads constructor(
         )
 
         orderListener?.let {
-            if (order.status == CoreOrderStatus.PROCESSING.value) {
+            if (orderModel.status == CoreOrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)
                 productList_btnFulfill.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-                    orderListener.openOrderFulfillment(order)
+                    orderListener.openOrderFulfillment(orderModel)
                 }
             } else {
                 productList_btnFulfill.visibility = View.GONE
                 productList_btnDetails.visibility = View.VISIBLE
                 productList_btnDetails.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED)
-                    orderListener.openOrderProductList(order)
+                    orderListener.openOrderProductList(orderModel)
                 }
                 productList_btnFulfill.setOnClickListener(null)
             }
@@ -138,9 +159,9 @@ class OrderDetailProductListView @JvmOverloads constructor(
     }
 
     class ProductListAdapter(
-        private val orderItems: List<WCOrderModel.LineItem>,
+        private val orderItems: List<Order.Item>,
         private val productImageMap: ProductImageMap,
-        private val formatCurrencyForDisplay: (String?) -> String,
+        private val formatCurrencyForDisplay: (BigDecimal) -> String,
         private var isExpanded: Boolean,
         private val productListener: OrderProductActionListener?
     ) : RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {

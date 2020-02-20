@@ -34,6 +34,14 @@ sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val 
             }
         }
 
+        fun fromBackorderStatus(backorderStatus: ProductBackorderStatus): String {
+            return when (backorderStatus) {
+                Yes -> CoreProductBackOrders.YES.value
+                Notify -> CoreProductBackOrders.NOTIFY.value
+                else -> CoreProductBackOrders.NO.value
+            }
+        }
+
         fun toStringResource(value: String) = fromString(value).stringResource
 
         fun toMap(context: Context) = CoreProductBackOrders.values()

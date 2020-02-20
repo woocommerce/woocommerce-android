@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import com.woocommerce.android.extensions.calculateTotals
+import com.woocommerce.android.extensions.isCashPayment
 
 @OpenClassOnDebug
 class RefundDetailViewModel @AssistedInject constructor(
@@ -47,21 +48,42 @@ class RefundDetailViewModel @AssistedInject constructor(
     private val navArgs: RefundDetailFragmentArgs by savedState.navArgs()
 
     init {
-        orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, navArgs.orderId))
-                ?.toAppModel()?.let { order ->
+        val orderModel = orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, navArgs.orderId))
+        orderModel?.toAppModel()?.let { order ->
             formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-            refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)?.toAppModel()?.let { refund ->
-                displayRefundDetails(refund, order)
+            if (navArgs.refundId > 0) {
+                refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
+                    ?.toAppModel()?.let { refund ->
+                        displayRefundDetails(refund, order)
+                    }
+            } else {
+                val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
+                displayRefundedProducts(order, refunds)
             }
         }
     }
 
-    private fun displayRefundDetails(refund: Refund, order: Order) {
-        val method = if (refund.automaticGatewayRefund)
-            order.paymentMethodTitle
-        else
-            "${resourceProvider.getString(R.string.order_refunds_manual_refund)} - ${order.paymentMethodTitle}"
+    private fun displayRefundedProducts(order: Order, refunds: List<Refund>) {
+        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
+        val refundedProducts = groupedRefunds.keys.mapNotNull { id ->
+            order.items.firstOrNull { it.uniqueId == id }?.let { item ->
+                groupedRefunds[id]?.sumBy { it.quantity }?.let { quantity ->
+                    RefundListItem(item, quantity = quantity)
+                }
+            }
+        }
 
+        viewState = viewState.copy(
+            currency = order.currency,
+            screenTitle = resourceProvider.getString(R.string.orderdetail_refunded_products),
+            areItemsVisible = true,
+            areDetailsVisible = false
+        )
+
+        _refundItems.value = refundedProducts
+    }
+
+    private fun displayRefundDetails(refund: Refund, order: Order) {
         if (refund.items.isNotEmpty()) {
             val items = refund.items.map { refundItem ->
                 RefundListItem(
@@ -86,9 +108,23 @@ class RefundDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(
                 screenTitle = "${resourceProvider.getString(R.string.order_refunds_refund)} #${refund.id}",
                 refundAmount = formatCurrency(refund.amount),
-                refundMethod = resourceProvider.getString(R.string.order_refunds_refunded_via).format(method),
-                refundReason = refund.reason
+                refundMethod = resourceProvider.getString(
+                        R.string.order_refunds_refunded_via,
+                        getRefundMethod(order, refund)),
+                refundReason = refund.reason,
+                areDetailsVisible = true
         )
+    }
+
+    private fun getRefundMethod(order: Order, refund: Refund): String {
+        val manualRefund = resourceProvider.getString(R.string.order_refunds_manual_refund)
+        return if (order.paymentMethodTitle.isNotBlank() &&
+                (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment))
+            order.paymentMethodTitle
+        else if (order.paymentMethodTitle.isNotBlank())
+            "$manualRefund - ${order.paymentMethodTitle}"
+        else
+            manualRefund
     }
 
     @Parcelize
@@ -100,7 +136,8 @@ class RefundDetailViewModel @AssistedInject constructor(
         val refundMethod: String? = null,
         val refundReason: String? = null,
         val currency: String? = null,
-        val areItemsVisible: Boolean? = null
+        val areItemsVisible: Boolean? = null,
+        val areDetailsVisible: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

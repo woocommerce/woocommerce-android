@@ -1,0 +1,2 @@
+3.5 :
+Lorsque vous débutez et que l'application n’a rien à afficher sous forme de liste (par ex. avant votre première commande ou votre premier avis), un message convivial vous aide à démarrer.

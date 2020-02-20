@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-22 00:54:04+0000
+Translation-Revision-Date: 2020-02-06 00:54:13+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="sign_up">S\'inscrire sur WordPress.com</string>
+    <string name="empty_message_with_search">Désolé, il n’y a aucun résultat pour « %s »</string>
+    <string name="empty_review_list_message">Capturer des avis de produits de qualité pour votre boutique</string>
+    <string name="empty_review_list_title">Obtenir vos premiers avis</string>
+    <string name="empty_order_list_all_processed">Toutes les commandes ont été exécutées</string>
+    <string name="empty_order_list_message">Vous serez informé lorsque vous recevrez une nouvelle commande. En attendant, découvrez comment vous pouvez améliorer les ventes de votre boutique.</string>
+    <string name="empty_order_list_title">En attendant votre première commande</string>
+    <string name="share_your_store_message">Partagez votre boutique sur les réseaux sociaux et par e-mail avec vos contacts</string>
+    <string name="get_the_word_out">Faites passer le message</string>
+    <string name="product_inventory_quantity_summary">Nombre d’articles en stock</string>
+    <string name="product_inventory_quantity">Quantité</string>
+    <string name="product_sold_individually">Limite : un par commande</string>
+    <string name="product_manage_stock">Gestion du stock</string>
+    <string name="product_sku_summary">Permet d’identifier rapidement ce produit</string>
+    <string name="product_sale_date_from">à partir du %1$s</string>
+    <string name="product_sale_date_from_to">%1$s – %2$s</string>
+    <string name="product_sale_dates">Dates des soldes</string>
+    <string name="product_price_empty">Ajouter un prix</string>
+    <string name="product_inventory_empty">Ajouter un inventaire</string>
+    <string name="orderlist_loading">Recherche dans vos commandes…</string>
     <string name="product_detail_editable_text_hint">Saisissez du texte</string>
     <string name="product_detail_title_hint">Saisissez un titre</string>
     <string name="product_detail_update_product_success">Produit mis à jour</string>
@@ -49,7 +69,6 @@ Language: fr
     <string name="product_add_photos">Ajouter des photos</string>
     <string name="product_images_title">Photos</string>
     <string name="product_add_image_content_description">Ajouter une image</string>
-    <string name="orderlist_fetching">Récupération des commandes…</string>
     <string name="date_timeframe_future">À venir</string>
     <string name="remove">Supprimer</string>
     <string name="product_variant_hidden">Masqué</string>
@@ -127,7 +146,7 @@ Language: fr
     <string name="order_refunds_available_for_refund">%s disponible(s) pour remboursement</string>
     <string name="orderdetail_issue_refund_button">Effectuer le remboursement</string>
     <string name="orderdetail_refund_view_details">Voir les détails</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Essayez les nouvelles statistiques disponibles avec\nl\'extension d\'administration WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistiques améliorées</string>
     <string name="beta_features">Fonctionnalités bêta</string>
