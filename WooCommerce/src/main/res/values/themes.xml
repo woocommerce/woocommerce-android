@@ -64,7 +64,7 @@
         <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
         <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
         <item name="tabStyle">@style/Woo.TabLayout</item>
         <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
         <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
@@ -89,5 +89,22 @@
         <!-- TODO: convert styles to material -->
 <!--        <item name="android:listViewStyle"></item>-->
         <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
+    </style>
+
+    <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Colors -->
+        <item name="colorPrimary">@color/color_secondary</item>
+        <item name="colorSecondary">@color/color_primary</item>
+
+        <item name="android:colorBackground">@color/default_window_background</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorError">@color/color_error</item>
+
+        <item name="colorOnPrimary">@color/color_on_primary_high</item>
+        <item name="colorOnPrimarySurface">@color/color_on_primary_surface_high</item>
+        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorOnSurface">@color/color_on_surface_high</item>
+        <item name="colorOnError">@color/color_on_error</item>
     </style>
 </resources>

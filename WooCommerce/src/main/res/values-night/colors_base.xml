@@ -6,6 +6,7 @@
     <color name="color_primary">@color/woo_purple_30</color>
     <color name="color_primary_surface">@color/woo_black_90</color>
     <color name="color_secondary">@color/woo_pink_30</color>
+    <color name="color_error">@color/woo_red_30</color>
     <color name="color_surface">@color/woo_black_90</color>
     <color name="color_on_surface_high">@color/woo_white_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_white_alpha_060</color>
@@ -14,6 +15,8 @@
     <color name="color_on_primary_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_primary_disabled">@color/woo_black_90_alpha_038</color>
     <color name="color_on_primary_surface_high">@color/color_on_surface_high</color>
+    <color name="color_on_background">@color/woo_white</color>
+    <color name="color_on_error">@color/woo_black</color>
     <!--
         App colors
     -->
