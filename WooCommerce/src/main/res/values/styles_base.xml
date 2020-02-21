@@ -255,7 +255,21 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Woo.TextInputLayout"/>
     <style name="Woo.TextInputLayout.Outlined"
-        parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"/>
+        parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_75</item>
+    </style>
+
+    <style name="Woo.TextInputEditText"/>
+    <style name="Woo.TextInputEditText.Subtitle1">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
+        <item name="android:layout_margin">@dimen/minor_00</item>
+    </style>
 
     <!--
         Button Styles
