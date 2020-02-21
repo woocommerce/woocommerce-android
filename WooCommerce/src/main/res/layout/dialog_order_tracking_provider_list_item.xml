@@ -1,40 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Woo.ListItem"
+    style="@style/Woo.Card.WithoutPadding"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardElevation="0dp">
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/Woo.ListItem"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:paddingBottom="@dimen/card_padding_bottom"
-        android:paddingTop="@dimen/card_padding_top">
+        android:layout_height="wrap_content">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/addShipmentTrackingProviderListItem_name"
-            style="@style/Woo.TextAppearance.Title.Large"
+            style="@style/Woo.ListItem.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/addShipmentTrackingProviderListItem_tick"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Canada Post"/>
+            tools:text="Canada Post" />
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/addShipmentTrackingProviderListItem_tick"
-            android:layout_width="wrap_content"
+            style="@style/Woo.Button.Toggle"
+            android:layout_width="@dimen/min_tap_target"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_done_purple_24dp"
-            android:button="@null"
             android:contentDescription="@string/order_shipment_tracking_provider_list_item"
+            android:button="@null"
+            android:drawableEnd="@drawable/ic_done_secondary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -42,4 +37,4 @@
             tools:visibility="visible"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
