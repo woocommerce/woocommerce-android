@@ -14,8 +14,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.OrderNote
 import kotlinx.android.synthetic.main.order_detail_note_item.view.*
 
-class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class OrderDetailOrderNoteItemView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : ConstraintLayout(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_detail_note_item, this)
     }
@@ -32,8 +35,6 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
 
         orderNote_header.text = header
         orderNote_note.text = getHtmlText(note.note)
-
-        orderNote_bottomSpacer.visibility = if (showBottomPadding) View.VISIBLE else View.GONE
 
         when {
             note.isCustomerNote -> {

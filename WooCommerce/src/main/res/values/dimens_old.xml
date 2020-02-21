@@ -126,11 +126,6 @@
     <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
 
     <!--
-        Orders and order notes
-    -->
-    <dimen name="order_note_icon">26dp</dimen>
-
-    <!--
         Skeletons
     -->
     <dimen name="skeleton_order_note_item_height">96dp</dimen>
