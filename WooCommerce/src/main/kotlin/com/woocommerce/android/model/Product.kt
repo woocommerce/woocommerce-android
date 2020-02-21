@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.roundError
@@ -86,7 +87,7 @@ data class Product(
                 sku == product.sku &&
                 type == product.type &&
                 numVariations == product.numVariations &&
-                name == product.name &&
+                name.fastStripHtml() == product.name.fastStripHtml() &&
                 description == product.description &&
                 images == product.images &&
                 taxClass == product.taxClass &&
