@@ -121,36 +121,6 @@ end
   end
 
   #####################################################################################
-  # upload_beta_build_to_play_store
-  # -----------------------------------------------------------------------------------
-  # This lane ships the app to Beta lane in the Play Store (but does not release it)
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane upload_beta_build_to_play_store
-  #####################################################################################
-  desc "Uploads the release build to the Play Store (without releasing it)"
-  lane :upload_beta_build_to_play_store do | options |
-    version=android_get_release_version()
-    
-    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
-    aab_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }.aab")
-
-    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
-
-    upload_to_play_store(
-      package_name: 'com.woocommerce.android',
-      aab: aab_file_path,
-      track: 'beta',
-      release_status: 'draft',
-      skip_upload_metadata: true,
-      skip_upload_changelogs: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      json_key: './google-upload-credentials.json',
-    )
-  end
-
-  #####################################################################################
   # new_hotfix_release
   # -----------------------------------------------------------------------------------
   # This lane updates the release branch for a new hotix release. 
@@ -243,47 +213,43 @@ end
   end
 
   #####################################################################################
-  # build_pre_releases
+  # build_and_upload_beta
   # -----------------------------------------------------------------------------------
-  # This lane builds the app it for both internal and external distribution 
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane build_pre_releases [skip_confirm:<skip confirm>]
-  #
-  # Example:
-  # bundle exec fastlane build_pre_releases 
-  # bundle exec fastlane build_pre_releases skip_confirm:true 
-  #####################################################################################
-  desc "Builds and updates for distribution"
-  lane :build_pre_releases do | options |
-    android_build_prechecks(skip_confirm: options[:skip_confirm], 
-      alpha: false,
-      beta: true,
-      final: false)
-    android_build_preflight()
-    build_beta(skip_prechecks: true, skip_confirm: options[:skip_confirm])
-  end
-
-  #####################################################################################
-  # build_beta
-  # -----------------------------------------------------------------------------------
-  # This lane builds the app it for internal testing  
+  # This lane builds the app for external beta distribution, and uploads the build
+  # to the beta channel (but does not release it).
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_beta [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>]
   #
   # Example:
-  # bundle exec fastlane build_beta 
-  # bundle exec fastlane build_beta skip_confirm:true 
+  # bundle exec fastlane build_and_upload_beta 
+  # bundle exec fastlane build_and_upload_beta skip_confirm:true 
   #####################################################################################
-  desc "Builds and updates for distribution"
-  lane :build_beta do | options |
-    android_build_prechecks(skip_confirm: options[:skip_confirm], beta: true) unless (options[:skip_prechecks])
+  desc "Builds and uploads a new beta build to Google Play (without releasing it)"
+  lane :build_and_upload_beta do | options |
+    android_build_prechecks(skip_confirm: options[:skip_confirm], alpha: false, beta: true, final: false) unless (options[:skip_prechecks])
     android_build_preflight() unless (options[:skip_prechecks])
 
     # Create the file names
     version=android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
+
+    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
+    aab_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }.aab")
+
+    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
+
+    upload_to_play_store(
+      package_name: 'com.woocommerce.android',
+      aab: aab_file_path,
+      track: 'beta',
+      release_status: 'draft',
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      json_key: './google-upload-credentials.json',
+    )
   end
   
 #####################################################################################
