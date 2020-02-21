@@ -192,8 +192,6 @@ end
     version=android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
 
-    version=android_get_release_version()
-
     project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
     aab_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }.aab")
 
