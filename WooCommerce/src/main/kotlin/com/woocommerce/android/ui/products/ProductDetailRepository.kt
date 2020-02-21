@@ -187,7 +187,7 @@ class ProductDetailRepository @Inject constructor(
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
     fun getTaxClassesForSite(): List<TaxClass> =
-            taxStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
+            taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**
      * Returns a list of cached (SQLite) shipping classes for the current site

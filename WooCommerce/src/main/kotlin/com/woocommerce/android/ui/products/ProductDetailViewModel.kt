@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.formatDateToYYYYMMDDFormat
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
@@ -46,6 +46,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.Date
 import kotlin.math.roundToInt
 
 @OpenClassOnDebug
@@ -137,10 +138,26 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Method called when back button is clicked.
+     *
+     * Each product screen has it's own [ProductExitEvent]
+     * Based on the exit event, the logic is to check if the discard dialog should be displayed.
+     *
+     * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
+     * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
+     * i.e. viewState.product != viewState.storedProduct and viewState.product != viewState.cachedProduct
+     *
+     * For the product detail screen, the discard dialog should only be displayed if there are changes to the
+     * [Product] model locally, that still need to be saved to the backend. i.e.
+     * viewState.product != viewState.storedProduct
+     */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
+        val isProductDetailUpdated = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
+        val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
-            else -> viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
+            is ExitProductDetail -> isProductDetailUpdated
+            else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
         return if (isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
@@ -202,8 +219,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         isSaleScheduled: Boolean? = null,
-        dateOnSaleFrom: String? = null,
-        dateOnSaleTo: String? = null,
+        dateOnSaleFromGmt: Date? = null,
+        dateOnSaleToGmt: Date? = null,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null,
         length: Float? = null,
@@ -224,8 +241,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
                     images = viewState.storedProduct?.images ?: product.images,
-                    regularPrice = regularPrice ?: product.regularPrice,
-                    salePrice = salePrice ?: product.salePrice,
+                    regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) null else regularPrice
+                            ?: product.regularPrice,
+                    salePrice = if (salePrice isEqualTo BigDecimal.ZERO) null else salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
                     length = length ?: product.length,
@@ -234,12 +252,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                     weight = weight ?: product.weight,
                     shippingClass = shippingClass ?: product.shippingClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    dateOnSaleToGmt = if (product.isSaleScheduled) {
-                        dateOnSaleTo?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleToGmt
-                    } else null,
-                    dateOnSaleFromGmt = if (product.isSaleScheduled) {
-                        dateOnSaleFrom?.formatDateToYYYYMMDDFormat() ?: product.dateOnSaleFromGmt
-                    } else null
+                    dateOnSaleToGmt = if (isSaleScheduled == true) {
+                        dateOnSaleToGmt ?: product.dateOnSaleToGmt
+                    } else product.dateOnSaleToGmt,
+                    dateOnSaleFromGmt = if (isSaleScheduled == true) {
+                        dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
+                    } else product.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 

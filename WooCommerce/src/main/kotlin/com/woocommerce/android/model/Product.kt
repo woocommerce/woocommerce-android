@@ -2,7 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.formatDateToISO8601Format
-import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -162,10 +162,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.taxClass = taxClass
         if (isSaleScheduled) {
             dateOnSaleFromGmt?.let { dateOnSaleFrom ->
-                it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDD()
+                it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
             }
             dateOnSaleToGmt?.let { dateOnSaleTo ->
-                it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDD()
+                it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDDhhmmss()
             }
         } else {
             it.dateOnSaleFromGmt = ""

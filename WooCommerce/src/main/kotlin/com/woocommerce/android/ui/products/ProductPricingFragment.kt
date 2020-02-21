@@ -17,7 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
-import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
@@ -144,49 +144,45 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         }
 
         val scheduleSale = product.isSaleScheduled
+        val gmtOffset = productData.gmtOffset
+
         enableScheduleSale(scheduleSale)
         with(scheduleSale_switch) {
             isChecked = scheduleSale
             setOnCheckedChangeListener { _, isChecked ->
                 enableScheduleSale(isChecked)
-                viewModel.updateProductDraft(isSaleScheduled = isChecked)
+                viewModel.updateProductDraft(
+                        isSaleScheduled = isChecked,
+                        dateOnSaleFromGmt = DateUtils.localDateToGmt(scheduleSale_startDate.getText(), gmtOffset, true),
+                        dateOnSaleToGmt = DateUtils.localDateToGmt(scheduleSale_endDate.getText(), gmtOffset, false)
+                )
             }
         }
 
-        val gmtOffset = productData.gmtOffset
-        val currentDate = DateUtils.offsetGmtDate(Date(), gmtOffset)
         with(scheduleSale_startDate) {
-            val dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
-                DateUtils.offsetGmtDate(it, gmtOffset)
-            } ?: currentDate
-
-            setText(dateOnSaleFrom.formatToMMMddYYYY())
+            setText(formatSaleDateForDisplay(product.dateOnSaleFromGmt, gmtOffset))
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.getOffsetGmtDate(
-                            selectedYear, selectedMonth, dayOfMonth, gmtOffset
+                    val selectedDate = DateUtils.localDateToGmt(
+                            selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
                     )
                     setText(selectedDate.formatToMMMddYYYY())
-                    viewModel.updateProductDraft(dateOnSaleFrom = selectedDate.formatToYYYYmmDD())
+                    viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleFromGmt = selectedDate)
                 })
             }
         }
 
         with(scheduleSale_endDate) {
-            val dateOnSaleTo = product.dateOnSaleToGmt?.let {
-                DateUtils.offsetGmtDate(it, gmtOffset)
-            } ?: currentDate
-
-            setText(dateOnSaleTo.formatToMMMddYYYY())
+            setText(formatSaleDateForDisplay(product.dateOnSaleToGmt, gmtOffset))
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(scheduleSale_endDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.getOffsetGmtDate(
-                            selectedYear, selectedMonth, dayOfMonth, gmtOffset
+                    val selectedDate = DateUtils.localDateToGmt(
+                            selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
                     )
                     setText(selectedDate.formatToMMMddYYYY())
-                    viewModel.updateProductDraft(dateOnSaleTo = selectedDate.formatToYYYYmmDD())
+                    viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleToGmt = selectedDate)
                 })
             }
         }
@@ -247,6 +243,18 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
         datePicker.show()
         return datePicker
+    }
+
+    /**
+     * Parses the given [date] and applies the passed [gmtOffset] and
+     * formats this formatted date to MMM dd, YYYY format
+     *
+     * If given [date] is null, current date is used
+     */
+    private fun formatSaleDateForDisplay(date: Date?, gmtOffset: Float): String {
+        val currentDate = DateUtils.offsetGmtDate(Date(), gmtOffset)
+        val dateOnSaleFrom = date?.offsetGmtDate(gmtOffset) ?: currentDate
+        return dateOnSaleFrom.formatToMMMddYYYY()
     }
 
     override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {
