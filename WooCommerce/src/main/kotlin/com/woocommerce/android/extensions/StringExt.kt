@@ -29,15 +29,15 @@ fun String.fastStripHtml(): String {
     if (str.isEmpty()) return str
 
     if (str.lastIndexOf("<p") > 0) {
-        str = str.replace("<p(.|\n)*?>", "\n<p>")
+        str = str.replace(Regex("<p(.|\n)*?>"), "\n<p>")
     }
 
     // convert BR tags to line breaks
     if (str.contains("<br")) {
-        str = str.replace("<br(.|\n)*?>", "\n")
+        str = str.replace(Regex("<br(.|\n)*?>"), "\n")
     }
 
-    val htmlString = StringEscapeUtils.unescapeHtml4(str.replace("<(.|\n)*?>", ""))
+    val htmlString = StringEscapeUtils.unescapeHtml4(str.replace(Regex("<(.|\n)*?>"), ""))
     if (htmlString.isEmpty()) return str
 
     var start = 0
