@@ -20,6 +20,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="minor_100">8dp</dimen>
 
     <dimen name="major_75">12dp</dimen>
+    <dimen name="major_85">14dp</dimen>
     <dimen name="major_100">16dp</dimen>
     <dimen name="major_110">18sp</dimen>
     <dimen name="major_125">20dp</dimen>
