@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -11,15 +10,18 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -28,6 +30,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
@@ -38,6 +41,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.Date
 import kotlin.math.roundToInt
 
 @OpenClassOnDebug
@@ -51,6 +55,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
+        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
 
@@ -65,15 +70,32 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
 
+    final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
+    private var productPricingViewState by productPricingViewStateData
+
     init {
         EventBus.getDefault().register(this)
     }
 
     fun getProduct() = viewState
 
+    fun getTaxClassBySlug(slug: String): TaxClass? {
+        return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
+    }
+
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
         checkUploads()
+    }
+
+    fun initialisePricing() {
+        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+                ?: DEFAULT_DECIMAL_PRECISION
+        productPricingViewState = productPricingViewState.copy(
+                currency = parameters?.currencyCode,
+                decimals = decimals,
+                taxClassList = productRepository.getTaxClassesForSite()
+        )
     }
 
     fun onShareButtonClicked() {
@@ -105,10 +127,26 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Method called when back button is clicked.
+     *
+     * Each product screen has it's own [ProductExitEvent]
+     * Based on the exit event, the logic is to check if the discard dialog should be displayed.
+     *
+     * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
+     * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
+     * i.e. viewState.product != viewState.storedProduct and viewState.product != viewState.cachedProduct
+     *
+     * For the product detail screen, the discard dialog should only be displayed if there are changes to the
+     * [Product] model locally, that still need to be saved to the backend. i.e.
+     * viewState.product != viewState.storedProduct
+     */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
+        val isProductDetailUpdated = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
+        val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
-            else -> viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
+            is ExitProductDetail -> isProductDetailUpdated
+            else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
         return if (isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
@@ -166,7 +204,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
         stockQuantity: String? = null,
-        backorderStatus: ProductBackorderStatus? = null
+        backorderStatus: ProductBackorderStatus? = null,
+        regularPrice: BigDecimal? = null,
+        salePrice: BigDecimal? = null,
+        isSaleScheduled: Boolean? = null,
+        dateOnSaleFromGmt: Date? = null,
+        dateOnSaleToGmt: Date? = null,
+        taxStatus: ProductTaxStatus? = null,
+        taxClass: String? = null
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -179,7 +224,19 @@ class ProductDetailViewModel @AssistedInject constructor(
                     soldIndividually = soldIndividually ?: product.soldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = viewState.storedProduct?.images ?: product.images
+                    images = viewState.storedProduct?.images ?: product.images,
+                    regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) null else regularPrice
+                            ?: product.regularPrice,
+                    salePrice = if (salePrice isEqualTo BigDecimal.ZERO) null else salePrice ?: product.salePrice,
+                    taxStatus = taxStatus ?: product.taxStatus,
+                    taxClass = taxClass ?: product.taxClass,
+                    isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                    dateOnSaleToGmt = if (isSaleScheduled == true) {
+                        dateOnSaleToGmt ?: product.dateOnSaleToGmt
+                    } else product.dateOnSaleToGmt,
+                    dateOnSaleFromGmt = if (isSaleScheduled == true) {
+                        dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
+                    } else product.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
@@ -212,6 +269,24 @@ class ProductDetailViewModel @AssistedInject constructor(
                     )
                 }
             }
+            // discard pricing screen changes
+            is ExitPricing -> {
+                viewState.cachedProduct?.let {
+                    val product = viewState.product?.copy(
+                            dateOnSaleFromGmt = it.dateOnSaleFromGmt,
+                            dateOnSaleToGmt = it.dateOnSaleToGmt,
+                            isSaleScheduled = it.isSaleScheduled,
+                            taxClass = it.taxClass,
+                            taxStatus = it.taxStatus,
+                            regularPrice = it.regularPrice,
+                            salePrice = it.salePrice
+                    )
+                    viewState = viewState.copy(
+                            product = product,
+                            cachedProduct = product
+                    )
+                }
+            }
         }
 
         updateProductEditAction()
@@ -219,6 +294,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private fun loadProduct(remoteProductId: Long) {
         loadParameters()
+
+        // Pre-load tax class list for a site. This is used in the product pricing screen
+        launch(dispatchers.main) {
+            productRepository.loadTaxClassesForSite()
+        }
 
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
@@ -330,9 +410,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                 storedProduct = storedProduct,
                 weightWithUnits = weight,
                 sizeWithUnits = size,
-                priceWithCurrency = formatCurrency(storedProduct.price, parameters?.currencyCode),
-                salePriceWithCurrency = formatCurrency(storedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(storedProduct.regularPrice, parameters?.currencyCode),
+                priceWithCurrency = formatCurrency(updatedProduct.price, parameters?.currencyCode),
+                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters?.currencyCode),
+                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters?.currencyCode),
                 gmtOffset = parameters?.gmtOffset ?: 0f
         )
     }
@@ -376,6 +456,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
@@ -406,6 +487,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductInventoryViewState(
         val skuErrorMessage: Int? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductPricingViewState(
+        val currency: String? = null,
+        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
+        val taxClassList: List<TaxClass>? = null
     ) : Parcelable
 
     @AssistedInject.Factory

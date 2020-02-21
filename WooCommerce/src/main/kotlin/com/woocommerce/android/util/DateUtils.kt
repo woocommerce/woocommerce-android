@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.text.format.DateFormat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.TimeGroup
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
@@ -333,16 +334,83 @@ object DateUtils {
 
     /**
      * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
+     *
+     * The [operator] can either be [Int::plus] or [Int::minus]
+     * [Int::plus] is passed when formatting gmtDate to local date
+     * [Int::minus] is passed when formatting local date to gmt
      */
-    fun offsetGmtDate(dateGmt: Date, gmtOffset: Float): Date {
+    fun offsetGmtDate(dateGmt: Date, gmtOffset: Float, operator: (Int, Int) -> Int = Int::plus): Date {
         if (gmtOffset == 0f) {
             return dateGmt
         }
 
         val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
         val calendar = Calendar.getInstance()
-        calendar.setTime(dateGmt)
-        calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + secondsOffset)
+        calendar.time = dateGmt
+        calendar.set(Calendar.SECOND, operator(calendar.get(Calendar.SECOND), secondsOffset))
         return calendar.time
+    }
+
+    /**
+     * Converts the given [year] [month] [day] to a [Date] object
+     * and applies the passed [gmtOffset] to the date
+     *
+     * [timeAtStartOfDay] is set to true for start date and set to false for end dates
+     */
+    fun localDateToGmt(
+        year: Int,
+        month: Int,
+        day: Int,
+        gmtOffset: Float,
+        timeAtStartOfDay: Boolean
+    ): Date {
+        val hour = if (timeAtStartOfDay) 0 else 23
+        val minuteSecond = if (timeAtStartOfDay) 0 else 59
+        val operator: (Int, Int) -> Int = if (timeAtStartOfDay) Int::minus else Int::plus
+        val date = GregorianCalendar(year, month, day, hour, minuteSecond, minuteSecond).time
+        return offsetGmtDate(date, gmtOffset, operator)
+    }
+
+    /**
+     * Converts the given [dateString] to a [Date] object
+     * and applies the passed [gmtOffset] to the date
+     */
+    fun localDateToGmt(
+        dateString: String,
+        gmtOffset: Float,
+        timeAtStartOfDay: Boolean
+    ): Date {
+        return try {
+            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            val date = dateFormat.parse(dateString) ?: Date()
+
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+
+            localDateToGmt(
+                    year = calendar.get(Calendar.YEAR),
+                    month = calendar.get(Calendar.MONTH),
+                    day = calendar.get(Calendar.DATE),
+                    gmtOffset = gmtOffset,
+                    timeAtStartOfDay = timeAtStartOfDay
+            )
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMM dd, yyyy: $this")
+        }
+    }
+
+    /**
+     * Method to convert date string from MMM dd, yyyy format to yyyy-MM-dd format
+     * i.e. Dec 02, 2020 is formatted to 2020-12-02
+     */
+    @Throws(IllegalArgumentException::class)
+    fun formatToYYYYmmDD(dateString: String): String {
+        return try {
+            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            val date = dateFormat.parse(dateString) ?: Date()
+            date.formatToYYYYmmDD()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMM dd, yyyy: $this")
+        }
     }
 }

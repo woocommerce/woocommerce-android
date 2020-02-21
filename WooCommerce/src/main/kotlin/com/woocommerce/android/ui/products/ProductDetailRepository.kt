@@ -6,6 +6,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
@@ -15,6 +17,8 @@ import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -27,6 +31,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabil
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
+import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -35,7 +40,8 @@ import kotlin.coroutines.resume
 class ProductDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val taxStore: WCTaxStore
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
@@ -44,6 +50,8 @@ class ProductDetailRepository @Inject constructor(
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
+
+    private var isFetchingTaxClassList = false
 
     init {
         dispatcher.register(this)
@@ -111,6 +119,25 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
+    /**
+     * Fires the request to fetch list of [TaxClass] for a given [selectedSite]
+     *
+     * @return the result of the action as a [RequestResult]
+     */
+    suspend fun loadTaxClassesForSite(): RequestResult {
+        return withContext(Dispatchers.IO) {
+            if (!isFetchingTaxClassList) {
+                isFetchingTaxClassList = true
+                val result = taxStore.fetchTaxClassList(selectedSite.get())
+                isFetchingTaxClassList = false
+                if (result.isError) {
+                    WooLog.e(PRODUCTS, "Exception encountered while fetching tax class list: ${result.error.message}")
+                    RequestResult.ERROR
+                } else RequestResult.SUCCESS
+            } else RequestResult.NO_ACTION_NEEDED
+        }
+    }
+
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
@@ -120,6 +147,9 @@ class ProductDetailRepository @Inject constructor(
 
     fun getCachedVariantCount(remoteProductId: Long) =
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
+
+    fun getTaxClassesForSite(): List<TaxClass> =
+            taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

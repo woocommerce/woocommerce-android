@@ -2,10 +2,12 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -53,7 +55,9 @@ data class Product(
     val attributes: List<Attribute>,
     val dateOnSaleToGmt: Date?,
     val dateOnSaleFromGmt: Date?,
-    val soldIndividually: Boolean
+    val soldIndividually: Boolean,
+    val taxStatus: ProductTaxStatus,
+    val isSaleScheduled: Boolean
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -84,7 +88,14 @@ data class Product(
                 numVariations == product.numVariations &&
                 name == product.name &&
                 description == product.description &&
-                images == product.images
+                images == product.images &&
+                taxClass == product.taxClass &&
+                taxStatus == product.taxStatus &&
+                isSaleScheduled == product.isSaleScheduled &&
+                dateOnSaleToGmt == product.dateOnSaleToGmt &&
+                dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
+                regularPrice == product.regularPrice &&
+                salePrice == product.salePrice
     }
 
     /**
@@ -106,7 +117,14 @@ data class Product(
                     stockStatus = updatedProduct.stockStatus,
                     stockQuantity = updatedProduct.stockQuantity,
                     backorderStatus = updatedProduct.backorderStatus,
-                    soldIndividually = updatedProduct.soldIndividually
+                    soldIndividually = updatedProduct.soldIndividually,
+                    regularPrice = updatedProduct.regularPrice,
+                    salePrice = updatedProduct.salePrice,
+                    isSaleScheduled = updatedProduct.isSaleScheduled,
+                    dateOnSaleFromGmt = updatedProduct.dateOnSaleFromGmt,
+                    dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
+                    taxStatus = updatedProduct.taxStatus,
+                    taxClass = updatedProduct.taxClass
             )
         } ?: this.copy()
     }
@@ -123,6 +141,21 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.stockQuantity = stockQuantity
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
+        it.regularPrice = regularPrice.toString()
+        it.salePrice = salePrice.toString()
+        it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
+        it.taxClass = taxClass
+        if (isSaleScheduled) {
+            dateOnSaleFromGmt?.let { dateOnSaleFrom ->
+                it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
+            }
+            dateOnSaleToGmt?.let { dateOnSaleTo ->
+                it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDDhhmmss()
+            }
+        } else {
+            it.dateOnSaleFromGmt = ""
+            it.dateOnSaleToGmt = ""
+        }
     }
 }
 
@@ -180,7 +213,9 @@ fun WCProductModel.toAppModel(): Product {
         },
         this.dateOnSaleToGmt.formatDateToISO8601Format(),
         this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        this.soldIndividually
+        this.soldIndividually,
+        ProductTaxStatus.fromString(this.taxStatus),
+        this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()
     )
 }
 
