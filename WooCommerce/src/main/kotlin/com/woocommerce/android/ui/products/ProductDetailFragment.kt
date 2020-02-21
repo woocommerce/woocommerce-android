@@ -179,7 +179,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
-        val productName = HtmlUtils.fastStripHtml(product.name)
+        val productName = product.name
         productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, productName)
             GROUPED -> getString(R.string.product_name_grouped, productName)

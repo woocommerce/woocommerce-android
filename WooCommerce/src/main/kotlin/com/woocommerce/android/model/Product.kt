@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.products.ProductType
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.HtmlUtils
 import java.math.BigDecimal
 import java.util.Date
 
@@ -129,7 +130,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
 fun WCProductModel.toAppModel(): Product {
     return Product(
         this.remoteProductId,
-        this.name,
+        HtmlUtils.fastStripHtml(this.name),
         this.description,
         ProductType.fromString(this.type),
         ProductStatus.fromString(this.status),
