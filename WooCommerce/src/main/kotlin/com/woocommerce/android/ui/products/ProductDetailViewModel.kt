@@ -135,11 +135,11 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
      * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
-     * i.e. [viewState.product] != [viewState.storedProduct] and [viewState.product] != [viewState.cachedProduct]
+     * i.e. viewState.product != viewState.storedProduct and viewState.product != viewState.cachedProduct
      *
      * For the product detail screen, the discard dialog should only be displayed if there are changes to the
      * [Product] model locally, that still need to be saved to the backend. i.e.
-     * [viewState.product] != [viewState.storedProduct]
+     * viewState.product != viewState.storedProduct
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
@@ -233,10 +233,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true) {
                         dateOnSaleToGmt ?: product.dateOnSaleToGmt
-                    } else  product.dateOnSaleToGmt,
+                    } else product.dateOnSaleToGmt,
                     dateOnSaleFromGmt = if (isSaleScheduled == true) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else  product.dateOnSaleFromGmt
+                    } else product.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
