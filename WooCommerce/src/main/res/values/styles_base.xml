@@ -246,7 +246,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
         <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
+        <item name="android:layout_marginTop">@dimen/minor_75</item>
+        <item name="android:layout_marginBottom">@dimen/minor_75</item>
     </style>
+
+    <!--
+        TextInputLayout styles
+    -->
+    <style name="Woo.TextInputLayout"/>
+    <style name="Woo.TextInputLayout.Outlined"
+        parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"/>
 
     <!--
         Button Styles
