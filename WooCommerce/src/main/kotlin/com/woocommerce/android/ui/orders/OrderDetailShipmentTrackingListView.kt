@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import kotlinx.android.synthetic.main.order_detail_shipment_tracking_list.view.*
@@ -14,8 +14,9 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 
 class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     ctx: Context,
-    attrs: AttributeSet? = null
-) : ConstraintLayout(ctx, attrs) {
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_detail_shipment_tracking_list, this)
     }
@@ -61,7 +62,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     }
 
     /**
-     * Divider should only be displayed when there is atleast one tracking
+     * Divider should only be displayed when there is at least one tracking
      * item in the list
      */
     private fun showOrHideDivider() {
