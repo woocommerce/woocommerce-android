@@ -75,7 +75,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun v(tag: T, message: String) {
-        Log.v(TAG + "-" + tag.toString(), message)
+        Log.v("$TAG-$tag", message)
         addEntry(tag, LogLevel.v, message)
     }
 
@@ -86,7 +86,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun d(tag: T, message: String) {
-        Log.d(TAG + "-" + tag.toString(), message)
+        Log.d("$TAG-$tag", message)
         addEntry(tag, LogLevel.d, message)
     }
 
@@ -97,7 +97,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun i(tag: T, message: String) {
-        Log.i(TAG + "-" + tag.toString(), message)
+        Log.i("$TAG-$tag", message)
         addEntry(tag, LogLevel.i, message)
     }
 
@@ -108,7 +108,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun w(tag: T, message: String) {
-        Log.w(TAG + "-" + tag.toString(), message)
+        Log.w("$TAG-$tag", message)
         addEntry(tag, LogLevel.w, message)
     }
 
@@ -119,7 +119,7 @@ object WooLog {
      * @param message The message you would like logged.
      */
     fun e(tag: T, message: String) {
-        Log.e(TAG + "-" + tag.toString(), message)
+        Log.e("$TAG-$tag", message)
         addEntry(tag, LogLevel.e, message)
     }
 
@@ -131,7 +131,7 @@ object WooLog {
      * @param tr An exception to log
      */
     fun e(tag: T, message: String, tr: Throwable) {
-        Log.e(TAG + "-" + tag.toString(), message, tr)
+        Log.e("$TAG-$tag", message, tr)
         addEntry(tag, LogLevel.e, message + " - exception: " + tr.message)
         addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
     }
@@ -143,7 +143,7 @@ object WooLog {
      * @param tr An exception to log to get StackTrace
      */
     fun e(tag: T, tr: Throwable) {
-        Log.e(TAG + "-" + tag.toString(), tr.message, tr)
+        Log.e("$TAG-$tag", tr.message, tr)
         addEntry(tag, LogLevel.e, tr.message ?: "")
         addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
     }
@@ -163,7 +163,7 @@ object WooLog {
         } else {
             "$volleyErrorMsg, status $statusCode"
         }
-        Log.e(TAG + "-" + tag.toString(), logText)
+        Log.e("$TAG-$tag", logText)
         addEntry(tag, LogLevel.w, logText)
     }
 
@@ -233,7 +233,9 @@ object WooLog {
          */
         fun toHtmlList(isDarkTheme: Boolean): ArrayList<String> {
             val list = ArrayList<String>()
-            for (entry in this) {
+            // work with a copy of the log entries in case they're modified while traversing them
+            val entries = mutableListOf<LogEntry>().also { it.addAll(this) }
+            for (entry in entries) {
                 // same colors as WPAndroid
                 val color = if (isDarkTheme) {
                     "white"
@@ -254,7 +256,8 @@ object WooLog {
          */
         override fun toString(): String {
             val sb = StringBuilder()
-            for (entry in this) {
+            val entries = mutableListOf<LogEntry>().also { it.addAll(this) }
+            for (entry in entries) {
                 sb.append("${entry}\n")
             }
             return sb.toString()

@@ -12,7 +12,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/productList_lblProduct"
-            style="@style/Woo.ListHeader"
+            style="@style/Woo.Card.Header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/orderdetail_product"
@@ -21,7 +21,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/productList_lblQty"
-            style="@style/Woo.ListHeader"
+            style="@style/Woo.Card.Header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/orderdetail_product_qty"
