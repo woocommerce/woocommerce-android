@@ -231,12 +231,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    dateOnSaleToGmt = if (isSaleScheduled == true || product.isSaleScheduled) {
+                    dateOnSaleToGmt = if (isSaleScheduled == true) {
                         dateOnSaleToGmt ?: product.dateOnSaleToGmt
-                    } else null,
-                    dateOnSaleFromGmt = if (isSaleScheduled == true || product.isSaleScheduled) {
+                    } else  product.dateOnSaleToGmt,
+                    dateOnSaleFromGmt = if (isSaleScheduled == true) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else null
+                    } else  product.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
