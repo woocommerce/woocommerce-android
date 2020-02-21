@@ -1,0 +1,4 @@
+3.6:
+- Agora você pode criar novos reembolsos e visualizar os anteriores pelo aplicativo.
+- Quando tiver uma lista vazia, as imagens não serão cortadas em telas menores no modo paisagem.
+- Bug que esvaziava a lista de avaliações após a rotação do dispositivo resolvido.

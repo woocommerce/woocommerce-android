@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-06 12:54:25+0000
+Translation-Revision-Date: 2020-02-18 16:31:53+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_dimensions">Dimensioner</string>
+    <string name="product_height">Höjd</string>
+    <string name="product_width">Bredd</string>
+    <string name="product_length">Längd</string>
+    <string name="order_refunds_refund_info_title">Återbetalda produkter</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s via %2$s</string>
+    <string name="orderdetail_refunded_products">Återbetalda produkter</string>
+    <string name="refunds">Återbetalningar</string>
     <string name="sign_up">Registrera dig på WordPress.com</string>
-    <string name="empty_message_with_search">Vi kunde inte hitta resultat för ”%s”</string>
-    <string name="empty_review_list_title">Skaffa dina första recensioner</string>
+    <string name="empty_message_with_search">Vi hittade inga resultat för %s</string>
+    <string name="empty_review_list_message">Få högkvalitativa produktrecensioner för din butik</string>
+    <string name="empty_review_list_title">Få dina första recensioner</string>
+    <string name="empty_order_list_all_processed">Alla beställningar har slutförts</string>
+    <string name="empty_order_list_message">Vi meddelar dig när du får en ny beställning. Under tiden kan du utforska hur du kan öka din försäljning i butiken.</string>
+    <string name="empty_order_list_title">Väntar på din första beställning</string>
+    <string name="share_your_store_message">Dela din butik i sociala medier och via e-post med dina kontakter</string>
+    <string name="get_the_word_out">Sprid ryktet</string>
+    <string name="product_inventory_quantity_summary">Hur många artiklar som finns i lager</string>
+    <string name="product_inventory_quantity">Antal</string>
+    <string name="product_sold_individually">Begränsa till en per order</string>
     <string name="product_manage_stock">Handera lager</string>
-    <string name="product_sku_summary">Hjälper till att enkelt identifiera denna produkt</string>
+    <string name="product_sku_summary">Hjälper att enkelt identifiera den här produkten</string>
     <string name="product_sale_date_from">från %1$s</string>
     <string name="product_sale_date_from_to">%1$s – %2$s </string>
     <string name="product_sale_dates">Readatum</string>
     <string name="product_price_empty">Lägg till pris</string>
+    <string name="product_inventory_empty">Lägg till lager</string>
+    <string name="orderlist_loading">Kollar upp din beställning…</string>
     <string name="product_detail_editable_text_hint">Ange text</string>
     <string name="product_detail_title_hint">Ange rubrik</string>
     <string name="product_detail_update_product_success">Produkt uppdaterad</string>
@@ -134,7 +154,6 @@ Language: sv_SE
     <string name="order_refunds_title_with_amount">Återbetala %s</string>
     <string name="order_refunds_available_for_refund">%s tillgängligt för återbetalning</string>
     <string name="orderdetail_issue_refund_button">Utfärda återbetalning</string>
-    <string name="orderdetail_refund_view_details">Visa detaljer</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Prova de nya statistik som är tillgänglig med\nWooCommerce-adminplugin</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
@@ -538,9 +557,6 @@ Language: sv_SE
     <string name="app_rating_title">Gillar du Woo?</string>
     <string name="settings_selected_store">Vald butik</string>
     <string name="orders_empty_message_with_search">Inga matchande ordrar</string>
-    <string name="orders_empty_message_with_filter">Inga ordrar ännu</string>
-    <string name="waiting_for_customers_contentdesc">Väntar på kundbild</string>
-    <string name="waiting_for_customers">Väntar på kunder</string>
     <string name="share_store_dialog_title">Dela din butiks URL</string>
     <string name="share_store_button">Dela din butik</string>
     <string name="wc_mark_all_read_success">Alla granskningar har markerats som lästa</string>

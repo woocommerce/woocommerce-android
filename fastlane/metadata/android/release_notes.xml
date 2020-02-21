@@ -1,32 +1,24 @@
-<de-DE>
-3.5:
-Wenn du gerade erst angefangen hast und in der App noch keine Listeneinträge vorhanden sind (z. B. solange noch keine Bestellungen und Bewertungen eingegangen sind), wird eine freundliche Nachricht angezeigt, um dir bei deinem Einstieg zu helfen.
-</de-DE>
+<es-ES>
+3.6:
+- Ahora puedes crear reembolsos y ver los anteriores en la aplicación.
+- Al mirar una lista vacía, las nuevas y elegantes imágenes no quedarán cortadas en pantallas más pequeñas en el modo apaisado.
+- Se ha corregido un error por el que se vaciaba la lista de reseñas después de girar el dispositivo.
+</es-ES>
 <fr-FR>
-3.5 :
-Lorsque vous débutez et que l'application n’a rien à afficher sous forme de liste (par ex. avant votre première commande ou votre premier avis), un message convivial vous aide à démarrer.
+3.6 :
+- Vous pouvez désormais créer de nouveaux remboursements et consulter les remboursements précédents dans l'application.
+- Lorsque vous consultez une liste vide, les nouvelles images ne sont pas coupées sur les écrans plus petits en mode paysage.
+- Résolution d'un bug qui vidait la liste des avis après le pivotement de l'appareil.
 </fr-FR>
-<ko-KR>
-3.5:
-새로 시작하여 앱에 표시할 항목이 목록에 없는 경우(예: 첫 주문 및 리뷰를 받기 전 주문 및 리뷰), 시작을 지원하는 도움말 메시지가 표시됩니다.
-</ko-KR>
 <pt-BR>
-3.5:
-Quando você está apenas começando e não há nada para o aplicativo exibir em uma lista, como pedidos e avaliações, você verá uma mensagem para ajudá-lo a começar.
+3.6:
+- Agora você pode criar novos reembolsos e visualizar os anteriores pelo aplicativo.
+- Quando tiver uma lista vazia, as imagens não serão cortadas em telas menores no modo paisagem.
+- Bug que esvaziava a lista de avaliações após a rotação do dispositivo resolvido.
 </pt-BR>
-<ru-RU>
-Версия 3.5.
-Если вы только начинаете и у вас пока нет информации для отображения в списке приложения (например, в списке заказов и отзывов), там будет отображаться приветственное сообщение.
-</ru-RU>
-<tr-TR>
-3.5:
-Yeni başlıyorsanız ve uygulamanın listede göstereceği herhangi bir şey yoksa (ör. ilk siparişinizi ve yorumunuzu almadan önce) başlangıç yapmanıza yardımcı olabilecek bir mesaj görürsünüz.
-</tr-TR>
-<zh-TW>
-3.5：
-若你剛開始使用，而應用程式尚未在清單中顯示任何內容 (例如：收到第一筆訂單前沒有任何訂單和評論)，你會看到一則協助你開始使用的友善訊息。
-</zh-TW>
 <en-US>
-3.5:
-When you’re just getting started and there’s nothing for the app to display in a list (e.g., for orders and reviews, before you get your first one), you’ll see a friendly message to help you get started.
+3.6:
+- You can now create new refunds and view past refunds within the app.
+- When you’re looking at an empty list, the fancy new images won’t be cut off on smaller screens in landscape mode.
+- Fixed a bug that emptied the reviews list after rotating the device.
 </en-US>
