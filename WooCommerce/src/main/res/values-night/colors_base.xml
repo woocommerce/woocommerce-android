@@ -14,6 +14,10 @@
     <color name="color_on_primary_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_primary_disabled">@color/woo_black_90_alpha_038</color>
 
+    <color name="color_accent_1">@color/woo_yellow_30</color>
+    <color name="color_accent_2">@color/woo_orange_30</color>
+    <color name="color_accent_3">@color/woo_blue_30</color>
+
     <!--
         App colors
     -->
