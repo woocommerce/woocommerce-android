@@ -26,6 +26,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -179,7 +180,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
-        val productName = product.name
+        val productName = product.name.fastStripHtml()
         productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, productName)
             GROUPED -> getString(R.string.product_name_grouped, productName)
@@ -237,7 +238,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
-            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productTitle)?.also { view ->
                 view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
             }
         } else {

@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -10,7 +11,6 @@ import com.woocommerce.android.ui.products.ProductType
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
-import org.wordpress.android.util.HtmlUtils
 import java.math.BigDecimal
 import java.util.Date
 
@@ -83,7 +83,7 @@ data class Product(
                 sku == product.sku &&
                 type == product.type &&
                 numVariations == product.numVariations &&
-                name == product.name &&
+                name.fastStripHtml() == product.name.fastStripHtml() &&
                 description == product.description &&
                 images == product.images
     }
@@ -130,7 +130,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
 fun WCProductModel.toAppModel(): Product {
     return Product(
         this.remoteProductId,
-        HtmlUtils.fastStripHtml(this.name),
+        this.name,
         this.description,
         ProductType.fromString(this.type),
         ProductStatus.fromString(this.status),
