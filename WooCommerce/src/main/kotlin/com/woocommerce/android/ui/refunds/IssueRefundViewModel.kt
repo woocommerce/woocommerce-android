@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
@@ -264,6 +265,10 @@ class IssueRefundViewModel @AssistedInject constructor(
         } else {
             refundByItemsState.copy(isShippingRefundVisible = false)
         }
+    }
+
+    fun onOpenStoreAdminLinkClicked() {
+        triggerEvent(OpenUrl(selectedSite.get().adminUrl))
     }
 
     private fun showRefundSummary() {
@@ -617,6 +622,7 @@ class IssueRefundViewModel @AssistedInject constructor(
             val maxRefund: BigDecimal,
             val message: String
         ) : IssueRefundEvent()
+        data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
     }
 
