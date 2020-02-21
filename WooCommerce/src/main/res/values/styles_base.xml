@@ -237,6 +237,18 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <!--
+        EditText styles
+    -->
+    <style name="Woo.EditText" parent="Woo.TextView"/>
+
+    <style name="Woo.EditText.Subtitle1">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
+    </style>
+
+    <!--
         Button Styles
     -->
     <style name="Woo.Button" parent="@style/Widget.MaterialComponents.Button.TextButton">
