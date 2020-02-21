@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -153,7 +153,7 @@ class RefundByItemsFragment : BaseFragment() {
                     findNavController().navigate(action)
                 }
                 is OpenUrl -> {
-                    ActivityUtils.openUrlExternal(requireContext(), event.url)
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 else -> event.isHandled = false
             }
