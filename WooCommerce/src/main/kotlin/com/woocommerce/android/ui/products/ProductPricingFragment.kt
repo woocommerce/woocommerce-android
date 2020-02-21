@@ -153,8 +153,8 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                 enableScheduleSale(isChecked)
                 viewModel.updateProductDraft(
                         isSaleScheduled = isChecked,
-                        dateOnSaleFromGmt = DateUtils.getOffsetGmtDate(scheduleSale_startDate.getText(), gmtOffset),
-                        dateOnSaleToGmt = DateUtils.getOffsetGmtDate(scheduleSale_endDate.getText(), gmtOffset)
+                        dateOnSaleFromGmt = DateUtils.localDateToGmt(scheduleSale_startDate.getText(), gmtOffset, true),
+                        dateOnSaleToGmt = DateUtils.localDateToGmt(scheduleSale_endDate.getText(), gmtOffset, false)
                 )
             }
         }
@@ -164,11 +164,11 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.getOffsetGmtDate(
-                            selectedYear, selectedMonth, dayOfMonth, gmtOffset = gmtOffset
+                    val selectedDate = DateUtils.localDateToGmt(
+                            selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
                     )
                     setText(selectedDate.formatToMMMddYYYY())
-                    viewModel.updateProductDraft(dateOnSaleFromGmt = selectedDate)
+                    viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleFromGmt = selectedDate)
                 })
             }
         }
@@ -178,11 +178,11 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(scheduleSale_endDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.getOffsetGmtDate(
-                            selectedYear, selectedMonth, dayOfMonth, gmtOffset = gmtOffset
+                    val selectedDate = DateUtils.localDateToGmt(
+                            selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
                     )
                     setText(selectedDate.formatToMMMddYYYY())
-                    viewModel.updateProductDraft(dateOnSaleToGmt = selectedDate)
+                    viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleToGmt = selectedDate)
                 })
             }
         }

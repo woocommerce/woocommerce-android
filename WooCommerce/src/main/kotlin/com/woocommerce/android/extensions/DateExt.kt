@@ -31,3 +31,6 @@ fun Date.formatToEEEEMMMddhha(): String {
 }
 
 fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils.offsetGmtDate(it, gmtOffset) }
+
+fun Date.formatToYYYYmmDDhhmmss(): String =
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)
