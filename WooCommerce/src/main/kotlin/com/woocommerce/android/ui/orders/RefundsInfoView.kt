@@ -3,16 +3,20 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Refund
 import kotlinx.android.synthetic.main.order_detail_refunds_info.view.*
 
-class RefundsInfoView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class RefundsInfoView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_detail_refunds_info, this)
     }
+
     /**
      * Initialize and format this view.
      *
