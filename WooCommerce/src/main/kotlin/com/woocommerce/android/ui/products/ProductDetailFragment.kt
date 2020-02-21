@@ -342,27 +342,29 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
 
             // display product sale dates using the site's timezone, if available
-            val gmtOffset = productData.gmtOffset
-            var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
-                DateUtils.offsetGmtDate(it, gmtOffset)
-            }
-            val dateOnSaleTo = product.dateOnSaleToGmt?.let {
-                DateUtils.offsetGmtDate(it, gmtOffset)
-            }
-            if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), gmtOffset)
-            }
-            val saleDates = when {
-                (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
-                    getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
+            if (product.isSaleScheduled) {
+                val gmtOffset = productData.gmtOffset
+                var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
+                    DateUtils.offsetGmtDate(it, gmtOffset)
                 }
-                (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
-                    getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                val dateOnSaleTo = product.dateOnSaleToGmt?.let {
+                    DateUtils.offsetGmtDate(it, gmtOffset)
                 }
-                else -> null
-            }
-            saleDates?.let {
-                pricingGroup[getString(R.string.product_sale_dates)] = it
+                if (dateOnSaleTo != null && dateOnSaleFrom == null) {
+                    dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), gmtOffset)
+                }
+                val saleDates = when {
+                    (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
+                        getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
+                    }
+                    (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
+                        getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                    }
+                    else -> null
+                }
+                saleDates?.let {
+                    pricingGroup[getString(R.string.product_sale_dates)] = it
+                }
             }
         } else {
             pricingGroup[""] = getString(R.string.product_price_empty)
