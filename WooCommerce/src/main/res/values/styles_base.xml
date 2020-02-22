@@ -4,7 +4,8 @@ Base Woo Styles. Use these styles as a base for custom component styles and over
 properties necessary. The goal is to make as few modifications as possible to keep a consistent
 theme across the entire app. Overridden versions should be added to the styles.xml file.
 -->
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools">
     <style name="Woo"/>
     <style name="Widget"/>
     <style name="Widget.Woo"/>
@@ -239,22 +240,32 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         EditText styles
     -->
-    <style name="Woo.EditText" parent="Woo.TextView"/>
-
-    <style name="Woo.EditText.Subtitle1">
+    <!--
+        Most edit text widgets in the app should use TextInputLayout + TextInputEditText which
+        will use the outlined box style. This specific style is to be used with EditText and
+        will not show an outlined box.
+    -->
+    <style name="Woo.EditText" parent="Woo.TextView">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
         <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
-        <item name="android:layout_marginTop">@dimen/minor_75</item>
+        <item name="android:layout_marginTop">@dimen/major_75</item>
         <item name="android:layout_marginBottom">@dimen/minor_75</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingStart" tools:ignore="NewApi">0dp</item>
+        <item name="android:paddingEnd" tools:ignore="NewApi">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
     </style>
 
     <!--
         TextInputLayout styles
     -->
-    <style name="Woo.TextInputLayout"/>
-    <style name="Woo.TextInputLayout.Outlined"
+    <style name="Woo.TextInputLayout"
         parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
@@ -262,8 +273,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginBottom">@dimen/minor_75</item>
     </style>
 
-    <style name="Woo.TextInputEditText"/>
-    <style name="Woo.TextInputEditText.Subtitle1">
+    <style name="Woo.TextInputEditText"
+        parent="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
