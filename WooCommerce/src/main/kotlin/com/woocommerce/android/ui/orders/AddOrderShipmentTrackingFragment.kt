@@ -170,29 +170,27 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         return when (item.itemId) {
             R.id.menu_add -> {
                 if (addTracking_editCarrier.text.toString().isEmpty()) {
-                    addTracking_editCarrier.isFocusableInTouchMode = true
-                    addTracking_editCarrier.requestFocus()
-                    addTracking_editCarrier.error = getString(R.string.order_shipment_tracking_empty_provider)
-                    addTracking_number.error = null
-                    addTracking_custom_provider_name.error = null
+                    addTracking_carrierLayout.error = getString(R.string.order_shipment_tracking_empty_provider)
+                    addTracking_numberLayout.error = null
+                    addTracking_customNameLayout.error = null
                     return true
                 }
 
                 if (isCustomProvider() && addTracking_custom_provider_name.text.toString().isEmpty()) {
                     addTracking_number.error = null
-                    addTracking_editCarrier.error = null
+                    addTracking_carrierLayout.error = null
                     addTracking_custom_provider_name.requestFocus()
-                    addTracking_custom_provider_name.error = getString(
+                    addTracking_customNameLayout.error = getString(
                             R.string.order_shipment_tracking_empty_custom_provider_name
                     )
                     return true
                 }
 
                 if (addTracking_number.text.isNullOrEmpty()) {
-                    addTracking_editCarrier.error = null
-                    addTracking_custom_provider_name.error = null
+                    addTracking_carrierLayout.error = null
+                    addTracking_customNameLayout.error = null
                     addTracking_number.requestFocus()
-                    addTracking_number.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
+                    addTracking_numberLayout.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
                     return true
                 }
 
@@ -338,12 +336,12 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
     }
 
     private fun showCustomProviderFields() {
-        addTracking_custom_provider_name_view.visibility = View.VISIBLE
-        addTracking_custom_provider_url_view.visibility = View.VISIBLE
+        addTracking_customNameLayout.visibility = View.VISIBLE
+        addTracking_customUrlLayout.visibility = View.VISIBLE
     }
 
     private fun hideCustomProviderFields() {
-        addTracking_custom_provider_name_view.visibility = View.GONE
-        addTracking_custom_provider_url_view.visibility = View.GONE
+        addTracking_customNameLayout.visibility = View.GONE
+        addTracking_customUrlLayout.visibility = View.GONE
     }
 }
