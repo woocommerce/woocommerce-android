@@ -174,8 +174,9 @@ class IssueRefundViewModel @AssistedInject constructor(
                     currency = order.currency,
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
+                    shippingSubtotal = formatCurrency(order.shippingTotal),
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                    isShippingRefundVisible = false,
+                    isShippingRefundVisible = order.shippingTotal > BigDecimal.ZERO,
                     isNextButtonEnabled = false
             )
         }
@@ -259,13 +260,13 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
-    fun onRefundItemsShippingSwitchChanged(isChecked: Boolean) {
-        refundByItemsState = if (isChecked) {
-            refundByItemsState.copy(isShippingRefundVisible = true)
-        } else {
-            refundByItemsState.copy(isShippingRefundVisible = false)
-        }
-    }
+//    fun onRefundItemsShippingSwitchChanged(isChecked: Boolean) {
+//        refundByItemsState = if (isChecked) {
+//            refundByItemsState.copy(isShippingRefundVisible = true)
+//        } else {
+//            refundByItemsState.copy(isShippingRefundVisible = false)
+//        }
+//    }
 
     fun onOpenStoreAdminLinkClicked() {
         triggerEvent(OpenUrl(selectedSite.get().adminUrl))
