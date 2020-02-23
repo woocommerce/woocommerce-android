@@ -110,6 +110,7 @@
         android:drawablePadding="@dimen/card_item_padding_intra_double"
         android:text="@string/order_refunds_shipping_refund_notice"
         android:textAlignment="viewStart"
+        android:textColor="@color/grey_500"
         app:layout_constraintEnd_toEndOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="@+id/issueRefund_lblTaxes"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal" />
