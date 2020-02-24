@@ -58,6 +58,7 @@
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_marginTop="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
