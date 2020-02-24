@@ -22,7 +22,7 @@
         android:focusable="true"
         android:clickable="true"
         android:textAppearance="@style/Woo.TextAppearance.Title"
-        android:drawableEnd="@drawable/ic_arrow_right_grey"
+        android:drawableEnd="@drawable/ic_arrow_right"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:background="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/refundsInfo_lblTitle"
