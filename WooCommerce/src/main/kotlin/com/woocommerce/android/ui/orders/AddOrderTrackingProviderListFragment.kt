@@ -167,7 +167,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
     override fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(providersView, R.layout.skeleton_order_list, delayed = true)
+            skeletonView.show(providersView, R.layout.skeleton_tracking_provider_list, delayed = true)
         } else {
             skeletonView.hide()
         }
