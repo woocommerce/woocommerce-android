@@ -35,17 +35,17 @@
                 <com.woocommerce.android.widgets.WCProductImageGalleryView
                     android:id="@+id/imageGallery"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/product_image_gallery_image_size"
+                    android:layout_height="@dimen/image_major_120"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/margin_extra_large"
-                    android:layout_marginBottom="@dimen/margin_extra_large"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_100"
                     app:isGridView="false"
                     app:showAddImageIcon="true" />
 
                 <FrameLayout
                     android:id="@+id/addImageContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/product_image_gallery_image_size"
+                    android:layout_height="@dimen/image_major_120"
                     android:background="@drawable/ripple_grey_framed"
                     android:visibility="gone"
                     tools:visibility="visible">
@@ -56,11 +56,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:drawableTop="@drawable/ic_gridicons_add_image"
-                        android:drawablePadding="@dimen/margin_medium"
+                        android:drawablePadding="@dimen/minor_100"
                         android:gravity="center"
                         android:text="@string/product_image_add"
-                        android:textColor="@color/wc_grey_mid"
-                        android:textSize="@dimen/text_medium" />
+                        android:textColor="@color/color_on_surface_medium"
+                        android:textSize="@dimen/text_minor_100" />
                 </FrameLayout>
 
                 <FrameLayout
@@ -68,7 +68,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|bottom"
-                    android:padding="@dimen/margin_large"
+                    android:padding="@dimen/major_75"
                     android:visibility="gone"
                     tools:visibility="visible">
 
@@ -79,12 +79,12 @@
                         android:layout_gravity="bottom"
                         android:background="@drawable/product_detail_status_badge"
                         android:gravity="center"
-                        android:paddingStart="@dimen/margin_medium"
-                        android:paddingTop="@dimen/margin_small"
-                        android:paddingEnd="@dimen/margin_medium"
-                        android:paddingBottom="@dimen/margin_small"
+                        android:paddingStart="@dimen/minor_100"
+                        android:paddingTop="@dimen/minor_50"
+                        android:paddingEnd="@dimen/minor_100"
+                        android:paddingBottom="@dimen/minor_50"
                         android:textColor="@color/wc_grey_dark"
-                        android:textSize="@dimen/text_medium"
+                        android:textSize="@dimen/text_minor_100"
                         tools:text="Private" />
                 </FrameLayout>
 
