@@ -25,8 +25,7 @@
             app:contentScrim="@color/card_surface_color"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Woo.Card.WithoutPadding"
+            <FrameLayout
                 android:id="@+id/collapsing_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,7 +91,7 @@
                     style="@style/Woo.Divider"
                     android:layout_gravity="bottom" />
 
-            </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
