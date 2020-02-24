@@ -23,8 +23,8 @@ abstract class ProductShippingModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ProductShippingViewModel::class)
-    abstract fun bindFactory(factory: ProductShippingViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(ProductDetailViewModel::class)
+    abstract fun bindFactory(factory: ProductDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
     abstract fun bindSavedStateRegistryOwner(fragment: ProductShippingFragment): SavedStateRegistryOwner

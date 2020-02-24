@@ -1,22 +1,31 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
 import kotlinx.android.synthetic.main.refund_by_items_products.*
 import java.math.BigDecimal
@@ -58,13 +67,28 @@ class RefundByItemsFragment : BaseFragment() {
             viewModel.onNextButtonTappedFromItems()
         }
 
-        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
-        }
         // TODO: Temporarily disabled, this will be used in a future release - do not remove
+//        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
+//            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
+//        }
+//
 //        issueRefund_productsTotal.setOnClickListener {
 //            viewModel.onProductRefundAmountTapped()
 //        }
+
+        val linkText = getString(R.string.order_refunds_store_admin_link_text)
+        val noticeText = getString(R.string.order_refunds_shipping_refund_notice, linkText)
+        val spannable = SpannableString(noticeText)
+        val span = WooClickableSpan { viewModel.onOpenStoreAdminLinkClicked() }
+        span.useCustomStyle = false
+        spannable.setSpan(
+                span,
+                (noticeText.length - linkText.length),
+                noticeText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        issueRefund_shippingRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
+        issueRefund_shippingRefundNotice.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun setupObservers() {
@@ -83,6 +107,9 @@ class RefundByItemsFragment : BaseFragment() {
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
                 issueRefund_productsTotal.text = it
             }
+            new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
+                issueRefund_shippingTotal.text = it
+            }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 issueRefund_taxesTotal.text = it
             }
@@ -94,6 +121,15 @@ class RefundByItemsFragment : BaseFragment() {
             }
             new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
                 issueRefund_selectButton.text = it
+            }
+            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
+                if (isVisible) {
+                    issueRefund_lblShipping.show()
+                    issueRefund_shippingTotal.show()
+                } else {
+                    issueRefund_lblShipping.hide()
+                    issueRefund_shippingTotal.hide()
+                }
             }
             // TODO: Temporarily disabled, this will be used in a future release - do not remove
 //            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
@@ -130,6 +166,9 @@ class RefundByItemsFragment : BaseFragment() {
                             event.message
                     )
                     findNavController().navigate(action)
+                }
+                is OpenUrl -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 else -> event.isHandled = false
             }

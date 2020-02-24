@@ -55,6 +55,29 @@
         tools:text="$45.00" />
 
     <TextView
+        android:id="@+id/issueRefund_lblShipping"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_padding_start"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:layout_weight="1"
+        android:text="@string/shipping"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/Woo.Refunds.TextAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
+
+    <TextView
+        android:id="@+id/issueRefund_shippingTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/card_padding_end"
+        android:textAppearance="@style/Woo.Refunds.TextAppearance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/issueRefund_lblShipping"
+        tools:text="$1.00" />
+
+    <TextView
         android:id="@+id/issueRefund_lblTaxes"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -65,7 +88,7 @@
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.Refunds.TextAppearance"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingTotal" />
 
     <TextView
         android:id="@+id/issueRefund_taxesTotal"
@@ -77,6 +100,21 @@
         app:layout_constraintTop_toTopOf="@id/issueRefund_lblTaxes"
         tools:text="$1.00" />
 
+    <TextView
+        android:id="@+id/issueRefund_shippingRefundNotice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:layout_weight="1"
+        android:drawableStart="@drawable/ic_info_outline_light_grey_min_24dp"
+        android:drawablePadding="@dimen/card_item_padding_intra_double"
+        android:text="@string/order_refunds_shipping_refund_notice"
+        android:textAlignment="viewStart"
+        android:textColor="@color/grey_500"
+        app:layout_constraintEnd_toEndOf="@+id/issueRefund_taxesTotal"
+        app:layout_constraintStart_toStartOf="@+id/issueRefund_lblTaxes"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal" />
+
     <View
         android:id="@+id/issueRefund_dividerBelowTaxes"
         android:layout_width="match_parent"
@@ -86,7 +124,7 @@
         android:layout_marginEnd="@dimen/card_padding_end"
         android:background="@color/list_divider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingRefundNotice"
         app:srcCompat="@drawable/list_divider" />
 
     <TextView

@@ -2,6 +2,7 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.text.Editable
+import android.text.InputFilter
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -39,6 +40,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
                         R.styleable.WCMaterialOutlinedEditTextView_android_inputType,
                         EditorInfo.TYPE_TEXT_VARIATION_NORMAL
                 )
+
+                // Set the max length
+                if (a.hasValue(R.styleable.WCMaterialOutlinedEditTextView_android_maxLength)) {
+                    val max = a.getInt(R.styleable.WCMaterialOutlinedEditTextView_android_maxLength, 0)
+                    setMaxLength(max)
+                }
             } finally {
                 a.recycle()
             }
@@ -69,5 +76,9 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
         edit_text_input.error = null
         edit_text_input.isErrorEnabled = false
         edit_text_summary.visibility = View.VISIBLE
+    }
+
+    fun setMaxLength(max: Int) {
+        edit_text.filters += InputFilter.LengthFilter(max)
     }
 }

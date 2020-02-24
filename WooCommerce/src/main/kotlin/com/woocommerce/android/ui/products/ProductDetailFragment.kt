@@ -26,6 +26,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -179,7 +180,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
-        val productName = HtmlUtils.fastStripHtml(product.name)
+        val productName = product.name.fastStripHtml()
         productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, productName)
             GROUPED -> getString(R.string.product_name_grouped, productName)
@@ -237,7 +238,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
-            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, product.name)?.also { view ->
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productTitle)?.also { view ->
                 view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
             }
         } else {
@@ -342,27 +343,29 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
 
             // display product sale dates using the site's timezone, if available
-            val gmtOffset = productData.gmtOffset
-            var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
-                DateUtils.offsetGmtDate(it, gmtOffset)
-            }
-            val dateOnSaleTo = product.dateOnSaleToGmt?.let {
-                DateUtils.offsetGmtDate(it, gmtOffset)
-            }
-            if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), gmtOffset)
-            }
-            val saleDates = when {
-                (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
-                    getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
+            if (product.isSaleScheduled) {
+                val gmtOffset = productData.gmtOffset
+                var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
+                    DateUtils.offsetGmtDate(it, gmtOffset)
                 }
-                (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
-                    getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                val dateOnSaleTo = product.dateOnSaleToGmt?.let {
+                    DateUtils.offsetGmtDate(it, gmtOffset)
                 }
-                else -> null
-            }
-            saleDates?.let {
-                pricingGroup[getString(R.string.product_sale_dates)] = it
+                if (dateOnSaleTo != null && dateOnSaleFrom == null) {
+                    dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), gmtOffset)
+                }
+                val saleDates = when {
+                    (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
+                        getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
+                    }
+                    (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
+                        getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                    }
+                    else -> null
+                }
+                saleDates?.let {
+                    pricingGroup[getString(R.string.product_sale_dates)] = it
+                }
             }
         } else {
             pricingGroup[""] = getString(R.string.product_price_empty)
@@ -377,6 +380,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             // display pricing caption only if pricing info is available
             if (!hasPricingInfo) {
                 it.showPropertyName(false)
+            }
+            it.setClickListener {
+                // TODO: add event listener for click
+                showProductPricing()
             }
         }
 
@@ -404,7 +411,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             it.setClickListener {
                 // TODO: add event listener for click
-                showProductInventory(product.remoteId)
+                showProductInventory()
             }
         }
 
@@ -771,10 +778,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 )))
     }
 
-    private fun showProductInventory(remoteId: Long) {
+    private fun showProductInventory() {
         findNavController().navigate(
                 ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment(remoteId)
+                        .actionProductDetailFragmentToProductInventoryFragment()
+        )
+    }
+
+    private fun showProductPricing() {
+        findNavController().navigate(
+                ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductPricingFragment()
         )
     }
 

@@ -317,6 +317,9 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
      */
     private fun showOptionsMenu(show: Boolean) {
         setHasOptionsMenu(show)
+        if (show) {
+            activity?.invalidateOptionsMenu()
+        }
     }
 
     private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
