@@ -12,7 +12,6 @@
         android:layout_marginTop="@dimen/minor_100"
         android:layout_marginBottom="@dimen/minor_100"
         android:hint="@string/product_detail_title_hint"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -34,6 +33,6 @@
         android:layout_marginStart="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@id/edit_text_input" />
 
 </merge> 

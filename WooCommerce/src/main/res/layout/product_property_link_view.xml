@@ -28,7 +28,6 @@
         android:layout_margin="@dimen/major_100"
         android:importantForAccessibility="no"
         android:tint="@color/color_secondary"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_external" />
@@ -40,6 +39,6 @@
         android:layout_marginStart="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@id/iconExternal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
