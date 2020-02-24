@@ -46,7 +46,7 @@
                     android:id="@+id/addImageContainer"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/image_major_120"
-                    android:background="@drawable/ripple_grey_framed"
+                    android:background="@drawable/ripple_framed"
                     android:visibility="gone"
                     tools:visibility="visible">
 

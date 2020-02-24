@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/grey"
+    android:color="@color/color_ripple_overlay"
     android:exitFadeDuration="@android:integer/config_shortAnimTime">
 
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/card_surface_color" />
             <stroke
-                android:width="@dimen/image_border_size"
+                android:width="@dimen/minor_10"
                 android:color="@color/color_on_surface_medium" />
-            <corners android:radius="@dimen/image_border_radius" />
+            <corners android:radius="@dimen/minor_25" />
         </shape>
     </item>
 
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
-            <solid android:color="@android:color/holo_green_light" />
+            <solid android:color="@color/color_surface" />
         </shape>
     </item>
-
 </ripple>

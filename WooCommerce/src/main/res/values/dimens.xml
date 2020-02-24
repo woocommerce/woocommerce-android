@@ -14,6 +14,7 @@ so that's the baseline as defined in `major_100`.
 -->
 <resources>
     <dimen name="minor_00">0dp</dimen>
+    <dimen name="minor_10">1dp</dimen>
     <dimen name="minor_25">2dp</dimen>
     <dimen name="minor_50">4dp</dimen>
     <dimen name="minor_75">6dp</dimen>

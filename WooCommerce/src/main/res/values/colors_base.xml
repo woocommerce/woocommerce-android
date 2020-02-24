@@ -14,6 +14,7 @@
     <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_primary_disabled">@color/woo_white_alpha_038</color>
     <color name="color_on_primary_surface_high">@color/color_on_primary_high</color>
+    <color name="color_ripple_overlay">#1A000000</color>
     <!--
         Custom widget tint
     -->

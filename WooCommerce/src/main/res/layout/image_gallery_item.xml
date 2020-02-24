@@ -23,7 +23,7 @@
         android:layout_gravity="center"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
-        android:background="@drawable/ripple_grey_framed"
+        android:background="@drawable/ripple_framed"
         android:visibility="gone"
         tools:visibility="visible">
 
