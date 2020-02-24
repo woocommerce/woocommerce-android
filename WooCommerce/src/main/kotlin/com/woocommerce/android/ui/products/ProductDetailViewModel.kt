@@ -478,12 +478,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    @Parcelize
-    data class ViewState(
-        val showLoadingProgress: Boolean = false,
-        val showLoadingMoreProgress: Boolean = false
-    ) : Parcelable
-
     private fun updateProductState(storedProduct: Product) {
         val updatedProduct = viewState.product?.let {
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
