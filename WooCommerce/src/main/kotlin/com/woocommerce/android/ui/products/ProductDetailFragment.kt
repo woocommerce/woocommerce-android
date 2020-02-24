@@ -749,12 +749,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * Adds a divider between cards
      */
     private fun addCardDividerView(context: Context) {
-        val divider = View(context)
+        val divider = View(context, null, android.R.attr.listDivider)
         divider.layoutParams = LayoutParams(
                 MATCH_PARENT,
                 resources.getDimensionPixelSize(R.dimen.minor_100)
         )
-        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.card_divider_color))
         productDetail_container.addView(divider)
     }
 

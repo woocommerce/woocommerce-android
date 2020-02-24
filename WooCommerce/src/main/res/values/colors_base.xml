@@ -25,7 +25,6 @@
         App colors
     -->
     <color name="default_window_background">#F2F2F2</color>
-    <color name="card_divider_color">@color/default_window_background</color>
     <color name="list_divider">@color/woo_black_90_alpha_012</color>
     <color name="card_surface_color">@color/color_surface</color>
 
