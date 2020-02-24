@@ -19,6 +19,11 @@
     <color name="color_on_secondary">@color/woo_black</color>
     <color name="color_on_background">@color/woo_black</color>
     <color name="color_on_error">@color/woo_white</color>
+
+    <color name="color_accent_1">@color/woo_yellow_50</color>
+    <color name="color_accent_2">@color/woo_orange_50</color>
+    <color name="color_accent_3">@color/woo_blue_50</color>
+
     <!--
         Custom widget tint
     -->
@@ -31,12 +36,6 @@
     -->
     <color name="default_window_background">#F2F2F2</color>
     <color name="list_divider">@color/woo_black_90_alpha_012</color>
-
-    <!--
-        Badge colors
-    -->
-    <color name="badge_border_color">@color/woo_white</color>
-    <color name="badge_background_color">@color/woo_purple_60</color>
 
     <!--
         Default graph colors
