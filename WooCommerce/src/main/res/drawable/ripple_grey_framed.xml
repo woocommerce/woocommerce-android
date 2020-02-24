@@ -8,7 +8,7 @@
             <solid android:color="@color/card_surface_color" />
             <stroke
                 android:width="@dimen/image_border_size"
-                android:color="@color/list_divider" />
+                android:color="@color/color_on_surface_medium" />
             <corners android:radius="@dimen/image_border_radius" />
         </shape>
     </item>
