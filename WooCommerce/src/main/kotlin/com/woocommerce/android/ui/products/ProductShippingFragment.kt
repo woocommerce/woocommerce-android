@@ -78,22 +78,22 @@ class ProductShippingFragment : BaseProductFragment() {
     }
 
     private fun initListeners() {
-        fun toFloatOrNull(editable: Editable?): Float? {
+        fun editableToFloat(editable: Editable?): Float {
             val str = editable?.toString() ?: ""
-            return if (str.isEmpty()) null else str.toFloat()
+            return if (str.isEmpty()) 0.0f else str.toFloat()
         }
 
         product_weight.setOnTextChangedListener {
-            viewModel.updateProductDraft(weight = toFloatOrNull(it))
+            viewModel.updateProductDraft(weight = editableToFloat(it))
         }
         product_length.setOnTextChangedListener {
-            viewModel.updateProductDraft(length = toFloatOrNull(it))
+            viewModel.updateProductDraft(length = editableToFloat(it))
         }
         product_height.setOnTextChangedListener {
-            viewModel.updateProductDraft(height = toFloatOrNull(it))
+            viewModel.updateProductDraft(height = editableToFloat(it))
         }
         product_width.setOnTextChangedListener {
-            viewModel.updateProductDraft(width = toFloatOrNull(it))
+            viewModel.updateProductDraft(width = editableToFloat(it))
         }
         product_shipping_class_spinner.setClickListener {
             showShippingClassFragment()
@@ -105,7 +105,8 @@ class ProductShippingFragment : BaseProductFragment() {
      * includes the weight or dimension unit, ex: "Width (in)"
      */
     private fun showValue(view: WCMaterialOutlinedEditTextView, @StringRes hintRes: Int, value: Float?, unit: String?) {
-        view.setText(value?.toString() ?: "")
+        val valStr = if (value != 0.0f) (value?.toString() ?: "") else ""
+        view.setText(valStr)
         view.setHint(
                 if (unit != null) {
                     getString(hintRes) + " ($unit)"
