@@ -14,6 +14,8 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -65,10 +67,11 @@ class RefundByItemsFragment : BaseFragment() {
             viewModel.onNextButtonTappedFromItems()
         }
 
-        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
-        }
         // TODO: Temporarily disabled, this will be used in a future release - do not remove
+//        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
+//            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
+//        }
+//
 //        issueRefund_productsTotal.setOnClickListener {
 //            viewModel.onProductRefundAmountTapped()
 //        }
@@ -104,6 +107,9 @@ class RefundByItemsFragment : BaseFragment() {
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
                 issueRefund_productsTotal.text = it
             }
+            new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
+                issueRefund_shippingTotal.text = it
+            }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 issueRefund_taxesTotal.text = it
             }
@@ -115,6 +121,15 @@ class RefundByItemsFragment : BaseFragment() {
             }
             new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
                 issueRefund_selectButton.text = it
+            }
+            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
+                if (isVisible) {
+                    issueRefund_lblShipping.show()
+                    issueRefund_shippingTotal.show()
+                } else {
+                    issueRefund_lblShipping.hide()
+                    issueRefund_shippingTotal.hide()
+                }
             }
             // TODO: Temporarily disabled, this will be used in a future release - do not remove
 //            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
