@@ -24,7 +24,7 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
         const val TAG = "ProductShippingClassFragment"
     }
 
-    private var adapter: ProductShippingClassAdapter? = null
+    private var shippingClassAdapter: ProductShippingClassAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_shipping_class_list, container, false)
@@ -33,19 +33,22 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        recycler?.addItemDecoration(
-                DividerItemDecoration(
-                        requireActivity(),
-                        DividerItemDecoration.VERTICAL
-                )
-        )
-        recycler.layoutManager = LinearLayoutManager(requireActivity())
-        adapter = ProductShippingClassAdapter(
+        shippingClassAdapter = ProductShippingClassAdapter(
                 requireActivity(),
                 this,
-                viewModel.getProduct().shippingClass
+                viewModel.getProduct().product?.shippingClass
         )
-        recycler.adapter = adapter
+
+        with(recycler) {
+            addItemDecoration(
+                    DividerItemDecoration(
+                            requireActivity(),
+                            DividerItemDecoration.VERTICAL
+                    )
+            )
+            layoutManager = LinearLayoutManager(requireActivity())
+            adapter = shippingClassAdapter
+        }
 
         viewModel.loadShippingClasses()
     }
@@ -69,7 +72,7 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
                 showLoadingMoreProgress(new.isLoadingMoreProgressShown)
             }
             new.shippingClassList.takeIfNotEqualTo(old?.shippingClassList) {
-                adapter?.shippingClassList = it!!
+                shippingClassAdapter?.shippingClassList = it!!
             }
         }
     }

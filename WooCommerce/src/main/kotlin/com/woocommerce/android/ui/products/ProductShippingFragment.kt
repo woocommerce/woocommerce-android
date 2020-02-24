@@ -136,9 +136,7 @@ class ProductShippingFragment : BaseProductFragment() {
     }
 
     private fun showShippingClassFragment() {
-        val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment(
-                shippingClassSlug = product_shipping_class_spinner.getText()
-        )
+        val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment()
         findNavController().navigate(action)
     }
 }
