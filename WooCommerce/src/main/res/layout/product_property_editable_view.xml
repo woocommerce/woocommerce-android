@@ -4,20 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/editText"
-        style="@style/TextAppearance.Woo.Headline6"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_text_input"
+        style="@style/Woo.MaterialComponents.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
-        android:ellipsize="end"
-        android:imeOptions="actionDone"
-        android:background="@null"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:hint="@string/product_detail_title_hint"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:hint="@string/product_detail_editable_text_hint"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText"
+            style="@style/Woo.TextView.Headline6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <View
         android:id="@+id/divider"
