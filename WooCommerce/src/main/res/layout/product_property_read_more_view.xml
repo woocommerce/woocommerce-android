@@ -29,30 +29,26 @@
         android:ellipsize="end"
         android:lineSpacingExtra="@dimen/minor_25"
         android:textAlignment="viewStart"
-        app:layout_constraintBottom_toTopOf="@id/textReadMore"
+        app:layout_constraintBottom_toTopOf="@id/btnReadMore"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textCaption"
         tools:text="textContent" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textReadMore"
-        style="@style/Woo.Card.Body"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnReadMore"
+        style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginStart="@dimen/minor_100"
         android:layout_marginEnd="@dimen/major_100"
-        android:layout_marginBottom="@dimen/major_100"
-        android:background="?attr/selectableItemBackground"
         android:paddingTop="@dimen/minor_50"
         android:paddingBottom="@dimen/minor_50"
         android:text="@string/read_more"
-        android:textColor="@color/color_secondary"
-        android:visibility="gone"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textContent"
-        app:layout_goneMarginBottom="@dimen/major_100"
-        tools:visibility="visible" />
+        app:layout_goneMarginBottom="@dimen/major_100" />
 
     <View
         android:id="@+id/divider"

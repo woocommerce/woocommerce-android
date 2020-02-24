@@ -7,6 +7,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.button.MaterialButton
 import com.woocommerce.android.R
 
 /**
@@ -20,13 +21,13 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
     private var textCaption: TextView
     private var textContent: TextView
-    private var textReadMore: TextView
+    private var btnReadMore: MaterialButton
 
     init {
         with(View.inflate(context, R.layout.product_property_read_more_view, this)) {
             textCaption = findViewById(R.id.textCaption)
             textContent = findViewById(R.id.textContent)
-            textReadMore = findViewById(R.id.textReadMore)
+            btnReadMore = findViewById(R.id.btnReadMore)
         }
     }
 
@@ -44,10 +45,10 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
                 textContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 if (textContent.lineCount > maxLines) {
                     textContent.maxLines = maxLines
-                    textReadMore.visibility = View.VISIBLE
-                    textReadMore.setOnClickListener { showFullContent(caption, content) }
+                    btnReadMore.visibility = View.VISIBLE
+                    btnReadMore.setOnClickListener { showFullContent(caption, content) }
                 } else {
-                    textReadMore.visibility = View.GONE
+                    btnReadMore.visibility = View.GONE
                 }
             }
         })
