@@ -752,7 +752,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val divider = View(context)
         divider.layoutParams = LayoutParams(
                 MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen.product_detail_card_divider_height)
+                resources.getDimensionPixelSize(R.dimen.minor_100)
         )
         divider.setBackgroundColor(ContextCompat.getColor(context, R.color.card_divider_color))
         productDetail_container.addView(divider)
