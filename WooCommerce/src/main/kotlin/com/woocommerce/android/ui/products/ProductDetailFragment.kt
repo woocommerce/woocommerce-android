@@ -700,7 +700,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             addCardDividerView(requireActivity())
         }
 
-        val cardView = WCProductPropertyCardView(requireActivity())
+        val cardView = View.inflate(
+                requireActivity(),
+                R.layout.product_property_cardview,
+                null
+        ) as WCProductPropertyCardView
         cardView.tag = cardTag
 
         val cardViewCaption: String? = when (card) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<com.woocommerce.android.ui.products.WCProductPropertyCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Woo.Card.WithoutPadding"
@@ -10,6 +10,7 @@
         android:id="@+id/cardContainerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="-1dp"
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
@@ -24,4 +25,4 @@
 
     </LinearLayout>
     
-</com.google.android.material.card.MaterialCardView>
+</com.woocommerce.android.ui.products.WCProductPropertyCardView>
