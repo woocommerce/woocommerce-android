@@ -255,10 +255,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true) {
                         dateOnSaleToGmt ?: product.dateOnSaleToGmt
-                    } else product.dateOnSaleToGmt,
+                    } else viewState.storedProduct?.dateOnSaleToGmt,
                     dateOnSaleFromGmt = if (isSaleScheduled == true) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else product.dateOnSaleFromGmt
+                    } else viewState.storedProduct?.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
@@ -573,6 +573,18 @@ class ProductDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float
     ) : Parcelable
 
+    /**
+     * [product] - used for the UI. Any updates to the fields in the UI would update this model.
+     *
+     * [cachedProduct] is the [Product] model that is used to verify if there are any changes made to the
+     * [product] model locally, which are not yet updated to the API.
+     *
+     * [storedProduct] is the [Product] model that is fetched from the API and available in the local db
+     *
+     * [isProductUpdated] - flag to determine if there are any changes made to the product by comparing
+     * [product] and [storedProduct] OR [product] and [cachedProduct].
+     *
+     */
     @Parcelize
     data class ProductDetailViewState(
         val product: Product? = null,
