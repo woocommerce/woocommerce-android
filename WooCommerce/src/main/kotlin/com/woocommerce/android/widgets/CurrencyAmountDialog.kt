@@ -1,18 +1,17 @@
 package com.woocommerce.android.widgets
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
-import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyFormatter
@@ -39,7 +38,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
     private var minValue: BigDecimal = BigDecimal(Double.MIN_VALUE)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(ContextThemeWrapper(activity, R.style.Woo_Dialog))
+        val builder = MaterialAlertDialogBuilder(activity)
         val view = View.inflate(activity, R.layout.currency_amount_dialog, null)
 
         headerText = view.findViewById(R.id.currencyAmount_header)
