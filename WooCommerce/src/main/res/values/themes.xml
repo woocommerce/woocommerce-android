@@ -72,6 +72,9 @@
         <item name="materialCardViewStyle">@style/Woo.Card</item>
         <item name="android:listDivider">@drawable/list_divider</item>
         <item name="ratingBarStyleSmall">@style/Woo.RatingsBar.Small</item>
+        <item name="textInputStyle">@style/Woo.TextInputLayout</item>
+        <item name="android:textViewStyle">@style/Woo.TextView</item>
+        <item name="editTextStyle">@style/Woo.TextInputEditText</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
