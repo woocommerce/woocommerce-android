@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-28 16:01:02+0000
+Translation-Revision-Date: 2020-02-10 00:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="sign_up">الدخول إلى ووردبريس.كوم</string>
+    <string name="empty_message_with_search">عذرًا، لم نتمكن من العثور على نتائج بشأن \"%s\"</string>
+    <string name="empty_review_list_message">الحصول على مراجعات حول منتج بجودة عالية لمتجرك</string>
+    <string name="empty_review_list_title">احصل على تقييماتك الأولى</string>
+    <string name="empty_order_list_all_processed">تم استيفاء جميع الطلبات</string>
+    <string name="empty_order_list_message">سنُخطرك عندما تتلقى طلبًا جديدًا. في غضون ذلك، استكشف كيف يمكنك زيادة مبيعات متجرك.</string>
+    <string name="empty_order_list_title">في انتظار طلبك الأول</string>
+    <string name="share_your_store_message">شارك متجرك مع جهات الاتصال الخاصة بك عبر شبكات التواصل الاجتماعي والبريد الإلكتروني</string>
+    <string name="get_the_word_out">لننشر الخبر</string>
+    <string name="product_inventory_quantity_summary">كم عدد العناصر المتوفرة في المخزون</string>
+    <string name="product_inventory_quantity">الكمية</string>
+    <string name="product_sold_individually">بحد واحد لكل طلب</string>
+    <string name="product_manage_stock">إدارة المخزون</string>
+    <string name="product_sku_summary">يساعد في التعرف على هذا المنتج بسهولة</string>
+    <string name="product_sale_date_from">من %1$s</string>
+    <string name="product_sale_date_from_to">%1$s - %2$s</string>
+    <string name="product_sale_dates">تواريخ البيع</string>
+    <string name="product_price_empty">إضافة سعر</string>
+    <string name="product_inventory_empty">إضافة المخزون</string>
+    <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
     <string name="product_detail_editable_text_hint">إدخال نص</string>
     <string name="product_detail_title_hint">إدخال عنوان</string>
     <string name="product_detail_update_product_success">تم تحديث المنتج</string>
@@ -125,8 +145,6 @@ Language: ar
     <string name="order_refunds_title_with_amount">استرداد %s</string>
     <string name="order_refunds_available_for_refund">%s متوافر للاسترداد</string>
     <string name="orderdetail_issue_refund_button">نشر مبلغ الاسترداد</string>
-    <string name="orderdetail_refund_view_details">عرض التفاصيل</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">تجربة الإحصاءات الجديدة المتاحة مع\nإضافة مسؤول WooCommerce</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>
@@ -529,9 +547,6 @@ Language: ar
     <string name="app_rating_title">هل تستمتع بـ Woo؟</string>
     <string name="settings_selected_store">المتجر المحدّد</string>
     <string name="orders_empty_message_with_search">لا توجد طلبات مطابقة</string>
-    <string name="orders_empty_message_with_filter">لا توجد طلبات حتى الآن</string>
-    <string name="waiting_for_customers_contentdesc">في انتظار صورة العملاء</string>
-    <string name="waiting_for_customers">في انتظار العملاء</string>
     <string name="share_store_dialog_title">مشاركة عنوان URL الخاص بمتجرك</string>
     <string name="share_store_button">مشاركة متجرك</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>

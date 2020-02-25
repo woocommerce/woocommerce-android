@@ -1,0 +1,4 @@
+3.6 :
+- Vous pouvez désormais créer de nouveaux remboursements et consulter les remboursements précédents dans l'application.
+- Lorsque vous consultez une liste vide, les nouvelles images ne sont pas coupées sur les écrans plus petits en mode paysage.
+- Résolution d'un bug qui vidait la liste des avis après le pivotement de l'appareil.

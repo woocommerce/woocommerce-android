@@ -37,6 +37,11 @@
             app:destination="@id/productShippingFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productPricingFragment"
+            app:destination="@id/productPricingFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -74,10 +79,10 @@
         android:id="@+id/productInventoryFragment"
         android:name="com.woocommerce.android.ui.products.ProductInventoryFragment"
         tools:layout="@layout/fragment_product_inventory">
-    <argument
-        android:name="remoteProductId"
-        android:defaultValue="0L"
-        app:argType="long" />
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
@@ -94,10 +99,14 @@
     <fragment
         android:id="@+id/productShippingClassFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingClassFragment"
-        android:label="ProductShippingClassFragment">
+        android:label="ProductShippingClassFragment" />
+    <fragment
+        android:id="@+id/productPricingFragment"
+        android:name="com.woocommerce.android.ui.products.ProductPricingFragment"
+        tools:layout="@layout/fragment_product_pricing">
         <argument
-            android:name="shippingClassSlug"
-            android:defaultValue='""'
-            app:argType="string" />
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
 </navigation>
