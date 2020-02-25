@@ -18,10 +18,16 @@
             style="@style/Woo.Card.Header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
+            android:layout_marginBottom="@dimen/major_100"
             android:visibility="gone"
             tools:text="cardCaptionText"
             tools:visibility="visible"/>
+
+        <View
+            android:id="@+id/cardCaptionDivider"
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_gravity="bottom" />
 
     </LinearLayout>
     
