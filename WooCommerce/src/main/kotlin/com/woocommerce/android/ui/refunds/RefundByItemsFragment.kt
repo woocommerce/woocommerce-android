@@ -124,11 +124,16 @@ class RefundByItemsFragment : BaseFragment() {
             }
             new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
                 if (isVisible) {
-                    issueRefund_lblShipping.show()
-                    issueRefund_shippingTotal.show()
+                    issueRefund_shippingRefundGroup.show()
                 } else {
-                    issueRefund_lblShipping.hide()
-                    issueRefund_shippingTotal.hide()
+                    issueRefund_shippingRefundGroup.hide()
+                }
+            }
+            new.isShippingNoticeVisible?.takeIfNotEqualTo(old?.isShippingNoticeVisible) { isVisible ->
+                if (isVisible) {
+                    issueRefund_shippingRefundNotice.show()
+                } else {
+                    issueRefund_shippingRefundNotice.hide()
                 }
             }
             // TODO: Temporarily disabled, this will be used in a future release - do not remove
