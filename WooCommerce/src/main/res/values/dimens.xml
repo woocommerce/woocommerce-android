@@ -83,6 +83,8 @@ so that's the baseline as defined in `major_100`.
     <dimen name="skeleton_text_height_75">@dimen/text_minor_125</dimen>
     <dimen name="skeleton_text_height_100">@dimen/text_major_25</dimen>
     <dimen name="skeleton_tagview_height">24dp</dimen>
+    <dimen name="skeleton_text_button_height">24dp</dimen>
+
 
     <!-- Other literal dimensions -->
     <dimen name="margin_app_title_aligned">72dp</dimen>
