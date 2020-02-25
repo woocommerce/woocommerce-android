@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.dialog
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.DialogInterface.OnClickListener
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R.string
 import java.lang.ref.WeakReference
 
@@ -24,7 +25,7 @@ object CustomDiscardDialog {
             return
         }
 
-        val builder = AlertDialog.Builder(activity)
+        val builder = MaterialAlertDialogBuilder(activity)
                 .setMessage(activity.applicationContext.getString(string.discard_message))
                 .setCancelable(true)
                 .setPositiveButton(string.discard, posBtnAction)
