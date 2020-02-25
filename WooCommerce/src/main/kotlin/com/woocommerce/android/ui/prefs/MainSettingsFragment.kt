@@ -162,7 +162,9 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         // if v4 stats is available, show both products & stats under the beta setting label, otherwise
         // only show products
         textBetaFeaturesDetail.text = if (AppPrefs.isUsingV4Api()) {
-            getString(R.string.settings_enable_product_teaser_title) + ", " + getString(R.string.settings_enable_v4_stats_title)
+            getString(R.string.settings_enable_product_teaser_title) +
+                    ", " +
+                    getString(R.string.settings_enable_v4_stats_title)
         } else {
             getString(R.string.settings_enable_product_teaser_title)
         }
