@@ -97,13 +97,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
-
-        val content = view.findViewById<View>(R.id.collapsing_content)
-        val appBar = view.findViewById<AppBarLayout>(R.id.app_bar_layout)
-        appBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset ->
-            val scrollRange = (appBarLayout.totalScrollRange - DisplayUtils.dpToPx(context, 64)).toFloat()
-            content.alpha = 1.0f - abs(verticalOffset / scrollRange)
-        })
     }
 
     private fun initializeViewModel() {
