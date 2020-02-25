@@ -100,6 +100,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun initialisePricing() {
+        if (parameters == null) loadParameters()
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                 ?: DEFAULT_DECIMAL_PRECISION
         productPricingViewState = productPricingViewState.copy(

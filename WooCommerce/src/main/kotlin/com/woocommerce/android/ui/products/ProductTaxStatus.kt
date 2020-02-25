@@ -6,13 +6,14 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductTaxStatus
 
 sealed class ProductTaxStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
-    object Taxable : ProductTaxStatus(R.string.product_tax_status_taxable)
-    object Shipping : ProductTaxStatus(R.string.product_tax_status_shipping)
-    object None : ProductTaxStatus(R.string.product_tax_status_none)
-    object NotAvailable : ProductTaxStatus()
+    @Parcelize object Taxable : ProductTaxStatus(R.string.product_tax_status_taxable)
+    @Parcelize object Shipping : ProductTaxStatus(R.string.product_tax_status_shipping)
+    @Parcelize object None : ProductTaxStatus(R.string.product_tax_status_none)
+    @Parcelize object NotAvailable : ProductTaxStatus()
     class Custom(value: String) : ProductTaxStatus(value = value)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
