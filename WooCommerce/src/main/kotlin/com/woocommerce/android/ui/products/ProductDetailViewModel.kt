@@ -154,8 +154,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * viewState.product != viewState.storedProduct
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
-        val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
+        val isProductDetailUpdated = isProductUpdated()
+        val isProductSubDetailUpdated = isProductLocalCacheUpdated()
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
@@ -273,10 +273,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun discardEditChanges(event: ProductExitEvent) {
+        val currentProduct = if (isProductLocalCacheUpdated() == true) {
+            viewState.cachedProduct
+        } else viewState.storedProduct
+
         when (event) {
             // discard inventory screen changes
             is ExitInventory -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             sku = it.sku,
                             manageStock = it.manageStock,
@@ -293,7 +297,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             // discard pricing screen changes
             is ExitPricing -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             dateOnSaleFromGmt = it.dateOnSaleFromGmt,
                             dateOnSaleToGmt = it.dateOnSaleToGmt,
@@ -311,7 +315,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             // discard shipping screen changes
             is ExitShipping -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             weight = it.weight,
                             height = it.height,
@@ -357,6 +361,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
+
+    private fun isProductUpdated() = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
+
+    private fun isProductLocalCacheUpdated() =
+            viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
 
     private fun loadParameters() {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
