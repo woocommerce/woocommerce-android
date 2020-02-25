@@ -383,7 +383,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             it.setClickListener {
                 // TODO: add event listener for click
-                showProductPricing()
+                showProductPricing(product.remoteId)
             }
         }
 
@@ -411,7 +411,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             it.setClickListener {
                 // TODO: add event listener for click
-                showProductInventory()
+                showProductInventory(product.remoteId)
             }
         }
 
@@ -778,17 +778,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 )))
     }
 
-    private fun showProductInventory() {
+    private fun showProductInventory(remoteId: Long) {
         findNavController().navigate(
                 ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment()
+                        .actionProductDetailFragmentToProductInventoryFragment(remoteId)
         )
     }
 
-    private fun showProductPricing() {
+    private fun showProductPricing(remoteId: Long) {
         findNavController().navigate(
                 ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductPricingFragment()
+                        .actionProductDetailFragmentToProductPricingFragment(remoteId)
         )
     }
 

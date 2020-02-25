@@ -6,13 +6,14 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 
 sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
-    object InStock : ProductStockStatus(R.string.product_stock_status_instock)
-    object OutOfStock : ProductStockStatus(R.string.product_stock_status_out_of_stock)
-    object OnBackorder : ProductStockStatus(R.string.product_stock_status_on_backorder)
-    object NotAvailable : ProductStockStatus()
+    @Parcelize object InStock : ProductStockStatus(R.string.product_stock_status_instock)
+    @Parcelize object OutOfStock : ProductStockStatus(R.string.product_stock_status_out_of_stock)
+    @Parcelize object OnBackorder : ProductStockStatus(R.string.product_stock_status_on_backorder)
+    @Parcelize object NotAvailable : ProductStockStatus()
     class Custom(value: String) : ProductStockStatus(value = value)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

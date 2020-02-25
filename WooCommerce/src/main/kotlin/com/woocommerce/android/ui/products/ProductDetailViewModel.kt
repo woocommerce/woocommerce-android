@@ -100,6 +100,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun initialisePricing() {
+        if (parameters == null) loadParameters()
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                 ?: DEFAULT_DECIMAL_PRECISION
         productPricingViewState = productPricingViewState.copy(
@@ -153,8 +154,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * viewState.product != viewState.storedProduct
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
-        val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
+        val isProductDetailUpdated = isProductUpdated()
+        val isProductSubDetailUpdated = isProductLocalCacheUpdated()
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
@@ -254,10 +255,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true) {
                         dateOnSaleToGmt ?: product.dateOnSaleToGmt
-                    } else product.dateOnSaleToGmt,
+                    } else viewState.storedProduct?.dateOnSaleToGmt,
                     dateOnSaleFromGmt = if (isSaleScheduled == true) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else product.dateOnSaleFromGmt
+                    } else viewState.storedProduct?.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
@@ -272,10 +273,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun discardEditChanges(event: ProductExitEvent) {
+        val currentProduct = if (isProductLocalCacheUpdated() == true) {
+            viewState.cachedProduct
+        } else viewState.storedProduct
+
         when (event) {
             // discard inventory screen changes
             is ExitInventory -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             sku = it.sku,
                             manageStock = it.manageStock,
@@ -292,7 +297,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             // discard pricing screen changes
             is ExitPricing -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             dateOnSaleFromGmt = it.dateOnSaleFromGmt,
                             dateOnSaleToGmt = it.dateOnSaleToGmt,
@@ -310,7 +315,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             // discard shipping screen changes
             is ExitShipping -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             weight = it.weight,
                             height = it.height,
@@ -356,6 +361,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
+
+    private fun isProductUpdated() = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
+
+    private fun isProductLocalCacheUpdated() =
+            viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
 
     private fun loadParameters() {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -572,6 +582,18 @@ class ProductDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float
     ) : Parcelable
 
+    /**
+     * [product] - used for the UI. Any updates to the fields in the UI would update this model.
+     *
+     * [cachedProduct] is the [Product] model that is used to verify if there are any changes made to the
+     * [product] model locally, which are not yet updated to the API.
+     *
+     * [storedProduct] is the [Product] model that is fetched from the API and available in the local db
+     *
+     * [isProductUpdated] - flag to determine if there are any changes made to the product by comparing
+     * [product] and [storedProduct] OR [product] and [cachedProduct].
+     *
+     */
     @Parcelize
     data class ProductDetailViewState(
         val product: Product? = null,
