@@ -14,7 +14,7 @@ enum class FeatureFlag {
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             PRODUCT_RELEASE_M1 -> AppPrefs.isProductsFeatureEnabled()
-            PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG && AppPrefs.isProductsFeatureEnabled()
+            PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG && PRODUCT_RELEASE_M1.isEnabled(context)
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
