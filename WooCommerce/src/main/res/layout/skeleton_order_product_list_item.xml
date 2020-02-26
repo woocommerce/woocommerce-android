@@ -1,34 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:paddingBottom="@dimen/settings_padding"
-    android:paddingTop="@dimen/settings_padding">
+    android:layout_marginTop="@dimen/major_75"
+    android:layout_marginBottom="@dimen/major_75">
 
     <View
         android:id="@+id/product_gravatar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="@dimen/margin_large"
-        android:layout_marginStart="@dimen/margin_large"
-        android:background="@drawable/skeleton_background"/>
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
+        android:background="@drawable/skeleton_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <View
         android:id="@+id/product_name"
         android:layout_width="200dp"
-        android:layout_height="@dimen/text_medium"
-        android:layout_marginTop="@dimen/margin_large"
+        android:layout_height="@dimen/skeleton_text_height_75"
+        android:layout_margin="@dimen/major_75"
         android:layout_toEndOf="@+id/product_gravatar"
-        android:background="@drawable/skeleton_background"/>
+        android:background="@drawable/skeleton_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/view7"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/product_gravatar"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:id="@+id/view7"
         android:layout_width="30dp"
-        android:layout_height="@dimen/text_large"
+        android:layout_height="@dimen/skeleton_text_height_75"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_large"
-        android:background="@drawable/skeleton_background"/>
-
-</RelativeLayout>
+        android:background="@drawable/skeleton_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,22 +2,22 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/skeleton_order_note_item_height"
+    android:layout_height="80dp"
     android:orientation="horizontal"
-    android:paddingBottom="@dimen/margin_large"
-    android:paddingTop="@dimen/margin_large">
+    android:layout_marginTop="@dimen/major_75"
+    android:layout_marginBottom="@dimen/major_75"
+    android:layout_marginStart="@dimen/major_100"
+    android:layout_marginEnd="@dimen/major_100">
 
     <View
-        android:layout_width="@dimen/order_note_icon"
-        android:layout_height="@dimen/order_note_icon"
+        android:layout_width="@dimen/image_minor_60"
+        android:layout_height="@dimen/image_minor_60"
         android:background="@drawable/skeleton_background_oval"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/card_section_padding_h"
+        android:layout_marginStart="@dimen/major_75"
         android:background="@drawable/skeleton_background"/>
 
 </LinearLayout>

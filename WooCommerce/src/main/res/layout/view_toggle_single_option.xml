@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:focusable="true">
 
     <com.google.android.material.textview.MaterialTextView
@@ -11,17 +12,23 @@
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/minor_00"
         android:importantForAccessibility="no"
         tools:text="Email note to customer"/>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchSetting_switch"
-        android:textAppearance="@style/TextAppearance.Woo.Body2"
-        android:textColor="@null"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/major_175"
+        android:gravity="center_vertical"
         android:importantForAccessibility="no"
         android:switchPadding="@dimen/major_100"
+        android:layout_marginEnd="@dimen/minor_00"
+        android:layout_marginBottom="@dimen/major_75"
+        android:paddingEnd="@dimen/minor_100"
+        android:paddingStart="@dimen/minor_00"
         android:clickable="false"
         tools:text="If disabled will add the note as private"/>
 </merge>

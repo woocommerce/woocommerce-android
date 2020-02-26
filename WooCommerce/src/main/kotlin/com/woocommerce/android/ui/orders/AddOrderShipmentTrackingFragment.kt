@@ -74,7 +74,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         if (savedInstanceState != null) {
             isSelectedProviderCustom = savedInstanceState.getBoolean(FIELD_IS_CUSTOM_PROVIDER, false)
             addTracking_number.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_NUMBER, ""))
-            addTracking_date.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED)
+            addTracking_date.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED, ""))
             addTracking_custom_provider_name.setText(
                     savedInstanceState.getString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME, "")
             )
@@ -95,10 +95,10 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         } ?: navArgs.orderTrackingProvider
         if (isCustomProvider()) {
             addTracking_custom_provider_name.setText(selectedCarrierName)
-            addTracking_editCarrier.text = getString(R.string.order_shipment_tracking_custom_provider_section_name)
+            addTracking_editCarrier.setText(getString(R.string.order_shipment_tracking_custom_provider_section_name))
             showCustomProviderFields()
         } else {
-            addTracking_editCarrier.text = selectedCarrierName
+            addTracking_editCarrier.setText(selectedCarrierName)
             hideCustomProviderFields()
         }
 
@@ -170,29 +170,27 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         return when (item.itemId) {
             R.id.menu_add -> {
                 if (addTracking_editCarrier.text.toString().isEmpty()) {
-                    addTracking_editCarrier.isFocusableInTouchMode = true
-                    addTracking_editCarrier.requestFocus()
-                    addTracking_editCarrier.error = getString(R.string.order_shipment_tracking_empty_provider)
-                    addTracking_number.error = null
-                    addTracking_custom_provider_name.error = null
+                    addTracking_carrierLayout.error = getString(R.string.order_shipment_tracking_empty_provider)
+                    addTracking_numberLayout.error = null
+                    addTracking_customNameLayout.error = null
                     return true
                 }
 
                 if (isCustomProvider() && addTracking_custom_provider_name.text.toString().isEmpty()) {
                     addTracking_number.error = null
-                    addTracking_editCarrier.error = null
+                    addTracking_carrierLayout.error = null
                     addTracking_custom_provider_name.requestFocus()
-                    addTracking_custom_provider_name.error = getString(
+                    addTracking_customNameLayout.error = getString(
                             R.string.order_shipment_tracking_empty_custom_provider_name
                     )
                     return true
                 }
 
                 if (addTracking_number.text.isNullOrEmpty()) {
-                    addTracking_editCarrier.error = null
-                    addTracking_custom_provider_name.error = null
+                    addTracking_carrierLayout.error = null
+                    addTracking_customNameLayout.error = null
                     addTracking_number.requestFocus()
-                    addTracking_number.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
+                    addTracking_numberLayout.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
                     return true
                 }
 
@@ -300,11 +298,11 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
     }
 
     override fun onTrackingProviderSelected(selectedCarrierName: String) {
-        addTracking_editCarrier.text = selectedCarrierName
+        addTracking_editCarrier.setText(selectedCarrierName)
         addTracking_editCarrier.error = null
         addTracking_editCarrier.isFocusableInTouchMode = false
         addTracking_editCarrier.isFocusable = false
-        isSelectedProviderCustom = addTracking_editCarrier.text ==
+        isSelectedProviderCustom = addTracking_editCarrier.text.toString() ==
                 getString(R.string.order_shipment_tracking_custom_provider_section_name)
         // Display custom provider fields only if selectedCarrierName = custom provider
         if (isCustomProvider()) {
@@ -330,20 +328,20 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     private fun displayFormatDateShippedText(dateString: String) {
         context?.let {
-            addTracking_date.text = DateUtils.getLocalizedLongDateString(
+            addTracking_date.setText(DateUtils.getLocalizedLongDateString(
                     it,
                     dateString
-            )
+            ))
         }
     }
 
     private fun showCustomProviderFields() {
-        addTracking_custom_provider_name_view.visibility = View.VISIBLE
-        addTracking_custom_provider_url_view.visibility = View.VISIBLE
+        addTracking_customNameLayout.visibility = View.VISIBLE
+        addTracking_customUrlLayout.visibility = View.VISIBLE
     }
 
     private fun hideCustomProviderFields() {
-        addTracking_custom_provider_name_view.visibility = View.GONE
-        addTracking_custom_provider_url_view.visibility = View.GONE
+        addTracking_customNameLayout.visibility = View.GONE
+        addTracking_customUrlLayout.visibility = View.GONE
     }
 }
