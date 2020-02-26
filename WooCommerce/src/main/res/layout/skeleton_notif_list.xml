@@ -7,7 +7,7 @@
 
     <include
         android:id="@+id/include4"
-        layout="@layout/skeleton_notif_header"
+        layout="@layout/skeleton_list_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>

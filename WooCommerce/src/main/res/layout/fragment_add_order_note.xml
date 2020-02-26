@@ -33,16 +33,14 @@
 
             <EditText
                 android:id="@+id/addNote_editor"
-                style="@style/Woo.EditText.Subtitle1"
+                style="@style/Woo.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textAlignment="viewStart"
                 android:gravity="top|start"
-                android:background="@null"
                 android:hint="@string/orderdetail_note_hint"
                 android:importantForAutofill="no"
                 android:inputType="textAutoComplete|textMultiLine|textCapSentences"
-                tools:text="This is at test order note. This is only a test. IF this were a real order note it'd contain something worth reading."/>
+                tools:text="This is at test order note. This is only a test. IF this were a real order note it'd contain something worth reading." />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
