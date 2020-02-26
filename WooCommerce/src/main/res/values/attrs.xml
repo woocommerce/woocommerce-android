@@ -52,6 +52,7 @@
         <attr name="editTextHint" format="string"/>
         <attr name="editTextSummary" format="string"/>
         <attr name="android:inputType"/>
+        <attr name="android:maxLength"/>
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedSpinnerView">

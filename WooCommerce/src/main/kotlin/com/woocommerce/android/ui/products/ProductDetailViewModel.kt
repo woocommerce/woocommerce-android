@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -23,8 +24,11 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailE
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -33,6 +37,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,9 +65,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private var remoteProductId = 0L
-    private var parameters: Parameters? = null
+    final var parameters: Parameters? = null
+        private set
 
     private var skuVerificationJob: Job? = null
+    private var shippingClassLoadJob: Job? = null
 
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
     private var viewState by productDetailViewStateData
@@ -72,6 +79,10 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
+
+    // view state for the shipping class screen
+    final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
+    private var productShippingClassViewState by productShippingClassViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -89,6 +100,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun initialisePricing() {
+        if (parameters == null) loadParameters()
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                 ?: DEFAULT_DECIMAL_PRECISION
         productPricingViewState = productPricingViewState.copy(
@@ -142,8 +154,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * viewState.product != viewState.storedProduct
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
-        val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
+        val isProductDetailUpdated = isProductUpdated()
+        val isProductSubDetailUpdated = isProductLocalCacheUpdated()
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
@@ -211,7 +223,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         dateOnSaleFromGmt: Date? = null,
         dateOnSaleToGmt: Date? = null,
         taxStatus: ProductTaxStatus? = null,
-        taxClass: String? = null
+        taxClass: String? = null,
+        length: Float? = null,
+        width: Float? = null,
+        height: Float? = null,
+        weight: Float? = null,
+        shippingClass: String? = null
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -230,13 +247,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                     salePrice = if (salePrice isEqualTo BigDecimal.ZERO) null else salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
+                    length = length ?: product.length,
+                    width = width ?: product.width,
+                    height = height ?: product.height,
+                    weight = weight ?: product.weight,
+                    shippingClass = shippingClass ?: product.shippingClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true) {
                         dateOnSaleToGmt ?: product.dateOnSaleToGmt
-                    } else product.dateOnSaleToGmt,
+                    } else viewState.storedProduct?.dateOnSaleToGmt,
                     dateOnSaleFromGmt = if (isSaleScheduled == true) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else product.dateOnSaleFromGmt
+                    } else viewState.storedProduct?.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
@@ -251,10 +273,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun discardEditChanges(event: ProductExitEvent) {
+        val currentProduct = if (isProductLocalCacheUpdated() == true) {
+            viewState.cachedProduct
+        } else viewState.storedProduct
+
         when (event) {
             // discard inventory screen changes
             is ExitInventory -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             sku = it.sku,
                             manageStock = it.manageStock,
@@ -271,7 +297,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             // discard pricing screen changes
             is ExitPricing -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             dateOnSaleFromGmt = it.dateOnSaleFromGmt,
                             dateOnSaleToGmt = it.dateOnSaleToGmt,
@@ -287,6 +313,22 @@ class ProductDetailViewModel @AssistedInject constructor(
                     )
                 }
             }
+            // discard shipping screen changes
+            is ExitShipping -> {
+                currentProduct?.let {
+                    val product = viewState.product?.copy(
+                            weight = it.weight,
+                            height = it.height,
+                            width = it.width,
+                            length = it.length,
+                            shippingClass = it.shippingClass
+                    )
+                    viewState = viewState.copy(
+                            product = product,
+                            cachedProduct = product
+                    )
+                }
+            }
         }
 
         updateProductEditAction()
@@ -295,7 +337,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun loadProduct(remoteProductId: Long) {
         loadParameters()
 
-        // Pre-load tax class list for a site. This is used in the product pricing screen
+        // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
         }
@@ -319,6 +361,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
+
+    private fun isProductUpdated() = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
+
+    private fun isProductLocalCacheUpdated() =
+            viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
 
     private fun loadParameters() {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -384,36 +431,103 @@ class ProductDetailViewModel @AssistedInject constructor(
         productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = skuErrorMessage)
     }
 
-    private fun updateProductState(storedProduct: Product) {
-        val weight = if (storedProduct.weight > 0) {
-            "${format(storedProduct.weight)}${parameters?.weightUnit ?: ""}"
-        } else ""
+    /**
+     * Load & fetch the shipping classed for the current site, optionally performing a "load more" to
+     * load the next page of shipping classes
+     */
+    fun loadShippingClasses(loadMore: Boolean = false) {
+        if (loadMore && !productRepository.canLoadMoreShippingClasses) {
+            WooLog.d(T.PRODUCTS, "Can't load more product shipping classes")
+            return
+        }
 
-        val hasLength = storedProduct.length > 0
-        val hasWidth = storedProduct.width > 0
-        val hasHeight = storedProduct.height > 0
+        waitForExistingShippingClassFetch()
+
+        shippingClassLoadJob = launch {
+            if (loadMore) {
+                productShippingClassViewState = productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
+            } else {
+                // get cached shipping classes and only show loading progress the list is empty, otherwise show
+                // them right away
+                val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
+                if (cachedShippingClasses.isEmpty()) {
+                    productShippingClassViewState =
+                            productShippingClassViewState.copy(isLoadingProgressShown = true)
+                } else {
+                    productShippingClassViewState =
+                            productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
+                }
+            }
+
+            // fetch shipping classes from the backend
+            val shippingClasses = productRepository.fetchShippingClassesForSite(loadMore)
+            productShippingClassViewState = productShippingClassViewState.copy(
+                    isLoadingProgressShown = false,
+                    isLoadingMoreProgressShown = false,
+                    shippingClassList = shippingClasses
+            )
+        }
+    }
+
+    /**
+     * If shipping classes are already being fetch, wait for the current fetch to complete - this is
+     * used above to avoid fetching multiple pages of shipping classes in unison
+     */
+    private fun waitForExistingShippingClassFetch() {
+        if (shippingClassLoadJob?.isActive == true) {
+            launch {
+                try {
+                    shippingClassLoadJob?.join()
+                } catch (e: CancellationException) {
+                    WooLog.d(
+                            T.PRODUCTS,
+                            "CancellationException while waiting for existing shipping class list fetch"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun updateProductState(storedProduct: Product) {
+        val updatedProduct = viewState.product?.let {
+            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
+        } ?: storedProduct
+
+        val weightWithUnits = if (updatedProduct.weight > 0) {
+            "${format(updatedProduct.weight)}${parameters?.weightUnit ?: ""}"
+        } else {
+            ""
+        }
+
+        val hasLength = updatedProduct.length > 0
+        val hasWidth = updatedProduct.width > 0
+        val hasHeight = updatedProduct.height > 0
         val unit = parameters?.dimensionUnit ?: ""
-        val size = if (hasLength && hasWidth && hasHeight) {
-            "${format(storedProduct.length)} x ${format(storedProduct.width)} x ${format(storedProduct.height)} $unit"
+        val sizeWithUnits = if (hasLength && hasWidth && hasHeight) {
+            "${format(updatedProduct.length)} " +
+                    "x ${format(updatedProduct.width)} " +
+                    "x ${format(updatedProduct.height)} $unit"
         } else if (hasWidth && hasHeight) {
-            "${format(storedProduct.width)} x ${format(storedProduct.height)} $unit"
+            "${format(updatedProduct.width)} x ${format(updatedProduct.height)} $unit"
         } else {
             ""
         }.trim()
 
-        val updatedProduct = viewState.product?.let {
-            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
-        } ?: storedProduct
         viewState = viewState.copy(
                 product = updatedProduct,
                 cachedProduct = viewState.cachedProduct ?: updatedProduct,
                 storedProduct = storedProduct,
-                weightWithUnits = weight,
-                sizeWithUnits = size,
+                weightWithUnits = weightWithUnits,
+                sizeWithUnits = sizeWithUnits,
                 priceWithCurrency = formatCurrency(updatedProduct.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters?.currencyCode),
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters?.currencyCode),
-                gmtOffset = parameters?.gmtOffset ?: 0f
+                gmtOffset = parameters?.gmtOffset ?: 0f,
+                length = updatedProduct.length,
+                width = updatedProduct.width,
+                height = updatedProduct.height,
+                weight = updatedProduct.weight,
+                shippingClass = updatedProduct.shippingClass
         )
     }
 
@@ -457,6 +571,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
@@ -467,6 +582,18 @@ class ProductDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float
     ) : Parcelable
 
+    /**
+     * [product] - used for the UI. Any updates to the fields in the UI would update this model.
+     *
+     * [cachedProduct] is the [Product] model that is used to verify if there are any changes made to the
+     * [product] model locally, which are not yet updated to the API.
+     *
+     * [storedProduct] is the [Product] model that is fetched from the API and available in the local db
+     *
+     * [isProductUpdated] - flag to determine if there are any changes made to the product by comparing
+     * [product] and [storedProduct] OR [product] and [cachedProduct].
+     *
+     */
     @Parcelize
     data class ProductDetailViewState(
         val product: Product? = null,
@@ -481,7 +608,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f
+        val gmtOffset: Float = 0f,
+        val length: Float? = null,
+        val width: Float? = null,
+        val height: Float? = null,
+        val weight: Float? = null,
+        val shippingClass: String? = null
     ) : Parcelable
 
     @Parcelize
@@ -494,6 +626,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductShippingClassViewState(
+        val isLoadingProgressShown: Boolean = false,
+        val isLoadingMoreProgressShown: Boolean = false,
+        val shippingClassList: List<ShippingClass>? = null
     ) : Parcelable
 
     @AssistedInject.Factory

@@ -78,7 +78,12 @@
     <fragment
         android:id="@+id/productInventoryFragment"
         android:name="com.woocommerce.android.ui.products.ProductInventoryFragment"
-        tools:layout="@layout/fragment_product_inventory"/>
+        tools:layout="@layout/fragment_product_inventory">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
@@ -94,14 +99,14 @@
     <fragment
         android:id="@+id/productShippingClassFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingClassFragment"
-        android:label="ProductShippingClassFragment">
-        <argument
-            android:name="shippingClassSlug"
-            android:defaultValue='""'
-            app:argType="string" />
-    </fragment>
+        android:label="ProductShippingClassFragment" />
     <fragment
         android:id="@+id/productPricingFragment"
         android:name="com.woocommerce.android.ui.products.ProductPricingFragment"
-        tools:layout="@layout/fragment_product_pricing"/>
+        tools:layout="@layout/fragment_product_pricing">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
 </navigation>

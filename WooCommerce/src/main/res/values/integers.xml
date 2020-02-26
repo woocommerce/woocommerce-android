@@ -6,4 +6,7 @@
     <integer name="stats_label_count_weeks">6</integer>
     <integer name="stats_label_count_months">6</integer>
     <integer name="stats_label_count_years">6</integer>
+
+    <!-- max # of chars that can be enetered in dimension fields (ex: length, height, width) -->
+    <integer name="maxlength_dimension_edittext">8</integer>
 </resources>

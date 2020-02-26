@@ -262,10 +262,11 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                 override fun onAnimationEnd(animation: Animator) {
                     remoteMediaId = newMediaId
                     viewModel.removeProductImage(currentMediaId)
-                    // activity will finish if we removed the last image, so only scale back in
+                    // activity will finish if we removed the last image, so only scale back in and show toolbar
                     // if there are more images
                     if (newImageCount > 0) {
                         WooAnimUtils.scaleIn(viewPager)
+                        showToolbar(true)
                     }
                 }
             })

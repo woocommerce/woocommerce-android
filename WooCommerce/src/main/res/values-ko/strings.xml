@@ -145,8 +145,6 @@ Language: ko_KR
     <string name="order_refunds_title_with_amount">%s 환불</string>
     <string name="order_refunds_available_for_refund">%s 환불 가능</string>
     <string name="orderdetail_issue_refund_button">환불 발행</string>
-    <string name="orderdetail_refund_view_details">상세 보기</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">WooCommerce 관리자 플러그인으로\n사용할 수 있는 새 통계를 확인해 보세요.</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>
@@ -549,9 +547,6 @@ Language: ko_KR
     <string name="app_rating_title">Woo를 사용하고 계세요?</string>
     <string name="settings_selected_store">선택한 스토어</string>
     <string name="orders_empty_message_with_search">일치하는 주문이 없음</string>
-    <string name="orders_empty_message_with_filter">아직 주문이 없음</string>
-    <string name="waiting_for_customers_contentdesc">고객 이미지를 기다리는 중</string>
-    <string name="waiting_for_customers">고객을 기다리는 중</string>
     <string name="share_store_dialog_title">스토어 URL 공유</string>
     <string name="share_store_button">스토어 공유</string>
     <string name="wc_mark_all_read_success">모든 리뷰가 읽음으로 표시됨</string>
