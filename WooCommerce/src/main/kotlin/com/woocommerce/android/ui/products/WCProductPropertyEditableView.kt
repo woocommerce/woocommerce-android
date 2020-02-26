@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
+import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 
 class WCProductPropertyEditableView @JvmOverloads constructor(
@@ -16,14 +17,14 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
     private val view = View.inflate(context, R.layout.product_property_editable_view_layout, this)
     private val editableText = view.findViewById<EditText>(R.id.editText)
+    private val textInputLayout = view.findViewById<TextInputLayout>(R.id.edit_text_input)
 
     // Flag to check if [EditText] already has a [EditText.doAfterTextChanged] defined to avoid multiple callbacks
     private var isTextChangeListenerActive: Boolean = false
 
     fun show(hint: String, detail: String?) {
-        if (detail.isNullOrEmpty()) {
-            editableText.hint = hint
-        } else {
+        textInputLayout.hint = hint
+        if (!detail.isNullOrEmpty()) {
             editableText.setText(detail)
             editableText.setSelection(detail.length)
         }

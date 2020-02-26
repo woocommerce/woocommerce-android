@@ -12,13 +12,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_100"
         android:layout_marginBottom="@dimen/minor_100"
-        android:hint="@string/product_detail_title_hint"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editText"
-            style="@style/Woo.TextView.Headline6"
+            style="@style/TextAppearance.Woo.Headline6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -30,6 +31,7 @@
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
+        android:layout_marginTop="@dimen/major_100"
         android:layout_marginStart="@dimen/major_100"
         app:layout_constraintTop_toBottomOf="@id/edit_text_input"
         app:layout_constraintEnd_toEndOf="parent"
