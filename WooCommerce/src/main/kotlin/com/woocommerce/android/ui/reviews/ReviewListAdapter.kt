@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.StringUtils
@@ -358,7 +359,7 @@ class ReviewListAdapter(
             }
 
             itemHolder.title.text = context.getString(
-                    R.string.review_list_item_title, review.reviewerName, review.product?.name)
+                    R.string.review_list_item_title, review.reviewerName, review.product?.name?.fastStripHtml())
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
 
             itemHolder.itemView.setOnClickListener {
