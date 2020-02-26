@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 
 /**
@@ -57,7 +58,7 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     private fun showFullContent(caption: String, content: String) {
         val customView = View.inflate(context, R.layout.view_alert_dialog, null)
         customView.findViewById<TextView>(R.id.product_purchase_note).text = content
-        AlertDialog.Builder(context)
+        MaterialAlertDialogBuilder(context)
                 .setTitle(caption)
                 .setView(customView)
                 .setCancelable(true)
