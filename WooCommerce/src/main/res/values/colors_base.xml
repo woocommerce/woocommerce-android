@@ -14,7 +14,6 @@
     <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_primary_disabled">@color/woo_white_alpha_038</color>
     <color name="color_on_primary_surface_high">@color/color_on_primary_high</color>
-    <color name="color_ripple_overlay">#1A000000</color>
     <!--
         Custom widget tint
     -->
@@ -28,6 +27,8 @@
     <color name="default_window_background">#F2F2F2</color>
     <color name="list_divider">@color/woo_black_90_alpha_012</color>
     <color name="card_surface_color">@color/color_surface</color>
+    <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
+    <color name="image_border_color">@color/woo_black_90_alpha_012</color>
 
     <!--
         Badge colors
