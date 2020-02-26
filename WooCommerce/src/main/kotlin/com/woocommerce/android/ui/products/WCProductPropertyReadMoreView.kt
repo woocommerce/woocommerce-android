@@ -24,7 +24,7 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     private var btnReadMore: MaterialButton
 
     init {
-        with(View.inflate(context, R.layout.product_property_read_more_view, this)) {
+        with(View.inflate(context, R.layout.product_property_read_more_view_layout, this)) {
             textCaption = findViewById(R.id.textCaption)
             textContent = findViewById(R.id.textContent)
             btnReadMore = findViewById(R.id.btnReadMore)

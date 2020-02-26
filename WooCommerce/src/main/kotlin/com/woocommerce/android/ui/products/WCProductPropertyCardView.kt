@@ -17,15 +17,18 @@ class WCProductPropertyCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : MaterialCardView(context, attrs, defStyle) {
+    private var view: View = View.inflate(context, R.layout.product_property_cardview_layout, this)
+
     fun show(caption: String?) {
-        val captionTextView = findViewById<TextView>(R.id.cardCaptionText)
+        val captionTextView = view.findViewById<TextView>(R.id.cardCaptionText)
+        val divider = view.findViewById<View>(R.id.cardCaptionDivider)
         if (caption.isNullOrBlank()) {
             captionTextView.visibility = View.GONE
-            findViewById<View>(R.id.cardCaptionDivider).hide()
+            divider.hide()
         } else {
             captionTextView.visibility = View.VISIBLE
             captionTextView.text = caption
-            findViewById<View>(R.id.cardCaptionDivider).show()
+            divider.show()
         }
     }
 }

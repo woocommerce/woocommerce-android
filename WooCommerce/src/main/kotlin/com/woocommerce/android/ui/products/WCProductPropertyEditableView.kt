@@ -14,8 +14,8 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private val view = View.inflate(context, R.layout.product_property_editable_view, this)
-    private val editableText = findViewById<EditText>(R.id.editText)
+    private val view = View.inflate(context, R.layout.product_property_editable_view_layout, this)
+    private val editableText = view.findViewById<EditText>(R.id.editText)
 
     // Flag to check if [EditText] already has a [EditText.doAfterTextChanged] defined to avoid multiple callbacks
     private var isTextChangeListenerActive: Boolean = false
