@@ -15,12 +15,9 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -54,11 +51,9 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageC
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DateTimeUtils
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import java.lang.ref.WeakReference
 import java.util.Date
-import kotlin.math.abs
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     private enum class DetailCard {
@@ -579,7 +574,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
-            propertyView = WCProductPropertyView(requireActivity())
+            propertyView = View.inflate(context, R.layout.product_property_view, null) as WCProductPropertyView
             propertyView.tag = propertyTag
             container.addView(propertyView)
         }
@@ -624,7 +619,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var linkView = container.findViewWithTag<WCProductPropertyLinkView>(linkViewTag)
 
         if (linkView == null) {
-            linkView = WCProductPropertyLinkView(requireActivity())
+            linkView = View.inflate(
+                    context,
+                    R.layout.product_property_link_view,
+                    null
+            ) as WCProductPropertyLinkView
             linkView.tag = linkViewTag
             container.addView(linkView)
         }
@@ -646,7 +645,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var readMoreView = container.findViewWithTag<WCProductPropertyReadMoreView>(readMoreTag)
 
         if (readMoreView == null) {
-            readMoreView = WCProductPropertyReadMoreView(requireActivity())
+            readMoreView = View.inflate(
+                    context,
+                    R.layout.product_property_read_more_view,
+                    null
+            ) as WCProductPropertyReadMoreView
             readMoreView.tag = readMoreTag
             container.addView(readMoreView)
         }
@@ -670,7 +673,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var editableView = container.findViewWithTag<WCProductPropertyEditableView>(editableViewTag)
 
         if (editableView == null) {
-            editableView = WCProductPropertyEditableView(requireActivity())
+            editableView = View.inflate(
+                    context,
+                    R.layout.product_property_editable_view,
+                    null
+            ) as WCProductPropertyEditableView
             editableView.tag = editableViewTag
             container.addView(editableView)
         }
