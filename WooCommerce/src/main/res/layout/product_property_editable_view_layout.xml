@@ -5,35 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edit_text_input"
-        style="@style/Woo.MaterialComponents.EditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editText"
+        style="@style/TextAppearance.Woo.Headline6"
+        android:paddingTop="@dimen/major_100"
         android:layout_marginBottom="@dimen/minor_100"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editText"
-            style="@style/TextAppearance.Woo.Headline6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:imeOptions="actionDone"
-            android:importantForAutofill="no" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:background="@null"
+        android:imeOptions="actionDone"
+        android:importantForAutofill="no" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_marginTop="@dimen/major_100"
         android:layout_marginStart="@dimen/major_100"
-        app:layout_constraintTop_toBottomOf="@id/edit_text_input"
+        app:layout_constraintTop_toBottomOf="@id/editText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/edit_text_input" />
 
