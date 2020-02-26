@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
-import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 
 class WCProductPropertyEditableView @JvmOverloads constructor(
