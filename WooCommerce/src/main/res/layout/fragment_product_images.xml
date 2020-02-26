@@ -7,9 +7,9 @@
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.products.ProductImagesFragment">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addImageButton"
-        style="@style/Woo.Button.Bordered"
+        style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_extra_large"
