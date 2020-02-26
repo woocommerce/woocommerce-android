@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/major_150">
+    android:paddingTop="@dimen/minor_100"
+    android:paddingStart="@dimen/minor_100"
+    android:paddingEnd="@dimen/minor_100">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/support_identity_input_dialog_message"
-        style="@style/Woo.TextView.Subtitle2"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/minor_00"
-        android:paddingBottom="@dimen/major_100"
+        android:paddingBottom="@dimen/minor_100"
         tools:text="@string/support_identity_input_dialog_enter_email_and_name"/>
 
     <com.google.android.material.textfield.TextInputLayout
+        style="@style/Woo.TextInputLayout"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:hint="@string/support_identity_input_dialog_email_label">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/support_identity_input_dialog_email_edit_text"
-            style="@style/Woo.TextView.Body2"
+            style="@style/Woo.TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/minor_00"
@@ -34,19 +37,24 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        style="@style/Woo.TextInputLayout"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        app:counterEnabled="true"
+        app:counterMaxLength="50"
+        tools:visibility="visible">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/support_identity_input_dialog_name_edit_text"
-            style="@style/Woo.TextView.Body2"
+            style="@style/Woo.TextInputEditText"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:layout_marginStart="@dimen/minor_00"
             android:layout_marginEnd="@dimen/minor_00"
             android:inputType="text"
             android:hint="@string/support_identity_input_dialog_name_label"
-            android:maxLength="50">
+            android:maxLength="50"
+            tools:visibility="visible">
         </com.google.android.material.textfield.TextInputEditText>
 
     </com.google.android.material.textfield.TextInputLayout>

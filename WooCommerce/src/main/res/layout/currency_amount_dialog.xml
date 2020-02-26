@@ -27,7 +27,7 @@
 
         <com.woocommerce.android.widgets.CurrencyEditText
             android:id="@+id/currencyAmount_refundAmount"
-            style="@style/Woo.EditText.Subtitle1"
+            style="@style/Woo.EditText"
             android:layout_margin="@dimen/minor_00"
             android:imeOptions="flagNoExtractUi"
             android:layout_width="match_parent"
