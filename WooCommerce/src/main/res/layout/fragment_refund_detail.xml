@@ -14,12 +14,12 @@
         tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/refundDetail_refundItems"
             style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/refundDetail_refundItems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -55,12 +55,12 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/refundDetail_detailsCard"
             style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
-                android:id="@+id/refundDetail_detailsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -114,12 +114,12 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/refundDetail_reasonCard"
             style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/refundDetail_reasonCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:visibility="visible">
