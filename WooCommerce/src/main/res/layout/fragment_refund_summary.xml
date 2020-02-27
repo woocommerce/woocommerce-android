@@ -25,13 +25,13 @@
                 android:focusable="true"
                 android:orientation="horizontal">
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/order_refunds_previously_refunded"/>
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:id="@+id/refundSummary_previouslyRefunded"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -51,13 +51,13 @@
                 android:focusable="true"
                 android:orientation="horizontal">
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/order_refunds_refund_amount" />
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:id="@+id/refundSummary_refundAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,18 +86,18 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/order_refunds_refund_via" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/refundSummary_method"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/order_refunds_manual_refund" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/refundSummary_methodDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
 
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/refundSummary_btnRefund"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
