@@ -111,6 +111,7 @@
         android:text="@string/order_refunds_shipping_refund_notice"
         android:textAlignment="viewStart"
         android:textColor="@color/grey_500"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="@+id/issueRefund_lblTaxes"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal" />
@@ -160,6 +161,12 @@
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="issueRefund_dividerBelowList,issueRefund_dividerBelowTaxes,issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_productsTotal,issueRefund_lblProductsTotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/issueRefund_shippingRefundGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="issueRefund_shippingTotal,issueRefund_lblShipping" />
 
     <!-- TODO: Temporarily disabled, this will be used in a future release - do not remove -->
     <!--    <androidx.appcompat.widget.AppCompatButton-->

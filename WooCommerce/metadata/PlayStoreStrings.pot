@@ -11,18 +11,20 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_037"
+msgid ""
+"3.7:\n"
+"- Details of refunded orders display both product refunds and shipping refunds.\n"
+"- Product titles no longer show HTML tags.\n"
+"- A few rare crashes fixed.\n"
+msgstr ""
+
 msgctxt "release_note_036"
 msgid ""
 "3.6:\n"
 "- You can now create new refunds and view past refunds within the app.\n"
 "- When you’re looking at an empty list, the fancy new images won’t be cut off on smaller screens in landscape mode.\n"
 "- Fixed a bug that emptied the reviews list after rotating the device.\n"
-msgstr ""
-
-msgctxt "release_note_035"
-msgid ""
-"3.5:\n"
-"When you’re just getting started and there’s nothing for the app to display in a list (e.g., for orders and reviews, before you get your first one), you’ll see a friendly message to help you get started.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
