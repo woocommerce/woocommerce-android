@@ -26,30 +26,23 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/Woo.Card.Body.High"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginTop="@dimen/major_75"
                     android:text="@string/order_refunds_previously_refunded"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/refundSummary_previouslyRefunded"
-                    style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/major_75"
                     tools:text="$45.00"/>
 
             </LinearLayout>
 
             <!-- Divider -->
             <View
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/minor_00"
-                android:layout_marginTop="@dimen/major_75"
-                android:layout_marginBottom="@dimen/major_75"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
 
             <!-- Refund amount -->
             <LinearLayout
@@ -59,7 +52,6 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/Woo.Card.Body.Bold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -67,7 +59,6 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/refundSummary_refundAmount"
-                    style="@style/Woo.Card.Body.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="$45.00"/>
@@ -75,29 +66,18 @@
             </LinearLayout>
 
             <!-- Divider -->
-<!--            <View-->
-<!--                style="@style/Woo.Divider"-->
-<!--                android:layout_marginStart="@dimen/major_100"-->
-<!--                android:layout_marginTop="@dimen/major_75"-->
-<!--                android:layout_marginBottom="@dimen/major_75" />-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Woo.TextInputLayout"
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/refundSummary_reason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_75"
-                app:counterEnabled="true"
-                app:counterMaxLength="255"
-                android:hint="@string/order_refunds_reason_hint" >
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/refundSummary_reason"
-                    style="@style/Woo.TextInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:hint="@string/order_refunds_reason_hint"
+                android:inputType="textMultiLine"
+                android:maxLength="@integer/max_length_tracking_number"
+                android:maxLines="4" />
 
         </LinearLayout>
 
@@ -107,33 +87,29 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.Card.Header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/order_refunds_refund_via" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/refundSummary_method"
-                style="@style/Woo.Card.Body.High"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/order_refunds_manual_refund" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/refundSummary_methodDescription"
-                style="@style/Woo.Card.Body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_50"
                 android:text="@string/order_refunds_refund_manual_refund_note"
                 android:lineSpacingMultiplier="1.4"
                 android:textIsSelectable="true" />
+
 
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/refundSummary_btnRefund"
-            style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/order_refunds_refund" />
