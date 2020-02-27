@@ -20,8 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"
-            android:background="@color/card_surface_color"
-            app:contentScrim="@color/card_surface_color"
+            android:background="@color/color_elevation_overlay_01"
+            app:contentScrim="@color/color_elevation_overlay_01"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <FrameLayout

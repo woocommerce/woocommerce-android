@@ -36,9 +36,13 @@
     -->
     <color name="default_window_background">#F2F2F2</color>
     <color name="list_divider">@color/woo_black_90_alpha_012</color>
-    <color name="card_surface_color">@color/color_surface</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
+
+    <!--
+        Elevation colors
+    -->
+    <color name="color_elevation_overlay_01">@color/color_surface</color>
 
     <!--
         Default graph colors
