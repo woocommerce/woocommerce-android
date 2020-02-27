@@ -114,11 +114,6 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         }
 
         productVariantsRefreshLayout?.apply {
-            setColorSchemeColors(
-                    ContextCompat.getColor(activity, R.color.colorPrimary),
-                    ContextCompat.getColor(activity, R.color.colorAccent),
-                    ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-            )
             scrollUpChild = productVariantsList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
