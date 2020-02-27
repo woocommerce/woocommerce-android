@@ -7,16 +7,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Woo.Card"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
+            android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/refundDetail_refundItems"
@@ -52,6 +52,12 @@
                     app:layout_constraintTop_toBottomOf="@id/refundDetail_quantityTitle" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/refundDetail_detailsCard"
@@ -65,6 +71,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/order_refunds_refund_details"/>
+
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_75" />
 
                 <!-- Refund amount -->
                 <LinearLayout
@@ -88,25 +99,24 @@
 
                 </LinearLayout>
 
-                <!-- Divider -->
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"
-                    android:layout_marginEnd="@dimen/minor_00"
-                    android:layout_marginTop="@dimen/major_75"
-                    android:layout_marginBottom="@dimen/major_75"/>
-
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/refundDetail_refundMethod"
                     style="@style/Woo.Card.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_50"
                     android:layout_marginBottom="@dimen/major_75"
                     tools:text="Refunded via Stripe"
                     android:textAlignment="viewStart"
                     android:textAppearance="@style/Woo.Refunds.TextAppearance" />
 
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/refundDetail_reasonCard"
@@ -123,6 +133,16 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <View
+                    android:id="@+id/divider_reason"
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_75"
+                    android:layout_marginTop="@dimen/major_75"
+                    app:layout_constraintTop_toBottomOf="@+id/refundDetail_reasonTitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
                 <ImageView
                     android:id="@+id/refundDetail_quoteImage"
                     android:layout_width="wrap_content"
@@ -134,7 +154,7 @@
                     android:src="@drawable/ic_quote"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/refundDetail_reasonTitle"
+                    app:layout_constraintTop_toBottomOf="@id/divider_reason"
                     app:layout_constraintVertical_bias="0.0" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -147,13 +167,13 @@
                     android:lineSpacingMultiplier="1.2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/refundDetail_quoteImage"
-                    app:layout_constraintTop_toBottomOf="@+id/refundDetail_reasonTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/divider_reason"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:text="The reason behind the refund is that your product sucks." />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+    </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
 </androidx.core.widget.NestedScrollView>
