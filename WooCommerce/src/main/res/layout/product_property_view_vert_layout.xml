@@ -22,13 +22,16 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textPropertyName"
         style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginTop="@dimen/major_100"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintEnd_toStartOf="@+id/imgProperty"
         app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="textPropertyName" />
+        tools:text="textPropertyName tis is really long text that will wrap." />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textPropertyValue"
@@ -37,8 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginStart="@dimen/major_100"
-        android:layout_marginTop="@dimen/minor_50"
         android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginTop="@dimen/minor_50"
         android:layout_marginBottom="@dimen/major_100"
         android:ellipsize="end"
         android:lineSpacingExtra="@dimen/minor_25"
@@ -48,7 +51,7 @@
         app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         app:layout_goneMarginTop="@dimen/major_100"
-        tools:text="textPropertyValue" />
+        tools:text="textPropertyValue tis is really long text that will wrap." />
 
     <RatingBar
         android:id="@+id/ratingBar"
@@ -60,6 +63,7 @@
         android:rating="0"
         android:stepSize="1"
         android:visibility="gone"
+        android:layout_marginBottom="@dimen/major_100"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintStart_toStartOf="@+id/textPropertyName"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyValue"
@@ -74,7 +78,7 @@
         android:background="@drawable/ic_arrow_right"
         android:contentDescription="@string/product_property_edit"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
