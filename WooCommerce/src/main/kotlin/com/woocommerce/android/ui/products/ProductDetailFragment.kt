@@ -15,7 +15,6 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -575,7 +574,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
-            propertyView = WCProductPropertyView(requireActivity())
+            propertyView = View.inflate(context, R.layout.product_property_view, null) as WCProductPropertyView
             propertyView.tag = propertyTag
             container.addView(propertyView)
         }
@@ -620,7 +619,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var linkView = container.findViewWithTag<WCProductPropertyLinkView>(linkViewTag)
 
         if (linkView == null) {
-            linkView = WCProductPropertyLinkView(requireActivity())
+            linkView = View.inflate(
+                    context,
+                    R.layout.product_property_link_view,
+                    null
+            ) as WCProductPropertyLinkView
             linkView.tag = linkViewTag
             container.addView(linkView)
         }
@@ -642,7 +645,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var readMoreView = container.findViewWithTag<WCProductPropertyReadMoreView>(readMoreTag)
 
         if (readMoreView == null) {
-            readMoreView = WCProductPropertyReadMoreView(requireActivity())
+            readMoreView = View.inflate(
+                    context,
+                    R.layout.product_property_read_more_view,
+                    null
+            ) as WCProductPropertyReadMoreView
             readMoreView.tag = readMoreTag
             container.addView(readMoreView)
         }
@@ -666,7 +673,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var editableView = container.findViewWithTag<WCProductPropertyEditableView>(editableViewTag)
 
         if (editableView == null) {
-            editableView = WCProductPropertyEditableView(requireActivity())
+            editableView = View.inflate(
+                    context,
+                    R.layout.product_property_editable_view,
+                    null
+            ) as WCProductPropertyEditableView
             editableView.tag = editableViewTag
             container.addView(editableView)
         }
@@ -689,7 +700,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             addCardDividerView(requireActivity())
         }
 
-        val cardView = WCProductPropertyCardView(requireActivity())
+        val cardView = View.inflate(
+                requireActivity(),
+                R.layout.product_property_cardview,
+                null
+        ) as WCProductPropertyCardView
         cardView.tag = cardTag
 
         val cardViewCaption: String? = when (card) {
@@ -738,12 +753,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * Adds a divider between cards
      */
     private fun addCardDividerView(context: Context) {
-        val divider = View(context)
+        val divider = View(context, null, android.R.attr.listDivider)
         divider.layoutParams = LayoutParams(
                 MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen.product_detail_card_divider_height)
+                resources.getDimensionPixelSize(R.dimen.minor_100)
         )
-        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.default_window_background))
         productDetail_container.addView(divider)
     }
 
