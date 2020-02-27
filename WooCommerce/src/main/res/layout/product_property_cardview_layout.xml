@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- The "-1dp" margin is necessary to hide the bottom divider for the last property -->
     <LinearLayout
         android:id="@+id/cardContainerView"
         android:layout_width="match_parent"
