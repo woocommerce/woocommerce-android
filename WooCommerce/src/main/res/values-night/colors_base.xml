@@ -30,6 +30,13 @@
     -->
     <color name="default_window_background">#1D1E1F</color>
     <color name="list_divider">@color/woo_white_alpha_012</color>
+    <color name="color_ripple_overlay">@color/woo_white_alpha_012</color>
+    <color name="image_border_color">@color/woo_white_alpha_012</color>
+
+    <!--
+        Elevation colors
+    -->
+    <color name="color_elevation_overlay_01">@color/woo_white_alpha_005</color>
 
     <!--
         Default graph colors

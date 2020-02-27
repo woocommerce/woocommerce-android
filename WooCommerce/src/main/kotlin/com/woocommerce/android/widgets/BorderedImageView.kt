@@ -21,7 +21,7 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
 
     private var borderSize = context.resources.getDimensionPixelSize(R.dimen.image_border_size).toFloat()
     private var borderRadius = context.resources.getDimensionPixelSize(R.dimen.image_border_radius).toFloat()
-    private var borderColor = ContextCompat.getColor(context, R.color.list_divider)
+    private var borderColor = ContextCompat.getColor(context, R.color.image_border_color)
 
     init {
         attrs?.let {

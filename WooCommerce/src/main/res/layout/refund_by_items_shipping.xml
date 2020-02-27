@@ -39,7 +39,7 @@
                     android:contentDescription="@string/orderdetail_product_image_contentdesc"
                     android:padding="@dimen/minor_100"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/ic_shipping_24dp"
+                    app:srcCompat="@drawable/ic_gridicons_shipping"
                     tools:visibility="visible" />
 
             </FrameLayout>
