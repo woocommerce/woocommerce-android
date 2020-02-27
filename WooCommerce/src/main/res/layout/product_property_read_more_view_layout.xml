@@ -38,8 +38,6 @@
         style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/minor_100"
-        android:layout_marginEnd="@dimen/major_100"
         android:paddingTop="@dimen/minor_50"
         android:paddingBottom="@dimen/minor_50"
         android:text="@string/read_more"
@@ -56,6 +54,6 @@
         android:layout_marginStart="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/btnReadMore" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </merge>
