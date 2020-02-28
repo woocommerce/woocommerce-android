@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/confirmationDialog_header"
+        style="@style/Woo.TextView.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/major_110"
+        android:layout_marginBottom="@dimen/minor_100"
         android:duplicateParentState="true"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        tools:text="Refund $87.50"
-        android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold" />
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
+        tools:text="Refund $87.50" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/confirmationDialog_message"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:textAppearance="@style/Woo.TextAppearance.Large"
-        android:textColor="@color/dialog_content_text_color"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
         tools:text="Are you sure you want to issue a refund? This can't be undone."
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        />
+        android:layout_marginTop="@dimen/minor_100" />
 
 </LinearLayout>

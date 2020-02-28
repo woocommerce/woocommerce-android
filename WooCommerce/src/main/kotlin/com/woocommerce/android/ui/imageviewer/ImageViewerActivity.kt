@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.app.ActivityOptions
-import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -16,16 +15,16 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.activity.viewModels
 import androidx.annotation.AnimRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.R.style
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -122,7 +121,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
                 ?: intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
         container.transitionName = transitionName
 
-        val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
+        val toolbarColor = ContextCompat.getColor(this, R.color.woo_black_90_alpha_038)
         toolbar.background = ColorDrawable(toolbarColor)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -226,7 +225,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
      */
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
-        confirmationDialog = AlertDialog.Builder(ContextThemeWrapper(this, style.Theme_Woo_DayNight))
+        confirmationDialog = MaterialAlertDialogBuilder(this)
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->

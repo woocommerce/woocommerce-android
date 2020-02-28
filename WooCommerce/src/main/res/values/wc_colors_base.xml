@@ -35,6 +35,7 @@
     <color name="woo_white_alpha_087">#DEFFFFFF</color>
 
     <color name="woo_gray_5">#DCDCDE</color>
+    <color name="woo_gray_900">#F7F7F7</color>
 
     <color name="woo_black">@android:color/black</color>
     <color name="woo_black_90">#121212</color>

@@ -1,15 +1,14 @@
 package com.woocommerce.android.widgets
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 
 open class ConfirmationDialog : DialogFragment(), DialogInterface.OnClickListener {
@@ -27,7 +26,7 @@ open class ConfirmationDialog : DialogFragment(), DialogInterface.OnClickListene
     private var confirmed: Boolean = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(ContextThemeWrapper(activity, R.style.Woo_Dialog))
+        val builder = MaterialAlertDialogBuilder(context)
         val view = View.inflate(activity, R.layout.confirmation_dialog, null)
 
         headerText = view.findViewById(R.id.confirmationDialog_header)
