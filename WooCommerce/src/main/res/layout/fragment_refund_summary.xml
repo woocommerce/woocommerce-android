@@ -79,13 +79,6 @@
 
                 </LinearLayout>
 
-                <!-- Divider -->
-    <!--            <View-->
-    <!--                style="@style/Woo.Divider"-->
-    <!--                android:layout_marginStart="@dimen/major_100"-->
-    <!--                android:layout_marginTop="@dimen/major_75"-->
-    <!--                android:layout_marginBottom="@dimen/major_75" />-->
-
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Woo.TextInputLayout"
                     android:layout_width="match_parent"
