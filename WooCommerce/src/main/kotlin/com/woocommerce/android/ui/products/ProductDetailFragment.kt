@@ -288,7 +288,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // show product variants only if product type is variable and if there are variations for the product
         if (product.type == VARIABLE &&
-                FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled(context) &&
+                FeatureFlag.PRODUCT_RELEASE_M1.isEnabled(context) &&
                 product.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
@@ -870,8 +870,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     /**
-     * Add/Edit Product Release 1 is enabled only for debug users for SIMPLE products only
+     * Add/Edit Product Release 1 is enabled only if beta setting is enabled and only for SIMPLE products
      */
     private fun isAddEditProductRelease1Enabled(productType: ProductType) =
-            FeatureFlag.ADD_EDIT_PRODUCT_RELEASE_1.isEnabled() && productType == ProductType.SIMPLE
+            FeatureFlag.PRODUCT_RELEASE_M1.isEnabled() && productType == ProductType.SIMPLE
 }
