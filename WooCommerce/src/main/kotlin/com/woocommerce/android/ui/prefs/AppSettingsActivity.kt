@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -165,7 +164,7 @@ class AppSettingsActivity : AppCompatActivity(),
                 getString(R.string.settings_confirm_logout),
                 presenter.getAccountDisplayName()
         )
-        AlertDialog.Builder(ContextThemeWrapper(this, R.style.Theme_Woo_DayNight))
+        MaterialAlertDialogBuilder(this)
                 .setMessage(message)
                 .setPositiveButton(R.string.signout) { _, _ ->
                     AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(

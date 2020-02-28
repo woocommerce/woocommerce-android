@@ -110,4 +110,9 @@
         <item name="colorOnSurface">@color/color_on_surface_high</item>
         <item name="colorOnError">@color/color_on_error</item>
     </style>
+
+    <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">
+        <item name="colorControlNormal">@color/transparent</item>
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Headline6</item>
+    </style>
 </resources>
