@@ -28,10 +28,10 @@
         <item name="android:statusBarColor">@color/woo_purple_60</item>
         <item name="android:navigationBarColor">@color/nav_bar</item>
 
-        <!-- TODO: Add ShapeAppearance values -->
-        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MaterialComponents.SmallComponent</item>
-        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.MaterialComponents.MediumComponent</item>
-        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.MaterialComponents.LargeComponent</item>
+        <!-- Shapes -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Theme.Woo.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Theme.Woo.LargeComponent</item>
 
         <!-- Typography -->
         <item name="textAppearanceHeadline1">@style/TextAppearance.Woo.Headline1</item>
@@ -58,7 +58,6 @@
         <item name="emphasisDisabledAlphaPrimary">0.38</item>
 
         <!-- Styles -->
-        <!-- TODO: Configure custom styles -->
         <item name="bottomNavigationStyle">@style/Widget.Woo.BottomNavigationView</item>
         <item name="bottomSheetStyle">@style/Widget.MaterialComponents.BottomSheet.Modal</item>
         <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
