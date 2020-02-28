@@ -22,15 +22,6 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <!--
-        Number picker
-    -->
-    <style name="NumberPickerTheme" parent="Theme.Woo.DayNight">
-        <item name="colorControlNormal">@color/transparent</item>
-        <item name="android:textSize">@dimen/text_extra_large</item>
-        <item name="android:textColorPrimary">@color/colorPrimary</item>
-    </style>
-
-    <!--
         Text Styles
     -->
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
