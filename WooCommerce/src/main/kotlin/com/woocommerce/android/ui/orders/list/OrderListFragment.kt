@@ -163,13 +163,6 @@ class OrderListFragment : TopLevelFragment(),
         val view = inflater.inflate(R.layout.fragment_order_list, container, false)
         with(view) {
             orderRefreshLayout?.apply {
-                activity?.let { activity ->
-                    setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.colorPrimary),
-                            ContextCompat.getColor(activity, R.color.colorAccent),
-                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                    )
-                }
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = order_list_view.ordersList
                 setOnRefreshListener {

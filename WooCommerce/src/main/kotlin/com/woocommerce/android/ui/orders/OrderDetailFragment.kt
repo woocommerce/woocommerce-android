@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
@@ -125,13 +124,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         }
 
         orderRefreshLayout?.apply {
-            activity?.let { activity ->
-                setColorSchemeColors(
-                        ContextCompat.getColor(activity, R.color.colorPrimary),
-                        ContextCompat.getColor(activity, R.color.colorAccent),
-                        ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                )
-            }
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = scrollView
             setOnRefreshListener {
