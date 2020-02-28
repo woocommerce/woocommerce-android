@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.R.style
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -142,7 +141,7 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
                     }
                 }
 
-        imageSourceDialog = AlertDialog.Builder(ContextThemeWrapper(activity, style.Woo_Dialog))
+        imageSourceDialog = MaterialAlertDialogBuilder(activity)
                 .setView(contentView)
                 .show()
     }
