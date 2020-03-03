@@ -47,7 +47,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
-import kotlin.math.roundToInt
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
@@ -493,25 +492,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
         } ?: storedProduct
 
-        val weightWithUnits = if (updatedProduct.weight > 0) {
-            "${format(updatedProduct.weight)}${parameters?.weightUnit ?: ""}"
-        } else {
-            ""
-        }
-
-        val hasLength = updatedProduct.length > 0
-        val hasWidth = updatedProduct.width > 0
-        val hasHeight = updatedProduct.height > 0
-        val unit = parameters?.dimensionUnit ?: ""
-        val sizeWithUnits = if (hasLength && hasWidth && hasHeight) {
-            "${format(updatedProduct.length)} " +
-                    "x ${format(updatedProduct.width)} " +
-                    "x ${format(updatedProduct.height)} $unit"
-        } else if (hasWidth && hasHeight) {
-            "${format(updatedProduct.width)} x ${format(updatedProduct.height)} $unit"
-        } else {
-            ""
-        }.trim()
+        val weightWithUnits = updatedProduct.getWeightWithUnits(parameters?.weightUnit)
+        val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters?.dimensionUnit)
 
         viewState = viewState.copy(
                 product = updatedProduct,
@@ -522,12 +504,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 priceWithCurrency = formatCurrency(updatedProduct.price, parameters?.currencyCode),
                 salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters?.currencyCode),
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters?.currencyCode),
-                gmtOffset = parameters?.gmtOffset ?: 0f,
-                length = updatedProduct.length,
-                width = updatedProduct.width,
-                height = updatedProduct.height,
-                weight = updatedProduct.weight,
-                shippingClass = updatedProduct.shippingClass
+                gmtOffset = parameters?.gmtOffset ?: 0f
         )
     }
 
@@ -535,15 +512,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         return currencyCode?.let {
             currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
         } ?: amount.toString()
-    }
-
-    private fun format(number: Float): String {
-        val int = number.roundToInt()
-        return if (number != int.toFloat()) {
-            number.toString()
-        } else {
-            int.toString()
-        }
     }
 
     /**
@@ -608,12 +576,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f,
-        val length: Float? = null,
-        val width: Float? = null,
-        val height: Float? = null,
-        val weight: Float? = null,
-        val shippingClass: String? = null
+        val gmtOffset: Float = 0f
     ) : Parcelable
 
     @Parcelize
