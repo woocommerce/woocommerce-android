@@ -252,10 +252,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                     weight = weight ?: product.weight,
                     shippingClass = shippingClass ?: product.shippingClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    dateOnSaleToGmt = if (isSaleScheduled == true) {
+                    dateOnSaleToGmt = if (isSaleScheduled == true ||
+                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         dateOnSaleToGmt ?: product.dateOnSaleToGmt
                     } else viewState.storedProduct?.dateOnSaleToGmt,
-                    dateOnSaleFromGmt = if (isSaleScheduled == true) {
+                    dateOnSaleFromGmt = if (isSaleScheduled == true ||
+                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
                     } else viewState.storedProduct?.dateOnSaleFromGmt
             )
