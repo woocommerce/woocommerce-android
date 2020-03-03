@@ -341,6 +341,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             with(axisLeft) {
                 labelCount = 3
                 valueFormatter = RevenueAxisFormatter()
+                spaceBottom = resources.getDimension(R.dimen.chart_axis_bottom_padding)
             }
         }
 
