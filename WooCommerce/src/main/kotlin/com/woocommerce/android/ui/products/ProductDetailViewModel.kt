@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import android.view.View
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -18,13 +19,14 @@ import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -45,6 +47,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Date
 
@@ -114,20 +117,26 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun onShareButtonClicked() {
         viewState.product?.let {
-            triggerEvent(ShareProduct(it))
+            triggerEvent(ShareProduct(it.permalink, it.name))
         }
     }
 
-    fun onImageGalleryClicked(image: Product.Image) {
+    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.product?.let {
-            triggerEvent(ShowImages(it, image))
+            triggerEvent(ViewProductImages(it, image, selectedImage))
         }
     }
 
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        triggerEvent(ShowImageChooser)
+        viewState.product?.let {
+            triggerEvent(ViewProductImageChooser(it.remoteId))
+        }
+    }
+
+    fun onEditProductCardClicked(target: ProductNavigationTarget) {
+        triggerEvent(target)
     }
 
     fun onDoneButtonClicked(event: ProductExitEvent) {
@@ -171,7 +180,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                         // If user in Product detail screen, exit product detail,
                         // otherwise, redirect to Product Detail screen
                         if (event is ExitProductDetail) {
-                            triggerEvent(ExitProductDetail(false))
+                            triggerEvent(ExitProduct)
                         } else {
                             triggerEvent(Exit)
                         }
@@ -530,12 +539,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             loadProduct(remoteProductId)
         }
         checkUploads()
-    }
-
-    sealed class ProductDetailEvent : Event() {
-        data class ShareProduct(val product: Product) : ProductDetailEvent()
-        data class ShowImages(val product: Product, val image: Product.Image) : ProductDetailEvent()
-        object ShowImageChooser : ProductDetailEvent()
     }
 
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {

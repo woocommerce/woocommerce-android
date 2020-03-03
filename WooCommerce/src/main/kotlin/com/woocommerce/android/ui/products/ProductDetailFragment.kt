@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
 import android.view.LayoutInflater
@@ -16,8 +15,6 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -34,13 +31,14 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
-import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -69,7 +67,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private var productTitle = ""
     private var isVariation = false
     private val skeletonView = SkeletonView()
-    private var clickedImage = WeakReference<View>(null)
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -111,16 +108,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 imageGallery.setPlaceholderImageUris(it)
             }
         }
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowImages -> showProductImages(event.product, event.image)
-                is ShowImageChooser -> showImageChooser()
-                is ShareProduct -> shareProduct(event.product)
-                is ExitProductDetail -> findNavController().navigateUp()
-                else -> event.isHandled = false
-            }
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -263,7 +250,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 it.setMaxLines(1)
                 it.setClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED)
-                    showProductDescriptionEditor(productDescription)
+                    viewModel.onEditProductCardClicked(ViewProductDescriptionEditor(
+                                productDescription, getString(R.string.product_description)
+                    ))
                 }
             }
         }
@@ -303,7 +292,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     LinearLayout.VERTICAL
             )?.setClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED)
-                showProductVariations(product.remoteId)
+                viewModel.onEditProductCardClicked(ViewProductVariations(product.remoteId))
             }
         } else {
             removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
@@ -383,7 +372,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             it.setClickListener {
                 // TODO: add event listener for click
-                showProductPricing(product.remoteId)
+                viewModel.onEditProductCardClicked(ViewProductPricing(product.remoteId))
             }
         }
 
@@ -415,7 +404,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             it.setClickListener {
                 // TODO: add event listener for click
-                showProductInventory(product.remoteId)
+                viewModel.onEditProductCardClicked(ViewProductInventory(product.remoteId))
             }
         }
 
@@ -432,7 +421,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         )?.also {
             it.setClickListener {
                 // TODO add event tracking for click
-                showProductShipping(product.remoteId)
+                viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
             }
         }
     }
@@ -762,51 +751,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productDetail_container.addView(divider)
     }
 
-    private fun shareProduct(product: Product) {
-        val shareIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_SUBJECT, productTitle)
-            putExtra(Intent.EXTRA_TEXT, product.permalink)
-            type = "text/plain"
-        }
-        val title = resources.getText(R.string.product_share_dialog_title)
-        startActivity(Intent.createChooser(shareIntent, title))
-    }
-
-    private fun showProductVariations(remoteId: Long) {
-        val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductVariantsFragment(remoteId)
-        findNavController().navigate(action)
-    }
-
-    private fun showProductDescriptionEditor(productDescription: String) {
-        findNavController().navigate(ProductDetailFragmentDirections
-                .actionProductDetailFragmentToAztecEditorFragment(
-                        productDescription, getString(R.string.product_description
-                )))
-    }
-
-    private fun showProductInventory(remoteId: Long) {
-        findNavController().navigate(
-                ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment(remoteId)
-        )
-    }
-
-    private fun showProductPricing(remoteId: Long) {
-        findNavController().navigate(
-                ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductPricingFragment(remoteId)
-        )
-    }
-
-    private fun showProductShipping(remoteId: Long) {
-        findNavController().navigate(
-                ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductShippingFragment(remoteId)
-        )
-    }
-
     private fun getProductSaleDates(dateOnSaleFrom: Date, dateOnSaleTo: Date): String {
         val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
             dateOnSaleFrom.formatToMMMdd()
@@ -831,31 +775,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
-        clickedImage = WeakReference(imageView)
-        viewModel.onImageGalleryClicked(image)
+        viewModel.onImageGalleryClicked(image, WeakReference(imageView))
     }
 
     override fun onGalleryAddImageClicked() {
-        showImageChooser()
-    }
-
-    private fun showProductImages(product: Product, imageModel: Product.Image? = null) {
-        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
-            showImageChooser()
-        } else if (imageModel != null) {
-            ImageViewerActivity.showProductImages(
-                    this,
-                    product,
-                    imageModel,
-                    sharedElement = clickedImage.get()
-            )
-        }
-    }
-
-    private fun showImageChooser() {
-        val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductImagesFragment(navArgs.remoteProductId)
-        findNavController().navigate(action)
+        viewModel.onAddImageClicked()
     }
 
     /**
