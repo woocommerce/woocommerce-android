@@ -201,18 +201,12 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             axisRight.isEnabled = false
 
             with(axisLeft) {
-                setDrawZeroLine(false)
+                setDrawZeroLine(true)
+                setDrawTopYLabelEntry(true)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
+                zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
-                setLabelCount(3, true)
-
-                valueFormatter = IAxisValueFormatter { value, _ ->
-                    // Only use non-zero values for the axis
-                    value.toDouble().takeIf { it > 0 }?.let {
-                        getFormattedRevenueValue(it)
-                    }.orEmpty()
-                }
             }
 
             description.isEnabled = false
@@ -337,20 +331,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             highLightColor = ContextCompat.getColor(context, R.color.graph_highlight_color)
         }
 
-        // determine the min revenue so we can set the min value for the left axis, which should be zero unless
-        // the stats contain any negative revenue
-        var minRevenue = 0f
-        for (value in dataSet.values) {
-            if (value.y < minRevenue) minRevenue = value.y
-        }
-
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(chart) {
-            axisLeft.axisMinimum = minRevenue
-            axisRight.axisMinimum = 0f
             data = BarData(dataSet)
             if (wasEmpty) {
                 animateY(duration)
+            }
+
+            with(axisLeft) {
+                labelCount = 3
+                valueFormatter = RevenueAxisFormatter()
             }
         }
 
@@ -613,6 +603,21 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
                 StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
                 StatsGranularity.YEARS -> dateString
+            }
+        }
+    }
+
+    /**
+     * Custom AxisFormatter for the Y-axis which only displays 3 labels:
+     * the maximum, minimum and 0 value labels
+     */
+    private inner class RevenueAxisFormatter : IAxisValueFormatter {
+        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+            return when (value) {
+                0f -> value.toInt().toString()
+                axis.mEntries.first() -> getFormattedRevenueValue(value.toDouble())
+                axis.mEntries.max() -> getFormattedRevenueValue(value.toDouble())
+                else -> ""
             }
         }
     }
