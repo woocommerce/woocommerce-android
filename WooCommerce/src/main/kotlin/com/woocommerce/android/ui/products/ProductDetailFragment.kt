@@ -390,8 +390,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
         val inventoryGroup = when {
             product.manageStock -> mapOf(
-                    Pair(getString(R.string.product_stock_status), stockStatusToDisplayString(product.stockStatus)),
-                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorderStatus)),
+                    Pair(getString(R.string.product_stock_status), ProductStockStatus.stockStatusToDisplayString(
+                            requireContext(), product.stockStatus
+                    )),
+                    Pair(getString(R.string.product_backorders), ProductBackorderStatus.backordersToDisplayString(
+                            requireContext(), product.backorderStatus
+                    )),
                     Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
@@ -465,8 +469,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
         if (product.manageStock) {
             val group = mapOf(
-                    Pair(getString(R.string.product_stock_status), stockStatusToDisplayString(product.stockStatus)),
-                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorderStatus)),
+                    Pair(getString(R.string.product_stock_status), ProductStockStatus.stockStatusToDisplayString(
+                            requireContext(), product.stockStatus
+                    )),
+                    Pair(getString(R.string.product_backorders), ProductBackorderStatus.backordersToDisplayString(
+                            requireContext(), product.backorderStatus
+                    )),
                     Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
@@ -806,25 +814,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             dateOnSaleFrom.formatToMMMddYYYY()
         }
         return getString(R.string.product_sale_date_from_to, formattedFromDate, dateOnSaleTo.formatToMMMddYYYY())
-    }
-
-    /**
-     * returns the product's stock status formatted for display
-     */
-    private fun stockStatusToDisplayString(status: ProductStockStatus): String {
-        return if (status.stringResource != 0) {
-            getString(status.stringResource)
-        } else {
-            status.value
-        }
-    }
-
-    private fun backordersToDisplayString(status: ProductBackorderStatus): String {
-        return if (status.stringResource != 0) {
-            getString(status.stringResource)
-        } else {
-            status.value
-        }
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
