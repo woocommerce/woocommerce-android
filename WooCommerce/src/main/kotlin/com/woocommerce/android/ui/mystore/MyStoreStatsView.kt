@@ -192,11 +192,12 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
             axisRight.isEnabled = false
             with(axisLeft) {
-                setDrawZeroLine(false)
+                setDrawZeroLine(true)
+                setDrawTopYLabelEntry(true)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
+                zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
-                setLabelCount(3, true)
             }
 
             description.isEnabled = false
@@ -366,8 +367,6 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(chart) {
-            axisLeft.axisMinimum = minRevenue
-            axisRight.axisMinimum = 0f
             data = BarData(dataSet)
             if (wasEmpty) {
                 animateY(duration)
@@ -381,6 +380,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 labelCount = getBarLabelCount()
                 setCenterAxisLabels(false)
                 valueFormatter = StartEndDateAxisFormatter()
+            }
+            with(axisLeft) {
+                labelCount = 3
+                setCenterAxisLabels(false)
+                valueFormatter = RevenueAxisFormatter()
             }
         }
 
@@ -568,6 +572,21 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 dateString.formatToMonthDateOnly()
             } else {
                 dateString.formatToDateOnly()
+            }
+        }
+    }
+
+    /**
+     * Custom AxisFormatter for the Y-axis which only displays 3 labels:
+     * the maximum, minimum and 0 value labels
+     */
+    private inner class RevenueAxisFormatter : IAxisValueFormatter {
+        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+            return when (value) {
+                0f -> value.toInt().toString()
+                axis.mEntries.first() -> getFormattedRevenueValue(value.toDouble())
+                axis.mEntries.max() -> getFormattedRevenueValue(value.toDouble())
+                else -> ""
             }
         }
     }
