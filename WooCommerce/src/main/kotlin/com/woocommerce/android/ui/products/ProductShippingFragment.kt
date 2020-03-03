@@ -125,8 +125,8 @@ class ProductShippingFragment : BaseProductFragment() {
             return
         }
 
-        val weightUnit = viewModel.parameters?.weightUnit
-        val dimensionUnit = viewModel.parameters?.dimensionUnit
+        val weightUnit = viewModel.parameters.weightUnit
+        val dimensionUnit = viewModel.parameters.dimensionUnit
 
         showValue(product_weight, R.string.product_weight, product.weight, weightUnit)
         showValue(product_length, R.string.product_length, product.length, dimensionUnit)

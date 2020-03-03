@@ -61,11 +61,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
+        private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
     private var remoteProductId = 0L
-    final var parameters: Parameters? = null
-        private set
+    final val parameters: Parameters by lazy {
+        val params = savedState.get<Parameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
+        savedState[KEY_PRODUCT_PARAMETERS] = params
+        params
+    }
 
     private var skuVerificationJob: Job? = null
     private var shippingClassLoadJob: Job? = null
@@ -99,11 +103,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun initialisePricing() {
-        if (parameters == null) loadParameters()
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                 ?: DEFAULT_DECIMAL_PRECISION
         productPricingViewState = productPricingViewState.copy(
-                currency = parameters?.currencyCode,
+                currency = parameters.currencyCode,
                 decimals = decimals,
                 taxClassList = productRepository.getTaxClassesForSite()
         )
@@ -368,14 +371,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun isProductLocalCacheUpdated() =
             viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
 
-    private fun loadParameters() {
+    private fun loadParameters(): Parameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
         val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
 
-        parameters = Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
+        return Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
@@ -445,18 +448,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         waitForExistingShippingClassFetch()
 
         shippingClassLoadJob = launch {
-            if (loadMore) {
-                productShippingClassViewState = productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
+            productShippingClassViewState = if (loadMore) {
+                productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
             } else {
                 // get cached shipping classes and only show loading progress the list is empty, otherwise show
                 // them right away
                 val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
                 if (cachedShippingClasses.isEmpty()) {
-                    productShippingClassViewState =
-                            productShippingClassViewState.copy(isLoadingProgressShown = true)
+                    productShippingClassViewState.copy(isLoadingProgressShown = true)
                 } else {
-                    productShippingClassViewState =
-                            productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
+                    productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
                 }
             }
 
@@ -494,8 +495,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
         } ?: storedProduct
 
-        val weightWithUnits = updatedProduct.getWeightWithUnits(parameters?.weightUnit)
-        val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters?.dimensionUnit)
+        val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
+        val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
                 product = updatedProduct,
@@ -503,10 +504,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                 storedProduct = storedProduct,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
-                priceWithCurrency = formatCurrency(updatedProduct.price, parameters?.currencyCode),
-                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters?.currencyCode),
-                gmtOffset = parameters?.gmtOffset ?: 0f
+                priceWithCurrency = formatCurrency(updatedProduct.price, parameters.currencyCode),
+                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters.currencyCode),
+                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
+                gmtOffset = parameters.gmtOffset
         )
     }
 
