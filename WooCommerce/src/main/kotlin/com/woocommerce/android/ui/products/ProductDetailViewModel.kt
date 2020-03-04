@@ -165,8 +165,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * viewState.product != viewState.storedProduct
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = isProductUpdated()
-        val isProductSubDetailUpdated = isProductLocalCacheUpdated()
+        val isProductDetailUpdated = viewState.isProductUpdated
+        val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
@@ -286,9 +286,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun discardEditChanges(event: ProductExitEvent) {
-        val currentProduct = if (isProductLocalCacheUpdated() == true) {
-            viewState.cachedProduct
-        } else viewState.storedProduct
+        val currentProduct = if (event is ExitProductDetail) {
+            viewState.storedProduct
+        } else viewState.cachedProduct
 
         when (event) {
             // discard inventory screen changes
@@ -348,8 +348,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun loadProduct(remoteProductId: Long) {
-        loadParameters()
-
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
@@ -374,11 +372,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
-
-    private fun isProductUpdated() = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
-
-    private fun isProductLocalCacheUpdated() =
-            viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
 
     private fun loadParameters(): Parameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
