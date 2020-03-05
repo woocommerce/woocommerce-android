@@ -68,6 +68,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private var remoteProductId = 0L
+
+    /**
+     * Fetch product related properties (currency, product dimensions) for the site since we use this
+     * variable in many different places in the product detail view such as pricing, shipping.
+     */
     final val parameters: Parameters by lazy {
         val params = savedState.get<Parameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
         savedState[KEY_PRODUCT_PARAMETERS] = params
@@ -77,12 +82,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var skuVerificationJob: Job? = null
     private var shippingClassLoadJob: Job? = null
 
+    // view state for the product detail screen
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
     private var viewState by productDetailViewStateData
 
+    // view state for the product inventory screen
     final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
 
+    // view state for the product pricing screen
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
@@ -115,12 +123,18 @@ class ProductDetailViewModel @AssistedInject constructor(
         )
     }
 
+    /**
+     * Called when the Share menu button is clicked in Product detail screen
+     */
     fun onShareButtonClicked() {
         viewState.product?.let {
             triggerEvent(ShareProduct(it.permalink, it.name))
         }
     }
 
+    /**
+     * Called when an existing image is selected in Product detail screen
+     */
     fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.product?.let {
@@ -128,6 +142,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Called when the add image icon is clicked in Product detail screen
+     */
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.product?.let {
@@ -135,14 +152,25 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Called when the any of the editable sections (such as pricing, shipping, inventory)
+     * is selected in Product detail screen
+     */
     fun onEditProductCardClicked(target: ProductNavigationTarget) {
         triggerEvent(target)
     }
 
+    /**
+     * Called when the DONE menu button is clicked in all of the product sub detail screen
+     */
     fun onDoneButtonClicked(event: ProductExitEvent) {
         triggerEvent(event)
     }
 
+    /**
+     * Called when the UPDATE menu button is clicked in the product detail screen.
+     * Displays a progress dialog and updates the product
+     */
     fun onUpdateButtonClicked() {
         viewState.product?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -192,6 +220,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Called when user modifies the SKU field. Currently checks if the entered sku is available
+     * in the local db. Only if it is not available, the API verification call is initiated.
+     */
     fun onSkuChanged(sku: String) {
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
@@ -285,6 +317,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
+    /**
+     * Called when discard is clicked on any of the product screens.
+     * Resets the changes edited by the user based on [event].
+     */
     private fun discardEditChanges(event: ProductExitEvent) {
         val currentProduct = if (event is ExitProductDetail) {
             viewState.storedProduct
@@ -344,6 +380,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         }
 
+        // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
+        // will only be displayed if there are changes made to the Product model.
         updateProductEditAction()
     }
 
@@ -373,6 +411,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Loads the product dependencies for a site such as dimensions, currency or timezone
+     */
     private fun loadParameters(): Parameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
         val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
@@ -400,6 +441,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
 
+    /**
+     * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
+     * when there are changes made to the [Product] model and this can be verified by comparing
+     * the viewState.product with viewState.storedProduct model.
+     */
     private fun updateProductEditAction() {
         viewState.product?.let {
             val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
@@ -412,6 +458,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(uploadingImageUris = uris)
     }
 
+    /**
+     * Updates the product to the backend only if network is connected.
+     * Otherwise, an offline snackbar is displayed.
+     */
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
@@ -438,7 +488,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Load & fetch the shipping classed for the current site, optionally performing a "load more" to
+     * Load & fetch the shipping classes for the current site, optionally performing a "load more" to
      * load the next page of shipping classes
      */
     fun loadShippingClasses(loadMore: Boolean = false) {
@@ -534,6 +584,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         checkUploads()
     }
 
+    /**
+     * Sealed class that handles the back navigation for the product detail screens while providing a common
+     * interface for managing them as a single type. Currently used in all the product sub detail screens when
+     * back is clicked or DONE is clicked.
+     *
+     * Add a new class here for each new product sub detail screen to handle back navigation.
+     */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -552,13 +609,21 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * [product] - used for the UI. Any updates to the fields in the UI would update this model.
      *
-     * [cachedProduct] is the [Product] model that is used to verify if there are any changes made to the
-     * [product] model locally, which are not yet updated to the API.
+     * [cachedProduct] is a copy of the [product] model before a change has been made to the [product] model.
      *
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db
      *
-     * [isProductUpdated] - flag to determine if there are any changes made to the product by comparing
-     * [product] and [storedProduct] OR [product] and [cachedProduct].
+     * [isProductUpdated] is used to determine if there are any changes made to the product by comparing
+     * [product] and [storedProduct]. Currently used in the product detail screen to display/hide the UPDATE
+     * menu button.
+     *
+     * When the user first enters the product detail screen, the [product] , [storedProduct]  and [cachedProduct] 
+     * are the same. When a change is made to the product in the UI,
+     *  1. the [cachedProduct] is updated with the [product] model first, then
+     * 	2. the [product] model is updated with whatever change has been made in the UI.
+     *
+     * The [cachedProduct] keeps track of the changes made to the [product] in order to discard the changes
+     * when necessary.
      *
      */
     @Parcelize
