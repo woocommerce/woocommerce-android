@@ -181,7 +181,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.product) ?: false
             }
         }
-        eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_STATE to hasChanges)) }
+        eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
     }
 
