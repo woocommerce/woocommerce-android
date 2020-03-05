@@ -607,20 +607,21 @@ class ProductDetailViewModel @AssistedInject constructor(
     ) : Parcelable
 
     /**
-     * [product] - used for the UI. Any updates to the fields in the UI would update this model.
-     *
+     * [product] is used for the UI. Any updates to the fields in the UI would update this model.
      * [cachedProduct] is a copy of the [product] model before a change has been made to the [product] model.
-     *
-     * [storedProduct] is the [Product] model that is fetched from the API and available in the local db
+     * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
+     * This is read only and is not updated in any way. It is used in the product detail screen, to check
+     * if we need to display the UPDATE menu button (which is only displayed if there are changes made to
+     * any of the product fields).
      *
      * [isProductUpdated] is used to determine if there are any changes made to the product by comparing
-     * [product] and [storedProduct]. Currently used in the product detail screen to display/hide the UPDATE
+     * [product] and [storedProduct]. Currently used in the product detail screen to display or hide the UPDATE
      * menu button.
      *
      * When the user first enters the product detail screen, the [product] , [storedProduct]  and [cachedProduct] 
      * are the same. When a change is made to the product in the UI,
-     *  1. the [cachedProduct] is updated with the [product] model first, then
-     * 	2. the [product] model is updated with whatever change has been made in the UI.
+     * 1. the [cachedProduct] is updated with the [product] model first, then
+     * 2. the [product] model is updated with whatever change has been made in the UI.
      *
      * The [cachedProduct] keeps track of the changes made to the [product] in order to discard the changes
      * when necessary.
