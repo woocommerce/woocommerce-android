@@ -106,6 +106,53 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the inventory fields
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasInventoryChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            sku != it.sku ||
+                    manageStock != it.manageStock ||
+                    stockStatus != it.stockStatus ||
+                    stockQuantity != it.stockQuantity ||
+                    backorderStatus != it.backorderStatus ||
+                    soldIndividually != it.soldIndividually
+        } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes made to the pricing fields
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasPricingChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            regularPrice != it.regularPrice ||
+                    salePrice != it.salePrice ||
+                    dateOnSaleFromGmt != it.dateOnSaleFromGmt ||
+                    dateOnSaleToGmt != it.dateOnSaleToGmt ||
+                    taxClass != it.taxClass ||
+                    taxStatus != it.taxStatus
+        } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes made to the shipping fields
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasShippingChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            weight != it.weight ||
+                    length != it.length ||
+                    width != it.width ||
+                    height != it.height ||
+                    shippingClass != it.shippingClass
+        } ?: false
+    }
+
+    /**
      * Method merges the updated product fields edited by the user with the locally cached
      * [Product] model and returns the updated [Product] model.
      *
