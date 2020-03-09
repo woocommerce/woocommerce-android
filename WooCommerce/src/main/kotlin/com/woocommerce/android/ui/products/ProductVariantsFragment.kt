@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
@@ -114,11 +113,6 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         }
 
         productVariantsRefreshLayout?.apply {
-            setColorSchemeColors(
-                    ContextCompat.getColor(activity, R.color.colorPrimary),
-                    ContextCompat.getColor(activity, R.color.colorAccent),
-                    ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-            )
             scrollUpChild = productVariantsList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
