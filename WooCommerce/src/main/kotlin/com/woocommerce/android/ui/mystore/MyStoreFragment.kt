@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
-import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -83,13 +82,6 @@ class MyStoreFragment : TopLevelFragment(),
         val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
             dashboard_refresh_layout.apply {
-                activity?.let { activity ->
-                    setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.colorPrimary),
-                            ContextCompat.getColor(activity, R.color.colorAccent),
-                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                    )
-                }
                 setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)

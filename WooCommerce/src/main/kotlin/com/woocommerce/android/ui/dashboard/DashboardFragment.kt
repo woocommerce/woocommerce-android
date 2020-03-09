@@ -67,13 +67,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
         with(view) {
             dashboard_refresh_layout.apply {
-                activity?.let { _ ->
-                    setColorSchemeColors(
-                            R.attr.colorPrimary,
-                            R.attr.colorSecondary,
-                            R.attr.colorPrimaryVariant
-                    )
-                }
                 setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)

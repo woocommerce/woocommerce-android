@@ -6,10 +6,8 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.view.ContextThemeWrapper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.R.style
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
@@ -37,7 +35,7 @@ class SupportHelper {
         val (layout, emailEditText, nameEditText) =
                 supportIdentityInputDialogLayout(context, isNameInputHidden, email, name)
 
-        val dialog = MaterialAlertDialogBuilder(ContextThemeWrapper(context, style.Theme_Woo_DayNight))
+        val dialog = MaterialAlertDialogBuilder(context)
                 .setView(layout)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
