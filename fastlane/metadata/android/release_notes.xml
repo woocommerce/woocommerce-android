@@ -1,24 +1,102 @@
+<ar>
+3.7:
+- تُظهر تفاصيل طلبات استرداد الأموال كلاً من استرداد قيمة المنتج واسترداد قيمة الشحن.
+- لن تظهر وسوم HTML في عناوين المنتجات.
+- تم إصلاح بعض الأعطال النادرة.
+</ar>
+<de-DE>
+3.7:
+- Details von rückerstatteten Bestellungen zeigen sowohl die rückerstatteten Produkte als auch die rückerstatteten Lieferungen an.
+- In Produkttiteln werden keine HTML-Tags mehr angezeigt.
+- Es wurden ein paar seltene Gründe für Abstürze behoben.
+</de-DE>
 <es-ES>
-3.6:
-- Ahora puedes crear reembolsos y ver los anteriores en la aplicación.
-- Al mirar una lista vacía, las nuevas y elegantes imágenes no quedarán cortadas en pantallas más pequeñas en el modo apaisado.
-- Se ha corregido un error por el que se vaciaba la lista de reseñas después de girar el dispositivo.
+3.7:
+- Los detalles de los pedidos reembolsados muestran los reembolsos de producto y de envío.
+- Los títulos de productos ya no muestran etiquetas HTML.
+- Se han solucionado algunos bloqueos que se producían en raras ocasiones.
 </es-ES>
 <fr-FR>
-3.6 :
-- Vous pouvez désormais créer de nouveaux remboursements et consulter les remboursements précédents dans l'application.
-- Lorsque vous consultez une liste vide, les nouvelles images ne sont pas coupées sur les écrans plus petits en mode paysage.
-- Résolution d'un bug qui vidait la liste des avis après le pivotement de l'appareil.
+3.7 :
+- Les détails des commandes remboursées affichent les remboursements de produits et les remboursements d’expédition.
+- Les titres de produits n’affichent plus les étiquettes HTML.
+- Quelques incidents rares ont été résolus.
 </fr-FR>
+<iw-IL>
+3.7:
+- פרטים של הזמנות שבעבורן התקבל החזר כספי מציגים גם את ההחזרים הכספיים על המוצרים וגם את ההחזרים הכספיים על המשלוח.
+- כותרות המוצרים כבר לא מציגים תגיות של HTML.
+- תיקנו כמה קריסות נדירות.
+</iw-IL>
+<id>
+3.7:
+- Detail refund produk dan pengiriman.
+- Nama produk tanpa tag HTML.
+- Perbaikan crash.
+</id>
+<it-IT>
+3.7:
+- I dettagli degli ordini rimborsati mostrano sia i rimborsi per i prodotti sia i rimborsi per la spedizione.
+- I titoli dei prodotti non mostrano più i tag HTML.
+- Sono stati risolti alcuni rari arresti anomali.
+</it-IT>
+<ja-JP>
+3.7:
+- 商品代金の返金と配送料金の返金の両方に対象注文の詳細が表示されます。
+- 商品名に HTML タグが表示されなくなりました。
+- 発生頻度が少ないクラッシュを数件修正しました。
+</ja-JP>
+<ko-KR>
+3.7:
+- 환불된 주문 세부 정보에 제품 환불 및 배송 환불이 모두 표시됩니다.
+- 제품 제목에 더 이상 HTML 태그가 표시되지 않습니다.
+- 드물게 발생하던 몇 가지 충돌이 수정되었습니다.
+</ko-KR>
+<nl-NL>
+3.7:
+- Bij details van gerestitueerde bestellingen worden zowel productrestituties als verzendrestituties weergegeven.
+- In producttitels worden geen HTML-tags meer weergegeven.
+- Een paar zeldzame crashes zijn verholpen.
+</nl-NL>
 <pt-BR>
-3.6:
-- Agora você pode criar novos reembolsos e visualizar os anteriores pelo aplicativo.
-- Quando tiver uma lista vazia, as imagens não serão cortadas em telas menores no modo paisagem.
-- Bug que esvaziava a lista de avaliações após a rotação do dispositivo resolvido.
+3.7:
+- Detalhes de pedidos reembolsados exibem os reembolsos de produtos e de envio.
+- Títulos de produtos não mostram mais tags de HTML.
+- Alguns travamentos raros foram consertados.
 </pt-BR>
+<ru-RU>
+3.7:
+— В сведениях о заказах, по которым выполнен возврат, отображаются возвраты продуктов и возмещение расходов на доставку.
+— В заголовках продуктов больше не отображаются HTML-теги.
+— Исправлено несколько редких неисправностей.
+</ru-RU>
+<sv-SE>
+3.7:
+– Informationen om återbetalda beställningar visar återbetalningar av både produkter och frakt.
+– Produkttitlar visar inte längre HTML-taggar.
+– Några sällsynta krascher har åtgärdats.
+</sv-SE>
+<tr-TR>
+3.7:
+- İadesi yapılan siparişlerin ayrıntıları hem ürün iadelerinde hem gönderim iadelerinde görüntülenir.
+- Ürün başlıklarında artık HTML etiketleri gösterilmez.
+- Nadir rastlanan birkaç kilitlenme sorunu düzeltildi.
+</tr-TR>
+<zh-CN>
+3.7：
+- 退款订单的详细信息既显示产品退款，也显示运费退款。
+- 产品标题不再显示 HTML 标签。
+- 修复了一些极少出现的崩溃问题。
+</zh-CN>
+<zh-TW>
+3.7：
+- 退款訂單詳細資訊會一併顯示產品和運費的退款金額。
+- 產品標題不再顯示 HTML 標籤。
+- 修正一些不常見的當機情況。
+</zh-TW>
 <en-US>
-3.6:
-- You can now create new refunds and view past refunds within the app.
-- When you’re looking at an empty list, the fancy new images won’t be cut off on smaller screens in landscape mode.
-- Fixed a bug that emptied the reviews list after rotating the device.
+3.7:
+- Details of refunded orders display both product refunds and shipping refunds.
+- Product titles no longer show HTML tags.
+- A few rare crashes fixed.
 </en-US>

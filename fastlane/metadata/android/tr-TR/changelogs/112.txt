@@ -1,0 +1,4 @@
+3.7:
+- İadesi yapılan siparişlerin ayrıntıları hem ürün iadelerinde hem gönderim iadelerinde görüntülenir.
+- Ürün başlıklarında artık HTML etiketleri gösterilmez.
+- Nadir rastlanan birkaç kilitlenme sorunu düzeltildi.

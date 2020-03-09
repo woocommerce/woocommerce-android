@@ -1,4 +1,0 @@
-3.6:
-- Ahora puedes crear reembolsos y ver los anteriores en la aplicación.
-- Al mirar una lista vacía, las nuevas y elegantes imágenes no quedarán cortadas en pantallas más pequeñas en el modo apaisado.
-- Se ha corregido un error por el que se vaciaba la lista de reseñas después de girar el dispositivo.

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-06 00:54:04+0000
+Translation-Revision-Date: 2020-03-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="product_tax_status_shipping">Envio</string>
+    <string name="product_tax_status_taxable">Tributável</string>
+    <string name="product_tax_status_none">Nenhum</string>
+    <string name="product_tax_class_standard">Classificação padrão</string>
+    <string name="product_tax_class">Classe do imposto</string>
+    <string name="product_tax_status">Status do imposto</string>
+    <string name="product_tax_settings">Configurações do imposto</string>
+    <string name="product_schedule_sale_to_label">Para</string>
+    <string name="product_schedule_sale_from_label">De</string>
+    <string name="product_schedule_sale_sublabel">Iniciar e encerrar uma oferta automaticamente</string>
+    <string name="product_schedule_sale_label">Agendar oferta</string>
+    <string name="order_refunds_store_admin_link_text">na página admin da sua loja</string>
+    <string name="order_refunds_shipping_refund_notice">É possível reembolsar valores de taxa e envio %s</string>
+    <string name="orders_empty_message_with_order_status_filter">Não foi possível encontrar resultados para “%s”</string>
+    <string name="product_inventory_update_sku_error">O SKU já foi usado por outro produto</string>
+    <string name="product_shipping_settings">Configurações de envio</string>
+    <string name="product_no_shipping_class">Sem classe de envio</string>
+    <string name="product_dimensions">Dimensões</string>
+    <string name="product_height">Altura</string>
+    <string name="product_width">Largura</string>
+    <string name="product_length">Comprimento</string>
+    <string name="order_refunds_refund_info_title">Produtos reembolsados</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s via %2$s</string>
+    <string name="order_refunds_confirmation">Tem certeza de que deseja pedir o reembolso? Essa ação não pode ser revertida.</string>
+    <string name="orderdetail_refunded_products">Produtos reembolsados</string>
+    <string name="refunds">Reembolsos</string>
     <string name="sign_up">Inscreva-se no WordPress.com</string>
     <string name="empty_message_with_search">Não foi possível encontrar resultados para \"%s\"</string>
     <string name="empty_review_list_message">Reúna avaliações do produto de alta qualidade para a sua loja</string>
@@ -145,6 +172,7 @@ Language: pt_BR
     <string name="order_refunds_title_with_amount">Reembolsar %s</string>
     <string name="order_refunds_available_for_refund">Total de %s disponível para reembolso</string>
     <string name="orderdetail_issue_refund_button">Emitir reembolso</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Experimente as novas estatísticas disponíveis com o\nplugin WooCommerce Admin</string>
     <string name="settings_enable_v4_stats_title">Estatísticas aprimoradas</string>
     <string name="beta_features">Funcionalidades Beta</string>

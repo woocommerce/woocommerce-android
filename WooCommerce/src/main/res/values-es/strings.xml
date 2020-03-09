@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-21 00:54:03+0000
+Translation-Revision-Date: 2020-03-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_tax_status_shipping">En envío</string>
+    <string name="product_tax_status_taxable">Imponible</string>
+    <string name="product_tax_status_none">Ninguno</string>
+    <string name="product_tax_class_standard">Tarifa estándar</string>
+    <string name="product_tax_class">Clase de impuesto</string>
+    <string name="product_tax_status">Estado del impuesto</string>
+    <string name="product_tax_settings">Configuración de impuestos</string>
+    <string name="product_schedule_sale_to_label">Hasta</string>
+    <string name="product_schedule_sale_from_label">Desde</string>
+    <string name="product_schedule_sale_sublabel">Iniciar y finalizar una oferta automáticamente</string>
+    <string name="product_schedule_sale_label">Programar oferta</string>
+    <string name="order_refunds_store_admin_link_text">en la administración de tu tienda</string>
+    <string name="order_refunds_shipping_refund_notice">Puedes reembolsar los importes de los envíos y los impuestos %s</string>
     <string name="orders_empty_message_with_order_status_filter">No hemos encontrado pedidos de \"%s\"</string>
     <string name="product_inventory_update_sku_error">Otro producto ya usa este SKU</string>
     <string name="product_shipping_settings">Configuración de envío</string>

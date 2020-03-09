@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-05 04:54:04+0000
+Translation-Revision-Date: 2020-03-05 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_tax_status_shipping">運送方式</string>
+    <string name="product_tax_status_taxable">應課稅</string>
+    <string name="product_tax_status_none">無</string>
+    <string name="product_tax_class_standard">標準稅率</string>
+    <string name="product_tax_class">稅率類別</string>
+    <string name="product_tax_status">稅金狀態</string>
+    <string name="product_tax_settings">稅金設定</string>
+    <string name="product_schedule_sale_to_label">結束時間</string>
+    <string name="product_schedule_sale_from_label">開始時間</string>
+    <string name="product_schedule_sale_sublabel">自動開始及結束折扣優惠</string>
+    <string name="product_schedule_sale_label">在商店管理員中</string>
+    <string name="order_refunds_store_admin_link_text">排程折扣優惠</string>
+    <string name="order_refunds_shipping_refund_notice">你可以退還運費和稅款 %s</string>
+    <string name="orders_empty_message_with_order_status_filter">不好意思，我們找不到任何「%s」訂單</string>
+    <string name="product_inventory_update_sku_error">其他商品已使用此貨號</string>
+    <string name="product_shipping_settings">運送設定</string>
+    <string name="product_no_shipping_class">無運送類別</string>
+    <string name="product_dimensions">尺寸</string>
+    <string name="product_height">高度</string>
+    <string name="product_width">寬度</string>
+    <string name="product_length">長度</string>
+    <string name="order_refunds_refund_info_title">已退款的商品</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s，付款方式：%2$s</string>
+    <string name="order_refunds_confirmation">確定要申請退款？此動作無法復原。</string>
+    <string name="orderdetail_refunded_products">已退款的商品</string>
+    <string name="refunds">退款</string>
     <string name="sign_up">註冊 WordPress.com</string>
     <string name="empty_message_with_search">很抱歉，我們找不到「%s」的搜尋結果</string>
     <string name="empty_review_list_message">為你的商店擷取高品質的產品評論</string>
@@ -145,6 +172,7 @@ Language: zh_TW
     <string name="order_refunds_title_with_amount">退款 %s</string>
     <string name="order_refunds_available_for_refund">%s 可退款</string>
     <string name="orderdetail_issue_refund_button">核發退款</string>
+    <string name="orderdetail_refund_detail">%1$s，付款方式：%2$s</string>
     <string name="settings_enable_v4_stats_message">體驗下列外掛程式提供的全新統計資料：\nWooCommerce 管理員外掛程式</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
     <string name="beta_features">Beta 功能</string>

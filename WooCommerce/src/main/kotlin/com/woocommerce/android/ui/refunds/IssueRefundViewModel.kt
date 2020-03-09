@@ -177,6 +177,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                     shippingSubtotal = formatCurrency(order.shippingTotal),
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
                     isShippingRefundVisible = order.shippingTotal > BigDecimal.ZERO,
+                    isShippingNoticeVisible = true,
                     isNextButtonEnabled = false
             )
         }
@@ -585,6 +586,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         val shippingSubtotal: String? = null,
         val shippingTaxes: String? = null,
         val isShippingRefundVisible: Boolean? = null,
+        val isShippingNoticeVisible: Boolean? = null,
         val selectedItemsHeader: String? = null,
         val selectButtonTitle: String? = null
     ) : Parcelable {

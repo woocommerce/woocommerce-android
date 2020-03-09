@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-11 11:49:11+0000
+Translation-Revision-Date: 2020-03-04 00:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_tax_status_shipping">Доставка</string>
+    <string name="product_tax_status_taxable">Налогооблагаемый</string>
+    <string name="product_tax_status_none">Нет</string>
+    <string name="product_tax_class_standard">Стандартный тариф</string>
+    <string name="product_tax_class">Налоговый класс</string>
+    <string name="product_tax_status">Статус налога</string>
+    <string name="product_tax_settings">Настройки налогообложения</string>
+    <string name="product_schedule_sale_to_label">До</string>
+    <string name="product_schedule_sale_from_label">С</string>
+    <string name="product_schedule_sale_sublabel">Автоматически начинать и завершать распродажу</string>
+    <string name="product_schedule_sale_label">Запланировать распродажу</string>
+    <string name="order_refunds_store_admin_link_text">в учетной записи администратора магазина</string>
+    <string name="order_refunds_shipping_refund_notice">Можно получить возврат оплаты доставки и суммы налогов (%s)</string>
+    <string name="orders_empty_message_with_order_status_filter">К сожалению, мы не смогли найти заказы \"%s\"</string>
+    <string name="product_inventory_update_sku_error">Артикул уже используется для другого продукта</string>
+    <string name="product_shipping_settings">Настройки доставки</string>
+    <string name="product_no_shipping_class">Не указан класс доставки</string>
+    <string name="product_dimensions">Размеры</string>
+    <string name="product_height">Высота</string>
+    <string name="product_width">Ширина</string>
+    <string name="product_length">Длина</string>
+    <string name="order_refunds_refund_info_title">Продукты, по которым возвращены средства</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s с помощью %2$s</string>
+    <string name="order_refunds_confirmation">Вы уверены, что хотите вернуть деньги? Это действие нельзя отменить.</string>
+    <string name="orderdetail_refunded_products">Продукты, по которым возвращены средства</string>
+    <string name="refunds">Возврат оплаты</string>
     <string name="sign_up">Подписаться на WordPress.com</string>
     <string name="empty_message_with_search">К сожалению, результаты по запросу \"%s\" не найдены</string>
     <string name="empty_review_list_message">Получайте высококачественные отзывы о продуктах в вашем магазине</string>
@@ -146,6 +173,7 @@ Language: ru
     <string name="order_refunds_title_with_amount">Вернуть %s</string>
     <string name="order_refunds_available_for_refund">%s доступно для возврата</string>
     <string name="orderdetail_issue_refund_button">Оформить возврат</string>
+    <string name="orderdetail_refund_detail">%1$s с помощью %2$s</string>
     <string name="settings_enable_v4_stats_message">Оцените новую страницу статистики в\nплагине администратора WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
