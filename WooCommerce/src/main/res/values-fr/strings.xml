@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-06 00:54:13+0000
+Translation-Revision-Date: 2020-03-07 00:54:58+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_tax_status_shipping">Expédition</string>
+    <string name="product_tax_status_taxable">Taxable</string>
+    <string name="product_tax_status_none">Aucune</string>
+    <string name="product_tax_class_standard">Taux standard</string>
+    <string name="product_tax_class">Classe de taxe</string>
+    <string name="product_tax_status">État de la taxe</string>
+    <string name="product_tax_settings">Paramètres d\'imposition</string>
+    <string name="product_schedule_sale_to_label">Jusqu’au</string>
+    <string name="product_schedule_sale_from_label">À partir du</string>
+    <string name="product_schedule_sale_sublabel">Commencer et terminer automatiquement une vente</string>
+    <string name="product_schedule_sale_label">Planifier une vente</string>
+    <string name="order_refunds_store_admin_link_text">depuis la page administration de votre boutique</string>
+    <string name="order_refunds_shipping_refund_notice">Vous pouvez rembourser les frais d’expédition et de taxe %s</string>
+    <string name="orders_empty_message_with_order_status_filter">Désolé, impossible de trouver les commandes « %s »</string>
+    <string name="product_inventory_update_sku_error">Cette UGS est déjà utilisée par un autre produit</string>
+    <string name="product_shipping_settings">Paramètres de livraison</string>
+    <string name="product_no_shipping_class">Pas de classe de livraison</string>
+    <string name="product_dimensions">Dimensions</string>
+    <string name="product_height">Hauteur</string>
+    <string name="product_width">Largeur</string>
+    <string name="product_length">Longueur</string>
+    <string name="order_refunds_refund_info_title">Produits remboursés</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s via %2$s</string>
+    <string name="order_refunds_confirmation">Voulez-vous vraiment déclencher un remboursement ? Cette opération est irréversible.</string>
+    <string name="orderdetail_refunded_products">Produits remboursés</string>
+    <string name="refunds">Remboursements</string>
     <string name="sign_up">S\'inscrire sur WordPress.com</string>
     <string name="empty_message_with_search">Désolé, il n’y a aucun résultat pour « %s »</string>
     <string name="empty_review_list_message">Capturer des avis de produits de qualité pour votre boutique</string>
@@ -145,6 +172,7 @@ Language: fr
     <string name="order_refunds_title_with_amount">Rembourser %s</string>
     <string name="order_refunds_available_for_refund">%s disponible(s) pour remboursement</string>
     <string name="orderdetail_issue_refund_button">Effectuer le remboursement</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Essayez les nouvelles statistiques disponibles avec\nl\'extension d\'administration WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistiques améliorées</string>
     <string name="beta_features">Fonctionnalités bêta</string>

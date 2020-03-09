@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-06 00:54:12+0000
+Translation-Revision-Date: 2020-03-06 00:54:34+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_tax_status_shipping">Gönderiliyor</string>
+    <string name="product_tax_status_taxable">Vergilendirilebilir</string>
+    <string name="product_tax_status_none">Hiçbiri</string>
+    <string name="product_tax_class_standard">Standart oran</string>
+    <string name="product_tax_class">Vergi sınıfı</string>
+    <string name="product_tax_status">Vergi durumu</string>
+    <string name="product_tax_settings">Vergi ayarları</string>
+    <string name="product_schedule_sale_sublabel">Bir satışı otomatik başlat ve durdur</string>
+    <string name="product_schedule_sale_label">Programlı satış</string>
+    <string name="order_refunds_store_admin_link_text">mağaza yöneticinizde</string>
+    <string name="order_refunds_shipping_refund_notice">%s tutarında gönderim ve vergiyi iade edebilirsiniz</string>
+    <string name="orders_empty_message_with_order_status_filter">Maalesef \"%s\" siparişi bulamadık</string>
+    <string name="product_inventory_update_sku_error">SKU başka bir ürün için kullanılıyor</string>
+    <string name="product_shipping_settings">Kargo ayarları</string>
+    <string name="product_no_shipping_class">Kargo sınıfı yok</string>
+    <string name="product_dimensions">Ölçüler</string>
+    <string name="product_height">Yükseklik</string>
+    <string name="product_width">Genişlik</string>
+    <string name="product_length">Uzunluk</string>
+    <string name="order_refunds_refund_info_title">Para iadesi yapılan ürünler</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%2$s üzerinden %1$s</string>
+    <string name="order_refunds_confirmation">Para iadesi yapmak istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
+    <string name="orderdetail_refunded_products">Para iadesi yapılan ürünler</string>
+    <string name="refunds">Para İadeleri</string>
     <string name="sign_up">WordPress.com\'a Kaydolun</string>
     <string name="empty_message_with_search">Üzgünüz, \"%s\" için sonuç bulamadık</string>
     <string name="empty_review_list_message">Mağazanız için yüksek kalitede ürün yorumları alın</string>
@@ -145,6 +170,7 @@ Language: tr
     <string name="order_refunds_title_with_amount">%s iade et</string>
     <string name="order_refunds_available_for_refund">%s para iadesi için kullanılabilir</string>
     <string name="orderdetail_issue_refund_button">Para iadesi düzenle</string>
+    <string name="orderdetail_refund_detail">%2$s üzerinden %1$s</string>
     <string name="settings_enable_v4_stats_message">Mevcut yeni istatistikleri deneyin:\nWooCommerce yönetici eklentisi</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
     <string name="beta_features">Beta özellikler</string>
