@@ -49,6 +49,9 @@ sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val 
                 .map { it.value to context.getString(fromString(it.value).stringResource)
                 }.toMap()
 
+        /**
+         * returns the product's backorder status formatted for display
+         */
         fun backordersToDisplayString(context: Context, backorderStatus: ProductBackorderStatus): String {
             return if (backorderStatus.stringResource != 0) {
                 context.getString(backorderStatus.stringResource)
