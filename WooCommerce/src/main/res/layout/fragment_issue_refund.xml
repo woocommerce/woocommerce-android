@@ -2,8 +2,7 @@
     android:id="@+id/issueRefund_frame"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/default_window_background" />
+    android:layout_height="wrap_content" />
 
 <!-- TODO: Temporary; it will be used again in a future release - do not remove -->
 <!--<LinearLayout-->
