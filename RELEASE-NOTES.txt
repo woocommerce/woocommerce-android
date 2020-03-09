@@ -1,3 +1,6 @@
+3.9
+-----
+ 
 3.8
 -----
 * Limited editing is now available for simple products (requires enabling Settings > Beta features > Products)
