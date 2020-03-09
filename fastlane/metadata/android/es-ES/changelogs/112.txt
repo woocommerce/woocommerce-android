@@ -1,0 +1,4 @@
+3.7:
+- Los detalles de los pedidos reembolsados muestran los reembolsos de producto y de envío.
+- Los títulos de productos ya no muestran etiquetas HTML.
+- Se han solucionado algunos bloqueos que se producían en raras ocasiones.
