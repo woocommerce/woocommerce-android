@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-18 16:31:53+0000
+Translation-Revision-Date: 2020-03-06 00:54:34+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_tax_status_shipping">Frakt</string>
+    <string name="product_tax_status_taxable">Momsbelagd</string>
+    <string name="product_tax_status_none">Ingen</string>
+    <string name="product_tax_class_standard">Standardmoms</string>
+    <string name="product_tax_class">Momsgrupp</string>
+    <string name="product_tax_status">Momsstatus</string>
+    <string name="product_tax_settings">Momsinställningar</string>
+    <string name="product_schedule_sale_to_label">Till</string>
+    <string name="product_schedule_sale_from_label">Från</string>
+    <string name="product_schedule_sale_sublabel">Starta och avsluta en rea automatiskt</string>
+    <string name="product_schedule_sale_label">Schemalägg rea</string>
+    <string name="order_refunds_store_admin_link_text">i ditt administratörsarkiv</string>
+    <string name="order_refunds_shipping_refund_notice">Du kan återbetala frakt- och momsbelopp %s</string>
+    <string name="orders_empty_message_with_order_status_filter">Vi hittade inga %s-ordrar</string>
+    <string name="product_inventory_update_sku_error">SKU används redan av en annan produkt</string>
+    <string name="product_shipping_settings">Fraktinställningar</string>
+    <string name="product_no_shipping_class">Ingen fraktklass</string>
     <string name="product_dimensions">Dimensioner</string>
     <string name="product_height">Höjd</string>
     <string name="product_width">Bredd</string>
@@ -13,6 +30,7 @@ Language: sv_SE
     <string name="order_refunds_refund_info_title">Återbetalda produkter</string>
     <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_method">%1$s via %2$s</string>
+    <string name="order_refunds_confirmation">Är du säker på att du vill utfärda en återbetalning? Det här kan inte ångras.</string>
     <string name="orderdetail_refunded_products">Återbetalda produkter</string>
     <string name="refunds">Återbetalningar</string>
     <string name="sign_up">Registrera dig på WordPress.com</string>
