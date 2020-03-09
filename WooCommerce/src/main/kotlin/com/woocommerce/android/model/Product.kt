@@ -3,6 +3,7 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -138,6 +139,38 @@ data class Product(
                     shippingClass = updatedProduct.shippingClass
             )
         } ?: this.copy()
+    }
+
+    /**
+     * Formats the [Product] weight with the given [weightUnit]
+     * for display purposes.
+     * Eg: 12oz
+     */
+    fun getWeightWithUnits(weightUnit: String?): String {
+        return if (weight > 0) {
+            "${weight.formatToString()}${weightUnit ?: ""}"
+        } else ""
+    }
+
+    /**
+     * Formats the [Product] size (length, width, height) with the given [dimensionUnit]
+     * if all the dimensions are available.
+     * Eg: 12 x 15 x 13 in
+     */
+    fun getSizeWithUnits(dimensionUnit: String?): String {
+        val hasLength = length > 0
+        val hasWidth = width > 0
+        val hasHeight = height > 0
+        val unit = dimensionUnit ?: ""
+        return if (hasLength && hasWidth && hasHeight) {
+            "${length.formatToString()} " +
+                    "x ${width.formatToString()} " +
+                    "x ${height.formatToString()} $unit"
+        } else if (hasWidth && hasHeight) {
+            "${width.formatToString()} x ${height.formatToString()} $unit"
+        } else {
+            ""
+        }.trim()
     }
 }
 

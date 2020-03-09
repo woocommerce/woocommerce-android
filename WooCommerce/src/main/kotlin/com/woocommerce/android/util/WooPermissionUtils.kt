@@ -124,12 +124,10 @@ object WooPermissionUtils {
     }
 
     /*
-     * returns the name to display for a permission, ex: "permission.WRITE_EXTERNAL_STORAGE" > "Storage"
+     * returns the name to display for a permission, ex: "permission.CAMERA" > "Camera"
      */
     private fun getPermissionName(context: Context, permission: String): String {
         return when (permission) {
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE ->
-                context.getString(R.string.permission_storage)
             android.Manifest.permission.CAMERA ->
                 context.getString(R.string.permission_camera)
             else -> {
@@ -172,12 +170,6 @@ object WooPermissionUtils {
         intent.data = uri
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(intent)
-    }
-
-    fun hasStoragePermission(context: Context): Boolean {
-        return ContextCompat.checkSelfPermission(
-                context, permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
     }
 
     fun hasCameraPermission(context: Context): Boolean {

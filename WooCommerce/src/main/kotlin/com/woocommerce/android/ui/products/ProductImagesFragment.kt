@@ -148,17 +148,12 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     private fun chooseProductImage() {
-        // only show the chooser if user already allowed storage permission, otherwise simply request the
-        // permission and do nothing else - this will be called again if the user then agrees to allow
-        // storage permission
-        if (requestStoragePermission()) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT).also {
-                it.type = "image/*"
-                it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            }
-            val chooser = Intent.createChooser(intent, null)
-            activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)
+        val intent = Intent(Intent.ACTION_GET_CONTENT).also {
+            it.type = "image/*"
+            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
+        val chooser = Intent.createChooser(intent, null)
+        activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)
     }
 
     private fun captureProductImage() {
@@ -221,46 +216,15 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
     }
 
     /**
-     * Requests storage permission, returns true only if permission is already available
-     */
-    private fun requestStoragePermission(): Boolean {
-        if (!isAdded) {
-            return false
-        } else if (WooPermissionUtils.hasStoragePermission(activity!!)) {
-            return true
-        }
-
-        val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE)
-        requestPermissions(permissions, RequestCodes.STORAGE_PERMISSION)
-        return false
-    }
-
-    /**
-     * Requests camera & storage permissions, returns true only if permissions are already
-     * available. Note that we need to ask for both permissions because we also need storage
-     * permission to store media from the camera.
+     * Requests camera permissions, returns true only if camera permission is already available
      */
     private fun requestCameraPermission(): Boolean {
-        if (!isAdded) {
-            return false
+        if (isAdded) {
+            if (WooPermissionUtils.hasCameraPermission(requireActivity())) {
+                return true
+            }
+            requestPermissions(arrayOf(permission.CAMERA), RequestCodes.CAMERA_PERMISSION)
         }
-
-        val hasStorage = WooPermissionUtils.hasStoragePermission(activity!!)
-        val hasCamera = WooPermissionUtils.hasCameraPermission(activity!!)
-        if (hasStorage && hasCamera) {
-            return true
-        }
-
-        val permissions = when {
-            hasStorage -> arrayOf(permission.CAMERA)
-            hasCamera -> arrayOf(permission.WRITE_EXTERNAL_STORAGE)
-            else -> arrayOf(permission.CAMERA, permission.WRITE_EXTERNAL_STORAGE)
-        }
-
-        requestPermissions(
-                permissions,
-                RequestCodes.CAMERA_PERMISSION
-        )
         return false
     }
 
@@ -274,14 +238,11 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         }
 
         val allGranted = WooPermissionUtils.setPermissionListAsked(
-                activity!!, requestCode, permissions, grantResults, checkForAlwaysDenied = true
+                requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
         )
 
         if (allGranted) {
             when (requestCode) {
-                RequestCodes.STORAGE_PERMISSION -> {
-                    chooseProductImage()
-                }
                 RequestCodes.CAMERA_PERMISSION -> {
                     captureProductImage()
                 }

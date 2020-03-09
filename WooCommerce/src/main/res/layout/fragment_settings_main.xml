@@ -152,10 +152,17 @@
 
             <TextView
                 android:id="@+id/textBetaFeatures"
-                style="@style/Woo.Settings.Label"
+                style="@style/Woo.Settings.LabelWithDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/beta_features"/>
+
+            <TextView
+                android:id="@+id/textBetaFeaturesDetail"
+                style="@style/Woo.Settings.Label.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="@string/settings_enable_v4_stats_title"/>
 
             <View
                 style="@style/Woo.Settings.Divider"/>
