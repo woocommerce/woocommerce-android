@@ -80,6 +80,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/refundSummary_reasonLayout"
                     style="@style/Woo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
