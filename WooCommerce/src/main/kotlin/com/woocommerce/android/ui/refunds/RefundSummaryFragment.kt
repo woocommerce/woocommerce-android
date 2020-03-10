@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -92,6 +93,13 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
     private fun initializeViews() {
         refundSummary_btnRefund.setOnClickListener {
             viewModel.onRefundIssued(refundSummary_reason.text.toString())
+        }
+
+        refundSummary_reason.doOnTextChanged { _, _, _, _ ->
+            val maxLength = refundSummary_reasonLayout.counterMaxLength
+            refundSummary_reason.length().let {
+                refundSummary_btnRefund.isEnabled = it <= maxLength
+            }
         }
     }
 
