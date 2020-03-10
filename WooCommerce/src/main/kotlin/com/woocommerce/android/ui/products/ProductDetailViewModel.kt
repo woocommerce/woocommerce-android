@@ -104,7 +104,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
     private var productShippingClassViewState by productShippingClassViewStateData
 
-    // view state for the shipping class screen
+    // view state for the product images screen
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
@@ -302,8 +302,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         width: Float? = null,
         height: Float? = null,
         weight: Float? = null,
-        shippingClass: String? = null
-        // TODO: images
+        shippingClass: String? = null,
+        images: List<Product.Image>? = null
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -316,7 +316,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     soldIndividually = soldIndividually ?: product.soldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = viewState.storedProduct?.images ?: product.images,
+                    images = images ?: product.images,
                     regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) null else regularPrice
                             ?: product.regularPrice,
                     salePrice = if (salePrice isEqualTo BigDecimal.ZERO) null else salePrice ?: product.salePrice,
