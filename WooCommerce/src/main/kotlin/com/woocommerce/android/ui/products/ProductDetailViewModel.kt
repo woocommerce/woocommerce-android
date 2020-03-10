@@ -300,7 +300,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         width: Float? = null,
         height: Float? = null,
         weight: Float? = null,
-        shippingClass: String? = null,
+        shippingClass: String? = null
         // TODO: images
     ) {
         viewState.product?.let { product ->
@@ -510,6 +510,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun checkImageUploads() {
         val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
         viewState = viewState.copy(uploadingImageUris = uris)
+        productImagesViewState = productImagesViewState.copy(isUploadingImages = uris.isNotEmpty())
     }
 
     /**
@@ -720,7 +721,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductImagesViewState(
-        val capturedPhotoUri: Uri? = null
+        val isUploadingImages: Boolean = false
     ) : Parcelable
 
     @AssistedInject.Factory

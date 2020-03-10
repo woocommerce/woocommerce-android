@@ -101,16 +101,19 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         })
 
-        viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.product?.takeIfNotEqualTo(old?.product) {
-                imageGallery.showProductImages(new.product, this)
+        viewModel.productImagesViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isUploadingImages.takeIfNotEqualTo(old?.isUploadingImages) {
+                viewModel.getProduct().product?.let {
+                    imageGallery.showProductImages(it, this)
+                }
+
+                // TODO imageGallery.setPlaceholderImageUris(viewModel.)
             }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) {
+
+            // TODO
+            /*new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) {
                 showUpdateProductAction(it)
-            }
-            new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
-                imageGallery.setPlaceholderImageUris(it)
-            }
+            }*/
         }
     }
 
