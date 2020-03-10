@@ -8,6 +8,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -164,6 +165,23 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the DONE menu button is clicked in all of the product sub detail screen
      */
     fun onDoneButtonClicked(event: ProductExitEvent) {
+        var eventName: Stat? = null
+        var hasChanges = false
+        when (event) {
+            is ExitInventory -> {
+                eventName = Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED
+                hasChanges = viewState.storedProduct?.hasInventoryChanges(viewState.product) ?: false
+            }
+            is ExitPricing -> {
+                eventName = Stat.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED
+                hasChanges = viewState.storedProduct?.hasPricingChanges(viewState.product) ?: false
+            }
+            is ExitShipping -> {
+                eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
+                hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.product) ?: false
+            }
+        }
+        eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
     }
 
