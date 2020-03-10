@@ -153,6 +153,17 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the product images
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasImageChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            images != it.images
+        } ?: false
+    }
+
+    /**
      * Method merges the updated product fields edited by the user with the locally cached
      * [Product] model and returns the updated [Product] model.
      *
