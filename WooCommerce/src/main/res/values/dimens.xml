@@ -89,6 +89,8 @@ so that's the baseline as defined in `major_100`.
     <dimen name="skeleton_tagview_height">24dp</dimen>
     <dimen name="skeleton_text_button_height">24dp</dimen>
 
+    <!-- Corner Radius -->
+    <dimen name="corner_radius_small">2dp</dimen>
 
     <!-- Other literal dimensions -->
     <dimen name="margin_app_title_aligned">72dp</dimen>

@@ -29,7 +29,6 @@
     <!--
         Custom widget tint
     -->
-    <color name="button_colored_bg_tint">@color/color_secondary</color>
     <color name="ratings_bar_progress_tint">@color/color_on_surface_high</color>
     <color name="unread_indicator_color">@color/color_primary</color>
 
