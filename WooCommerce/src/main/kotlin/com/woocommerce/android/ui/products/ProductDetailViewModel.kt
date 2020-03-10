@@ -15,6 +15,8 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ShippingClass
@@ -637,6 +639,29 @@ class ProductDetailViewModel @AssistedInject constructor(
             loadProduct(remoteProductId)
         }
         checkImageUploads()
+    }
+
+    /**
+     * The list of images has started uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
+        if (remoteProductId == event.remoteProductId) {
+            checkImageUploads()
+        }
+    }
+
+    /**
+     * The list of images has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        if (remoteProductId == event.remoteProductId) {
+            loadProduct(remoteProductId)
+            checkImageUploads()
+        }
     }
 
     /**
