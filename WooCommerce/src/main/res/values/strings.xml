@@ -188,6 +188,11 @@
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for  stores using the WooCommerce Admin plugin</string>
     <!--
+        Stats refreshed widgets
+    -->
+    <string name="stats_widget_log_in_message">Please log in to the Woocommerce app to add a widget.</string>
+    <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
+    <!--
         Order List View
     -->
     <string name="orderlist_no_orders">No Orders</string>
