@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.RequestCodes
@@ -40,8 +39,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
-
-    private val navArgs: ProductImagesFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -110,11 +107,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
             }
-
-            // TODO
-            /*new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) {
-                showUpdateProductAction(it)
-            }*/
         }
     }
 
@@ -199,7 +191,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                             Stat.PRODUCT_IMAGE_ADDED,
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
+                    viewModel.uploadProductImages(uriList)
                 }
                 RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
@@ -207,11 +199,11 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    viewModel.uploadProductImages(navArgs.remoteProductId, uriList)
+                    viewModel.uploadProductImages(uriList)
                 }
                 RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
                     if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
-                        // TODO viewModel.loadProduct()
+                        viewModel.reloadProduct()
                     }
                 }
             }

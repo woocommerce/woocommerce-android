@@ -455,6 +455,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun reloadProduct() {
+        loadProduct(remoteProductId)
+    }
+
     /**
      * Loads the product dependencies for a site such as dimensions, currency or timezone
      */
@@ -497,7 +501,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
+    fun uploadProductImages(localUriList: ArrayList<Uri>) {
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
             return
@@ -509,6 +513,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
     }
 
+    /**
+     * Checks whether product images are uploading and ensures the view state reflects any currently
+     * uploading images
+     */
     private fun checkImageUploads() {
         val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
         viewState = viewState.copy(uploadingImageUris = uris)
