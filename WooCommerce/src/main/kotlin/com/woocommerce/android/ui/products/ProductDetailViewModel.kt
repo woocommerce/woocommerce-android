@@ -627,8 +627,26 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * This event may happen if the user uploads or removes an image from the images fragment and returns
-     * to the detail fragment before the request completes
+     * The list of product images has started uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
+        checkImageUploads()
+    }
+
+    /**
+     * The list of product images has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        loadProduct(event.remoteProductId)
+        checkImageUploads()
+    }
+
+    /**
+     * A single product image has finished uploading
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -636,33 +654,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            loadProduct(remoteProductId)
+            loadProduct(event.remoteProductId)
         }
         checkImageUploads()
     }
 
-    /**
-     * The list of images has started uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        if (remoteProductId == event.remoteProductId) {
-            checkImageUploads()
-        }
-    }
-
-    /**
-     * The list of images has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        if (remoteProductId == event.remoteProductId) {
-            loadProduct(remoteProductId)
-            checkImageUploads()
-        }
-    }
 
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common

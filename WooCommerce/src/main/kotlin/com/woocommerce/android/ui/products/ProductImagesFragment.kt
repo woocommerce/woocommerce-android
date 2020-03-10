@@ -108,7 +108,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                     imageGallery.showProductImages(it, this)
                 }
 
-                // TODO imageGallery.setPlaceholderImageUris(viewModel.)
+                imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
             }
 
             // TODO
