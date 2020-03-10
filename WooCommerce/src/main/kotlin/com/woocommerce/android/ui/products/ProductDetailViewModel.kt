@@ -118,7 +118,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        checkUploads()
+        checkImageUploads()
     }
 
     fun initialisePricing() {
@@ -481,7 +481,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
+    fun isUploadingImages() = ProductImagesService.isUploadingForProduct(remoteProductId)
 
     /**
      * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
@@ -507,7 +507,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
     }
 
-    private fun checkUploads() {
+    private fun checkImageUploads() {
         val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
         viewState = viewState.copy(uploadingImageUris = uris)
     }
@@ -635,7 +635,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         } else {
             loadProduct(remoteProductId)
         }
-        checkUploads()
+        checkImageUploads()
     }
 
     /**
