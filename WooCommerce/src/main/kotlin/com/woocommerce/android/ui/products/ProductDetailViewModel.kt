@@ -15,6 +15,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
@@ -61,7 +62,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -99,6 +101,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the shipping class screen
     final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
     private var productShippingClassViewState by productShippingClassViewStateData
+
+    // view state for the shipping class screen
+    final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
+    private var productImagesViewState by productImagesViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -180,6 +186,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitShipping -> {
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.product) ?: false
+            }
+            is ExitImages -> {
+                // TODO: eventName = ??
+                hasChanges = viewState.storedProduct?.hasImageChanges(viewState.product) ?: false
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -290,7 +300,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         width: Float? = null,
         height: Float? = null,
         weight: Float? = null,
-        shippingClass: String? = null
+        shippingClass: String? = null,
+        // TODO: images
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -482,6 +493,18 @@ class ProductDetailViewModel @AssistedInject constructor(
             val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
+    }
+
+    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
+            return
+        }
+        if (ProductImagesService.isBusy()) {
+            triggerEvent(ShowSnackbar(string.product_image_service_busy))
+            return
+        }
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
     }
 
     private fun checkUploads() {

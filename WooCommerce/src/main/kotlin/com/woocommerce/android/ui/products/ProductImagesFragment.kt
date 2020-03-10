@@ -34,13 +34,26 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_images.*
 
 class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
+    companion object {
+        private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
+    }
+
     private var imageSourceDialog: AlertDialog? = null
+    private var capturedPhotoUri: Uri? = null
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
+        savedInstanceState?.let { bundle ->
+            capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
+        }
         return inflater.inflate(R.layout.fragment_product_images, container, false)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -99,14 +112,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 imageGallery.setPlaceholderImageUris(it)
             }
         }
-
-        viewModel.chooseProductImage.observe(viewLifecycleOwner, Observer {
-            chooseProductImage()
-        })
-
-        viewModel.captureProductImage.observe(viewLifecycleOwner, Observer {
-            captureProductImage()
-        })
     }
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
@@ -129,10 +134,10 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
                 .also {
                     it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
-                        viewModel.onChooseImageClicked()
+                        chooseProductImage()
                     }
                     it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
-                        viewModel.onCaptureImageClicked()
+                        captureProductImage()
                     }
                 }
 
@@ -202,7 +207,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 }
                 RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
                     if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
-                        viewModel.loadProduct()
+                        // TODO viewModel.loadProduct()
                     }
                 }
             }
