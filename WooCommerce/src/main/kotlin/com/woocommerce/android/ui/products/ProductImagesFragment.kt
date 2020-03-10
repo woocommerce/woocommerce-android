@@ -8,11 +8,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
@@ -20,50 +21,45 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_images.*
-import javax.inject.Inject
 
-class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
-    companion object {
-        private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
-    }
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
-    private val viewModel: ProductImagesViewModel by viewModels { viewModelFactory }
+class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
     private var imageSourceDialog: AlertDialog? = null
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
-    private var capturedPhotoUri: Uri? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        savedInstanceState?.let { bundle ->
-            capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
-        }
         return inflater.inflate(R.layout.fragment_product_images, container, false)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                viewModel.onDoneButtonClicked(ExitImages(shouldShowDiscardDialog = false))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return true
     }
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
     }
 
     override fun onPause() {
@@ -78,25 +74,31 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViewModel()
+        setupObservers(viewModel)
         addImageButton.setOnClickListener {
             showImageSourceDialog()
         }
     }
 
-    private fun initializeViewModel() {
-        setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
-    }
-
-    private fun setupObservers(viewModel: ProductImagesViewModel) {
-        viewModel.product.observe(viewLifecycleOwner, Observer {
-            imageGallery.showProductImages(it, this)
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ExitImages -> findNavController().navigateUp()
+                else -> event.isHandled = false
+            }
         })
 
-        viewModel.showSnackbarMessage.observe(viewLifecycleOwner, Observer {
-            uiMessageResolver.showSnack(it)
-        })
+        viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.product?.takeIfNotEqualTo(old?.product) {
+                imageGallery.showProductImages(new.product, this)
+            }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) {
+                showUpdateProductAction(it)
+            }
+            new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
+                imageGallery.setPlaceholderImageUris(it)
+            }
+        }
 
         viewModel.chooseProductImage.observe(viewLifecycleOwner, Observer {
             chooseProductImage()
@@ -105,21 +107,13 @@ class ProductImagesFragment : BaseFragment(), OnGalleryImageClickListener {
         viewModel.captureProductImage.observe(viewLifecycleOwner, Observer {
             captureProductImage()
         })
-
-        viewModel.uploadingImageUris.observe(viewLifecycleOwner, Observer {
-            imageGallery.setPlaceholderImageUris(it)
-        })
-
-        viewModel.exit.observe(viewLifecycleOwner, Observer {
-            activity?.onBackPressed()
-        })
     }
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewModel.product.value?.let { product ->
+        viewModel.getProduct().product?.let { product ->
             ImageViewerActivity.showProductImages(
                     this,
                     product,

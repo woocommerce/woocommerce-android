@@ -20,6 +20,7 @@ import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -396,6 +397,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                     )
                 }
             }
+            // discard product images screen changes
+            is ExitImages -> {
+                currentProduct?.let {
+                    val product = viewState.product?.copy(
+                            images = it.images
+                    )
+                    viewState = viewState.copy(
+                            product = product,
+                            cachedProduct = product
+                    )
+                }
+            }
         }
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
@@ -614,6 +627,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
@@ -679,6 +693,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isLoadingProgressShown: Boolean = false,
         val isLoadingMoreProgressShown: Boolean = false,
         val shippingClassList: List<ShippingClass>? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductImagesViewState(
+        val capturedPhotoUri: Uri? = null
     ) : Parcelable
 
     @AssistedInject.Factory
