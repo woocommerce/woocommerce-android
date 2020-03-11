@@ -77,14 +77,14 @@ class TodayWidgetListViewModelTest : BaseUnitTest() {
         whenever(widgetRepository.getTodayVisitorStats()).thenReturn(visitors.toString())
         whenever(currencyFormatter.formatCurrencyRounded(any(), any())).thenReturn(revenueWithCurrency)
 
-        viewModel.onDataSetChanged { _, _ -> }
+        viewModel.onDataSetChanged { }
 
         // verify if the widget data size is 3. The current day stats widget should include;
         // revenue, order count, visitor count in that order
         assertThat(viewModel.data).hasSize(3)
-        assertListItem(viewModel.data[0], revenueKey, revenueWithCurrency)
+        assertListItem(viewModel.data[0], visitorsKey, visitors.toString())
+        assertListItem(viewModel.data[2], revenueKey, revenueWithCurrency)
         assertListItem(viewModel.data[1], ordersKey, orders.toString())
-        assertListItem(viewModel.data[2], visitorsKey, visitors.toString())
     }
 
     @Test
@@ -92,27 +92,13 @@ class TodayWidgetListViewModelTest : BaseUnitTest() {
         whenever(widgetRepository.userIsLoggedIn()).thenReturn(false)
 
         var onError: Int? = null
-        var onErrorId: Int? = null
-        viewModel.onDataSetChanged { appWidgetId, errorId -> onError = appWidgetId; onErrorId = errorId }
+        viewModel.onDataSetChanged { appWidgetId -> onError = appWidgetId }
 
         assertThat(onError).isEqualTo(appWidgetId)
-        assertThat(onErrorId).isEqualTo(R.string.stats_widget_log_in_message)
-    }
-
-    @Test
-    fun `shows error when v4 stats not available`() {
-        whenever(appPrefsWrapper.isUsingV4Api).thenReturn(false)
-
-        var onError: Int? = null
-        var onErrorId: Int? = null
-        viewModel.onDataSetChanged { appWidgetId, errorId -> onError = appWidgetId; onErrorId = errorId }
-
-        assertThat(onError).isEqualTo(appWidgetId)
-        assertThat(onErrorId).isEqualTo(R.string.stats_widget_availability_message)
     }
 
     private fun assertListItem(listItem: TodayWidgetListItem, key: String, value: String) {
-        assertThat(listItem.layout).isEqualTo(R.layout.stats_widget_list)
+        assertThat(listItem.layout).isEqualTo(R.layout.stats_widget_list_item)
         assertThat(listItem.localSiteId).isEqualTo(siteModel.siteId)
         assertThat(listItem.key).isEqualTo(key)
         assertThat(listItem.value).isEqualTo(value)

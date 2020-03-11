@@ -14,6 +14,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.widgets.WidgetUpdater.StatsWidgetUpdaters
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -52,6 +53,7 @@ class MyStorePresenterTest {
     private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val statsWidgetUpdaters: StatsWidgetUpdaters = mock()
 
     private lateinit var presenter: MyStorePresenter
 
@@ -60,7 +62,9 @@ class MyStorePresenterTest {
     @Before
     fun setup() {
         presenter = spy(MyStorePresenter(
-                dispatcher, wooCommerceStore, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
+                dispatcher, wooCommerceStore, wcStatsStore,
+                wcOrderStore, selectedSite, networkStatus, statsWidgetUpdaters
+        ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
@@ -70,14 +74,14 @@ class MyStorePresenterTest {
     @Test
     fun `Requests revenue stats data correctly`() {
         presenter.takeView(myStoreView)
-        presenter.loadStats(StatsGranularity.DAYS)
+        presenter.loadStats(DAYS)
 
         // note that we expect two dispatches because there's one to get stats and another to get visitors
         verify(dispatcher, times(2)).dispatch(actionCaptor.capture())
         assertEquals(FETCH_REVENUE_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchRevenueStatsPayload
-        assertEquals(StatsGranularity.DAYS, payload.granularity)
+        assertEquals(DAYS, payload.granularity)
     }
 
     @Test
@@ -86,12 +90,12 @@ class MyStorePresenterTest {
 
         // Simulate OnChanged event from FluxC
         val onChanged = OnWCRevenueStatsChanged(
-                1, StatsGranularity.DAYS, "2019-07-30", "2019-07-30"
+                1, DAYS, "2019-07-30", "2019-07-30"
         )
         onChanged.causeOfChange = FETCH_REVENUE_STATS
         presenter.onWCRevenueStatsChanged(onChanged)
 
-        verify(myStoreView).showStats(anyOrNull(), eq(StatsGranularity.DAYS))
+        verify(myStoreView).showStats(anyOrNull(), eq(DAYS))
     }
 
     @Test
@@ -104,7 +108,7 @@ class MyStorePresenterTest {
             error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
         }
         presenter.onWCRevenueStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showStatsError(StatsGranularity.DAYS)
+        verify(myStoreView, times(1)).showStatsError(DAYS)
     }
 
     @Test
@@ -179,12 +183,12 @@ class MyStorePresenterTest {
     fun `Requests top earners stats data correctly - forced`() {
         presenter.takeView(myStoreView)
 
-        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
+        presenter.loadTopEarnerStats(DAYS, forced = true)
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
         assertEquals(FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
-        assertEquals(StatsGranularity.DAYS, payload.granularity)
+        assertEquals(DAYS, payload.granularity)
         assertTrue(payload.forced)
     }
 
@@ -192,12 +196,12 @@ class MyStorePresenterTest {
     fun `Requests top earners stats data correctly - not forced`() {
         presenter.takeView(myStoreView)
 
-        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = false)
+        presenter.loadTopEarnerStats(DAYS, forced = false)
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
         assertEquals(FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
-        assertEquals(StatsGranularity.DAYS, payload.granularity)
+        assertEquals(DAYS, payload.granularity)
     }
 
     @Test
@@ -206,21 +210,21 @@ class MyStorePresenterTest {
 
         val topEarners = ArrayList<WCTopEarnerModel>()
         topEarners.add(WCTopEarnerModel())
-        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(topEarners, StatsGranularity.DAYS).apply {
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(topEarners, DAYS).apply {
             causeOfChange = FETCH_TOP_EARNERS_STATS
         })
-        verify(myStoreView, times(1)).showTopEarners(topEarners, StatsGranularity.DAYS)
+        verify(myStoreView, times(1)).showTopEarners(topEarners, DAYS)
     }
 
     @Test
     fun `Handles FETCH_TOP_EARNERS_STATS error event correctly`() {
         presenter.takeView(myStoreView)
 
-        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), DAYS).apply {
             causeOfChange = FETCH_TOP_EARNERS_STATS
             error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
         })
-        verify(myStoreView, times(1)).showTopEarnersError(StatsGranularity.DAYS)
+        verify(myStoreView, times(1)).showTopEarnersError(DAYS)
     }
 
     @Test
@@ -241,33 +245,33 @@ class MyStorePresenterTest {
     fun `Handles FETCH_NEW_VISITOR_STATS event correctly`() {
         presenter.takeView(myStoreView)
 
-        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        val onChanged = OnWCStatsChanged(1, granularity = DAYS)
         onChanged.causeOfChange = FETCH_NEW_VISITOR_STATS
 
         presenter.onWCStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showVisitorStats(mapOf(), StatsGranularity.DAYS)
+        verify(myStoreView, times(1)).showVisitorStats(mapOf(), DAYS)
     }
 
     @Test
     fun `Handles FETCH_NEW_VISITOR_STATS error event correctly`() {
         presenter.takeView(myStoreView)
 
-        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        val onChanged = OnWCStatsChanged(1, granularity = DAYS)
         onChanged.causeOfChange = FETCH_NEW_VISITOR_STATS
         onChanged.error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
 
         presenter.onWCStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showVisitorStatsError(StatsGranularity.DAYS)
+        verify(myStoreView, times(1)).showVisitorStatsError(DAYS)
     }
 
     @Test
     fun `Show and hide stats skeleton correctly`() {
         presenter.takeView(myStoreView)
-        presenter.loadStats(StatsGranularity.DAYS, forced = true)
+        presenter.loadStats(DAYS, forced = true)
         verify(myStoreView, times(1)).showChartSkeleton(true)
 
         val onChanged = OnWCRevenueStatsChanged(
-                1, granularity = StatsGranularity.DAYS, startDate = "2019-07-30", endDate = "2019-07-30"
+                1, granularity = DAYS, startDate = "2019-07-30", endDate = "2019-07-30"
         )
         onChanged.causeOfChange = FETCH_REVENUE_STATS
         presenter.onWCRevenueStatsChanged(onChanged)
@@ -277,10 +281,10 @@ class MyStorePresenterTest {
     @Test
     fun `Show and hide top earners skeleton correctly`() {
         presenter.takeView(myStoreView)
-        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
+        presenter.loadTopEarnerStats(DAYS, forced = true)
         verify(myStoreView, times(1)).showTopEarnersSkeleton(true)
 
-        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), DAYS).apply {
             causeOfChange = FETCH_TOP_EARNERS_STATS
         })
         verify(myStoreView, times(1)).showTopEarnersSkeleton(false)

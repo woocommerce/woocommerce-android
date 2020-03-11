@@ -26,11 +26,11 @@ class TodayWidgetListViewModel @Inject constructor(
         this.appWidgetId = appWidgetId
     }
 
-    fun onDataSetChanged(onError: (appWidgetId: Int, errorId: Int) -> Unit) {
+    fun onDataSetChanged(onError: (appWidgetId: Int) -> Unit) {
         // currently the stats widget data can only be fetched if the user is logged in. If user is not
         // logged in, display an error message in the widget
         if (!repository.userIsLoggedIn()) {
-            appWidgetId?.let { onError(it, string.stats_widget_log_in_message) }
+            appWidgetId?.let { onError(it) }
             return
         }
 
@@ -44,7 +44,7 @@ class TodayWidgetListViewModel @Inject constructor(
         // The v4 stats API is only available if user has the WC-Admin plugin or uses a WooCommerce version >= 4.0.
         // If v4 stats is not available, an error message is displayed in the widget
         if (!appPrefsWrapper.isUsingV4Api) {
-            appWidgetId?.let { onError(it, string.stats_widget_availability_message) }
+            appWidgetId?.let { onError(it) }
             return
         }
 

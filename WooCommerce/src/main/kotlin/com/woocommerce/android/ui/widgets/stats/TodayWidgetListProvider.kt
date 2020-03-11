@@ -39,7 +39,7 @@ class TodayWidgetListProvider(val context: Context, intent: Intent) : RemoteView
      * will show up in lieu of the actual contents in the interim
      * */
     override fun onDataSetChanged() {
-        viewModel.onDataSetChanged { appWidgetId, _ ->
+        viewModel.onDataSetChanged { appWidgetId ->
             widgetUpdater.updateAppWidget(
                     context,
                     appWidgetId = appWidgetId
