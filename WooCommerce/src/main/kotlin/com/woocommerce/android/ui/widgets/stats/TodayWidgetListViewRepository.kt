@@ -158,7 +158,7 @@ class TodayWidgetListViewRepository @Inject constructor(
     fun getTodayVisitorStats(): String {
         val date = DateUtils.getDateTimeForSite(selectedSite.get(), "yyyy-MM-dd", DateUtils.getStartOfCurrentDay())
         val visitorStats = statsStore.getNewVisitorStats(
-                selectedSite.get(), StatsGranularity.DAYS, "1", date, false
+                selectedSite.get(), StatsGranularity.DAYS, "1", date, true
         )
         return visitorStats.values.sum().toString()
     }
