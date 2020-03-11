@@ -193,9 +193,6 @@
     <string name="stats_widget_log_in_message">Please log in to the Woocommerce app to add a widget.</string>
     <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
-    <string name="stats_widget_current_day_visitors">Today\'s\nvisitors</string>
-    <string name="stats_widget_current_day_orders">Today\'s\norders</string>
-    <string name="stats_widget_current_day_revenue">Today\'s\nrevenue</string>
     <!--
         Order List View
     -->

@@ -25,6 +25,7 @@
     <!-- Primary Blacks -->
     <color name="wc_black_light">#0A000000</color>
     <color name="wc_black_lighter">#99000000</color>
+    <color name="wc_black_dark">#61000000</color>
     <color name="wc_black_darker">#DE000000</color>
 
     <!-- Primary Greens -->

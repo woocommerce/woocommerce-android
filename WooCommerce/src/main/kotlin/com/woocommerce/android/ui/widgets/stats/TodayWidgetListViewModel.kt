@@ -76,19 +76,19 @@ class TodayWidgetListViewModel @Inject constructor(
                 TodayWidgetListItem(
                         layout,
                         localSiteId,
-                        resourceProvider.getString(string.stats_widget_current_day_visitors),
+                        resourceProvider.getString(string.dashboard_stats_visitors),
                         visitorCount
                 ),
                 TodayWidgetListItem(
                         layout,
                         localSiteId,
-                        resourceProvider.getString(string.stats_widget_current_day_orders),
+                        resourceProvider.getString(string.dashboard_stats_orders),
                         orderCount.toString()
                 ),
                 TodayWidgetListItem(
                         layout,
                         localSiteId,
-                        resourceProvider.getString(string.stats_widget_current_day_revenue),
+                        resourceProvider.getString(string.dashboard_stats_revenue),
                         formatCurrencyForDisplay(grossRevenue, currencyCode.orEmpty())
                 )
         )

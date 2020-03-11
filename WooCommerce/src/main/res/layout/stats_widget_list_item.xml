@@ -13,10 +13,11 @@
     <TextView
         android:id="@+id/list_item_title"
         style="@style/Woo.StatsWidget.Label"
+        android:layout_marginTop="@dimen/margin_medium"
         android:ellipsize="end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/stats_widget_current_day_visitors" />
+        tools:text="@string/dashboard_stats_visitors" />
 
     <TextView
         android:id="@+id/list_item_value"

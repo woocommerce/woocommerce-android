@@ -797,26 +797,30 @@
         <item name="android:background">@color/wc_black_light</item>
     </style>
     <style name="Woo.StatsWidget.Icon">
-        <item name="android:paddingTop">@dimen/default_padding</item>
-        <item name="android:paddingBottom">@dimen/default_padding</item>
-        <item name="android:layout_marginStart">@dimen/margin_large</item>
+        <item name="android:paddingStart">@dimen/margin_extra_extra_small</item>
+        <item name="android:paddingEnd">@dimen/margin_extra_extra_small</item>
+        <item name="android:layout_marginStart">@dimen/margin_medium</item>
+        <item name="android:layout_marginEnd">@dimen/margin_medium</item>
     </style>
     <style name="Woo.StatsWidget.Title" parent="Woo.TextAppearance">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:gravity">center_vertical</item>
     </style>
     <style name="Woo.StatsWidget.Label" parent="Woo.TextAppearance.Label">
+        <item name="android:textSize">@dimen/text_medium</item>
         <item name="android:textColor">@color/wc_black_darker</item>
-        <item name="android:layout_marginTop">@dimen/margin_medium</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
     </style>
+    <style name="Woo.StatsWidget.SubLabel" parent="Woo.TextAppearance.Small">
+        <item name="android:textColor">@color/wc_black_dark</item>
+    </style>
     <style name="Woo.StatsWidget.List">
-        <item name="android:background">@drawable/bg_rectangle_white_radius_4dp</item>
+        <item name="android:background">@drawable/bg_rectangle_white_radius_6dp</item>
     </style>
     <style name="Woo.StatsWidget.ListItem" parent="Woo.TextAppearance">
         <item name="android:textColor">@android:color/black</item>
-        <item name="android:textSize">@dimen/text_medium_extra_large</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
         <item name="android:layout_marginTop">@dimen/margin_medium</item>
         <item name="android:layout_marginBottom">@dimen/margin_medium</item>
         <item name="android:layout_gravity">center</item>
