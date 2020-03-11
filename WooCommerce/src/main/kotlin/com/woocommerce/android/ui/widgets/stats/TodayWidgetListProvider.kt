@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
+import com.woocommerce.android.R
 import javax.inject.Inject
 
 /**
@@ -58,7 +59,13 @@ class TodayWidgetListProvider(val context: Context, intent: Intent) : RemoteView
         val uiModel = viewModel.data[position]
         val rv = RemoteViews(context.packageName, uiModel.layout)
 
-        // TODO: Add logic to update the widget UI in a different commit
+        rv.setTextViewText(R.id.list_item_title, uiModel.key)
+        rv.setTextViewText(R.id.list_item_value, uiModel.value)
+
+        val intent = Intent()
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        rv.setOnClickFillInIntent(R.id.container, intent)
+
         return rv
     }
 }

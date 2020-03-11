@@ -112,8 +112,7 @@ class TodayWidgetListViewModelTest : BaseUnitTest() {
     }
 
     private fun assertListItem(listItem: TodayWidgetListItem, key: String, value: String) {
-        // TODO: Will be updated when the UI for the screen has been constructed
-        assertThat(listItem.layout).isEqualTo(0)
+        assertThat(listItem.layout).isEqualTo(R.layout.stats_widget_list)
         assertThat(listItem.localSiteId).isEqualTo(siteModel.siteId)
         assertThat(listItem.key).isEqualTo(key)
         assertThat(listItem.value).isEqualTo(value)

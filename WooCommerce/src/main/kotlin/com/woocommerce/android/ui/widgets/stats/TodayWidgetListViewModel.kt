@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.widgets.stats
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
@@ -64,8 +65,7 @@ class TodayWidgetListViewModel @Inject constructor(
         visitorCount: String,
         currencyCode: String?
     ): List<TodayWidgetListItem> {
-        // TODO: update layout resource file in a different commit
-        val layout = 0
+        val layout = R.layout.stats_widget_list
         val grossRevenue = revenueStats?.getTotal()?.totalSales ?: 0.0
         val orderCount = revenueStats?.getTotal()?.ordersCount ?: 0
         val localSiteId = selectedSite.get().siteId.toInt()
