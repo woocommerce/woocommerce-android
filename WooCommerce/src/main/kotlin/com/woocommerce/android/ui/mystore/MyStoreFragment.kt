@@ -355,7 +355,7 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
+        (activity?.findViewById<View>(R.id.app_bar_layout_main) as? AppBarLayout)?.let { appBar ->
             if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(
                         tabLayout,
@@ -366,7 +366,7 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
+        (activity?.findViewById<View>(R.id.app_bar_layout_main) as? AppBarLayout)?.removeView(tabLayout)
     }
 
     private fun isEmptyViewShowing() = empty_view.visibility == View.VISIBLE

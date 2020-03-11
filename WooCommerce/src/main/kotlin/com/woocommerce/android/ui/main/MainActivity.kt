@@ -59,6 +59,8 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.container_main_child.*
+import kotlinx.android.synthetic.main.container_main_top.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -122,7 +124,7 @@ class MainActivity : AppUpgradeActivity(),
         setContentView(R.layout.activity_main)
 
         // Set the toolbar
-        setSupportActionBar(toolbar as Toolbar)
+        setSupportActionBar(toolbar_main as Toolbar)
 
         presenter.takeView(this)
 
@@ -311,23 +313,31 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
+        val tabletModeEnabled = getActiveTopLevelFragment()?.let {
+            it.splitViewSupport
+        } ?: false
+
+        val containerCount = container_child.childCount
+
+        // show/hide the child fragment container depending on whether or not in tablet mode
+        container_child.visibility = if (isAtRoot) View.GONE else View.VISIBLE
+
         // show/hide the top level fragment container depending on whether we're at the root
         if (isAtRoot) {
-            container.visibility = View.VISIBLE
+            container_top.visibility = View.VISIBLE
         } else {
-            container.visibility = View.INVISIBLE
+            if (!tabletModeEnabled) {
+                container_top.visibility = View.GONE
+            }
         }
 
         // make sure the correct up icon appears
-        val showUpIcon: Boolean
         val showCrossIcon: Boolean
         val showBottomNav: Boolean
         if (isAtRoot) {
-            showUpIcon = false
             showCrossIcon = false
             showBottomNav = true
         } else {
-            showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
                 R.id.productShippingClassFragment,
@@ -355,14 +365,25 @@ class MainActivity : AppUpgradeActivity(),
                 }
             }
         }
-        supportActionBar?.let { actionBar ->
-            actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
-            @DrawableRes val icon = if (showCrossIcon) {
-                R.drawable.ic_gridicons_cross_white_24dp
-            } else {
-                R.drawable.ic_back_white_24dp
+
+        if (isAtRoot) {
+            setSupportActionBar(toolbar_main as Toolbar)
+            invalidateOptionsMenu()
+            supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(false)
             }
-            actionBar.setHomeAsUpIndicator(icon)
+        } else {
+            setSupportActionBar(toolbar_child as Toolbar)
+            invalidateOptionsMenu()
+            supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(true)
+                @DrawableRes val icon = if (showCrossIcon) {
+                    R.drawable.ic_gridicons_cross_white_24dp
+                } else {
+                    R.drawable.ic_back_white_24dp
+                }
+                actionBar.setHomeAsUpIndicator(icon)
+            }
         }
 
         if (showBottomNav) {

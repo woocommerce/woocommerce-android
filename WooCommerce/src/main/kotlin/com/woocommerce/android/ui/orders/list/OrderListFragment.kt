@@ -38,9 +38,11 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.isTabletMode
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.container_main_top.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.*
@@ -118,6 +120,14 @@ class OrderListFragment : TopLevelFragment(),
     private val tabLayout: TabLayout by lazy {
         TabLayout(requireContext(), null, R.attr.tabStyle)
     }
+
+    override var splitViewSupport: Boolean
+        get() {
+            return context?.let {
+                isTabletMode(it)
+            } ?: false
+        }
+        set(value) {}
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -457,7 +467,7 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun openOrderDetail(remoteOrderId: Long) {
         showOptionsMenu(false)
-        removeTabLayoutFromAppBar(tabLayout)
+//        removeTabLayoutFromAppBar(tabLayout)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }
 
@@ -757,7 +767,7 @@ class OrderListFragment : TopLevelFragment(),
     // endregion
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
+        (activity?.findViewById<View>(R.id.app_bar_layout_main) as? AppBarLayout)?.let { appBar ->
             if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(tabLayout)
             }
@@ -765,6 +775,6 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
+        (activity?.findViewById<View>(R.id.app_bar_layout_main) as? AppBarLayout)?.removeView(tabLayout)
     }
 }
