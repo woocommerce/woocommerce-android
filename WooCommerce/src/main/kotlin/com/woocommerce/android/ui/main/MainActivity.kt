@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -117,6 +119,11 @@ class MainActivity : AppUpgradeActivity(),
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
+
+    override fun setTitle(title: CharSequence?) {
+        val toolbar = if (isAtNavigationRoot()) toolbar_main else toolbar_child
+        (toolbar as Toolbar).setTitle(title)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -367,14 +374,12 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         if (isAtRoot) {
-            setSupportActionBar(toolbar_main as Toolbar)
-            invalidateOptionsMenu()
+            setSupportActionBar(toolbar_main as MaterialToolbar)
             supportActionBar?.let { actionBar ->
                 actionBar.setDisplayHomeAsUpEnabled(false)
             }
         } else {
-            setSupportActionBar(toolbar_child as Toolbar)
-            invalidateOptionsMenu()
+            setSupportActionBar(toolbar_child as MaterialToolbar)
             supportActionBar?.let { actionBar ->
                 actionBar.setDisplayHomeAsUpEnabled(true)
                 @DrawableRes val icon = if (showCrossIcon) {

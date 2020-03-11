@@ -139,7 +139,9 @@
         android:id="@+id/action_global_orderDetailFragment"
         app:destination="@id/orderDetailFragment"
         app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:popExitAnim="@anim/activity_fade_out"
+        app:popUpTo="@id/orderDetailFragment"
+        app:popUpToInclusive="true" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
