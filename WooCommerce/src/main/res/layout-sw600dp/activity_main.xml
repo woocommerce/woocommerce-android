@@ -7,23 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!-- container for top level fragments -->
         <com.woocommerce.android.ui.base.MainContainerTop
             android:id="@+id/container_top"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
         <!-- container for child fragments in the nav graph -->
         <com.woocommerce.android.ui.base.MainContainerChild
             android:id="@+id/container_child"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </FrameLayout>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:visibility="gone"/>
+    </LinearLayout>
 
     <com.woocommerce.android.ui.network.OfflineStatusBarView
         android:id="@+id/offline_bar"
