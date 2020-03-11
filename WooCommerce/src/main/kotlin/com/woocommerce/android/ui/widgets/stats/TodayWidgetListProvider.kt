@@ -6,6 +6,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.R
+import com.woocommerce.android.WooCommerce
 import javax.inject.Inject
 
 /**
@@ -13,7 +14,12 @@ import javax.inject.Inject
  */
 class TodayWidgetListProvider(val context: Context, intent: Intent) : RemoteViewsFactory {
     @Inject lateinit var viewModel: TodayWidgetListViewModel
+    @Inject lateinit var widgetUpdater: TodayWidgetUpdater
     private val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
+
+    init {
+        (context.applicationContext as WooCommerce).component.inject(this)
+    }
 
     override fun onCreate() {
         viewModel.start(appWidgetId)
@@ -33,8 +39,11 @@ class TodayWidgetListProvider(val context: Context, intent: Intent) : RemoteView
      * will show up in lieu of the actual contents in the interim
      * */
     override fun onDataSetChanged() {
-        viewModel.onDataSetChanged { appWidgetId, errorId ->
-            // TODO: update widget errors in a different commit
+        viewModel.onDataSetChanged { appWidgetId, _ ->
+            widgetUpdater.updateAppWidget(
+                    context,
+                    appWidgetId = appWidgetId
+            )
         }
     }
 
