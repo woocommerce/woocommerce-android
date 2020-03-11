@@ -794,7 +794,7 @@
     <style name="Woo.StatsWidget.Header">
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:background">@color/wc_black_light</item>
     </style>
     <style name="Woo.StatsWidget.Icon">
         <item name="android:paddingTop">@dimen/default_padding</item>
@@ -804,7 +804,6 @@
     <style name="Woo.StatsWidget.Title" parent="Woo.TextAppearance">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:layout_marginStart">@dimen/margin_large</item>
     </style>
     <style name="Woo.StatsWidget.Label" parent="Woo.TextAppearance.Label">
         <item name="android:textColor">@color/wc_black_darker</item>
@@ -813,7 +812,7 @@
         <item name="android:gravity">center</item>
     </style>
     <style name="Woo.StatsWidget.List">
-        <item name="background">@drawable/bg_rectangle_white_radius_4dp</item>
+        <item name="android:background">@drawable/bg_rectangle_white_radius_4dp</item>
     </style>
     <style name="Woo.StatsWidget.ListItem" parent="Woo.TextAppearance">
         <item name="android:textColor">@android:color/black</item>
