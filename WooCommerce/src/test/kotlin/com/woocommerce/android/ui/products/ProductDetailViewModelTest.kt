@@ -55,12 +55,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             sizeWithUnits = "1 x 2 x 3 cm",
             priceWithCurrency = "CZK20.00",
             salePriceWithCurrency = "CZK10.00",
-            regularPriceWithCurrency = "CZK30.00",
-            length = 1.0f,
-            width = 2.0f,
-            height = 3.0f,
-            weight = 10.0f,
-            shippingClass = ""
+            regularPriceWithCurrency = "CZK30.00"
     )
 
     @Before

@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
+import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
@@ -19,13 +21,16 @@ abstract class ProductDetailModule {
         fun provideDefaultArgs(fragment: ProductDetailFragment): Bundle? {
             return fragment.arguments
         }
+
+        @JvmStatic
+        @Provides
+        fun provideSavedStateRegistryOwner(fragment: ProductDetailFragment): SavedStateRegistryOwner {
+            return fragment.findNavController().getBackStackEntry(R.id.nav_graph_products)
+        }
     }
 
     @Binds
     @IntoMap
     @ViewModelKey(ProductDetailViewModel::class)
     abstract fun bindFactory(factory: ProductDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
-
-    @Binds
-    abstract fun bindSavedStateRegistryOwner(fragment: ProductDetailFragment): SavedStateRegistryOwner
 }

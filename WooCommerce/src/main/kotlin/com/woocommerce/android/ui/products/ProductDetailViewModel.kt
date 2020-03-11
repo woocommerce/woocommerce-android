@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import android.view.View
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -18,13 +19,14 @@ import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShareProduct
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImageChooser
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailEvent.ShowImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -45,9 +47,9 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Date
-import kotlin.math.roundToInt
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
@@ -62,21 +64,33 @@ class ProductDetailViewModel @AssistedInject constructor(
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
+        private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
     private var remoteProductId = 0L
-    final var parameters: Parameters? = null
-        private set
+
+    /**
+     * Fetch product related properties (currency, product dimensions) for the site since we use this
+     * variable in many different places in the product detail view such as pricing, shipping.
+     */
+    final val parameters: Parameters by lazy {
+        val params = savedState.get<Parameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
+        savedState[KEY_PRODUCT_PARAMETERS] = params
+        params
+    }
 
     private var skuVerificationJob: Job? = null
     private var shippingClassLoadJob: Job? = null
 
+    // view state for the product detail screen
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
     private var viewState by productDetailViewStateData
 
+    // view state for the product inventory screen
     final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
 
+    // view state for the product pricing screen
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
@@ -103,34 +117,60 @@ class ProductDetailViewModel @AssistedInject constructor(
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                 ?: DEFAULT_DECIMAL_PRECISION
         productPricingViewState = productPricingViewState.copy(
-                currency = parameters?.currencyCode,
+                currency = parameters.currencyCode,
                 decimals = decimals,
                 taxClassList = productRepository.getTaxClassesForSite()
         )
     }
 
+    /**
+     * Called when the Share menu button is clicked in Product detail screen
+     */
     fun onShareButtonClicked() {
         viewState.product?.let {
-            triggerEvent(ShareProduct(it))
+            triggerEvent(ShareProduct(it.permalink, it.name))
         }
     }
 
-    fun onImageGalleryClicked(image: Product.Image) {
+    /**
+     * Called when an existing image is selected in Product detail screen
+     */
+    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.product?.let {
-            triggerEvent(ShowImages(it, image))
+            triggerEvent(ViewProductImages(it, image, selectedImage))
         }
     }
 
+    /**
+     * Called when the add image icon is clicked in Product detail screen
+     */
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        triggerEvent(ShowImageChooser)
+        viewState.product?.let {
+            triggerEvent(ViewProductImageChooser(it.remoteId))
+        }
     }
 
+    /**
+     * Called when the any of the editable sections (such as pricing, shipping, inventory)
+     * is selected in Product detail screen
+     */
+    fun onEditProductCardClicked(target: ProductNavigationTarget) {
+        triggerEvent(target)
+    }
+
+    /**
+     * Called when the DONE menu button is clicked in all of the product sub detail screen
+     */
     fun onDoneButtonClicked(event: ProductExitEvent) {
         triggerEvent(event)
     }
 
+    /**
+     * Called when the UPDATE menu button is clicked in the product detail screen.
+     * Displays a progress dialog and updates the product
+     */
     fun onUpdateButtonClicked() {
         viewState.product?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -153,7 +193,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * viewState.product != viewState.storedProduct
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.product?.let { viewState.storedProduct?.isSameProduct(it) == false }
+        val isProductDetailUpdated = viewState.isProductUpdated
         val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
@@ -168,7 +208,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                         // If user in Product detail screen, exit product detail,
                         // otherwise, redirect to Product Detail screen
                         if (event is ExitProductDetail) {
-                            triggerEvent(ExitProductDetail(false))
+                            triggerEvent(ExitProduct)
                         } else {
                             triggerEvent(Exit)
                         }
@@ -180,6 +220,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Called when user modifies the SKU field. Currently checks if the entered sku is available
+     * in the local db. Only if it is not available, the API verification call is initiated.
+     */
     fun onSkuChanged(sku: String) {
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
@@ -252,12 +296,14 @@ class ProductDetailViewModel @AssistedInject constructor(
                     weight = weight ?: product.weight,
                     shippingClass = shippingClass ?: product.shippingClass,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    dateOnSaleToGmt = if (isSaleScheduled == true) {
+                    dateOnSaleToGmt = if (isSaleScheduled == true ||
+                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         dateOnSaleToGmt ?: product.dateOnSaleToGmt
-                    } else product.dateOnSaleToGmt,
-                    dateOnSaleFromGmt = if (isSaleScheduled == true) {
+                    } else viewState.storedProduct?.dateOnSaleToGmt,
+                    dateOnSaleFromGmt = if (isSaleScheduled == true ||
+                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else product.dateOnSaleFromGmt
+                    } else viewState.storedProduct?.dateOnSaleFromGmt
             )
             viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
 
@@ -271,11 +317,19 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
+    /**
+     * Called when discard is clicked on any of the product screens.
+     * Resets the changes edited by the user based on [event].
+     */
     private fun discardEditChanges(event: ProductExitEvent) {
+        val currentProduct = if (event is ExitProductDetail) {
+            viewState.storedProduct
+        } else viewState.cachedProduct
+
         when (event) {
             // discard inventory screen changes
             is ExitInventory -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             sku = it.sku,
                             manageStock = it.manageStock,
@@ -292,7 +346,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             // discard pricing screen changes
             is ExitPricing -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             dateOnSaleFromGmt = it.dateOnSaleFromGmt,
                             dateOnSaleToGmt = it.dateOnSaleToGmt,
@@ -310,7 +364,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             // discard shipping screen changes
             is ExitShipping -> {
-                viewState.cachedProduct?.let {
+                currentProduct?.let {
                     val product = viewState.product?.copy(
                             weight = it.weight,
                             height = it.height,
@@ -326,12 +380,12 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         }
 
+        // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
+        // will only be displayed if there are changes made to the Product model.
         updateProductEditAction()
     }
 
     private fun loadProduct(remoteProductId: Long) {
-        loadParameters()
-
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
@@ -357,14 +411,17 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadParameters() {
+    /**
+     * Loads the product dependencies for a site such as dimensions, currency or timezone
+     */
+    private fun loadParameters(): Parameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
         val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
 
-        parameters = Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
+        return Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
@@ -384,6 +441,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
 
+    /**
+     * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
+     * when there are changes made to the [Product] model and this can be verified by comparing
+     * the viewState.product with viewState.storedProduct model.
+     */
     private fun updateProductEditAction() {
         viewState.product?.let {
             val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
@@ -396,6 +458,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(uploadingImageUris = uris)
     }
 
+    /**
+     * Updates the product to the backend only if network is connected.
+     * Otherwise, an offline snackbar is displayed.
+     */
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
@@ -422,7 +488,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Load & fetch the shipping classed for the current site, optionally performing a "load more" to
+     * Load & fetch the shipping classes for the current site, optionally performing a "load more" to
      * load the next page of shipping classes
      */
     fun loadShippingClasses(loadMore: Boolean = false) {
@@ -434,18 +500,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         waitForExistingShippingClassFetch()
 
         shippingClassLoadJob = launch {
-            if (loadMore) {
-                productShippingClassViewState = productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
+            productShippingClassViewState = if (loadMore) {
+                productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
             } else {
                 // get cached shipping classes and only show loading progress the list is empty, otherwise show
                 // them right away
                 val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
                 if (cachedShippingClasses.isEmpty()) {
-                    productShippingClassViewState =
-                            productShippingClassViewState.copy(isLoadingProgressShown = true)
+                    productShippingClassViewState.copy(isLoadingProgressShown = true)
                 } else {
-                    productShippingClassViewState =
-                            productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
+                    productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
                 }
             }
 
@@ -483,25 +547,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
         } ?: storedProduct
 
-        val weightWithUnits = if (updatedProduct.weight > 0) {
-            "${format(updatedProduct.weight)}${parameters?.weightUnit ?: ""}"
-        } else {
-            ""
-        }
-
-        val hasLength = updatedProduct.length > 0
-        val hasWidth = updatedProduct.width > 0
-        val hasHeight = updatedProduct.height > 0
-        val unit = parameters?.dimensionUnit ?: ""
-        val sizeWithUnits = if (hasLength && hasWidth && hasHeight) {
-            "${format(updatedProduct.length)} " +
-                    "x ${format(updatedProduct.width)} " +
-                    "x ${format(updatedProduct.height)} $unit"
-        } else if (hasWidth && hasHeight) {
-            "${format(updatedProduct.width)} x ${format(updatedProduct.height)} $unit"
-        } else {
-            ""
-        }.trim()
+        val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
+        val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
                 product = updatedProduct,
@@ -509,15 +556,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                 storedProduct = storedProduct,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
-                priceWithCurrency = formatCurrency(updatedProduct.price, parameters?.currencyCode),
-                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters?.currencyCode),
-                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters?.currencyCode),
-                gmtOffset = parameters?.gmtOffset ?: 0f,
-                length = updatedProduct.length,
-                width = updatedProduct.width,
-                height = updatedProduct.height,
-                weight = updatedProduct.weight,
-                shippingClass = updatedProduct.shippingClass
+                priceWithCurrency = formatCurrency(updatedProduct.price, parameters.currencyCode),
+                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters.currencyCode),
+                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
+                gmtOffset = parameters.gmtOffset
         )
     }
 
@@ -525,15 +567,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         return currencyCode?.let {
             currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
         } ?: amount.toString()
-    }
-
-    private fun format(number: Float): String {
-        val int = number.roundToInt()
-        return if (number != int.toFloat()) {
-            number.toString()
-        } else {
-            int.toString()
-        }
     }
 
     /**
@@ -551,12 +584,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         checkUploads()
     }
 
-    sealed class ProductDetailEvent : Event() {
-        data class ShareProduct(val product: Product) : ProductDetailEvent()
-        data class ShowImages(val product: Product, val image: Product.Image) : ProductDetailEvent()
-        object ShowImageChooser : ProductDetailEvent()
-    }
-
+    /**
+     * Sealed class that handles the back navigation for the product detail screens while providing a common
+     * interface for managing them as a single type. Currently used in all the product sub detail screens when
+     * back is clicked or DONE is clicked.
+     *
+     * Add a new class here for each new product sub detail screen to handle back navigation.
+     */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -572,6 +606,27 @@ class ProductDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float
     ) : Parcelable
 
+    /**
+     * [product] is used for the UI. Any updates to the fields in the UI would update this model.
+     * [cachedProduct] is a copy of the [product] model before a change has been made to the [product] model.
+     * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
+     * This is read only and is not updated in any way. It is used in the product detail screen, to check
+     * if we need to display the UPDATE menu button (which is only displayed if there are changes made to
+     * any of the product fields).
+     *
+     * [isProductUpdated] is used to determine if there are any changes made to the product by comparing
+     * [product] and [storedProduct]. Currently used in the product detail screen to display or hide the UPDATE
+     * menu button.
+     *
+     * When the user first enters the product detail screen, the [product] , [storedProduct]  and [cachedProduct] 
+     * are the same. When a change is made to the product in the UI,
+     * 1. the [cachedProduct] is updated with the [product] model first, then
+     * 2. the [product] model is updated with whatever change has been made in the UI.
+     *
+     * The [cachedProduct] keeps track of the changes made to the [product] in order to discard the changes
+     * when necessary.
+     *
+     */
     @Parcelize
     data class ProductDetailViewState(
         val product: Product? = null,
@@ -586,12 +641,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f,
-        val length: Float? = null,
-        val width: Float? = null,
-        val height: Float? = null,
-        val weight: Float? = null,
-        val shippingClass: String? = null
+        val gmtOffset: Float = 0f
     ) : Parcelable
 
     @Parcelize
