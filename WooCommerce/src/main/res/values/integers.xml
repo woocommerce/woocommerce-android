@@ -9,4 +9,7 @@
 
     <!-- max # of chars that can be enetered in dimension fields (ex: length, height, width) -->
     <integer name="maxlength_dimension_edittext">8</integer>
+
+    <!-- Specifies how often, in milliseconds, the stats widget should be updated -->
+    <integer name="stats_widget_update_period">600000</integer>
 </resources>

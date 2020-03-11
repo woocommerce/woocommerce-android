@@ -192,4 +192,6 @@
     <dimen name="stats_widget_header_height">40dp</dimen>
     <dimen name="stats_widget_list_item_height">60dp</dimen>
     <dimen name="stats_widget_content_height">108dp</dimen>
+    <dimen name="stats_widget_min_width">250dp</dimen>
+    <dimen name="stats_widget_min_height">150dp</dimen>
 </resources>
