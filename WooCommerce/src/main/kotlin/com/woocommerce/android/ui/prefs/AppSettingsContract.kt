@@ -15,5 +15,6 @@ interface AppSettingsContract {
         fun finishLogout()
         fun confirmLogout()
         fun clearNotificationPreferences()
+        fun clearWidgetData()
     }
 }

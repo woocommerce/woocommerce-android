@@ -19,6 +19,7 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
+import com.woocommerce.android.ui.widgets.WidgetUpdater.StatsWidgetUpdaters
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -42,6 +43,7 @@ class AppSettingsActivity : AppCompatActivity(),
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var statsWidgetUpdaters: StatsWidgetUpdaters
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
@@ -181,5 +183,9 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun clearNotificationPreferences() {
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
+    }
+
+    override fun clearWidgetData() {
+        statsWidgetUpdaters.update(applicationContext)
     }
 }
