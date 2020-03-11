@@ -36,6 +36,11 @@ interface WidgetUpdater {
     ) {
         private val widgetUpdaters = listOf(todayWidgetUpdater)
 
+        /**
+         * Update method is called when we need to update all the widgets that are active.
+         * For instance, we would need to update all the active widgets when user logs out of the app
+         * since most of the data needed for the widget, requires authentication.
+         */
         fun update(context: Context) {
             widgetUpdaters.forEach {
                 val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -46,6 +51,10 @@ interface WidgetUpdater {
             }
         }
 
+        /**
+         * Method used to update the today widget when stats is refreshed OR
+         * another store is selected
+         */
         fun updateTodayWidget() {
             todayWidgetUpdater.update()
         }

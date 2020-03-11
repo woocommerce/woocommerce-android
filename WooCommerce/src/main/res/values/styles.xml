@@ -799,8 +799,8 @@
     <style name="Woo.StatsWidget.Icon">
         <item name="android:paddingStart">@dimen/margin_extra_extra_small</item>
         <item name="android:paddingEnd">@dimen/margin_extra_extra_small</item>
-        <item name="android:layout_marginStart">@dimen/margin_medium</item>
-        <item name="android:layout_marginEnd">@dimen/margin_medium</item>
+        <item name="android:layout_marginStart">@dimen/margin_medium_large</item>
+        <item name="android:layout_marginEnd">@dimen/margin_medium_large</item>
     </style>
     <style name="Woo.StatsWidget.Title" parent="Woo.TextAppearance">
         <item name="android:textColor">@android:color/black</item>
