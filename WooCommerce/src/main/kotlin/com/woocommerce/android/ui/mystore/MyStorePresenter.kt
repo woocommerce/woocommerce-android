@@ -11,6 +11,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
+import com.woocommerce.android.ui.widgets.WidgetUpdater.StatsWidgetUpdaters
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
@@ -44,7 +45,8 @@ class MyStorePresenter @Inject constructor(
     private val wcStatsStore: WCStatsStore,
     private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized!
     private val selectedSite: SelectedSite,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val statsWidgetUpdaters: StatsWidgetUpdaters // used to update stats widget
 ) : Presenter {
     companion object {
         private val TAG = MyStorePresenter::class.java
@@ -171,6 +173,7 @@ class MyStorePresenter @Inject constructor(
                 val revenueStatsModel = wcStatsStore.getRawRevenueStats(
                         selectedSite.get(), event.granularity, event.startDate!!, event.endDate!!
                 )
+                statsWidgetUpdaters.updateTodayWidget()
                 dashboardView?.showStats(revenueStatsModel, event.granularity)
             }
         }
@@ -190,6 +193,7 @@ class MyStorePresenter @Inject constructor(
                 val visitorStats = wcStatsStore.getNewVisitorStats(
                         selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
                 )
+                statsWidgetUpdaters.updateTodayWidget()
                 dashboardView?.showVisitorStats(visitorStats, event.granularity)
             }
         }
