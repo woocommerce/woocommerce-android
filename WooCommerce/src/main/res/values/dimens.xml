@@ -185,4 +185,11 @@
     -->
     <dimen name="image_border_size">1dp</dimen>
     <dimen name="image_border_radius">2dp</dimen>
+
+    <!--
+        Stats Widget
+    -->
+    <dimen name="stats_widget_header_height">40dp</dimen>
+    <dimen name="stats_widget_list_item_height">56dp</dimen>
+    <dimen name="stats_widget_content_height">108dp</dimen>
 </resources>

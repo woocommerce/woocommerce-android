@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_title_container"
+    style="@style/Woo.StatsWidget.Header"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/stats_widget_header_height"
+    android:orientation="horizontal"
+    tools:showIn="@layout/stats_widget_list"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/widget_app_icon"
+        style="@style/Woo.StatsWidget.Icon"
+        android:importantForAccessibility="no"
+        android:layout_width="@dimen/stats_widget_header_height"
+        android:layout_height="@dimen/stats_widget_header_height"
+        android:src="@mipmap/ic_launcher_round"
+        tools:src="@mipmap/ic_launcher_round"/>
+
+    <TextView
+        android:id="@+id/widget_title"
+        style="@style/Woo.StatsWidget.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/stats_widget_header_height"/>
+</LinearLayout>
