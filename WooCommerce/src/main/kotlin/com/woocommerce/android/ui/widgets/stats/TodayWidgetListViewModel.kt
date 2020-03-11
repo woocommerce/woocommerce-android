@@ -65,7 +65,7 @@ class TodayWidgetListViewModel @Inject constructor(
         visitorCount: String,
         currencyCode: String?
     ): List<TodayWidgetListItem> {
-        val layout = R.layout.stats_widget_list
+        val layout = R.layout.stats_widget_list_item
         val grossRevenue = revenueStats?.getTotal()?.totalSales ?: 0.0
         val orderCount = revenueStats?.getTotal()?.ordersCount ?: 0
         val localSiteId = selectedSite.get().siteId.toInt()
@@ -76,20 +76,20 @@ class TodayWidgetListViewModel @Inject constructor(
                 TodayWidgetListItem(
                         layout,
                         localSiteId,
-                        resourceProvider.getString(string.dashboard_stats_revenue),
-                        formatCurrencyForDisplay(grossRevenue, currencyCode.orEmpty())
+                        resourceProvider.getString(string.stats_widget_current_day_visitors),
+                        visitorCount
                 ),
                 TodayWidgetListItem(
                         layout,
                         localSiteId,
-                        resourceProvider.getString(string.dashboard_stats_orders),
+                        resourceProvider.getString(string.stats_widget_current_day_orders),
                         orderCount.toString()
                 ),
                 TodayWidgetListItem(
                         layout,
                         localSiteId,
-                        resourceProvider.getString(string.dashboard_stats_visitors),
-                        visitorCount
+                        resourceProvider.getString(string.stats_widget_current_day_revenue),
+                        formatCurrencyForDisplay(grossRevenue, currencyCode.orEmpty())
                 )
         )
     }
