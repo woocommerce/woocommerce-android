@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -60,6 +61,7 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import kotlinx.android.synthetic.main.activity_help.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.container_main_child.*
 import kotlinx.android.synthetic.main.container_main_top.*
@@ -123,6 +125,7 @@ class MainActivity : AppUpgradeActivity(),
     override fun setTitle(title: CharSequence?) {
         val toolbar = if (isAtNavigationRoot()) toolbar_main else toolbar_child
         (toolbar as Toolbar).setTitle(title)
+        super.setTitle(title)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,8 +133,16 @@ class MainActivity : AppUpgradeActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Set the toolbar
+        // Set the main toolbar
         setSupportActionBar(toolbar_main as Toolbar)
+
+        // Configure the child toolbar
+        with(toolbar_child as Toolbar) {
+            setTitle(StringUtils.EMPTY)
+            setOnMenuItemClickListener {
+                onOptionsItemSelected(it)
+            }
+        }
 
         presenter.takeView(this)
 
