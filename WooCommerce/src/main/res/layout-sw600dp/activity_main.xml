@@ -31,6 +31,12 @@
                 android:layout_weight="1"
                 android:orientation="vertical"/>
 
+            <!-- vertical divider to separate the two view containers -->
+            <View
+                android:layout_width="@dimen/minor_10"
+                android:layout_height="match_parent"
+                android:background="@color/list_divider"/>
+
             <!-- container for child fragments in the nav graph -->
             <com.woocommerce.android.ui.base.MainContainerChild
                 android:id="@+id/container_child"
