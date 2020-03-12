@@ -7,6 +7,7 @@
  
 3.7
 -----
+* Added support to display negative revenue in our new stats screen!
  
 3.6
 -----
