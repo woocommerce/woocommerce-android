@@ -375,9 +375,6 @@ class MainActivity : AppUpgradeActivity(),
 
         if (isAtRoot) {
             setSupportActionBar(toolbar_main as MaterialToolbar)
-            supportActionBar?.let { actionBar ->
-                actionBar.setDisplayHomeAsUpEnabled(false)
-            }
         } else {
             setSupportActionBar(toolbar_child as MaterialToolbar)
             supportActionBar?.let { actionBar ->

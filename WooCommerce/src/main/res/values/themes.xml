@@ -4,7 +4,7 @@
     <!-- Final top-level theme -->
     <style name="Theme.Woo.DayNight" parent="Theme.Woo"/>
 
-    <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Colors -->
         <item name="colorPrimary">@color/woo_purple_60</item>
         <item name="colorPrimarySurface">@color/color_primary_surface</item>
