@@ -203,7 +203,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 }
                 RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
                     if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
-                        viewModel.reloadProduct()
+                        viewModel.reloadProductImages()
                     }
                 }
             }

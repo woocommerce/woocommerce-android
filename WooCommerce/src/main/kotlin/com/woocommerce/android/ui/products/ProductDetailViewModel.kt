@@ -455,8 +455,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun reloadProduct() {
-        loadProduct(remoteProductId)
+    fun reloadProductImages() {
+        val images = productRepository.getProduct(remoteProductId)?.images
+        viewState.cachedProduct?.images?.let {
+            // TODO
+        }
     }
 
     /**

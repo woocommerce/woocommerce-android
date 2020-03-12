@@ -1,6 +1,8 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
@@ -90,7 +92,6 @@ data class Product(
                 numVariations == product.numVariations &&
                 name.fastStripHtml() == product.name.fastStripHtml() &&
                 description == product.description &&
-                images == product.images &&
                 taxClass == product.taxClass &&
                 taxStatus == product.taxStatus &&
                 isSaleScheduled == product.isSaleScheduled &&
@@ -102,7 +103,8 @@ data class Product(
                 length == product.length &&
                 height == product.height &&
                 width == product.width &&
-                shippingClass == product.shippingClass
+                shippingClass == product.shippingClass &&
+                isSameImages(product.images)
     }
 
     /**
@@ -159,8 +161,24 @@ data class Product(
      */
     fun hasImageChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
-            images != it.images
+            !isSameImages(it.images)
         } ?: false
+    }
+
+    /**
+     * Compares this product's images with the passed list, returns true only if both lists contain
+     * the same images in the same order
+     */
+    private fun isSameImages(updatedImages: List<Image>): Boolean {
+        if (this.images.size != updatedImages.size) {
+            return false
+        }
+        for (i in images.indices) {
+            if (images[i].id != updatedImages[i].id) {
+                return false
+            }
+        }
+        return true
     }
 
     /**
@@ -194,7 +212,8 @@ data class Product(
                     width = updatedProduct.width,
                     height = updatedProduct.height,
                     weight = updatedProduct.weight,
-                    shippingClass = updatedProduct.shippingClass
+                    shippingClass = updatedProduct.shippingClass,
+                    images = updatedProduct.images
             )
         } ?: this.copy()
     }
@@ -233,6 +252,18 @@ data class Product(
 }
 
 fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
+    fun imagesToJson(): String {
+        val jsonArray = JsonArray()
+        for (image in images) {
+            jsonArray.add(JsonObject().also { json ->
+                json.addProperty("id", image.id)
+                json.addProperty("name", image.name)
+                json.addProperty("source", image.source)
+            })
+        }
+        return jsonArray.toString()
+    }
+
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
@@ -252,6 +283,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.shippingClass = shippingClass
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
+        it.images = imagesToJson()
         if (isSaleScheduled) {
             dateOnSaleFromGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
