@@ -1,0 +1,4 @@
+3.7 :
+- Les détails des commandes remboursées affichent les remboursements de produits et les remboursements d’expédition.
+- Les titres de produits n’affichent plus les étiquettes HTML.
+- Quelques incidents rares ont été résolus.

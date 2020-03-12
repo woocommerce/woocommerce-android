@@ -39,7 +39,7 @@
         app:layout_constraintEnd_toStartOf="@+id/refundItem_quantity"
         app:layout_constraintStart_toEndOf="@+id/refundItem_iconFrame"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Awesome Sauce" />
+        tools:text="Awesome Sauce. This is a very long title, let's see how it works" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/refundItem_description"

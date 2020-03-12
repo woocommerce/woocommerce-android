@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-22 00:54:04+0000
+Translation-Revision-Date: 2020-03-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_tax_status_shipping">Verzending</string>
+    <string name="product_tax_status_taxable">Belastbaar</string>
+    <string name="product_tax_status_none">Geen</string>
+    <string name="product_tax_class_standard">Standaardtarief</string>
+    <string name="product_tax_class">Belastinggroep</string>
+    <string name="product_tax_status">Belastingstatus</string>
+    <string name="product_tax_settings">Belastinginstellingen</string>
+    <string name="product_schedule_sale_to_label">Aan</string>
+    <string name="product_schedule_sale_from_label">Van</string>
+    <string name="product_schedule_sale_sublabel">Uitverkoop automatisch beginnen en beëindigen</string>
+    <string name="product_schedule_sale_label">Uitverkoop inplannen</string>
+    <string name="order_refunds_store_admin_link_text">in je winkelbeheer</string>
+    <string name="order_refunds_shipping_refund_notice">Je kunt verzend- en belastingkosten restitueren %s</string>
+    <string name="orders_empty_message_with_order_status_filter">Helaas kunnen we geen bestellingen voor \'%s\' vinden</string>
+    <string name="product_inventory_update_sku_error">SKU wordt al door een ander product gebruikt</string>
+    <string name="product_shipping_settings">Verzendinstellingen</string>
+    <string name="product_no_shipping_class">Geen verzendingsklasse</string>
+    <string name="product_dimensions">Afmetingen</string>
+    <string name="product_height">Hoogte</string>
+    <string name="product_width">Breedte</string>
+    <string name="product_length">Lengte</string>
+    <string name="order_refunds_refund_info_title">Gerestitueerde producten</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s via %2$s</string>
+    <string name="order_refunds_confirmation">Weet je zeker dat je restitutie wilt aanvragen? Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="orderdetail_refunded_products">Gerestitueerde producten</string>
+    <string name="refunds">Restituties</string>
+    <string name="sign_up">Meld je aan voor WordPress.com</string>
+    <string name="empty_message_with_search">Sorry, we kunnen geen resultaten vinden voor \'%s\'</string>
+    <string name="empty_review_list_message">Krijg hoogwaardige productbeoordelingen voor je winkel</string>
+    <string name="empty_review_list_title">Krijg je eerste beoordelingen</string>
+    <string name="empty_order_list_all_processed">Alle bestellingen zijn voltooid</string>
+    <string name="empty_order_list_message">We laten het je weten als je een nieuwe bestelling krijgt. Bekijk ondertussen hoe je de verkoop van je winkel kunt verhogen.</string>
+    <string name="empty_order_list_title">Wachten op je eerste bestelling</string>
+    <string name="share_your_store_message">Deel je winkel op social media en via e-mail met je contacten</string>
+    <string name="get_the_word_out">Maak jezelf bekend</string>
+    <string name="product_inventory_quantity_summary">Hoeveel items zijn er op voorraad</string>
+    <string name="product_inventory_quantity">Hoeveelheid</string>
+    <string name="product_sold_individually">Beperkt tot één per bestelling</string>
+    <string name="product_manage_stock">Voorraad beheren</string>
+    <string name="product_sku_summary">Zorgt ervoor dat dit product eenvoudig geïdentificeerd kan worden</string>
+    <string name="product_sale_date_from">vanaf %1$s</string>
+    <string name="product_sale_date_from_to">%1$s - %2$s</string>
+    <string name="product_sale_dates">Verkoopdata</string>
+    <string name="product_price_empty">Prijs toevoegen</string>
+    <string name="product_inventory_empty">Voorraad toevoegen</string>
+    <string name="orderlist_loading">Je bestellingen worden opgezocht …</string>
     <string name="product_detail_editable_text_hint">Voer tekst in</string>
     <string name="product_detail_title_hint">Voer titel in</string>
     <string name="product_detail_update_product_success">Product bijgewerkt</string>
@@ -125,7 +172,6 @@ Language: nl
     <string name="order_refunds_title_with_amount">Restitutie %s</string>
     <string name="order_refunds_available_for_refund">%s restitueerbaar</string>
     <string name="orderdetail_issue_refund_button">Restitueren</string>
-    <string name="orderdetail_refund_view_details">Gegevens weergeven</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_message">Probeer de nieuwe statistieken die beschikbaar zijn met de\nWooCommerce Admin-plugin</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
@@ -529,9 +575,6 @@ Language: nl
     <string name="app_rating_title">Wat vind je van Woo?</string>
     <string name="settings_selected_store">Geselecteerde winkel</string>
     <string name="orders_empty_message_with_search">Geen overeenkomende bestellingen</string>
-    <string name="orders_empty_message_with_filter">Nog geen bestellingen</string>
-    <string name="waiting_for_customers_contentdesc">Wachten op klantenafbeelding</string>
-    <string name="waiting_for_customers">Wachten op klanten</string>
     <string name="share_store_dialog_title">Deel de URL van je winkel</string>
     <string name="share_store_button">Deel je winkel</string>
     <string name="wc_mark_all_read_success">Alle beoordelingen zijn gemarkeerd als gelezen</string>

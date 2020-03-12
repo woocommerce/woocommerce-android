@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
@@ -173,8 +174,10 @@ class IssueRefundViewModel @AssistedInject constructor(
                     currency = order.currency,
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
+                    shippingSubtotal = formatCurrency(order.shippingTotal),
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                    isShippingRefundVisible = false,
+                    isShippingRefundVisible = order.shippingTotal > BigDecimal.ZERO,
+                    isShippingNoticeVisible = true,
                     isNextButtonEnabled = false
             )
         }
@@ -258,12 +261,16 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
-    fun onRefundItemsShippingSwitchChanged(isChecked: Boolean) {
-        refundByItemsState = if (isChecked) {
-            refundByItemsState.copy(isShippingRefundVisible = true)
-        } else {
-            refundByItemsState.copy(isShippingRefundVisible = false)
-        }
+//    fun onRefundItemsShippingSwitchChanged(isChecked: Boolean) {
+//        refundByItemsState = if (isChecked) {
+//            refundByItemsState.copy(isShippingRefundVisible = true)
+//        } else {
+//            refundByItemsState.copy(isShippingRefundVisible = false)
+//        }
+//    }
+
+    fun onOpenStoreAdminLinkClicked() {
+        triggerEvent(OpenUrl(selectedSite.get().adminUrl))
     }
 
     private fun showRefundSummary() {
@@ -579,6 +586,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         val shippingSubtotal: String? = null,
         val shippingTaxes: String? = null,
         val isShippingRefundVisible: Boolean? = null,
+        val isShippingNoticeVisible: Boolean? = null,
         val selectedItemsHeader: String? = null,
         val selectButtonTitle: String? = null
     ) : Parcelable {
@@ -617,6 +625,7 @@ class IssueRefundViewModel @AssistedInject constructor(
             val maxRefund: BigDecimal,
             val message: String
         ) : IssueRefundEvent()
+        data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
     }
 
