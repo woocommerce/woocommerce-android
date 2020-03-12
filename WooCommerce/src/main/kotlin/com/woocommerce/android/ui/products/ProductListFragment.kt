@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
+import com.woocommerce.android.util.isTabletMode
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -57,6 +58,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+
+    override var splitViewSupport: Boolean
+        get() {
+            return context?.let {
+                isTabletMode(it)
+            } ?: false
+        }
+        set(value) {}
 
     override fun onCreateView(
         inflater: LayoutInflater,
