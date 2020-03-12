@@ -26,13 +26,16 @@
             <com.woocommerce.android.ui.base.MainContainerTop
                 android:id="@+id/container_top"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical"/>
 
             <!-- container for child fragments in the nav graph -->
             <com.woocommerce.android.ui.base.MainContainerChild
                 android:id="@+id/container_child"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"/>
         </FrameLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

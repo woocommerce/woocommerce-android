@@ -141,7 +141,7 @@ class MainActivity : AppUpgradeActivity(),
         setContentView(R.layout.activity_main)
 
         // Set the main toolbar
-        setSupportActionBar(toolbar_main as Toolbar)
+        setSupportActionBar(toolbar_main as MaterialToolbar)
 
         presenter.takeView(this)
 
