@@ -15,7 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -123,9 +127,12 @@ class MainActivity : AppUpgradeActivity(),
     private var progressDialog: ProgressDialog? = null
 
     override fun setTitle(title: CharSequence?) {
-        val toolbar = if (isAtNavigationRoot()) toolbar_main else toolbar_child
-        (toolbar as Toolbar).setTitle(title)
-        super.setTitle(title)
+        if (isAtNavigationRoot()) {
+            (toolbar_main as Toolbar).setTitle(title)
+            super.setTitle(title)
+        } else {
+            (toolbar_child as Toolbar).setTitle(title)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,19 +143,15 @@ class MainActivity : AppUpgradeActivity(),
         // Set the main toolbar
         setSupportActionBar(toolbar_main as Toolbar)
 
-        // Configure the child toolbar
-        with(toolbar_child as Toolbar) {
-            setTitle(StringUtils.EMPTY)
-            setOnMenuItemClickListener {
-                onOptionsItemSelected(it)
-            }
-        }
-
         presenter.takeView(this)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
+
+        // Configure the navController to work with the secondary child toolbar properly.
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        (toolbar_child as Toolbar).setupWithNavController(navController, appBarConfiguration)
 
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
@@ -382,20 +385,20 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        if (isAtRoot) {
-            setSupportActionBar(toolbar_main as MaterialToolbar)
-        } else {
-            setSupportActionBar(toolbar_child as MaterialToolbar)
-            supportActionBar?.let { actionBar ->
-                actionBar.setDisplayHomeAsUpEnabled(true)
-                @DrawableRes val icon = if (showCrossIcon) {
-                    R.drawable.ic_gridicons_cross_white_24dp
-                } else {
-                    R.drawable.ic_back_white_24dp
-                }
-                actionBar.setHomeAsUpIndicator(icon)
-            }
-        }
+//        if (isAtRoot) {
+//            setSupportActionBar(toolbar_main as MaterialToolbar)
+//        } else {
+//            setSupportActionBar(toolbar_child as MaterialToolbar)
+//            supportActionBar?.let { actionBar ->
+//                actionBar.setDisplayHomeAsUpEnabled(true)
+//                @DrawableRes val icon = if (showCrossIcon) {
+//                    R.drawable.ic_gridicons_cross_white_24dp
+//                } else {
+//                    R.drawable.ic_back_white_24dp
+//                }
+//                actionBar.setHomeAsUpIndicator(icon)
+//            }
+//        }
 
         if (showBottomNav) {
             showBottomNav()
@@ -405,7 +408,6 @@ class MainActivity : AppUpgradeActivity(),
 
         if (isAtRoot) {
             getActiveTopLevelFragment()?.let {
-                it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
             }
         }
