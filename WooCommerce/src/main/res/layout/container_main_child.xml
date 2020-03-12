@@ -19,19 +19,14 @@
             android:id="@+id/toolbar_child"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <!-- container for child fragments in the nav graph -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <!-- container for child fragments in the nav graph -->
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_fragment_main"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph_main"
-            tools:layout="@layout/fragment_my_store"/>
-    </FrameLayout>
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph_main"
+        tools:layout="@layout/fragment_my_store"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
