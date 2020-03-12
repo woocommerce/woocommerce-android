@@ -42,7 +42,6 @@ import com.woocommerce.android.util.isTabletMode
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.container_main_top.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.*
@@ -459,15 +458,12 @@ class OrderListFragment : TopLevelFragment(),
      * fragment's menu will continue to appear when the child is shown
      */
     private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
         if (show) {
             refreshOptionsMenu()
         }
     }
 
     override fun openOrderDetail(remoteOrderId: Long) {
-        showOptionsMenu(false)
-//        removeTabLayoutFromAppBar(tabLayout)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }
 
