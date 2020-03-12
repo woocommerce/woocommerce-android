@@ -335,8 +335,6 @@ class MainActivity : AppUpgradeActivity(),
             it.splitViewSupport
         } ?: false
 
-        val containerCount = container_child.childCount
-
         // show/hide the child fragment container depending on whether or not in tablet mode
         container_child.visibility = if (isAtRoot) View.GONE else View.VISIBLE
 
@@ -757,10 +755,13 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String?) {
         showBottomNav()
-        bottomNavView.currentPosition = REVIEWS
 
-        val navPos = REVIEWS.position
-        bottom_nav.active(navPos)
+        if (bottomNavView.currentPosition != REVIEWS) {
+            bottomNavView.currentPosition = REVIEWS
+            val navPos = REVIEWS.position
+            bottom_nav.active(navPos)
+        }
+
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 remoteReviewId,
