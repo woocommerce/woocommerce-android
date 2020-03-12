@@ -129,7 +129,8 @@
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products"
         app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out">
+        app:popExitAnim="@anim/activity_fade_out"
+        app:popUpTo="@id/nav_graph_main">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
