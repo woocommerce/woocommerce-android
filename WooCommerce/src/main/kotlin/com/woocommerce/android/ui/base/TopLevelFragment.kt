@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.base
 
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.util.isTabletMode
 
 /**
  * The main fragments hosted by the bottom bar should extend this class

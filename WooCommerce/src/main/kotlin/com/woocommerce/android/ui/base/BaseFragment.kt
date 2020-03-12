@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.base
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.util.StringUtils
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -59,7 +61,13 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
     }
 
     override fun getFragmentTitle(): String {
-        return activity?.title?.toString() ?: ""
+        return activity?.let {
+            if (it is MainNavigationRouter) {
+                it.getActiveToolbarTitle()
+            } else {
+                it.title.toString() ?: StringUtils.EMPTY
+            }
+        } ?: StringUtils.EMPTY
     }
 
     override fun androidInjector(): AndroidInjector<Any> {

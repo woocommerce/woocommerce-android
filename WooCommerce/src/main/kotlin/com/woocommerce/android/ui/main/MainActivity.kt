@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -16,9 +15,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.AppPrefs
@@ -53,7 +49,6 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -119,21 +114,13 @@ class MainActivity : AppUpgradeActivity(),
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
+    private var childToolbarTitle: String? = null
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
-
-    override fun setTitle(title: CharSequence?) {
-        if (isAtNavigationRoot()) {
-            (toolbar_main as Toolbar).setTitle(title)
-            super.setTitle(title)
-        } else {
-            (toolbar_child as Toolbar).setTitle(title)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -292,6 +279,31 @@ class MainActivity : AppUpgradeActivity(),
      * Return true if one of the nav component fragments is showing (the opposite of the above)
      */
     override fun isChildFragmentShowing() = !isAtNavigationRoot()
+
+    /**
+     * Overridden to ensure the title is set to the correct
+     * toolbar.
+     */
+    override fun setTitle(title: CharSequence?) {
+        if (isAtNavigationRoot()) {
+            (toolbar_main as Toolbar).setTitle(title)
+            super.setTitle(title)
+        } else {
+            (toolbar_child as Toolbar).setTitle(title)
+            childToolbarTitle = title.toString()
+        }
+    }
+
+    /**
+     * Returns the title matching the currrently active toolbar.
+     */
+    override fun getActiveToolbarTitle(): String {
+        return if (isAtNavigationRoot()) {
+            title.toString()
+        } else {
+            childToolbarTitle ?: ""
+        }
+    }
 
     /**
      * Navigates to the root fragment so only the top level fragment is showing
@@ -763,7 +775,6 @@ class MainActivity : AppUpgradeActivity(),
             val navPos = REVIEWS.position
             bottom_nav.active(navPos)
         }
-
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 remoteReviewId,
