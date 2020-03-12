@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.widgets.stats
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import android.view.View
 import android.widget.RemoteViews
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -50,6 +51,8 @@ class TodayWidgetUpdater
         } else null
 
         errorMessage?.let {
+            views.setTextViewText(R.id.widget_title, resourceProvider.getString(R.string.my_store))
+            views.setViewVisibility(R.id.widget_type, View.GONE)
             widgetUtils.showError(
                     widgetManager,
                     views,
@@ -62,6 +65,7 @@ class TodayWidgetUpdater
         } ?: run {
             val siteModel = selectedSite.get()
             views.setTextViewText(R.id.widget_title, siteModel.getTitle(context))
+            views.setViewVisibility(R.id.widget_type, View.VISIBLE)
             views.setOnClickPendingIntent(
                     R.id.widget_title_container,
                     widgetUtils.getPendingSelfIntent(context)

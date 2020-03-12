@@ -38,7 +38,8 @@
             style="@style/Woo.StatsWidget.SubLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/today"/>
+            android:text="@string/today"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </LinearLayout>
