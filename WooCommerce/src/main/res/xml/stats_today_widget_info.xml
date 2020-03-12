@@ -6,6 +6,7 @@
     android:minHeight="@dimen/stats_widget_min_height"
     android:minWidth="@dimen/stats_widget_min_width"
     android:resizeMode="none"
+    android:previewImage="@drawable/stats_today_widget_preview"
     android:updatePeriodMillis="@integer/stats_widget_update_period"
     android:widgetCategory="home_screen">
 </appwidget-provider>
