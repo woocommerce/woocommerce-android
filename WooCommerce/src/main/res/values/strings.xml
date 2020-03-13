@@ -190,7 +190,7 @@
     <!--
         Stats widgets
     -->
-    <string name="stats_widget_log_in_message">Please log in to the Woocommerce app to add a widget.</string>
+    <string name="stats_widget_log_in_message">Please log in to the WooCommerce app to add a widget.</string>
     <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <!--
