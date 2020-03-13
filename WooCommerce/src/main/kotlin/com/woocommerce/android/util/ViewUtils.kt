@@ -13,3 +13,5 @@ fun getDensityPixel(context: Context, dps: Int): Int {
 }
 
 fun isTabletMode(context: Context) = context.resources.getBoolean(R.bool.is_tablet)
+
+fun isLandscapeMode(context: Context) = context.resources.getBoolean(R.bool.is_landscape)

@@ -38,6 +38,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.isLandscapeMode
 import com.woocommerce.android.util.isTabletMode
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -123,7 +124,7 @@ class OrderListFragment : TopLevelFragment(),
     override var splitViewSupport: Boolean
         get() {
             return context?.let {
-                isTabletMode(it)
+                isTabletMode(it) && isLandscapeMode(it)
             } ?: false
         }
         set(value) {}
