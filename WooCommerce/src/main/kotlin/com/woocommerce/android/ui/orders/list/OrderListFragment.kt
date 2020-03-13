@@ -149,13 +149,16 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_list_fragment, menu)
+        if (!isChildFragmentShowing()) {
+            // only show the search option if the child view is not active.
+            // this would only happen in tablet mode.
+            inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
-        orderListMenu = menu
-        searchMenuItem = menu.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getString(R.string.orderlist_search_hint)
-
+            orderListMenu = menu
+            searchMenuItem = menu.findItem(R.id.menu_search)
+            searchView = searchMenuItem?.actionView as SearchView?
+            searchView?.queryHint = getString(R.string.orderlist_search_hint)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
