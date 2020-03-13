@@ -65,6 +65,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private var productTitle = ""
+    private var productName = ""
     private var isVariation = false
     private val skeletonView = SkeletonView()
 
@@ -167,7 +168,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
-        val productName = product.name.fastStripHtml()
+        productName = product.name.fastStripHtml()
         productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, productName)
             GROUPED -> getString(R.string.product_name_grouped, productName)
@@ -225,7 +226,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
-            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productTitle)?.also { view ->
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productName)?.also { view ->
                 view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
             }
         } else {
