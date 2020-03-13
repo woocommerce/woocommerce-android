@@ -126,6 +126,8 @@ class MainActivity : AppUpgradeActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+
         // Set the main toolbar
         setSupportActionBar(toolbar_main as MaterialToolbar)
 
@@ -134,8 +136,6 @@ class MainActivity : AppUpgradeActivity(),
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
-
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
