@@ -59,10 +59,9 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_help.*
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.container_main_child.*
-import kotlinx.android.synthetic.main.container_main_top.*
+import kotlinx.android.synthetic.main.container_child.*
+import kotlinx.android.synthetic.main.container_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -348,10 +347,10 @@ class MainActivity : AppUpgradeActivity(),
 
         // show/hide the top level fragment container depending on whether we're at the root
         if (isAtRoot) {
-            container_top.visibility = View.VISIBLE
+            container_main.visibility = View.VISIBLE
         } else {
             if (!tabletModeEnabled) {
-                container_top.visibility = View.GONE
+                container_main.visibility = View.GONE
             }
         }
 
