@@ -73,4 +73,9 @@
         <!-- Optional: resource id of title style -->
         <attr name="aevTitleAppearance" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="DashboardStatsBarChart">
+        <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
 </resources>
