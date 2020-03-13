@@ -113,7 +113,7 @@
         Default Chart
     -->
     <dimen name="chart_height">200dp</dimen>
-    <dimen name="chart_axis_bottom_padding">4dp</dimen>
+    <dimen name="chart_axis_bottom_padding">10dp</dimen>
 
     <!--
         Login

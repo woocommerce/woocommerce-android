@@ -36,6 +36,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.max
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
@@ -44,6 +45,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
 import java.util.ArrayList
 import java.util.Date
+import kotlin.math.absoluteValue
 import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -192,11 +194,9 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
             axisRight.isEnabled = false
             with(axisLeft) {
-                setDrawZeroLine(true)
                 setDrawTopYLabelEntry(true)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
-                zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
             }
 
@@ -380,10 +380,18 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 labelCount = getBarLabelCount()
                 setCenterAxisLabels(false)
                 valueFormatter = StartEndDateAxisFormatter()
+                yOffset = resources.getDimension(R.dimen.chart_axis_bottom_padding)
             }
             with(axisLeft) {
-                labelCount = 3
-                setCenterAxisLabels(false)
+                if (data.yMin < 0) {
+                    val difference = max(data.yMin.absoluteValue.toBigDecimal(), data.yMax.toBigDecimal())
+                    axisMinimum = - difference.toFloat()
+                    axisMaximum = difference.toFloat()
+                } else {
+                    axisMinimum = 0f
+                    axisMaximum = data.yMax
+                }
+                setLabelCount(3, true)
                 valueFormatter = RevenueAxisFormatter()
             }
         }
