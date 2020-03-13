@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -14,8 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -136,10 +135,6 @@ class MainActivity : AppUpgradeActivity(),
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
 
-        // Configure the navController to work with the secondary child toolbar properly.
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        (toolbar_child as Toolbar).setupWithNavController(navController, appBarConfiguration)
-
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
@@ -191,10 +186,8 @@ class MainActivity : AppUpgradeActivity(),
         // don't show the options menu unless we're at the root
         if (isAtNavigationRoot()) {
             menuInflater.inflate(R.menu.menu_action_bar, menu)
-            return true
-        } else {
-            return false
         }
+        return true
     }
 
     override fun onResume() {
@@ -397,20 +390,20 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-//        if (isAtRoot) {
-//            setSupportActionBar(toolbar_main as MaterialToolbar)
-//        } else {
-//            setSupportActionBar(toolbar_child as MaterialToolbar)
-//            supportActionBar?.let { actionBar ->
-//                actionBar.setDisplayHomeAsUpEnabled(true)
-//                @DrawableRes val icon = if (showCrossIcon) {
-//                    R.drawable.ic_gridicons_cross_white_24dp
-//                } else {
-//                    R.drawable.ic_back_white_24dp
-//                }
-//                actionBar.setHomeAsUpIndicator(icon)
-//            }
-//        }
+        if (isAtRoot) {
+            setSupportActionBar(toolbar_main as MaterialToolbar)
+        } else {
+            setSupportActionBar(toolbar_child as MaterialToolbar)
+            supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(true)
+                @DrawableRes val icon = if (showCrossIcon) {
+                    R.drawable.ic_gridicons_cross_white_24dp
+                } else {
+                    R.drawable.ic_back_white_24dp
+                }
+                actionBar.setHomeAsUpIndicator(icon)
+            }
+        }
 
         if (showBottomNav) {
             showBottomNav()
