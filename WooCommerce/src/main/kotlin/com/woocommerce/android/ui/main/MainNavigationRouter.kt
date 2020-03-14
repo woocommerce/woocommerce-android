@@ -4,6 +4,7 @@ interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
     fun getActiveToolbarTitle(): String
+    fun setActiveToolbarTitle(title: String?, isTopLevelFragment: Boolean)
 
     fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long = 0, markComplete: Boolean = false)
     fun showProductDetail(remoteProductId: Long)

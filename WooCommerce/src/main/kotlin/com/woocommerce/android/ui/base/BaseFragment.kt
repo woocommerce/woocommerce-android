@@ -27,7 +27,11 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
 
         super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.let {
-            activity?.title = it.getString(KEY_TITLE)
+            activity?.let {act ->
+                if (act !is MainNavigationRouter) {
+                    activity?.title = it.getString(KEY_TITLE)
+                }
+            }
         }
     }
 
@@ -56,7 +60,14 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
             }
         }
         if (isAdded && !isHidden) {
-            activity?.title = getFragmentTitle()
+            activity?.let {
+                val isTopLevelFragment = this is TopLevelFragment
+                if (it is MainNavigationRouter) {
+                    it.setActiveToolbarTitle(getFragmentTitle(), isTopLevelFragment)
+                } else {
+                    it.title = getFragmentTitle()
+                }
+            }
         }
     }
 

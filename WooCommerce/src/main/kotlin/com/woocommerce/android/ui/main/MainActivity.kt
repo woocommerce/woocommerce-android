@@ -82,6 +82,8 @@ class MainActivity : AppUpgradeActivity(),
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
+        private const val KEY_TOOLBAR_TITLE_MAIN = "toolbar-title-main"
+        private const val KEY_TOOLBAR_TITLE_CHILD = "toolbar-title-child"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -113,6 +115,7 @@ class MainActivity : AppUpgradeActivity(),
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
     private var childToolbarTitle: String? = null
+    private var mainToolbarTitle: String? = null
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -218,6 +221,8 @@ class MainActivity : AppUpgradeActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
         outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
+        outState.putString(KEY_TOOLBAR_TITLE_MAIN, mainToolbarTitle)
+        outState.putString(KEY_TOOLBAR_TITLE_CHILD, childToolbarTitle)
         super.onSaveInstanceState(outState)
     }
 
@@ -230,6 +235,11 @@ class MainActivity : AppUpgradeActivity(),
             if (count > 0) {
                 showOrderBadge(count)
             }
+
+            mainToolbarTitle = it.getString(KEY_TOOLBAR_TITLE_MAIN)
+            childToolbarTitle = it.getString(KEY_TOOLBAR_TITLE_CHILD)
+            setActiveToolbarTitle(mainToolbarTitle, true)
+            setActiveToolbarTitle(childToolbarTitle, false)
         }
     }
 
@@ -277,9 +287,13 @@ class MainActivity : AppUpgradeActivity(),
      * toolbar.
      */
     override fun setTitle(title: CharSequence?) {
-        if (isAtNavigationRoot()) {
+        title?.let { setActiveToolbarTitle(it.toString(), false) }
+    }
+
+    override fun setActiveToolbarTitle(title: String?, isTopLevelFragment: Boolean) {
+        if (isTopLevelFragment || isAtNavigationRoot()) {
             (toolbar_main as Toolbar).setTitle(title)
-            super.setTitle(title)
+            mainToolbarTitle = title.toString()
         } else {
             (toolbar_child as Toolbar).setTitle(title)
             childToolbarTitle = title.toString()
