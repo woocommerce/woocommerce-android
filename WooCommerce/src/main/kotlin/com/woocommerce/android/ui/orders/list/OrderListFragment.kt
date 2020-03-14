@@ -162,7 +162,9 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        refreshOptionsMenu()
+        if (!isChildFragmentShowing()) {
+            refreshOptionsMenu()
+        }
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -316,7 +318,7 @@ class OrderListFragment : TopLevelFragment(),
      * search menu item to collapse
      */
     private fun refreshOptionsMenu() {
-        if (!isChildFragmentShowing() && isSearching) {
+        if (isSearching) {
             enableSearchListeners()
             searchMenuItem?.expandActionView()
             if (isFilterEnabled) displayFilteredList()
@@ -343,9 +345,7 @@ class OrderListFragment : TopLevelFragment(),
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
 
     private fun shouldShowSearchMenuItem(): Boolean {
-        val isChildShowing = isChildFragmentShowing()
         return when {
-            (isChildShowing) -> false
             (isFilterEnabled) -> false
             else -> true
         }
@@ -582,7 +582,7 @@ class OrderListFragment : TopLevelFragment(),
             searchView?.post { searchMenuItem?.expandActionView() }
         } else {
             clearSearchResults()
-            searchMenuItem?.isVisible = true
+            searchMenuItem?.isVisible = shouldShowSearchMenuItem()
         }
         loadListForActiveTab()
         return true
