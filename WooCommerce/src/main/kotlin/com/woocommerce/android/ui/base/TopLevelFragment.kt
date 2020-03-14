@@ -15,7 +15,7 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
     override var isActive: Boolean = false
         get() {
             return if (isAdded && !isHidden) {
-                (activity as? MainNavigationRouter)?.isAtNavigationRoot() ?: false
+                (activity as? MainNavigationRouter)?.isAtNavigationRoot() ?: false || splitViewSupported
             } else {
                 false
             }

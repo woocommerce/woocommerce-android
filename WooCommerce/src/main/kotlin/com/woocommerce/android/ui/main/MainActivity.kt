@@ -135,6 +135,8 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
+        restoreSavedInstanceState(savedInstanceState)
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
@@ -164,7 +166,9 @@ class MainActivity : AppUpgradeActivity(),
             fetchRevenueStatsAvailability(selectedSite.get())
         }
 
-        initFragment(savedInstanceState)
+        if (savedInstanceState == null) {
+            initFragment()
+        }
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
@@ -210,7 +214,7 @@ class MainActivity : AppUpgradeActivity(),
         super.onNewIntent(intent)
 
         setIntent(intent)
-        initFragment(null)
+        initFragment()
     }
 
     public override fun onDestroy() {
@@ -226,8 +230,8 @@ class MainActivity : AppUpgradeActivity(),
         super.onSaveInstanceState(outState)
     }
 
-    private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.also {
+    private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
             val id = it.getInt(KEY_BOTTOM_NAV_POSITION, DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
 
@@ -524,7 +528,7 @@ class MainActivity : AppUpgradeActivity(),
         // Complete UI initialization
 
         bottomNavView.init(supportFragmentManager, this)
-        initFragment(null)
+        initFragment()
     }
 
     /**
@@ -673,12 +677,10 @@ class MainActivity : AppUpgradeActivity(),
     // endregion
 
     // region Fragment Processing
-    private fun initFragment(savedInstanceState: Bundle?) {
+    private fun initFragment() {
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
 
-        if (savedInstanceState != null) {
-            restoreSavedInstanceState(savedInstanceState)
-        } else if (openedFromPush) {
+        if (openedFromPush) {
             // Opened from a push notification
             //
             // Reset this flag now that it's being processed
