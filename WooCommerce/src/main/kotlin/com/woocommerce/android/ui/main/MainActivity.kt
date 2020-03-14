@@ -339,7 +339,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         val tabletModeEnabled = getActiveTopLevelFragment()?.let {
-            it.splitViewSupport
+            it.splitViewSupported
         } ?: false
 
         // show/hide the child fragment container depending on whether or not in tablet mode

@@ -38,8 +38,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.isLandscapeMode
-import com.woocommerce.android.util.isTabletMode
+import com.woocommerce.android.util.isSplitScreenSupported
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
@@ -121,13 +120,12 @@ class OrderListFragment : TopLevelFragment(),
         TabLayout(requireContext(), null, R.attr.tabStyle)
     }
 
-    override var splitViewSupport: Boolean
+    override val splitViewSupported: Boolean
         get() {
             return context?.let {
-                isTabletMode(it) && isLandscapeMode(it)
+                isSplitScreenSupported(it)
             } ?: false
         }
-        set(value) {}
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)

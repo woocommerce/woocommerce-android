@@ -21,5 +21,9 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
             }
         }
 
-    override val splitViewSupport = false
+    /**
+     * This method should return true if the current fragment and device supports split
+     * screen mode for tablets.
+     */
+    override val splitViewSupported = false
 }
