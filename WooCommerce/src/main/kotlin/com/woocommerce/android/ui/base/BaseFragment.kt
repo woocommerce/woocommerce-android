@@ -65,7 +65,7 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
             if (it is MainNavigationRouter) {
                 it.getActiveToolbarTitle()
             } else {
-                it.title.toString() ?: StringUtils.EMPTY
+                it.title.toString()
             }
         } ?: StringUtils.EMPTY
     }

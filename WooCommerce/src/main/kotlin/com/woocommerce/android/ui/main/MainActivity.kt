@@ -338,18 +338,18 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        val tabletModeEnabled = getActiveTopLevelFragment()?.let {
+        val splitScreenEnabled = getActiveTopLevelFragment()?.let {
             it.splitViewSupported
         } ?: false
 
-        // show/hide the child fragment container depending on whether or not in tablet mode
+
         container_child.visibility = if (isAtRoot) View.GONE else View.VISIBLE
 
         // show/hide the top level fragment container depending on whether we're at the root
         if (isAtRoot) {
             container_main.visibility = View.VISIBLE
         } else {
-            if (!tabletModeEnabled) {
+            if (!splitScreenEnabled) {
                 container_main.visibility = View.GONE
             }
         }
