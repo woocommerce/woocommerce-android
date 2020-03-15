@@ -379,16 +379,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
         val inventoryGroup = when {
             product.manageStock -> mapOf(
-                    Pair(getString(R.string.product_stock_status), ProductStockStatus.stockStatusToDisplayString(
-                            requireContext(), product.stockStatus
-                    )),
                     Pair(getString(R.string.product_backorders), ProductBackorderStatus.backordersToDisplayString(
                             requireContext(), product.backorderStatus
                     )),
                     Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
-            product.sku.isNotEmpty() -> mapOf(Pair(getString(R.string.product_sku), product.sku))
+            product.sku.isNotEmpty() -> mapOf(
+                    Pair(getString(R.string.product_sku), product.sku),
+                    Pair(getString(R.string.product_stock_status), ProductStockStatus.stockStatusToDisplayString(
+                            requireContext(), product.stockStatus
+                    ))
+            )
             else -> mapOf(Pair("", getString(R.string.product_inventory_empty)))
         }
 
