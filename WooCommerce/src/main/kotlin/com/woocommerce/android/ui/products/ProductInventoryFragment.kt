@@ -99,9 +99,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
 
         val product = requireNotNull(productData.product)
         with(product_sku) {
-            if (product.sku.isNotEmpty()) {
-                setText(product.sku)
-            }
+            setText(product.sku)
             setOnTextChangedListener {
                 viewModel.updateProductDraft(sku = it.toString())
                 viewModel.onSkuChanged(it.toString())
