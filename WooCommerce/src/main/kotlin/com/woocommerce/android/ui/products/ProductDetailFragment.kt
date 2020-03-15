@@ -481,7 +481,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             val shippingGroup = mapOf(
                     Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
                     Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
-                    Pair(getString(R.string.product_shipping_class), product.shippingClass)
+                    Pair(
+                            getString(R.string.product_shipping_class),
+                            viewModel.getShippingClassBySlug(product.shippingClass)
+                    )
             )
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
         }

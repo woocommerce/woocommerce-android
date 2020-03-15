@@ -488,6 +488,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Fetch the shipping class name of a product based on the slug
+     */
+    fun getShippingClassBySlug(slug: String): String {
+        val shippingClassList = productShippingClassViewState.shippingClassList
+                ?: productRepository.getProductShippingClassesForSite()
+        return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
+    }
+
+    /**
      * Load & fetch the shipping classes for the current site, optionally performing a "load more" to
      * load the next page of shipping classes
      */
