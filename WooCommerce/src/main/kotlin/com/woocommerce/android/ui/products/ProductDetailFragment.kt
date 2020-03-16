@@ -39,8 +39,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIn
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
-import com.woocommerce.android.ui.products.ProductType.EXTERNAL
-import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -64,7 +62,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         PurchaseDetails
     }
 
-    private var productTitle = ""
+    private var productName = ""
     private var isVariation = false
     private val skeletonView = SkeletonView()
 
@@ -161,26 +159,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         progressDialog = null
     }
 
-    override fun getFragmentTitle() = productTitle
+    override fun getFragmentTitle() = productName
 
     private fun showProduct(productData: ProductDetailViewState) {
         if (!isAdded) return
 
         val product = requireNotNull(productData.product)
-        val productName = product.name.fastStripHtml()
-        productTitle = when (product.type) {
-            EXTERNAL -> getString(R.string.product_name_external, productName)
-            GROUPED -> getString(R.string.product_name_grouped, productName)
-            VARIABLE -> getString(R.string.product_name_variable, productName)
-            else -> {
-                if (product.isVirtual) {
-                    getString(R.string.product_name_virtual, productName)
-                } else {
-                    productName
-                }
-            }
-        }
-
+        productName = product.name.fastStripHtml()
         updateActivityTitle()
 
         if (product.images.isEmpty() && !viewModel.isUploading()) {
@@ -225,11 +210,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val product = requireNotNull(productData.product)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
-            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productTitle)?.also { view ->
+            addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productName)?.also { view ->
                 view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
             }
         } else {
-            addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+            addPropertyView(DetailCard.Primary, R.string.product_name, productName, LinearLayout.VERTICAL)
         }
 
         if (isAddEditProductRelease1Enabled(product.type)) {
