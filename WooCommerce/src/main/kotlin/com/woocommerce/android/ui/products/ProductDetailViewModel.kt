@@ -179,6 +179,18 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when the date is selected from the date picker in the pricing screen.
+     * Keeps track of the min and max date value when scheduling a sale.
+     */
+    fun onDatePickerValueSelected(selectedDate: Date, isMinValue: Boolean) {
+        productPricingViewState = if (isMinValue) {
+            productPricingViewState.copy(minDate = selectedDate)
+        } else {
+            productPricingViewState.copy(maxDate = selectedDate)
+        }
+    }
+
+    /**
      * Method called when back button is clicked.
      *
      * Each product screen has it's own [ProductExitEvent]
@@ -662,7 +674,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class ProductPricingViewState(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val taxClassList: List<TaxClass>? = null
+        val taxClassList: List<TaxClass>? = null,
+        val minDate: Date? = null,
+        val maxDate: Date? = null
     ) : Parcelable
 
     @Parcelize
