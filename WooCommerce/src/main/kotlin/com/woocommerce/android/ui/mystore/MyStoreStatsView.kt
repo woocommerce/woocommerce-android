@@ -279,97 +279,9 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
-//        this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
-//            it.interval!! to (it.subtotals?.totalSales ?: 0.0)
-//        }?.toMap() ?: mapOf()
-        chartRevenueStats = when (activeGranularity) {
-            StatsGranularity.MONTHS -> {
-                mapOf(
-                        "2020-02-01" to 101.1,
-                        "2020-02-02" to 111.1,
-                        "2020-02-03" to 121.1,
-                        "2020-02-04" to 201.1,
-                        "2020-02-05" to 221.1,
-                        "2020-02-06" to 321.1,
-                        "2020-02-07" to -101.1,
-                        "2020-02-08" to 450.1,
-                        "2020-02-09" to 111.1,
-                        "2020-02-10" to 455.1,
-                        "2020-02-11" to 555.1,
-                        "2020-02-12" to 655.1,
-                        "2020-02-13" to -34.1,
-                        "2020-02-14" to 386.1,
-                        "2020-02-15" to 111.1,
-                        "2020-02-16" to 121.1,
-                        "2020-02-17" to 131.1,
-                        "2020-02-18" to 141.1,
-                        "2020-02-19" to 151.1,
-                        "2020-02-20" to 161.1,
-                        "2020-02-21" to 171.1,
-                        "2020-02-22" to -101.1,
-                        "2020-02-23" to 84.1,
-                        "2020-02-24" to 23.1,
-                        "2020-02-25" to 90.1,
-                        "2020-02-26" to 23.1,
-                        "2020-02-27" to 289.1,
-                        "2020-02-28" to 222.1,
-                        "2020-02-29" to 121.1
-                )
-            }
-            StatsGranularity.WEEKS -> {
-                mapOf(
-                        "2020-02-01" to 101.1,
-                        "2020-02-02" to -111.1,
-                        "2020-02-03" to 121.1,
-                        "2020-02-04" to 201.1,
-                        "2020-02-05" to 221.1,
-                        "2020-02-06" to 251.1,
-                        "2020-02-07" to -41.1
-                )
-            }
-            StatsGranularity.YEARS -> {
-                mapOf(
-                        "2020-01" to 101.1,
-                        "2020-02" to 111.1,
-                        "2020-03" to -121.1,
-                        "2020-04" to 201.1,
-                        "2020-05" to 221.1,
-                        "2020-06" to 321.1,
-                        "2020-07" to 555.1,
-                        "2020-08" to 341.1,
-                        "2020-09" to -31.1,
-                        "2020-10" to 141.1,
-                        "2020-11" to 121.1,
-                        "2020-12" to 41.1
-                )
-            }
-            else -> mapOf(
-                    "2020-02-23 00" to 101.1,
-                    "2020-02-23 01" to 101.1,
-                    "2020-02-23 02" to 201.1,
-                    "2020-02-23 03" to 201.1,
-                    "2020-02-23 04" to 311.1,
-                    "2020-02-23 05" to 312.1,
-                    "2020-02-23 06" to 333.1,
-                    "2020-02-23 07" to 343.1,
-                    "2020-02-23 08" to 353.1,
-                    "2020-02-23 09" to -44.1,
-                    "2020-02-23 10" to 363.1,
-                    "2020-02-23 11" to 464.1,
-                    "2020-02-23 12" to 454.1,
-                    "2020-02-23 13" to 20.1,
-                    "2020-02-23 14" to -123.1,
-                    "2020-02-23 15" to 222.1,
-                    "2020-02-23 16" to 17.1,
-                    "2020-02-23 17" to -98.1,
-                    "2020-02-23 18" to 9.1,
-                    "2020-02-23 19" to 12.1,
-                    "2020-02-23 20" to 67.1,
-                    "2020-02-23 21" to 34.1,
-                    "2020-02-23 22" to 232.1,
-                    "2020-02-23 23" to 121.1
-            )
-        }
+        this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
+            it.interval!! to (it.subtotals?.totalSales ?: 0.0)
+        }?.toMap() ?: mapOf()
 
         this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
             it.interval!! to (it.subtotals?.ordersCount ?: 0)
@@ -425,11 +337,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-//        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.totalSales?.toInt() == 0) {
-//            clearLastUpdated()
-//            isRequestingStats = false
-//            return
-//        }
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.totalSales?.toInt() == 0) {
+            clearLastUpdated()
+            isRequestingStats = false
+            return
+        }
 
         val barColors = ArrayList<Int>()
         val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
@@ -524,95 +436,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
-        chartRevenueStats = when (activeGranularity) {
-            StatsGranularity.MONTHS -> {
-                mapOf(
-                        "2020-02-01" to 101.1,
-                        "2020-02-02" to 111.1,
-                        "2020-02-03" to 121.1,
-                        "2020-02-04" to 201.1,
-                        "2020-02-05" to 221.1,
-                        "2020-02-06" to 321.1,
-                        "2020-02-07" to -101.1,
-                        "2020-02-08" to 450.1,
-                        "2020-02-09" to 111.1,
-                        "2020-02-10" to 455.1,
-                        "2020-02-11" to 555.1,
-                        "2020-02-12" to 655.1,
-                        "2020-02-13" to -34.1,
-                        "2020-02-14" to 386.1,
-                        "2020-02-15" to 111.1,
-                        "2020-02-16" to 121.1,
-                        "2020-02-17" to 131.1,
-                        "2020-02-18" to 141.1,
-                        "2020-02-19" to 151.1,
-                        "2020-02-20" to 161.1,
-                        "2020-02-21" to 171.1,
-                        "2020-02-22" to -101.1,
-                        "2020-02-23" to 84.1,
-                        "2020-02-24" to 23.1,
-                        "2020-02-25" to 90.1,
-                        "2020-02-26" to 23.1,
-                        "2020-02-27" to 289.1,
-                        "2020-02-28" to 222.1,
-                        "2020-02-29" to 121.1
-                )
-            }
-            StatsGranularity.WEEKS -> {
-                mapOf(
-                        "2020-02-01" to 101.1,
-                        "2020-02-02" to -111.1,
-                        "2020-02-03" to 121.1,
-                        "2020-02-04" to 201.1,
-                        "2020-02-05" to 221.1,
-                        "2020-02-06" to 251.1,
-                        "2020-02-07" to -41.1
-                )
-            }
-            StatsGranularity.YEARS -> {
-                mapOf(
-                        "2020-01" to 101.1,
-                        "2020-02" to 111.1,
-                        "2020-03" to -121.1,
-                        "2020-04" to 201.1,
-                        "2020-05" to 221.1,
-                        "2020-06" to 321.1,
-                        "2020-07" to 555.1,
-                        "2020-08" to 341.1,
-                        "2020-09" to -31.1,
-                        "2020-10" to 141.1,
-                        "2020-11" to 121.1,
-                        "2020-12" to 41.1
-                )
-            }
-            else -> mapOf(
-                    "2020-02-23 00" to 101.1,
-                    "2020-02-23 01" to 101.1,
-                    "2020-02-23 02" to 201.1,
-                    "2020-02-23 03" to 201.1,
-                    "2020-02-23 04" to 311.1,
-                    "2020-02-23 05" to 312.1,
-                    "2020-02-23 06" to 333.1,
-                    "2020-02-23 07" to 343.1,
-                    "2020-02-23 08" to 353.1,
-                    "2020-02-23 09" to -44.1,
-                    "2020-02-23 10" to 363.1,
-                    "2020-02-23 11" to 464.1,
-                    "2020-02-23 12" to 454.1,
-                    "2020-02-23 13" to 20.1,
-                    "2020-02-23 14" to -123.1,
-                    "2020-02-23 15" to 222.1,
-                    "2020-02-23 16" to 17.1,
-                    "2020-02-23 17" to -98.1,
-                    "2020-02-23 18" to 9.1,
-                    "2020-02-23 19" to 12.1,
-                    "2020-02-23 20" to 67.1,
-                    "2020-02-23 21" to 34.1,
-                    "2020-02-23 22" to 232.1,
-                    "2020-02-23 23" to 121.1
-            )
-        }
-//        chartRevenueStats = revenueStats
+        chartRevenueStats = revenueStats
         val barEntries = chartRevenueStats.values.mapIndexed { index, value ->
             BarEntry((index + 1).toFloat(), value.toFloat())
         }
