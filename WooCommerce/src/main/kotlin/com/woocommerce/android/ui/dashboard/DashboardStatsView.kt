@@ -37,7 +37,6 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.util.max
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
@@ -47,7 +46,6 @@ import org.wordpress.android.util.DateTimeUtils
 import java.io.Serializable
 import java.util.ArrayList
 import java.util.Date
-import kotlin.math.absoluteValue
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs), OnChartValueSelectedListener, BarChartGestureListener {
@@ -342,14 +340,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             }
 
             with(axisLeft) {
-                if (data.yMin < 0) {
-                    val difference = max(data.yMin.absoluteValue.toBigDecimal(), data.yMax.toBigDecimal())
-                    axisMinimum = - difference.toFloat()
-                    axisMaximum = difference.toFloat()
-                } else {
-                    axisMinimum = 0f
-                    axisMaximum = data.yMax
-                }
                 setLabelCount(3, true)
                 valueFormatter = RevenueAxisFormatter()
             }
@@ -624,12 +614,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      */
     private inner class RevenueAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return when (value) {
-                0f -> value.toInt().toString()
-                axis.mEntries.first() -> getFormattedRevenueValue(value.toDouble())
-                axis.mEntries.max() -> getFormattedRevenueValue(value.toDouble())
-                else -> ""
-            }
+            return getFormattedRevenueValue(value.toDouble())
         }
     }
 }
