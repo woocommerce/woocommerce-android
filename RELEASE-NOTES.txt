@@ -1,5 +1,6 @@
 3.9
 -----
+* Fixed a crash when clicking on 2 products at the same time from the Products list section.
  
 3.8
 -----

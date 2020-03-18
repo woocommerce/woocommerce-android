@@ -192,11 +192,9 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
             axisRight.isEnabled = false
             with(axisLeft) {
-                setDrawZeroLine(true)
                 setDrawTopYLabelEntry(true)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
-                zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
             }
 
@@ -380,10 +378,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 labelCount = getBarLabelCount()
                 setCenterAxisLabels(false)
                 valueFormatter = StartEndDateAxisFormatter()
+                yOffset = resources.getDimension(R.dimen.chart_axis_bottom_padding)
             }
             with(axisLeft) {
-                labelCount = 3
-                setCenterAxisLabels(false)
+                setLabelCount(3, true)
                 valueFormatter = RevenueAxisFormatter()
             }
         }
@@ -582,12 +580,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
      */
     private inner class RevenueAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return when (value) {
-                0f -> value.toInt().toString()
-                axis.mEntries.first() -> getFormattedRevenueValue(value.toDouble())
-                axis.mEntries.max() -> getFormattedRevenueValue(value.toDouble())
-                else -> ""
-            }
+            return getFormattedRevenueValue(value.toDouble())
         }
     }
 }

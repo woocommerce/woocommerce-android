@@ -196,6 +196,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setLabelCount(2, true) // Only show first and last date
 
                 valueFormatter = StartEndDateAxisFormatter()
+                yOffset = resources.getDimension(R.dimen.chart_axis_bottom_padding)
             }
 
             axisRight.isEnabled = false
@@ -339,9 +340,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             }
 
             with(axisLeft) {
-                labelCount = 3
+                setLabelCount(3, true)
                 valueFormatter = RevenueAxisFormatter()
-                spaceBottom = resources.getDimension(R.dimen.chart_axis_bottom_padding)
             }
         }
 
@@ -614,12 +614,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      */
     private inner class RevenueAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return when (value) {
-                0f -> value.toInt().toString()
-                axis.mEntries.first() -> getFormattedRevenueValue(value.toDouble())
-                axis.mEntries.max() -> getFormattedRevenueValue(value.toDouble())
-                else -> ""
-            }
+            return getFormattedRevenueValue(value.toDouble())
         }
     }
 }
