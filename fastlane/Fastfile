@@ -274,7 +274,7 @@ lane :localize_libs do | options |
   end
 end
 
-#####################################################################################
+  #####################################################################################
   # download_metadata_string 
   # -----------------------------------------------------------------------------------
   # This lane downloads the translated metadata (release notes,
@@ -308,6 +308,38 @@ end
     add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end 
+
+  #####################################################################################
+  # screenshots 
+  # -----------------------------------------------------------------------------------
+  # This lane creates screenshots
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane screenshots
+  #
+  # Example:
+  # fastlane screenshots
+  #####################################################################################
+  desc "Create raw screenshots"
+  lane :screenshots do |options|
+    # Build the app and test targets
+    gradle(task: "assembleVanillaDebug assembleVanillaDebugAndroidTest")
+
+    capture_android_screenshots(
+      app_package_name: "com.woocommerce.android",
+      locales: ["en-US", "fr-FR", "ja-JP"],
+      clear_previous_screenshots: true,
+      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
+      app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
+      tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
+      test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
+      reinstall_app: true,
+      launch_arguments: [
+        "disableMocks true",
+      ]
+    )
+  end
+
 
 ########################################################################
 # Helper Lanes

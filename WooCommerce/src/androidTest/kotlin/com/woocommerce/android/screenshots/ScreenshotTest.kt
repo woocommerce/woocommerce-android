@@ -1,15 +1,36 @@
 package com.woocommerce.android.screenshots
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.orders.OrderListScreen
+import com.woocommerce.android.screenshots.orders.OrderSearchScreen
+import com.woocommerce.android.screenshots.orders.SingleOrderScreen
+import com.woocommerce.android.screenshots.products.ProductListScreen
+import com.woocommerce.android.screenshots.products.SingleProductScreen
+import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
+import com.woocommerce.android.screenshots.reviews.SingleReviewScreen
+import com.woocommerce.android.ui.main.MainActivity
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import tools.fastlane.screengrab.Screengrab
+import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
+import tools.fastlane.screengrab.locale.LocaleTestRule
 
+@RunWith(AndroidJUnit4::class)
 class ScreenshotTest {
-    private val screenshotTestRule = ScreenshotTestRule()
+    @Rule @JvmField
+    val localeTestRule = LocaleTestRule()
+
+    @get:Rule
+    var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Test
     fun screenshots() {
-        screenshotTestRule.launch()
+//        activityRule.launchActivity(null)
+        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
 
         WelcomeScreen.logoutIfNeeded()
                 .selectLogin()
@@ -26,30 +47,30 @@ class ScreenshotTest {
                 // My Store
                 .dismissTopBannerIfNeeded()
                 .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
-                // Take dashboard screenshot
+                .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
 
                 // Orders
                 .tabBar.gotoOrdersScreen()
-                // Take order list screenshot
+                .thenTakeScreenshot<OrderListScreen>("order-list")
                 .selectOrder(0)
-                // Take order detail screenshot
+                .thenTakeScreenshot<SingleOrderScreen>("order-detail")
                 .goBackToOrdersScreen()
 
                 .openSearchPane()
-                // Take order search screenshot
+                .thenTakeScreenshot<OrderSearchScreen>("order-search")
                 .cancel()
 
                 // Reviews
                 .tabBar.gotoReviewsScreen()
-                // Take review list screenshot
+                .thenTakeScreenshot<ReviewsListScreen>("review-list")
                 .selectReview(3)
-                // Take review detail screenshot
+                .thenTakeScreenshot<SingleReviewScreen>("review-details")
                 .goBackToReviewsScreen()
 
                 // Products
                 .tabBar.gotoProductsScreen()
-                // Take product list screenshot
+                .thenTakeScreenshot<ProductListScreen>("product-list")
                 .selectProduct(1)
-                // Take product detail screenshot
+                .thenTakeScreenshot<SingleProductScreen>("product-details")
     }
 }

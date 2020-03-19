@@ -1,6 +1,7 @@
 package com.woocommerce.android.screenshots.util
 
 import android.app.Activity
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
@@ -32,6 +33,7 @@ import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
+import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
 
 open class Screen {
@@ -43,6 +45,7 @@ open class Screen {
     }
 
     companion object {
+        var screenshotCount: Int = 0
         fun isVisible(): Boolean {
             return false
         }
@@ -50,10 +53,18 @@ open class Screen {
 
     inline fun <reified T> then(closure: (T) -> Unit): T {
         closure(this as T)
+        return this
+    }
 
-        // This will fail if the `Screen` subclass constructor requires parameters.
-        // For now, perhaps avoid doing that.
-        return T::class.java.newInstance()
+    inline fun <reified T> thenTakeScreenshot(name: String): T {
+        screenshotCount += 1
+        val screenshotName = "$screenshotCount-$name"
+        try {
+            Screengrab.screenshot(screenshotName)
+        } catch (e: Throwable) {
+            Log.w("screenshots", "Error capturing $screenshotName", e)
+        }
+        return this as T
     }
 
     fun clickOn(elementID: Int) {
