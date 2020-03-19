@@ -191,7 +191,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                             Stat.PRODUCT_IMAGE_ADDED,
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    viewModel.uploadProductImages(uriList)
+                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
                 RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
@@ -199,11 +199,11 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    viewModel.uploadProductImages(uriList)
+                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
                 RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
                     if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
-                        viewModel.reloadProductImages()
+                        viewModel.reloadProductImages(viewModel.getRemoteProductId())
                     }
                 }
             }
