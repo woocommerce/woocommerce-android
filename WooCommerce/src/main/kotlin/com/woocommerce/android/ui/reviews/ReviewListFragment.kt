@@ -275,9 +275,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        if (isActive) {
-            notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
-        }
+        notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showSkeleton(show: Boolean) {
