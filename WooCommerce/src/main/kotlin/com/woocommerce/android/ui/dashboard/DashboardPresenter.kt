@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -8,6 +9,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.widgets.WidgetUpdater.StatsWidgetUpdaters
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
@@ -40,7 +42,9 @@ class DashboardPresenter @Inject constructor(
     private val wcStatsStore: WCStatsStore,
     private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized!
     private val selectedSite: SelectedSite,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val statsWidgetUpdaters: StatsWidgetUpdaters // used to update stats widget
 ) : DashboardContract.Presenter {
     companion object {
         private val TAG = DashboardPresenter::class.java
@@ -97,6 +101,11 @@ class DashboardPresenter @Inject constructor(
         // fetch visitor stats
         val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
+
+        // update stats widget if new stats API is supported
+        if (appPrefsWrapper.isUsingV4Api) {
+            statsWidgetUpdaters.updateTodayWidget()
+        }
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
