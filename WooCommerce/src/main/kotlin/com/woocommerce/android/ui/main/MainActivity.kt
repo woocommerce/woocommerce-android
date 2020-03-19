@@ -337,10 +337,12 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderNoteFragment -> {
                     true
                 }
+                R.id.productDetailFragment -> {
+                    // show Cross icon only when product detail isn't opened from the product list
+                    bottomNavView.currentPosition != PRODUCTS
+                }
                 else -> {
-                    // display CROSS icon in product detail screen only if product opened from order or top earners
-                    // UP icons should be displayed if product opened from products TAB
-                    destination.id == R.id.productDetailFragment && bottomNavView.currentPosition != PRODUCTS
+                    false
                 }
             }
             showBottomNav = when (destination.id) {
