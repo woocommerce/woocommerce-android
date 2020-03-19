@@ -331,7 +331,6 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
-                R.id.productDetailFragment,
                 R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
@@ -339,7 +338,9 @@ class MainActivity : AppUpgradeActivity(),
                     true
                 }
                 else -> {
-                    false
+                    // display CROSS icon in product detail screen only if product opened from order or top earners
+                    // UP icons should be displayed if product opened from products TAB
+                    destination.id == R.id.productDetailFragment && bottomNavView.currentPosition != PRODUCTS
                 }
             }
             showBottomNav = when (destination.id) {
