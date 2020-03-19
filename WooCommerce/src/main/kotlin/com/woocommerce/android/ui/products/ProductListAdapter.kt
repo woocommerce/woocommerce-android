@@ -55,10 +55,6 @@ class ProductListAdapter(
             null
         }
 
-        if (!product.manageStock) {
-            return statusHtml
-        }
-
         val stock = when (product.stockStatus) {
             InStock -> {
                 if (product.type == VARIABLE) {
@@ -71,10 +67,14 @@ class ProductListAdapter(
                         context.getString(R.string.product_stock_status_instock)
                     }
                 } else {
-                    context.getString(
-                            R.string.product_stock_count,
-                            FormatUtils.formatInt(product.stockQuantity)
-                    )
+                    if (product.stockQuantity > 0) {
+                        context.getString(
+                                R.string.product_stock_count,
+                                FormatUtils.formatInt(product.stockQuantity)
+                        )
+                    } else {
+                        context.getString(R.string.product_stock_status_instock)
+                    }
                 }
             }
             OutOfStock -> {
