@@ -25,7 +25,7 @@ abstract class StatsWidget : AppWidgetProvider() {
         if (appWidgetId > -1) {
             widgetUpdater.updateAppWidget(
                     context,
-                    appWidgetId = appWidgetId
+                    appWidgetId
             )
         }
     }
