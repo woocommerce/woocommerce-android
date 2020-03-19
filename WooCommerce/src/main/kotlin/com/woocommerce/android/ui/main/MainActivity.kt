@@ -331,12 +331,15 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
-                R.id.productDetailFragment,
                 R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment -> {
                     true
+                }
+                R.id.productDetailFragment -> {
+                    // show Cross icon only when product detail isn't opened from the product list
+                    bottomNavView.currentPosition != PRODUCTS
                 }
                 else -> {
                     false
