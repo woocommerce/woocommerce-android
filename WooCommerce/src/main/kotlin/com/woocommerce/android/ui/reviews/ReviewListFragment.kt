@@ -281,14 +281,12 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun showSkeleton(show: Boolean) {
-        if (isActive) {
-            when (show) {
-                true -> {
-                    skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
-                    showEmptyView(false)
-                }
-                false -> skeletonView.hide()
+        when (show) {
+            true -> {
+                skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+                showEmptyView(false)
             }
+            false -> skeletonView.hide()
         }
     }
 
