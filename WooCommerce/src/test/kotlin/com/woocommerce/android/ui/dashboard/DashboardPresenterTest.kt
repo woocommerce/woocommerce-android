@@ -10,9 +10,11 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.widgets.WidgetUpdater.StatsWidgetUpdaters
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -49,6 +51,8 @@ class DashboardPresenterTest {
     private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val statsWidgetUpdaters: StatsWidgetUpdaters = mock()
 
     private lateinit var presenter: DashboardPresenter
 
@@ -57,7 +61,9 @@ class DashboardPresenterTest {
     @Before
     fun setup() {
         presenter = spy(DashboardPresenter(
-                dispatcher, wooCommerceStore, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
+                dispatcher, wooCommerceStore, wcStatsStore,
+                wcOrderStore, selectedSite, networkStatus, appPrefsWrapper, statsWidgetUpdaters
+        ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
