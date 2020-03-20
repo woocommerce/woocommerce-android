@@ -51,8 +51,8 @@ class ProductImagesService : JobIntentService() {
 
         // posted when a single image has been uploaded
         class OnProductImageUploaded(
-            val media: MediaModel,
-            val isError: Boolean
+            val media: MediaModel? = null,
+            val isError: Boolean = false
         )
 
         fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
@@ -73,7 +73,6 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var doneSignal: CountDownLatch? = null
-    private var didLastUploadFail = false
 
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
@@ -186,9 +185,8 @@ class ProductImagesService : JobIntentService() {
                 handleFailure()
             }
             event.completed -> {
-                // the image uploaded successfully, notify that this upload completed
-                EventBus.getDefault().post(OnProductImageUploaded(event.media, isError = didLastUploadFail))
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
+                handleSuccess(event.media)
             } else -> {
                 // otherwise this is an upload progress event, so update the notification progress
                 val progress = (event.progress * 100).toInt()
@@ -197,9 +195,14 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
-    private fun handleFailure() {
-        didLastUploadFail = true
+    private fun handleSuccess(uploadedMedia: MediaModel) {
         countDown()
+        EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
+    }
+
+    private fun handleFailure() {
+        countDown()
+        EventBus.getDefault().post(OnProductImageUploaded(isError = true))
     }
 
     private fun countDown() {

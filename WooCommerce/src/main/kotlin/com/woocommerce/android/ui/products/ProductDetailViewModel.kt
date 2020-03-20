@@ -666,7 +666,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            addProductImage(event.media)
+            event.media?.let {
+                addProductImage(it)
+            }
         }
         checkImageUploads(getRemoteProductId())
     }
