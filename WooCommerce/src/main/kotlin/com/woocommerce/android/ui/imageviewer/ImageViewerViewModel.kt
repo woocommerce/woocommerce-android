@@ -81,12 +81,10 @@ class ImageViewerViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploaded) {
-        if (remoteProductId == event.remoteProductId) {
-            if (event.isError) {
-                _showSnackbarMessage.value = R.string.product_image_error_removing
-            } else {
-                loadProduct()
-            }
+        if (event.isError) {
+            _showSnackbarMessage.value = R.string.product_image_error_removing
+        } else {
+            loadProduct()
         }
     }
 

@@ -19,6 +19,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
@@ -51,7 +52,9 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.util.DateTimeUtils
 import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Date
@@ -663,9 +666,35 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            loadProduct(event.remoteProductId)
+            addProductImage(event.media)
         }
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(getRemoteProductId())
+    }
+
+    /**
+     * Called after product image has been uploaded to add the uploaded image to the draft product
+     */
+    fun addProductImage(media: MediaModel) {
+        // create a new image list and add the passed media first...
+        val imageList = ArrayList<Image>().also {
+            it.add(
+                    Image
+                    (
+                            media.mediaId,
+                            media.fileName,
+                            media.url,
+                            DateTimeUtils.dateFromIso8601(media.uploadDate)
+                    )
+            )
+        }
+
+        // ...then add the existing product images to the new list...
+        viewState.product?.let {
+            imageList.addAll(it.images)
+        }
+
+        // ...and then update the draft with the new list
+        updateProductDraft(images = imageList)
     }
 
     /**

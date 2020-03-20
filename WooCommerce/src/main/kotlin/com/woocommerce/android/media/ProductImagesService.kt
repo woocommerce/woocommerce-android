@@ -15,22 +15,18 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
-import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.Inject
 
 /**
- * Service which uploads device images to the WP media library and assigns them to a product
+ * Service which uploads device images to the WP media library to be later assigned to a product
  */
 class ProductImagesService : JobIntentService() {
     companion object {
@@ -55,7 +51,7 @@ class ProductImagesService : JobIntentService() {
 
         // posted when a single image has been uploaded
         class OnProductImageUploaded(
-            val remoteProductId: Long,
+            val media: MediaModel,
             val isError: Boolean
         )
 
@@ -158,9 +154,6 @@ class ProductImagesService : JobIntentService() {
                 }
                 currentUploads.put(remoteProductId, newList)
             }
-
-            // notify that this upload completed
-            EventBus.getDefault().post(OnProductImageUploaded(remoteProductId, isError = didLastUploadFail))
         }
 
         currentUploads.remove(remoteProductId)
@@ -193,8 +186,8 @@ class ProductImagesService : JobIntentService() {
                 handleFailure()
             }
             event.completed -> {
-                // the image uploaded successfully, so assign it to the product
-                dispatchAddMediaAction(event.media)
+                // the image uploaded successfully, notify that this upload completed
+                EventBus.getDefault().post(OnProductImageUploaded(event.media, isError = didLastUploadFail))
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
             } else -> {
                 // otherwise this is an upload progress event, so update the notification progress
@@ -204,11 +197,25 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
+    private fun handleFailure() {
+        didLastUploadFail = true
+        countDown()
+    }
+
+    private fun countDown() {
+        doneSignal?.let {
+            if (it.count > 0) {
+                it.countDown()
+            }
+        }
+    }
+
+    // TODO: this should be removed before submitting this PR
     /**
      * Called after device media has been uploaded to dispatch a request to assign the uploaded media
      * to the product
      */
-    private fun dispatchAddMediaAction(media: MediaModel) {
+    /*private fun dispatchAddMediaAction(media: MediaModel) {
         val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
         if (product == null) {
             WooLog.w(T.MEDIA, "productImagesService > product is null")
@@ -238,23 +245,5 @@ class ProductImagesService : JobIntentService() {
             WooLog.i(T.MEDIA, "productImagesService > product images changed")
             handleSuccess()
         }
-    }
-
-    private fun handleSuccess() {
-        didLastUploadFail = false
-        countDown()
-    }
-
-    private fun handleFailure() {
-        didLastUploadFail = true
-        countDown()
-    }
-
-    private fun countDown() {
-        doneSignal?.let {
-            if (it.count > 0) {
-                it.countDown()
-            }
-        }
-    }
+    }*/
 }
