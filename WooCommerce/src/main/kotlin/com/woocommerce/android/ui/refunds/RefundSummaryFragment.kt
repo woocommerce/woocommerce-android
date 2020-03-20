@@ -76,6 +76,9 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
                 refundSummary_btnRefund.isEnabled = new.isFormEnabled
                 refundSummary_reason.isEnabled = new.isFormEnabled
             }
+            new.isSubmitButtonEnabled?.takeIfNotEqualTo(old?.isSubmitButtonEnabled) {
+                refundSummary_btnRefund.isEnabled = new.isSubmitButtonEnabled
+            }
             new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) { refundSummary_refundAmount.text = it }
             new.previouslyRefunded?.takeIfNotEqualTo(old?.previouslyRefunded) {
                 refundSummary_previouslyRefunded.text = it
@@ -97,9 +100,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
 
         refundSummary_reason.doOnTextChanged { _, _, _, _ ->
             val maxLength = refundSummary_reasonLayout.counterMaxLength
-            refundSummary_reason.length().let {
-                refundSummary_btnRefund.isEnabled = it <= maxLength
-            }
+            viewModel.onRefundSummaryTextChanged(maxLength, refundSummary_reason.length())
         }
     }
 

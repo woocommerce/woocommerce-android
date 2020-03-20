@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/major_75"
                     app:counterEnabled="true"
-                    app:counterMaxLength="255"
+                    app:counterMaxLength="@integer/maxlength_order_refund_summary_reason"
                     android:hint="@string/order_refunds_reason_hint" >
 
                     <com.google.android.material.textfield.TextInputEditText
