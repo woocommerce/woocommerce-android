@@ -1,11 +1,15 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -53,7 +57,9 @@ data class Product(
     val attributes: List<Attribute>,
     val dateOnSaleToGmt: Date?,
     val dateOnSaleFromGmt: Date?,
-    val soldIndividually: Boolean
+    val soldIndividually: Boolean,
+    val taxStatus: ProductTaxStatus,
+    val isSaleScheduled: Boolean
 ) : Parcelable {
     @Parcelize
     data class Image(
@@ -82,9 +88,68 @@ data class Product(
                 sku == product.sku &&
                 type == product.type &&
                 numVariations == product.numVariations &&
-                name == product.name &&
+                name.fastStripHtml() == product.name.fastStripHtml() &&
                 description == product.description &&
-                images == product.images
+                images == product.images &&
+                taxClass == product.taxClass &&
+                taxStatus == product.taxStatus &&
+                isSaleScheduled == product.isSaleScheduled &&
+                dateOnSaleToGmt == product.dateOnSaleToGmt &&
+                dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
+                regularPrice == product.regularPrice &&
+                salePrice == product.salePrice &&
+                weight == product.weight &&
+                length == product.length &&
+                height == product.height &&
+                width == product.width &&
+                shippingClass == product.shippingClass
+    }
+
+    /**
+     * Verifies if there are any changes made to the inventory fields
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasInventoryChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            sku != it.sku ||
+                    manageStock != it.manageStock ||
+                    stockStatus != it.stockStatus ||
+                    stockQuantity != it.stockQuantity ||
+                    backorderStatus != it.backorderStatus ||
+                    soldIndividually != it.soldIndividually
+        } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes made to the pricing fields
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasPricingChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            regularPrice != it.regularPrice ||
+                    salePrice != it.salePrice ||
+                    dateOnSaleFromGmt != it.dateOnSaleFromGmt ||
+                    dateOnSaleToGmt != it.dateOnSaleToGmt ||
+                    taxClass != it.taxClass ||
+                    taxStatus != it.taxStatus
+        } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes made to the shipping fields
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasShippingChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            weight != it.weight ||
+                    length != it.length ||
+                    width != it.width ||
+                    height != it.height ||
+                    shippingClass != it.shippingClass
+        } ?: false
     }
 
     /**
@@ -106,9 +171,53 @@ data class Product(
                     stockStatus = updatedProduct.stockStatus,
                     stockQuantity = updatedProduct.stockQuantity,
                     backorderStatus = updatedProduct.backorderStatus,
-                    soldIndividually = updatedProduct.soldIndividually
+                    soldIndividually = updatedProduct.soldIndividually,
+                    regularPrice = updatedProduct.regularPrice,
+                    salePrice = updatedProduct.salePrice,
+                    isSaleScheduled = updatedProduct.isSaleScheduled,
+                    dateOnSaleFromGmt = updatedProduct.dateOnSaleFromGmt,
+                    dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
+                    taxStatus = updatedProduct.taxStatus,
+                    taxClass = updatedProduct.taxClass,
+                    length = updatedProduct.length,
+                    width = updatedProduct.width,
+                    height = updatedProduct.height,
+                    weight = updatedProduct.weight,
+                    shippingClass = updatedProduct.shippingClass
             )
         } ?: this.copy()
+    }
+
+    /**
+     * Formats the [Product] weight with the given [weightUnit]
+     * for display purposes.
+     * Eg: 12oz
+     */
+    fun getWeightWithUnits(weightUnit: String?): String {
+        return if (weight > 0) {
+            "${weight.formatToString()}${weightUnit ?: ""}"
+        } else ""
+    }
+
+    /**
+     * Formats the [Product] size (length, width, height) with the given [dimensionUnit]
+     * if all the dimensions are available.
+     * Eg: 12 x 15 x 13 in
+     */
+    fun getSizeWithUnits(dimensionUnit: String?): String {
+        val hasLength = length > 0
+        val hasWidth = width > 0
+        val hasHeight = height > 0
+        val unit = dimensionUnit ?: ""
+        return if (hasLength && hasWidth && hasHeight) {
+            "${length.formatToString()} " +
+                    "x ${width.formatToString()} " +
+                    "x ${height.formatToString()} $unit"
+        } else if (hasWidth && hasHeight) {
+            "${width.formatToString()} x ${height.formatToString()} $unit"
+        } else {
+            ""
+        }.trim()
     }
 }
 
@@ -123,46 +232,66 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.stockQuantity = stockQuantity
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
+        it.regularPrice = regularPrice.toString()
+        it.salePrice = salePrice.toString()
+        it.length = length.toString()
+        it.width = width.toString()
+        it.weight = weight.toString()
+        it.height = height.toString()
+        it.shippingClass = shippingClass
+        it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
+        it.taxClass = taxClass
+        if (isSaleScheduled) {
+            dateOnSaleFromGmt?.let { dateOnSaleFrom ->
+                it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
+            }
+            dateOnSaleToGmt?.let { dateOnSaleTo ->
+                it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDDhhmmss()
+            }
+        } else {
+            it.dateOnSaleFromGmt = ""
+            it.dateOnSaleToGmt = ""
+        }
     }
 }
 
 fun WCProductModel.toAppModel(): Product {
     return Product(
-        this.remoteProductId,
-        this.name,
-        this.description,
-        ProductType.fromString(this.type),
-        ProductStatus.fromString(this.status),
-        ProductStockStatus.fromString(this.stockStatus),
-        ProductBackorderStatus.fromString(this.backorders),
-        DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
-        this.getFirstImageUrl(),
-        this.totalSales,
-        this.reviewsAllowed,
-        this.virtual,
-        this.ratingCount,
-        this.averageRating.toFloatOrNull() ?: 0f,
-        this.permalink,
-        this.externalUrl,
-        this.price.toBigDecimalOrNull()?.roundError(),
-        this.salePrice.toBigDecimalOrNull()?.roundError(),
-        this.regularPrice.toBigDecimalOrNull()?.roundError(),
-        this.taxClass,
-        this.manageStock,
-        this.stockQuantity,
-        this.sku,
-        this.length.toFloatOrNull() ?: 0f,
-        this.width.toFloatOrNull() ?: 0f,
-        this.height.toFloatOrNull() ?: 0f,
-        this.weight.toFloatOrNull() ?: 0f,
-        this.shippingClass,
-        this.downloadable,
-        this.getDownloadableFiles().size,
-        this.downloadLimit,
-        this.downloadExpiry,
-        this.purchaseNote,
-        this.getNumVariations(),
-        this.getImages().map {
+        remoteId = this.remoteProductId,
+        name = this.name,
+        description = this.description,
+        type = ProductType.fromString(this.type),
+        status = ProductStatus.fromString(this.status),
+        stockStatus = ProductStockStatus.fromString(this.stockStatus),
+        backorderStatus = ProductBackorderStatus.fromString(this.backorders),
+        dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
+        firstImageUrl = this.getFirstImageUrl(),
+        totalSales = this.totalSales,
+        reviewsAllowed = this.reviewsAllowed,
+        isVirtual = this.virtual,
+        ratingCount = this.ratingCount,
+        averageRating = this.averageRating.toFloatOrNull() ?: 0f,
+        permalink = this.permalink,
+        externalUrl = this.externalUrl,
+        price = this.price.toBigDecimalOrNull()?.roundError(),
+        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
+        taxClass = this.taxClass,
+        manageStock = this.manageStock,
+        stockQuantity = this.stockQuantity,
+        sku = this.sku,
+        length = this.length.toFloatOrNull() ?: 0f,
+        width = this.width.toFloatOrNull() ?: 0f,
+        height = this.height.toFloatOrNull() ?: 0f,
+        weight = this.weight.toFloatOrNull() ?: 0f,
+        shippingClass = this.shippingClass,
+        isDownloadable = this.downloadable,
+        fileCount = this.getDownloadableFiles().size,
+        downloadLimit = this.downloadLimit,
+        downloadExpiry = this.downloadExpiry,
+        purchaseNote = this.purchaseNote,
+        numVariations = this.getNumVariations(),
+        images = this.getImages().map {
             Product.Image(
                     it.id,
                     it.name,
@@ -170,7 +299,7 @@ fun WCProductModel.toAppModel(): Product {
                     DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
-        this.getAttributes().map {
+        attributes = this.getAttributes().map {
             Product.Attribute(
                     it.id,
                     it.name,
@@ -178,9 +307,11 @@ fun WCProductModel.toAppModel(): Product {
                     it.visible
             )
         },
-        this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        this.soldIndividually
+        dateOnSaleToGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
+        dateOnSaleFromGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        soldIndividually = this.soldIndividually,
+        taxStatus = ProductTaxStatus.fromString(this.taxStatus),
+        isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()
     )
 }
 

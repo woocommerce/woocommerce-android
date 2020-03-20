@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-02-03 02:54:03+0000
+Translation-Revision-Date: 2020-03-05 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_tax_status_shipping">配送</string>
+    <string name="product_tax_status_taxable">应纳税</string>
+    <string name="product_tax_status_none">无</string>
+    <string name="product_tax_class_standard">标准税率</string>
+    <string name="product_tax_class">税类</string>
+    <string name="product_tax_status">税收状态</string>
+    <string name="product_tax_settings">税收设置</string>
+    <string name="product_schedule_sale_to_label">结束日期</string>
+    <string name="product_schedule_sale_from_label">开始日期</string>
+    <string name="product_schedule_sale_sublabel">自动开始和结束销售</string>
+    <string name="product_schedule_sale_label">安排促销</string>
+    <string name="order_refunds_store_admin_link_text">在您的店铺管理页面中</string>
+    <string name="order_refunds_shipping_refund_notice">您可以退还运费和税款 %s</string>
+    <string name="orders_empty_message_with_order_status_filter">抱歉，找不到任何“%s”的订单</string>
+    <string name="product_inventory_update_sku_error">SKU 已用于其他产品</string>
+    <string name="product_shipping_settings">配送选项</string>
+    <string name="product_no_shipping_class">无配送类型</string>
+    <string name="product_dimensions">尺寸</string>
+    <string name="product_height">高度</string>
+    <string name="product_width">宽度</string>
+    <string name="product_length">长度</string>
+    <string name="order_refunds_refund_info_title">退款产品</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s（通过 %2$s）</string>
+    <string name="order_refunds_confirmation">是否确定要发放退款？此操作无法撤消。</string>
+    <string name="orderdetail_refunded_products">退款产品</string>
+    <string name="refunds">退款</string>
+    <string name="sign_up">注册 WordPress.com</string>
+    <string name="empty_message_with_search">抱歉，我们找不到与“%s”匹配的结果</string>
+    <string name="empty_review_list_message">为您的商店获取高质量的产品评论</string>
+    <string name="empty_review_list_title">获取首个评论</string>
+    <string name="empty_order_list_all_processed">已完成所有订单</string>
+    <string name="empty_order_list_message">我们会在您收到新订单时通知您。同时，探索如何提高您的商店销售额。</string>
+    <string name="empty_order_list_title">正在等待您的首个订单</string>
+    <string name="share_your_store_message">通过社交媒体和电子邮件与您的联系人共享您的商店</string>
+    <string name="get_the_word_out">分享您的商店信息</string>
+    <string name="product_inventory_quantity_summary">库存数量</string>
+    <string name="product_inventory_quantity">数量</string>
+    <string name="product_sold_individually">每个订单限一个</string>
+    <string name="product_manage_stock">管理库存</string>
+    <string name="product_sku_summary">有助于轻松识别此产品</string>
+    <string name="product_sale_date_from">自 %1$s</string>
+    <string name="product_sale_date_from_to">%1$s - %2$s</string>
+    <string name="product_sale_dates">销售日期</string>
+    <string name="product_price_empty">添加价格</string>
+    <string name="product_inventory_empty">添加库存</string>
+    <string name="orderlist_loading">正在查找您的订单…</string>
     <string name="product_detail_editable_text_hint">输入文本</string>
     <string name="product_detail_title_hint">输入标题</string>
     <string name="product_detail_update_product_success">产品已更新</string>
@@ -125,8 +172,7 @@ Language: zh_CN
     <string name="order_refunds_title_with_amount">退款 %s</string>
     <string name="order_refunds_available_for_refund">%s 可用于退款</string>
     <string name="orderdetail_issue_refund_button">发放退款</string>
-    <string name="orderdetail_refund_view_details">查看详细信息</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
+    <string name="orderdetail_refund_detail">%1$s（通过 %2$s）</string>
     <string name="settings_enable_v4_stats_message">试用新的统计页面（适用于\nWooCommerce Admin 插件）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
     <string name="beta_features">测试版功能</string>
@@ -529,9 +575,6 @@ Language: zh_CN
     <string name="app_rating_title">喜欢 Woo？</string>
     <string name="settings_selected_store">已选商店</string>
     <string name="orders_empty_message_with_search">没有匹配的订单</string>
-    <string name="orders_empty_message_with_filter">没有订单</string>
-    <string name="waiting_for_customers_contentdesc">等待客户图片</string>
-    <string name="waiting_for_customers">等待客户</string>
     <string name="share_store_dialog_title">共享您商店的 URL</string>
     <string name="share_store_button">共享您的商店</string>
     <string name="wc_mark_all_read_success">所有评论均已标记为已读</string>

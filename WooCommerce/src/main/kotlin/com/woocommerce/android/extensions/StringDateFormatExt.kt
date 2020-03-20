@@ -139,3 +139,20 @@ fun String?.formatDateToISO8601Format(): Date? {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd'T'HH:mm:ss: $this")
     }
 }
+
+/**
+ * Method to convert month string from yyyy-MM-dd format to MMM dd
+ * i.e. 2018-08-08T08:12:03 is formatted to Aug 08
+ */
+@Throws(IllegalArgumentException::class)
+fun String?.formatDateToYYYYMMDDFormat(): Date? {
+    return try {
+        if (!this.isNullOrEmpty()) {
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return originalFormat.parse(this)
+        }
+        null
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+    }
+}

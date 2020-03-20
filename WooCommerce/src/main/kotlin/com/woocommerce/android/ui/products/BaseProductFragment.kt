@@ -20,11 +20,11 @@ import javax.inject.Inject
 
 /**
  * All product related fragments should extend this class to provide a consistent method
- * of displaying snackbar and discard dialogs
+ * of displaying snackbar, handling navigation and discard dialogs
  */
 abstract class BaseProductFragment : BaseFragment(), BackPressListener {
+    @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
@@ -46,6 +46,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                         event.positiveBtnAction,
                         event.negativeBtnAction
                 )
+                is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })

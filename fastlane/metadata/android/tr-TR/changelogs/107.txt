@@ -1,2 +1,0 @@
-3.5:
-Yeni başlıyorsanız ve uygulamanın listede göstereceği herhangi bir şey yoksa (ör. ilk siparişinizi ve yorumunuzu almadan önce) başlangıç yapmanıza yardımcı olabilecek bir mesaj görürsünüz.

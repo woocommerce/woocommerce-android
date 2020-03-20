@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
@@ -145,7 +146,7 @@ class ReviewDetailFragment : BaseFragment() {
 
         // Populate reviewed product info
         review.product?.let { product ->
-            review_product_name.text = product.name
+            review_product_name.text = product.name.fastStripHtml()
             review_open_product.setOnClickListener {
                 AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(activity as Context, product.externalUrl)

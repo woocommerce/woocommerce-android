@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.Order.Address
 import com.woocommerce.android.model.Order.Address.Type.BILLING
@@ -150,7 +151,7 @@ fun WCOrderModel.toAppModel(): Order {
                         Item(
                                 it.id!!,
                                 it.productId!!,
-                                it.name ?: "",
+                                it.name?.fastStripHtml() ?: "",
                                 it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.sku ?: "",
                                 it.quantity?.toInt() ?: 0,
