@@ -667,7 +667,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             event.media?.let {
-                addProductImage(it)
+                addProductImageToDraft(it)
             }
         }
         checkImageUploads(getRemoteProductId())
@@ -676,7 +676,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called after product image has been uploaded to add the uploaded image to the draft product
      */
-    fun addProductImage(media: MediaModel) {
+    fun addProductImageToDraft(media: MediaModel) {
         // create a new image list and add the passed media first...
         val imageList = ArrayList<Image>().also {
             it.add(
