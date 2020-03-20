@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -14,8 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -60,10 +59,9 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_help.*
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.container_main_child.*
-import kotlinx.android.synthetic.main.container_main_top.*
+import kotlinx.android.synthetic.main.container_child.*
+import kotlinx.android.synthetic.main.container_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -84,6 +82,8 @@ class MainActivity : AppUpgradeActivity(),
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
+        private const val KEY_TOOLBAR_TITLE_MAIN = "toolbar-title-main"
+        private const val KEY_TOOLBAR_TITLE_CHILD = "toolbar-title-child"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -115,6 +115,7 @@ class MainActivity : AppUpgradeActivity(),
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
     private var childToolbarTitle: String? = null
+    private var mainToolbarTitle: String? = null
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -127,20 +128,18 @@ class MainActivity : AppUpgradeActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+
         // Set the main toolbar
         setSupportActionBar(toolbar_main as MaterialToolbar)
 
         presenter.takeView(this)
 
+        restoreSavedInstanceState(savedInstanceState)
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
-
-        // Configure the navController to work with the secondary child toolbar properly.
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        (toolbar_child as Toolbar).setupWithNavController(navController, appBarConfiguration)
-
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -167,7 +166,9 @@ class MainActivity : AppUpgradeActivity(),
             fetchRevenueStatsAvailability(selectedSite.get())
         }
 
-        initFragment(savedInstanceState)
+        if (savedInstanceState == null) {
+            initFragment()
+        }
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
@@ -191,10 +192,8 @@ class MainActivity : AppUpgradeActivity(),
         // don't show the options menu unless we're at the root
         if (isAtNavigationRoot()) {
             menuInflater.inflate(R.menu.menu_action_bar, menu)
-            return true
-        } else {
-            return false
         }
+        return true
     }
 
     override fun onResume() {
@@ -215,7 +214,7 @@ class MainActivity : AppUpgradeActivity(),
         super.onNewIntent(intent)
 
         setIntent(intent)
-        initFragment(null)
+        initFragment()
     }
 
     public override fun onDestroy() {
@@ -226,11 +225,13 @@ class MainActivity : AppUpgradeActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
         outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
+        outState.putString(KEY_TOOLBAR_TITLE_MAIN, mainToolbarTitle)
+        outState.putString(KEY_TOOLBAR_TITLE_CHILD, childToolbarTitle)
         super.onSaveInstanceState(outState)
     }
 
-    private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.also {
+    private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
             val id = it.getInt(KEY_BOTTOM_NAV_POSITION, DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
 
@@ -238,6 +239,11 @@ class MainActivity : AppUpgradeActivity(),
             if (count > 0) {
                 showOrderBadge(count)
             }
+
+            mainToolbarTitle = it.getString(KEY_TOOLBAR_TITLE_MAIN)
+            childToolbarTitle = it.getString(KEY_TOOLBAR_TITLE_CHILD)
+            setActiveToolbarTitle(mainToolbarTitle, true)
+            setActiveToolbarTitle(childToolbarTitle, false)
         }
     }
 
@@ -285,9 +291,13 @@ class MainActivity : AppUpgradeActivity(),
      * toolbar.
      */
     override fun setTitle(title: CharSequence?) {
-        if (isAtNavigationRoot()) {
+        title?.let { setActiveToolbarTitle(it.toString(), false) }
+    }
+
+    override fun setActiveToolbarTitle(title: String?, isTopLevelFragment: Boolean) {
+        if (isTopLevelFragment || isAtNavigationRoot()) {
             (toolbar_main as Toolbar).setTitle(title)
-            super.setTitle(title)
+            mainToolbarTitle = title.toString()
         } else {
             (toolbar_child as Toolbar).setTitle(title)
             childToolbarTitle = title.toString()
@@ -346,19 +356,19 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        val tabletModeEnabled = getActiveTopLevelFragment()?.let {
-            it.splitViewSupport
+        val splitScreenEnabled = getActiveTopLevelFragment()?.let {
+            it.splitViewSupported
         } ?: false
 
-        // show/hide the child fragment container depending on whether or not in tablet mode
+
         container_child.visibility = if (isAtRoot) View.GONE else View.VISIBLE
 
         // show/hide the top level fragment container depending on whether we're at the root
         if (isAtRoot) {
-            container_top.visibility = View.VISIBLE
+            container_main.visibility = View.VISIBLE
         } else {
-            if (!tabletModeEnabled) {
-                container_top.visibility = View.GONE
+            if (!splitScreenEnabled) {
+                container_main.visibility = View.GONE
             }
         }
 
@@ -397,20 +407,20 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-//        if (isAtRoot) {
-//            setSupportActionBar(toolbar_main as MaterialToolbar)
-//        } else {
-//            setSupportActionBar(toolbar_child as MaterialToolbar)
-//            supportActionBar?.let { actionBar ->
-//                actionBar.setDisplayHomeAsUpEnabled(true)
-//                @DrawableRes val icon = if (showCrossIcon) {
-//                    R.drawable.ic_gridicons_cross_white_24dp
-//                } else {
-//                    R.drawable.ic_back_white_24dp
-//                }
-//                actionBar.setHomeAsUpIndicator(icon)
-//            }
-//        }
+        if (isAtRoot) {
+            setSupportActionBar(toolbar_main as MaterialToolbar)
+        } else {
+            setSupportActionBar(toolbar_child as MaterialToolbar)
+            supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(true)
+                @DrawableRes val icon = if (showCrossIcon) {
+                    R.drawable.ic_gridicons_cross_white_24dp
+                } else {
+                    R.drawable.ic_back_white_24dp
+                }
+                actionBar.setHomeAsUpIndicator(icon)
+            }
+        }
 
         if (showBottomNav) {
             showBottomNav()
@@ -518,7 +528,7 @@ class MainActivity : AppUpgradeActivity(),
         // Complete UI initialization
 
         bottomNavView.init(supportFragmentManager, this)
-        initFragment(null)
+        initFragment()
     }
 
     /**
@@ -667,12 +677,10 @@ class MainActivity : AppUpgradeActivity(),
     // endregion
 
     // region Fragment Processing
-    private fun initFragment(savedInstanceState: Bundle?) {
+    private fun initFragment() {
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
 
-        if (savedInstanceState != null) {
-            restoreSavedInstanceState(savedInstanceState)
-        } else if (openedFromPush) {
+        if (openedFromPush) {
             // Opened from a push notification
             //
             // Reset this flag now that it's being processed

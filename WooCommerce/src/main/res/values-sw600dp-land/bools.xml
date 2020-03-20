@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item type="bool" name="is_tablet">true</item>
+    <item type="bool" name="split_screen_supported">true</item>
 </resources>

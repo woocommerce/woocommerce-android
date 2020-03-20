@@ -15,11 +15,15 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
     override var isActive: Boolean = false
         get() {
             return if (isAdded && !isHidden) {
-                (activity as? MainNavigationRouter)?.isAtNavigationRoot() ?: false
+                (activity as? MainNavigationRouter)?.isAtNavigationRoot() ?: false || splitViewSupported
             } else {
                 false
             }
         }
 
-    override val splitViewSupport = false
+    /**
+     * This method should return true if the current fragment and device supports split
+     * screen mode for tablets.
+     */
+    override val splitViewSupported = false
 }

@@ -6,7 +6,7 @@ package com.woocommerce.android.ui.base
 interface TopLevelFragmentView : BaseFragmentView {
     var isActive: Boolean
 
-    val splitViewSupport: Boolean
+    val splitViewSupported: Boolean
 
     /**
      * Refresh this top-level fragment data and reset its state.

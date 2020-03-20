@@ -24,15 +24,21 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <!-- container for top level fragments -->
-            <com.woocommerce.android.ui.base.MainContainerTop
-                android:id="@+id/container_top"
+            <com.woocommerce.android.ui.base.ContainerChild
+                android:id="@+id/container_main"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical"/>
 
+            <!-- vertical divider to separate the two view containers -->
+            <View
+                android:layout_width="@dimen/minor_10"
+                android:layout_height="match_parent"
+                android:background="@color/list_divider"/>
+
             <!-- container for child fragments in the nav graph -->
-            <com.woocommerce.android.ui.base.MainContainerChild
+            <com.woocommerce.android.ui.base.ContainerMain
                 android:id="@+id/container_child"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

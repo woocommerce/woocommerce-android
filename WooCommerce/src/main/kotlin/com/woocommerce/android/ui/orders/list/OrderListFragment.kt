@@ -38,11 +38,10 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.isTabletMode
+import com.woocommerce.android.util.isSplitScreenSupported
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.container_main_top.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.*
@@ -121,13 +120,12 @@ class OrderListFragment : TopLevelFragment(),
         TabLayout(requireContext(), null, R.attr.tabStyle)
     }
 
-    override var splitViewSupport: Boolean
+    override val splitViewSupported: Boolean
         get() {
             return context?.let {
-                isTabletMode(it)
+                isSplitScreenSupported(it)
             } ?: false
         }
-        set(value) {}
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -150,18 +148,23 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_list_fragment, menu)
+        if (!isChildFragmentShowing()) {
+            // only show the search option if the child view is not active.
+            // this would only happen in tablet mode.
+            inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
-        orderListMenu = menu
-        searchMenuItem = menu.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getString(R.string.orderlist_search_hint)
-
+            orderListMenu = menu
+            searchMenuItem = menu.findItem(R.id.menu_search)
+            searchView = searchMenuItem?.actionView as SearchView?
+            searchView?.queryHint = getString(R.string.orderlist_search_hint)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        refreshOptionsMenu()
+        if (!isChildFragmentShowing()) {
+            refreshOptionsMenu()
+        }
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -315,7 +318,7 @@ class OrderListFragment : TopLevelFragment(),
      * search menu item to collapse
      */
     private fun refreshOptionsMenu() {
-        if (!isChildFragmentShowing() && isSearching) {
+        if (isSearching) {
             enableSearchListeners()
             searchMenuItem?.expandActionView()
             if (isFilterEnabled) displayFilteredList()
@@ -342,9 +345,7 @@ class OrderListFragment : TopLevelFragment(),
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
 
     private fun shouldShowSearchMenuItem(): Boolean {
-        val isChildShowing = isChildFragmentShowing()
         return when {
-            (isChildShowing) -> false
             (isFilterEnabled) -> false
             else -> true
         }
@@ -459,15 +460,12 @@ class OrderListFragment : TopLevelFragment(),
      * fragment's menu will continue to appear when the child is shown
      */
     private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
         if (show) {
             refreshOptionsMenu()
         }
     }
 
     override fun openOrderDetail(remoteOrderId: Long) {
-        showOptionsMenu(false)
-//        removeTabLayoutFromAppBar(tabLayout)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }
 
@@ -584,7 +582,7 @@ class OrderListFragment : TopLevelFragment(),
             searchView?.post { searchMenuItem?.expandActionView() }
         } else {
             clearSearchResults()
-            searchMenuItem?.isVisible = true
+            searchMenuItem?.isVisible = shouldShowSearchMenuItem()
         }
         loadListForActiveTab()
         return true
