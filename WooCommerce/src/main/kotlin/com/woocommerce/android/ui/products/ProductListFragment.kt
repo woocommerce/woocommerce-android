@@ -20,8 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -87,6 +85,11 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                         DividerItemDecoration.VERTICAL, R.id.productName, clipToMargin = false
                 )
         )
+
+        // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
+        // and only processes the first click event. More details on this issue can be found here:
+        // https://github.com/woocommerce/woocommerce-android/issues/2074
+        productsRecycler.isMotionEventSplittingEnabled = false
 
         productsRefreshLayout?.apply {
             setColorSchemeColors(

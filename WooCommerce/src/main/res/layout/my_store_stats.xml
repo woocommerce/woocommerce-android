@@ -16,7 +16,8 @@
         <com.woocommerce.android.ui.dashboard.DashboardStatsBarChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:radius="@dimen/chart_bar_radius"/>
 
         <ImageView
             android:id="@+id/dashboard_stats_error"

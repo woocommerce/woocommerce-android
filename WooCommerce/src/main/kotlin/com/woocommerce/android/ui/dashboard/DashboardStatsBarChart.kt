@@ -7,16 +7,26 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarEntry
+import com.woocommerce.android.R
 import kotlin.math.abs
 
 /**
  * Creating a custom BarChart to fix this issue:
  * https://github.com/woocommerce/woocommerce-android/issues/1048
  */
-class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart(
+class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
         context,
         attrs
 ) {
+    init {
+        val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.DashboardStatsBarChart, 0, 0)
+        try {
+            setRadius(typedArray.getDimensionPixelSize(R.styleable.DashboardStatsBarChart_radius, 0).toFloat())
+        } finally {
+            typedArray.recycle()
+        }
+    }
+
     private val startTouchPoint = Point(0, 0)
 
     // Overriding this method from the Chart.java: line 719
@@ -87,5 +97,9 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
         }
 
         return super.onTouchEvent(event)
+    }
+
+    private fun setRadius(radius: Float) {
+        renderer = RoundedBarChartRenderer(this, animator, viewPortHandler, radius)
     }
 }
