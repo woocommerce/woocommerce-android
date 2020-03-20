@@ -72,7 +72,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     private fun refreshProductsTab() {
-        menu.findItem(R.id.products)?.isVisible = FeatureFlag.PRODUCT_RELEASE_TEASER.isEnabled()
+        menu.findItem(R.id.products)?.isVisible = FeatureFlag.PRODUCT_RELEASE_M1.isEnabled()
         detectLabelVisibilityMode()
     }
 

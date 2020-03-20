@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-28 00:54:04+0000
+Translation-Revision-Date: 2020-03-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_tax_status_shipping">Pengiriman</string>
+    <string name="product_tax_status_taxable">Kena Pajak</string>
+    <string name="product_tax_status_none">Tidak Ada</string>
+    <string name="product_tax_class_standard">Tarif standar</string>
+    <string name="product_tax_class">Kelas pajak</string>
+    <string name="product_tax_status">Status pajak</string>
+    <string name="product_tax_settings">Pengaturan pajak</string>
+    <string name="product_schedule_sale_to_label">Ke</string>
+    <string name="product_schedule_sale_from_label">Dari</string>
+    <string name="product_schedule_sale_sublabel">Otomatis mulai dan akhiri penjualan</string>
+    <string name="product_schedule_sale_label">Jadwalkan obral</string>
+    <string name="order_refunds_store_admin_link_text">di admin toko Anda</string>
+    <string name="order_refunds_shipping_refund_notice">Anda dapat mengembalikan dana pengiriman dan jumlah pajak %s</string>
+    <string name="orders_empty_message_with_order_status_filter">Maaf, kami tidak dapat menemukan pesanan \"%s\"</string>
+    <string name="product_inventory_update_sku_error">SKU telah digunakan oleh produk lain</string>
+    <string name="product_shipping_settings">Pengaturan pengiriman</string>
+    <string name="product_no_shipping_class">Tidak ada kelas pengiriman</string>
+    <string name="product_dimensions">Dimensi</string>
+    <string name="product_height">Tinggi</string>
+    <string name="product_width">Lebar</string>
+    <string name="product_length">Panjang</string>
+    <string name="order_refunds_refund_info_title">Produk yang dananya dikembalikan</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s melalui %2$s</string>
+    <string name="order_refunds_confirmation">Apakah Anda yakin ingin meminta pengembalian dana? Hal ini tidak dapat dibatalkan.</string>
+    <string name="orderdetail_refunded_products">Produk yang dananya dikembalikan</string>
+    <string name="refunds">Pengembalian dana</string>
+    <string name="sign_up">Daftar ke WordPress.com</string>
+    <string name="empty_message_with_search">Maaf, kami tidak dapat menemukan hasil untuk \"%s\"</string>
+    <string name="empty_review_list_message">Tangkap ulasan produk kualitas tinggi untuk toko Anda</string>
+    <string name="empty_review_list_title">Dapatkan ulasan pertama Anda</string>
+    <string name="empty_order_list_all_processed">Semua pesanan telah terpenuhi</string>
+    <string name="empty_order_list_message">Kami akan memberi tahu saat Anda menerima pesanan baru. Selama rentang waktu tersebut, cari tahu bagaimana Anda dapat meningkatkan penjualan toko Anda.</string>
+    <string name="empty_order_list_title">Menunggu pesanan pertama Anda</string>
+    <string name="share_your_store_message">Bagikan toko Anda di media sosial dan lewat email dengan kontak Anda</string>
+    <string name="get_the_word_out">Kabarkan pada dunia</string>
+    <string name="product_inventory_quantity_summary">Banyaknya item di stok</string>
+    <string name="product_inventory_quantity">Jumlah</string>
+    <string name="product_sold_individually">Batas per pesanan</string>
+    <string name="product_manage_stock">Kelola stok</string>
+    <string name="product_sku_summary">Bantuan agar mudah mengidentifikasi produk ini</string>
+    <string name="product_sale_date_from">mulai %1$s</string>
+    <string name="product_sale_date_from_to">%1$s - %2$s</string>
+    <string name="product_sale_dates">Tanggal obral</string>
+    <string name="product_price_empty">Tambahkan harga</string>
+    <string name="product_inventory_empty">Tambahkan inventaris</string>
+    <string name="orderlist_loading">Mencari pesanan Anda…</string>
     <string name="product_detail_editable_text_hint">Masukkan teks</string>
     <string name="product_detail_title_hint">Masukkan judul</string>
     <string name="product_detail_update_product_success">Produk diperbarui</string>
@@ -125,8 +172,7 @@ Language: id
     <string name="order_refunds_title_with_amount">Pengembalian dana %s</string>
     <string name="order_refunds_available_for_refund">%s tersedia untuk pengembalian dana</string>
     <string name="orderdetail_issue_refund_button">Keluarkan pengembalian dana</string>
-    <string name="orderdetail_refund_view_details">Lihat rincian</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
+    <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
     <string name="settings_enable_v4_stats_message">Cobalah statistik baru yang tersedia bersama\nPlugin admin WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
@@ -529,9 +575,6 @@ Language: id
     <string name="app_rating_title">Puas dengan Woo?</string>
     <string name="settings_selected_store">Toko pilihan</string>
     <string name="orders_empty_message_with_search">Tidak ada pesanan yang sesuai</string>
-    <string name="orders_empty_message_with_filter">Belum ada pesanan</string>
-    <string name="waiting_for_customers_contentdesc">Menunggu gambar pelanggan</string>
-    <string name="waiting_for_customers">Menunggu pelanggan</string>
     <string name="share_store_dialog_title">Bagikan URL toko Anda</string>
     <string name="share_store_button">Bagikan toko Anda</string>
     <string name="wc_mark_all_read_success">Semua ulasan ditandai sudah dibaca</string>

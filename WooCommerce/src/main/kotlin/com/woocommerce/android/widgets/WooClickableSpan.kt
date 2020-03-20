@@ -8,13 +8,21 @@ import android.view.View
  * Custom [ClickableSpan] that removes the default text underline, as well as sets the color
  * of the text to the link color.
  */
-class WooClickableSpan(val onClickListener: (view: View) -> Unit) : ClickableSpan() {
+class WooClickableSpan(
+    val onClickListener: (view: View) -> Unit
+) : ClickableSpan() {
+    var useCustomStyle: Boolean = true
+
     override fun onClick(widget: View) {
         onClickListener(widget)
     }
 
     override fun updateDrawState(ds: TextPaint) {
-        ds.isUnderlineText = false
-        ds.color = ds.linkColor
+        if (useCustomStyle) {
+            ds.isUnderlineText = false
+            ds.color = ds.linkColor
+        } else {
+            ds.isUnderlineText = true
+        }
     }
 }

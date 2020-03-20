@@ -266,6 +266,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED,
         PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED,
         PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED,
+        PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED,
+        PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED,
+        PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED,
+        PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
+        PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
+        PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_DETAIL_UPDATE_SUCCESS,
         PRODUCT_DETAIL_UPDATE_ERROR,
 
@@ -482,6 +488,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_RESULT = "result"
         const val KEY_SELECTED_STORE_ID = "selected_store_id"
         const val KEY_STATE = "state"
+        const val KEY_HAS_CHANGED_DATA = "has_changed_data"
         const val KEY_STATUS = "status"
         const val KEY_SEARCH = "search"
         const val KEY_TO = "to"

@@ -408,6 +408,10 @@ Use this file to override styles in the styles_base.xml file.
     <style name="Woo.Product.Label" parent="Woo.TextAppearance.Large">
         <item name="android:textColor">@color/wc_black_darker</item>
     </style>
+    <style name="Woo.Product.Label.Large">
+        <item name="android:textColor">@color/wc_black_darker</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
+    </style>
     <style name="Woo.Product.Title" parent="@style/EditText">
         <item name="android:textColor">@color/wc_black_darker</item>
         <item name="android:fontFamily">@font/roboto_medium</item>

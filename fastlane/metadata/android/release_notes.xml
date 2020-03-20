@@ -1,32 +1,102 @@
+<ar>
+3.7:
+- تُظهر تفاصيل طلبات استرداد الأموال كلاً من استرداد قيمة المنتج واسترداد قيمة الشحن.
+- لن تظهر وسوم HTML في عناوين المنتجات.
+- تم إصلاح بعض الأعطال النادرة.
+</ar>
 <de-DE>
-3.5:
-Wenn du gerade erst angefangen hast und in der App noch keine Listeneinträge vorhanden sind (z. B. solange noch keine Bestellungen und Bewertungen eingegangen sind), wird eine freundliche Nachricht angezeigt, um dir bei deinem Einstieg zu helfen.
+3.7:
+- Details von rückerstatteten Bestellungen zeigen sowohl die rückerstatteten Produkte als auch die rückerstatteten Lieferungen an.
+- In Produkttiteln werden keine HTML-Tags mehr angezeigt.
+- Es wurden ein paar seltene Gründe für Abstürze behoben.
 </de-DE>
+<es-ES>
+3.7:
+- Los detalles de los pedidos reembolsados muestran los reembolsos de producto y de envío.
+- Los títulos de productos ya no muestran etiquetas HTML.
+- Se han solucionado algunos bloqueos que se producían en raras ocasiones.
+</es-ES>
 <fr-FR>
-3.5 :
-Lorsque vous débutez et que l'application n’a rien à afficher sous forme de liste (par ex. avant votre première commande ou votre premier avis), un message convivial vous aide à démarrer.
+3.7 :
+- Les détails des commandes remboursées affichent les remboursements de produits et les remboursements d’expédition.
+- Les titres de produits n’affichent plus les étiquettes HTML.
+- Quelques incidents rares ont été résolus.
 </fr-FR>
+<iw-IL>
+3.7:
+- פרטים של הזמנות שבעבורן התקבל החזר כספי מציגים גם את ההחזרים הכספיים על המוצרים וגם את ההחזרים הכספיים על המשלוח.
+- כותרות המוצרים כבר לא מציגים תגיות של HTML.
+- תיקנו כמה קריסות נדירות.
+</iw-IL>
+<id>
+3.7:
+- Detail refund produk dan pengiriman.
+- Nama produk tanpa tag HTML.
+- Perbaikan crash.
+</id>
+<it-IT>
+3.7:
+- I dettagli degli ordini rimborsati mostrano sia i rimborsi per i prodotti sia i rimborsi per la spedizione.
+- I titoli dei prodotti non mostrano più i tag HTML.
+- Sono stati risolti alcuni rari arresti anomali.
+</it-IT>
+<ja-JP>
+3.7:
+- 商品代金の返金と配送料金の返金の両方に対象注文の詳細が表示されます。
+- 商品名に HTML タグが表示されなくなりました。
+- 発生頻度が少ないクラッシュを数件修正しました。
+</ja-JP>
 <ko-KR>
-3.5:
-새로 시작하여 앱에 표시할 항목이 목록에 없는 경우(예: 첫 주문 및 리뷰를 받기 전 주문 및 리뷰), 시작을 지원하는 도움말 메시지가 표시됩니다.
+3.7:
+- 환불된 주문 세부 정보에 제품 환불 및 배송 환불이 모두 표시됩니다.
+- 제품 제목에 더 이상 HTML 태그가 표시되지 않습니다.
+- 드물게 발생하던 몇 가지 충돌이 수정되었습니다.
 </ko-KR>
+<nl-NL>
+3.7:
+- Bij details van gerestitueerde bestellingen worden zowel productrestituties als verzendrestituties weergegeven.
+- In producttitels worden geen HTML-tags meer weergegeven.
+- Een paar zeldzame crashes zijn verholpen.
+</nl-NL>
 <pt-BR>
-3.5:
-Quando você está apenas começando e não há nada para o aplicativo exibir em uma lista, como pedidos e avaliações, você verá uma mensagem para ajudá-lo a começar.
+3.7:
+- Detalhes de pedidos reembolsados exibem os reembolsos de produtos e de envio.
+- Títulos de produtos não mostram mais tags de HTML.
+- Alguns travamentos raros foram consertados.
 </pt-BR>
 <ru-RU>
-Версия 3.5.
-Если вы только начинаете и у вас пока нет информации для отображения в списке приложения (например, в списке заказов и отзывов), там будет отображаться приветственное сообщение.
+3.7:
+— В сведениях о заказах, по которым выполнен возврат, отображаются возвраты продуктов и возмещение расходов на доставку.
+— В заголовках продуктов больше не отображаются HTML-теги.
+— Исправлено несколько редких неисправностей.
 </ru-RU>
+<sv-SE>
+3.7:
+– Informationen om återbetalda beställningar visar återbetalningar av både produkter och frakt.
+– Produkttitlar visar inte längre HTML-taggar.
+– Några sällsynta krascher har åtgärdats.
+</sv-SE>
 <tr-TR>
-3.5:
-Yeni başlıyorsanız ve uygulamanın listede göstereceği herhangi bir şey yoksa (ör. ilk siparişinizi ve yorumunuzu almadan önce) başlangıç yapmanıza yardımcı olabilecek bir mesaj görürsünüz.
+3.7:
+- İadesi yapılan siparişlerin ayrıntıları hem ürün iadelerinde hem gönderim iadelerinde görüntülenir.
+- Ürün başlıklarında artık HTML etiketleri gösterilmez.
+- Nadir rastlanan birkaç kilitlenme sorunu düzeltildi.
 </tr-TR>
+<zh-CN>
+3.7：
+- 退款订单的详细信息既显示产品退款，也显示运费退款。
+- 产品标题不再显示 HTML 标签。
+- 修复了一些极少出现的崩溃问题。
+</zh-CN>
 <zh-TW>
-3.5：
-若你剛開始使用，而應用程式尚未在清單中顯示任何內容 (例如：收到第一筆訂單前沒有任何訂單和評論)，你會看到一則協助你開始使用的友善訊息。
+3.7：
+- 退款訂單詳細資訊會一併顯示產品和運費的退款金額。
+- 產品標題不再顯示 HTML 標籤。
+- 修正一些不常見的當機情況。
 </zh-TW>
 <en-US>
-3.5:
-When you’re just getting started and there’s nothing for the app to display in a list (e.g., for orders and reviews, before you get your first one), you’ll see a friendly message to help you get started.
+3.7:
+- Details of refunded orders display both product refunds and shipping refunds.
+- Product titles no longer show HTML tags.
+- A few rare crashes fixed.
 </en-US>

@@ -1,0 +1,4 @@
+3.7:
+- Bij details van gerestitueerde bestellingen worden zowel productrestituties als verzendrestituties weergegeven.
+- In producttitels worden geen HTML-tags meer weergegeven.
+- Een paar zeldzame crashes zijn verholpen.

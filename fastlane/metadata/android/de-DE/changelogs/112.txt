@@ -1,0 +1,4 @@
+3.7:
+- Details von rückerstatteten Bestellungen zeigen sowohl die rückerstatteten Produkte als auch die rückerstatteten Lieferungen an.
+- In Produkttiteln werden keine HTML-Tags mehr angezeigt.
+- Es wurden ein paar seltene Gründe für Abstürze behoben.

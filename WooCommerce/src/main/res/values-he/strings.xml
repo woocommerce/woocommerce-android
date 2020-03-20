@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-01-29 00:54:05+0000
+Translation-Revision-Date: 2020-03-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_tax_status_shipping">משלוח</string>
+    <string name="product_tax_status_taxable">חייב במיסים</string>
+    <string name="product_tax_status_none">ללא</string>
+    <string name="product_tax_class_standard">תעריף סטנדרטי</string>
+    <string name="product_tax_class">סיווג מס</string>
+    <string name="product_tax_status">מצב מס</string>
+    <string name="product_tax_settings">הגדרות מס</string>
+    <string name="product_schedule_sale_to_label">עד</string>
+    <string name="product_schedule_sale_from_label">מתאריך</string>
+    <string name="product_schedule_sale_sublabel">להתחיל ולסיים מבצע באופן אוטומטי</string>
+    <string name="product_schedule_sale_label">לקבוע תאריך למבצע</string>
+    <string name="order_refunds_store_admin_link_text">במנהל המערכת של החנות שלך</string>
+    <string name="order_refunds_shipping_refund_notice">אפשר לבצע החזר כספי על הסכומים של המשלוח והמס %s</string>
+    <string name="orders_empty_message_with_order_status_filter">מצטערים, לא הצלחנו למצוא הזמנות של \"%s\"</string>
+    <string name="product_inventory_update_sku_error">הקוד של SKU כבר נמצא בשימוש של מוצר אחר</string>
+    <string name="product_shipping_settings">הגדרות משלוח</string>
+    <string name="product_no_shipping_class">ללא סיווג משלוח</string>
+    <string name="product_dimensions">מידות</string>
+    <string name="product_height">גובה</string>
+    <string name="product_width">רוחב</string>
+    <string name="product_length">אורך</string>
+    <string name="order_refunds_refund_info_title">מוצרים שעליהם ניתן החזר כספי</string>
+    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_method">%1$s דרך %2$s</string>
+    <string name="order_refunds_confirmation">האם ברצונך ליצור החזר כספי? לא ניתן לבטל את הפעולה.</string>
+    <string name="orderdetail_refunded_products">מוצרים שעליהם ניתן החזר כספי</string>
+    <string name="refunds">החזרים כספיים</string>
+    <string name="sign_up">הרשמה ל-WordPress.com</string>
+    <string name="empty_message_with_search">מצטערים, לא הצלחנו למצוא תוצאות עבור \"%s\"</string>
+    <string name="empty_review_list_message">לקבל ביקורות איכותיות על מוצר בחנות שלך</string>
+    <string name="empty_review_list_title">לקבל את הביקורות הראשונות שלך</string>
+    <string name="empty_order_list_all_processed">כל ההזמנות הושלמו</string>
+    <string name="empty_order_list_message">אנחנו נודיע לך כאשר תתקבל הזמנה חדשה. בינתיים, מומלץ לבדוק כיצד אפשר להגדיל את המכירות בחנות שלך.</string>
+    <string name="empty_order_list_title">ממתין להזמנה הראשונה שלך</string>
+    <string name="share_your_store_message">לשתף את החנות שלך ברשתות החברתיות ועם אנשי הקשר שלך באימייל</string>
+    <string name="get_the_word_out">כדאי להפיץ את הבשורה</string>
+    <string name="product_inventory_quantity_summary">כבר פריטים יש במלאי</string>
+    <string name="product_inventory_quantity">כמות</string>
+    <string name="product_sold_individually">להגביל פריט אחד בכל הזמנה</string>
+    <string name="product_manage_stock">ניהול מלאי</string>
+    <string name="product_sku_summary">הפעולה עוזרת לזהות את המוצר בקלות</string>
+    <string name="product_sale_date_from">מתאריך %1$s</string>
+    <string name="product_sale_date_from_to">%1$s - %2$s</string>
+    <string name="product_sale_dates">תאריכי המבצע</string>
+    <string name="product_price_empty">להוסיף מחיר</string>
+    <string name="product_inventory_empty">להוסיף מלאי</string>
+    <string name="orderlist_loading">מחפש את ההזמנות שלך…</string>
     <string name="product_detail_editable_text_hint">להזין טקסט</string>
     <string name="product_detail_title_hint">להזין כותרת</string>
     <string name="product_detail_update_product_success">המוצר עודכן</string>
@@ -125,8 +172,7 @@ Language: he_IL
     <string name="order_refunds_title_with_amount">החזר כספי %s</string>
     <string name="order_refunds_available_for_refund">סכום של %s זמין להחזר כספי</string>
     <string name="orderdetail_issue_refund_button">נמצאה בעיה</string>
-    <string name="orderdetail_refund_view_details">להציג פרטים</string>
-    <string name="orderdetail_refund_detail">%1$s via %2$s</string>
+    <string name="orderdetail_refund_detail">%1$s דרך %2$s</string>
     <string name="settings_enable_v4_stats_message">נסה את הנתונים הסטטיסטיים שזמינים\nבתוסף הניהול החדש של WooCommerce</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
     <string name="beta_features">תכונות ביתא</string>
@@ -529,9 +575,6 @@ Language: he_IL
     <string name="app_rating_title">מרוצה מ-Woo?</string>
     <string name="settings_selected_store">חנויות נבחרות</string>
     <string name="orders_empty_message_with_search">לא נמצאו הזמנות תואמות</string>
-    <string name="orders_empty_message_with_filter">עדיין לא התקבלו הזמנות</string>
-    <string name="waiting_for_customers_contentdesc">בהמתנה לתמונות לקוחות</string>
-    <string name="waiting_for_customers">בהמתנה ללקוחות</string>
     <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
     <string name="share_store_button">שיתוף החנות שלך</string>
     <string name="wc_mark_all_read_success">כל הביקורות שמסומנות כ\'נקרא\'</string>
