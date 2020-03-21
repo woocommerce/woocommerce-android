@@ -2,6 +2,7 @@ package com.woocommerce.android.screenshots
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.orders.OrderListScreen
@@ -34,10 +35,10 @@ class ScreenshotTest {
 
         WelcomeScreen.logoutIfNeeded()
                 .selectLogin()
-                .proceedWith("automatticwidgets.com")
-                .proceedWith("nuttystephen.bem8kzmg@mailosaur.io")
+                .proceedWith(BuildConfig.SCREENSHOTS_URL)
+                .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
                 .proceedWithPassword()
-                .proceedWith("*xBu(Z1Gr##Qo&SqaK0RBrqI")
+                .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
                 // Enable Products
                 .openSettingsPane().openBetaFeatures()
@@ -70,7 +71,7 @@ class ScreenshotTest {
                 // Products
                 .tabBar.gotoProductsScreen()
                 .thenTakeScreenshot<ProductListScreen>("product-list")
-                .selectProduct(1)
+                .selectProduct(0)
                 .thenTakeScreenshot<SingleProductScreen>("product-details")
     }
 }

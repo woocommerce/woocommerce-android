@@ -1,7 +1,6 @@
 package com.woocommerce.android.screenshots.util
 
 import android.app.Activity
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
@@ -13,13 +12,11 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -31,7 +28,6 @@ import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
@@ -41,8 +37,15 @@ open class Screen {
 
     constructor(elementID: Int) {
         this.elementID = elementID
-        waitForElementToBeDisplayed(elementID)
+
+        // If we fail to find the element, attempt recovery
+        if (!waitForElementToBeDisplayedWithoutFailure(elementID)) {
+            recover()
+            waitForElementToBeDisplayed(elementID)
+        }
     }
+
+    open fun recover() = Unit
 
     companion object {
         var screenshotCount: Int = 0
@@ -59,11 +62,11 @@ open class Screen {
     inline fun <reified T> thenTakeScreenshot(name: String): T {
         screenshotCount += 1
         val screenshotName = "$screenshotCount-$name"
-        try {
+//        try {
             Screengrab.screenshot(screenshotName)
-        } catch (e: Throwable) {
-            Log.w("screenshots", "Error capturing $screenshotName", e)
-        }
+//        } catch (e: Throwable) {
+//            Log.w("screenshots", "Error capturing $screenshotName", e)
+//        }
         return this as T
     }
 
@@ -148,7 +151,14 @@ open class Screen {
         }
     }
 
-    fun selectItemAtIndexInRecyclerView(index: Int, recyclerViewId: Int) {
+    fun selectItemAtIndexInRecyclerView(index: Int, recyclerViewId: Int, elementId: Int = 0) {
+
+        if (elementId == 0) {
+            waitForAtLeastOneElementToBeDisplayed(elementId)
+        }
+
+        idleFor(1000)
+
         onView(withId(recyclerViewId))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
     }
@@ -157,6 +167,13 @@ open class Screen {
         val title = getTranslatedString(resourceID)
         val dialogButton = onView(ViewMatchers.withText(title)).inRoot(isDialog())
         clickOn(dialogButton)
+    }
+
+    fun isDisplayingDialog(): Boolean {
+        val dialog = onView(withId(R.id.button1))
+                .inRoot(isDialog())
+
+        return isElementDisplayed(dialog)
     }
 
     fun dismissSoftwareKeyboard() {
@@ -179,6 +196,16 @@ open class Screen {
         })
     }
 
+    fun waitForElementToBeDisplayedWithoutFailure(elementId: Int): Boolean {
+        try {
+            waitForConditionToBeTrueWithoutFailure(Supplier<Boolean> {
+                isElementDisplayed(elementId)
+            })
+        } catch (e: java.lang.Exception) { // ignore the failure
+        }
+        return isElementDisplayed(elementId)
+    }
+
     fun isElementDisplayed(elementID: Int): Boolean {
         return isElementDisplayed(onView(withId(elementID)))
     }
@@ -192,26 +219,8 @@ open class Screen {
         }
     }
 
-    fun elementExists(element: ViewInteraction): Boolean {
-        return try {
-            element.check(doesNotExist())
-            false
-        } catch (e: Throwable) {
-            true
-        }
-    }
-
     fun isElementCompletelyDisplayed(elementID: Int): Boolean {
         return isElementCompletelyDisplayed(onView(withId(elementID)))
-    }
-
-    private fun isElementClickable(element: ViewInteraction): Boolean {
-        return try {
-            element.check(matches(isClickable()))
-            true
-        } catch (e: Throwable) {
-            false
-        }
     }
 
     private fun isElementCompletelyDisplayed(element: ViewInteraction): Boolean {
@@ -223,11 +232,37 @@ open class Screen {
         }
     }
 
+    // HELPERS
+    private fun atLeastOneElementIsDisplayed(elementId: Int): Boolean {
+        return try {
+            onView(allOf(
+                withId(elementId),
+                first()
+            )).check(matches(isDisplayed()))
+            true
+        } catch (e: Throwable) {
+            false
+        }
+    }
+
     private fun waitForConditionToBeTrue(supplier: Supplier<Boolean>) {
         if (supplier.get()) {
             return
         }
         SupplierIdler(supplier).idleUntilReady()
+    }
+
+    private fun waitForConditionToBeTrueWithoutFailure(supplier: Supplier<Boolean>) {
+        if (supplier.get()) {
+            return
+        }
+        SupplierIdler(supplier).idleUntilReady(false)
+    }
+
+    private fun waitForAtLeastOneElementToBeDisplayed(elementId: Int) {
+        waitForConditionToBeTrue(Supplier {
+            atLeastOneElementIsDisplayed(elementId)
+        })
     }
 
     // MATCHERS
@@ -255,7 +290,7 @@ open class Screen {
         return getCurrentActivity()!!.resources.getString(resourceID)
     }
 
-    private fun idleFor(milliseconds: Int) {
+    protected fun idleFor(milliseconds: Int) {
         try {
             Thread.sleep(milliseconds.toLong())
         } catch (ex: Exception) {

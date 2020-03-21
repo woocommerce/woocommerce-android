@@ -12,22 +12,22 @@ ENV["PROJECT_ROOT_FOLDER"]="./"
 ENV["validate_translations"]="buildVanillaRelease"
 
 SUPPORTED_LOCALES = [
-  { glotpress: "ar", google_play: "ar",  promo_config: {}},
-  { glotpress: "de", google_play: "de-DE",  promo_config: {} },
-  { glotpress: "es", google_play: "es-ES",  promo_config: {} },
-  { glotpress: "fr", google_play: "fr-FR",  promo_config: {} },
-  { glotpress: "he", google_play: "iw-IL",  promo_config: {} },
-  { glotpress: "id", google_play: "id",  promo_config: {} },
-  { glotpress: "it", google_play: "it-IT",  promo_config: {} },
-  { glotpress: "ja", google_play: "ja-JP",  promo_config: {} },
-  { glotpress: "ko", google_play: "ko-KR",  promo_config: {} },
-  { glotpress: "nl", google_play: "nl-NL",  promo_config: {} },
-  { glotpress: "pt-br", google_play: "pt-BR",  promo_config: {} },
-  { glotpress: "ru", google_play: "ru-RU",  promo_config: {} },
-  { glotpress: "sv", google_play: "sv-SE",  promo_config: {} },
-  { glotpress: "tr", google_play: "tr-TR",  promo_config: {} },
-  { glotpress: "zh-cn", google_play: "zh-CN",  promo_config: {} },
-  { glotpress: "zh-tw", google_play: "zh-TW",  promo_config: {} },
+  { glotpress: "ar", google_play: "ar", emulator: "ar", promo_config: {}},
+  { glotpress: "de", google_play: "de-DE", emulator: "de", promo_config: {} },
+  { glotpress: "es", google_play: "es-ES", emulator: "es", promo_config: {} },
+  { glotpress: "fr", google_play: "fr-FR", emulator: "fr", promo_config: {} },
+  { glotpress: "he", google_play: "iw-IL", emulator: "he", promo_config: {} },
+  { glotpress: "id", google_play: "id", emulator: "id", promo_config: {} },
+  { glotpress: "it", google_play: "it-IT", emulator: "it", promo_config: {} },
+  { glotpress: "ja", google_play: "ja-JP", emulator: "ja", promo_config: {} },
+  { glotpress: "ko", google_play: "ko-KR", emulator: "ko", promo_config: {} },
+  { glotpress: "nl", google_play: "nl-NL", emulator: "nl", promo_config: {} },
+  { glotpress: "pt-br", google_play: "pt-BR", emulator: "pt-BR", promo_config: {} },
+  { glotpress: "ru", google_play: "ru-RU", emulator: "ru", promo_config: {} },
+  { glotpress: "sv", google_play: "sv-SE", emulator: "sv", promo_config: {} },
+  { glotpress: "tr", google_play: "tr-TR", emulator: "tr", promo_config: {} },
+  { glotpress: "zh-cn", google_play: "zh-CN", emulator: "zh-CN", promo_config: {} },
+  { glotpress: "zh-tw", google_play: "zh-TW", emulator: "zh-TW", promo_config: {} },
 ].freeze
 
 ########################################################################
@@ -325,19 +325,66 @@ end
     # Build the app and test targets
     gradle(task: "assembleVanillaDebug assembleVanillaDebugAndroidTest")
 
-    capture_android_screenshots(
+    locales = SUPPORTED_LOCALES
+      .reject { |locale| locale[:glotpress == 'zh-cn' ]} #breaks due to Pinwin Keyboard wanting contacts access
+      .map { |locale|  locale[:emulator] }
+      
+    rebuild_screenshot_devices
+
+    puts locales
+
+    screenshot_devices = [
+      {
+        screenshot_type: 'phone',
+        device_name: 'Pixel_3_API_28',
+        device_serial: options[:phone_serial],
+      }
+    ]
+
+    screenshot_options = {
+      output_directory: "fastlane/screenshots",
       app_package_name: "com.woocommerce.android",
-      locales: ["en-US", "fr-FR", "ja-JP"],
-      clear_previous_screenshots: true,
-      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
       app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
+      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
+      reinstall_app: false,
+      clear_previous_screenshots: true,
+      use_adb_root: true,
+      locales: locales,
       test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
-      reinstall_app: true,
       launch_arguments: [
         "disableMocks true",
       ]
-    )
+    }
+
+    take_android_emulator_screenshots(devices: screenshot_devices, screenshot_options: screenshot_options)
+  end
+
+  #####################################################################################
+  # rebuild_screenshot_devices
+  # -----------------------------------------------------------------------------------
+  # This lane rebuilds all of the emulators used for generating screenshots. Beware – running
+  # this action will overwrite the following emulators:
+  #     - Nexus 9 API 28
+  #     - Pixel 2 XL API 28
+  # It will not overwrite any other devices.
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane rebuild_screenshot_devices
+  #
+  # Example:
+  # fastlane rebuild_screenshot_devices
+  #####################################################################################
+  desc "Rebuild screenshot devices"
+  lane :rebuild_screenshot_devices do |options|
+
+    emulators = [
+        Dir.pwd + "/emulators/Pixel_3_API_28.ini",
+    ]
+
+    emulators.each do |emulator_configuration|
+        sh("helpers/copy-device.sh '#{emulator_configuration}'")
+    end
   end
 
 
