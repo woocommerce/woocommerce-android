@@ -7,6 +7,7 @@ import com.woocommerce.android.screenshots.util.Screen
 class OrderListScreen : Screen {
     companion object {
         const val LIST_VIEW = R.id.ordersList
+        const val LIST_ITEM = R.id.linearLayout
         const val SEARCH_BUTTON = R.id.menu_search
     }
 
@@ -16,7 +17,7 @@ class OrderListScreen : Screen {
 
     fun selectOrder(index: Int): SingleOrderScreen {
         val correctedIndex = index + 1 // account for the header
-        selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW)
+        selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
         return SingleOrderScreen()
     }
 

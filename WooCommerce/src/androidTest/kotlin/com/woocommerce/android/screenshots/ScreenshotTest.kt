@@ -70,7 +70,7 @@ class ScreenshotTest {
                 // Products
                 .tabBar.gotoProductsScreen()
                 .thenTakeScreenshot<ProductListScreen>("product-list")
-                .selectProduct(1)
+                .selectProduct(0)
                 .thenTakeScreenshot<SingleProductScreen>("product-details")
     }
 }
