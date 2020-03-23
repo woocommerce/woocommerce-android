@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-07 00:55:03+0000
+Translation-Revision-Date: 2020-03-18 00:54:55+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -107,8 +107,8 @@ Language: ar
     <string name="enter_site_credentials_instead">سجِّل الدخول باستخدام بيانات اعتماد الموقع.</string>
     <string name="enter_credentials_for_site">تسجيل الدخول باستخدام بيانات اعتماد الموقع %1$s الخاصة بك</string>
     <string name="send_verification_email">إرسال رسالة تحقق عبر البريد الإلكتروني</string>
-    <string name="settings_enable_product_teaser_message">اختبار قسم \"المنتجات\" الجديد عندما نصبح جاهزين للبدء</string>
-    <string name="settings_enable_product_teaser_title">المنتجات</string>
+    <string name="settings_enable_product_teaser_message">جرِّب وظائف تحرير المنتجات الجديدة عند بدء التشغيل</string>
+    <string name="settings_enable_product_teaser_title">تحرير المنتج</string>
     <string name="product_wip_message">نبذل قصارى جهدنا في قسم المنتجات الجديد لكي تتمكن من رؤية بعض التغييرات عندما نصبح جاهزين للبدء</string>
     <string name="product_wip_title">العمل قيد التنفيذ!</string>
     <string name="magic_link_fetch_account_error">كانت هناك بعض المشكلات في إحضار الحساب الخاص بك. يمكنك إعادة المحاولة الآن أو الإغلاق والمحاولة مرة أخرى لاحقًا.</string>
@@ -133,7 +133,6 @@ Language: ar
     <string name="orderdetail_shipping_method">طريقة الشحن</string>
     <string name="button_edit_permissions">تحرير الأذونات</string>
     <string name="permission_camera">الكاميرا</string>
-    <string name="permission_storage">مساحة التخزين</string>
     <string name="permissions_denied_message">يبدو أنك أوقفت الأذونات المطلوبة لهذه الميزة.&lt;br/>&lt;br/>لتغيير هذا، قم بتحرير أذوناتك وتأكد من تمكين &lt;strong>%s&lt;/strong>.</string>
     <string name="permissions_denied_title">أذونات</string>
     <string name="orders_processed_empty_message">تمت معالجة جميع الطلبات</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-20 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -107,8 +107,8 @@ Language: ja_JP
     <string name="enter_site_credentials_instead">サイトのログイン情報でログインします。</string>
     <string name="enter_credentials_for_site">%1$s サイトのログイン情報でログインします。</string>
     <string name="send_verification_email">確認メールを送信</string>
-    <string name="settings_enable_product_teaser_message">リリースの準備ができ次第、新商品セクションをテストしてください</string>
-    <string name="settings_enable_product_teaser_title">商品</string>
+    <string name="settings_enable_product_teaser_message">リリースの準備ができ次第、新商品の編集機能をテストしてください</string>
+    <string name="settings_enable_product_teaser_title">商品編集</string>
     <string name="product_wip_message">現在、新しい商品セクションの開発に取り組んでいます。リリースの準備が整いしだい変更が反映される場合があります 🚀</string>
     <string name="product_wip_title">作業進行中</string>
     <string name="magic_link_fetch_account_error">アカウントの取得時に問題が発生しました。今すぐ再試行するか、閉じてから後で再試行できます。</string>
@@ -133,7 +133,6 @@ Language: ja_JP
     <string name="orderdetail_shipping_method">配送方法</string>
     <string name="button_edit_permissions">権限を編集</string>
     <string name="permission_camera">カメラ</string>
-    <string name="permission_storage">ストレージ</string>
     <string name="permissions_denied_message">この機能に必要な権限を無効にしているようです。&lt;br/>&lt;br/>これを変更するには、権限を編集して &lt;strong>%s&lt;/strong> が有効であることを確認してください。</string>
     <string name="permissions_denied_title">権限</string>
     <string name="orders_processed_empty_message">注文がすべて処理されました</string>

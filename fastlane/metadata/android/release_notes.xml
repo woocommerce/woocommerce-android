@@ -1,102 +1,68 @@
 <ar>
-3.7:
-- تُظهر تفاصيل طلبات استرداد الأموال كلاً من استرداد قيمة المنتج واسترداد قيمة الشحن.
-- لن تظهر وسوم HTML في عناوين المنتجات.
-- تم إصلاح بعض الأعطال النادرة.
+3.8:
+ارفع يديك إذا كنتَ ترغب في تحرير المنتجات في أثناء التنقل! لتجربة خيارات التحرير المتوافرة، قم بتمكين تحرير المنتجات في الإعدادات > ميزات بيتا.
 </ar>
 <de-DE>
-3.7:
-- Details von rückerstatteten Bestellungen zeigen sowohl die rückerstatteten Produkte als auch die rückerstatteten Lieferungen an.
-- In Produkttiteln werden keine HTML-Tags mehr angezeigt.
-- Es wurden ein paar seltene Gründe für Abstürze behoben.
+3.8:
+Wer würde Produkte nicht gerne unterwegs bearbeiten können? Wenn du verfügbare Bearbeitungsoptionen ausprobieren möchtest, aktiviere unter „Einstellungen“ > „Betafunktionen“ die Option „Produktbearbeitung“.
 </de-DE>
 <es-ES>
-3.7:
-- Los detalles de los pedidos reembolsados muestran los reembolsos de producto y de envío.
-- Los títulos de productos ya no muestran etiquetas HTML.
-- Se han solucionado algunos bloqueos que se producían en raras ocasiones.
+3.8:
+¡Levanta la mano si te gustaría editar productos en cualquier momento y lugar! Para probar las opciones de edición disponibles, activa Edición del producto en Configuración > Funciones beta.
 </es-ES>
 <fr-FR>
-3.7 :
-- Les détails des commandes remboursées affichent les remboursements de produits et les remboursements d’expédition.
-- Les titres de produits n’affichent plus les étiquettes HTML.
-- Quelques incidents rares ont été résolus.
+3.8 :
+Levez la main si vous souhaitez éditer des produits en nomade ! Pour essayer les options d’édition disponibles, activez l’édition de produit dans Paramètres > Fonctionnalités bêta.
 </fr-FR>
 <iw-IL>
-3.7:
-- פרטים של הזמנות שבעבורן התקבל החזר כספי מציגים גם את ההחזרים הכספיים על המוצרים וגם את ההחזרים הכספיים על המשלוח.
-- כותרות המוצרים כבר לא מציגים תגיות של HTML.
-- תיקנו כמה קריסות נדירות.
+3.8:
+תמיד רצית לערוך מוצרים מכל מקום? משאלותיך התגשמו! אם ברצונך לנסות את אפשרויות העריכה הזמינות, יש להפעיל את 'עריכת מוצר' במקטע 'הגדרות' > 'תכונות ביתא'.
 </iw-IL>
 <id>
-3.7:
-- Detail refund produk dan pengiriman.
-- Nama produk tanpa tag HTML.
-- Perbaikan crash.
+3.8:
+Angkat tangan bila Anda ingin menyunting produk di mana saja! Untuk mencoba opsi penyuntingan yang tersedia, aktifkan Penyuntingan Produk di Pengaturan > Fitur Beta.
 </id>
 <it-IT>
-3.7:
-- I dettagli degli ordini rimborsati mostrano sia i rimborsi per i prodotti sia i rimborsi per la spedizione.
-- I titoli dei prodotti non mostrano più i tag HTML.
-- Sono stati risolti alcuni rari arresti anomali.
+3.8:
+Alza la mano se vorresti modificare i prodotti in viaggio! Per provare le opzioni di modifica disponibili, abilita Modifica del prodotto in Impostazioni > Funzionalità beta.
 </it-IT>
 <ja-JP>
-3.7:
-- 商品代金の返金と配送料金の返金の両方に対象注文の詳細が表示されます。
-- 商品名に HTML タグが表示されなくなりました。
-- 発生頻度が少ないクラッシュを数件修正しました。
+3.8:
+外出先でも商品を編集したい人は手を挙げてください !「設定」の「ベータ版の機能」で「商品編集」を有効にすると、編集オプションをお試しいただけます。
 </ja-JP>
 <ko-KR>
-3.7:
-- 환불된 주문 세부 정보에 제품 환불 및 배송 환불이 모두 표시됩니다.
-- 제품 제목에 더 이상 HTML 태그가 표시되지 않습니다.
-- 드물게 발생하던 몇 가지 충돌이 수정되었습니다.
+3.8:
+언제 어디서나 이동 중에도 제품을 편집하고 싶다면 주목해 주세요! 사용 가능한 편집 옵션을 사용해 보려면 설정 > 베타 기능에서 제품 편집을 사용하도록 설정하세요.
 </ko-KR>
 <nl-NL>
-3.7:
-- Bij details van gerestitueerde bestellingen worden zowel productrestituties als verzendrestituties weergegeven.
-- In producttitels worden geen HTML-tags meer weergegeven.
-- Een paar zeldzame crashes zijn verholpen.
+3.8:
+Steek je hand op als je producten onderweg wilt bewerken! Schakel Productbewerking in Instellingen > Bèta-functies in om beschikbare opties voor bewerken uit te proberen.
 </nl-NL>
 <pt-BR>
-3.7:
-- Detalhes de pedidos reembolsados exibem os reembolsos de produtos e de envio.
-- Títulos de produtos não mostram mais tags de HTML.
-- Alguns travamentos raros foram consertados.
+3.8:
+Levante a mão quem gostaria de editar produtos de onde estiver. Para isso, habilite as opções disponíveis em Configurações > Funcionalidades Beta.
 </pt-BR>
 <ru-RU>
-3.7:
-— В сведениях о заказах, по которым выполнен возврат, отображаются возвраты продуктов и возмещение расходов на доставку.
-— В заголовках продуктов больше не отображаются HTML-теги.
-— Исправлено несколько редких неисправностей.
+3.8:
+Поднимите руку, если вы хотите редактировать продукты на ходу! Чтобы попробовать эту функцию, включите редактирование продуктов в меню «Настройки > Бета-функции».
 </ru-RU>
 <sv-SE>
-3.7:
-– Informationen om återbetalda beställningar visar återbetalningar av både produkter och frakt.
-– Produkttitlar visar inte längre HTML-taggar.
-– Några sällsynta krascher har åtgärdats.
+3.8:
+Räck upp handen om du vill kunna redigera produkter när du är på språng! För att prova de tillgängliga redigeringsalternativen, aktivera Produktredigering i Inställningar > Beta-funktioner.
 </sv-SE>
 <tr-TR>
-3.7:
-- İadesi yapılan siparişlerin ayrıntıları hem ürün iadelerinde hem gönderim iadelerinde görüntülenir.
-- Ürün başlıklarında artık HTML etiketleri gösterilmez.
-- Nadir rastlanan birkaç kilitlenme sorunu düzeltildi.
+3.8:
+Hareket halindeyken ürünleri düzenlemek istiyorsanız elinizi kaldırın! Mevcut düzenleme seçeneklerini denemek için Ayarlar > Beta Özellikleri'nde Ürün Düzenleme'yi etkinleştirin.
 </tr-TR>
 <zh-CN>
-3.7：
-- 退款订单的详细信息既显示产品退款，也显示运费退款。
-- 产品标题不再显示 HTML 标签。
-- 修复了一些极少出现的崩溃问题。
+3.8：
+如果您想随时随地编辑产品，请告诉我们！要尝试可用的编辑选项，请在“设置”>“测试版功能”中启用“产品编辑”。
 </zh-CN>
 <zh-TW>
-3.7：
-- 退款訂單詳細資訊會一併顯示產品和運費的退款金額。
-- 產品標題不再顯示 HTML 標籤。
-- 修正一些不常見的當機情況。
+3.8：
+想隨時隨地編輯產品資訊的舉手！若要試試可用的編輯選項，請在「設定」>「試用功能」中啟用「產品編輯」。
 </zh-TW>
 <en-US>
-3.7:
-- Details of refunded orders display both product refunds and shipping refunds.
-- Product titles no longer show HTML tags.
-- A few rare crashes fixed.
+3.8:
+Raise your hand if you’d like to edit products on the go! To give available editing options a try, enable Product Editing in Settings > Beta Features.
 </en-US>

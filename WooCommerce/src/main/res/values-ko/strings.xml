@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-19 00:54:49+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
@@ -107,8 +107,8 @@ Language: ko_KR
     <string name="enter_site_credentials_instead">사이트 자격 증명으로 로그인하세요.</string>
     <string name="enter_credentials_for_site">%1$s 사이트 자격 증명으로 로그인</string>
     <string name="send_verification_email">인증 이메일 보내기</string>
-    <string name="settings_enable_product_teaser_message">출시 준비가 완료되면 새 제품 섹션을 테스트하세요.</string>
-    <string name="settings_enable_product_teaser_title">제품</string>
+    <string name="settings_enable_product_teaser_message">출시 준비가 완료되면 새 제품 편집 기능을 테스트하세요.</string>
+    <string name="settings_enable_product_teaser_title">제품 편집</string>
     <string name="product_wip_message">새로운 제품 섹션을 최선을 다해 준비하고 있습니다. 출시 준비 과정에서 일부 변경 사항이 발생할 수 있습니다. 🚀</string>
     <string name="product_wip_title">작업 진행 중!</string>
     <string name="magic_link_fetch_account_error">계정을 가져오는 중에 문제가 발생했습니다. 지금 다시 시도하거나 닫고 나중에 다시 시도할 수 있습니다.</string>
@@ -133,7 +133,6 @@ Language: ko_KR
     <string name="orderdetail_shipping_method">배송 방법</string>
     <string name="button_edit_permissions">권한 편집</string>
     <string name="permission_camera">카메라</string>
-    <string name="permission_storage">저장 공간</string>
     <string name="permissions_denied_message">이 기능에 대한 필수 권한이 해제되어 있는 것 같습니다.&lt;br/>&lt;br/>변경하려면 권한을 편집하고 &lt;strong>%s&lt;/strong>이(가) 활성화되어 있는지 확인하세요.</string>
     <string name="permissions_denied_title">권한</string>
     <string name="orders_processed_empty_message">모든 주문이 처리됨</string>
