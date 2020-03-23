@@ -10,9 +10,7 @@ import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
@@ -25,9 +23,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.helpers.WCMatchers
-import com.woocommerce.android.helpers.WCMatchers.scrollTo
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
@@ -53,7 +49,7 @@ class ProductDetailNavigationTest : TestBase() {
     private val mockProductModel = WcProductTestUtils.generateProductDetail()
 
     private fun chooser(matcher: Matcher<Intent>): Matcher<Intent> {
-        return allOf(hasAction(Intent.ACTION_CHOOSER), hasExtra(`is`(Intent.EXTRA_INTENT), matcher))
+        return allOf(IntentMatchers.hasAction(Intent.ACTION_CHOOSER), hasExtra(`is`(Intent.EXTRA_INTENT), matcher))
     }
 
     @Before
@@ -89,7 +85,7 @@ class ProductDetailNavigationTest : TestBase() {
         activityTestRule.setOrderProductListWithMockData(mockWCOrderModel)
 
         // click on the Details button in product list card
-        onView(withId(R.id.productList_btnDetails)).perform(scrollTo(), click())
+        onView(withId(R.id.productList_btnDetails)).perform(WCMatchers.scrollTo(), click())
     }
 
     @After
@@ -111,7 +107,7 @@ class ProductDetailNavigationTest : TestBase() {
                 equalToIgnoringCase(mockProductModel.name))))
 
         // verify that close button is visible
-        onView(withContentDescription(string.abc_action_bar_up_description))
+        onView(withContentDescription(R.string.abc_action_bar_up_description))
                 .check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
         // verify that share button is visible
@@ -158,82 +154,6 @@ class ProductDetailNavigationTest : TestBase() {
         // verify that total orders is displayed correctly
         onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
                 .check(matches(withText(mockProductModel.totalSales.toString())))
-    }
-
-    @Test
-    fun verifyProductDetailTitleDisplayedCorrectlyForExternalProducts() {
-        // inject mock data to product detail
-        mockProductModel.type = ProductType.EXTERNAL.name
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that product title is displayed correctly
-        val productTitle = appContext.getString(R.string.product_name_external, mockProductModel.name)
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 0))
-                .check(matches(withText(productTitle)))
-
-        // verify that toolbar title is displayed correctly
-        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(equalToIgnoringCase(productTitle))))
-    }
-
-    @Test
-    fun verifyProductDetailTitleDisplayedCorrectlyForGroupedProducts() {
-        // inject mock data to product detail
-        mockProductModel.type = ProductType.GROUPED.name
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that product title is displayed correctly
-        val productTitle = appContext.getString(R.string.product_name_grouped, mockProductModel.name)
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 0))
-                .check(matches(withText(productTitle)))
-
-        // verify that toolbar title is displayed correctly
-        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(equalToIgnoringCase(productTitle))))
-    }
-
-    @Test
-    fun verifyProductDetailTitleDisplayedCorrectlyForVariableProducts() {
-        // inject mock data to product detail
-        mockProductModel.type = ProductType.VARIABLE.name
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that product title is displayed correctly
-        val productTitle = appContext.getString(R.string.product_name_variable, mockProductModel.name)
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 0))
-                .check(matches(withText(productTitle)))
-
-        // verify that toolbar title is displayed correctly
-        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(equalToIgnoringCase(productTitle))))
-    }
-
-    @Test
-    fun verifyProductDetailTitleDisplayedCorrectlyForVirtualProducts() {
-        // inject mock data to product detail
-        mockProductModel.virtual = true
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that product title is displayed correctly
-        val productTitle = appContext.getString(R.string.product_name_virtual, mockProductModel.name)
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 0))
-                .check(matches(withText(productTitle)))
-
-        // verify that toolbar title is displayed correctly
-        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(equalToIgnoringCase(productTitle))))
     }
 
     @Test
@@ -408,8 +328,8 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withId(R.id.menu_share)).perform(click())
 
         // check if share intent is opened with the given product details
-        intended(chooser(allOf(
-                hasAction(Intent.ACTION_SEND),
+        Intents.intended(chooser(allOf(
+                IntentMatchers.hasAction(Intent.ACTION_SEND),
                 hasExtra(Intent.EXTRA_TEXT, mockProductModel.permalink)
         )))
     }

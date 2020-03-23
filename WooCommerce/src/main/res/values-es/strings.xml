@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-20 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
@@ -107,8 +107,8 @@ Language: es
     <string name="enter_site_credentials_instead">Accede con las credenciales del sitio.</string>
     <string name="enter_credentials_for_site">Acceder con las credenciales del sitio %1$s</string>
     <string name="send_verification_email">Enviar el correo electrónico de verificación</string>
-    <string name="settings_enable_product_teaser_message">Prueba la sección de nuevos productos mientras preparamos el lanzamiento</string>
-    <string name="settings_enable_product_teaser_title">Productos</string>
+    <string name="settings_enable_product_teaser_message">Prueba la nueva función de edición de productos mientras preparamos el lanzamiento</string>
+    <string name="settings_enable_product_teaser_title">Edición del producto</string>
     <string name="product_wip_message">Estamos poniendo todo nuestro empeño en la nueva sección Productos, así que puede que veas algunos cambios mientras preparamos el lanzamiento 🚀</string>
     <string name="product_wip_title">¡Trabajo en curso!</string>
     <string name="magic_link_fetch_account_error">No se ha podido obtener tu cuenta. Puedes intentarlo de nuevo ahora o cerrar e intentarlo más tarde.</string>
@@ -133,7 +133,6 @@ Language: es
     <string name="orderdetail_shipping_method">Método de envío</string>
     <string name="button_edit_permissions">Editar permisos</string>
     <string name="permission_camera">Cámara</string>
-    <string name="permission_storage">Almacenamiento</string>
     <string name="permissions_denied_message">Parece que has desactivado permisos requeridos para esta funcionalidad.&lt;br/>&lt;br/>Para cambiar este estado, modifica tus permisos y asegúrate de activar &lt;strong>%s&lt;/strong>.</string>
     <string name="permissions_denied_title">Permisos</string>
     <string name="orders_processed_empty_message">Se han procesado todos los pedidos</string>
