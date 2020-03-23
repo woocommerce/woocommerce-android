@@ -19,14 +19,6 @@ class ImageViewerRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap
 ) {
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
     fun getProduct(remoteProductId: Long): Product? =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.toAppModel()
 

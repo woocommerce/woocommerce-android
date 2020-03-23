@@ -101,12 +101,15 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         viewModel.productImagesViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isUploadingImages.takeIfNotEqualTo(old?.isUploadingImages) {
-                viewModel.getProduct().product?.let {
-                    imageGallery.showProductImages(it, this)
-                }
-
+                reloadImageGallery()
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
             }
+        }
+    }
+
+    private fun reloadImageGallery() {
+        viewModel.getProduct().product?.let {
+            imageGallery.showProductImages(it, this)
         }
     }
 
@@ -202,11 +205,13 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
                 RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
+                    // if the user deleted any product images in the image viewer, remove them from the draft product
                     if (bundle.hasExtra(ImageViewerActivity.KEY_REMOVED_IMAGE_IDS)) {
-                        val removedImageIds = bundle.getSerializableExtra(ImageViewerActivity.KEY_REMOVED_IMAGE_IDS) as ArrayList<Long>
-                        for (mediaId in removedImageIds) {
-                            viewModel.removeProductImageFromDraft(mediaId)
-                        }
+                        val removedImageIds = bundle.getSerializableExtra(
+                                ImageViewerActivity.KEY_REMOVED_IMAGE_IDS
+                        ) as ArrayList<Long>
+                        viewModel.removeProductImageListFromDraft(removedImageIds)
+                        reloadImageGallery()
                     }
                 }
             }

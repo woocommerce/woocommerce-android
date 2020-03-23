@@ -148,7 +148,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.product?.let {
             triggerEvent(ViewProductImages(it, image, selectedImage))
@@ -306,7 +306,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null,
         shippingClass: String? = null,
-        images: List<Product.Image>? = null
+        images: List<Image>? = null
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -453,13 +453,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 fetchProduct(remoteProductId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
-        }
-    }
-
-    fun reloadProductImages(remoteProductId: Long) {
-        val images = productRepository.getProduct(remoteProductId)?.images
-        viewState.cachedProduct?.images?.let {
-            // TODO
         }
     }
 
@@ -702,7 +695,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Removes a single product image from the product draft
      */
-    fun removeProductImageFromDraft(remoteMediaId: Long) {
+    private fun removeProductImageFromDraft(remoteMediaId: Long) {
         val imageList = ArrayList<Image>()
 
         viewState.product?.let { product ->
@@ -714,6 +707,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         updateProductDraft(images = imageList)
+    }
+
+    fun removeProductImageListFromDraft(remoteMediaIds: ArrayList<Long>) {
+        for (mediaId in remoteMediaIds) {
+            removeProductImageFromDraft(mediaId)
+        }
     }
 
     /**

@@ -212,41 +212,4 @@ class ProductImagesService : JobIntentService() {
             }
         }
     }
-
-    // TODO: this should be removed before submitting this PR
-    /**
-     * Called after device media has been uploaded to dispatch a request to assign the uploaded media
-     * to the product
-     */
-    /*private fun dispatchAddMediaAction(media: MediaModel) {
-        val product = productStore.getProductByRemoteId(selectedSite.get(), media.postId)
-        if (product == null) {
-            WooLog.w(T.MEDIA, "productImagesService > product is null")
-            handleFailure()
-        } else {
-            // add the new image as the first (primary) one
-            val imageList = ArrayList<WCProductImageModel>().also {
-                it.add(WCProductImageModel.fromMediaModel(media))
-                it.addAll(product.getImages())
-            }
-            val site = siteStore.getSiteByLocalId(media.localSiteId)
-            val payload = UpdateProductImagesPayload(site, media.postId, imageList)
-            dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductImagesChanged(event: OnProductImagesChanged) {
-        if (event.isError) {
-            WooLog.w(
-                    T.MEDIA,
-                    "productImagesService > error changing product images: ${event.error.type}, ${event.error.message}"
-            )
-            handleFailure()
-        } else {
-            WooLog.i(T.MEDIA, "productImagesService > product images changed")
-            handleSuccess()
-        }
-    }*/
 }
