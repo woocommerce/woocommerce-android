@@ -21,6 +21,7 @@ class OrderStatusSelectorDialog : androidx.fragment.app.DialogFragment() {
         const val TAG: String = "OrderStatusSelectorDialog"
 
         private const val ALL_FILTER_ID: String = "all"
+        private const val REFUNDED_ID: String = "refunded"
 
         fun newInstance(
             orderStatusOptions: Map<String, WCOrderStatusModel>,
@@ -42,12 +43,15 @@ class OrderStatusSelectorDialog : androidx.fragment.app.DialogFragment() {
     }
 
     private val orderStatusMap: Map<String, String> by lazy {
+        // remove the Refunded status from the dialog to avoid reporting problems
+        val statusesWithoutRefunded = orderStatusOptions
+                .filter { it.key != REFUNDED_ID }
+                .values.associate { it.statusKey to it.label }
+
         if (isFilter) {
-            mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(
-                    orderStatusOptions.values.associate { it.statusKey to it.label }
-            )
+            mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(statusesWithoutRefunded)
         } else {
-            orderStatusOptions.values.associate { it.statusKey to it.label }
+            statusesWithoutRefunded
         }
     }
 
