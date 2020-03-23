@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-04 00:54:04+0000
+Translation-Revision-Date: 2020-03-19 00:54:48+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
@@ -107,8 +107,8 @@ Language: ru
     <string name="enter_site_credentials_instead">Войдите с именем пользователя и паролем для сайта.</string>
     <string name="enter_credentials_for_site">Войдите с именем пользователя и паролем для сайта %1$s</string>
     <string name="send_verification_email">Отправить письмо с подтверждением</string>
-    <string name="settings_enable_product_teaser_message">Оцените новый раздел продуктов, который готовится к запуску</string>
-    <string name="settings_enable_product_teaser_title">Товары</string>
+    <string name="settings_enable_product_teaser_message">Оцените новые возможности редактирования, пока мы готовим их к запуску</string>
+    <string name="settings_enable_product_teaser_title">Редактирование продукта</string>
     <string name="product_wip_message">Мы активно готовим к запуску раздел \"Товары\", в связи с чем вы можете заметить некоторые изменения 🚀</string>
     <string name="product_wip_title">Процесс идёт!</string>
     <string name="magic_link_fetch_account_error">При загрузке вашей учетной записи произошла ошибка. Повторите попытку сейчас или закройте и попробуйте позже.</string>
@@ -134,7 +134,6 @@ Language: ru
     <string name="orderdetail_shipping_method">Способ доставки</string>
     <string name="button_edit_permissions">Изменить разрешения</string>
     <string name="permission_camera">Камера</string>
-    <string name="permission_storage">Хранилище</string>
     <string name="permissions_denied_message">Кажется, вы отключили разрешения, которые нужны для этой функции.&lt;br/>&lt;br/>Чтобы это изменить, отредактируйте разрешения и убедитесь, что параметр &lt;strong>%s&lt;/strong> включён.</string>
     <string name="permissions_denied_title">Разрешения</string>
     <string name="orders_processed_empty_message">Все заказы обработаны</string>

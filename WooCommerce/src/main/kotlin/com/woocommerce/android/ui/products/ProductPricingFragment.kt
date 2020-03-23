@@ -107,6 +107,18 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.getProduct())
             }
+            new.minDate?.takeIfNotEqualTo(old?.minDate) {
+                // update end date to min date if current end date < start date
+                if (it.after(viewModel.getProduct().product?.dateOnSaleToGmt)) {
+                    scheduleSale_endDate.setText(it.formatToMMMddYYYY())
+                }
+            }
+            new.maxDate?.takeIfNotEqualTo(old?.maxDate) {
+                // update start date to max date if current start date > end date
+                if (it.before(viewModel.getProduct().product?.dateOnSaleFromGmt)) {
+                    scheduleSale_startDate.setText(it.formatToMMMddYYYY())
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -169,6 +181,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                     )
                     setText(selectedDate.formatToMMMddYYYY())
                     viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleFromGmt = selectedDate)
+                    viewModel.onDatePickerValueSelected(selectedDate, true)
                 })
             }
         }
@@ -183,6 +196,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                     )
                     setText(selectedDate.formatToMMMddYYYY())
                     viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleToGmt = selectedDate)
+                    viewModel.onDatePickerValueSelected(selectedDate, false)
                 })
             }
         }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-18 00:54:54+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
@@ -107,8 +107,8 @@ Language: it
     <string name="enter_site_credentials_instead">Accedi con le credenziali del sito.</string>
     <string name="enter_credentials_for_site">Accedi con le credenziali del sito %1$s</string>
     <string name="send_verification_email">Invia e-mail di verifica</string>
-    <string name="settings_enable_product_teaser_message">Prova la nuova sezione dei prodotti mentre ci prepariamo al lancio</string>
-    <string name="settings_enable_product_teaser_title">Prodotti</string>
+    <string name="settings_enable_product_teaser_message">Testa la nuova funzionalità di modifica del prodotto mentre ci prepariamo a lanciarla</string>
+    <string name="settings_enable_product_teaser_title">Modifica del prodotto</string>
     <string name="product_wip_message">Stiamo lavorando sodo sulla nuova sezione Products (Prodotti), quindi potresti vedere alcune modifiche mentre ci prepariamo al lancio 🚀</string>
     <string name="product_wip_title">Lavori in corso!</string>
     <string name="magic_link_fetch_account_error">Si è verificato un errore durante il recupero del tuo account. Puoi riprovare ora o chiudere e riprovare più tardi.</string>
@@ -133,7 +133,6 @@ Language: it
     <string name="orderdetail_shipping_method">Metodo di spedizione</string>
     <string name="button_edit_permissions">Modifica autorizzazioni</string>
     <string name="permission_camera">Fotocamera</string>
-    <string name="permission_storage">Archiviazione</string>
     <string name="permissions_denied_message">Sembra che tu abbia disattivato le autorizzazioni necessarie per questa funzionalità.&lt;br/>&lt;br/>Per cambiare, modifica le tue autorizzazioni e assicurati che sia attivo &lt;strong>%s&lt;/strong>.</string>
     <string name="permissions_denied_title">Autorizzazioni</string>
     <string name="orders_processed_empty_message">Tutti gli ordini sono stati elaborati</string>

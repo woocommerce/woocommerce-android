@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-18 00:54:54+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
@@ -107,8 +107,8 @@ Language: nl
     <string name="enter_site_credentials_instead">Inloggen met site-inloggegevens.</string>
     <string name="enter_credentials_for_site">Inloggen met je site-inloggegevens voor %1$s.</string>
     <string name="send_verification_email">Verificatiemail verzenden</string>
-    <string name="settings_enable_product_teaser_message">Vergeet niet het nieuwe productgedeelte te proberen terwijl we ons klaarmaken voor de lancering</string>
-    <string name="settings_enable_product_teaser_title">Producten</string>
+    <string name="settings_enable_product_teaser_message">Vergeet niet de nieuwe functies voor productbewerking te proberen terwijl we ons klaarmaken voor de lancering</string>
+    <string name="settings_enable_product_teaser_title">Productbewerking</string>
     <string name="product_wip_message">We werken hard aan het nieuwe productgedeelte, dus kun je wat wijzigingen opmerken terwijl we ons klaarmaken voor de lancering 🚀</string>
     <string name="product_wip_title">Werk in uitvoer!</string>
     <string name="magic_link_fetch_account_error">Er is een probleem opgetreden bij het ophalen van je account. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
@@ -133,7 +133,6 @@ Language: nl
     <string name="orderdetail_shipping_method">Verzendmethode</string>
     <string name="button_edit_permissions">Machtigingen bewerken</string>
     <string name="permission_camera">Camera</string>
-    <string name="permission_storage">Opslagcapaciteit</string>
     <string name="permissions_denied_message">Het lijkt erop dat je de vereiste machtigingen voor deze functie hebt uitgeschakeld.&lt;br/>&lt;br/>Om dit te wijzigen, moet je je machtigingen bewerken en zorgen dat &lt;strong>%s&lt;/strong> is ingeschakeld.</string>
     <string name="permissions_denied_title">Machtigingen</string>
     <string name="orders_processed_empty_message">Alle bestellingen zijn verwerkt</string>

@@ -1,0 +1,2 @@
+3.8 :
+Levez la main si vous souhaitez éditer des produits en nomade ! Pour essayer les options d’édition disponibles, activez l’édition de produit dans Paramètres > Fonctionnalités bêta.
