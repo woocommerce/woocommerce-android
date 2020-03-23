@@ -1,4 +1,0 @@
-3.7:
-- I dettagli degli ordini rimborsati mostrano sia i rimborsi per i prodotti sia i rimborsi per la spedizione.
-- I titoli dei prodotti non mostrano più i tag HTML.
-- Sono stati risolti alcuni rari arresti anomali.

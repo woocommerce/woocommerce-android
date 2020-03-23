@@ -132,7 +132,7 @@ class ProductShippingFragment : BaseProductFragment() {
         showValue(product_length, R.string.product_length, product.length, dimensionUnit)
         showValue(product_height, R.string.product_height, product.height, dimensionUnit)
         showValue(product_width, R.string.product_width, product.width, dimensionUnit)
-        product_shipping_class_spinner.setText(product.shippingClass)
+        product_shipping_class_spinner.setText(viewModel.getShippingClassBySlug(product.shippingClass))
     }
 
     private fun showShippingClassFragment() {
