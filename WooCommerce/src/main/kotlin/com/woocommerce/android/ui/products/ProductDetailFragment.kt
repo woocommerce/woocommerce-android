@@ -356,7 +356,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 it.showPropertyName(false)
             }
             it.setClickListener {
-                // TODO: add event listener for click
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductPricing(product.remoteId))
             }
         }
@@ -390,7 +390,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 it.showPropertyName(false)
             }
             it.setClickListener {
-                // TODO: add event listener for click
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductInventory(product.remoteId))
             }
         }
@@ -407,7 +407,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 groupIconId = R.drawable.ic_gridicons_shipping
         )?.also {
             it.setClickListener {
-                // TODO add event tracking for click
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
             }
         }

@@ -31,7 +31,6 @@ class CurrencyEditText : AppCompatEditText {
 
     init {
         this.inputType = InputType.TYPE_CLASS_NUMBER
-        this.isCursorVisible = false
     }
 
     fun initView(currency: String, decimals: Int, currencyFormatter: CurrencyFormatter) {

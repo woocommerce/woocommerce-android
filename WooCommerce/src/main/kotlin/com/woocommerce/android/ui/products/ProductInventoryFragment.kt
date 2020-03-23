@@ -71,7 +71,6 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                // TODO: add track event for click
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked(ExitInventory(shouldShowDiscardDialog = false))
                 true
@@ -83,6 +82,9 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
+            new.stockQuantityErrorMessage?.takeIfNotEqualTo(old?.stockQuantityErrorMessage) {
+                displayStockQuantityError(it)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -119,10 +121,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         with(product_stock_quantity) {
             setText(product.stockQuantity.toString())
             setOnTextChangedListener {
-                val stockQuantity = if (it.toString().isNotEmpty()) {
-                    it.toString()
-                } else "0"
-                viewModel.updateProductDraft(stockQuantity = stockQuantity)
+                viewModel.onStockQuantityChanged(it.toString())
             }
         }
 
@@ -172,6 +171,16 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             enablePublishMenuItem(false)
         } else {
             product_sku.clearError()
+            enablePublishMenuItem(true)
+        }
+    }
+
+    private fun displayStockQuantityError(messageId: Int) {
+        if (messageId != 0) {
+            product_stock_quantity.setError(getString(messageId))
+            enablePublishMenuItem(false)
+        } else {
+            product_stock_quantity.clearError()
             enablePublishMenuItem(true)
         }
     }

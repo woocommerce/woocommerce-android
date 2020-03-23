@@ -458,7 +458,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
-    <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
+    <string name="product_stock_status_instock_with_variants">In stock \u2022 %d variants</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
     <string name="product_stock_count">%s in stock</string>
@@ -486,6 +486,7 @@
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
+    <string name="product_inventory_update_stock_quantity_error">Please enter a number</string>
 
     <!--
         Product images

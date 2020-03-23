@@ -90,7 +90,6 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                // TODO: add track event for click
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked(ExitPricing(shouldShowDiscardDialog = false))
                 true

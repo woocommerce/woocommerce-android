@@ -164,13 +164,6 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         return context.resources.getDimensionPixelSize(resId)
     }
 
-    private fun getAxisOffset(): Float {
-        return if (activeGranularity == StatsGranularity.DAYS ||
-                activeGranularity == StatsGranularity.MONTHS) {
-            1f
-        } else 0.5f
-    }
-
     private fun getBarLabelCount(): Int {
         val resId = when (activeGranularity) {
             StatsGranularity.DAYS -> R.integer.stats_label_count_days
@@ -199,18 +192,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
             axisRight.isEnabled = false
             with(axisLeft) {
-                setDrawZeroLine(false)
+                setDrawTopYLabelEntry(true)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
-                setLabelCount(3, true)
-
-                valueFormatter = IAxisValueFormatter { value, _ ->
-                    // Only use non-zero values for the axis
-                    value.toDouble().takeIf { it > 0 }?.let {
-                        getFormattedRevenueValue(it)
-                    }.orEmpty()
-                }
             }
 
             description.isEnabled = false
@@ -380,8 +365,6 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(chart) {
-            axisLeft.axisMinimum = minRevenue
-            axisRight.axisMinimum = 0f
             data = BarData(dataSet)
             if (wasEmpty) {
                 animateY(duration)
@@ -389,12 +372,17 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             with(xAxis) {
                 // Added axis minimum offset & axis max offset in order to align the bar chart with the x-axis labels
                 // Related fix: https://github.com/PhilJay/MPAndroidChart/issues/2566
-                val axisValue = getAxisOffset()
+                val axisValue = 0.5f
                 axisMinimum = data.xMin - axisValue
                 axisMaximum = data.xMax + axisValue
                 labelCount = getBarLabelCount()
-                setCenterAxisLabels(activeGranularity == StatsGranularity.YEARS)
+                setCenterAxisLabels(false)
                 valueFormatter = StartEndDateAxisFormatter()
+                yOffset = resources.getDimension(R.dimen.chart_axis_bottom_padding)
+            }
+            with(axisLeft) {
+                setLabelCount(3, true)
+                valueFormatter = RevenueAxisFormatter()
             }
         }
 
@@ -541,7 +529,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
             var index = round(value).toInt() - 1
-            index = if (index == -1 || activeGranularity == StatsGranularity.YEARS) index + 1 else index
+            index = if (index == -1) index + 1 else index
             return if (index > -1 && index < chartRevenueStats.keys.size) {
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
@@ -583,6 +571,16 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             } else {
                 dateString.formatToDateOnly()
             }
+        }
+    }
+
+    /**
+     * Custom AxisFormatter for the Y-axis which only displays 3 labels:
+     * the maximum, minimum and 0 value labels
+     */
+    private inner class RevenueAxisFormatter : IAxisValueFormatter {
+        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+            return getFormattedRevenueValue(value.toDouble())
         }
     }
 }
