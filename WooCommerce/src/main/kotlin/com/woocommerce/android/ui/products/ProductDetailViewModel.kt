@@ -700,6 +700,23 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Removes a single product image from the product draft
+     */
+    fun removeProductImageFromDraft(remoteMediaId: Long) {
+        val imageList = ArrayList<Image>()
+
+        viewState.product?.let { product ->
+            for (image in product.images) {
+                if (image.id != remoteMediaId) {
+                    imageList.add(image)
+                }
+            }
+        }
+
+        updateProductDraft(images = imageList)
+    }
+
+    /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
      * back is clicked or DONE is clicked.

@@ -7,14 +7,9 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductImagesChanged
-import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductImagesPayload
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -35,14 +30,10 @@ class ImageViewerRepository @Inject constructor(
     fun getProduct(remoteProductId: Long): Product? =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.toAppModel()
 
-    private fun fetchProduct(remoteProductId: Long) {
-        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
-    }
-
     /**
-     * Dispatches a request to remove a single product image, returns true only if request
-     * was sent
+     * removes a single image from the product's image list - note that while this deletes
+     * the product image in the local DB, it does *not* send a request to remove the image
+     * from the backend, that work needs to be done by the image viewer's caller
      */
     fun removeProductImage(remoteProductId: Long, remoteMediaId: Long): Boolean {
         val product = getProduct(remoteProductId)
@@ -65,19 +56,6 @@ class ImageViewerRepository @Inject constructor(
         // remove this product from our image cache so the image is re-fetched the next time it's needed
         productImageMap.remove(remoteProductId)
 
-        // then dispatch the request to remove it
-        val payload = UpdateProductImagesPayload(selectedSite.get(), remoteProductId, imageList)
-        dispatcher.dispatch(WCProductActionBuilder.newUpdateProductImagesAction(payload))
         return true
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductImagesChanged(event: OnProductImagesChanged) {
-        // fetch the product again if the update fails - this is to restore any image we removed
-        // from SQLite above
-        if (event.isError) {
-            fetchProduct(event.remoteProductId)
-        }
     }
 }
