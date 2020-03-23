@@ -3,14 +3,6 @@ package com.woocommerce.android.extensions
 import org.apache.commons.text.StringEscapeUtils
 
 /**
- * Checks if a given string is a number (supports positive or negative numbers)
- */
-fun String?.isNumeric(): Boolean {
-    return if (this.isNullOrBlank()) false
-    else Regex("-?\\d+(\\.\\d+)?").matches(this)
-}
-
-/**
  * If the provided [line] is not null and not empty, then add the string to this instance. Will prepend the
  * [separator] if the current contents of this StringBuilder are not empty.
  */

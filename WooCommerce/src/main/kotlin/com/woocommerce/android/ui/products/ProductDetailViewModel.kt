@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
@@ -258,25 +257,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                     verifyProductExistsBySkuRemotely(sku)
                 }
             }
-        }
-    }
-
-    /**
-     * Called when user modifies the Stock quantity field in the inventory screen.
-     *
-     * Currently checks if the entered stock quantity [text] is empty or contains '-' symbol.
-     * Symbols are not supported when updating the stock quantity and displays an error
-     * message to the UI if there are any unsupported symbols found in the [text]
-     */
-    fun onStockQuantityChanged(text: String) {
-        val inputText = if (text.isEmpty()) "0" else text
-        productInventoryViewState = if (inputText.isNumeric()) {
-            updateProductDraft(stockQuantity = inputText)
-            productInventoryViewState.copy(stockQuantityErrorMessage = 0)
-        } else {
-            productInventoryViewState.copy(
-                    stockQuantityErrorMessage = string.product_inventory_update_stock_quantity_error
-            )
         }
     }
 
@@ -687,8 +667,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductInventoryViewState(
-        val skuErrorMessage: Int? = null,
-        val stockQuantityErrorMessage: Int? = null
+        val skuErrorMessage: Int? = null
     ) : Parcelable
 
     @Parcelize
