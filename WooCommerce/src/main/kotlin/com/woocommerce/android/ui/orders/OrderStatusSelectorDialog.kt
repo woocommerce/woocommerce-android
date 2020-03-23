@@ -43,9 +43,9 @@ class OrderStatusSelectorDialog : androidx.fragment.app.DialogFragment() {
     }
 
     private val orderStatusMap: Map<String, String> by lazy {
-        // remove the Refunded status from the dialog to avoid reporting problems
+        // remove the Refunded status from the dialog to avoid reporting problems (unless it's already Refunded)
         val statusesWithoutRefunded = orderStatusOptions
-                .filter { it.key != REFUNDED_ID }
+                .filter { selectedOrderStatus == REFUNDED_ID || it.key != REFUNDED_ID }
                 .values.associate { it.statusKey to it.label }
 
         if (isFilter) {
