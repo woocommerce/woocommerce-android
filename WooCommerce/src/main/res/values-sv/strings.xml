@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-06 00:54:34+0000
+Translation-Revision-Date: 2020-03-19 00:54:48+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
@@ -107,8 +107,8 @@ Language: sv_SE
     <string name="enter_site_credentials_instead">Logga in med dina inloggningsuppgifter.</string>
     <string name="enter_credentials_for_site">Logga in med dina inloggningsuppgifter för %1$s</string>
     <string name="send_verification_email">Skicka verifieringsmeddelande via e-post</string>
-    <string name="settings_enable_product_teaser_message">Testa sektionen nya produkter när vi börjar närma oss lansering</string>
-    <string name="settings_enable_product_teaser_title">Produkter</string>
+    <string name="settings_enable_product_teaser_message">Testa den nya produktredigeringsfunktionen då vi snart är klara för lansering</string>
+    <string name="settings_enable_product_teaser_title">Produktredigering</string>
     <string name="product_wip_message">Vi jobbar hårt på den nya Produkter-sektionen så du kan se några ändringar när vi närmar oss lanseringen 🚀</string>
     <string name="product_wip_title">Arbete pågår!</string>
     <string name="magic_link_fetch_account_error">Det uppstod ett fel när ditt konto skulle hämtas. Du kan försöka igen nu eller stänga och försöka igen senare.</string>
@@ -133,7 +133,6 @@ Language: sv_SE
     <string name="orderdetail_shipping_method">Fraktmetod</string>
     <string name="button_edit_permissions">Redigera behörigheter</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permission_storage">Lagring</string>
     <string name="permissions_denied_message">Det verkar som om du har stängt av några behörigheter som krävs för denna funktion.&lt;br/>&lt;br/>För att ändra detta behöver du redigera appens behörigheter och se till att &lt;strong>%s&lt;/strong> är aktiverat.</string>
     <string name="permissions_denied_title">Behörigheter</string>
     <string name="orders_processed_empty_message">Alla ordrar har behandlats</string>
