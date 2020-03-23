@@ -1,4 +1,0 @@
-3.7:
-– Informationen om återbetalda beställningar visar återbetalningar av både produkter och frakt.
-– Produkttitlar visar inte längre HTML-taggar.
-– Några sällsynta krascher har åtgärdats.

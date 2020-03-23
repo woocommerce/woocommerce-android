@@ -1,0 +1,2 @@
+3.8:
+Hareket halindeyken ürünleri düzenlemek istiyorsanız elinizi kaldırın! Mevcut düzenleme seçeneklerini denemek için Ayarlar > Beta Özellikleri'nde Ürün Düzenleme'yi etkinleştirin.
