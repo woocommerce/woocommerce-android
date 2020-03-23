@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-06 00:54:34+0000
+Translation-Revision-Date: 2020-03-18 00:54:55+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
@@ -105,8 +105,8 @@ Language: tr
     <string name="enter_site_credentials_instead">Site kimlik bilgileriyle giriş yapın.</string>
     <string name="enter_credentials_for_site">%1$s site kimlik bilginizle giriş yapın</string>
     <string name="send_verification_email">Doğrulama e-postası gönder</string>
-    <string name="settings_enable_product_teaser_message">Yayımlamaya hazırlanırken yeni ürünler bölümünü deneyin</string>
-    <string name="settings_enable_product_teaser_title">Ürünler</string>
+    <string name="settings_enable_product_teaser_message">Yayımlanmaya hazırlanırken yeni ürün düzenleme işlevini deneyin</string>
+    <string name="settings_enable_product_teaser_title">Ürün düzenleme</string>
     <string name="product_wip_message">Yeni Ürünler bölümünde çok çalışıyoruz, bu nedenle yayımlamaya için hazırlanırken bazı değişiklikler görebilirsiniz. &amp; # 128640;</string>
     <string name="product_wip_title">Çalışma devam ediyor!</string>
     <string name="magic_link_fetch_account_error">Hesabınızı alırken bazı sorunlar oluştu. Şimdi yeniden deneyebilir veya kapatıp daha sonra tekrar deneyebilirsiniz.</string>
@@ -131,7 +131,6 @@ Language: tr
     <string name="orderdetail_shipping_method">Sevkiyat yöntemi</string>
     <string name="button_edit_permissions">İzinleri düzenle</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permission_storage">Depolama Alanı</string>
     <string name="permissions_denied_message">Görünen o ki bu özellik için gerekli izinleri kapatmışsınız.&lt;br/>&lt;br/>Bunu değiştirmek için izinlerinizi düzenleyin ve &lt;strong>%s&lt;/strong> izninin etkin olduğundan emin olun.</string>
     <string name="permissions_denied_title">İzinler</string>
     <string name="orders_processed_empty_message">Tüm siparişler işlendi</string>

@@ -98,9 +98,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
 
         val product = requireNotNull(productData.product)
         with(product_sku) {
-            if (product.sku.isNotEmpty()) {
-                setText(product.sku)
-            }
+            setText(product.sku)
             setOnTextChangedListener {
                 viewModel.updateProductDraft(sku = it.toString())
                 viewModel.onSkuChanged(it.toString())
@@ -120,9 +118,10 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         with(product_stock_quantity) {
             setText(product.stockQuantity.toString())
             setOnTextChangedListener {
-                if (it.toString().isNotEmpty()) {
-                    viewModel.updateProductDraft(stockQuantity = it.toString())
-                }
+                val stockQuantity = if (it.toString().isNotEmpty()) {
+                    it.toString()
+                } else "0"
+                viewModel.updateProductDraft(stockQuantity = stockQuantity)
             }
         }
 

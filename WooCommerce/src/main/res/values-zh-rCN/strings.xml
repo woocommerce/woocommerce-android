@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-18 00:54:54+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
@@ -107,8 +107,8 @@ Language: zh_CN
     <string name="enter_site_credentials_instead">使用站点凭据登录。</string>
     <string name="enter_credentials_for_site">使用 %1$s 站点凭据登录</string>
     <string name="send_verification_email">发送验证电子邮件</string>
-    <string name="settings_enable_product_teaser_message">在我们准备发布新产品时测试一下新的“产品”部分</string>
-    <string name="settings_enable_product_teaser_title">产品</string>
+    <string name="settings_enable_product_teaser_message">我们会在准备发布新产品编辑功能时测试该功能</string>
+    <string name="settings_enable_product_teaser_title">产品编辑</string>
     <string name="product_wip_message">我们正在努力开发此新的“产品”部分，因此，在我们准备发布时，您可能会看到一些更改 🚀</string>
     <string name="product_wip_title">工作进行中！</string>
     <string name="magic_link_fetch_account_error">获取您的帐户时出现一些问题。您可以立即重试，或关闭并稍后重试。</string>
@@ -133,7 +133,6 @@ Language: zh_CN
     <string name="orderdetail_shipping_method">配送方式</string>
     <string name="button_edit_permissions">编辑权限</string>
     <string name="permission_camera">照相机</string>
-    <string name="permission_storage">存储</string>
     <string name="permissions_denied_message">您似乎关闭了此功能所需的权限。&lt;br/>&lt;br/>要对此进行更改，请编辑您的权限并确保已启用&lt;strong>%s&lt;/strong>。</string>
     <string name="permissions_denied_title">权限</string>
     <string name="orders_processed_empty_message">所有订单均已处理完毕</string>

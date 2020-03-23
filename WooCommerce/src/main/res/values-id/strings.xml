@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-18 00:54:54+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
@@ -107,8 +107,8 @@ Language: id
     <string name="enter_site_credentials_instead">Login dengan kredensial situs.</string>
     <string name="enter_credentials_for_site">Login dengan kredensial situs %1$s</string>
     <string name="send_verification_email">Kirim email verifikasi</string>
-    <string name="settings_enable_product_teaser_message">Uji bagian produk baru saat kami mempersiapkan peluncuran</string>
-    <string name="settings_enable_product_teaser_title">Produk</string>
+    <string name="settings_enable_product_teaser_message">Uji fungsionalitas penyuntingan produk baru saat kami mempersiapkan peluncuran</string>
+    <string name="settings_enable_product_teaser_title">Penyuntingan produk</string>
     <string name="product_wip_message">Kami bekerja keras dalam mengembangkan bagian Produk yang baru. Anda mungkin melihat beberapa perubahan saat kami mempersiapkan peluncurkan 🚀</string>
     <string name="product_wip_title">Sedang dalam proses!</string>
     <string name="magic_link_fetch_account_error">Ada masalah saat mengambil akun Anda. Anda dapat mencoba lagi sekarang atau menutupnya dan mencoba lagi nanti.</string>
@@ -133,7 +133,6 @@ Language: id
     <string name="orderdetail_shipping_method">Metode pengiriman</string>
     <string name="button_edit_permissions">Sunting izin</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permission_storage">Penyimpanan</string>
     <string name="permissions_denied_message">Tampaknya Anda mematikan izin wajib untuk fitur ini.&lt;br/>&lt;br/>Untuk mengubahnya, edit izin Anda dan pastikan &lt;strong>%s&lt;/strong> telah aktif.</string>
     <string name="permissions_denied_title">Izin</string>
     <string name="orders_processed_empty_message">Semua pesanan telah diproses</string>

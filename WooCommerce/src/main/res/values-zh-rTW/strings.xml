@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-05 00:54:04+0000
+Translation-Revision-Date: 2020-03-20 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
@@ -107,8 +107,8 @@ Language: zh_TW
     <string name="enter_site_credentials_instead">請使用網站憑證登入。</string>
     <string name="enter_credentials_for_site">請使用 %1$s 網站憑證登入</string>
     <string name="send_verification_email">傳送驗證電子郵件</string>
-    <string name="settings_enable_product_teaser_message">新產品推出前的測試階段</string>
-    <string name="settings_enable_product_teaser_title">產品</string>
+    <string name="settings_enable_product_teaser_message">在新產品編輯功能推出前搶先測試</string>
+    <string name="settings_enable_product_teaser_title">產品編輯</string>
     <string name="product_wip_message">我們正在新產品籌備階段，因此也許會在產品推出前發佈一些變更 🚀</string>
     <string name="product_wip_title">正在籌備階段！</string>
     <string name="magic_link_fetch_account_error">擷取帳號時發生錯誤。你可以現在重試，或先關閉並稍後再試。</string>
@@ -133,7 +133,6 @@ Language: zh_TW
     <string name="orderdetail_shipping_method">運送方式</string>
     <string name="button_edit_permissions">編輯權限</string>
     <string name="permission_camera">相機</string>
-    <string name="permission_storage">儲存空間</string>
     <string name="permissions_denied_message">你似乎已關閉此功能所需的權限。&lt;br/>&lt;br/>若要變更此設定，請編輯權限並確認已啟用 &lt;strong>%s&lt;/strong>。</string>
     <string name="permissions_denied_title">權限</string>
     <string name="orders_processed_empty_message">所有訂單均已處理</string>
