@@ -25,7 +25,8 @@ class ImageViewerRepository @Inject constructor(
     /**
      * removes a single image from the product's image list - note that while this deletes
      * the product image in the local DB, it does *not* send a request to remove the image
-     * from the backend, that work needs to be done by the image viewer's caller
+     * from the backend, that work is done in the product detail fragment when the user
+     * taps the "Update" button
      */
     fun removeProductImage(remoteProductId: Long, remoteMediaId: Long): Boolean {
         val product = getProduct(remoteProductId)
