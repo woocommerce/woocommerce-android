@@ -202,8 +202,11 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
                 RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
-                    if (bundle.getBooleanExtra(ImageViewerActivity.KEY_DID_REMOVE_IMAGE, false)) {
-                        viewModel.reloadProductImages(viewModel.getRemoteProductId())
+                    if (bundle.hasExtra(ImageViewerActivity.KEY_REMOVED_IMAGE_IDS)) {
+                        val removedImageIds = bundle.getSerializableExtra(ImageViewerActivity.KEY_REMOVED_IMAGE_IDS) as ArrayList<Long>
+                        for (mediaId in removedImageIds) {
+                            viewModel.removeProductImageFromDraft(mediaId)
+                        }
                     }
                 }
             }
