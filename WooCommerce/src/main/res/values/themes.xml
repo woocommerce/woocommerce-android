@@ -4,6 +4,12 @@
     <!-- Final top-level theme -->
     <style name="Theme.Woo.DayNight" parent="Theme.Woo"/>
 
+    <style name="Theme.Woo.Splash" parent="Theme.Woo">
+        <item name="android:navigationBarColor">@color/woo_purple_60</item>
+        <item name="android:statusBarColor">@color/woo_purple_60</item>
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+    </style>
+
     <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Colors -->
         <item name="colorPrimary">@color/woo_purple_60</item>
