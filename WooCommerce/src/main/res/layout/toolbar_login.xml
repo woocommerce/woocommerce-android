@@ -18,5 +18,5 @@
         android:layout_height="36dp"
         android:layout_gravity="center"
         android:contentDescription="@string/app_name"
-        app:srcCompat="@drawable/img_woo_white_bubble"/>
+        app:srcCompat="@drawable/img_woo_bubble_white"/>
 </androidx.appcompat.widget.Toolbar>
