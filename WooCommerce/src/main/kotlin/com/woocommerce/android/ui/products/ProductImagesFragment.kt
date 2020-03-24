@@ -70,7 +70,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return true
+        return viewModel.onBackButtonClicked(ExitImages())
     }
 
     override fun onPause() {
