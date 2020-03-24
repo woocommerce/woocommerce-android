@@ -193,7 +193,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             val endDate = formatSaleDateForDisplay(product.dateOnSaleToGmt, gmtOffset)
             product.dateOnSaleToGmt?.let { setText(endDate) }
             setClickListener {
-                endDatePickerDialog = displayDatePickerDialog(endDate, OnDateSetListener {
+                val selectedEndDate = if (scheduleSale_endDate.getText().isNotEmpty()) {
+                    scheduleSale_endDate.getText()
+                } else endDate
+                endDatePickerDialog = displayDatePickerDialog(selectedEndDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
                     val selectedDate = DateUtils.localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
