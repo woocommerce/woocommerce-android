@@ -163,6 +163,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when the the Remove end date link is clicked
+     */
+    fun onRemoveEndDateClicked() {
+        productPricingViewState = productPricingViewState.copy(maxDate = null)
+    }
+
+    /**
      * Called when the DONE menu button is clicked in all of the product sub detail screen
      */
     fun onDoneButtonClicked(event: ProductExitEvent) {
