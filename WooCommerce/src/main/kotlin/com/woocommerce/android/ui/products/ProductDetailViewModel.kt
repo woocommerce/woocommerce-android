@@ -148,7 +148,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.product?.let {
             triggerEvent(ViewProductImages(it, image, selectedImage))
@@ -337,7 +337,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null,
         shippingClass: String? = null,
-        images: List<Product.Image>? = null
+        images: List<Image>? = null
     ) {
         viewState.product?.let { product ->
             val currentProduct = product.copy()
@@ -350,7 +350,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     soldIndividually = soldIndividually ?: product.soldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = viewState.storedProduct?.images ?: product.images,
+                    images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
