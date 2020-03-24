@@ -80,6 +80,8 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         setupObservers(viewModel)
     }
 
+    override fun getFragmentTitle() = getString(R.string.product_price)
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
