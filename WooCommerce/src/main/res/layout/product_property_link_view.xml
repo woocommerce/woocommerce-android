@@ -33,12 +33,4 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_external"/>
 
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Settings.Divider"
-        android:layout_marginTop="@dimen/product_detail_property_margin"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
