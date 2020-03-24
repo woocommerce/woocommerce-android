@@ -82,13 +82,13 @@ class ReviewListViewModel @AssistedInject constructor(
      */
     fun start() {
         launch {
-            viewState = viewState.copy(isSkeletonShown = true)
-
             // Initial load. Get and show reviewList from the db if any
             val reviewsInDb = reviewRepository.getCachedProductReviews()
             if (reviewsInDb.isNotEmpty()) {
                 _reviewList.value = reviewsInDb
                 viewState = viewState.copy(isSkeletonShown = false)
+            } else {
+                viewState = viewState.copy(isSkeletonShown = true)
             }
             fetchReviewList(loadMore = false)
         }
