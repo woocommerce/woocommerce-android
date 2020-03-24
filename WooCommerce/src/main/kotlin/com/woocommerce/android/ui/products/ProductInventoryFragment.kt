@@ -82,6 +82,9 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
+            new.stockQuantityErrorMessage?.takeIfNotEqualTo(old?.stockQuantityErrorMessage) {
+                displayStockQuantityError(it)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -98,9 +101,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
 
         val product = requireNotNull(productData.product)
         with(product_sku) {
-            if (product.sku.isNotEmpty()) {
-                setText(product.sku)
-            }
+            setText(product.sku)
             setOnTextChangedListener {
                 viewModel.updateProductDraft(sku = it.toString())
                 viewModel.onSkuChanged(it.toString())
@@ -120,9 +121,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         with(product_stock_quantity) {
             setText(product.stockQuantity.toString())
             setOnTextChangedListener {
-                if (it.toString().isNotEmpty()) {
-                    viewModel.updateProductDraft(stockQuantity = it.toString())
-                }
+                viewModel.onStockQuantityChanged(it.toString())
             }
         }
 
@@ -172,6 +171,16 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             enablePublishMenuItem(false)
         } else {
             product_sku.clearError()
+            enablePublishMenuItem(true)
+        }
+    }
+
+    private fun displayStockQuantityError(messageId: Int) {
+        if (messageId != 0) {
+            product_stock_quantity.setError(getString(messageId))
+            enablePublishMenuItem(false)
+        } else {
+            product_stock_quantity.clearError()
             enablePublishMenuItem(true)
         }
     }

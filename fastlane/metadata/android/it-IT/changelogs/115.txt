@@ -1,0 +1,2 @@
+3.8:
+Alza la mano se vorresti modificare i prodotti in viaggio! Per provare le opzioni di modifica disponibili, abilita Modifica del prodotto in Impostazioni > Funzionalità beta.

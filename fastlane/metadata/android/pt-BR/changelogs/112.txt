@@ -1,4 +1,0 @@
-3.7:
-- Detalhes de pedidos reembolsados exibem os reembolsos de produtos e de envio.
-- Títulos de produtos não mostram mais tags de HTML.
-- Alguns travamentos raros foram consertados.

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-06 00:54:34+0000
+Translation-Revision-Date: 2020-03-18 00:54:57+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
@@ -107,8 +107,8 @@ Language: de
     <string name="enter_site_credentials_instead">Melde dich mit deinen Website-Anmeldedaten an.</string>
     <string name="enter_credentials_for_site">Melde dich mit deinen Website-Anmeldedaten für %1$s an.</string>
     <string name="send_verification_email">Verifizierungs-E-Mail senden</string>
-    <string name="settings_enable_product_teaser_message">Teste den neuen Produktabschnitt, an dem wir gerade arbeiten.</string>
-    <string name="settings_enable_product_teaser_title">Produkte</string>
+    <string name="settings_enable_product_teaser_message">Teste die neuen Produktbearbeitungsfunktionen, wenn wir sie einführen</string>
+    <string name="settings_enable_product_teaser_title">Produktbearbeitung</string>
     <string name="product_wip_message">Wir sind gerade mit dem neuen Produktabschnitt beschäftigt. Während wir ihn fertigstellen, kannst du vielleicht schon einige Neuerungen sehen 🚀</string>
     <string name="product_wip_title">In Bearbeitung!</string>
     <string name="magic_link_fetch_account_error">Es gab Probleme beim Abrufen deines Kontos. Du kannst es jetzt oder es schließen und später erneut versuchen.</string>
@@ -133,7 +133,6 @@ Language: de
     <string name="orderdetail_shipping_method">Versandmethode</string>
     <string name="button_edit_permissions">Rechte bearbeiten</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permission_storage">Speicherplatz</string>
     <string name="permissions_denied_message">Scheinbar hast du die Rechte, die für diese Funktion erforderlich sind, deaktiviert.&lt;br/>&lt;br/>Bearbeite deine Rechte, um dies zu ändern, und stelle sicher, dass &lt;strong>%s&lt;/strong> aktiviert ist.</string>
     <string name="permissions_denied_title">Berechtigungen</string>
     <string name="orders_processed_empty_message">Alle Bestellungen wurden verarbeitet</string>

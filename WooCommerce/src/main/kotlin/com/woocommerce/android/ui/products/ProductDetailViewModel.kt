@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.model.Product
@@ -197,6 +198,18 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when the date is selected from the date picker in the pricing screen.
+     * Keeps track of the min and max date value when scheduling a sale.
+     */
+    fun onDatePickerValueSelected(selectedDate: Date, isMinValue: Boolean) {
+        productPricingViewState = if (isMinValue) {
+            productPricingViewState.copy(minDate = selectedDate)
+        } else {
+            productPricingViewState.copy(maxDate = selectedDate)
+        }
+    }
+
+    /**
      * Method called when back button is clicked.
      *
      * Each product screen has it's own [ProductExitEvent]
@@ -263,6 +276,25 @@ class ProductDetailViewModel @AssistedInject constructor(
                     verifyProductExistsBySkuRemotely(sku)
                 }
             }
+        }
+    }
+
+    /**
+     * Called when user modifies the Stock quantity field in the inventory screen.
+     *
+     * Currently checks if the entered stock quantity [text] is empty or contains '-' symbol.
+     * Symbols are not supported when updating the stock quantity and displays an error
+     * message to the UI if there are any unsupported symbols found in the [text]
+     */
+    fun onStockQuantityChanged(text: String) {
+        val inputText = if (text.isEmpty()) "0" else text
+        productInventoryViewState = if (inputText.isNumeric()) {
+            updateProductDraft(stockQuantity = inputText)
+            productInventoryViewState.copy(stockQuantityErrorMessage = 0)
+        } else {
+            productInventoryViewState.copy(
+                    stockQuantityErrorMessage = string.product_inventory_update_stock_quantity_error
+            )
         }
     }
 
@@ -506,6 +538,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Fetch the shipping class name of a product based on the slug
+     */
+    fun getShippingClassBySlug(slug: String): String {
+        val shippingClassList = productShippingClassViewState.shippingClassList
+                ?: productRepository.getProductShippingClassesForSite()
+        return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
+    }
+
+    /**
      * Load & fetch the shipping classes for the current site, optionally performing a "load more" to
      * load the next page of shipping classes
      */
@@ -664,14 +705,17 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductInventoryViewState(
-        val skuErrorMessage: Int? = null
+        val skuErrorMessage: Int? = null,
+        val stockQuantityErrorMessage: Int? = null
     ) : Parcelable
 
     @Parcelize
     data class ProductPricingViewState(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val taxClassList: List<TaxClass>? = null
+        val taxClassList: List<TaxClass>? = null,
+        val minDate: Date? = null,
+        val maxDate: Date? = null
     ) : Parcelable
 
     @Parcelize

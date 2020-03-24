@@ -78,7 +78,7 @@
                 android:id="@+id/product_stock_quantity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="numberSigned"
                 app:editTextHint="@string/product_inventory_quantity"
                 app:editTextSummary="@string/product_inventory_quantity_summary"
                 app:layout_constraintStart_toEndOf="parent"

@@ -1,3 +1,1 @@
-- Details of refunded orders display both product refunds and shipping refunds.
-- Product titles no longer show HTML tags.
-- A few rare crashes fixed.
+Raise your hand if you’d like to edit products on the go! To give available editing options a try, enable Product Editing in Settings > Beta Features.
