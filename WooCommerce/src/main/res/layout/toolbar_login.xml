@@ -18,5 +18,5 @@
         android:layout_height="36dp"
         android:layout_gravity="center"
         android:contentDescription="@string/app_name"
-        app:srcCompat="@drawable/login_toolbar_icon"/>
+        app:srcCompat="@drawable/img_woo_white_bubble"/>
 </androidx.appcompat.widget.Toolbar>
