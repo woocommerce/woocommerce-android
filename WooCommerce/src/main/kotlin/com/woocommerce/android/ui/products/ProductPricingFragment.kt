@@ -107,7 +107,8 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
             new.minDate?.takeIfNotEqualTo(old?.minDate) {
                 // update end date to min date if current end date < start date
-                if (it.after(viewModel.getProduct().product?.dateOnSaleToGmt)) {
+                val dateOnSaleToGmt = viewModel.getProduct().product?.dateOnSaleToGmt
+                if (dateOnSaleToGmt?.before(it) == true) {
                     scheduleSale_endDate.setText(it.formatToMMMddYYYY())
                 }
             }
