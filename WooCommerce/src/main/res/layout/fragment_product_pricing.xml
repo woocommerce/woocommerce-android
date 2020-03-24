@@ -110,6 +110,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/scheduleSale_startDate"
                 app:spinnerHint="@string/product_schedule_sale_to_label" />
 
+            <!-- Remove End Date button -->
+            <TextView
+                android:id="@+id/scheduleSale_RemoveEndDateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/wc_purple"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:background="?attr/selectableItemBackground"
+                android:text="@string/product_schedule_remove_end_date_link_label"
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/scheduleSale_endDate"
+                app:layout_constraintTop_toBottomOf="@id/scheduleSale_endDate" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.Barrier
