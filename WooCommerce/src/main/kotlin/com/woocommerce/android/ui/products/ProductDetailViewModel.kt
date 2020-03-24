@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
@@ -351,10 +350,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                     soldIndividually = soldIndividually ?: product.soldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = images ?: product.images,
-                    regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) null else regularPrice
-                            ?: product.regularPrice,
-                    salePrice = if (salePrice isEqualTo BigDecimal.ZERO) null else salePrice ?: product.salePrice,
+                    images = viewState.storedProduct?.images ?: product.images,
+                    regularPrice = regularPrice ?: product.regularPrice,
+                    salePrice = salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
                     length = length ?: product.length,
