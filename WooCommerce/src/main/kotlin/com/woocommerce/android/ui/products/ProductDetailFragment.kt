@@ -170,7 +170,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         if (product.images.isEmpty() && !viewModel.isUploading()) {
             imageGallery.visibility = View.GONE
-            if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
                 addImageContainer.visibility = View.VISIBLE
                 addImageContainer.setOnClickListener {
                     viewModel.onAddImageClicked()

@@ -107,7 +107,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
         }
 
-        if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
             switchImageOptimizaton.visibility = View.VISIBLE
             switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
             switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->

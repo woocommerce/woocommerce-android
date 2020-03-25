@@ -8,14 +8,12 @@ import com.woocommerce.android.BuildConfig
  */
 enum class FeatureFlag {
     PRODUCT_RELEASE_M2,
-    DB_DOWNGRADE,
-    PRODUCT_IMAGE_CHOOSER;
+    DB_DOWNGRADE;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             // currently only enabled for debug users but once live, this feature will live switched on from the
             // setting screen. i.e. check AppPrefs.isProductsFeatureEnabled() method
             PRODUCT_RELEASE_M2 -> BuildConfig.DEBUG
-            PRODUCT_IMAGE_CHOOSER -> BuildConfig.DEBUG && PRODUCT_RELEASE_M2.isEnabled(context)
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
