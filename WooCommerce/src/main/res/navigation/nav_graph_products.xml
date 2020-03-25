@@ -16,12 +16,12 @@
             android:id="@+id/action_productDetailFragment_to_productVariantsFragment"
             app:destination="@id/productVariantsFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_productDetailFragment_to_aztecEditorFragment"
             app:destination="@id/aztecEditorFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_productDetailFragment_to_productImagesFragment"
             app:destination="@id/productImagesFragment"
@@ -31,17 +31,17 @@
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_productDetailFragment_to_productShippingFragment"
             app:destination="@id/productShippingFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_productDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -52,6 +52,12 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_productImagesFragment_to_productImageViewerFragment"
+            app:destination="@id/productImageViewerFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+
     </fragment>
     <fragment
         android:id="@+id/productVariantsFragment"
@@ -68,12 +74,12 @@
         tools:layout="@layout/fragment_aztec_editor">
         <argument
             android:name="aztecText"
-            app:argType="string"
-            android:defaultValue='""'/>
+            android:defaultValue='""'
+            app:argType="string" />
         <argument
             android:name="aztecTitle"
-            app:argType="string"
-            android:defaultValue='""'/>
+            android:defaultValue='""'
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/productInventoryFragment"
@@ -117,5 +123,8 @@
         <argument
             android:name="imageUrl"
             app:argType="string" />
-    </fragment><action android:id="@+id/action_global_productImageViewerFragment" app:destination="@id/productImageViewerFragment"/>
+    </fragment>
+    <action
+        android:id="@+id/action_global_productImageViewerFragment"
+        app:destination="@id/productImageViewerFragment" />
 </navigation>
