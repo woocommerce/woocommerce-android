@@ -119,6 +119,11 @@ class MainActivity : AppUpgradeActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+
+        // Manually set the theme here so the splash screen will be visible while this
+        // activity is loading.
+        setTheme(R.style.Theme_Woo_DayNight)
+
         setContentView(R.layout.activity_main)
 
         // Set the toolbar
