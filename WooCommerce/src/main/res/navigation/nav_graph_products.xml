@@ -123,5 +123,7 @@
     </fragment>
     <action
         android:id="@+id/action_global_productImageViewerFragment"
-        app:destination="@id/productImageViewerFragment" />
+        app:destination="@id/productImageViewerFragment"
+        app:enterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/activity_fade_out"/>
 </navigation>

@@ -25,7 +25,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -200,16 +199,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
                     viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
-                }
-                RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
-                    // if the user deleted any product images in the image viewer, remove them from the draft product
-                    if (bundle.hasExtra(ImageViewerActivity.KEY_REMOVED_IMAGE_IDS)) {
-                        val removedImageIds = bundle.getSerializableExtra(
-                                ImageViewerActivity.KEY_REMOVED_IMAGE_IDS
-                        ) as ArrayList<Long>
-                        viewModel.removeProductImageListFromDraft(removedImageIds)
-                        reloadImageGallery()
-                    }
                 }
             }
         }

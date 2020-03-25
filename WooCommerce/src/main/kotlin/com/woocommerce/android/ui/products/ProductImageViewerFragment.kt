@@ -23,6 +23,10 @@ import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
 
 class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawable> {
+    companion object {
+        private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
+    }
+
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
 
     private var isConfirmationShowing = false
@@ -45,6 +49,16 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loadImage()
+        savedInstanceState?.let { bundle ->
+            if (bundle.getBoolean(KEY_IS_CONFIRMATION_SHOWING)) {
+                confirmRemoveProductImage()
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_IS_CONFIRMATION_SHOWING, isConfirmationShowing)
     }
 
     override fun onResume() {
