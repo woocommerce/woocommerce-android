@@ -159,15 +159,19 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        // if v4 stats is available, show both products & stats under the beta setting label, otherwise
-        // only show products
-        textBetaFeaturesDetail.text = if (AppPrefs.isUsingV4Api()) {
-            getString(R.string.settings_enable_product_teaser_title) +
-                    ", " +
-                    getString(R.string.settings_enable_v4_stats_title)
-        } else {
-            getString(R.string.settings_enable_product_teaser_title)
-        }
+        // TODO: commenting out this code since we are enabling products for all users in the next release.
+        // Once product M2 editing features are live, we can enable product editing switch from this screen again.
+        textBetaFeaturesDetail.text = getString(R.string.settings_enable_v4_stats_title)
+
+//         // if v4 stats is available, show both products & stats under the beta setting label, otherwise
+//         // only show products
+//        textBetaFeaturesDetail.text = if (AppPrefs.isUsingV4Api()) {
+//            getString(R.string.settings_enable_product_teaser_title) +
+//                    ", " +
+//                    getString(R.string.settings_enable_v4_stats_title)
+//        } else {
+//            getString(R.string.settings_enable_product_teaser_title)
+//        }
 
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
