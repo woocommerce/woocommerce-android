@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import kotlinx.android.synthetic.main.fragment_product_pricing.*
 import org.wordpress.android.util.ActivityUtils
@@ -108,14 +109,15 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
             new.minDate?.takeIfNotEqualTo(old?.minDate) {
                 // update end date to min date if current end date < start date
-                if (it.after(viewModel.getProduct().product?.dateOnSaleToGmt)) {
+                val endDate = viewModel.getProduct().product?.dateOnSaleToGmt
+                if (endDate != null && it.after(endDate)) {
                     scheduleSale_endDate.setText(it.formatToMMMddYYYY())
                 }
             }
             new.maxDate.takeIfNotEqualTo(old?.maxDate) {
                 // update start date to max date if current start date > end date
                 if (it == null) {
-                    scheduleSale_startDate.setText("")
+                    scheduleSale_endDate.setText("")
                 } else if (it.before(viewModel.getProduct().product?.dateOnSaleFromGmt)) {
                     scheduleSale_startDate.setText(it.formatToMMMddYYYY())
                 }
@@ -164,15 +166,17 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             isChecked = scheduleSale
             setOnCheckedChangeListener { _, isChecked ->
                 enableScheduleSale(isChecked)
+                val startDate = DateUtils.localDateToGmtOrNull(scheduleSale_startDate.getText(), gmtOffset, true)
+                val endDate = DateUtils.localDateToGmtOrNull(scheduleSale_endDate.getText(), gmtOffset, false)
                 viewModel.updateProductDraft(
                         isSaleScheduled = isChecked,
-                        dateOnSaleFromGmt = DateUtils.localDateToGmt(scheduleSale_startDate.getText(), gmtOffset, true),
-                        dateOnSaleToGmt = DateUtils.localDateToGmt(scheduleSale_endDate.getText(), gmtOffset, false)
+                        dateOnSaleFromGmt = startDate,
+                        dateOnSaleToGmt = Optional(endDate)
                 )
             }
         }
 
-        product.dateOnSaleFromGmt?.let { updateSaleStartDate(it, productData.gmtOffset) }
+        updateSaleStartDate(product.dateOnSaleFromGmt, productData.gmtOffset)
         with(scheduleSale_startDate) {
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
@@ -186,7 +190,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
         }
 
-        product.dateOnSaleToGmt?.let { updateSaleEndDate(it, productData.gmtOffset) }
+        updateSaleEndDate(product.dateOnSaleToGmt, productData.gmtOffset)
         with(scheduleSale_endDate) {
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(scheduleSale_endDate, OnDateSetListener {
@@ -219,16 +223,19 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     }
 
 
-    private fun updateSaleStartDate(date: Date, offset: Float) {
+    private fun updateSaleStartDate(selectedDate: Date?, offset: Float) {
+        val date = selectedDate ?: Date()
         scheduleSale_startDate.setText(formatSaleDateForDisplay(date, offset))
-        viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleFromGmt = date)
+        viewModel.updateProductDraft(dateOnSaleFromGmt = date)
         viewModel.onDatePickerValueSelected(date, true)
     }
 
-    private fun updateSaleEndDate(date: Date, offset: Float) {
-        scheduleSale_endDate.setText(formatSaleDateForDisplay(date, offset))
-        viewModel.updateProductDraft(isSaleScheduled = true, dateOnSaleToGmt = date)
-        viewModel.onDatePickerValueSelected(date, false)
+    private fun updateSaleEndDate(selectedDate: Date?, offset: Float) {
+        if (selectedDate != null) {
+            scheduleSale_endDate.setText(formatSaleDateForDisplay(selectedDate, offset))
+            viewModel.updateProductDraft(dateOnSaleToGmt = Optional(selectedDate))
+            viewModel.onDatePickerValueSelected(selectedDate, false)
+        }
     }
 
     private fun updateProductTaxClassList(
@@ -267,7 +274,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         spinnerEditText: WCMaterialOutlinedSpinnerView,
         dateSetListener: OnDateSetListener
     ): DatePickerDialog {
-        val dateString = DateUtils.formatToYYYYmmDD(spinnerEditText.getText())
+        val dateString = if (spinnerEditText.getText().isNotBlank())
+            DateUtils.formatToYYYYmmDD(spinnerEditText.getText())
+        else
+            DateUtils.formatToYYYYmmDD(Date().formatToMMMddYYYY())
         val (year, month, day) = dateString.split("-")
         val datePicker = DatePickerDialog(
                 requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
