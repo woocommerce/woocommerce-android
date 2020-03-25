@@ -73,7 +73,7 @@ class ProductNavigator @Inject constructor() {
             is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId)
 
             is ViewProductImages -> {
-                if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(fragment.requireActivity())) {
+                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(fragment.requireActivity())) {
                     viewProductImageChooser(fragment, target.product.remoteId)
                 } else if (target.imageModel != null) {
                     ImageViewerActivity.showProductImages(
