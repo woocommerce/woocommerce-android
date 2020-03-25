@@ -31,6 +31,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_images.*
+import java.lang.ref.WeakReference
 
 class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
     companion object {
@@ -117,15 +118,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewModel.getProduct().product?.let { product ->
-            ImageViewerActivity.showProductImages(
-                    this,
-                    product,
-                    image,
-                    sharedElement = imageView,
-                    enableRemoveImage = true
-            )
-        }
+        viewModel.onImageGalleryClicked(image, WeakReference(imageView))
     }
 
     private fun showImageSourceDialog() {

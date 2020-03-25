@@ -52,17 +52,6 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
-        <action
-            android:id="@+id/action_productImagesFragment_to_productImageViewerFragment"
-            app:destination="@id/productImageViewerFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/productImageViewerFragment"
-        android:name="com.woocommerce.android.ui.products.ProductImageViewerFragment"
-        tools:layout="@layout/fragment_image_viewer">
-        <argument
-            android:name="imageUrl"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/productVariantsFragment"
@@ -120,4 +109,13 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/productImageViewerFragment"
+        android:name="com.woocommerce.android.ui.products.ProductImageViewerFragment"
+        android:label="ProductImageViewerFragment"
+        tools:layout="@layout/fragment_image_viewer">
+        <argument
+            android:name="imageUrl"
+            app:argType="string" />
+    </fragment><action android:id="@+id/action_global_productImageViewerFragment" app:destination="@id/productImageViewerFragment"/>
 </navigation>

@@ -5,41 +5,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
 
 class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawable> {
     companion object {
-        private const val KEY_IMAGE_URL = "image_url"
-
         interface ImageViewerListener {
             fun onImageTapped()
             fun onImageLoadError()
         }
-
-        fun newInstance(imageModel: Product.Image): ProductImageViewerFragment {
-            val args = Bundle().also {
-                it.putString(KEY_IMAGE_URL, imageModel.source)
-            }
-            ProductImageViewerFragment().also {
-                it.arguments = args
-                return it
-            }
-        }
     }
 
-    private lateinit var imageUrl: String
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        imageUrl = arguments?.getString(KEY_IMAGE_URL) ?: ""
-    }
+    private val navArgs: ProductImageViewerFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_viewer, container, false)
@@ -57,11 +40,6 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(KEY_IMAGE_URL, imageUrl)
-        super.onSaveInstanceState(outState)
-    }
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -71,7 +49,7 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
         showProgress(true)
 
         GlideApp.with(this)
-                .load(imageUrl)
+                .load(navArgs.imageUrl)
                 .listener(this)
                 .into(photoView)
     }

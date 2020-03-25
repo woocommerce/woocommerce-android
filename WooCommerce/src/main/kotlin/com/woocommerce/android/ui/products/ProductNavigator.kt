@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Intent
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -15,6 +16,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.util.FeatureFlag
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -76,12 +78,7 @@ class ProductNavigator @Inject constructor() {
                 if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(fragment.requireActivity())) {
                     viewProductImageChooser(fragment, target.product.remoteId)
                 } else if (target.imageModel != null) {
-                    ImageViewerActivity.showProductImages(
-                            fragment,
-                            target.product,
-                            target.imageModel,
-                            sharedElement = target.clickedImage.get()
-                    )
+                    viewProductImageViewer(fragment, target.imageModel, target.clickedImage)
                 }
             }
 
@@ -92,6 +89,11 @@ class ProductNavigator @Inject constructor() {
     private fun viewProductImageChooser(fragment: Fragment, remoteId: Long) {
         val action = ProductDetailFragmentDirections
                 .actionProductDetailFragmentToProductImagesFragment(remoteId)
+        fragment.findNavController().navigate(action)
+    }
+
+    private fun viewProductImageViewer(fragment: Fragment, image: Product.Image, clickedView: WeakReference<View>) {
+        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(image.source)
         fragment.findNavController().navigate(action)
     }
 }
