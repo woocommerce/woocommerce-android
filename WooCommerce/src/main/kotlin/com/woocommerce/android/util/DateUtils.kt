@@ -399,6 +399,18 @@ object DateUtils {
         }
     }
 
+    fun localDateToGmtOrNull(
+        dateString: String,
+        gmtOffset: Float,
+        timeAtStartOfDay: Boolean
+    ): Date? {
+        return try {
+            localDateToGmt(dateString, gmtOffset, timeAtStartOfDay)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     /**
      * Method to convert date string from MMM dd, yyyy format to yyyy-MM-dd format
      * i.e. Dec 02, 2020 is formatted to 2020-12-02
