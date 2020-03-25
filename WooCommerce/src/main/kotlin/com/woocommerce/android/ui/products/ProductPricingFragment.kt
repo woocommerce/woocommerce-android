@@ -82,6 +82,8 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         setupObservers(viewModel)
     }
 
+    override fun getFragmentTitle() = getString(R.string.product_price)
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
@@ -109,8 +111,8 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
             new.minDate?.takeIfNotEqualTo(old?.minDate) {
                 // update end date to min date if current end date < start date
-                val endDate = viewModel.getProduct().product?.dateOnSaleToGmt
-                if (endDate != null && it.after(endDate)) {
+                val dateOnSaleToGmt = viewModel.getProduct().product?.dateOnSaleToGmt
+                if (dateOnSaleToGmt?.before(it) == true) {
                     scheduleSale_endDate.setText(it.formatToMMMddYYYY())
                 }
             }

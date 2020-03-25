@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import org.wordpress.android.util.DisplayUtils
@@ -62,8 +61,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.fragmentManager = fm
         this.listener = listener
 
-        refreshProductsTab()
-
         navAdapter = NavAdapter()
         addTopDivider()
 
@@ -84,11 +81,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         // Default to the dashboard position
         active(DASHBOARD.position)
-    }
-
-    private fun refreshProductsTab() {
-        menu.findItem(R.id.products)?.isVisible = FeatureFlag.PRODUCT_RELEASE_M1.isEnabled()
-        detectLabelVisibilityMode()
     }
 
     /**
