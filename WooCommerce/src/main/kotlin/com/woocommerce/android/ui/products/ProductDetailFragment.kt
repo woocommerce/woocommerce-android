@@ -261,9 +261,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         // show product variants only if product type is variable and if there are variations for the product
-        if (product.type == VARIABLE &&
-                FeatureFlag.PRODUCT_RELEASE_M1.isEnabled(context) &&
-                product.numVariations > 0) {
+        if (product.type == VARIABLE && product.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
@@ -773,8 +771,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     /**
-     * Add/Edit Product Release 1 is enabled only if beta setting is enabled and only for SIMPLE products
+     * Add/Edit Product Release 1 is enabled by default for SIMPLE products
      */
-    private fun isAddEditProductRelease1Enabled(productType: ProductType) =
-            FeatureFlag.PRODUCT_RELEASE_M1.isEnabled() && productType == ProductType.SIMPLE
+    private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
 }
