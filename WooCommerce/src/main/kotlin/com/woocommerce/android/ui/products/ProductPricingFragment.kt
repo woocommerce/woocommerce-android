@@ -222,7 +222,6 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         }
     }
 
-
     private fun updateSaleStartDate(selectedDate: Date?, offset: Float) {
         val date = selectedDate ?: Date()
         scheduleSale_startDate.setText(formatSaleDateForDisplay(date, offset))
@@ -231,6 +230,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     }
 
     private fun updateSaleEndDate(selectedDate: Date?, offset: Float) {
+        // The end sale date is optional => null is a valid value
         if (selectedDate != null) {
             scheduleSale_endDate.setText(formatSaleDateForDisplay(selectedDate, offset))
             viewModel.updateProductDraft(dateOnSaleToGmt = Optional(selectedDate))
