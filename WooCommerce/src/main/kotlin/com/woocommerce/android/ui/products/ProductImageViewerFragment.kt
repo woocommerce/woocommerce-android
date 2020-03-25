@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.app.AlertDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
 import android.transition.ChangeBounds
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,11 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import androidx.annotation.AnimRes
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
@@ -28,20 +23,10 @@ import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
 
 class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawable> {
-    companion object {
-        private const val TOOLBAR_FADE_DELAY_MS = 2500L
-    }
-
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
-
-    private val fadeOutToolbarHandler = Handler()
-
-    private val fadeOutToolbarRunnable = Runnable {
-        showToolbar(false)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +45,6 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loadImage()
-        showToolbar(true)
     }
 
     override fun onResume() {
@@ -142,45 +126,5 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
                     isConfirmationShowing = false
                 }
                 .show()
-    }
-
-    private fun showToolbar(show: Boolean) {
-        requireActivity().findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
-
-            // remove the current fade-out runnable and start a new one to hide the toolbar shortly after we show it
-            fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
-            if (show) {
-                fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
-            }
-
-            if ((show && toolbar.visibility == View.VISIBLE) || (!show && toolbar.visibility == View.GONE)) {
-                return
-            }
-
-            @AnimRes val animRes = if (show) {
-                R.anim.toolbar_fade_in_and_down
-            } else {
-                R.anim.toolbar_fade_out_and_up
-            }
-
-            val listener = object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {
-                    if (show) toolbar.visibility = View.VISIBLE
-                }
-
-                override fun onAnimationEnd(animation: Animation) {
-                    if (!show) toolbar.visibility = View.GONE
-                }
-
-                override fun onAnimationRepeat(animation: Animation) {
-                    // noop
-                }
-            }
-
-            AnimationUtils.loadAnimation(requireActivity(), animRes)?.let { anim ->
-                anim.setAnimationListener(listener)
-                toolbar.startAnimation(anim)
-            }
-        }
     }
 }
