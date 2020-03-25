@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.products
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -15,14 +17,12 @@ import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
 
 class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawable> {
-    companion object {
-        interface ImageViewerListener {
-            fun onImageTapped()
-            fun onImageLoadError()
-        }
-    }
-
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_viewer, container, false)
@@ -35,9 +35,6 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loadImage()
-        photoView.setOnPhotoTapListener { _, _, _ ->
-            (activity as? ImageViewerListener)?.onImageTapped()
-        }
     }
 
     override fun onResume() {
@@ -59,7 +56,7 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
     }
 
     /**
-     * Glide failed to load the image, alert the host activity
+     * Glide failed to load the image
      */
     override fun onLoadFailed(
         e: GlideException?,
@@ -68,12 +65,13 @@ class ProductImageViewerFragment : BaseProductFragment(), RequestListener<Drawab
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-        (activity as? ImageViewerListener)?.onImageLoadError()
+        uiMessageResolver.showSnack(R.string.error_loading_image)
+        findNavController().navigateUp()
         return false
     }
 
     /**
-     * Glide has loaded the image, hide the progress bar
+     * Glide has loaded the image
      */
     override fun onResourceReady(
         resource: Drawable?,

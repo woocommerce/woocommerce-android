@@ -52,12 +52,6 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
-        <action
-            android:id="@+id/action_productImagesFragment_to_productImageViewerFragment"
-            app:destination="@id/productImageViewerFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-
     </fragment>
     <fragment
         android:id="@+id/productVariantsFragment"

@@ -117,6 +117,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        imageView.transitionName = getString(R.string.shared_element_transition_name)
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(image.source)
         findNavController().navigate(action)
     }
