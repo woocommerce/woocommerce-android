@@ -486,13 +486,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun reloadProductImages(remoteProductId: Long) {
-        val images = productRepository.getProduct(remoteProductId)?.images
-        viewState.cachedProduct?.images?.let {
-            // TODO
-        }
-    }
-
     /**
      * Loads the product dependencies for a site such as dimensions, currency or timezone
      */
@@ -736,6 +729,22 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         // ...and then update the draft with the new list
         updateProductDraft(images = imageList)
+    }
+
+    /**
+     * Removes a single product image from the product draft
+     */
+    private fun removeProductImageFromDraft(remoteMediaId: Long) {
+        viewState.product?.let { product ->
+            val imageList = product.images.filter { it.id != remoteMediaId }
+            updateProductDraft(images = imageList)
+        }
+    }
+
+    fun removeProductImageListFromDraft(remoteMediaIds: ArrayList<Long>) {
+        for (mediaId in remoteMediaIds) {
+            removeProductImageFromDraft(mediaId)
+        }
     }
 
     /**

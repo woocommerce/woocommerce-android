@@ -47,7 +47,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         private const val KEY_ENABLE_REMOVE_IMAGE = "enable_remove_image"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
 
-        const val KEY_DID_REMOVE_IMAGE = "did_remove_image"
+        const val KEY_REMOVED_IMAGE_IDS = "removed_image_ids"
 
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
@@ -97,7 +97,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     private val fadeOutToolbarHandler = Handler()
     private var canTransitionOnFinish = true
-    private var didRemoveImage = false
 
     private var confirmationDialog: AlertDialog? = null
     private var isConfirmationShowing = false
@@ -115,8 +114,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
         enableRemoveImage = savedInstanceState?.getBoolean(KEY_ENABLE_REMOVE_IMAGE)
                 ?: intent.getBooleanExtra(KEY_ENABLE_REMOVE_IMAGE, false)
-
-        didRemoveImage = savedInstanceState?.getBoolean(KEY_DID_REMOVE_IMAGE) ?: false
 
         transitionName = savedInstanceState?.getString(KEY_TRANSITION_NAME)
                 ?: intent.getStringExtra(KEY_TRANSITION_NAME) ?: ""
@@ -166,7 +163,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
             bundle.putLong(KEY_IMAGE_REMOTE_MEDIA_ID, remoteMediaId)
             bundle.putString(KEY_TRANSITION_NAME, transitionName)
             bundle.putBoolean(KEY_ENABLE_REMOVE_IMAGE, enableRemoveImage)
-            bundle.putBoolean(KEY_DID_REMOVE_IMAGE, didRemoveImage)
             bundle.putBoolean(KEY_IS_CONFIRMATION_SHOWING, isConfirmationShowing)
             super.onSaveInstanceState(outState)
         }
@@ -178,9 +174,11 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     }
 
     override fun finishAfterTransition() {
-        // let the calling fragment know the product's images were changed
-        if (didRemoveImage) {
-            val data = Intent().also { it.putExtra(KEY_DID_REMOVE_IMAGE, true) }
+        // let the calling fragment know if any images were removed
+        if (viewModel.removedImageIds.size > 0) {
+            val data = Intent().also {
+                it.putExtra(KEY_REMOVED_IMAGE_IDS, viewModel.removedImageIds)
+            }
             setResult(Activity.RESULT_OK, data)
         }
 
@@ -256,7 +254,6 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
         with(WooAnimUtils.getScaleOutAnim(viewPager)) {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
-                    didRemoveImage = true
                     canTransitionOnFinish = false
                 }
                 override fun onAnimationEnd(animation: Animator) {

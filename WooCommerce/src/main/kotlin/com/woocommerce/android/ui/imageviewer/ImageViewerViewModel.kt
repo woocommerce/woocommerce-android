@@ -38,6 +38,8 @@ class ImageViewerViewModel @AssistedInject constructor(
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
 
+    var removedImageIds = ArrayList<Long>()
+
     init {
         EventBus.getDefault().register(this)
     }
@@ -63,6 +65,7 @@ class ImageViewerViewModel @AssistedInject constructor(
 
         if (repository.removeProductImage(remoteProductId, remoteMediaId)) {
             AnalyticsTracker.track(Stat.PRODUCT_IMAGE_REMOVED)
+            removedImageIds.add(remoteMediaId)
             // reload the product to reflect the removed image
             loadProduct()
         } else {
