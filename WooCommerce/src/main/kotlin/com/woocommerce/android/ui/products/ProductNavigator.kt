@@ -94,7 +94,7 @@ class ProductNavigator @Inject constructor() {
 
     private fun viewProductImageViewer(fragment: Fragment, image: Product.Image, clickedView: WeakReference<View>) {
         clickedView.get()?.transitionName = fragment.getString(R.string.shared_element_transition_name)
-        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(image.source)
+        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(image.source, image.id)
         fragment.findNavController().navigate(action)
     }
 }

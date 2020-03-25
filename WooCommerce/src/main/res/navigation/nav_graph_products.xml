@@ -117,6 +117,9 @@
         <argument
             android:name="imageUrl"
             app:argType="string" />
+        <argument
+            android:name="imageId"
+            app:argType="long" />
     </fragment>
     <action
         android:id="@+id/action_global_productImageViewerFragment"
