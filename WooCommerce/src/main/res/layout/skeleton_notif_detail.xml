@@ -42,7 +42,7 @@
         style="@style/Woo.Divider"
         android:layout_marginBottom="@dimen/major_75"
         android:layout_marginTop="@dimen/major_75"
-        android:background="@color/list_divider"/>
+        android:background="@color/divider_color"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -139,7 +139,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginTop="@dimen/margin_extra_large"
-            android:background="@color/list_divider"/>
+            android:background="@color/divider_color"/>
 
     </LinearLayout>
 </LinearLayout>

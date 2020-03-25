@@ -83,7 +83,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
      */
     private fun addTopDivider() {
         val divider = View(context)
-        val dividerColor = ContextCompat.getColor(context, R.color.list_divider)
+        val dividerColor = ContextCompat.getColor(context, R.color.divider_color)
         divider.setBackgroundColor(dividerColor)
 
         val dividerHeight = resources.getDimensionPixelSize(R.dimen.bottomm_nav_top_border)
