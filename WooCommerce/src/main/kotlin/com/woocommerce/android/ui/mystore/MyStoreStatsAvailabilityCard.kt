@@ -28,12 +28,12 @@ class MyStoreStatsAvailabilityCard @JvmOverloads constructor(
             }
         }
 
-        btn_try.setOnClickListener {
+        btn_primary.setOnClickListener {
             AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED)
             listener.onMyStoreStatsAvailabilityAccepted()
         }
 
-        btn_no_thanks.setOnClickListener {
+        btn_secondary.setOnClickListener {
             AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED)
             listener.onMyStoreStatsAvailabilityRejected()
         }
