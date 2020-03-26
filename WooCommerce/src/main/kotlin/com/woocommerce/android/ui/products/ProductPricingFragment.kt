@@ -116,13 +116,12 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                     scheduleSale_endDate.setText(it.formatToMMMddYYYY())
                 }
             }
-            new.maxDate.takeIfNotEqualTo(old?.maxDate) {
-                // update start date to max date if current start date > end date
-                if (it == null) {
-                    scheduleSale_endDate.setText("")
-                } else if (it.before(viewModel.getProduct().product?.dateOnSaleFromGmt)) {
-                    scheduleSale_startDate.setText(it.formatToMMMddYYYY())
-                }
+
+            // update start date to max date if current start date > end date
+            if (new.maxDate == null) {
+                scheduleSale_endDate.setText("")
+            } else if (new.maxDate.before(viewModel.getProduct().product?.dateOnSaleFromGmt)) {
+                scheduleSale_startDate.setText(new.maxDate.formatToMMMddYYYY())
             }
 
             new.isRemoveMaxDateButtonVisible.takeIfNotEqualTo(old?.isRemoveMaxDateButtonVisible) { isVisible ->
