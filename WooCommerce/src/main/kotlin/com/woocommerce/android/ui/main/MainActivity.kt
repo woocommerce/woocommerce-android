@@ -356,7 +356,7 @@ class MainActivity : AppUpgradeActivity(),
                     false
                 }
                 else -> {
-                    true
+                    destination.parent?.id != R.id.nav_graph_products
                 }
             }
             showToolbarShadow = when (destination.id) {
