@@ -124,6 +124,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                     scheduleSale_startDate.setText(it.formatToMMMddYYYY())
                 }
             }
+
+            new.isRemoveMaxDateButtonVisible.takeIfNotEqualTo(old?.isRemoveMaxDateButtonVisible) { isVisible ->
+                scheduleSale_RemoveEndDateButton.visibility = if (isVisible) View.VISIBLE else View.GONE
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->

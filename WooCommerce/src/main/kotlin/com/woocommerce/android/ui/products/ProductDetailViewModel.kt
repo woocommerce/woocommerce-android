@@ -723,7 +723,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val minDate: Date? = null,
         val maxDate: Date? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val isRemoveMaxDateButtonVisible: Boolean
+            get() = maxDate != null
+    }
 
     @Parcelize
     data class ProductShippingClassViewState(
