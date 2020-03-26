@@ -32,7 +32,7 @@ class MyStoreStatsAvailabilityCard @JvmOverloads constructor(
             textOff = context.getString(R.string.my_store_stats_availability_title)
             textOn = context.getString(R.string.my_store_stats_availability_title)
             setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_gridicons_sync, 0, R.drawable.card_expander_selector, 0
+                    R.drawable.ic_gridicons_gift, 0, R.drawable.card_expander_selector, 0
             )
         }
 
