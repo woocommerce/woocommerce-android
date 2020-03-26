@@ -108,13 +108,15 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
             new.minDate?.takeIfNotEqualTo(old?.minDate) {
                 // update end date to min date if current end date < start date
-                if (it.after(viewModel.getProduct().product?.dateOnSaleToGmt)) {
+                val dateOnSaleToGmt = viewModel.getProduct().product?.dateOnSaleToGmt
+                if (dateOnSaleToGmt?.before(it) == true) {
                     scheduleSale_endDate.setText(it.formatToMMMddYYYY())
                 }
             }
             new.maxDate?.takeIfNotEqualTo(old?.maxDate) {
                 // update start date to max date if current start date > end date
-                if (it.before(viewModel.getProduct().product?.dateOnSaleFromGmt)) {
+                val dateOnSaleFromGmt = viewModel.getProduct().product?.dateOnSaleFromGmt
+                if (dateOnSaleFromGmt?.after(it) == true) {
                     scheduleSale_startDate.setText(it.formatToMMMddYYYY())
                 }
             }
