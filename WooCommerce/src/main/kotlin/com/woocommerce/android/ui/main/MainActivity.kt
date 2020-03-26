@@ -346,14 +346,6 @@ class MainActivity : AppUpgradeActivity(),
                 }
             }
             showBottomNav = when (destination.id) {
-                R.id.aztecEditorFragment,
-                R.id.productDetailFragment,
-                R.id.productShippingClassFragment,
-                R.id.productImagesFragment,
-                R.id.productInventoryFragment,
-                R.id.productPricingFragment,
-                R.id.productShippingFragment,
-                R.id.productVariantsFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
                 R.id.issueRefundFragment,
@@ -364,7 +356,7 @@ class MainActivity : AppUpgradeActivity(),
                     false
                 }
                 else -> {
-                    true
+                    destination.parent?.id != R.id.nav_graph_products
                 }
             }
             showToolbarShadow = when (destination.id) {
