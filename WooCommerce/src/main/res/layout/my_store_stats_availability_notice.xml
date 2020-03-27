@@ -18,8 +18,8 @@
             style="@style/Woo.Card.ExpanderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textOff="@string/my_store_stats_availability_title"
-            android:textOn="@string/my_store_stats_availability_title"
+            tools:textOff="@string/my_store_stats_availability_title"
+            tools:textOn="@string/my_store_stats_availability_title"
             android:drawableStart="@drawable/ic_gridicons_gift"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,34 +36,34 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
-                android:text="@string/my_store_stats_availability_message"
+                tools:text="@string/my_store_stats_availability_message"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <!-- TRY IT NOW button -->
+            <!-- PRIMARY button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_try"
+                android:id="@+id/btn_primary"
                 style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/try_it_now"
+                tools:text="@string/try_it_now"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
 
-            <!-- NO THANKS button -->
+            <!-- SECONDARY button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_no_thanks"
+                android:id="@+id/btn_secondary"
                 style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/minor_100"
-                android:text="@string/no_thanks"
+                tools:text="@string/no_thanks"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_try"
+                app:layout_constraintEnd_toStartOf="@+id/btn_primary"
                 app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
