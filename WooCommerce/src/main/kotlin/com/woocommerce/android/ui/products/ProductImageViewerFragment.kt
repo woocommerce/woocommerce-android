@@ -61,15 +61,18 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.getProduct().productDraft?.let {
-            setupViewPager(it.images)
-        }
+        setupViewPager()
 
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRMATION_SHOWING)) {
                 confirmRemoveProductImage()
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        showToolbar(true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -146,17 +149,17 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
         showToolbar(false)
     }
 
-    private fun setupViewPager(images: List<Product.Image>) {
-        pagerAdapter = ImageViewerAdapter(requireActivity().supportFragmentManager, images)
+    private fun setupViewPager() {
+        pagerAdapter = ImageViewerAdapter(requireActivity().supportFragmentManager).also {
+            it.loadProductImages()
+        }
         viewPager.adapter = pagerAdapter
         viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
 
         // determine the position of the original media item so we can page to it immediately
-        for (index in images.indices) {
-            if (remoteMediaId == images[index].id) {
-                viewPager.currentItem = index
-                break
-            }
+        val position = pagerAdapter.indexOfImageId(remoteMediaId)
+        if (position > -1) {
+            viewPager.currentItem = position
         }
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
@@ -164,7 +167,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                 showToolbar(true)
                 // remember this image id so we can return to it upon rotation, and so
                 // we use the right image if the user requests to remove it
-                remoteMediaId = images[position].id
+                remoteMediaId = pagerAdapter.images[position].id
             }
         })
     }
@@ -179,7 +182,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
                     viewModel.removeProductImageFromDraft(remoteMediaId)
-                    // TODO
+                    pagerAdapter.loadProductImages()
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
                     isConfirmationShowing = false
@@ -187,8 +190,26 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                 .show()
     }
 
-    internal inner class ImageViewerAdapter(fm: FragmentManager, val images: List<Product.Image>) :
-            FragmentStatePagerAdapter(fm) {
+    internal inner class ImageViewerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+        val images = ArrayList<Product.Image>()
+
+        fun loadProductImages() {
+            images.clear()
+            viewModel.getProduct().productDraft?.let { product ->
+                images.addAll(product.images)
+            }
+            notifyDataSetChanged()
+        }
+
+        fun indexOfImageId(imageId: Long): Int {
+            for (index in images.indices) {
+                if (imageId == images[index].id) {
+                    return index
+                }
+            }
+            return -1
+        }
+
         override fun getItem(position: Int): Fragment {
             return ImageViewerFragment.newInstance(images[position])
         }
