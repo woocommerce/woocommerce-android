@@ -119,8 +119,13 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         val transitionName = getString(R.string.shared_element_transition_name)
         imageView.transitionName = transitionName
-        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(image.id)
-        val extras = FragmentNavigatorExtras(imageView to transitionName)
+        val extras = FragmentNavigatorExtras(
+                imageView to transitionName
+        )
+
+        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
+                image.id
+        )
         findNavController().navigate(action, extras)
     }
 

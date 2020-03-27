@@ -115,7 +115,7 @@
         android:label="ProductImageViewerFragment"
         tools:layout="@layout/fragment_image_viewer">
         <argument
-            android:name="imageId"
+            android:name="remoteMediaId"
             app:argType="long" />
     </fragment>
     <action
