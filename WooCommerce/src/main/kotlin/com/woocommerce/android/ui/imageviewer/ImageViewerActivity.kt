@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_image_viewer.*
+import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
 import javax.inject.Inject
 
 /**
@@ -86,7 +86,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_image_viewer)
+        setContentView(R.layout.fragment_product_image_viewer)
 
         remoteProductId = savedInstanceState?.getLong(KEY_IMAGE_REMOTE_PRODUCT_ID)
                 ?: intent.getLongExtra(KEY_IMAGE_REMOTE_PRODUCT_ID, 0L)

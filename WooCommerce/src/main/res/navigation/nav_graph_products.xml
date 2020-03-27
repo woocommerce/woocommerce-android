@@ -115,9 +115,6 @@
         android:label="ProductImageViewerFragment"
         tools:layout="@layout/fragment_image_viewer">
         <argument
-            android:name="imageUrl"
-            app:argType="string" />
-        <argument
             android:name="imageId"
             app:argType="long" />
     </fragment>
@@ -125,5 +122,5 @@
         android:id="@+id/action_global_productImageViewerFragment"
         app:destination="@id/productImageViewerFragment"
         app:enterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/activity_fade_out"/>
+        app:popExitAnim="@anim/activity_fade_out" />
 </navigation>
