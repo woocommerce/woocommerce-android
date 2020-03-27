@@ -119,7 +119,7 @@ class ProductShippingFragment : BaseProductFragment() {
     private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
-        val product = productData.product
+        val product = productData.productDraft
         if (product == null) {
             WooLog.w(T.PRODUCTS, "product shipping > productData.product is null")
             return

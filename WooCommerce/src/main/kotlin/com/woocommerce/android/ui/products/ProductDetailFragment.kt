@@ -98,7 +98,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
+            new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProduct(new) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
@@ -164,7 +164,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun showProduct(productData: ProductDetailViewState) {
         if (!isAdded) return
 
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
         productName = product.name.fastStripHtml()
         updateActivityTitle()
 
@@ -207,7 +207,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun addPrimaryCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
             addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productName)?.also { view ->
@@ -299,7 +299,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * New product detail card UI slated for new products release 1
      */
     private fun addSecondaryCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
@@ -416,7 +416,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * Product Release 1 changes are completed.
      */
     private fun addPricingAndInventoryCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
         val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
@@ -459,7 +459,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun addPurchaseDetailsCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         // shipping group is part of the secondary card if edit product is enabled
         if (!isAddEditProductRelease1Enabled(product.type)) {

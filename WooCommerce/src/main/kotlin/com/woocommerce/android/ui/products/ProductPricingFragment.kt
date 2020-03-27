@@ -111,7 +111,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
             new.minDate?.takeIfNotEqualTo(old?.minDate) {
                 // update end date to min date if current end date < start date
-                val dateOnSaleToGmt = viewModel.getProduct().product?.dateOnSaleToGmt
+                val dateOnSaleToGmt = viewModel.getProduct().productDraft?.dateOnSaleToGmt
                 if (dateOnSaleToGmt?.before(it) == true) {
                     scheduleSale_endDate.setText(it.formatToMMMddYYYY())
                 }
@@ -120,7 +120,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             // update start date to max date if current start date > end date
             if (new.maxDate == null) {
                 scheduleSale_endDate.setText("")
-            } else if (new.maxDate.before(viewModel.getProduct().product?.dateOnSaleFromGmt)) {
+            } else if (new.maxDate.before(viewModel.getProduct().productDraft?.dateOnSaleFromGmt)) {
                 scheduleSale_startDate.setText(new.maxDate.formatToMMMddYYYY())
             }
 
@@ -146,7 +146,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     ) {
         if (!isAdded) return
 
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
         with(product_regular_price) {
             initialiseCurrencyEditText(currency, decimals, currencyFormatter)
             product.regularPrice?.let { setText(it) }
@@ -249,7 +249,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     ) {
         if (!isAdded) return
 
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         val productTaxClass = if (product.taxClass.isEmpty()) {
             getString(R.string.product_tax_class_standard)
