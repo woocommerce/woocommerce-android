@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -171,6 +172,14 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onEditProductCardClicked(target: ProductNavigationTarget) {
         triggerEvent(target)
+    }
+
+    /**
+     * Called when the the Remove end date link is clicked
+     */
+    fun onRemoveEndDateClicked() {
+        productPricingViewState = productPricingViewState.copy(maxDate = null)
+        updateProductDraft(dateOnSaleToGmt = Optional(null))
     }
 
     /**
@@ -329,7 +338,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         salePrice: BigDecimal? = null,
         isSaleScheduled: Boolean? = null,
         dateOnSaleFromGmt: Date? = null,
-        dateOnSaleToGmt: Date? = null,
+        dateOnSaleToGmt: Optional<Date>? = null,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null,
         length: Float? = null,
@@ -363,7 +372,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        dateOnSaleToGmt ?: product.dateOnSaleToGmt
+                        if (dateOnSaleToGmt != null) dateOnSaleToGmt.value else product.dateOnSaleToGmt
                     } else viewState.storedProduct?.dateOnSaleToGmt,
                     dateOnSaleFromGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
@@ -821,7 +830,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val minDate: Date? = null,
         val maxDate: Date? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val isRemoveMaxDateButtonVisible: Boolean
+            get() = maxDate != null
+    }
 
     @Parcelize
     data class ProductShippingClassViewState(

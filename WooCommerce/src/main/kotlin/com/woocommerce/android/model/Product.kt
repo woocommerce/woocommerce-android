@@ -288,9 +288,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
             dateOnSaleFromGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
             }
-            dateOnSaleToGmt?.let { dateOnSaleTo ->
-                it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDDhhmmss()
-            }
+            it.dateOnSaleToGmt = dateOnSaleToGmt?.formatToYYYYmmDDhhmmss() ?: ""
         } else {
             it.dateOnSaleFromGmt = ""
             it.dateOnSaleToGmt = ""
