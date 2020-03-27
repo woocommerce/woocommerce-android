@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
@@ -25,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -108,7 +108,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun reloadImageGallery() {
-        viewModel.getProduct().product?.let {
+        viewModel.getProduct().productDraft?.let {
             imageGallery.showProductImages(it, this)
         }
     }
@@ -117,11 +117,15 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        val transitionName = getString(R.string.shared_element_transition_name)
-        imageView.transitionName = transitionName
-        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(image.source, image.id)
-        val extras = FragmentNavigatorExtras(imageView to transitionName)
-        findNavController().navigate(action, extras)
+        viewModel.getProduct().productDraft?.let { product ->
+            ImageViewerActivity.showProductImages(
+                    this,
+                    product,
+                    image,
+                    sharedElement = imageView,
+                    enableRemoveImage = true
+            )
+        }
     }
 
     private fun showImageSourceDialog() {
@@ -199,6 +203,16 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
                     viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
+                }
+                RequestCodes.PRODUCT_IMAGE_VIEWER -> data?.let { bundle ->
+                    // if the user deleted any product images in the image viewer, remove them from the draft product
+                    if (bundle.hasExtra(ImageViewerActivity.KEY_REMOVED_IMAGE_IDS)) {
+                        val removedImageIds = bundle.getSerializableExtra(
+                                ImageViewerActivity.KEY_REMOVED_IMAGE_IDS
+                        ) as ArrayList<Long>
+                        viewModel.removeProductImageListFromDraft(removedImageIds)
+                        reloadImageGallery()
+                    }
                 }
             }
         }

@@ -36,7 +36,7 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
         shippingClassAdapter = ProductShippingClassAdapter(
                 requireActivity(),
                 this,
-                viewModel.getProduct().product?.shippingClass
+                viewModel.getProduct().productDraft?.shippingClass
         )
 
         with(recycler) {
