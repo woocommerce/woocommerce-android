@@ -47,7 +47,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productWithParameters = ProductDetailViewState(
             productDraft = product,
-            cachedProduct = product,
             storedProduct = product,
             isSkeletonShown = false,
             uploadingImageUris = emptyList(),
