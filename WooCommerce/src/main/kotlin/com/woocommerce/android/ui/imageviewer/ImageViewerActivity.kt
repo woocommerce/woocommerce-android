@@ -148,7 +148,7 @@ class ImageViewerActivity : AppCompatActivity(), ImageViewerListener {
 
     private fun setupObservers(viewModel: ImageViewerViewModel) {
         viewModel.product.observe(this, Observer { product ->
-            if (product.images.isEmpty()) {
+            if (product == null || product.images.isEmpty()) {
                 finishAfterTransition()
             } else {
                 setupViewPager(product.images)
