@@ -1,19 +1,14 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -29,7 +24,6 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     companion object {
         private const val KEY_REMOTE_MEDIA_ID = "media_id"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
-        private const val TOOLBAR_FADE_DELAY_MS = 2500L
     }
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
@@ -40,18 +34,13 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
 
-    private val fadeOutToolbarHandler = Handler()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        remoteMediaId = savedInstanceState?.let {
-            it.getLong(KEY_REMOTE_MEDIA_ID)
-        } ?: navArgs.remoteMediaId
+        remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.remoteMediaId
 
         setHasOptionsMenu(true)
         sharedElementEnterTransition = ChangeBounds()
-        showToolbar(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -68,11 +57,6 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                 confirmRemoveProductImage()
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        showToolbar(true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -98,55 +82,8 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
     override fun onRequestAllowBackPress() = true
 
-    override fun onImageTapped() {
-        showToolbar(true)
-    }
-
     override fun onImageLoadError() {
         uiMessageResolver.showSnack(R.string.error_loading_image)
-    }
-
-    private fun showToolbar(show: Boolean) {
-        if (!isAdded) return
-
-        requireActivity().findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
-            // remove the current fade-out runnable and start a new one to hide the toolbar shortly after we show it
-            fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
-            if (show) {
-                fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
-            }
-
-            if ((show && toolbar.visibility == View.VISIBLE) || (!show && toolbar.visibility != View.VISIBLE)) {
-                return
-            }
-
-            @AnimRes val animRes = if (show) {
-                R.anim.toolbar_fade_in_and_down
-            } else {
-                R.anim.toolbar_fade_out_and_up
-            }
-
-            val listener = object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {
-                    if (show) toolbar.visibility = View.VISIBLE
-                }
-                override fun onAnimationEnd(animation: Animation) {
-                    if (!show) toolbar.visibility = View.GONE
-                }
-                override fun onAnimationRepeat(animation: Animation) {
-                    // noop
-                }
-            }
-
-            AnimationUtils.loadAnimation(requireActivity(), animRes)?.let { anim ->
-                anim.setAnimationListener(listener)
-                toolbar.startAnimation(anim)
-            }
-        }
-    }
-
-    private val fadeOutToolbarRunnable = Runnable {
-        showToolbar(false)
     }
 
     private fun setupViewPager() {
@@ -164,7 +101,6 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-                showToolbar(true)
                 // remember this image id so we can return to it upon rotation, and so
                 // we use the right image if the user requests to remove it
                 remoteMediaId = pagerAdapter.images[position].id

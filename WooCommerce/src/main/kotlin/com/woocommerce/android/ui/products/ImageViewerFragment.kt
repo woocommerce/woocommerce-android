@@ -22,7 +22,6 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         private const val KEY_IMAGE_URL = "image_url"
 
         interface ImageViewerListener {
-            fun onImageTapped()
             fun onImageLoadError()
         }
 
@@ -51,9 +50,6 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loadImage()
-        photoView.setOnPhotoTapListener { _, _, _ ->
-            (activity as? ImageViewerListener)?.onImageTapped()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
