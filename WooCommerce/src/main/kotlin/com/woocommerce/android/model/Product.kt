@@ -245,9 +245,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
             dateOnSaleFromGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
             }
-            dateOnSaleToGmt?.let { dateOnSaleTo ->
-                it.dateOnSaleToGmt = dateOnSaleTo.formatToYYYYmmDDhhmmss()
-            }
+            it.dateOnSaleToGmt = dateOnSaleToGmt?.formatToYYYYmmDDhhmmss() ?: ""
         } else {
             it.dateOnSaleFromGmt = ""
             it.dateOnSaleToGmt = ""
@@ -274,8 +272,8 @@ fun WCProductModel.toAppModel(): Product {
         permalink = this.permalink,
         externalUrl = this.externalUrl,
         price = this.price.toBigDecimalOrNull()?.roundError(),
-        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
-        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
+        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
         taxClass = this.taxClass,
         manageStock = this.manageStock,
         stockQuantity = this.stockQuantity,

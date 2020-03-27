@@ -419,6 +419,7 @@
     <string name="product_schedule_sale_sublabel">Automatically start and end a sale</string>
     <string name="product_schedule_sale_from_label">From</string>
     <string name="product_schedule_sale_to_label">To</string>
+    <string name="product_schedule_remove_end_date_link_label">Remove end date</string>
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
     <string name="product_sale_date_from">from %1$s</string>
@@ -459,22 +460,18 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
-    <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
+    <string name="product_stock_status_instock_with_variants">In stock \u2022 %d variants</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
     <string name="product_stock_count">%s in stock</string>
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
-    <string name="product_name_variable">Variable %s</string>
-    <string name="product_name_external">Affiliate %s</string>
-    <string name="product_name_grouped">Grouped %s</string>
-    <string name="product_name_virtual">Virtual %s</string>
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_search_hint">Search products</string>
-    <string name="product_wip_title">Work in progress!</string>
-    <string name="product_wip_message">We\'re hard at work on the new Products section so you may see some changes as we get ready for launch 🚀</string>
+    <string name="product_wip_title">Limited editing available</string>
+    <string name="product_wip_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_hidden">Hidden</string>
     <string name="product_variant_list_empty">Add options like size and color from web. These will show up as options on the product page of your site</string>
@@ -491,6 +488,7 @@
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
+    <string name="product_inventory_update_stock_quantity_error">Please enter a number</string>
 
     <!--
         Product images

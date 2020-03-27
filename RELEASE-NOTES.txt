@@ -1,5 +1,10 @@
+4.0
+-----
+* Products is now available with limited editing for simple products!
+ 
 3.9
 -----
+* Fixed a crash when clicking on 2 products at the same time from the Products list section.
  
 3.8
 -----
@@ -7,6 +12,7 @@
  
 3.7
 -----
+* Added support to display negative revenue in our new stats screen!
  
 3.6
 -----

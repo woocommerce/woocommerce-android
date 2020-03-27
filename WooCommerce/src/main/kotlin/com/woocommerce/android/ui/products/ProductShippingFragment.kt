@@ -119,7 +119,7 @@ class ProductShippingFragment : BaseProductFragment() {
     private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
-        val product = productData.product
+        val product = productData.productDraft
         if (product == null) {
             WooLog.w(T.PRODUCTS, "product shipping > productData.product is null")
             return
@@ -132,7 +132,7 @@ class ProductShippingFragment : BaseProductFragment() {
         showValue(product_length, R.string.product_length, product.length, dimensionUnit)
         showValue(product_height, R.string.product_height, product.height, dimensionUnit)
         showValue(product_width, R.string.product_width, product.width, dimensionUnit)
-        product_shipping_class_spinner.setText(product.shippingClass)
+        product_shipping_class_spinner.setText(viewModel.getShippingClassBySlug(product.shippingClass))
     }
 
     private fun showShippingClassFragment() {

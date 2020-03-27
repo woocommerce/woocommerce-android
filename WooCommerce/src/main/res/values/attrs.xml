@@ -119,4 +119,9 @@
     -->
     <!-- Sets the thickness of indicators like the tab indicator or new review indicator -->
     <attr name="lineIndicatorThickness" format="dimension" />
+
+    <declare-styleable name="DashboardStatsBarChart">
+        <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
 </resources>

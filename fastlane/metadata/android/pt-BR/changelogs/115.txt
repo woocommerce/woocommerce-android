@@ -1,0 +1,2 @@
+3.8:
+Levante a mão quem gostaria de editar produtos de onde estiver. Para isso, habilite as opções disponíveis em Configurações > Funcionalidades Beta.

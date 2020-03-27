@@ -96,6 +96,8 @@
         Default Chart
     -->
     <dimen name="chart_height">200dp</dimen>
+    <dimen name="chart_axis_bottom_padding">10dp</dimen>
+    <dimen name="chart_bar_radius">2dp</dimen>
 
     <!--
         Login

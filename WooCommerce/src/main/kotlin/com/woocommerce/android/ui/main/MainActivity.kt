@@ -323,7 +323,6 @@ class MainActivity : AppUpgradeActivity(),
             container.visibility = View.INVISIBLE
         }
 
-        // make sure the correct up icon appears
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
         val showBottomNav: Boolean
@@ -334,29 +333,18 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
-                R.id.productDetailFragment,
                 R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment -> {
                     true
                 }
-                else -> {
-                    false
-                }
-            }
-            showBottomNav = when (destination.id) {
-                R.id.addOrderShipmentTrackingFragment,
-                R.id.addOrderNoteFragment,
-                R.id.issueRefundFragment,
-                R.id.refundAmountDialog,
-                R.id.refundConfirmationDialog,
-                R.id.refundItemsPickerDialog,
-                R.id.refundSummaryFragment -> {
-                    false
+                R.id.productDetailFragment -> {
+                    // show Cross icon only when product detail isn't opened from the product list
+                    bottomNavView.currentPosition != PRODUCTS
                 }
                 else -> {
-                    true
+                    false
                 }
             }
         }
@@ -370,7 +358,8 @@ class MainActivity : AppUpgradeActivity(),
             actionBar.setHomeAsUpIndicator(icon)
         }
 
-        if (showBottomNav) {
+        // only show bottom nav if we're at a root fragment
+        if (isAtRoot) {
             showBottomNav()
         } else {
             hideBottomNav()

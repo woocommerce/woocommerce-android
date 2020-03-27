@@ -32,7 +32,8 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_75"
-                android:layout_marginBottom="@dimen/major_75"/>
+                android:layout_marginBottom="@dimen/major_75"
+                app:radius="@dimen/chart_bar_radius"/>
 
             <ImageView
                 android:id="@+id/dashboard_stats_error"

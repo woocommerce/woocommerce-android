@@ -113,6 +113,11 @@ class OrderDetailProductListView @JvmOverloads constructor(
             layoutManager = viewManager
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             adapter = viewAdapter
+
+            // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
+            // and only processes the first click event. More details on this issue can be found here:
+            // https://github.com/woocommerce/woocommerce-android/issues/2074
+            isMotionEventSplittingEnabled = false
         }
 
         if (isExpanded) {
