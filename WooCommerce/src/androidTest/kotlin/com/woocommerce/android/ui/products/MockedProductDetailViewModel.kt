@@ -52,9 +52,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         }.trim()
 
         return ProductDetailViewState(
-                product = product,
+                productDraft = product,
                 storedProduct = product,
-                cachedProduct = product,
                 weightWithUnits = weight,
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(product.price, parameters.currencyCode),

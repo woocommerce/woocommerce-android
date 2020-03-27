@@ -46,8 +46,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
-            product = product,
-            cachedProduct = product,
+            productDraft = product,
             storedProduct = product,
             isSkeletonShown = false,
             uploadingImageUris = emptyList(),
@@ -167,7 +166,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.updateProductDraft(updatedDescription)
 
         viewModel.start(productRemoteId)
-        assertThat(productData?.product?.description).isEqualTo(updatedDescription)
+        assertThat(productData?.productDraft?.description).isEqualTo(updatedDescription)
     }
 
     @Test
@@ -269,6 +268,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_success))
         assertThat(productData?.isProgressDialogShown).isFalse()
         assertThat(productData?.isProductUpdated).isFalse()
-        assertThat(productData?.product).isEqualTo(product)
+        assertThat(productData?.productDraft).isEqualTo(product)
     }
 }
