@@ -94,17 +94,9 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     }
 
     private fun setupViewPager() {
-        pagerAdapter = ImageViewerAdapter(requireActivity().supportFragmentManager).also {
-            it.loadProductImages()
-        }
-        viewPager.adapter = pagerAdapter
-        viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
+        resetAdapter()
 
-        // determine the position of the original media item so we can page to it immediately
-        val position = pagerAdapter.indexOfImageId(remoteMediaId)
-        if (position > -1) {
-            viewPager.currentItem = position
-        }
+        viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
@@ -113,6 +105,21 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                 remoteMediaId = pagerAdapter.images[position].id
             }
         })
+    }
+
+    private fun resetAdapter() {
+        val images = ArrayList<Product.Image>()
+        viewModel.getProduct().productDraft?.let { draft ->
+            images.addAll(draft.images)
+        }
+
+        pagerAdapter = ImageViewerAdapter(requireActivity().supportFragmentManager, images)
+        viewPager.adapter = pagerAdapter
+
+        val position = pagerAdapter.indexOfImageId(remoteMediaId)
+        if (position > -1) {
+            viewPager.currentItem = position
+        }
     }
 
     /**
@@ -159,7 +166,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                     // animate it back in if there are any images left, others return to the previous fragment
                     if (newImageCount > 0) {
                         WooAnimUtils.scaleIn(viewPager)
-                        pagerAdapter.loadProductImages()
+                        resetAdapter()
                     } else {
                         findNavController().navigateUp()
                     }
@@ -169,17 +176,8 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
         }
     }
 
-    internal inner class ImageViewerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-        val images = ArrayList<Product.Image>()
-
-        fun loadProductImages() {
-            images.clear()
-            viewModel.getProduct().productDraft?.let { product ->
-                images.addAll(product.images)
-            }
-            notifyDataSetChanged()
-        }
-
+    internal inner class ImageViewerAdapter(fm: FragmentManager, val images: ArrayList<Product.Image>) :
+            FragmentStatePagerAdapter(fm) {
         fun indexOfImageId(imageId: Long): Int {
             for (index in images.indices) {
                 if (imageId == images[index].id) {
