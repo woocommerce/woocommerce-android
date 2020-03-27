@@ -116,7 +116,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProduct() = viewState
 
-    fun getRemoteProductId() = viewState.product?.remoteId ?: 0L
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
         return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
@@ -141,7 +141,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        viewState.product?.let {
+        viewState.productDraft?.let {
             triggerEvent(ShareProduct(it.permalink, it.name))
         }
     }
@@ -151,7 +151,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.product?.let {
+        viewState.productDraft?.let {
             triggerEvent(ViewProductImages(it, image, selectedImage))
         }
     }
@@ -161,7 +161,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.product?.let {
+        viewState.productDraft?.let {
             triggerEvent(ViewProductImageChooser(it.remoteId))
         }
     }
@@ -191,19 +191,19 @@ class ProductDetailViewModel @AssistedInject constructor(
         when (event) {
             is ExitInventory -> {
                 eventName = Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasInventoryChanges(viewState.product) ?: false
+                hasChanges = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
             }
             is ExitPricing -> {
                 eventName = Stat.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasPricingChanges(viewState.product) ?: false
+                hasChanges = viewState.storedProduct?.hasPricingChanges(viewState.productDraft) ?: false
             }
             is ExitShipping -> {
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.product) ?: false
+                hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
             }
             is ExitImages -> {
                 // TODO: eventName = ??
-                hasChanges = viewState.storedProduct?.hasImageChanges(viewState.product) ?: false
+                hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -215,7 +215,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates the product
      */
     fun onUpdateButtonClicked() {
-        viewState.product?.let {
+        viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
         }
@@ -249,7 +249,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated
-        val isProductSubDetailUpdated = viewState.product?.let { viewState.cachedProduct?.isSameProduct(it) == false }
+        val isProductSubDetailUpdated = viewState.productDraft?.let {
+            viewState.productBeforeEnteringFragment?.isSameProduct(it) == false
+        }
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
@@ -258,7 +260,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
-                        discardEditChanges(event)
+                        discardEditChanges()
 
                         // If user in Product detail screen, exit product detail,
                         // otherwise, redirect to Product Detail screen
@@ -323,6 +325,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called before entering any product screen to save of copy of the product prior to the user making any
+     * changes in that specific screen
+     */
+    fun updateProductBeforeEnteringFragment() {
+        viewState.productBeforeEnteringFragment = viewState.productDraft
+    }
+
+    /**
      * Update all product fields that are edited by the user
      */
     fun updateProductDraft(
@@ -348,7 +358,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         shippingClass: String? = null,
         images: List<Image>? = null
     ) {
-        viewState.product?.let { product ->
+        viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
             val updatedProduct = product.copy(
                     description = description ?: product.description,
@@ -379,7 +389,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
                     } else viewState.storedProduct?.dateOnSaleFromGmt
             )
-            viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
+            viewState = viewState.copy(productDraft = updatedProduct)
 
             updateProductEditAction()
         }
@@ -392,79 +402,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when discard is clicked on any of the product screens.
-     * Resets the changes edited by the user based on [event].
+     * Called when discard is clicked on any of the product screens to restore the product to
+     * the state it was in when the screen was first entered
      */
-    private fun discardEditChanges(event: ProductExitEvent) {
-        val currentProduct = if (event is ExitProductDetail) {
-            viewState.storedProduct
-        } else viewState.cachedProduct
-
-        when (event) {
-            // discard inventory screen changes
-            is ExitInventory -> {
-                currentProduct?.let {
-                    val product = viewState.product?.copy(
-                            sku = it.sku,
-                            manageStock = it.manageStock,
-                            stockStatus = it.stockStatus,
-                            backorderStatus = it.backorderStatus,
-                            soldIndividually = it.soldIndividually,
-                            stockQuantity = it.stockQuantity
-                    )
-                    viewState = viewState.copy(
-                            product = product,
-                            cachedProduct = product
-                    )
-                }
-            }
-            // discard pricing screen changes
-            is ExitPricing -> {
-                currentProduct?.let {
-                    val product = viewState.product?.copy(
-                            dateOnSaleFromGmt = it.dateOnSaleFromGmt,
-                            dateOnSaleToGmt = it.dateOnSaleToGmt,
-                            isSaleScheduled = it.isSaleScheduled,
-                            taxClass = it.taxClass,
-                            taxStatus = it.taxStatus,
-                            regularPrice = it.regularPrice,
-                            salePrice = it.salePrice
-                    )
-                    viewState = viewState.copy(
-                            product = product,
-                            cachedProduct = product
-                    )
-                }
-            }
-            // discard shipping screen changes
-            is ExitShipping -> {
-                currentProduct?.let {
-                    val product = viewState.product?.copy(
-                            weight = it.weight,
-                            height = it.height,
-                            width = it.width,
-                            length = it.length,
-                            shippingClass = it.shippingClass
-                    )
-                    viewState = viewState.copy(
-                            product = product,
-                            cachedProduct = product
-                    )
-                }
-            }
-            // discard product images screen changes
-            is ExitImages -> {
-                currentProduct?.let {
-                    val product = viewState.product?.copy(
-                            images = it.images
-                    )
-                    viewState = viewState.copy(
-                            product = product,
-                            cachedProduct = product
-                    )
-                }
-            }
-        }
+    private fun discardEditChanges() {
+        viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
@@ -531,7 +473,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * the viewState.product with viewState.storedProduct model.
      */
     private fun updateProductEditAction() {
-        viewState.product?.let {
+        viewState.productDraft?.let {
             val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
@@ -567,7 +509,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
-                viewState = viewState.copy(product = null, isProductUpdated = false, isProgressDialogShown = false)
+                viewState = viewState.copy(productDraft = null, isProductUpdated = false, isProgressDialogShown = false)
                 loadProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
@@ -653,16 +595,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun updateProductState(storedProduct: Product) {
-        val updatedProduct = viewState.product?.let {
-            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.product)
+        val updatedProduct = viewState.productDraft?.let {
+            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.productDraft)
         } ?: storedProduct
 
         val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
         val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
-                product = updatedProduct,
-                cachedProduct = viewState.cachedProduct ?: updatedProduct,
+                productDraft = updatedProduct,
                 storedProduct = storedProduct,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
@@ -732,7 +673,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         // ...then add the existing product images to the new list...
-        viewState.product?.let {
+        viewState.productDraft?.let {
             imageList.addAll(it.images)
         }
 
@@ -744,7 +685,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Removes a single product image from the product draft
      */
     private fun removeProductImageFromDraft(remoteMediaId: Long) {
-        viewState.product?.let { product ->
+        viewState.productDraft?.let { product ->
             val imageList = product.images.filter { it.id != remoteMediaId }
             updateProductDraft(images = imageList)
         }
@@ -780,31 +721,30 @@ class ProductDetailViewModel @AssistedInject constructor(
     ) : Parcelable
 
     /**
-     * [product] is used for the UI. Any updates to the fields in the UI would update this model.
-     * [cachedProduct] is a copy of the [product] model before a change has been made to the [product] model.
+     * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
      * This is read only and is not updated in any way. It is used in the product detail screen, to check
      * if we need to display the UPDATE menu button (which is only displayed if there are changes made to
      * any of the product fields).
      *
      * [isProductUpdated] is used to determine if there are any changes made to the product by comparing
-     * [product] and [storedProduct]. Currently used in the product detail screen to display or hide the UPDATE
+     * [productDraft] and [storedProduct]. Currently used in the product detail screen to display or hide the UPDATE
      * menu button.
      *
-     * When the user first enters the product detail screen, the [product] , [storedProduct]  and [cachedProduct] 
-     * are the same. When a change is made to the product in the UI,
-     * 1. the [cachedProduct] is updated with the [product] model first, then
-     * 2. the [product] model is updated with whatever change has been made in the UI.
+     * When the user first enters the product detail screen, the [productDraft] and [storedProduct] are the same.
+     * When a change is made to the product in the UI, the [productDraft] model is updated with whatever change
+     * has been made in the UI.
      *
-     * The [cachedProduct] keeps track of the changes made to the [product] in order to discard the changes
-     * when necessary.
-     *
+     * The [productBeforeEnteringFragment] is a copy of the product before a specific detail fragment is entered.
+     * This is used when the user taps the back button to detect if any changes were made in that fragment, and
+     * if so we ask whether the user wants to discard changes. If they do, then we reset [productDraft] back to
+     * [productBeforeEnteringFragment] to restore it to the state it was when the fragment was entered.
      */
     @Parcelize
     data class ProductDetailViewState(
-        val product: Product? = null,
-        var cachedProduct: Product? = null,
         var storedProduct: Product? = null,
+        val productDraft: Product? = null,
+        var productBeforeEnteringFragment: Product? = null,
         val isSkeletonShown: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,

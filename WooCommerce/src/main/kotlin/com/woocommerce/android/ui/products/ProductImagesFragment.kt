@@ -108,7 +108,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun reloadImageGallery() {
-        viewModel.getProduct().product?.let {
+        viewModel.getProduct().productDraft?.let {
             imageGallery.showProductImages(it, this)
         }
     }
@@ -117,7 +117,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewModel.getProduct().product?.let { product ->
+        viewModel.getProduct().productDraft?.let { product ->
             ImageViewerActivity.showProductImages(
                     this,
                     product,
