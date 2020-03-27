@@ -31,7 +31,6 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
 
     private var publishMenuItem: MenuItem? = null
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
