@@ -99,7 +99,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
         with(product_sku) {
             setText(product.sku)
             setOnTextChangedListener {
