@@ -313,7 +313,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * changes in that specific screen
      */
     fun updateProductBeforeEnteringFragment() {
-        viewState.productBeforeEnteringFragment = viewState.cachedProduct ?: viewState.product
+        viewState.productBeforeEnteringFragment = viewState.product
     }
 
     /**
@@ -372,7 +372,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
                     } else viewState.storedProduct?.dateOnSaleFromGmt
             )
-            viewState = viewState.copy(cachedProduct = currentProduct, product = updatedProduct)
+            viewState = viewState.copy(product = updatedProduct)
 
             updateProductEditAction()
         }
@@ -389,10 +389,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * the state it was in when the screen was first entered
      */
     private fun discardEditChanges(event: ProductExitEvent) {
-        viewState = viewState.copy(
-                product = viewState.productBeforeEnteringFragment,
-                cachedProduct = viewState.productBeforeEnteringFragment
-        )
+        viewState = viewState.copy(product = viewState.productBeforeEnteringFragment)
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
@@ -575,7 +572,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(
                 product = updatedProduct,
-                cachedProduct = viewState.cachedProduct ?: updatedProduct,
                 storedProduct = storedProduct,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
@@ -631,7 +627,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     /**
      * [product] is used for the UI. Any updates to the fields in the UI would update this model.
-     * [cachedProduct] is a copy of the [product] model before a change has been made to the [product] model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
      * This is read only and is not updated in any way. It is used in the product detail screen, to check
      * if we need to display the UPDATE menu button (which is only displayed if there are changes made to
@@ -641,13 +636,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      * [product] and [storedProduct]. Currently used in the product detail screen to display or hide the UPDATE
      * menu button.
      *
-     * When the user first enters the product detail screen, the [product] , [storedProduct]  and [cachedProduct] 
-     * are the same. When a change is made to the product in the UI,
-     * 1. the [cachedProduct] is updated with the [product] model first, then
-     * 2. the [product] model is updated with whatever change has been made in the UI.
-     *
-     * The [cachedProduct] keeps track of the changes made to the [product] in order to discard the changes
-     * when necessary.
+     * When the user first enters the product detail screen, the [product] and [storedProduct] are the same.
+     * When a change is made to the product in the UI, the [product] model is updated with whatever change
+     * has been made in the UI.
      *
      * The [productBeforeEnteringFragment] is a copy of the product before a specific detail fragment is entered
      *
@@ -656,7 +647,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class ProductDetailViewState(
         val product: Product? = null,
         var productBeforeEnteringFragment: Product? = null,
-        var cachedProduct: Product? = null,
         var storedProduct: Product? = null,
         val isSkeletonShown: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
