@@ -244,7 +244,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
-                        discardEditChanges(event)
+                        discardEditChanges()
 
                         // If user in Product detail screen, exit product detail,
                         // otherwise, redirect to Product Detail screen
@@ -388,7 +388,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when discard is clicked on any of the product screens to restore the product to
      * the state it was in when the screen was first entered
      */
-    private fun discardEditChanges(event: ProductExitEvent) {
+    private fun discardEditChanges() {
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
