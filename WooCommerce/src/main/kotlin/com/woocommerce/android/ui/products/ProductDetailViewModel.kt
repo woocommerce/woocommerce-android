@@ -691,12 +691,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun removeProductImageListFromDraft(remoteMediaIds: ArrayList<Long>) {
-        for (mediaId in remoteMediaIds) {
-            removeProductImageFromDraft(mediaId)
-        }
-    }
-
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when

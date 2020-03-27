@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,12 +14,15 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.ChangeBounds
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
 
 class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
@@ -66,7 +71,9 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_trash, menu)
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            inflater.inflate(R.menu.menu_trash, menu)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -117,13 +124,49 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
-                    viewModel.removeProductImageFromDraft(remoteMediaId)
-                    pagerAdapter.loadProductImages()
+                    removeCurrentImage()
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
                     isConfirmationShowing = false
                 }
                 .show()
+    }
+
+    private fun removeCurrentImage() {
+        val newImageCount = pagerAdapter.count - 1
+        val currentMediaId = remoteMediaId
+
+        // determine the image to return to when the adapter is reloaded following the image removal
+        val newMediaId = when {
+            newImageCount == 0 -> {
+                0
+            }
+            viewPager.currentItem > 0 -> {
+                pagerAdapter.images[viewPager.currentItem - 1].id
+            }
+            else -> {
+                pagerAdapter.images[viewPager.currentItem + 1].id
+            }
+        }
+
+        // animate the viewPager out, then remove the image and animate it back in - this gives
+        // the appearance of the removed image being tossed away
+        with(WooAnimUtils.getScaleOutAnim(viewPager)) {
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    remoteMediaId = newMediaId
+                    viewModel.removeProductImageFromDraft(currentMediaId)
+                    // animate it back in if there are any images left, others return to the previous fragment
+                    if (newImageCount > 0) {
+                        WooAnimUtils.scaleIn(viewPager)
+                        pagerAdapter.loadProductImages()
+                    } else {
+                        findNavController().navigateUp()
+                    }
+                }
+            })
+            start()
+        }
     }
 
     internal inner class ImageViewerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
