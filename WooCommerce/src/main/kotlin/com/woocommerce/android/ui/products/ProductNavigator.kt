@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -73,15 +72,10 @@ class ProductNavigator @Inject constructor() {
             is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId)
 
             is ViewProductImages -> {
-                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(fragment.requireActivity())) {
+                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
                     viewProductImageChooser(fragment, target.product.remoteId)
                 } else if (target.imageModel != null) {
-                    ImageViewerActivity.showProductImages(
-                            fragment,
-                            target.product,
-                            target.imageModel,
-                            sharedElement = target.clickedImage.get()
-                    )
+                    viewProductImageViewer(fragment, target.product.remoteId)
                 }
             }
 
@@ -92,6 +86,12 @@ class ProductNavigator @Inject constructor() {
     private fun viewProductImageChooser(fragment: Fragment, remoteId: Long) {
         val action = ProductDetailFragmentDirections
                 .actionProductDetailFragmentToProductImagesFragment(remoteId)
+        fragment.findNavController().navigate(action)
+    }
+
+    private fun viewProductImageViewer(fragment: Fragment, remoteId: Long) {
+        val action = ProductImageViewerFragmentDirections
+                .actionGlobalProductImageViewerFragment(remoteId)
         fragment.findNavController().navigate(action)
     }
 }
