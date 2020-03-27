@@ -1,5 +1,6 @@
 4.0
 -----
+* Products is now available with limited editing for simple products!
  
 3.9
 -----

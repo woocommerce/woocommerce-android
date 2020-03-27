@@ -418,6 +418,7 @@
     <string name="product_schedule_sale_sublabel">Automatically start and end a sale</string>
     <string name="product_schedule_sale_from_label">From</string>
     <string name="product_schedule_sale_to_label">To</string>
+    <string name="product_schedule_remove_end_date_link_label">Remove end date</string>
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
     <string name="product_sale_date_from">from %1$s</string>

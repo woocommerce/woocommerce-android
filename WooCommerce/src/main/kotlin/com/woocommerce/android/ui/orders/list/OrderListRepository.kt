@@ -67,10 +67,15 @@ class OrderListRepository @Inject constructor(
 
     suspend fun getCachedOrderStatusOptions(): Map<String, WCOrderStatusModel> {
         return withContext(coroutineDispatchers.io) {
-            val statusOptions = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
-            if (statusOptions.isNotEmpty()) {
-                statusOptions.map { it.statusKey to it }.toMap()
+            if (selectedSite.exists()) {
+                val statusOptions = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+                if (statusOptions.isNotEmpty()) {
+                    statusOptions.map { it.statusKey to it }.toMap()
+                } else {
+                    emptyMap()
+                }
             } else {
+                WooLog.w(ORDERS, "No site selected - unable to load order status options")
                 emptyMap()
             }
         }
