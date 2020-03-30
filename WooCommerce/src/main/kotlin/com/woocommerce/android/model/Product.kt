@@ -274,7 +274,7 @@ fun WCProductModel.toAppModel(): Product {
         price = this.price.toBigDecimalOrNull()?.roundError(),
         salePrice = this.salePrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
         regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        taxClass = this.taxClass,
+        taxClass = if (this.taxClass.isEmpty()) "standard" else this.taxClass,
         manageStock = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,
