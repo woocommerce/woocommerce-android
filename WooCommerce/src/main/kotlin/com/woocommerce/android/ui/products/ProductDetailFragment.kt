@@ -254,7 +254,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         // we don't show total sales for variations because they're always zero
-        if (!isVariation) {
+        // we are removing the total orders sections from products M2 release
+        if (!isVariation && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_total_orders,
