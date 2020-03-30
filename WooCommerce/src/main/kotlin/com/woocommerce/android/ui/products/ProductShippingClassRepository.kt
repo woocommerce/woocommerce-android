@@ -29,7 +29,6 @@ class ProductShippingClassRepository@Inject constructor(
         private const val SHIPPING_CLASS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_SHIPPING_CLASS_PAGE_SIZE
     }
 
-
     private var continuationShippingClasses: CancellableContinuation<Boolean>? = null
 
     private var shippingClassOffset = 0
@@ -43,7 +42,6 @@ class ProductShippingClassRepository@Inject constructor(
     fun onCleanup() {
         dispatcher.unregister(this)
     }
-
 
     /**
      * Fetches the list of shipping classes for the [selectedSite], optionally loading the next page of classes
@@ -78,7 +76,6 @@ class ProductShippingClassRepository@Inject constructor(
      */
     fun getProductShippingClassesForSite(): List<ShippingClass> =
             productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
-
 
     /**
      * The list of shipping classes has been fetched for the current site
