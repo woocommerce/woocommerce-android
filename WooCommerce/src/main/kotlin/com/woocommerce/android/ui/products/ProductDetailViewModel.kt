@@ -166,7 +166,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the the Remove end date link is clicked
      */
     fun onRemoveEndDateClicked() {
-        productPricingViewState = productPricingViewState.copy(maxDate = null)
+        productPricingViewState = productPricingViewState.copy(isRemoveMaxDateButtonVisible = false)
         updateProductDraft(dateOnSaleToGmt = Optional(null))
     }
 
@@ -210,10 +210,25 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Keeps track of the min and max date value when scheduling a sale.
      */
     fun onDatePickerValueSelected(selectedDate: Date, isMinValue: Boolean) {
-        productPricingViewState = if (isMinValue) {
-            productPricingViewState.copy(minDate = selectedDate)
+        if (isMinValue) {
+            // update end date to min date only if current end date < start date
+            val dateOnSaleToGmt = viewState.productDraft?.dateOnSaleToGmt
+            if (dateOnSaleToGmt?.before(selectedDate) == true) {
+                productPricingViewState = productPricingViewState.copy(minDate = selectedDate)
+                updateProductDraft(dateOnSaleToGmt = Optional(selectedDate))
+            }
         } else {
-            productPricingViewState.copy(maxDate = selectedDate)
+            // update start date to max date only if current start date > end date
+            val dateOnSaleFromGmt = viewState.productDraft?.dateOnSaleFromGmt
+            if (dateOnSaleFromGmt?.after(selectedDate) == true) {
+                productPricingViewState = productPricingViewState.copy(maxDate = selectedDate)
+                updateProductDraft(dateOnSaleFromGmt = selectedDate)
+            }
+        }
+
+        // display remove end date link only if there is an end date available
+        viewState.productDraft?.dateOnSaleToGmt?.let {
+            productPricingViewState = productPricingViewState.copy(isRemoveMaxDateButtonVisible = true)
         }
     }
 
@@ -674,11 +689,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
         val minDate: Date? = null,
-        val maxDate: Date? = null
-    ) : Parcelable {
-        val isRemoveMaxDateButtonVisible: Boolean
-            get() = maxDate != null
-    }
+        val maxDate: Date? = null,
+        val isRemoveMaxDateButtonVisible: Boolean? = null
+    ) : Parcelable
 
     @Parcelize
     data class ProductShippingClassViewState(
