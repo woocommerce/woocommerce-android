@@ -12,7 +12,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.util.WooLog
@@ -24,7 +26,7 @@ import org.wordpress.android.util.ActivityUtils
 /**
  * Fragment which enables updating product shipping data.
  */
-class ProductShippingFragment : BaseProductFragment() {
+class ProductShippingFragment : BaseProductFragment(), NavigationResult {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -136,7 +138,22 @@ class ProductShippingFragment : BaseProductFragment() {
     }
 
     private fun showShippingClassFragment() {
-        val action = ProductShippingFragmentDirections.actionProductShippingFragmentToProductShippingClassFragment()
+        val action = ProductShippingFragmentDirections
+                .actionProductShippingFragmentToProductShippingClassFragment(
+                        productShippingClassSlug = viewModel.getProduct().productDraft?.shippingClass ?: ""
+                )
         findNavController().navigate(action)
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            RequestCodes.PRODUCT_SHIPPING_CLASS -> {
+                val selectedShippingClassSlug = result.getString(
+                        ProductShippingClassFragment.ARG_SELECTED_SHIPPING_CLASS_SLUG, ""
+                )
+                viewModel.updateProductDraft(shippingClass = selectedShippingClassSlug)
+                product_shipping_class_spinner.setText(viewModel.getShippingClassBySlug(selectedShippingClassSlug))
+            }
+        }
     }
 }
