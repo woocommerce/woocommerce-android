@@ -126,11 +126,11 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
+        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
-
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {

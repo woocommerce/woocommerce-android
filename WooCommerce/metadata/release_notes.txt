@@ -1,1 +1,3 @@
-Raise your hand if you’d like to edit products on the go! To give available editing options a try, enable Product Editing in Settings > Beta Features.
+Fixed two crashes: one that happened when you selected two products in the Product List at the same time, and another that would happen when editing a negative stock quantity.
+
+Stay safe and wash your hands, everyone!
