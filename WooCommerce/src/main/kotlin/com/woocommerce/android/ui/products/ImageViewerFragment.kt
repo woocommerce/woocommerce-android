@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.imageviewer
+package com.woocommerce.android.ui.products
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -14,12 +14,14 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
 
+/**
+ * Single image viewer used by the ViewPager in [ProductImagesFragment]
+ */
 class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
 
         interface ImageViewerListener {
-            fun onImageTapped()
             fun onImageLoadError()
         }
 
@@ -48,9 +50,6 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loadImage()
-        photoView.setOnPhotoTapListener { _, _, _ ->
-            (activity as? ImageViewerListener)?.onImageTapped()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
