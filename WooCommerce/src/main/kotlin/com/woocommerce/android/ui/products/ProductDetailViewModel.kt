@@ -20,7 +20,6 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -36,8 +35,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -46,7 +43,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -88,7 +84,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private var skuVerificationJob: Job? = null
-    private var shippingClassLoadJob: Job? = null
 
     // view state for the product detail screen
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
@@ -101,10 +96,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product pricing screen
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
-
-    // view state for the shipping class screen
-    final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
-    private var productShippingClassViewState by productShippingClassViewStateData
 
     // view state for the product images screen
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
@@ -178,7 +169,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the the Remove end date link is clicked
      */
     fun onRemoveEndDateClicked() {
-        productPricingViewState = productPricingViewState.copy(maxDate = null)
+        productPricingViewState = productPricingViewState.copy(isRemoveMaxDateButtonVisible = false)
         updateProductDraft(dateOnSaleToGmt = Optional(null))
     }
 
@@ -226,10 +217,25 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Keeps track of the min and max date value when scheduling a sale.
      */
     fun onDatePickerValueSelected(selectedDate: Date, isMinValue: Boolean) {
-        productPricingViewState = if (isMinValue) {
-            productPricingViewState.copy(minDate = selectedDate)
+        if (isMinValue) {
+            // update end date to min date only if current end date < start date
+            val dateOnSaleToGmt = viewState.productDraft?.dateOnSaleToGmt
+            if (dateOnSaleToGmt?.before(selectedDate) == true) {
+                productPricingViewState = productPricingViewState.copy(minDate = selectedDate)
+                updateProductDraft(dateOnSaleToGmt = Optional(selectedDate))
+            }
         } else {
-            productPricingViewState.copy(maxDate = selectedDate)
+            // update start date to max date only if current start date > end date
+            val dateOnSaleFromGmt = viewState.productDraft?.dateOnSaleFromGmt
+            if (dateOnSaleFromGmt?.after(selectedDate) == true) {
+                productPricingViewState = productPricingViewState.copy(maxDate = selectedDate)
+                updateProductDraft(dateOnSaleFromGmt = selectedDate)
+            }
+        }
+
+        // display remove end date link only if there is an end date available
+        viewState.productDraft?.dateOnSaleToGmt?.let {
+            productPricingViewState = productPricingViewState.copy(isRemoveMaxDateButtonVisible = true)
         }
     }
 
@@ -534,64 +540,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch the shipping class name of a product based on the slug
      */
     fun getShippingClassBySlug(slug: String): String {
-        val shippingClassList = productShippingClassViewState.shippingClassList
-                ?: productRepository.getProductShippingClassesForSite()
+        val shippingClassList = productRepository.getProductShippingClassesForSite()
         return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
-    }
-
-    /**
-     * Load & fetch the shipping classes for the current site, optionally performing a "load more" to
-     * load the next page of shipping classes
-     */
-    fun loadShippingClasses(loadMore: Boolean = false) {
-        if (loadMore && !productRepository.canLoadMoreShippingClasses) {
-            WooLog.d(T.PRODUCTS, "Can't load more product shipping classes")
-            return
-        }
-
-        waitForExistingShippingClassFetch()
-
-        shippingClassLoadJob = launch {
-            productShippingClassViewState = if (loadMore) {
-                productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
-            } else {
-                // get cached shipping classes and only show loading progress the list is empty, otherwise show
-                // them right away
-                val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
-                if (cachedShippingClasses.isEmpty()) {
-                    productShippingClassViewState.copy(isLoadingProgressShown = true)
-                } else {
-                    productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
-                }
-            }
-
-            // fetch shipping classes from the backend
-            val shippingClasses = productRepository.fetchShippingClassesForSite(loadMore)
-            productShippingClassViewState = productShippingClassViewState.copy(
-                    isLoadingProgressShown = false,
-                    isLoadingMoreProgressShown = false,
-                    shippingClassList = shippingClasses
-            )
-        }
-    }
-
-    /**
-     * If shipping classes are already being fetch, wait for the current fetch to complete - this is
-     * used above to avoid fetching multiple pages of shipping classes in unison
-     */
-    private fun waitForExistingShippingClassFetch() {
-        if (shippingClassLoadJob?.isActive == true) {
-            launch {
-                try {
-                    shippingClassLoadJob?.join()
-                } catch (e: CancellationException) {
-                    WooLog.d(
-                            T.PRODUCTS,
-                            "CancellationException while waiting for existing shipping class list fetch"
-                    )
-                }
-            }
-        }
     }
 
     private fun updateProductState(storedProduct: Product) {
@@ -763,17 +713,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
         val minDate: Date? = null,
-        val maxDate: Date? = null
-    ) : Parcelable {
-        val isRemoveMaxDateButtonVisible: Boolean
-            get() = maxDate != null
-    }
-
-    @Parcelize
-    data class ProductShippingClassViewState(
-        val isLoadingProgressShown: Boolean = false,
-        val isLoadingMoreProgressShown: Boolean = false,
-        val shippingClassList: List<ShippingClass>? = null
+        val maxDate: Date? = null,
+        val isRemoveMaxDateButtonVisible: Boolean? = null
     ) : Parcelable
 
     @Parcelize
