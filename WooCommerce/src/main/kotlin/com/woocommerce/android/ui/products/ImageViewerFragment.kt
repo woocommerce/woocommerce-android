@@ -26,20 +26,19 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
             fun onImageLoadError()
         }
 
-        fun newInstance(imageModel: Product.Image, listener: ImageViewerListener): ImageViewerFragment {
+        fun newInstance(imageModel: Product.Image): ImageViewerFragment {
             val args = Bundle().also {
                 it.putString(KEY_IMAGE_URL, imageModel.source)
             }
             ImageViewerFragment().also {
                 it.arguments = args
-                it.listener = listener
                 return it
             }
         }
     }
 
     private lateinit var imageUrl: String
-    var listener: ImageViewerListener? = null
+    private var imageListener: ImageViewerListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +53,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         super.onActivityCreated(savedInstanceState)
         loadImage()
         photoView.setOnPhotoTapListener { _, _, _ ->
-            listener?.onImageTapped()
+            imageListener?.onImageTapped()
         }
     }
 
@@ -66,6 +65,10 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    fun setImageListener(listener: ImageViewerListener) {
+        imageListener = listener
     }
 
     private fun loadImage() {
@@ -91,7 +94,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-        listener?.onImageLoadError()
+        imageListener?.onImageLoadError()
         return false
     }
 

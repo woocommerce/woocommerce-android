@@ -232,11 +232,16 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
         }
 
         override fun getItem(position: Int): Fragment {
-            return ImageViewerFragment.newInstance(images[position], this@ProductImageViewerFragment)
+            return ImageViewerFragment.newInstance(images[position])
         }
 
         override fun getCount(): Int {
             return images.size
+        }
+
+        override fun setPrimaryItem(container: ViewGroup, position: Int, item: Any) {
+            super.setPrimaryItem(container, position, item)
+            (item as? ImageViewerFragment)?.setImageListener(this@ProductImageViewerFragment)
         }
     }
 }
