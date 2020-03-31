@@ -3,14 +3,17 @@ package com.woocommerce.android.ui.main
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -19,6 +22,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -321,6 +325,7 @@ class MainActivity : AppUpgradeActivity(),
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
         val showToolbarShadow: Boolean
+        val showFullScreen = destination.id == R.id.productImageViewerFragment
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
@@ -360,6 +365,14 @@ class MainActivity : AppUpgradeActivity(),
                 actionBar.elevation = resources.getDimension(R.dimen.appbar_elevation)
             } else {
                 actionBar.elevation = 0f
+            }
+
+            if (showFullScreen){
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                actionBar.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, color.black)))
+            } else {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                actionBar.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, color.color_primary)))
             }
         }
 
