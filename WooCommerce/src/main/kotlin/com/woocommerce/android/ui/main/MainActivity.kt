@@ -363,7 +363,8 @@ class MainActivity : AppUpgradeActivity(),
                 actionBar.elevation = 0f
             }
 
-            // the image viewer should be shown full screen and provides its own toolbar, so we hide the main toolbar
+            // the image viewer should be shown full screen and we hide the actionbar since the fragment
+            // provides its own toolbar
             if (destination.id == R.id.productImageViewerFragment){
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 actionBar.hide()
