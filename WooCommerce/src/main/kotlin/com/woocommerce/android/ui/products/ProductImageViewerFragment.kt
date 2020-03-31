@@ -26,7 +26,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
 
-class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
+class ProductImageViewerFragment : BaseProductFragment() {
     companion object {
         private const val KEY_REMOTE_MEDIA_ID = "media_id"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
@@ -87,14 +87,6 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     }
 
     override fun onRequestAllowBackPress() = true
-
-    override fun onImageTapped() {
-        showToolbar(true)
-    }
-
-    override fun onImageLoadError() {
-        uiMessageResolver.showSnack(R.string.error_loading_image)
-    }
 
     private fun setupViewPager() {
         resetAdapter()
@@ -222,7 +214,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     }
 
     internal inner class ImageViewerAdapter(fm: FragmentManager, val images: ArrayList<Product.Image>) :
-            FragmentStatePagerAdapter(fm) {
+            FragmentStatePagerAdapter(fm), ImageViewerListener {
         fun indexOfImageId(imageId: Long): Int {
             for (index in images.indices) {
                 if (imageId == images[index].id) {
@@ -233,11 +225,19 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
         }
 
         override fun getItem(position: Int): Fragment {
-            return ImageViewerFragment.newInstance(images[position])
+            return ImageViewerFragment.newInstance(images[position], this)
         }
 
         override fun getCount(): Int {
             return images.size
+        }
+
+        override fun onImageTapped() {
+            showToolbar(true)
+        }
+
+        override fun onImageLoadError() {
+            uiMessageResolver.showSnack(R.string.error_loading_image)
         }
     }
 }
