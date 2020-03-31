@@ -3,9 +3,13 @@ package com.woocommerce.android.ui.products
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
@@ -26,12 +30,14 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     companion object {
         private const val KEY_REMOTE_MEDIA_ID = "media_id"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
+        private const val TOOLBAR_FADE_DELAY_MS = 2500L
     }
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
+    private val fadeOutToolbarHandler = Handler()
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
@@ -71,6 +77,8 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                 confirmRemoveProductImage()
             }
         }
+
+        showToolbar(true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -79,6 +87,10 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     }
 
     override fun onRequestAllowBackPress() = true
+
+    override fun onImageTapped() {
+        showToolbar(true)
+    }
 
     override fun onImageLoadError() {
         uiMessageResolver.showSnack(R.string.error_loading_image)
@@ -158,6 +170,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                     if (newImageCount > 0) {
                         WooAnimUtils.scaleIn(viewPager)
                         resetAdapter()
+                        showToolbar(true)
                     } else {
                         findNavController().navigateUp()
                     }
@@ -165,6 +178,47 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             })
             start()
         }
+    }
+
+    private fun showToolbar(show: Boolean) {
+        if (isAdded) {
+            // remove the current fade-out runnable and start a new one to hide the toolbar shortly after we show it
+            fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
+            if (show) {
+                fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
+            }
+
+            if ((show && fakeToolbar.visibility == View.VISIBLE) || (!show && fakeToolbar.visibility != View.VISIBLE)) {
+                return
+            }
+
+            @AnimRes val animRes = if (show) {
+                R.anim.toolbar_fade_in_and_down
+            } else {
+                R.anim.toolbar_fade_out_and_up
+            }
+
+            val listener = object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation) {
+                    if (show) fakeToolbar.visibility = View.VISIBLE
+                }
+                override fun onAnimationEnd(animation: Animation) {
+                    if (!show) fakeToolbar.visibility = View.GONE
+                }
+                override fun onAnimationRepeat(animation: Animation) {
+                    // noop
+                }
+            }
+
+            AnimationUtils.loadAnimation(requireActivity(), animRes)?.let { anim ->
+                anim.setAnimationListener(listener)
+                fakeToolbar.startAnimation(anim)
+            }
+        }
+    }
+
+    private val fadeOutToolbarRunnable = Runnable {
+        showToolbar(false)
     }
 
     internal inner class ImageViewerAdapter(fm: FragmentManager, val images: ArrayList<Product.Image>) :
