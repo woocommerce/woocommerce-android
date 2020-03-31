@@ -15,24 +15,29 @@
         android:id="@+id/fakeToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/iconBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="start|center_vertical"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/ripple_grey_oval"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
             app:srcCompat="@drawable/ic_arrow_left_white_24dp" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/iconTrash"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="end|center_vertical"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/ripple_grey_oval"
+            android:clickable="true"
             android:contentDescription="@string/product_remove_photo"
+            android:focusable="true"
+            android:padding="8dp"
             app:srcCompat="@drawable/ic_gridicons_trash" />
 
     </FrameLayout>

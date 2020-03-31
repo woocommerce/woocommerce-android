@@ -322,7 +322,6 @@ class MainActivity : AppUpgradeActivity(),
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
         val showToolbarShadow: Boolean
-        val showFullScreen = destination.id == R.id.productImageViewerFragment
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
@@ -364,11 +363,12 @@ class MainActivity : AppUpgradeActivity(),
                 actionBar.elevation = 0f
             }
 
-            if (showFullScreen){
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            // the image viewer should be shown full screen and provides its own toolbar, so we hide the main toolbar
+            if (destination.id == R.id.productImageViewerFragment){
+                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 actionBar.hide()
             } else {
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 actionBar.show()
             }
         }
