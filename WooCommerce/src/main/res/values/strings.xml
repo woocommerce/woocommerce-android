@@ -79,7 +79,6 @@
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
-    <string name="shared_element_transition_name" translatable="false">shared_element</string>
     <!--
         Date/Time Labels
     -->

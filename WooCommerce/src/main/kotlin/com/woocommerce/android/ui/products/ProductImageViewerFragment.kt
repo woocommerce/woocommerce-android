@@ -48,7 +48,6 @@ class ProductImageViewerFragment : BaseProductFragment() {
         remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.remoteMediaId
 
         setHasOptionsMenu(false)
-        sharedElementEnterTransition = ChangeBounds()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
