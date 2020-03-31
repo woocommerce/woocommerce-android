@@ -60,7 +60,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     }
 
     fun updateView(notes: List<OrderNote>) {
-        val adapter = notesList_notes.adapter as OrderNotesAdapter
+        val adapter = notesList_notes.adapter as? OrderNotesAdapter ?: OrderNotesAdapter()
         enableItemAnimator(adapter.itemCount == 0)
 
         val notesWithHeaders = addHeaders(notes)
