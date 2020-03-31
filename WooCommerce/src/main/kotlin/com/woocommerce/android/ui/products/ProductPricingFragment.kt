@@ -247,11 +247,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
         val product = requireNotNull(productData.productDraft)
 
-        val productTaxClass = if (product.taxClass.isEmpty()) {
-            getString(R.string.product_tax_class_standard)
-        } else viewModel.getTaxClassBySlug(product.taxClass)?.name ?: product.taxClass
-        product_tax_class.setText(productTaxClass)
-
+        product_tax_class.setText(viewModel.getTaxClassBySlug(product.taxClass)?.name ?: product.taxClass)
         taxClassList?.let { taxClasses ->
             product_tax_class.setClickListener {
                 productTaxClassSelectorDialog = ProductInventorySelectorDialog.newInstance(
