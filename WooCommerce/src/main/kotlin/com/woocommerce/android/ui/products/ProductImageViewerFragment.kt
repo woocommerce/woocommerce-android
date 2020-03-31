@@ -4,9 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -44,7 +41,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.remoteMediaId
 
-        setHasOptionsMenu(true)
+        setHasOptionsMenu(false)
         sharedElementEnterTransition = ChangeBounds()
     }
 
@@ -57,6 +54,18 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         setupViewPager()
 
+        iconBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            iconTrash.setOnClickListener {
+                confirmRemoveProductImage()
+            }
+        } else {
+            iconTrash.visibility = View.GONE
+        }
+
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRMATION_SHOWING)) {
                 confirmRemoveProductImage()
@@ -67,24 +76,6 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(KEY_IS_CONFIRMATION_SHOWING, isConfirmationShowing)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            inflater.inflate(R.menu.menu_trash, menu)
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_trash -> {
-                confirmRemoveProductImage()
-                true
-            } else -> {
-                super.onOptionsItemSelected(item)
-            }
-        }
     }
 
     override fun onRequestAllowBackPress() = true
