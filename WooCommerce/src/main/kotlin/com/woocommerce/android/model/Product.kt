@@ -63,6 +63,10 @@ data class Product(
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean
 ) : Parcelable {
+    companion object {
+        const val TAX_CLASS_DEFAULT = "standard"
+    }
+
     @Parcelize
     data class Image(
         val id: Long,
@@ -317,7 +321,9 @@ fun WCProductModel.toAppModel(): Product {
         price = this.price.toBigDecimalOrNull()?.roundError(),
         salePrice = this.salePrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
         regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        taxClass = this.taxClass,
+            // In Core, if a tax class is empty it is considered as standard and we are following the same
+            // procedure here
+        taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
         manageStock = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,

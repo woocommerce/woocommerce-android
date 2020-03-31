@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
@@ -111,6 +112,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
+
+        menu.findItem(R.id.menu_view_product).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -126,6 +129,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
+                true
+            }
+
+            R.id.menu_view_product -> {
+                viewModel.getProduct().productDraft?.permalink?.let {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+                    ChromeCustomTabUtils.launchUrl(requireContext(), it)
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -243,7 +254,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         // we don't show total sales for variations because they're always zero
-        if (!isVariation) {
+        // we are removing the total orders sections from products M2 release
+        if (!isVariation && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_total_orders,
@@ -281,12 +293,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
         }
 
-        addLinkView(
-                DetailCard.Primary,
-                R.string.product_view_in_store,
-                product.permalink,
-                PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-        )
+        // display `View product on Store` in options menu from M2 products release
+        if (!FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            addLinkView(
+                    DetailCard.Primary,
+                    R.string.product_view_in_store,
+                    product.permalink,
+                    PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+            )
+        }
         addLinkView(
                 DetailCard.Primary,
                 R.string.product_view_affiliate,

@@ -32,12 +32,6 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     fun initView(notes: List<OrderNote>, orderDetailListener: OrderDetailNoteListener) {
         listener = orderDetailListener
 
-        val viewAdapter = OrderNotesAdapter()
-        val notesWithHeaders = addHeaders(notes)
-        viewAdapter.setNotes(notesWithHeaders)
-
-        val viewManager = LinearLayoutManager(context)
-
         noteList_addNoteContainer.setOnClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_ADD_NOTE_BUTTON_TAPPED)
 
@@ -46,9 +40,11 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
         notesList_notes.apply {
             setHasFixedSize(false)
-            layoutManager = viewManager
-            adapter = viewAdapter
+            layoutManager = LinearLayoutManager(context)
+            adapter = OrderNotesAdapter()
         }
+
+        updateView(notes)
     }
 
     private fun addHeaders(notes: List<OrderNote>): List<OrderNoteListItem> {
@@ -60,7 +56,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     }
 
     fun updateView(notes: List<OrderNote>) {
-        val adapter = notesList_notes.adapter as OrderNotesAdapter
+        val adapter = notesList_notes.adapter as? OrderNotesAdapter ?: OrderNotesAdapter()
         enableItemAnimator(adapter.itemCount == 0)
 
         val notesWithHeaders = addHeaders(notes)
