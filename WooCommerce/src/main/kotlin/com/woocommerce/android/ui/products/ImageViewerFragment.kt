@@ -39,7 +39,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     }
 
     private lateinit var imageUrl: String
-    private var listener: ImageViewerListener? = null
+    var listener: ImageViewerListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

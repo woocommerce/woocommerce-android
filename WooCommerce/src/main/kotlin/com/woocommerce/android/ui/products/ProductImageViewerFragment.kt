@@ -25,7 +25,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
 
-class ProductImageViewerFragment : BaseProductFragment() {
+class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     companion object {
         private const val KEY_REMOTE_MEDIA_ID = "media_id"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
@@ -93,6 +93,7 @@ class ProductImageViewerFragment : BaseProductFragment() {
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
+                showToolbar(true)
                 // remember this image id so we can return to it upon rotation, and so
                 // we use the right image if the user requests to remove it
                 remoteMediaId = pagerAdapter.images[position].id
@@ -211,8 +212,16 @@ class ProductImageViewerFragment : BaseProductFragment() {
         showToolbar(false)
     }
 
+    override fun onImageTapped() {
+        showToolbar(true)
+    }
+
+    override fun onImageLoadError() {
+        uiMessageResolver.showSnack(R.string.error_loading_image)
+    }
+
     internal inner class ImageViewerAdapter(fm: FragmentManager, val images: ArrayList<Product.Image>) :
-            FragmentStatePagerAdapter(fm), ImageViewerListener {
+            FragmentStatePagerAdapter(fm) {
         fun indexOfImageId(imageId: Long): Int {
             for (index in images.indices) {
                 if (imageId == images[index].id) {
@@ -223,19 +232,11 @@ class ProductImageViewerFragment : BaseProductFragment() {
         }
 
         override fun getItem(position: Int): Fragment {
-            return ImageViewerFragment.newInstance(images[position], this)
+            return ImageViewerFragment.newInstance(images[position], this@ProductImageViewerFragment)
         }
 
         override fun getCount(): Int {
             return images.size
-        }
-
-        override fun onImageTapped() {
-            showToolbar(true)
-        }
-
-        override fun onImageLoadError() {
-            uiMessageResolver.showSnack(R.string.error_loading_image)
         }
     }
 }
