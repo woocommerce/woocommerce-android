@@ -408,8 +408,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true
-                || productData.sizeWithUnits?.isNotEmpty() == true || product.shippingClass.isNotEmpty()
+        val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
+                productData.sizeWithUnits?.isNotEmpty() == true ||
+                product.shippingClass.isNotEmpty()
         val shippingGroup = if (hasShippingInfo) {
             mapOf(
                     Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
