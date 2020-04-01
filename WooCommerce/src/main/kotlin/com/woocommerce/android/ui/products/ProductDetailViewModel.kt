@@ -345,7 +345,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         width: Float? = null,
         height: Float? = null,
         weight: Float? = null,
-        shippingClass: String? = null
+        shippingClass: String? = null,
+        shippingClassId: Long? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -368,6 +369,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     height = height ?: product.height,
                     weight = weight ?: product.weight,
                     shippingClass = shippingClass ?: product.shippingClass,
+                    shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
@@ -514,13 +516,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Fetch the shipping class name of a product based on the slug
+     * Fetch the shipping class name of a product based on the remote shipping class id
      */
-    fun getShippingClassBySlug(slug: String): String {
-//        val shippingClassList = productRepository.getProductShippingClassesForSite()
-//        return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
-        return ""
-    }
+    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name ?: ""
 
     private fun updateProductState(storedProduct: Product) {
         val updatedProduct = viewState.productDraft?.let {

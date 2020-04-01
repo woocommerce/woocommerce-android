@@ -17,6 +17,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.ARG_SELECTED_SHIPPING_CLASS_ID
+import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.ARG_SELECTED_SHIPPING_CLASS_SLUG
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -134,7 +136,9 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
         showValue(product_length, R.string.product_length, product.length, dimensionUnit)
         showValue(product_height, R.string.product_height, product.height, dimensionUnit)
         showValue(product_width, R.string.product_width, product.width, dimensionUnit)
-        product_shipping_class_spinner.setText(viewModel.getShippingClassBySlug(product.shippingClass))
+        product_shipping_class_spinner.setText(
+                viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId)
+        )
     }
 
     private fun showShippingClassFragment() {
@@ -148,11 +152,15 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
             RequestCodes.PRODUCT_SHIPPING_CLASS -> {
-                val selectedShippingClassSlug = result.getString(
-                        ProductShippingClassFragment.ARG_SELECTED_SHIPPING_CLASS_SLUG, ""
+                val selectedShippingClassSlug = result.getString(ARG_SELECTED_SHIPPING_CLASS_SLUG, "")
+                val selectedShippingClassId = result.getLong(ARG_SELECTED_SHIPPING_CLASS_ID)
+                viewModel.updateProductDraft(
+                        shippingClass = selectedShippingClassSlug,
+                        shippingClassId = selectedShippingClassId
                 )
-                viewModel.updateProductDraft(shippingClass = selectedShippingClassSlug)
-                product_shipping_class_spinner.setText(viewModel.getShippingClassBySlug(selectedShippingClassSlug))
+                product_shipping_class_spinner.setText(
+                        viewModel.getShippingClassByRemoteShippingClassId(selectedShippingClassId)
+                )
             }
         }
     }

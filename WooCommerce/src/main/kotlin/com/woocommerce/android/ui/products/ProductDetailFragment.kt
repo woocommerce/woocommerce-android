@@ -483,7 +483,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
                     Pair(
                             getString(R.string.product_shipping_class),
-                            viewModel.getShippingClassBySlug(product.shippingClass)
+                            viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId)
                     )
             )
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
