@@ -572,6 +572,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
+
+        // make sure to remember uploading images
+        checkImageUploads(getRemoteProductId())
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {
