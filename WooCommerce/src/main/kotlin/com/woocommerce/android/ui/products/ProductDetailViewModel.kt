@@ -115,7 +115,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        checkImageUploads(remoteProductId)
     }
 
     fun initialisePricing() {
