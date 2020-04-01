@@ -408,17 +408,27 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
-                Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
-                Pair(getString(R.string.product_shipping_class), product.shippingClass)
-        )
+        val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
+                productData.sizeWithUnits?.isNotEmpty() == true ||
+                product.shippingClass.isNotEmpty()
+        val shippingGroup = if (hasShippingInfo) {
+            mapOf(
+                    Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                    Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
+                    Pair(getString(R.string.product_shipping_class), product.shippingClass)
+            )
+        } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
+
         addPropertyGroup(
                 DetailCard.Secondary,
                 R.string.product_shipping,
                 shippingGroup,
                 groupIconId = R.drawable.ic_gridicons_shipping
         )?.also {
+            // display shipping caption only if shipping info is not available
+            if (!hasShippingInfo) {
+                it.showPropertyName(false)
+            }
             it.setClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
