@@ -75,6 +75,18 @@
             android:name=".ui.imageviewer.ImageViewerActivity"
             android:theme="@style/ImageViewer.Activity"/>
 
+        <activity android:name="zendesk.support.guide.HelpCenterActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+
+        <activity android:name="zendesk.support.guide.ViewArticleActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+
+        <activity android:name="zendesk.support.request.RequestActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+
+        <activity android:name="zendesk.support.requestlist.RequestListActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+
         <!-- Services -->
         <service
             android:name=".push.FCMRegistrationIntentService"
