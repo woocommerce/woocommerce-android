@@ -247,11 +247,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
      * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
-     * i.e. viewState.product != viewState.storedProduct and viewState.product != viewState.cachedProduct
      *
      * For the product detail screen, the discard dialog should only be displayed if there are changes to the
-     * [Product] model locally, that still need to be saved to the backend. i.e.
-     * viewState.product != viewState.storedProduct
+     * [Product] model locally, that still need to be saved to the backend.
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated
@@ -279,7 +277,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             ))
             return false
         } else if (event is ExitProductDetail && ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
-            // images can't be assigned to the product until they finish uploading, so ask whether to discard images
+            // images can't be assigned to the product until they finish uploading so ask whether to discard images.
             triggerEvent(ShowDiscardDialog(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
