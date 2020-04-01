@@ -179,7 +179,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productName = product.name.fastStripHtml()
         updateActivityTitle()
 
-        if (product.images.isEmpty() && !viewModel.isUploading()) {
+        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
             if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
                 addImageContainer.visibility = View.VISIBLE

@@ -126,14 +126,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     /**
      * Show upload placeholders for the passed local image Uris
      */
-    fun setPlaceholderImageUris(imageUriList: List<Uri>) {
+    fun setPlaceholderImageUris(imageUriList: List<Uri>?) {
         val placeholders = ArrayList<Product.Image>()
-        for (index in imageUriList.indices) {
-            // use a negative id so we can check it in isPlaceholder() below
-            val id = (-index - 1).toLong()
-            // set the image src to this uri so we can preview it while uploading
-            placeholders.add(0, Product.Image(id, "", imageUriList[index].toString(), Date()))
+
+        imageUriList?.let { images ->
+            for (index in images.indices) {
+                // use a negative id so we can check it in isPlaceholder() below
+                val id = (-index - 1).toLong()
+                // set the image src to this uri so we can preview it while uploading
+                placeholders.add(0, Product.Image(id, "", images[index].toString(), Date()))
+            }
         }
+
         adapter.setPlaceholderImages(placeholders)
     }
 
