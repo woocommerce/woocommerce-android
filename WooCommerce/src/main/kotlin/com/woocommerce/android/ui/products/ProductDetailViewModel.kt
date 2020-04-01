@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.view.View
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -280,6 +281,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         } else if (event is ExitProductDetail && ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
             // images can't be assigned to the product until they finish uploading, so ask whether to discard images
             triggerEvent(ShowDiscardDialog(
+                    messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         triggerEvent(ExitProduct)
                     }
