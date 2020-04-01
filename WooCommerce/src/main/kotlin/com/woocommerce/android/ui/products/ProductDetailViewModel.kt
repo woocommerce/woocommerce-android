@@ -403,15 +403,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun loadProduct(remoteProductId: Long) {
-        // Pre-load current site's tax class list for use in the product pricing screen
-        launch(dispatchers.main) {
-            productRepository.loadTaxClassesForSite()
-        }
-
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
 
         launch {
+            // fetch product
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
                 updateProductState(productInDb)
@@ -425,6 +421,19 @@ class ProductDetailViewModel @AssistedInject constructor(
                 fetchProduct(remoteProductId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
+
+            // Pre-load current site's tax class list for use in the product pricing screen
+            productRepository.loadTaxClassesForSite()
+
+            // Fetch current site's shipping class only if a shipping class is assigned to the product and if
+            // the shipping class is not available in the local db
+            if (viewState.productDraft?.shippingClassId != 0L) {
+                viewState.productDraft?.shippingClassId?.let {
+                    if (productRepository.getProductShippingClassByRemoteId(it) == null) {
+                        productRepository.fetchProductShippingClassById(it)
+                    }
+                }
+            }
         }
     }
 
@@ -508,8 +517,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch the shipping class name of a product based on the slug
      */
     fun getShippingClassBySlug(slug: String): String {
-        val shippingClassList = productRepository.getProductShippingClassesForSite()
-        return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
+//        val shippingClassList = productRepository.getProductShippingClassesForSite()
+//        return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
+        return ""
     }
 
     private fun updateProductState(storedProduct: Product) {
