@@ -6,7 +6,6 @@ import android.os.Parcelable
 import android.view.View
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
