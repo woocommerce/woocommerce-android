@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -282,11 +283,11 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
         it.regularPrice = regularPrice.toString()
-        it.salePrice = salePrice.toString()
-        it.length = length.toString()
-        it.width = width.toString()
-        it.weight = weight.toString()
-        it.height = height.toString()
+        it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
+        it.length = if (length == 0f) "" else length.formatToString()
+        it.width = if (width == 0f) "" else width.formatToString()
+        it.weight = if (weight == 0f) "" else weight.formatToString()
+        it.height = if (height == 0f) "" else height.formatToString()
         it.shippingClass = shippingClass
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
