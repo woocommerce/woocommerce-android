@@ -205,6 +205,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
                 gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                textColor = ContextCompat.getColor(context, R.color.graph_label_color)
 
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
