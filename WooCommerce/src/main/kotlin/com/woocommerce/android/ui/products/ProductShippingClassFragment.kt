@@ -29,6 +29,7 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
     companion object {
         const val TAG = "ProductShippingClassFragment"
         const val ARG_SELECTED_SHIPPING_CLASS_SLUG = "selected-shipping-class-slug"
+        const val ARG_SELECTED_SHIPPING_CLASS_ID = "selected-shipping-class-id"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -94,6 +95,7 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
     override fun onShippingClassClicked(shippingClass: ShippingClass?) {
         val bundle = Bundle()
         bundle.putString(ARG_SELECTED_SHIPPING_CLASS_SLUG, shippingClass?.slug ?: "")
+        bundle.putLong(ARG_SELECTED_SHIPPING_CLASS_ID, shippingClass?.remoteShippingClassId ?: 0L)
         requireActivity().navigateBackWithResult(
                 RequestCodes.PRODUCT_SHIPPING_CLASS,
                 bundle,

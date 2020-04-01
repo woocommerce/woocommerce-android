@@ -25,11 +25,13 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
 import org.wordpress.android.fluxc.store.WCTaxStore
@@ -50,6 +52,7 @@ class ProductDetailRepository @Inject constructor(
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
+    private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
 
     private var isFetchingTaxClassList = false
@@ -120,6 +123,30 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
+     * Fires the request to fetch the product shipping class for a given [selectedSite] and [remoteShippingClassId]
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun fetchProductShippingClassById(remoteShippingClassId: Long): ShippingClass? {
+        try {
+            continuationFetchProductShippingClass?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationFetchProduct = it
+
+                val payload = WCProductStore.FetchSingleProductShippingClassPayload(
+                        selectedSite.get(), remoteShippingClassId
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductShippingClassAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.d(PRODUCTS, "CancellationException while fetching single product shipping class")
+        }
+
+        continuationFetchProductShippingClass = null
+        return getProductShippingClassByRemoteId(remoteShippingClassId)
+    }
+
+    /**
      * Fires the request to fetch list of [TaxClass] for a given [selectedSite]
      *
      * @return the result of the action as a [RequestResult]
@@ -152,10 +179,10 @@ class ProductDetailRepository @Inject constructor(
             taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**
-     * Returns a list of cached (SQLite) shipping classes for the current site
+     * Returns the cached (SQLite) shipping class for the given [remoteShippingClassId]
      */
-    fun getProductShippingClassesForSite(): List<ShippingClass> =
-            productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
+    fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
+            productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
@@ -195,6 +222,21 @@ class ProductDetailRepository @Inject constructor(
             // TODO: add event to track sku availability success
             continuationVerifySku?.resume(event.available)
             continuationVerifySku = null
+        }
+    }
+
+    /**
+     * The shipping class for the product has been fetched
+     */
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductShippingClassesChanged(event: OnProductShippingClassesChanged) {
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT_SHIPPING_CLASS) {
+            if (event.isError) {
+                continuationFetchProductShippingClass?.resume(false)
+            } else {
+                continuationFetchProductShippingClass?.resume(true)
+            }
         }
     }
 }
