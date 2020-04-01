@@ -120,4 +120,10 @@
         <item name="colorControlNormal">@color/transparent</item>
         <item name="android:textAppearance">@style/TextAppearance.Woo.Headline6</item>
     </style>
+
+    <style name="Theme.Woo.DayNight.Zendesk">
+        <item name="colorPrimary">@color/color_primary_surface</item>
+        <item name="colorPrimaryDark">@color/color_primary</item>
+        <item name="colorAccent">@color/color_primary</item>
+    </style>
 </resources>
