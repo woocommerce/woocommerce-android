@@ -423,19 +423,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 fetchProduct(remoteProductId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
-
-            // Pre-load current site's tax class list for use in the product pricing screen
-            productRepository.loadTaxClassesForSite()
-
-            // Fetch current site's shipping class only if a shipping class is assigned to the product and if
-            // the shipping class is not available in the local db
-            if (viewState.productDraft?.shippingClassId != 0L) {
-                viewState.productDraft?.shippingClassId?.let {
-                    if (productRepository.getProductShippingClassByRemoteId(it) == null) {
-                        productRepository.fetchProductShippingClassById(it)
-                    }
-                }
-            }
         }
     }
 
@@ -519,12 +506,15 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name ?: ""
+            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+                    ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(storedProduct: Product) {
         val updatedProduct = viewState.productDraft?.let {
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.productDraft)
         } ?: storedProduct
+
+        loadProductTaxAndShippingClassDependencies(updatedProduct)
 
         val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
         val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
@@ -539,6 +529,20 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
+    }
+
+    private fun loadProductTaxAndShippingClassDependencies(product: Product) {
+        launch {
+            // Fetch current site's shipping class only if a shipping class is assigned to the product and if
+            // the shipping class is not available in the local db
+            val shippingClassId = product.shippingClassId
+            if (shippingClassId != 0L && productRepository.getProductShippingClassByRemoteId(shippingClassId) == null) {
+                productRepository.fetchProductShippingClassById(shippingClassId)
+            }
+
+            // Pre-load current site's tax class list for use in the product pricing screen
+            productRepository.loadTaxClassesForSite()
+        }
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
