@@ -261,7 +261,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
-        return if (isProductUpdated == true && event.shouldShowDiscardDialog) {
+        if (isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
@@ -276,9 +276,17 @@ class ProductDetailViewModel @AssistedInject constructor(
                         }
                     }
             ))
-            false
+            return false
+        } else if (event is ExitProductDetail && ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
+            // images can't be assigned to the product until they finish uploading, so ask whether to discard images
+            triggerEvent(ShowDiscardDialog(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(ExitProduct)
+                    }
+            ))
+            return false
         } else {
-            true
+            return true
         }
     }
 
