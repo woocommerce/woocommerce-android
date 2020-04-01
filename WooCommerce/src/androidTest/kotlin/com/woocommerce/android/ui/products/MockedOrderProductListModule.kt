@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.helpers.initCoroutineEngine
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderProductListContract
 import com.woocommerce.android.ui.orders.OrderProductListPresenter
@@ -63,7 +64,7 @@ abstract class MockedOrderProductListModule {
                             ),
                             WCRefundStore(
                                     RefundRestClient(mockDispatcher, mock(), mock(), mock(), mock(), mock()),
-                                    testDispatchers.main,
+                                    initCoroutineEngine(),
                                     RefundMapper()
                             ),
                             mockSelectedSite
