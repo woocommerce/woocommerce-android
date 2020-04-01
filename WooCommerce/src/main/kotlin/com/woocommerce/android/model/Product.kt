@@ -188,7 +188,8 @@ data class Product(
                     width = updatedProduct.width,
                     height = updatedProduct.height,
                     weight = updatedProduct.weight,
-                    shippingClass = updatedProduct.shippingClass
+                    shippingClass = updatedProduct.shippingClass,
+                    shippingClassId = updatedProduct.shippingClassId
             )
         } ?: this.copy()
     }
