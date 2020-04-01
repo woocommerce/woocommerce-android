@@ -47,6 +47,7 @@ data class Product(
     val height: Float,
     val weight: Float,
     val shippingClass: String,
+    val shippingClassId: Long,
     val isDownloadable: Boolean,
     val fileCount: Int,
     val downloadLimit: Int,
@@ -187,7 +188,8 @@ data class Product(
                     width = updatedProduct.width,
                     height = updatedProduct.height,
                     weight = updatedProduct.weight,
-                    shippingClass = updatedProduct.shippingClass
+                    shippingClass = updatedProduct.shippingClass,
+                    shippingClassId = updatedProduct.shippingClassId
             )
         } ?: this.copy()
     }
@@ -289,6 +291,7 @@ fun WCProductModel.toAppModel(): Product {
         height = this.height.toFloatOrNull() ?: 0f,
         weight = this.weight.toFloatOrNull() ?: 0f,
         shippingClass = this.shippingClass,
+        shippingClassId = this.shippingClassId.toLong(),
         isDownloadable = this.downloadable,
         fileCount = this.getDownloadableFiles().size,
         downloadLimit = this.downloadLimit,

@@ -247,7 +247,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 it.setClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED)
                     viewModel.onEditProductCardClicked(ViewProductDescriptionEditor(
-                                productDescription, getString(R.string.product_description)
+                            productDescription, getString(R.string.product_description)
                     ))
                 }
             }
@@ -415,7 +415,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             mapOf(
                     Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
                     Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
-                    Pair(getString(R.string.product_shipping_class), product.shippingClass)
+                    Pair(getString(R.string.product_shipping_class),
+                            viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId))
             )
         } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
 
@@ -491,10 +492,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             val shippingGroup = mapOf(
                     Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
                     Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
-                    Pair(
-                            getString(R.string.product_shipping_class),
-                            viewModel.getShippingClassBySlug(product.shippingClass)
-                    )
+                    Pair(getString(R.string.product_shipping_class), product.shippingClass)
             )
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
         }
