@@ -115,7 +115,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        checkImageUploads(remoteProductId)
     }
 
     fun initialisePricing() {
@@ -362,7 +361,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null,
         shippingClass: String? = null,
-        images: List<Image>? = null
+        images: List<Image>? = null,
+        shippingClassId: Long? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -385,6 +385,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     height = height ?: product.height,
                     weight = weight ?: product.weight,
                     shippingClass = shippingClass ?: product.shippingClass,
+                    shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
@@ -426,6 +427,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         launch {
+            // fetch product
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
                 updateProductState(productInDb)
@@ -537,17 +539,18 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Fetch the shipping class name of a product based on the slug
+     * Fetch the shipping class name of a product based on the remote shipping class id
      */
-    fun getShippingClassBySlug(slug: String): String {
-        val shippingClassList = productRepository.getProductShippingClassesForSite()
-        return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
-    }
+    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+                    ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(storedProduct: Product) {
         val updatedProduct = viewState.productDraft?.let {
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.productDraft)
         } ?: storedProduct
+
+        loadProductTaxAndShippingClassDependencies(updatedProduct)
 
         val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
         val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
@@ -562,6 +565,20 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
+    }
+
+    private fun loadProductTaxAndShippingClassDependencies(product: Product) {
+        launch {
+            // Fetch current site's shipping class only if a shipping class is assigned to the product and if
+            // the shipping class is not available in the local db
+            val shippingClassId = product.shippingClassId
+            if (shippingClassId != 0L && productRepository.getProductShippingClassByRemoteId(shippingClassId) == null) {
+                productRepository.fetchProductShippingClassById(shippingClassId)
+            }
+
+            // Pre-load current site's tax class list for use in the product pricing screen
+            productRepository.loadTaxClassesForSite()
+        }
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
