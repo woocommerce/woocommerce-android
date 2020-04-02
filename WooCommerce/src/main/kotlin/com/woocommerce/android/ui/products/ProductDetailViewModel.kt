@@ -336,6 +336,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onSalePriceEntered(inputValue: BigDecimal) {
+        val regularPrice = viewState.productDraft?.regularPrice ?: BigDecimal.ZERO
+        productPricingViewState = if (inputValue > regularPrice) {
+            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
+        } else {
+            updateProductDraft(salePrice = inputValue)
+            productPricingViewState.copy(salePriceErrorMessage = 0)
+        }
+    }
+
     /**
      * Called before entering any product screen to save of copy of the product prior to the user making any
      * changes in that specific screen
@@ -741,7 +751,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val minDate: Date? = null,
         val maxDate: Date? = null,
-        val isRemoveMaxDateButtonVisible: Boolean? = null
+        val isRemoveMaxDateButtonVisible: Boolean? = null,
+        val salePriceErrorMessage: Int? = null
     ) : Parcelable
 
     @Parcelize
