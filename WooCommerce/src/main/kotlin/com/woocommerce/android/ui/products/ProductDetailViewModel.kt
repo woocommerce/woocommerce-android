@@ -552,7 +552,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId).name
+            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
                     ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(storedProduct: Product) {
