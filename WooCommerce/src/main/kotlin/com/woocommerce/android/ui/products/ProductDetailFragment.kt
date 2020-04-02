@@ -134,7 +134,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
-            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageGallery.height
         } else {
             skeletonView.hide()
         }
