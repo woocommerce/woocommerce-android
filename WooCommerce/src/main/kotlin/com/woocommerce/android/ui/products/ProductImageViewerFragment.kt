@@ -3,12 +3,13 @@ package com.woocommerce.android.ui.products
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
@@ -16,7 +17,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.transition.ChangeBounds
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
@@ -29,12 +29,14 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     companion object {
         private const val KEY_REMOTE_MEDIA_ID = "media_id"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
+        private const val TOOLBAR_FADE_DELAY_MS = 2500L
     }
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
+    private val fadeOutToolbarHandler = Handler()
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
@@ -44,8 +46,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.remoteMediaId
 
-        setHasOptionsMenu(true)
-        sharedElementEnterTransition = ChangeBounds()
+        setHasOptionsMenu(false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,11 +58,25 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         setupViewPager()
 
+        iconBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            iconTrash.setOnClickListener {
+                confirmRemoveProductImage()
+            }
+        } else {
+            iconTrash.visibility = View.GONE
+        }
+
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRMATION_SHOWING)) {
                 confirmRemoveProductImage()
             }
         }
+
+        showToolbar(true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -69,29 +84,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
         outState.putBoolean(KEY_IS_CONFIRMATION_SHOWING, isConfirmationShowing)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            inflater.inflate(R.menu.menu_trash, menu)
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_trash -> {
-                confirmRemoveProductImage()
-                true
-            } else -> {
-                super.onOptionsItemSelected(item)
-            }
-        }
-    }
-
     override fun onRequestAllowBackPress() = true
-
-    override fun onImageLoadError() {
-        uiMessageResolver.showSnack(R.string.error_loading_image)
-    }
 
     private fun setupViewPager() {
         resetAdapter()
@@ -100,6 +93,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
+                showToolbar(true)
                 // remember this image id so we can return to it upon rotation, and so
                 // we use the right image if the user requests to remove it
                 remoteMediaId = pagerAdapter.images[position].id
@@ -167,6 +161,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
                     if (newImageCount > 0) {
                         WooAnimUtils.scaleIn(viewPager)
                         resetAdapter()
+                        showToolbar(true)
                     } else {
                         findNavController().navigateUp()
                     }
@@ -174,6 +169,55 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             })
             start()
         }
+    }
+
+    private fun showToolbar(show: Boolean) {
+        if (isAdded) {
+            if ((show && fakeToolbar.visibility == View.VISIBLE) || (!show && fakeToolbar.visibility != View.VISIBLE)) {
+                return
+            }
+
+            // remove the current fade-out runnable and start a new one to hide the toolbar shortly after we show it
+            fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
+            if (show) {
+                fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
+            }
+
+            @AnimRes val animRes = if (show) {
+                R.anim.toolbar_fade_in_and_down
+            } else {
+                R.anim.toolbar_fade_out_and_up
+            }
+
+            val listener = object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation) {
+                    if (show) fakeToolbar.visibility = View.VISIBLE
+                }
+                override fun onAnimationEnd(animation: Animation) {
+                    if (!show) fakeToolbar.visibility = View.GONE
+                }
+                override fun onAnimationRepeat(animation: Animation) {
+                    // noop
+                }
+            }
+
+            AnimationUtils.loadAnimation(requireActivity(), animRes)?.let { anim ->
+                anim.setAnimationListener(listener)
+                fakeToolbar.startAnimation(anim)
+            }
+        }
+    }
+
+    private val fadeOutToolbarRunnable = Runnable {
+        showToolbar(false)
+    }
+
+    override fun onImageTapped() {
+        showToolbar(true)
+    }
+
+    override fun onImageLoadError() {
+        uiMessageResolver.showSnack(R.string.error_loading_image)
     }
 
     internal inner class ImageViewerAdapter(fm: FragmentManager, val images: ArrayList<Product.Image>) :
@@ -193,6 +237,11 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         override fun getCount(): Int {
             return images.size
+        }
+
+        override fun setPrimaryItem(container: ViewGroup, position: Int, item: Any) {
+            super.setPrimaryItem(container, position, item)
+            (item as? ImageViewerFragment)?.setImageListener(this@ProductImageViewerFragment)
         }
     }
 }

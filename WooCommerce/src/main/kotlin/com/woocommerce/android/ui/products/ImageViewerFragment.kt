@@ -22,6 +22,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         private const val KEY_IMAGE_URL = "image_url"
 
         interface ImageViewerListener {
+            fun onImageTapped()
             fun onImageLoadError()
         }
 
@@ -37,6 +38,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     }
 
     private lateinit var imageUrl: String
+    private var imageListener: ImageViewerListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,9 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loadImage()
+        photoView.setOnPhotoTapListener { _, _, _ ->
+            imageListener?.onImageTapped()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -60,6 +65,10 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    fun setImageListener(listener: ImageViewerListener) {
+        imageListener = listener
     }
 
     private fun loadImage() {
@@ -85,7 +94,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-        (activity as? ImageViewerListener)?.onImageLoadError()
+        imageListener?.onImageLoadError()
         return false
     }
 

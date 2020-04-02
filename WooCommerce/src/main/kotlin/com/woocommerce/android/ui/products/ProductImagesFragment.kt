@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
@@ -117,16 +116,10 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        val transitionName = getString(R.string.shared_element_transition_name)
-        imageView.transitionName = transitionName
-        val extras = FragmentNavigatorExtras(
-                imageView to transitionName
-        )
-
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
                 image.id
         )
-        findNavController().navigate(action, extras)
+        findNavController().navigate(action)
     }
 
     private fun showImageSourceDialog() {

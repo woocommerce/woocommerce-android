@@ -144,7 +144,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private fun onImageClicked(position: Int, imageView: View) {
         val viewType = adapter.getItemViewType(position)
         if (viewType == VIEW_TYPE_IMAGE) {
-            imageView.transitionName = "shared_element$position"
             listener.onGalleryImageClicked(adapter.getImage(position), imageView)
         } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
             listener.onGalleryAddImageClicked()
