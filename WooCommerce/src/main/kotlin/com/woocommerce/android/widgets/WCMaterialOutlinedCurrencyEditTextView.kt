@@ -54,4 +54,13 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(ctx: Cont
     }
 
     fun getCurrencyEditText() = currency_edit_text
+
+    fun setError(error: String) {
+        currency_edit_text_input.error = error
+    }
+
+    fun clearError() {
+        currency_edit_text_input.error = null
+        currency_edit_text_input.isErrorEnabled = false
+    }
 }
