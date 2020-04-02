@@ -10,13 +10,15 @@
         android:id="@+id/imgPropertyIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_75"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:layout_marginTop="@dimen/major_100"
         android:contentDescription="@string/product_property_edit"
         android:src="@drawable/ic_gridicons_list_checkmark"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/textPropertyName"
         tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -39,7 +41,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginStart="@dimen/minor_00"
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginTop="@dimen/minor_50"
         android:layout_marginBottom="@dimen/major_100"
@@ -48,7 +50,7 @@
         android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@id/ratingBar"
         app:layout_constraintEnd_toStartOf="@+id/imgProperty"
-        app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
+        app:layout_constraintStart_toStartOf="@+id/textPropertyName"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         app:layout_goneMarginTop="@dimen/major_100"
         tools:text="textPropertyValue tis is really long text that will wrap." />
