@@ -173,14 +173,14 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
     private fun showToolbar(show: Boolean) {
         if (isAdded) {
+            if ((show && fakeToolbar.visibility == View.VISIBLE) || (!show && fakeToolbar.visibility != View.VISIBLE)) {
+                return
+            }
+
             // remove the current fade-out runnable and start a new one to hide the toolbar shortly after we show it
             fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
             if (show) {
                 fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
-            }
-
-            if ((show && fakeToolbar.visibility == View.VISIBLE) || (!show && fakeToolbar.visibility != View.VISIBLE)) {
-                return
             }
 
             @AnimRes val animRes = if (show) {
