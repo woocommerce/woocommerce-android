@@ -9,7 +9,6 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.helpers.initCoroutineEngine
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -36,7 +35,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.tools.FormattableContentMapper
+import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 @Module
 abstract class MockedOrderDetailModule {
@@ -100,7 +101,7 @@ abstract class MockedOrderDetailModule {
                             mock(),
                             mock()
                     ),
-                    initCoroutineEngine(),
+                    CoroutineEngine(Unconfined, AppLogWrapper()),
                     RefundMapper()
             )
             val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
