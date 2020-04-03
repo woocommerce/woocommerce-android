@@ -30,6 +30,7 @@ import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
+import com.woocommerce.android.ui.products.ProductType.GROUPED
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
@@ -480,6 +481,7 @@ class ProductDetailNavigationTest : TestBase() {
     @Test
     fun verifyProductDetailShippingInfoDisplayedCorrectlyWhenWidthHeightOnlyAvailable() {
         // inject mock data to product detail
+        val mockProductModel = WcProductTestUtils.generateProductDetail(productType = GROUPED)
         mockProductModel.weight = "4"
         mockProductModel.width = "2"
         mockProductModel.height = "3"
@@ -491,7 +493,7 @@ class ProductDetailNavigationTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // verify caption is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 2))
                 .check(matches(withText(appContext.getString(R.string.product_purchase_details))))
 
         // verify that the shipping card property label = R.string.product_shipping
@@ -505,7 +507,7 @@ class ProductDetailNavigationTest : TestBase() {
         val shippingClass = "${appContext.getString(R.string.product_shipping_class)}: " +
                 mockProductModel.shippingClass
 
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 2))
                 .check(matches(withText("$weight\n$size\n$shippingClass")))
     }
 
