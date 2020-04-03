@@ -1,0 +1,4 @@
+3.9:
+Risolti due arresti anomali: uno che avveniva quando selezionavi due prodotti nell'Elenco dei prodotti contemporaneamente e un altro quando modificavi una quantità in magazzino negativa.
+
+Lavatevi le mani e state tutti al sicuro!
