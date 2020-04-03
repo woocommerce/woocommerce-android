@@ -14,6 +14,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductImagesViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -68,6 +69,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ProductDetailViewState()))
                 .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
+        doReturn(MutableLiveData(ProductImagesViewState()))
+                .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
 
         viewModel = spy(
                 ProductDetailViewModel(

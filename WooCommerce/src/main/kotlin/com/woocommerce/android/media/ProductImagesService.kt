@@ -59,8 +59,8 @@ class ProductImagesService : JobIntentService() {
 
         fun isBusy() = !currentUploads.isEmpty
 
-        fun getUploadingImageUrisForProduct(remoteProductId: Long): List<Uri> {
-            return currentUploads.get(remoteProductId) ?: emptyList()
+        fun getUploadingImageUrisForProduct(remoteProductId: Long): List<Uri>? {
+            return currentUploads.get(remoteProductId)
         }
     }
 
