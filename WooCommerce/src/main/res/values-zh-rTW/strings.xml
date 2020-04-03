@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-20 00:54:04+0000
+Translation-Revision-Date: 2020-04-01 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">請輸入一個數字</string>
+    <string name="product_wip_message">我們已在簡單產品中新增了編輯功能。有更多選項即將登場，敬請密切注意！</string>
+    <string name="product_wip_title">僅可進行有限編輯</string>
     <string name="product_tax_status_shipping">運送方式</string>
     <string name="product_tax_status_taxable">應課稅</string>
     <string name="product_tax_status_none">無</string>
@@ -109,8 +112,6 @@ Language: zh_TW
     <string name="send_verification_email">傳送驗證電子郵件</string>
     <string name="settings_enable_product_teaser_message">在新產品編輯功能推出前搶先測試</string>
     <string name="settings_enable_product_teaser_title">產品編輯</string>
-    <string name="product_wip_message">我們正在新產品籌備階段，因此也許會在產品推出前發佈一些變更 🚀</string>
-    <string name="product_wip_title">正在籌備階段！</string>
     <string name="magic_link_fetch_account_error">擷取帳號時發生錯誤。你可以現在重試，或先關閉並稍後再試。</string>
     <string name="magic_link_update_error">發生錯誤。請登入以繼續</string>
     <string name="login_magic_link_token_updating">正在連線至你的網站…</string>
@@ -145,7 +146,7 @@ Language: zh_TW
     <string name="product_list_empty_search">沒有相符的產品</string>
     <string name="product_list_empty">尚未有任何產品</string>
     <string name="product_stock_count">尚有 %s 件庫存</string>
-    <string name="product_stock_status_instock_with_variations">尚有庫存 \u2022 %d 子類選項</string>
+    <string name="product_stock_status_instock_with_variants">有庫存\u2022 %d 種子類選項</string>
     <string name="product_image_content_description">商品圖片</string>
     <string name="review_list_item_title">%1$s 在%2$s 上留下了評論</string>
     <string name="wc_unapproved">未核准</string>
@@ -501,10 +502,6 @@ Language: zh_TW
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>
     <string name="no_site_error">此地址的網站不是 WordPress 網站。若需要我們連接網站，網站必須使用 WordPress。</string>
     <string name="support_help_center">說明中心</string>
-    <string name="product_name_virtual">虛擬 %s</string>
-    <string name="product_name_grouped">組合 %s</string>
-    <string name="product_name_external">附屬機構 %s</string>
-    <string name="product_name_variable">各式 %s</string>
     <string name="product_backorders_notify">允許，但通知顧客</string>
     <string name="product_backorders_yes">允許</string>
     <string name="product_backorders_no">不允許</string>

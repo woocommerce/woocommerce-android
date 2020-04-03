@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-18 00:54:58+0000
+Translation-Revision-Date: 2020-04-02 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">יש להזין מספר</string>
+    <string name="product_wip_message">הוספנו אפשרות עריכה למוצרים פשוטים. כדאי לשים לב לאפשרויות נוספות שיופיעו בקרוב!</string>
+    <string name="product_wip_title">עריכה מוגבלת זמינה</string>
     <string name="product_tax_status_shipping">משלוח</string>
     <string name="product_tax_status_taxable">חייב במיסים</string>
     <string name="product_tax_status_none">ללא</string>
@@ -109,8 +112,6 @@ Language: he_IL
     <string name="send_verification_email">לשלוח את הודעת האימייל לאישור</string>
     <string name="settings_enable_product_teaser_message">ניתן לעיין באפשרויות העריכה החדשות למוצרים בזמן שאנחנו מכינים הכול להשקה</string>
     <string name="settings_enable_product_teaser_title">עריכת מוצר</string>
-    <string name="product_wip_message">אנחנו עובדים קשה על מקטע המוצרים החדש ולכן, ייתכן שיוצגו שינויים בזמן שאנחנו מכינים הכול להשקה 🚀</string>
-    <string name="product_wip_title">העמוד בתהליך בנייה!</string>
     <string name="magic_link_fetch_account_error">אירעה בעיה בהבאת החשבון שלך. אפשר לנסות שוב עכשיו או לסגור את העמוד ולנסות שוב מאוחר יותר.</string>
     <string name="magic_link_update_error">אירעה שגיאה. עליך להתחבר כדי להמשיך</string>
     <string name="login_magic_link_token_updating">מתחבר לאתר שלך…</string>
@@ -145,7 +146,7 @@ Language: he_IL
     <string name="product_list_empty_search">אין מוצרים תואמים</string>
     <string name="product_list_empty">עדיין אין מוצרים</string>
     <string name="product_stock_count">%s במלאי</string>
-    <string name="product_stock_status_instock_with_variations">במלאי \u2022 %d סוגים</string>
+    <string name="product_stock_status_instock_with_variants">משתנים של \u2022 %d מלאי</string>
     <string name="product_image_content_description">תמונת מוצר</string>
     <string name="review_list_item_title">המשתמש %1$s כתב ביקורת על %2$s</string>
     <string name="wc_unapproved">לא מאושר</string>
@@ -501,10 +502,6 @@ Language: he_IL
     <string name="error_user_username_instead_of_email">יש להיכנס באמצעות שם המשתמש ב-WordPress.com במקום כתובת המייל.</string>
     <string name="no_site_error">כתובת האתר שהזנת אינה עבור אתר ב-WordPress. כדי שנוכל להתחבר לאתר, האתר חייב להשתמש בפלטפורמה של WordPress.</string>
     <string name="support_help_center">מרכז העזרה</string>
-    <string name="product_name_virtual">%s ויזואלי</string>
-    <string name="product_name_grouped">%s מקובץ</string>
-    <string name="product_name_external">%s מקושר</string>
-    <string name="product_name_variable">%s משתנה</string>
     <string name="product_backorders_notify">להרשות אך להודיע ללקוח</string>
     <string name="product_backorders_yes">להרשות</string>
     <string name="product_backorders_no">לא להרשות</string>
