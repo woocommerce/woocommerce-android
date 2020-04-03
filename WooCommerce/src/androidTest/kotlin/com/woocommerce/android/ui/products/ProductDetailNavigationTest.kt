@@ -5,6 +5,8 @@ import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -22,6 +24,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
@@ -110,9 +113,13 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withContentDescription(R.string.abc_action_bar_up_description))
                 .check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+
         // verify that share button is visible
-        onView(withId(R.id.menu_share))
+        onView(withText(R.string.share))
                 .check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
+
+        pressBack()
 
         // Clicking the "up" button in product detail screen returns the user to the product list screen.
         // The Toolbar title changes to "Order #1"
