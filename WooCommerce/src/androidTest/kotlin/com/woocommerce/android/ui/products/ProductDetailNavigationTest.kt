@@ -235,12 +235,12 @@ class ProductDetailNavigationTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // verify that total order view is not displayed for variation products
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1)).check(doesNotExist())
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 1)).check(doesNotExist())
-
-        // verify that reviews view is not displayed for variation products
         onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 2)).check(doesNotExist())
         onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 2)).check(doesNotExist())
+
+        // verify that reviews view is not displayed for variation products
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 3)).check(doesNotExist())
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 3)).check(doesNotExist())
     }
 
     @Test
