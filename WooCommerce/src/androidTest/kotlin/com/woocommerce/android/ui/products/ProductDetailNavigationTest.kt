@@ -555,17 +555,17 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withId(R.id.productList_products))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
-        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 2))
                 .check(matches(withText(appContext.getString(R.string.product_purchase_details))))
 
         // verify that the download card property label = R.string.product_downloads
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 3))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 5))
                 .check(matches(withText(appContext.getString(R.string.product_downloads))))
 
         // verify that the shipping card pricing text is displayed correctly
         val downloadableFiles = mockProductModel.getDownloadableFiles()
         val count = "${appContext.getString(R.string.product_downloadable_files)}: ${downloadableFiles.size}"
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 4))
                 .check(matches(withText(count)))
     }
 
