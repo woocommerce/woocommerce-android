@@ -278,8 +278,8 @@ class ProductDetailNavigationTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // verify that reviews view is hidden
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 2)).check(doesNotExist())
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 2)).check(doesNotExist())
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 4)).check(doesNotExist())
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 4)).check(doesNotExist())
     }
 
     @Test
