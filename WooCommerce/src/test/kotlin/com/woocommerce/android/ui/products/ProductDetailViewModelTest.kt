@@ -55,7 +55,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productWithParameters = ProductDetailViewState(
             productDraft = product,
             storedProduct = product,
-            isSkeletonShown = false,
+            isSkeletonShown = null,
             uploadingImageUris = null,
             weightWithUnits = "10kg",
             sizeWithUnits = "1 x 2 x 3 cm",
