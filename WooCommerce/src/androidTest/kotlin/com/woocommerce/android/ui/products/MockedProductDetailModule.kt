@@ -9,18 +9,11 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
-import org.wordpress.android.fluxc.model.WCProductModel
 
 @Module
 internal abstract class MockedProductDetailModule {
     @Module
     companion object {
-        private var product: WCProductModel? = null
-
-        fun setMockProduct(product: WCProductModel) {
-            this.product = product
-        }
-
         @JvmStatic
         @Provides
         fun provideDefaultArgs(): Bundle? {

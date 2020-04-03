@@ -7,11 +7,12 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.WcProductTestUtils.generateProductDetail
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
 
-class MockedProductDetailRepository @Inject constructor(
+class MockedProductDetailRepository constructor(
     dispatcher: Dispatcher,
     productStore: WCProductStore,
     selectedSite: SelectedSite,
@@ -22,12 +23,14 @@ class MockedProductDetailRepository @Inject constructor(
         selectedSite,
         taxStore
 ) {
+    var product: Product? = null
+
     override suspend fun fetchProduct(remoteProductId: Long): Product? {
         return getProduct(remoteProductId)
     }
 
     override fun getProduct(remoteProductId: Long): Product? {
-        return generateProductDetail().toAppModel()
+        return product ?: generateProductDetail().toAppModel()
     }
 
     override suspend fun fetchProductShippingClassById(remoteShippingClassId: Long): ShippingClass? {

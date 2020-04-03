@@ -25,6 +25,7 @@ import javax.inject.Singleton
         ReleaseWCNetworkModule::class,
         ReleaseOkHttpClientModule::class,
         MockedActivityBindingModule::class,
+        MockedProductDetailRepositoryModule::class,
         MockedSelectedSiteModule::class,
         FCMServiceModule::class,
         LoginAnalyticsModule::class,
