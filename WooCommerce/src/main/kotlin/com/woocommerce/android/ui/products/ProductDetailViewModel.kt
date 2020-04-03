@@ -15,10 +15,15 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -44,7 +49,9 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.util.DateTimeUtils
 import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Date
@@ -57,15 +64,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
-
-    private var remoteProductId = 0L
 
     /**
      * Fetch product related properties (currency, product dimensions) for the site since we use this
@@ -91,11 +97,17 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
+    // view state for the product images screen
+    final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
+    private var productImagesViewState by productImagesViewStateData
+
     init {
         EventBus.getDefault().register(this)
     }
 
     fun getProduct() = viewState
+
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
         return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
@@ -103,7 +115,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        checkUploads()
     }
 
     fun initialisePricing() {
@@ -128,7 +139,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ViewProductImages(it, image, selectedImage))
@@ -179,6 +190,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitShipping -> {
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
+            }
+            is ExitImages -> {
+                // TODO: eventName = ??
+                hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -231,11 +246,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
      * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
-     * i.e. viewState.product != viewState.storedProduct and viewState.product != viewState.cachedProduct
      *
      * For the product detail screen, the discard dialog should only be displayed if there are changes to the
-     * [Product] model locally, that still need to be saved to the backend. i.e.
-     * viewState.product != viewState.storedProduct
+     * [Product] model locally, that still need to be saved to the backend.
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated
@@ -246,7 +259,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
-        return if (isProductUpdated == true && event.shouldShowDiscardDialog) {
+        if (isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
@@ -261,9 +274,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                         }
                     }
             ))
-            false
+            return false
+        } else if (event is ExitProductDetail && ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
+            // images can't be assigned to the product until they finish uploading so ask whether to discard images.
+            triggerEvent(ShowDiscardDialog(
+                    messageId = string.discard_images_message,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(ExitProduct)
+                    }
+            ))
+            return false
         } else {
-            true
+            return true
         }
     }
 
@@ -314,6 +336,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onSalePriceEntered(inputValue: BigDecimal) {
+        val regularPrice = viewState.productDraft?.regularPrice ?: BigDecimal.ZERO
+        productPricingViewState = if (inputValue > regularPrice) {
+            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
+        } else {
+            updateProductDraft(salePrice = inputValue)
+            productPricingViewState.copy(salePriceErrorMessage = 0)
+        }
+    }
+
     /**
      * Called before entering any product screen to save of copy of the product prior to the user making any
      * changes in that specific screen
@@ -346,6 +378,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null,
         shippingClass: String? = null,
+        images: List<Image>? = null,
         shippingClassId: Long? = null
     ) {
         viewState.productDraft?.let { product ->
@@ -359,7 +392,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     soldIndividually = soldIndividually ?: product.soldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = viewState.storedProduct?.images ?: product.images,
+                    images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
@@ -405,8 +438,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun loadProduct(remoteProductId: Long) {
-        val shouldFetch = remoteProductId != this.remoteProductId
-        this.remoteProductId = remoteProductId
+        // Pre-load current site's tax class list for use in the product pricing screen
+        launch(dispatchers.main) {
+            productRepository.loadTaxClassesForSite()
+        }
 
         launch {
             // fetch product
@@ -414,6 +449,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (productInDb != null) {
                 updateProductState(productInDb)
 
+                val shouldFetch = remoteProductId != getRemoteProductId()
                 val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
                 if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
@@ -454,7 +490,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
+    fun isUploadingImages(remoteProductId: Long) = ProductImagesService.isUploadingForProduct(remoteProductId)
 
     /**
      * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
@@ -468,9 +504,26 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun checkUploads() {
+    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
+            return
+        }
+        if (ProductImagesService.isBusy()) {
+            triggerEvent(ShowSnackbar(string.product_image_service_busy))
+            return
+        }
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
+    }
+
+    /**
+     * Checks whether product images are uploading and ensures the view state reflects any currently
+     * uploading images
+     */
+    private fun checkImageUploads(remoteProductId: Long) {
         val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
         viewState = viewState.copy(uploadingImageUris = uris)
+        productImagesViewState = productImagesViewState.copy(isUploadingImages = uris.isNotEmpty())
     }
 
     /**
@@ -482,7 +535,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (productRepository.updateProduct(product)) {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 viewState = viewState.copy(productDraft = null, isProductUpdated = false, isProgressDialogShown = false)
-                loadProduct(remoteProductId)
+                loadProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
                 viewState = viewState.copy(isProgressDialogShown = false)
@@ -552,8 +605,26 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * This event may happen if the user uploads or removes an image from the images fragment and returns
-     * to the detail fragment before the request completes
+     * The list of product images has started uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
+        checkImageUploads(event.remoteProductId)
+    }
+
+    /**
+     * The list of product images has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        loadProduct(event.remoteProductId)
+        checkImageUploads(event.remoteProductId)
+    }
+
+    /**
+     * A single product image has finished uploading
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -561,9 +632,47 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            loadProduct(remoteProductId)
+            event.media?.let {
+                addProductImageToDraft(it)
+            }
         }
-        checkUploads()
+        checkImageUploads(getRemoteProductId())
+    }
+
+    /**
+     * Called after product image has been uploaded to add the uploaded image to the draft product
+     */
+    fun addProductImageToDraft(media: MediaModel) {
+        // create a new image list and add the passed media first...
+        val imageList = ArrayList<Image>().also {
+            it.add(
+                    Image
+                    (
+                            media.mediaId,
+                            media.fileName,
+                            media.url,
+                            DateTimeUtils.dateFromIso8601(media.uploadDate)
+                    )
+            )
+        }
+
+        // ...then add the existing product images to the new list...
+        viewState.productDraft?.let {
+            imageList.addAll(it.images)
+        }
+
+        // ...and then update the draft with the new list
+        updateProductDraft(images = imageList)
+    }
+
+    /**
+     * Removes a single product image from the product draft
+     */
+    fun removeProductImageFromDraft(remoteMediaId: Long) {
+        viewState.productDraft?.let { product ->
+            val imageList = product.images.filter { it.id != remoteMediaId }
+            updateProductDraft(images = imageList)
+        }
     }
 
     /**
@@ -578,6 +687,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
@@ -638,7 +748,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val minDate: Date? = null,
         val maxDate: Date? = null,
-        val isRemoveMaxDateButtonVisible: Boolean? = null
+        val isRemoveMaxDateButtonVisible: Boolean? = null,
+        val salePriceErrorMessage: Int? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductImagesViewState(
+        val isUploadingImages: Boolean = false
     ) : Parcelable
 
     @AssistedInject.Factory

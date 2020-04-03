@@ -123,6 +123,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                     View.GONE
                 }
             }
+            new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -155,7 +156,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             initialiseCurrencyEditText(currency, decimals, currencyFormatter)
             product.salePrice?.let { setText(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.updateProductDraft(salePrice = it)
+                viewModel.onSalePriceEntered(it)
             })
         }
 
@@ -256,6 +257,16 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                         product_tax_class.getText()
                 ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
             }
+        }
+    }
+
+    private fun displaySalePriceError(messageId: Int) {
+        if (messageId != 0) {
+            product_sale_price.setError(getString(messageId))
+            enablePublishMenuItem(false)
+        } else {
+            product_sale_price.clearError()
+            enablePublishMenuItem(true)
         }
     }
 

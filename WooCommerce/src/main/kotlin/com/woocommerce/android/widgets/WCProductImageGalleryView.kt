@@ -126,21 +126,24 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     /**
      * Show upload placeholders for the passed local image Uris
      */
-    fun setPlaceholderImageUris(imageUriList: List<Uri>) {
+    fun setPlaceholderImageUris(imageUriList: List<Uri>?) {
         val placeholders = ArrayList<Product.Image>()
-        for (index in imageUriList.indices) {
-            // use a negative id so we can check it in isPlaceholder() below
-            val id = (-index - 1).toLong()
-            // set the image src to this uri so we can preview it while uploading
-            placeholders.add(0, Product.Image(id, "", imageUriList[index].toString(), Date()))
+
+        imageUriList?.let { images ->
+            for (index in images.indices) {
+                // use a negative id so we can check it in isPlaceholder() below
+                val id = (-index - 1).toLong()
+                // set the image src to this uri so we can preview it while uploading
+                placeholders.add(0, Product.Image(id, "", images[index].toString(), Date()))
+            }
         }
+
         adapter.setPlaceholderImages(placeholders)
     }
 
     private fun onImageClicked(position: Int, imageView: View) {
         val viewType = adapter.getItemViewType(position)
         if (viewType == VIEW_TYPE_IMAGE) {
-            imageView.transitionName = "shared_element$position"
             listener.onGalleryImageClicked(adapter.getImage(position), imageView)
         } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
             listener.onGalleryAddImageClicked()

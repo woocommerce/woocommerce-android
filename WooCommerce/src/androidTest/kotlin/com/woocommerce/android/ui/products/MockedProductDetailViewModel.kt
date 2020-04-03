@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -16,6 +17,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
     productRepository: MockedProductDetailRepository,
     networkStatus: NetworkStatus,
     currencyFormatter: CurrencyFormatter,
+    productImagesServiceWrapper: ProductImagesServiceWrapper,
     @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
         arg0,
@@ -24,7 +26,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         productRepository,
         networkStatus,
         currencyFormatter,
-        wooCommerceStore
+        wooCommerceStore,
+        productImagesServiceWrapper
 ) {
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<MockedProductDetailViewModel>
