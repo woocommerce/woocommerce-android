@@ -379,16 +379,14 @@ class ProductDetailNavigationTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // verify caption is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 1))
-                .check(matches(withText(appContext.getString(R.string.product_pricing_and_inventory))))
-
-        // verify that the pricing card property label = R.string.product_sku
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 4))
-                .check(matches(withText(appContext.getString(R.string.product_sku))))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 3))
+                .check(matches(withText(appContext.getString(R.string.product_inventory))))
 
         // verify that the pricing card sku text is displayed correctly
         onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 2))
-                .check(matches(withText(mockProductModel.sku)))
+                .check(matches(withText(
+                        appContext.getString(R.string.product_sku) + ": " + mockProductModel.sku
+                )))
     }
 
     @Test
