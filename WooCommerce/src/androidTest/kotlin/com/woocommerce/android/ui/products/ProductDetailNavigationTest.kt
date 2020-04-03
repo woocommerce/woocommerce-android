@@ -143,25 +143,12 @@ class ProductDetailNavigationTest : TestBase() {
         // since image is available, the imageView should be visible
         onView(withId(R.id.imageGallery)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
-        // verify that product title label is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 0))
-                .check(matches(withText(appContext.getString(R.string.product_name))))
-
-        // verify that total orders label is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 1))
-                .check(matches(withText(appContext.getString(R.string.product_total_orders))))
-
         // verify that review label is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 2))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 1))
                 .check(matches(withText(appContext.getString(R.string.product_reviews))))
 
         // verify that product title is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 0))
-                .check(matches(withText(mockProductModel.name)))
-
-        // verify that total orders is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
-                .check(matches(withText(mockProductModel.totalSales.toString())))
+        onView(withId(R.id.editText)).check(matches(withText(mockProductModel.name)))
     }
 
     @Test
