@@ -49,7 +49,7 @@ android {
         } else {
             versionName "3.9"
         }
-        versionCode 118
+        versionCode 119
 
         minSdkVersion 21
         targetSdkVersion 29
