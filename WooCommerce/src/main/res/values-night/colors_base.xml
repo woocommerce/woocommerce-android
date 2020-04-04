@@ -63,6 +63,22 @@
     <color name="product_status_fg_pending">@color/woo_orange_30</color>
 
     <!--
+        Aztec Editor
+    -->
+    <color name="editor_attribute_color">@color/color_secondary</color>
+    <color name="editor_bullet_color">@color/color_on_surface</color>
+    <color name="editor_code_bg_color">@android:color/transparent</color>
+    <color name="editor_code_fg_color">@color/color_on_surface</color>
+    <color name="editor_link_color">@color/color_primary</color>
+    <color name="editor_preformat_bg_color">@color/woo_white</color>
+    <color name="editor_preformat_fg_color">@color/color_on_surface_high</color>
+    <color name="editor_quote_bg_color">@color/woo_blue_30</color>
+    <color name="editor_quote_fg_color">@color/color_on_surface_high</color>
+    <color name="editor_tag_color">@color/color_primary</color>
+    <color name="editor_text_color">@color/color_on_surface_high</color>
+    <color name="editor_text_hint_color">@color/color_on_surface_disabled</color>
+
+    <!--
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>

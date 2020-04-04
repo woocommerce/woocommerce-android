@@ -457,4 +457,53 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginTop">@dimen/minor_75</item>
         <item name="android:layout_marginBottom">@dimen/minor_75</item>
     </style>
+
+
+    <!--
+        Aztec Editor Styles
+    -->
+    <style name="Woo.AztecText">
+        <item name="android:gravity">top|start</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/major_100</item>
+        <item name="android:paddingBottom">@dimen/major_100</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="backgroundColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Woo.AztecText.VisualEditor">
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="bulletColor">@color/editor_bullet_color</item>
+        <item name="codeBackground">@color/editor_code_bg_color</item>
+        <item name="codeColor">@color/editor_code_fg_color</item>
+        <item name="lineSpacingExtra">@dimen/line_spacing_extra_50</item>
+        <item name="linkColor">@color/editor_link_color</item>
+        <item name="linkUnderline">true</item>
+        <item name="historyEnable">true</item>
+        <item name="historySize">10</item>
+        <item name="preformatBackground">@color/editor_preformat_bg_color</item>
+        <item name="preformatBackgroundAlpha">15%</item>
+        <item name="preformatColor">@color/editor_preformat_fg_color</item>
+        <item name="quoteBackground">@color/editor_quote_bg_color</item>
+        <item name="quoteBackgroundAlpha">25%</item>
+        <item name="quoteColor">@color/editor_quote_fg_color</item>
+        <item name="quoteMargin">0dp</item>
+        <item name="textColor">@color/editor_text_color</item>
+        <item name="textColorHint">@color/editor_text_hint_color</item>
+    </style>
+
+    <style name="Woo.AztecText.SourceEditor">
+        <item name="android:inputType">textNoSuggestions|textMultiLine</item>
+        <item name="attributeColor">@color/editor_attribute_color</item>
+        <item name="codeBackgroundColor">@color/editor_code_bg_color</item>
+        <item name="codeTextColor">@color/editor_code_fg_color</item>
+        <item name="tagColor">@color/editor_tag_color</item>
+    </style>
+
+    <style name="Woo.AztecToolbar">
+        <item name="advanced">false</item>
+        <item name="mediaToolbarAvailable">false</item>
+    </style>
 </resources>
