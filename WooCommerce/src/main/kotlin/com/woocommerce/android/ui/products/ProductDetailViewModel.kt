@@ -521,9 +521,12 @@ class ProductDetailViewModel @AssistedInject constructor(
      * uploading images
      */
     private fun checkImageUploads(remoteProductId: Long) {
-        val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
-        viewState = viewState.copy(uploadingImageUris = uris)
-        productImagesViewState = productImagesViewState.copy(isUploadingImages = uris.isNotEmpty())
+        val isUploadingImages = ProductImagesService.isUploadingForProduct(remoteProductId)
+        if (isUploadingImages != productImagesViewState.isUploadingImages) {
+            val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
+            viewState = viewState.copy(uploadingImageUris = uris)
+            productImagesViewState = productImagesViewState.copy(isUploadingImages = isUploadingImages)
+        }
     }
 
     /**
@@ -582,6 +585,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
+
+        // make sure to remember uploading images
+        checkImageUploads(getRemoteProductId())
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {

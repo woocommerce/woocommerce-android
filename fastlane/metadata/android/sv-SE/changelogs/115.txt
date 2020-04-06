@@ -1,2 +1,0 @@
-3.8:
-Räck upp handen om du vill kunna redigera produkter när du är på språng! För att prova de tillgängliga redigeringsalternativen, aktivera Produktredigering i Inställningar > Beta-funktioner.

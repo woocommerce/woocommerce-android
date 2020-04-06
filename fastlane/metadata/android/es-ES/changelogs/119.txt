@@ -1,0 +1,4 @@
+3.9:
+Se han corregido dos errores: uno que se producía al seleccionar dos productos en la lista de productos a la vez, y otro que se producía al editar una cantidad del inventario negativa.
+
+¡Cuidaos y lavaos las manos!
