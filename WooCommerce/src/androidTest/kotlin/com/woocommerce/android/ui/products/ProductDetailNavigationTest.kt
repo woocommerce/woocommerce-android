@@ -438,11 +438,11 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withId(R.id.productList_products))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
-        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 2))
                 .check(matches(withText(appContext.getString(R.string.product_purchase_details))))
 
         // verify that the download card property label = R.string.product_downloads
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 3))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 5))
                 .check(matches(withText(appContext.getString(R.string.product_downloads))))
 
         // verify that the shipping card pricing text is displayed correctly
@@ -456,7 +456,7 @@ class ProductDetailNavigationTest : TestBase() {
                 appContext.getString(R.string.product_download_expiry_days),
                 mockProductModel.downloadExpiry
         )}"
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 4))
                 .check(matches(withText("$count\n$limit\n$expiry")))
     }
 
