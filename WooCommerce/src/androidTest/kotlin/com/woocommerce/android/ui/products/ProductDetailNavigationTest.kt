@@ -176,14 +176,10 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withId(R.id.productList_products))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
-        // verify that `product view on store` is displayed
-        onView(withId(R.id.textLink)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
-        // verify that `product view on store` text is displayed correctly
-        onView(withId(R.id.textLink)).check(matches(withText(appContext.getString(R.string.product_view_in_store))))
-
-        // click the view product in store button
-        onView(withId(R.id.textLink)).perform(WCMatchers.scrollTo(), click())
+        // click the view product on store menu button
+        onView(withText(R.string.product_view_in_store)).perform(click())
 
         // check if webview intent is opened for the given url
         Intents.intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
