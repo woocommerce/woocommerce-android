@@ -147,7 +147,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         showOptionsMenu(true)
 
         if (!viewModel.isSearching()) {
-            viewModel.loadProducts()
+            viewModel.reloadProductsFromDb()
         }
     }
 

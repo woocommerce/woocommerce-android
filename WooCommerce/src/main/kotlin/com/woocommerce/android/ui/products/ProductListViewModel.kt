@@ -114,6 +114,10 @@ class ProductListViewModel @AssistedInject constructor(
         loadProducts()
     }
 
+    final fun reloadProductsFromDb() {
+        _productList.value = productRepository.getProductList()
+    }
+
     final fun loadProducts(loadMore: Boolean = false) {
         if (isLoading()) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
