@@ -152,66 +152,6 @@ class ProductDetailNavigationTest : TestBase() {
     }
 
     @Test
-    fun verifyProductDetailTotalOrderCountLessThan200FormattedCorrectly() {
-        // inject mock data to product detail
-        mockProductModel.totalSales = 200
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that total order count  = 200, is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
-                .check(matches(withText(mockProductModel.totalSales.toString())))
-    }
-
-    @Test
-    fun verifyProductDetailTotalOrderCountLessThan2000FormattedCorrectly() {
-        // inject mock data to product detail
-        mockProductModel.totalSales = 2000
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that total order count  = 200, is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
-                .check(matches(withText("2k")))
-    }
-
-    @Test
-    fun verifyProductDetailTotalOrderCountLessThan20000FormattedCorrectly() {
-        // inject mock data to product detail
-        mockProductModel.totalSales = 20000
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that total order count  = 200, is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
-                .check(matches(withText("20k")))
-    }
-
-    @Test
-    fun verifyProductDetailTotalOrderCountLessThan2000000FormattedCorrectly() {
-        // inject mock data to product detail
-        mockProductModel.totalSales = 2000000
-        activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
-
-        // click on the first item in product list page
-        onView(withId(R.id.productList_products))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-
-        // verify that total order count  = 200, is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
-                .check(matches(withText("2m")))
-    }
-
-    @Test
     fun verifyProductDetailForVariationProductsDisplayedCorrectly() {
         // inject mock data to product detail
         mockProductModel.type = ProductType.VARIATION.name
