@@ -7,10 +7,8 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.WcProductTestUtils.generateProductDetail
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCTaxStore
-import javax.inject.Inject
 
 class MockedProductDetailRepository constructor(
     dispatcher: Dispatcher,
@@ -38,7 +36,7 @@ class MockedProductDetailRepository constructor(
     }
 
     override fun getProductShippingClassByRemoteId(remoteShippingClassId: Long): ShippingClass? {
-        return ShippingClass()
+        return ShippingClass(remoteShippingClassId.toString(), remoteShippingClassId.toString(), remoteShippingClassId)
     }
 
     override fun getTaxClassesForSite(): List<TaxClass> {

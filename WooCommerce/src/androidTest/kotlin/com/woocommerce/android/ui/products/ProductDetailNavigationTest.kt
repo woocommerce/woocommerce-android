@@ -319,6 +319,8 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withId(R.id.productList_products))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+
         // click the share button
         onView(withId(R.id.menu_share)).perform(click())
 
@@ -440,28 +442,25 @@ class ProductDetailNavigationTest : TestBase() {
         mockProductModel.height = "3"
         mockProductModel.length = "1"
         mockProductModel.shippingClass = "5"
+        mockProductModel.shippingClassId = 5
         activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
 
         // click on the first item in product list page
         onView(withId(R.id.productList_products))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
-        // verify caption is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 1))
-                .check(matches(withText(appContext.getString(R.string.product_purchase_details))))
-
         // verify that the shipping card property label = R.string.product_shipping
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 3))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 4))
                 .check(matches(withText(appContext.getString(R.string.product_shipping))))
 
         // verify that the shipping card pricing text is displayed correctly
         val weight = "${appContext.getString(R.string.product_weight)}: ${mockProductModel.weight}oz"
-        val size = "${appContext.getString(R.string.product_size)}: " +
+        val size = "${appContext.getString(R.string.product_dimensions)}: " +
                 "${mockProductModel.length} x ${mockProductModel.width} x ${mockProductModel.height} in"
         val shippingClass = "${appContext.getString(R.string.product_shipping_class)}: " +
                 mockProductModel.shippingClass
 
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 3))
                 .check(matches(withText("$weight\n$size\n$shippingClass")))
     }
 
@@ -473,6 +472,7 @@ class ProductDetailNavigationTest : TestBase() {
         mockProductModel.width = "2"
         mockProductModel.height = "3"
         mockProductModel.shippingClass = "5"
+        mockProductModel.shippingClassId = 5
         activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
 
         // click on the first item in product list page
