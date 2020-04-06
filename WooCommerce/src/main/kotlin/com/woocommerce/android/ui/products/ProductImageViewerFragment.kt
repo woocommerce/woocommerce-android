@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
@@ -121,7 +122,8 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
      */
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
-        confirmationDialog = AlertDialog.Builder(ContextThemeWrapper(requireActivity(), R.style.AppTheme))
+        confirmationDialog = MaterialAlertDialogBuilder(ContextThemeWrapper(
+                requireActivity(), R.style.Theme_Woo_Dialog))
                 .setMessage(R.string.product_image_remove_confirmation)
                 .setCancelable(true)
                 .setPositiveButton(R.string.remove) { _, _ ->
