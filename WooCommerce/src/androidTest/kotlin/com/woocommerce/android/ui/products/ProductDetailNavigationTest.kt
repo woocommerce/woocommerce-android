@@ -218,14 +218,14 @@ class ProductDetailNavigationTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // verify that reviews view is displayed correctly
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 2))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyName), 1))
                 .check(matches(withText(appContext.getString(R.string.product_reviews))))
 
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 2))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 4))
                 .check(matches(withText(mockProductModel.ratingCount.toString())))
 
         // verify the rating bar displays correct value
-        onView(WCMatchers.matchesWithIndex(withId(R.id.ratingBar), 2))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.ratingBar), 4))
                 .check(matches(WCMatchers.matchesRating(mockProductModel.averageRating.toFloat())))
     }
 
