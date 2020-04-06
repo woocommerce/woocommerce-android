@@ -9,7 +9,6 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.Dispatchers
@@ -83,7 +82,14 @@ abstract class MockedOrderFulfillmentModule {
                             ProductRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
                     ),
                     WCRefundStore(
-                            RefundRestClient(mockDispatcher, JetpackTunnelGsonRequestBuilder(), mock(), mock(), mock(), mock()),
+                            RefundRestClient(
+                                    mockDispatcher,
+                                    JetpackTunnelGsonRequestBuilder(),
+                                    mock(),
+                                    mock(),
+                                    mock(),
+                                    mock()
+                            ),
                             CoroutineEngine(Dispatchers.Unconfined, AppLogWrapper()),
                             RefundMapper()
                     ),

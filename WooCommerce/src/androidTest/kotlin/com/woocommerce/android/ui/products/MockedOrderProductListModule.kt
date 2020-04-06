@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -62,7 +60,14 @@ abstract class MockedOrderProductListModule {
                                     )
                             ),
                             WCRefundStore(
-                                    RefundRestClient(mockDispatcher, JetpackTunnelGsonRequestBuilder(), mock(), mock(), mock(), mock()),
+                                    RefundRestClient(
+                                            mockDispatcher,
+                                            JetpackTunnelGsonRequestBuilder(),
+                                            mock(),
+                                            mock(),
+                                            mock(),
+                                            mock()
+                                    ),
                                     CoroutineEngine(Dispatchers.Unconfined, AppLogWrapper()),
                                     RefundMapper()
                             ),
