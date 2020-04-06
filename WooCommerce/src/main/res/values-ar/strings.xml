@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-18 00:54:55+0000
+Translation-Revision-Date: 2020-04-01 00:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">يرجى إدخال رقم</string>
+    <string name="product_wip_message">أضفنا وظائف التحرير إلى المنتجات البسيطة. ترقَّب المزيد من الخيارات قريبًا!</string>
+    <string name="product_wip_title">تتوافر وظائف تحرير محدودة</string>
     <string name="product_tax_status_shipping">الشحن</string>
     <string name="product_tax_status_taxable">خاضع للضريبة</string>
     <string name="product_tax_status_none">لا شيء</string>
@@ -109,8 +112,6 @@ Language: ar
     <string name="send_verification_email">إرسال رسالة تحقق عبر البريد الإلكتروني</string>
     <string name="settings_enable_product_teaser_message">جرِّب وظائف تحرير المنتجات الجديدة عند بدء التشغيل</string>
     <string name="settings_enable_product_teaser_title">تحرير المنتج</string>
-    <string name="product_wip_message">نبذل قصارى جهدنا في قسم المنتجات الجديد لكي تتمكن من رؤية بعض التغييرات عندما نصبح جاهزين للبدء</string>
-    <string name="product_wip_title">العمل قيد التنفيذ!</string>
     <string name="magic_link_fetch_account_error">كانت هناك بعض المشكلات في إحضار الحساب الخاص بك. يمكنك إعادة المحاولة الآن أو الإغلاق والمحاولة مرة أخرى لاحقًا.</string>
     <string name="magic_link_update_error">حدث خطأ. يرجى تسجيل الدخول مجددًا للمتابعة</string>
     <string name="login_magic_link_token_updating">جارٍ الاتصال بموقعك…</string>
@@ -145,7 +146,7 @@ Language: ar
     <string name="product_list_empty_search">لا توجد منتجات متطابقة</string>
     <string name="product_list_empty">لا توجد منتجات حتى الآن</string>
     <string name="product_stock_count">%s متوافرة</string>
-    <string name="product_stock_status_instock_with_variations">\u2022%d من التباينات متوافرة</string>
+    <string name="product_stock_status_instock_with_variants">\u2022 %dمن التباينات متوافرة</string>
     <string name="product_image_content_description">صورة المنتج</string>
     <string name="review_list_item_title">ترك %1$s مراجعة حول %2$s</string>
     <string name="wc_unapproved">غير موافق عليه</string>
@@ -501,10 +502,6 @@ Language: ar
     <string name="error_user_username_instead_of_email">يُرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك على وردبرس.كوم بدلاً من عنوان البريد الإلكتروني.</string>
     <string name="no_site_error">الموقع الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب أن يستخدم وردبرس.</string>
     <string name="support_help_center">مركز المساعدة</string>
-    <string name="product_name_virtual">%s ظاهري</string>
-    <string name="product_name_grouped">%s مجمَّع</string>
-    <string name="product_name_external">%s تابع</string>
-    <string name="product_name_variable">%s متغيِّر</string>
     <string name="product_backorders_notify">اسمح بذلك، ولكن مع تنبيه العميل</string>
     <string name="product_backorders_yes">سماح</string>
     <string name="product_backorders_no">لا تسمح بذلك</string>

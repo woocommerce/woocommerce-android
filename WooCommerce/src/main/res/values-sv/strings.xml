@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-19 00:54:48+0000
+Translation-Revision-Date: 2020-04-02 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">Ange ett nummer</string>
+    <string name="product_wip_message">Vi har lagt till redigeringsfunktioner till enkla produkter. Håll utkik efter fler alternativ snart!</string>
+    <string name="product_wip_title">Begränsad redigering tillgänglig</string>
     <string name="product_tax_status_shipping">Frakt</string>
     <string name="product_tax_status_taxable">Momsbelagd</string>
     <string name="product_tax_status_none">Ingen</string>
@@ -109,8 +112,6 @@ Language: sv_SE
     <string name="send_verification_email">Skicka verifieringsmeddelande via e-post</string>
     <string name="settings_enable_product_teaser_message">Testa den nya produktredigeringsfunktionen då vi snart är klara för lansering</string>
     <string name="settings_enable_product_teaser_title">Produktredigering</string>
-    <string name="product_wip_message">Vi jobbar hårt på den nya Produkter-sektionen så du kan se några ändringar när vi närmar oss lanseringen 🚀</string>
-    <string name="product_wip_title">Arbete pågår!</string>
     <string name="magic_link_fetch_account_error">Det uppstod ett fel när ditt konto skulle hämtas. Du kan försöka igen nu eller stänga och försöka igen senare.</string>
     <string name="magic_link_update_error">Ett fel har uppstått. Logga in för att fortsätta</string>
     <string name="login_magic_link_token_updating">Ansluter till din webbplats …</string>
@@ -145,7 +146,7 @@ Language: sv_SE
     <string name="product_list_empty_search">Inga matchande produkter</string>
     <string name="product_list_empty">Inga produkter ännu</string>
     <string name="product_stock_count">%s i lager</string>
-    <string name="product_stock_status_instock_with_variations">I lager \u2022 %d variationer</string>
+    <string name="product_stock_status_instock_with_variants">I lager \u2022 %d varianter</string>
     <string name="product_image_content_description">Produktbild</string>
     <string name="review_list_item_title">%1$s lämnade en recension om %2$s</string>
     <string name="wc_unapproved">Förkastad</string>
@@ -501,10 +502,6 @@ Language: sv_SE
     <string name="error_user_username_instead_of_email">Logga in med ditt WordPress.com användarnamn istället för din e-postadress.</string>
     <string name="no_site_error">Webbplatsen på denna adress är inte en WordPress-webbplats. För att vi ska kunna ansluta till den måste webbplatsen använda WordPress.</string>
     <string name="support_help_center">Hjälpcenter</string>
-    <string name="product_name_virtual">Virtuell %s</string>
-    <string name="product_name_grouped">Grupperad %s</string>
-    <string name="product_name_external">Dotterbolag %s</string>
-    <string name="product_name_variable">Variabel %s</string>
     <string name="product_backorders_notify">Tillåt, men meddela kunden</string>
     <string name="product_backorders_yes">Tillåt</string>
     <string name="product_backorders_no">Tillåt inte</string>

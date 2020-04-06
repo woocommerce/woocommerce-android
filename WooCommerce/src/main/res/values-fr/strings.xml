@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-20 00:54:04+0000
+Translation-Revision-Date: 2020-04-02 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">Veuillez saisir un numéro.</string>
+    <string name="product_wip_message">Nous avons ajouté la fonctionnalité d\'édition pour des produits simples. N\'hésitez pas à revenir de temps en temps. D\'autres options seront bientôt disponibles !</string>
+    <string name="product_wip_title">Édition limitée disponible</string>
     <string name="product_tax_status_shipping">Expédition</string>
     <string name="product_tax_status_taxable">Taxable</string>
     <string name="product_tax_status_none">Aucune</string>
@@ -109,8 +112,6 @@ Language: fr
     <string name="send_verification_email">Envoyer l\'e-mail de vérification</string>
     <string name="settings_enable_product_teaser_message">Essayer la nouvelle fonctionnalité d’édition de produit dès que nous sommes prêts pour le lancement</string>
     <string name="settings_enable_product_teaser_title">Édition de produit</string>
-    <string name="product_wip_message">Nous nous occupons de la section sur les nouveaux produits. Vous pourrez constater quelques modifications au moment du lancement 🚀</string>
-    <string name="product_wip_title">Tâche en cours !</string>
     <string name="magic_link_fetch_account_error">Une erreur s\'est produite lors de la récupération de votre compte. Vous pouvez recommencer maintenant ou fermer et réessayer ultérieurement.</string>
     <string name="magic_link_update_error">Une erreur inconnue est survenue. Veuillez vous connecter pour continuer.</string>
     <string name="login_magic_link_token_updating">Connexion à votre site en cours…</string>
@@ -145,7 +146,7 @@ Language: fr
     <string name="product_list_empty_search">Aucun produit correspondant</string>
     <string name="product_list_empty">Aucun produit pour le moment</string>
     <string name="product_stock_count">%s en stock</string>
-    <string name="product_stock_status_instock_with_variations">En stock : \u2022 %d variantes</string>
+    <string name="product_stock_status_instock_with_variants">Variantes en stock : \u2022 %d </string>
     <string name="product_image_content_description">Image produit</string>
     <string name="review_list_item_title">%1$s a laissé un avis sur %2$s</string>
     <string name="wc_unapproved">Désapprouvé</string>
@@ -501,10 +502,6 @@ Language: fr
     <string name="error_user_username_instead_of_email">Veuillez vous connecter avec votre nom d\'utilisateur WordPress.com plutôt que votre adresse e-mail.</string>
     <string name="no_site_error">Le site à cette adresse n\'est pas un site WordPress. Le site doit utiliser WordPress pour que nous puissions nous y connecter.</string>
     <string name="support_help_center">Centre d\'aide</string>
-    <string name="product_name_virtual">%s virtuel</string>
-    <string name="product_name_grouped">%s groupé</string>
-    <string name="product_name_external">%s affilié</string>
-    <string name="product_name_variable">%s variable</string>
     <string name="product_backorders_notify">Autoriser, mais avec notification client</string>
     <string name="product_backorders_yes">Autoriser</string>
     <string name="product_backorders_no">Ne pas autoriser</string>

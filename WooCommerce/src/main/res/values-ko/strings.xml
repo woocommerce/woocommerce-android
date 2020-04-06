@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-19 00:54:49+0000
+Translation-Revision-Date: 2020-04-02 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">번호를 입력해 주세요.</string>
+    <string name="product_wip_message">간단한 제품에 편집 기능을 추가했습니다. 더 많은 옵션이 곧 제공됩니다!</string>
+    <string name="product_wip_title">제한적인 편집 가능</string>
     <string name="product_tax_status_shipping">배송</string>
     <string name="product_tax_status_taxable">과세 가능</string>
     <string name="product_tax_status_none">없음</string>
@@ -109,8 +112,6 @@ Language: ko_KR
     <string name="send_verification_email">인증 이메일 보내기</string>
     <string name="settings_enable_product_teaser_message">출시 준비가 완료되면 새 제품 편집 기능을 테스트하세요.</string>
     <string name="settings_enable_product_teaser_title">제품 편집</string>
-    <string name="product_wip_message">새로운 제품 섹션을 최선을 다해 준비하고 있습니다. 출시 준비 과정에서 일부 변경 사항이 발생할 수 있습니다. 🚀</string>
-    <string name="product_wip_title">작업 진행 중!</string>
     <string name="magic_link_fetch_account_error">계정을 가져오는 중에 문제가 발생했습니다. 지금 다시 시도하거나 닫고 나중에 다시 시도할 수 있습니다.</string>
     <string name="magic_link_update_error">오류가 발생했습니다. 계속하려면 로그인하세요.</string>
     <string name="login_magic_link_token_updating">사이트에 연결하는 중…</string>
@@ -145,7 +146,7 @@ Language: ko_KR
     <string name="product_list_empty_search">일치하는 제품이 없음</string>
     <string name="product_list_empty">아직 제품이 없음</string>
     <string name="product_stock_count">%s 재고 있음</string>
-    <string name="product_stock_status_instock_with_variations">재고 있음 \u2022 %d 변형</string>
+    <string name="product_stock_status_instock_with_variants">재고 있음 \u2022 %d 변형</string>
     <string name="product_image_content_description">상품 이미지</string>
     <string name="review_list_item_title">%1$s 님이 %2$s에 대한 검토를 남김</string>
     <string name="wc_unapproved">받아들이지 않기</string>
@@ -501,10 +502,6 @@ Language: ko_KR
     <string name="error_user_username_instead_of_email">이메일 주소가 아닌 워드프레스닷컴 사용자 이름을 사용하여 로그인하세요.</string>
     <string name="no_site_error">이 주소의 사이트는 워드프레스 사이트가 아닙니다. 연결하려면 사이트에서 워드프레스를 사용해야 합니다.</string>
     <string name="support_help_center">도움말 센터</string>
-    <string name="product_name_virtual">가상 %s</string>
-    <string name="product_name_grouped">그룹 %s</string>
-    <string name="product_name_external">제휴사 %s</string>
-    <string name="product_name_variable">옵션 %s</string>
     <string name="product_backorders_notify">허용하지만 고객에게 알림</string>
     <string name="product_backorders_yes">허용</string>
     <string name="product_backorders_no">허용하지 않음</string>

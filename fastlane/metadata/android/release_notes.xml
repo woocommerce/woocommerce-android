@@ -1,68 +1,102 @@
 <ar>
-3.8:
-ارفع يديك إذا كنتَ ترغب في تحرير المنتجات في أثناء التنقل! لتجربة خيارات التحرير المتوافرة، قم بتمكين تحرير المنتجات في الإعدادات > ميزات بيتا.
+3.9:
+تم إصلاح عطلين: أحدهما حدث عند تحديد منتجين في قائمة المنتجات في الوقت نفسه، والآخر حدث عند تحرير كمية مخزون سالبة.
+
+ابقوا بأمان واغسلوا أيديكم جميعًا!
 </ar>
 <de-DE>
-3.8:
-Wer würde Produkte nicht gerne unterwegs bearbeiten können? Wenn du verfügbare Bearbeitungsoptionen ausprobieren möchtest, aktiviere unter „Einstellungen“ > „Betafunktionen“ die Option „Produktbearbeitung“.
+3.9:
+Zwei Abstürze behoben: Einer trat auf, wenn man in der Produktliste zwei Produkte gleichzeitig auswählte, und der andere beim Bearbeiten einer negativen Bestandsmenge.
+
+Bleibt alle gesund und wascht eure Hände!
 </de-DE>
 <es-ES>
-3.8:
-¡Levanta la mano si te gustaría editar productos en cualquier momento y lugar! Para probar las opciones de edición disponibles, activa Edición del producto en Configuración > Funciones beta.
+3.9:
+Se han corregido dos errores: uno que se producía al seleccionar dos productos en la lista de productos a la vez, y otro que se producía al editar una cantidad del inventario negativa.
+
+¡Cuidaos y lavaos las manos!
 </es-ES>
 <fr-FR>
-3.8 :
-Levez la main si vous souhaitez éditer des produits en nomade ! Pour essayer les options d’édition disponibles, activez l’édition de produit dans Paramètres > Fonctionnalités bêta.
+3.9 :
+Résolution de deux incidents : l'un qui se produisait lors de la sélection simultanée de deux produits dans la liste de produits et l'autre qui se produisait lors de la modification d'une quantité en stock négative.
+
+Prenez soin de vous et lavez-vous les mains !
 </fr-FR>
 <iw-IL>
-3.8:
-תמיד רצית לערוך מוצרים מכל מקום? משאלותיך התגשמו! אם ברצונך לנסות את אפשרויות העריכה הזמינות, יש להפעיל את 'עריכת מוצר' במקטע 'הגדרות' > 'תכונות ביתא'.
+3.9:
+תיקנו שתי קריסות: קריסה אחת התרחשה בבחירה של בשני מוצרים ברשימת המוצרים במקביל וקריסה נוספת התרחשה בעריכה של כמות שלילית של מלאי.
+
+רחצו ידיים ושמרו על עצמכם!
 </iw-IL>
 <id>
-3.8:
-Angkat tangan bila Anda ingin menyunting produk di mana saja! Untuk mencoba opsi penyuntingan yang tersedia, aktifkan Penyuntingan Produk di Pengaturan > Fitur Beta.
+3.9:
+Memperbaiki dua crash: crash yang terjadi bila Anda memilih dua produk dalam Daftar Produk di waktu yang bersamaan, dan crash yang terjadi saat menyunting jumlah stok negatif.
+
+Selalu jaga kesehatan dan cuci tangan semuanya!
 </id>
 <it-IT>
-3.8:
-Alza la mano se vorresti modificare i prodotti in viaggio! Per provare le opzioni di modifica disponibili, abilita Modifica del prodotto in Impostazioni > Funzionalità beta.
+3.9:
+Risolti due arresti anomali: uno che avveniva quando selezionavi due prodotti nell'Elenco dei prodotti contemporaneamente e un altro quando modificavi una quantità in magazzino negativa.
+
+Lavatevi le mani e state tutti al sicuro!
 </it-IT>
 <ja-JP>
-3.8:
-外出先でも商品を編集したい人は手を挙げてください !「設定」の「ベータ版の機能」で「商品編集」を有効にすると、編集オプションをお試しいただけます。
+3.9:
+2つのクラッシュを修正しました。1つは商品リストで2つの商品を同時に選択したときに、もう1つは在庫数をマイナスに編集したときに発生していました。
+
+手を洗い、身の安全を守りましょう !
 </ja-JP>
 <ko-KR>
-3.8:
-언제 어디서나 이동 중에도 제품을 편집하고 싶다면 주목해 주세요! 사용 가능한 편집 옵션을 사용해 보려면 설정 > 베타 기능에서 제품 편집을 사용하도록 설정하세요.
+3.9:
+두 가지 충돌이 수정되었습니다. 제품 목록에서 두 개의 제품을 동시에 선택했을 때 발생하는 문제와 음의 재고 수량을 편집할 때 발생하는 문제를 수정했습니다.
+
+모두 안전하게 지내고 손을 자주 씻으세요!
 </ko-KR>
 <nl-NL>
-3.8:
-Steek je hand op als je producten onderweg wilt bewerken! Schakel Productbewerking in Instellingen > Bèta-functies in om beschikbare opties voor bewerken uit te proberen.
+3.9:
+Twee crashes verholpen: een die zich voordeed als je twee producten in de Productlijst samen selecteerde en een andere die zich voordeed als een negatieve voorraad werd bewerkt.
+
+Blijf veilig en was je handen allemaal!
 </nl-NL>
 <pt-BR>
-3.8:
-Levante a mão quem gostaria de editar produtos de onde estiver. Para isso, habilite as opções disponíveis em Configurações > Funcionalidades Beta.
+3.9:
+Correção dos problemas causados ao selecionar dois produtos na Lista de produtos ao mesmo tempo e ao editar uma quantidade de estoque negativa.
+
+Fiquem seguros e lavem suas mãos!
 </pt-BR>
 <ru-RU>
-3.8:
-Поднимите руку, если вы хотите редактировать продукты на ходу! Чтобы попробовать эту функцию, включите редактирование продуктов в меню «Настройки > Бета-функции».
+3.9:
+Исправлено 2 ошибки: первая — при одновременном выборе двух продуктов в списке, а вторая — при изменении отрицательного количества товара в наличии.
+
+Берегите себя и мойте руки!
 </ru-RU>
 <sv-SE>
-3.8:
-Räck upp handen om du vill kunna redigera produkter när du är på språng! För att prova de tillgängliga redigeringsalternativen, aktivera Produktredigering i Inställningar > Beta-funktioner.
+3.9:
+Två krascher har åtgärdats: en som uppstod när två produkter valdes samtidigt i produktlistan och en som uppstod vid redigering av en negativ lagerkvantitet.
+
+Var försiktiga och tvätta händerna, allihopa!
 </sv-SE>
 <tr-TR>
-3.8:
-Hareket halindeyken ürünleri düzenlemek istiyorsanız elinizi kaldırın! Mevcut düzenleme seçeneklerini denemek için Ayarlar > Beta Özellikleri'nde Ürün Düzenleme'yi etkinleştirin.
+3.9:
+İki kilitlenme sorunu düzeltildi: Bu sorunlardan biri, Ürün Listesinde aynı anda iki ürün seçince, diğeri ise negatif bir stok miktarını düzenlerken oluşuyordu.
+
+Herkes güvende kalsın ve ellerini yıkasın!
 </tr-TR>
 <zh-CN>
-3.8：
-如果您想随时随地编辑产品，请告诉我们！要尝试可用的编辑选项，请在“设置”>“测试版功能”中启用“产品编辑”。
+3.9：
+修复了两个崩溃问题：一个是在产品列表中同时选择两个产品时发生，另一个是在编辑负数库存量时发生。
+
+请大家注意安全，清洁双手！
 </zh-CN>
 <zh-TW>
-3.8：
-想隨時隨地編輯產品資訊的舉手！若要試試可用的編輯選項，請在「設定」>「試用功能」中啟用「產品編輯」。
+3.9：
+修復兩種當機情況︰其一是在你於產品清單中同時選取兩個產品時發生，另一種當機情況則會在你編輯負數庫存數量時發生。
+
+各位，請保持安全並勤洗手！
 </zh-TW>
 <en-US>
-3.8:
-Raise your hand if you’d like to edit products on the go! To give available editing options a try, enable Product Editing in Settings > Beta Features.
+3.9:
+Fixed two crashes: one that happened when you selected two products in the Product List at the same time, and another that would happen when editing a negative stock quantity.
+
+Stay safe and wash your hands, everyone!
 </en-US>
