@@ -64,7 +64,7 @@ class ProductListViewModel @AssistedInject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
-    private fun isLoadingMore() = viewState.isLoadingMore == true
+    private fun isLoading() = viewState.isLoading == true
 
     private fun isRefreshing() = viewState.isRefreshing == true
 
@@ -115,18 +115,13 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     final fun loadProducts(loadMore: Boolean = false) {
+        if (isLoading()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading products")
+            return
+        }
+
         if (loadMore && !productRepository.canLoadMoreProducts) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
-            return
-        }
-
-        if (loadMore && isLoadingMore()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already loading more products")
-            return
-        }
-
-        if (loadMore && isRefreshing()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already refreshing products")
             return
         }
 
@@ -137,6 +132,7 @@ class ProductListViewModel @AssistedInject constructor(
             searchJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
                 viewState = viewState.copy(
+                        isLoading = true,
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false
@@ -158,13 +154,14 @@ class ProductListViewModel @AssistedInject constructor(
                         showSkeleton = true
                     } else {
                         _productList.value = productsInDb
-                        showSkeleton = viewState.isRefreshing == true
+                        showSkeleton = isRefreshing()
                     }
                 }
                 viewState = viewState.copy(
+                        isLoading = true,
+                        isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
-                        isEmptyViewVisible = false,
-                        isLoadingMore = loadMore
+                        isEmptyViewVisible = false
                 )
                 fetchProductList(loadMore = loadMore)
             }
@@ -211,6 +208,7 @@ class ProductListViewModel @AssistedInject constructor(
             }
 
             viewState = viewState.copy(
+                    isLoading = true,
                     canLoadMore = productRepository.canLoadMoreProducts,
                     isEmptyViewVisible = _productList.value?.isEmpty() == true
             )
@@ -220,6 +218,7 @@ class ProductListViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(
                 isSkeletonShown = false,
+                isLoading = false,
                 isLoadingMore = false,
                 isRefreshing = false
         )
@@ -234,6 +233,7 @@ class ProductListViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
+        val isLoading: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
