@@ -262,7 +262,7 @@ class ProductDetailNavigationTest : TestBase() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
         // click the share button
-        onView(withId(R.id.menu_share)).perform(click())
+        onView(withText(R.string.share)).perform(click())
 
         // check if share intent is opened with the given product details
         Intents.intended(chooser(allOf(
