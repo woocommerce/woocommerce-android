@@ -566,7 +566,7 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withId(R.id.productList_products))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
-        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 1))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.cardCaptionText), 2))
                 .check(matches(withText(appContext.getString(R.string.product_purchase_details))))
 
         // verify that the purchase note property label = R.string.product_purchase_note
