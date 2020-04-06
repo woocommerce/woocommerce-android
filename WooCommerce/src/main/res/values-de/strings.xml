@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-18 00:54:57+0000
+Translation-Revision-Date: 2020-04-02 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">Gib bitte eine Zahl ein</string>
+    <string name="product_wip_message">Wir haben zu einfachen Produkten Bearbeitungsfunktionen hinzugefügt. In Kürze werden noch weitere Optionen verfügbar sein. Halte deine Augen offen!</string>
+    <string name="product_wip_title">Begrenzte Bearbeitungsfunktionen verfügbar</string>
     <string name="product_tax_status_shipping">Versand</string>
     <string name="product_tax_status_taxable">Zu versteuern</string>
     <string name="product_tax_status_none">Keines</string>
@@ -109,8 +112,6 @@ Language: de
     <string name="send_verification_email">Verifizierungs-E-Mail senden</string>
     <string name="settings_enable_product_teaser_message">Teste die neuen Produktbearbeitungsfunktionen, wenn wir sie einführen</string>
     <string name="settings_enable_product_teaser_title">Produktbearbeitung</string>
-    <string name="product_wip_message">Wir sind gerade mit dem neuen Produktabschnitt beschäftigt. Während wir ihn fertigstellen, kannst du vielleicht schon einige Neuerungen sehen 🚀</string>
-    <string name="product_wip_title">In Bearbeitung!</string>
     <string name="magic_link_fetch_account_error">Es gab Probleme beim Abrufen deines Kontos. Du kannst es jetzt oder es schließen und später erneut versuchen.</string>
     <string name="magic_link_update_error">Es ist ein Fehler aufgetreten. Melde dich an, umfortzufahren</string>
     <string name="login_magic_link_token_updating">Verbindung mit deiner Website wird hergestellt…</string>
@@ -145,7 +146,7 @@ Language: de
     <string name="product_list_empty_search">Keine Produkte gefunden</string>
     <string name="product_list_empty">Noch keine Produkte</string>
     <string name="product_stock_count">%s auf Lager</string>
-    <string name="product_stock_status_instock_with_variations">Auf Lager \u2022 %d Varianten</string>
+    <string name="product_stock_status_instock_with_variants">Auf Lager \u2022 %d Varianten</string>
     <string name="product_image_content_description">Produktbild</string>
     <string name="review_list_item_title">%1$s hat eine Bewertung für %2$s hinterlassen</string>
     <string name="wc_unapproved">Nicht genehmigt</string>
@@ -501,10 +502,6 @@ Language: de
     <string name="error_user_username_instead_of_email">Bitte melde dich mit deinem WordPress.com-Benutzernamen anstelle deiner E-Mail-Adresse an.</string>
     <string name="no_site_error">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss die Website WordPress verwenden.</string>
     <string name="support_help_center">Hilfe-Center</string>
-    <string name="product_name_virtual">Virtuelles %s</string>
-    <string name="product_name_grouped">Gruppiertes %s</string>
-    <string name="product_name_external">Partner-%s</string>
-    <string name="product_name_variable">Variables %s</string>
     <string name="product_backorders_notify">Zulassen, aber Kunden benachrichtigen</string>
     <string name="product_backorders_yes">Zulassen</string>
     <string name="product_backorders_no">Nicht zulassen</string>
