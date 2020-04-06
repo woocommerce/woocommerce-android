@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -249,6 +250,29 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.onEditProductCardClicked(ViewProductDescriptionEditor(
                             productDescription, getString(R.string.product_description)
                     ))
+                }
+            }
+
+            val shortDescription = if (product.shortDescription.isEmpty()) {
+                getString(R.string.product_short_description_empty)
+            } else {
+                productDescription
+            }
+            val showShortCaption = shortDescription.isNotEmpty()
+            addPropertyView(
+                    DetailCard.Primary,
+                    getString(R.string.product_short_description),
+                    SpannableString(HtmlUtils.fromHtml(shortDescription)),
+                    LinearLayout.VERTICAL
+            )?.also {
+                it.showPropertyName(showShortCaption)
+                it.setMaxLines(1)
+                it.setClickListener {
+                    viewModel.onEditProductCardClicked(
+                            ViewProductShortDescriptionEditor(
+                                    product.shortDescription, getString(R.string.product_short_description)
+                            )
+                    )
                 }
             }
         }

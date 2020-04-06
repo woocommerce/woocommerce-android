@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
@@ -48,6 +49,12 @@ class ProductNavigator @Inject constructor() {
             is ViewProductDescriptionEditor -> {
                 val action = ProductDetailFragmentDirections
                         .actionProductDetailFragmentToAztecEditorFragment(target.description, target.title)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductShortDescriptionEditor -> {
+                val action = ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToAztecEditorFragment(target.shortDescription, target.title)
                 fragment.findNavController().navigate(action)
             }
 
