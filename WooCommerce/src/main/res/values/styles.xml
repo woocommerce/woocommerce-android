@@ -403,6 +403,12 @@ Use this file to override styles in the styles_base.xml file.
         <item name="codeBackgroundColor">@android:color/transparent</item>
         <item name="android:inputType">textNoSuggestions|textMultiLine</item>
     </style>
+    <style name="AztecToolbarStyle">
+        <item name="advanced">false</item>
+        <item name="toolbarIconNormalColor">@color/wc_grey_medium</item>
+        <item name="toolbarIconHighlightColor">@color/almost_black</item>
+        <item name="toolbarIconDisabledColor">@color/grey_lighten_20</item>
+    </style>
 
     <style name="Woo.Product"/>
     <style name="Woo.Product.Label" parent="Woo.TextAppearance.Large">
