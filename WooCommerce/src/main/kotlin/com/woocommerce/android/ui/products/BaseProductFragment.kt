@@ -50,7 +50,8 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                         requireActivity(),
                         event.positiveBtnAction,
-                        event.negativeBtnAction
+                        event.negativeBtnAction,
+                        event.messageId
                 )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false

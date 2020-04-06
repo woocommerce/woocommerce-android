@@ -23,13 +23,12 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SHIPPING_CLASS_LIST
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
@@ -49,19 +48,14 @@ class ProductDetailRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val SHIPPING_CLASS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_SHIPPING_CLASS_PAGE_SIZE
     }
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
+    private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
-    private var continuationShippingClasses: CancellableContinuation<Boolean>? = null
 
     private var isFetchingTaxClassList = false
-
-    private var shippingClassOffset = 0
-    final var canLoadMoreShippingClasses = true
-        private set
 
     init {
         dispatcher.register(this)
@@ -98,9 +92,8 @@ class ProductDetailRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationUpdateProduct = it
 
-                val payload = WCProductStore.UpdateProductPayload(
-                        selectedSite.get(), updatedProduct.toDataModel(getCachedWCProductModel(updatedProduct.remoteId))
-                )
+                val product = updatedProduct.toDataModel(getCachedWCProductModel(updatedProduct.remoteId))
+                val payload = WCProductStore.UpdateProductPayload(selectedSite.get(), product)
                 dispatcher.dispatch(WCProductActionBuilder.newUpdateProductAction(payload))
             } ?: false // request timed out
         } catch (e: CancellationException) {
@@ -130,6 +123,30 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
+     * Fires the request to fetch the product shipping class for a given [selectedSite] and [remoteShippingClassId]
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun fetchProductShippingClassById(remoteShippingClassId: Long): ShippingClass? {
+        try {
+            continuationFetchProductShippingClass?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationFetchProduct = it
+
+                val payload = WCProductStore.FetchSingleProductShippingClassPayload(
+                        selectedSite.get(), remoteShippingClassId
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductShippingClassAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.d(PRODUCTS, "CancellationException while fetching single product shipping class")
+        }
+
+        continuationFetchProductShippingClass = null
+        return getProductShippingClassByRemoteId(remoteShippingClassId)
+    }
+
+    /**
      * Fires the request to fetch list of [TaxClass] for a given [selectedSite]
      *
      * @return the result of the action as a [RequestResult]
@@ -148,34 +165,6 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    /**
-     * Fetches the list of shipping classes for the [selectedSite], optionally loading the next page of classes
-     */
-    suspend fun fetchShippingClassesForSite(loadMore: Boolean = false): List<ShippingClass> {
-        try {
-            continuationShippingClasses?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                continuationShippingClasses = it
-                shippingClassOffset = if (loadMore) {
-                    shippingClassOffset + SHIPPING_CLASS_PAGE_SIZE
-                } else {
-                    0
-                }
-                val payload = FetchProductShippingClassListPayload(
-                        selectedSite.get(),
-                        pageSize = SHIPPING_CLASS_PAGE_SIZE,
-                        offset = shippingClassOffset
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.d(PRODUCTS, "CancellationException while fetching product shipping classes")
-        }
-
-        continuationShippingClasses = null
-        return getProductShippingClassesForSite()
-    }
-
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
@@ -190,10 +179,10 @@ class ProductDetailRepository @Inject constructor(
             taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**
-     * Returns a list of cached (SQLite) shipping classes for the current site
+     * Returns the cached (SQLite) shipping class for the given [remoteShippingClassId]
      */
-    fun getProductShippingClassesForSite(): List<ShippingClass> =
-            productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
+    fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
+            productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
@@ -237,17 +226,16 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
-     * The list of shipping classes has been fetched for the current site
+     * The shipping class for the product has been fetched
      */
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductShippingClassesChanged(event: OnProductShippingClassesChanged) {
-        if (event.causeOfChange == FETCH_PRODUCT_SHIPPING_CLASS_LIST) {
-            canLoadMoreShippingClasses = event.canLoadMore
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT_SHIPPING_CLASS) {
             if (event.isError) {
-                continuationShippingClasses?.resume(false)
+                continuationFetchProductShippingClass?.resume(false)
             } else {
-                continuationShippingClasses?.resume(true)
+                continuationFetchProductShippingClass?.resume(true)
             }
         }
     }

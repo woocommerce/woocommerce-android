@@ -10,9 +10,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductImagesViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,10 +32,16 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 class ProductDetailViewModelTest : BaseUnitTest() {
+    companion object {
+        private const val PRODUCT_REMOTE_ID = 1L
+        private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
+    }
+
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
@@ -41,15 +49,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
-    private val product = ProductTestUtils.generateProduct()
-    private val productRemoteId = product.remoteId
+    private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
+    private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
             productDraft = product,
             storedProduct = product,
             isSkeletonShown = false,
-            uploadingImageUris = emptyList(),
+            uploadingImageUris = null,
             weightWithUnits = "10kg",
             sizeWithUnits = "1 x 2 x 3 cm",
             priceWithCurrency = "CZK20.00",
@@ -61,6 +69,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ProductDetailViewState()))
                 .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
+        doReturn(MutableLiveData(ProductImagesViewState()))
+                .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
 
         viewModel = spy(
                 ProductDetailViewModel(
@@ -70,7 +80,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         productRepository,
                         networkStatus,
                         currencyFormatter,
-                        wooCommerceStore
+                        wooCommerceStore,
+                        productImagesServiceWrapper
                 )
         )
         val prodSettings = WCProductSettingsModel(0).apply {
@@ -96,31 +107,31 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         assertThat(productData).isEqualTo(ProductDetailViewState())
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
 
         assertThat(productData).isEqualTo(productWithParameters)
     }
 
     @Test
     fun `Display error message on fetch product error`() = test {
-        whenever(productRepository.fetchProduct(productRemoteId)).thenReturn(null)
-        whenever(productRepository.getProduct(productRemoteId)).thenReturn(null)
+        whenever(productRepository.fetchProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.getProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
 
-        verify(productRepository, times(1)).fetchProduct(productRemoteId)
+        verify(productRepository, times(1)).fetchProduct(PRODUCT_REMOTE_ID)
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_fetch_product_error))
     }
 
     @Test
     fun `Do not fetch product from api when not connected`() = test {
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(offlineProduct).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null
@@ -128,9 +139,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
 
-        verify(productRepository, times(1)).getProduct(productRemoteId)
+        verify(productRepository, times(1)).getProduct(PRODUCT_REMOTE_ID)
         verify(productRepository, times(0)).fetchProduct(any())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -145,7 +156,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             old, new -> new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
         }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
 
         assertThat(isSkeletonShown).containsExactly(true, false)
     }
@@ -159,13 +170,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         assertThat(productData).isEqualTo(ProductDetailViewState())
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         assertThat(productData).isEqualTo(productWithParameters)
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         assertThat(productData?.productDraft?.description).isEqualTo(updatedDescription)
     }
 
@@ -176,13 +187,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         assertThat(productData?.isProductUpdated).isNull()
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         assertThat(productData?.isProductUpdated).isTrue()
     }
 
@@ -197,7 +208,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isProgressDialogShown.add(it)
             } }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         viewModel.onUpdateButtonClicked()
 
         assertThat(isProgressDialogShown).containsExactly(true, false)
@@ -216,7 +227,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         viewModel.onUpdateButtonClicked()
 
         verify(productRepository, times(0)).updateProduct(any())
@@ -237,7 +248,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         viewModel.onUpdateButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
@@ -258,12 +269,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        viewModel.start(productRemoteId)
+        viewModel.start(PRODUCT_REMOTE_ID)
         viewModel.onUpdateButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
-        verify(productRepository, times(2)).getProduct(productRemoteId)
-        verify(productRepository, times(1)).fetchProduct(any())
+        verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_success))
         assertThat(productData?.isProgressDialogShown).isFalse()

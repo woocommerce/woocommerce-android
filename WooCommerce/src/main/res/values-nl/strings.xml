@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-18 00:54:54+0000
+Translation-Revision-Date: 2020-04-02 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">Voer een nummer in</string>
+    <string name="product_wip_message">We hebben bewerkingsfuncties toegevoegd aan simpele producten. Houd de nieuwe functies in de gaten!</string>
+    <string name="product_wip_title">Beperkte bewerkingsmogelijkheden beschikbaar</string>
     <string name="product_tax_status_shipping">Verzending</string>
     <string name="product_tax_status_taxable">Belastbaar</string>
     <string name="product_tax_status_none">Geen</string>
@@ -109,8 +112,6 @@ Language: nl
     <string name="send_verification_email">Verificatiemail verzenden</string>
     <string name="settings_enable_product_teaser_message">Vergeet niet de nieuwe functies voor productbewerking te proberen terwijl we ons klaarmaken voor de lancering</string>
     <string name="settings_enable_product_teaser_title">Productbewerking</string>
-    <string name="product_wip_message">We werken hard aan het nieuwe productgedeelte, dus kun je wat wijzigingen opmerken terwijl we ons klaarmaken voor de lancering 🚀</string>
-    <string name="product_wip_title">Werk in uitvoer!</string>
     <string name="magic_link_fetch_account_error">Er is een probleem opgetreden bij het ophalen van je account. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
     <string name="magic_link_update_error">Er is een fout opgetreden. Log in om door te gaan</string>
     <string name="login_magic_link_token_updating">Je site wordt gekoppeld …</string>
@@ -145,7 +146,7 @@ Language: nl
     <string name="product_list_empty_search">Geen overeenkomende producten</string>
     <string name="product_list_empty">Nog geen producten</string>
     <string name="product_stock_count">%s op voorraad</string>
-    <string name="product_stock_status_instock_with_variations">Op voorraad \u2022 %d variaties</string>
+    <string name="product_stock_status_instock_with_variants">Op voorraad \u2022 %d varianten</string>
     <string name="product_image_content_description">Productafbeelding</string>
     <string name="review_list_item_title">%1$s heeft een beoordeling geplaatst voor %2$s</string>
     <string name="wc_unapproved">Afgekeurd</string>
@@ -501,10 +502,6 @@ Language: nl
     <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>
     <string name="no_site_error">De site op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet de site gebruikmaken van WordPress.</string>
     <string name="support_help_center">Help Center</string>
-    <string name="product_name_virtual">Virtuele %s</string>
-    <string name="product_name_grouped">Gegroepeerde %s</string>
-    <string name="product_name_external">Affiliate %s</string>
-    <string name="product_name_variable">Variabele %s</string>
     <string name="product_backorders_notify">Toestaan, maar melden bij klant</string>
     <string name="product_backorders_yes">Toestaan</string>
     <string name="product_backorders_no">Niet toestaan</string>

@@ -15,11 +15,15 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ShippingClass
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -31,8 +35,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -41,14 +43,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.util.DateTimeUtils
 import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Date
@@ -61,15 +64,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
-
-    private var remoteProductId = 0L
 
     /**
      * Fetch product related properties (currency, product dimensions) for the site since we use this
@@ -82,7 +84,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private var skuVerificationJob: Job? = null
-    private var shippingClassLoadJob: Job? = null
 
     // view state for the product detail screen
     final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
@@ -96,9 +97,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
-    // view state for the shipping class screen
-    final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
-    private var productShippingClassViewState by productShippingClassViewStateData
+    // view state for the product images screen
+    final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
+    private var productImagesViewState by productImagesViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -106,13 +107,14 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProduct() = viewState
 
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
+
     fun getTaxClassBySlug(slug: String): TaxClass? {
         return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
     }
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
-        checkUploads()
     }
 
     fun initialisePricing() {
@@ -137,7 +139,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ViewProductImages(it, image, selectedImage))
@@ -166,7 +168,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the the Remove end date link is clicked
      */
     fun onRemoveEndDateClicked() {
-        productPricingViewState = productPricingViewState.copy(maxDate = null)
+        productPricingViewState = productPricingViewState.copy(isRemoveMaxDateButtonVisible = false)
         updateProductDraft(dateOnSaleToGmt = Optional(null))
     }
 
@@ -189,6 +191,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
             }
+            is ExitImages -> {
+                // TODO: eventName = ??
+                hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+            }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -210,10 +216,25 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Keeps track of the min and max date value when scheduling a sale.
      */
     fun onDatePickerValueSelected(selectedDate: Date, isMinValue: Boolean) {
-        productPricingViewState = if (isMinValue) {
-            productPricingViewState.copy(minDate = selectedDate)
+        if (isMinValue) {
+            // update end date to min date only if current end date < start date
+            val dateOnSaleToGmt = viewState.productDraft?.dateOnSaleToGmt
+            if (dateOnSaleToGmt?.before(selectedDate) == true) {
+                productPricingViewState = productPricingViewState.copy(minDate = selectedDate)
+                updateProductDraft(dateOnSaleToGmt = Optional(selectedDate))
+            }
         } else {
-            productPricingViewState.copy(maxDate = selectedDate)
+            // update start date to max date only if current start date > end date
+            val dateOnSaleFromGmt = viewState.productDraft?.dateOnSaleFromGmt
+            if (dateOnSaleFromGmt?.after(selectedDate) == true) {
+                productPricingViewState = productPricingViewState.copy(maxDate = selectedDate)
+                updateProductDraft(dateOnSaleFromGmt = selectedDate)
+            }
+        }
+
+        // display remove end date link only if there is an end date available
+        viewState.productDraft?.dateOnSaleToGmt?.let {
+            productPricingViewState = productPricingViewState.copy(isRemoveMaxDateButtonVisible = true)
         }
     }
 
@@ -225,11 +246,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
      * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
-     * i.e. viewState.product != viewState.storedProduct and viewState.product != viewState.cachedProduct
      *
      * For the product detail screen, the discard dialog should only be displayed if there are changes to the
-     * [Product] model locally, that still need to be saved to the backend. i.e.
-     * viewState.product != viewState.storedProduct
+     * [Product] model locally, that still need to be saved to the backend.
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated
@@ -240,7 +259,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
-        return if (isProductUpdated == true && event.shouldShowDiscardDialog) {
+        if (isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
@@ -255,9 +274,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                         }
                     }
             ))
-            false
+            return false
+        } else if (event is ExitProductDetail && ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
+            // images can't be assigned to the product until they finish uploading so ask whether to discard images.
+            triggerEvent(ShowDiscardDialog(
+                    messageId = string.discard_images_message,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(ExitProduct)
+                    }
+            ))
+            return false
         } else {
-            true
+            return true
         }
     }
 
@@ -308,6 +336,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onSalePriceEntered(inputValue: BigDecimal) {
+        val regularPrice = viewState.productDraft?.regularPrice ?: BigDecimal.ZERO
+        productPricingViewState = if (inputValue > regularPrice) {
+            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
+        } else {
+            updateProductDraft(salePrice = inputValue)
+            productPricingViewState.copy(salePriceErrorMessage = 0)
+        }
+    }
+
     /**
      * Called before entering any product screen to save of copy of the product prior to the user making any
      * changes in that specific screen
@@ -339,7 +377,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         width: Float? = null,
         height: Float? = null,
         weight: Float? = null,
-        shippingClass: String? = null
+        shippingClass: String? = null,
+        images: List<Image>? = null,
+        shippingClassId: Long? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -352,7 +392,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     soldIndividually = soldIndividually ?: product.soldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = viewState.storedProduct?.images ?: product.images,
+                    images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
                     taxStatus = taxStatus ?: product.taxStatus,
@@ -362,6 +402,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     height = height ?: product.height,
                     weight = weight ?: product.weight,
                     shippingClass = shippingClass ?: product.shippingClass,
+                    shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     dateOnSaleToGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
@@ -402,14 +443,13 @@ class ProductDetailViewModel @AssistedInject constructor(
             productRepository.loadTaxClassesForSite()
         }
 
-        val shouldFetch = remoteProductId != this.remoteProductId
-        this.remoteProductId = remoteProductId
-
         launch {
+            // fetch product
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
                 updateProductState(productInDb)
 
+                val shouldFetch = remoteProductId != getRemoteProductId()
                 val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
                 if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
@@ -450,7 +490,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun isUploading() = ProductImagesService.isUploadingForProduct(remoteProductId)
+    fun isUploadingImages(remoteProductId: Long) = ProductImagesService.isUploadingForProduct(remoteProductId)
 
     /**
      * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
@@ -464,9 +504,29 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun checkUploads() {
-        val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
-        viewState = viewState.copy(uploadingImageUris = uris)
+    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
+            return
+        }
+        if (ProductImagesService.isBusy()) {
+            triggerEvent(ShowSnackbar(string.product_image_service_busy))
+            return
+        }
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
+    }
+
+    /**
+     * Checks whether product images are uploading and ensures the view state reflects any currently
+     * uploading images
+     */
+    private fun checkImageUploads(remoteProductId: Long) {
+        val isUploadingImages = ProductImagesService.isUploadingForProduct(remoteProductId)
+        if (isUploadingImages != productImagesViewState.isUploadingImages) {
+            val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
+            viewState = viewState.copy(uploadingImageUris = uris)
+            productImagesViewState = productImagesViewState.copy(isUploadingImages = isUploadingImages)
+        }
     }
 
     /**
@@ -478,7 +538,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (productRepository.updateProduct(product)) {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 viewState = viewState.copy(productDraft = null, isProductUpdated = false, isProgressDialogShown = false)
-                loadProduct(remoteProductId)
+                loadProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
                 viewState = viewState.copy(isProgressDialogShown = false)
@@ -499,73 +559,18 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Fetch the shipping class name of a product based on the slug
+     * Fetch the shipping class name of a product based on the remote shipping class id
      */
-    fun getShippingClassBySlug(slug: String): String {
-        val shippingClassList = productShippingClassViewState.shippingClassList
-                ?: productRepository.getProductShippingClassesForSite()
-        return shippingClassList.filter { it.slug == slug }.getOrNull(0)?.name ?: ""
-    }
-
-    /**
-     * Load & fetch the shipping classes for the current site, optionally performing a "load more" to
-     * load the next page of shipping classes
-     */
-    fun loadShippingClasses(loadMore: Boolean = false) {
-        if (loadMore && !productRepository.canLoadMoreShippingClasses) {
-            WooLog.d(T.PRODUCTS, "Can't load more product shipping classes")
-            return
-        }
-
-        waitForExistingShippingClassFetch()
-
-        shippingClassLoadJob = launch {
-            productShippingClassViewState = if (loadMore) {
-                productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
-            } else {
-                // get cached shipping classes and only show loading progress the list is empty, otherwise show
-                // them right away
-                val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
-                if (cachedShippingClasses.isEmpty()) {
-                    productShippingClassViewState.copy(isLoadingProgressShown = true)
-                } else {
-                    productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
-                }
-            }
-
-            // fetch shipping classes from the backend
-            val shippingClasses = productRepository.fetchShippingClassesForSite(loadMore)
-            productShippingClassViewState = productShippingClassViewState.copy(
-                    isLoadingProgressShown = false,
-                    isLoadingMoreProgressShown = false,
-                    shippingClassList = shippingClasses
-            )
-        }
-    }
-
-    /**
-     * If shipping classes are already being fetch, wait for the current fetch to complete - this is
-     * used above to avoid fetching multiple pages of shipping classes in unison
-     */
-    private fun waitForExistingShippingClassFetch() {
-        if (shippingClassLoadJob?.isActive == true) {
-            launch {
-                try {
-                    shippingClassLoadJob?.join()
-                } catch (e: CancellationException) {
-                    WooLog.d(
-                            T.PRODUCTS,
-                            "CancellationException while waiting for existing shipping class list fetch"
-                    )
-                }
-            }
-        }
-    }
+    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+                    ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(storedProduct: Product) {
         val updatedProduct = viewState.productDraft?.let {
             if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.productDraft)
         } ?: storedProduct
+
+        loadProductTaxAndShippingClassDependencies(updatedProduct)
 
         val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
         val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
@@ -580,6 +585,23 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
+
+        // make sure to remember uploading images
+        checkImageUploads(getRemoteProductId())
+    }
+
+    private fun loadProductTaxAndShippingClassDependencies(product: Product) {
+        launch {
+            // Fetch current site's shipping class only if a shipping class is assigned to the product and if
+            // the shipping class is not available in the local db
+            val shippingClassId = product.shippingClassId
+            if (shippingClassId != 0L && productRepository.getProductShippingClassByRemoteId(shippingClassId) == null) {
+                productRepository.fetchProductShippingClassById(shippingClassId)
+            }
+
+            // Pre-load current site's tax class list for use in the product pricing screen
+            productRepository.loadTaxClassesForSite()
+        }
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -589,8 +611,26 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * This event may happen if the user uploads or removes an image from the images fragment and returns
-     * to the detail fragment before the request completes
+     * The list of product images has started uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
+        checkImageUploads(event.remoteProductId)
+    }
+
+    /**
+     * The list of product images has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        loadProduct(event.remoteProductId)
+        checkImageUploads(event.remoteProductId)
+    }
+
+    /**
+     * A single product image has finished uploading
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -598,9 +638,47 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            loadProduct(remoteProductId)
+            event.media?.let {
+                addProductImageToDraft(it)
+            }
         }
-        checkUploads()
+        checkImageUploads(getRemoteProductId())
+    }
+
+    /**
+     * Called after product image has been uploaded to add the uploaded image to the draft product
+     */
+    fun addProductImageToDraft(media: MediaModel) {
+        // create a new image list and add the passed media first...
+        val imageList = ArrayList<Image>().also {
+            it.add(
+                    Image
+                    (
+                            media.mediaId,
+                            media.fileName,
+                            media.url,
+                            DateTimeUtils.dateFromIso8601(media.uploadDate)
+                    )
+            )
+        }
+
+        // ...then add the existing product images to the new list...
+        viewState.productDraft?.let {
+            imageList.addAll(it.images)
+        }
+
+        // ...and then update the draft with the new list
+        updateProductDraft(images = imageList)
+    }
+
+    /**
+     * Removes a single product image from the product draft
+     */
+    fun removeProductImageFromDraft(remoteMediaId: Long) {
+        viewState.productDraft?.let { product ->
+            val imageList = product.images.filter { it.id != remoteMediaId }
+            updateProductDraft(images = imageList)
+        }
     }
 
     /**
@@ -615,6 +693,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
@@ -674,17 +753,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
         val minDate: Date? = null,
-        val maxDate: Date? = null
-    ) : Parcelable {
-        val isRemoveMaxDateButtonVisible: Boolean
-            get() = maxDate != null
-    }
+        val maxDate: Date? = null,
+        val isRemoveMaxDateButtonVisible: Boolean? = null,
+        val salePriceErrorMessage: Int? = null
+    ) : Parcelable
 
     @Parcelize
-    data class ProductShippingClassViewState(
-        val isLoadingProgressShown: Boolean = false,
-        val isLoadingMoreProgressShown: Boolean = false,
-        val shippingClassList: List<ShippingClass>? = null
+    data class ProductImagesViewState(
+        val isUploadingImages: Boolean = false
     ) : Parcelable
 
     @AssistedInject.Factory

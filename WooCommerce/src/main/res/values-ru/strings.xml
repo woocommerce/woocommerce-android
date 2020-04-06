@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-19 00:54:48+0000
+Translation-Revision-Date: 2020-04-01 00:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">Введите номер</string>
+    <string name="product_wip_message">Мы добавили функцию редактирования простых продуктов. Следите за новостями, планируется дополнительное расширение возможностей!</string>
+    <string name="product_wip_title">Доступны ограниченные возможности редактирования</string>
     <string name="product_tax_status_shipping">Доставка</string>
     <string name="product_tax_status_taxable">Налогооблагаемый</string>
     <string name="product_tax_status_none">Нет</string>
@@ -109,8 +112,6 @@ Language: ru
     <string name="send_verification_email">Отправить письмо с подтверждением</string>
     <string name="settings_enable_product_teaser_message">Оцените новые возможности редактирования, пока мы готовим их к запуску</string>
     <string name="settings_enable_product_teaser_title">Редактирование продукта</string>
-    <string name="product_wip_message">Мы активно готовим к запуску раздел \"Товары\", в связи с чем вы можете заметить некоторые изменения 🚀</string>
-    <string name="product_wip_title">Процесс идёт!</string>
     <string name="magic_link_fetch_account_error">При загрузке вашей учетной записи произошла ошибка. Повторите попытку сейчас или закройте и попробуйте позже.</string>
     <string name="magic_link_update_error">Произошла ошибка. Войдите, чтобы продолжить.</string>
     <string name="login_magic_link_token_updating">Подключение к сайту…</string>
@@ -146,7 +147,7 @@ Language: ru
     <string name="product_list_empty_search">Нет соответствующих товаров</string>
     <string name="product_list_empty">В этом списке пока нет товаров</string>
     <string name="product_stock_count">%s в наличии</string>
-    <string name="product_stock_status_instock_with_variations">В наличии \u2022 %d вар.</string>
+    <string name="product_stock_status_instock_with_variants">Количество вариантов в наличии: \u2022 %d</string>
     <string name="product_image_content_description">Изображение продукта</string>
     <string name="review_list_item_title">Пользователь %1$s оставил отзыв на %2$s</string>
     <string name="wc_unapproved">Не одобрен</string>
@@ -502,10 +503,6 @@ Language: ru
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="support_help_center">Help Center</string>
-    <string name="product_name_virtual">Virtual %s</string>
-    <string name="product_name_grouped">Grouped %s</string>
-    <string name="product_name_external">Affiliate %s</string>
-    <string name="product_name_variable">Variable %s</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
     <string name="product_backorders_yes">Разрешить</string>
     <string name="product_backorders_no">Do not allow</string>

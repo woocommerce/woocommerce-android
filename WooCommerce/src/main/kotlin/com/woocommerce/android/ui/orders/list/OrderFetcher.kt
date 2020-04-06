@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersByIdsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrdersFetchedByIds
+import java.util.Collections
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,7 +31,7 @@ class OrderFetcher @Inject constructor(private val dispatcher: Dispatcher) {
      * The [RemoteId] of the [WCOrderModel] in the process of being fetched from
      * the remote API.
      */
-    private val ongoingRequests = HashSet<RemoteId>()
+    private val ongoingRequests = Collections.synchronizedSet(mutableSetOf<RemoteId>())
 
     init {
         dispatcher.register(this)

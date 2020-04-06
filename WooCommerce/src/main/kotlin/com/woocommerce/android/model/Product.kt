@@ -1,10 +1,13 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -47,6 +50,7 @@ data class Product(
     val height: Float,
     val weight: Float,
     val shippingClass: String,
+    val shippingClassId: Long,
     val isDownloadable: Boolean,
     val fileCount: Int,
     val downloadLimit: Int,
@@ -61,6 +65,10 @@ data class Product(
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean
 ) : Parcelable {
+    companion object {
+        const val TAX_CLASS_DEFAULT = "standard"
+    }
+
     @Parcelize
     data class Image(
         val id: Long,
@@ -90,7 +98,6 @@ data class Product(
                 numVariations == product.numVariations &&
                 name.fastStripHtml() == product.name.fastStripHtml() &&
                 description == product.description &&
-                images == product.images &&
                 taxClass == product.taxClass &&
                 taxStatus == product.taxStatus &&
                 isSaleScheduled == product.isSaleScheduled &&
@@ -102,7 +109,9 @@ data class Product(
                 length == product.length &&
                 height == product.height &&
                 width == product.width &&
-                shippingClass == product.shippingClass
+                shippingClass == product.shippingClass &&
+                shippingClassId == product.shippingClassId &&
+                isSameImages(product.images)
     }
 
     /**
@@ -153,6 +162,33 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the product images
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasImageChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            !isSameImages(it.images)
+        } ?: false
+    }
+
+    /**
+     * Compares this product's images with the passed list, returns true only if both lists contain
+     * the same images in the same order
+     */
+    private fun isSameImages(updatedImages: List<Image>): Boolean {
+        if (this.images.size != updatedImages.size) {
+            return false
+        }
+        for (i in images.indices) {
+            if (images[i].id != updatedImages[i].id) {
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
      * Method merges the updated product fields edited by the user with the locally cached
      * [Product] model and returns the updated [Product] model.
      *
@@ -183,7 +219,9 @@ data class Product(
                     width = updatedProduct.width,
                     height = updatedProduct.height,
                     weight = updatedProduct.weight,
-                    shippingClass = updatedProduct.shippingClass
+                    shippingClass = updatedProduct.shippingClass,
+                    images = updatedProduct.images,
+                    shippingClassId = updatedProduct.shippingClassId
             )
         } ?: this.copy()
     }
@@ -222,6 +260,18 @@ data class Product(
 }
 
 fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
+    fun imagesToJson(): String {
+        val jsonArray = JsonArray()
+        for (image in images) {
+            jsonArray.add(JsonObject().also { json ->
+                json.addProperty("id", image.id)
+                json.addProperty("name", image.name)
+                json.addProperty("source", image.source)
+            })
+        }
+        return jsonArray.toString()
+    }
+
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
@@ -233,14 +283,15 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
         it.regularPrice = regularPrice.toString()
-        it.salePrice = salePrice.toString()
-        it.length = length.toString()
-        it.width = width.toString()
-        it.weight = weight.toString()
-        it.height = height.toString()
+        it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
+        it.length = if (length == 0f) "" else length.formatToString()
+        it.width = if (width == 0f) "" else width.formatToString()
+        it.weight = if (weight == 0f) "" else weight.formatToString()
+        it.height = if (height == 0f) "" else height.formatToString()
         it.shippingClass = shippingClass
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
+        it.images = imagesToJson()
         if (isSaleScheduled) {
             dateOnSaleFromGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
@@ -274,7 +325,9 @@ fun WCProductModel.toAppModel(): Product {
         price = this.price.toBigDecimalOrNull()?.roundError(),
         salePrice = this.salePrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
         regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        taxClass = this.taxClass,
+            // In Core, if a tax class is empty it is considered as standard and we are following the same
+            // procedure here
+        taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
         manageStock = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,
@@ -283,6 +336,7 @@ fun WCProductModel.toAppModel(): Product {
         height = this.height.toFloatOrNull() ?: 0f,
         weight = this.weight.toFloatOrNull() ?: 0f,
         shippingClass = this.shippingClass,
+        shippingClassId = this.shippingClassId.toLong(),
         isDownloadable = this.downloadable,
         fileCount = this.getDownloadableFiles().size,
         downloadLimit = this.downloadLimit,

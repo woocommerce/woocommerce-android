@@ -13,4 +13,10 @@
         android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share"
         app:showAsAction="withText"/>
+
+    <item
+        android:id="@+id/menu_view_product"
+        android:title="@string/product_view_in_store"
+        app:showAsAction="withText"
+        android:visible="false"/>
 </menu>

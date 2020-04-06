@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-03-20 00:54:04+0000
+Translation-Revision-Date: 2020-04-03 00:54:54+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_inventory_update_stock_quantity_error">数字を入力してください</string>
+    <string name="product_wip_message">シンプルな商品に編集機能が加わりました。その他のオプションもまもなく加わる予定です。</string>
+    <string name="product_wip_title">一部の編集機能が利用可能</string>
     <string name="product_tax_status_shipping">配送</string>
     <string name="product_tax_status_taxable">課税</string>
     <string name="product_tax_status_none">なし</string>
@@ -109,8 +112,6 @@ Language: ja_JP
     <string name="send_verification_email">確認メールを送信</string>
     <string name="settings_enable_product_teaser_message">リリースの準備ができ次第、新商品の編集機能をテストしてください</string>
     <string name="settings_enable_product_teaser_title">商品編集</string>
-    <string name="product_wip_message">現在、新しい商品セクションの開発に取り組んでいます。リリースの準備が整いしだい変更が反映される場合があります 🚀</string>
-    <string name="product_wip_title">作業進行中</string>
     <string name="magic_link_fetch_account_error">アカウントの取得時に問題が発生しました。今すぐ再試行するか、閉じてから後で再試行できます。</string>
     <string name="magic_link_update_error">エラーが発生しました。ログインして続行してください</string>
     <string name="login_magic_link_token_updating">サイトに接続しています…</string>
@@ -145,7 +146,7 @@ Language: ja_JP
     <string name="product_list_empty_search">一致する商品はありません</string>
     <string name="product_list_empty">まだ商品がありません</string>
     <string name="product_stock_count">在庫%s個</string>
-    <string name="product_stock_status_instock_with_variations">在庫 \u2022 %d個のバリエーション</string>
+    <string name="product_stock_status_instock_with_variants">在庫 \u2022 %d個のバリエーション</string>
     <string name="product_image_content_description">商品画像</string>
     <string name="review_list_item_title">%1$sさんが%2$sに関するレビューを書きました</string>
     <string name="wc_unapproved">非承認</string>
@@ -501,10 +502,6 @@ Language: ja_JP
     <string name="error_user_username_instead_of_email">メールアドレスではなく WordPress.com ユーザー名を使用してログインしてください。</string>
     <string name="no_site_error">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトが WordPress を使用している必要があります。</string>
     <string name="support_help_center">ヘルプセンター</string>
-    <string name="product_name_virtual">仮想 %s</string>
-    <string name="product_name_grouped">グループ %s</string>
-    <string name="product_name_external">アフィリエイト %s</string>
-    <string name="product_name_variable">オプション %s</string>
     <string name="product_backorders_notify">許可し、顧客に通知する</string>
     <string name="product_backorders_yes">許可する</string>
     <string name="product_backorders_no">許可しない</string>

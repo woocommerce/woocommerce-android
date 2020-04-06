@@ -1,0 +1,4 @@
+3.9:
+Twee crashes verholpen: een die zich voordeed als je twee producten in de Productlijst samen selecteerde en een andere die zich voordeed als een negatieve voorraad werd bewerkt.
+
+Blijf veilig en was je handen allemaal!

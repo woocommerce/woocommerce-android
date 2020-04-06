@@ -1,2 +1,0 @@
-3.8:
-Wer würde Produkte nicht gerne unterwegs bearbeiten können? Wenn du verfügbare Bearbeitungsoptionen ausprobieren möchtest, aktiviere unter „Einstellungen“ > „Betafunktionen“ die Option „Produktbearbeitung“.

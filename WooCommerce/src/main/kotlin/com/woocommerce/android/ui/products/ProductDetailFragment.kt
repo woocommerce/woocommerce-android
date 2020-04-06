@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
@@ -110,6 +111,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
+
+        menu.findItem(R.id.menu_view_product).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -125,6 +128,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
+                true
+            }
+
+            R.id.menu_view_product -> {
+                viewModel.getProduct().productDraft?.permalink?.let {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+                    ChromeCustomTabUtils.launchUrl(requireContext(), it)
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -166,7 +177,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productName = product.name.fastStripHtml()
         updateActivityTitle()
 
-        if (product.images.isEmpty() && !viewModel.isUploading()) {
+        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
             if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
                 addImageContainer.visibility = View.VISIBLE
@@ -241,7 +252,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         // we don't show total sales for variations because they're always zero
-        if (!isVariation) {
+        // we are removing the total orders sections from products M2 release
+        if (!isVariation && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_total_orders,
@@ -279,12 +291,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
         }
 
-        addLinkView(
-                DetailCard.Primary,
-                R.string.product_view_in_store,
-                product.permalink,
-                PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-        )
+        // display `View product on Store` in options menu from M2 products release
+        if (!FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            addLinkView(
+                    DetailCard.Primary,
+                    R.string.product_view_in_store,
+                    product.permalink,
+                    PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+            )
+        }
         addLinkView(
                 DetailCard.Primary,
                 R.string.product_view_affiliate,
@@ -391,17 +406,28 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
-                Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
-                Pair(getString(R.string.product_shipping_class), product.shippingClass)
-        )
+        val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
+                productData.sizeWithUnits?.isNotEmpty() == true ||
+                product.shippingClass.isNotEmpty()
+        val shippingGroup = if (hasShippingInfo) {
+            mapOf(
+                    Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                    Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
+                    Pair(getString(R.string.product_shipping_class),
+                            viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId))
+            )
+        } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
+
         addPropertyGroup(
                 DetailCard.Secondary,
                 R.string.product_shipping,
                 shippingGroup,
                 groupIconId = R.drawable.ic_gridicons_shipping
         )?.also {
+            // display shipping caption only if shipping info is not available
+            if (!hasShippingInfo) {
+                it.showPropertyName(false)
+            }
             it.setClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
@@ -464,10 +490,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             val shippingGroup = mapOf(
                     Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
                     Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
-                    Pair(
-                            getString(R.string.product_shipping_class),
-                            viewModel.getShippingClassBySlug(product.shippingClass)
-                    )
+                    Pair(getString(R.string.product_shipping_class), product.shippingClass)
             )
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
         }
