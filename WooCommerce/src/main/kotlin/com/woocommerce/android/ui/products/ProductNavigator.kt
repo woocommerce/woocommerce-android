@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.util.FeatureFlag
@@ -70,6 +71,12 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId)
+
+            is ViewProductSettings -> {
+                val action = ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductSettingsFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
+            }
 
             is ViewProductImages -> {
                 if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {

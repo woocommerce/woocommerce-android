@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -208,6 +209,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
+        }
+    }
+
+    /**
+     * Called when the user taps the Product settings menu item
+     */
+    fun onSettingsButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductSettings(it.remoteId))
         }
     }
 

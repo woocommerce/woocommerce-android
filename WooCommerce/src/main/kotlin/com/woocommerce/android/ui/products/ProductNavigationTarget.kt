@@ -24,5 +24,6 @@ sealed class ProductNavigationTarget : Event() {
         val clickedImage: WeakReference<View>
     ) : ProductNavigationTarget()
     data class ViewProductImageChooser(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
 }

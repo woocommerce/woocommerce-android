@@ -113,6 +113,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
 
         menu.findItem(R.id.menu_view_product).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        menu.findItem(R.id.menu_product_settings).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -136,6 +138,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
                     ChromeCustomTabUtils.launchUrl(requireContext(), it)
                 }
+                true
+            }
+
+            R.id.menu_product_settings -> {
+                viewModel.onSettingsButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
