@@ -5,8 +5,8 @@ import android.content.Context
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
@@ -17,15 +17,17 @@ import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
-class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+class OrderDetailPaymentView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private lateinit var formatCurrency: (BigDecimal) -> String
     private lateinit var actionListener: OrderRefundActionListener
     private lateinit var order: Order
 
     init {
         View.inflate(context, R.layout.order_detail_payment_info, this)
-        orientation = VERTICAL
     }
 
     @SuppressLint("SetTextI18n")

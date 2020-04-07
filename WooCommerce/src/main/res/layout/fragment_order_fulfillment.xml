@@ -5,7 +5,6 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_window_background"
     tools:context="com.woocommerce.android.ui.orders.OrderFulfillmentFragment">
 
     <LinearLayout
@@ -16,46 +15,36 @@
         <!-- Product List -->
         <com.woocommerce.android.ui.orders.OrderDetailProductListView
             android:id="@+id/orderFulfill_products"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card.WithoutPadding"/>
-
-        <!-- Customer Provided Note -->
-        <com.woocommerce.android.ui.orders.notes.OrderDetailCustomerNoteView
-            android:id="@+id/orderFulfill_customerNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            android:layout_height="wrap_content"/>
 
         <!-- Customer Info -->
         <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
             android:id="@+id/orderFulfill_customerInfo"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Card.Expandable"/>
+            tools:visibility="visible" />
 
         <!-- Add Optional Shipment Tracking -->
         <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
             android:id="@+id/orderFulfill_addShipmentTracking"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Card.WithoutPadding"
-            android:clipToPadding="false"
-            android:paddingBottom="0dp"
             android:contentDescription="@string/order_shipment_tracking_add_label"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="gone"/>
 
         <!-- Button: Mark Order Complete -->
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/orderFulfill_btnComplete"
-            style="@style/Woo.Button.Purple"
+            style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
             android:text="@string/order_fulfill_mark_complete"/>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -185,9 +185,10 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="my_store_stats_reverted_message">We have reverted to the old stats. To use the beta stats, please activate the WooCommerce Admin plugin with version 0.22 or higher</string>
+    <string name="my_store_stats_reverted_title">Upgrade to keep seeing your stats</string>
+    <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after July 1, 2020.</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
-    <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for  stores using the WooCommerce Admin plugin</string>
+    <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for stores with WooCommerce 4.0 or stores with WooCommerce Admin plugin installed</string>
     <!--
         Order List View
     -->
@@ -484,7 +485,7 @@
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
-    <string name="product_detail_title_hint">Enter title</string>
+    <string name="product_detail_title_hint">Product title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
@@ -568,6 +569,13 @@
     <string name="settings_crash_reporting">Crash reports</string>
     <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports</string>
     <string name="settings_switch_site_notifs_msg">Switched to %s. You will only receive notifications for this store</string>
+    <string name="settings_app_theme_title">Appearance</string>
+    <string name="settings_app_theme_option_light">Light</string>
+    <string name="settings_app_theme_option_dark">Dark</string>
+    <string name="settings_app_theme_option_system">System default</string>
+    <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
+    <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
+    <string name="settings_about_title">About WooCommerce</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -754,7 +762,7 @@
     <!-- Product status -->
     <string name="product_status_published">Published</string>
     <string name="product_status_private">Private</string>
-    <string name="product_status_pending">Pending</string>
+    <string name="product_status_pending">Pending Review</string>
     <string name="product_status_draft">Draft</string>
 
     <!-- permissions -->

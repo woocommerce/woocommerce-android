@@ -20,6 +20,7 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashUtils
@@ -111,6 +112,10 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
         // to catch crashes that may occur before we can access the site and account (most notably crashes with
         // initializing WellSql). In order to do this, we must first init AppPrefs since Crash Logging uses it.
         AppPrefs.init(this)
+
+        // Apply Theme
+        AppThemeUtils.setAppTheme()
+
         CrashUtils.initCrashLogging(this)
 
         val wellSqlConfig = WooWellSqlConfig(applicationContext)

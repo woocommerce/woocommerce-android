@@ -9,7 +9,6 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
@@ -95,14 +94,6 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
                 productListener = this,
                 refunds = refunds
         )
-
-        // Check for customer provided note, show if available
-        if (order.customerNote.isEmpty()) {
-            orderFulfill_customerNote.visibility = View.GONE
-        } else {
-            orderFulfill_customerNote.visibility = View.VISIBLE
-            orderFulfill_customerNote.initView(order)
-        }
 
         // check if product is a virtual product
         val isVirtualProduct = presenter.isVirtualProduct(order)

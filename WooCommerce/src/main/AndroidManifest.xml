@@ -23,7 +23,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.Woo.Splash">
 
         <!-- TODO: we eventually want to drop support for Apache, but for now it's used by FluxC -->
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
@@ -44,7 +44,7 @@
 
         <activity
             android:name=".ui.sitepicker.SitePickerActivity"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/Theme.Woo.DayNight"/>
 
         <activity android:name=".ui.login.MagicLinkInterceptActivity">
             <intent-filter>
@@ -58,20 +58,34 @@
         </activity>
 
         <activity
-            android:name=".ui.prefs.AppSettingsActivity"/>
+            android:name=".ui.prefs.AppSettingsActivity"
+            android:theme="@style/Theme.Woo.DayNight"/>
 
         <activity
             android:label="@string/logviewer_activity_title"
-            android:name=".support.WooLogViewerActivity"/>
+            android:name=".support.WooLogViewerActivity"
+            android:theme="@style/Theme.Woo.DayNight"/>
 
         <activity
             android:name=".support.HelpActivity"
             android:label="@string/support_help"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/Theme.Woo.DayNight" />
 
         <activity
             android:name=".ui.imageviewer.ImageViewerActivity"
             android:theme="@style/ImageViewer.Activity"/>
+
+        <activity android:name="zendesk.support.guide.HelpCenterActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+
+        <activity android:name="zendesk.support.guide.ViewArticleActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+
+        <activity android:name="zendesk.support.request.RequestActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+
+        <activity android:name="zendesk.support.requestlist.RequestListActivity"
+            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
 
         <!-- Services -->
         <service

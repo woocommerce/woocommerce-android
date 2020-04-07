@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<com.woocommerce.android.ui.products.WCProductPropertyEditableView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
-        style="@style/Woo.Product.Title"
-        android:ellipsize="end"
-        android:imeOptions="actionDone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:hint="@string/product_detail_editable_text_hint"
-        android:importantForAutofill="no" />
-
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Settings.Divider"
-        android:layout_marginTop="@dimen/product_detail_property_margin"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</merge>
+    android:layout_height="wrap_content" />

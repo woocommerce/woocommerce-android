@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -209,6 +210,8 @@ class LoginNoJetpackFragment : Fragment() {
         setupObservers()
     }
 
+    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+    @Suppress("WrongConstant")
     private fun setupObservers() {
         viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             showProgressDialog(it)
@@ -220,7 +223,7 @@ class LoginNoJetpackFragment : Fragment() {
                 redirectToSiteCredentialsScreen()
             } else {
                 view?.let { Snackbar.make(
-                        it, getString(R.string.login_jetpack_not_found), Snackbar.LENGTH_LONG
+                        it, getString(R.string.login_jetpack_not_found), BaseTransientBottomBar.LENGTH_LONG
                 ).show() }
             }
         })

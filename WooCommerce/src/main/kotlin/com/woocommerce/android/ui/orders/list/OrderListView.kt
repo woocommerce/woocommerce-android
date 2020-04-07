@@ -14,8 +14,11 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 private const val MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION = 2
 
-class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+class OrderListView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_list_view, this)
     }
@@ -30,17 +33,10 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
         this.listener = orderListListener
         this.ordersAdapter = OrderListAdapter(orderListListener, currencyFormatter)
 
-        // Set the divider decoration for the list
-        val ordersDividerDecoration = androidx.recyclerview.widget.DividerItemDecoration(
-                context,
-                androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
-        )
-
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(true)
-            addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
 
             // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,

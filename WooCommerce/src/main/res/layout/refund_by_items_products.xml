@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -19,42 +20,34 @@
 
     <View
         android:id="@+id/issueRefund_dividerBelowList"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:layout_marginBottom="@dimen/card_item_padding_intra_double"
-        android:background="@color/list_divider"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/minor_00"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_products"
-        app:srcCompat="@drawable/list_divider" />
+        app:layout_constraintBottom_toTopOf="@+id/issueRefund_lblSubtotal"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_lblSubtotal"
+        style="@style/Woo.Card.Body.High"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:layout_weight="1"
+        android:layout_marginTop="@dimen/major_75"
         android:text="@string/subtotal"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/Woo.Refunds.TextAppearance"
+        app:layout_constraintEnd_toStartOf="@+id/issueRefund_subtotal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowList" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_subtotal"
+        style="@style/Woo.Card.Body.High"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:textAppearance="@style/Woo.Refunds.TextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/issueRefund_lblSubtotal"
         tools:text="$45.00" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_lblShipping"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -77,30 +70,27 @@
         app:layout_constraintTop_toTopOf="@id/issueRefund_lblShipping"
         tools:text="$1.00" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_lblTaxes"
+        style="@style/Woo.Card.Body.High"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:layout_weight="1"
+        android:layout_marginTop="@dimen/minor_50"
         android:text="@string/taxes"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/Woo.Refunds.TextAppearance"
+        app:layout_constraintEnd_toStartOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingTotal" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_taxesTotal"
+        style="@style/Woo.Card.Body.High"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:textAppearance="@style/Woo.Refunds.TextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/issueRefund_lblTaxes"
         tools:text="$1.00" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_shippingRefundNotice"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -118,41 +108,38 @@
 
     <View
         android:id="@+id/issueRefund_dividerBelowTaxes"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:background="@color/list_divider"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginEnd="@dimen/minor_00"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/issueRefund_lblProductsTotal"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingRefundNotice"
         app:srcCompat="@drawable/list_divider" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_lblProductsTotal"
+        style="@style/Woo.Card.Body.Bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:layout_marginBottom="@dimen/card_padding_bottom"
-        android:layout_weight="1"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginBottom="@dimen/major_75"
         android:text="@string/order_refunds_products_refund"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/Woo.Refunds.TextAppearance.Bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/issueRefund_productsTotal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_productsTotal"
+        style="@style/Woo.Card.Body.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginBottom="@dimen/major_75"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/issueRefund_lblProductsTotal"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"
         tools:text="$1.00" />
 
     <androidx.constraintlayout.widget.Group
@@ -168,15 +155,15 @@
         android:visibility="gone"
         app:constraint_referenced_ids="issueRefund_shippingTotal,issueRefund_lblShipping" />
 
-    <!-- TODO: Temporarily disabled, this will be used in a future release - do not remove -->
-    <!--    <androidx.appcompat.widget.AppCompatButton-->
-    <!--        android:id="@+id/issueRefund_productsTotalButton"-->
-    <!--        style="@style/Woo.Refunds.Button"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:textAllCaps="false"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"-->
-    <!--        tools:text="$49.00" />-->
+    <!--     TODO: Temporarily disabled, this will be used in a future release - do not remove -->
+    <!--        <com.google.android.material.button.MaterialButton-->
+    <!--            android:id="@+id/issueRefund_productsTotalButton"-->
+    <!--            style="@style/Woo.Button"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:textAllCaps="false"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"-->
+    <!--            tools:text="$49.00" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,70 +1,63 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/snack_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_window_background"
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/addNote_editContainer"
+        style="@style/Woo.Card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/addNote_editDivider"
-        android:layout_alignWithParentIfMissing="true"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:padding="@dimen/margin_large">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <EditText
-            android:id="@+id/addNote_editor"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:gravity="top|start"
-            android:textAlignment="viewStart"
-            android:hint="@string/orderdetail_note_hint"
-            android:inputType="textAutoComplete|textMultiLine|textCapSentences"/>
+            android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/addNote_icon"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/addNote_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginBottom="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_75"
+                android:contentDescription="@string/orderdetail_addnote_contentdesc"
+                app:srcCompat="@drawable/ic_note_private"/>
+
+            <EditText
+                android:id="@+id/addNote_editor"
+                style="@style/Woo.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top|start"
+                android:hint="@string/orderdetail_note_hint"
+                android:importantForAutofill="no"
+                android:inputType="textAutoComplete|textMultiLine|textCapSentences"
+                tools:text="This is at test order note. This is only a test. IF this were a real order note it'd contain something worth reading." />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+            android:id="@+id/addNote_switch"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_large"
-            android:contentDescription="@string/orderdetail_addnote_contentdesc"
-            app:srcCompat="@drawable/ic_note_private"/>
-    </LinearLayout>
-
-    <View
-        android:id="@+id/addNote_switchDivider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:background="@color/list_divider"/>
-
-    <View
-        android:id="@+id/addNote_editDivider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_above="@+id/addNote_switch"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:background="@color/list_divider"/>
-
-    <com.woocommerce.android.widgets.WCToggleSingleOptionView
-        android:id="@+id/addNote_switch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/addNote_switchDivider"
-        android:background="@color/white"
-        android:clickable="true"
-        android:focusable="true"
-        android:importantForAccessibility="yes"
-        android:padding="@dimen/margin_large"
-        app:switchSummary="@string/add_order_note_sublabel"
-        app:switchTitle="@string/add_order_note_label"/>
-
-</RelativeLayout>
+            android:layout_above="@+id/addNote_switchDivider"
+            android:clickable="true"
+            android:focusable="true"
+            android:importantForAccessibility="yes"
+            app:switchSummary="@string/add_order_note_sublabel"
+            app:switchTitle="@string/add_order_note_label"/>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

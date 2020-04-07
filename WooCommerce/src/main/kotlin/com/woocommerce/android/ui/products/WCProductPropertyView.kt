@@ -83,9 +83,9 @@ class WCProductPropertyView @JvmOverloads constructor(
     private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL) {
         if (view == null) {
             view = if (orientation == LinearLayout.VERTICAL) {
-                View.inflate(context, R.layout.product_property_view_vert, this)
+                View.inflate(context, R.layout.product_property_view_vert_layout, this)
             } else {
-                View.inflate(context, R.layout.product_property_view_horz, this)
+                View.inflate(context, R.layout.product_property_view_horz_layout, this)
             }
             propertyGroupImg = view?.findViewById(R.id.imgProperty)
             propertyGroupIcon = view?.findViewById(R.id.imgPropertyIcon)

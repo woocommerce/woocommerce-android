@@ -1,65 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Woo.ListItem"
+    style="@style/Woo.Card.WithoutPadding"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/notif_icon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="8dp"
-        android:importantForAccessibility="no"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:srcCompat="@drawable/ic_cart"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/notif_title"
-        style="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/notif_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="You have a new order!"/>
+        <ImageView
+            android:id="@+id/notif_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            android:paddingTop="@dimen/minor_25"
+            android:importantForAccessibility="no"
+            android:scaleType="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            tools:srcCompat="@drawable/ic_comment"/>
 
-    <TextView
-        android:id="@+id/notif_desc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:textAlignment="viewStart"
-        app:layout_constraintBottom_toTopOf="@+id/notif_rating"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/notif_title"
-        app:layout_constraintTop_toBottomOf="@+id/notif_title"
-        tools:text="Will Gorski placed a $18.00 order from Candle Kingdom."/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/notif_title"
+            style="@style/Woo.Card.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/notif_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Neil Gaiman left a review on Fallen Angel Candelabra"/>
 
-    <RatingBar
-        android:id="@+id/notif_rating"
-        style="@style/Base.Widget.AppCompat.RatingBar.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:isIndicator="true"
-        android:numStars="5"
-        android:progressTint="@color/grey_darken_30"
-        android:rating="0"
-        android:stepSize="1"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/notif_desc"
-        tools:rating="4"
-        tools:visibility="visible"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/notif_desc"
+            style="@style/Woo.Card.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_75"
+            android:ellipsize="end"
+            android:textAlignment="viewStart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/notif_icon"
+            app:layout_constraintTop_toBottomOf="@+id/notif_title"
+            tools:text="Pending review • Amazing!" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <RatingBar
+            android:id="@+id/notif_rating"
+            style="?attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:isIndicator="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/notif_divider"
+            app:layout_constraintStart_toStartOf="@+id/notif_desc"
+            app:layout_constraintTop_toBottomOf="@+id/notif_desc"
+            tools:rating="4"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/notif_divider"
+            style="@style/Woo.Divider"
+            android:layout_width="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/notif_title"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Final top-level theme -->
+    <style name="Theme.Woo.DayNight" parent="Theme.Woo"/>
+
+    <style name="Theme.Woo.Splash" parent="Theme.Woo">
+        <item name="android:navigationBarColor">@color/woo_purple_60</item>
+        <item name="android:statusBarColor">@color/woo_purple_60</item>
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+    </style>
+
+    <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Colors -->
+        <item name="colorPrimary">@color/woo_purple_60</item>
+        <item name="colorPrimarySurface">@color/color_primary_surface</item>
+        <item name="colorPrimaryVariant">@color/woo_purple_80</item>
+        <item name="colorSecondary">@color/woo_pink_50</item>
+        <item name="colorSecondaryVariant">@color/woo_pink_70</item>
+
+        <item name="android:colorBackground">@color/default_window_background</item>
+        <item name="colorSurface">@color/woo_white</item>
+        <item name="colorError">@color/woo_red_50</item>
+
+        <item name="colorOnPrimary">@color/woo_white</item>
+        <item name="colorOnPrimarySurface">@color/woo_white</item>
+        <item name="colorOnSecondary">@color/woo_black</item>
+        <item name="colorOnBackground">@color/woo_black</item>
+        <item name="colorOnSurface">@color/woo_black</item>
+        <item name="colorOnError">@color/woo_white</item>
+
+        <item name="android:colorControlActivated">@color/color_primary</item>
+        <item name="scrimBackground">@color/woo_white_alpha_038</item>
+        <item name="android:statusBarColor">@color/woo_purple_60</item>
+        <item name="android:navigationBarColor">@color/nav_bar</item>
+
+        <!-- Shapes -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Theme.Woo.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Theme.Woo.LargeComponent</item>
+
+        <!-- Typography -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Woo.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Woo.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Woo.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Woo.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Woo.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Woo.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.Woo.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Woo.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Woo.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Woo.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
+        <item name="textAppearanceBadge">@style/TextAppearance.Woo.Badge</item>
+
+        <!-- Custom attrs for setting alpha values -->
+        <item name="emphasisHighAlpha">0.87</item>
+        <item name="emphasisMediumAlpha">0.60</item>
+        <item name="emphasisDisabledAlpha">0.38</item>
+        <item name="emphasisHighAlphaPrimary">1.00</item>
+        <item name="emphasisMediumAlphaPrimary">0.74</item>
+        <item name="emphasisDisabledAlphaPrimary">0.38</item>
+
+        <!-- Styles -->
+        <item name="bottomNavigationStyle">@style/Widget.Woo.BottomNavigationView</item>
+        <item name="bottomSheetStyle">@style/Widget.MaterialComponents.BottomSheet.Modal</item>
+        <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
+        <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
+        <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
+        <item name="tabStyle">@style/Woo.TabLayout</item>
+        <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
+        <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
+        <item name="borderlessButtonStyle">@style/Woo.Button</item>
+        <item name="materialCardViewStyle">@style/Woo.Card</item>
+        <item name="android:listDivider">@drawable/list_divider</item>
+        <item name="ratingBarStyleSmall">@style/Woo.RatingsBar.Small</item>
+        <item name="textInputStyle">@style/Woo.TextInputLayout</item>
+        <item name="android:textViewStyle">@style/Woo.TextView</item>
+        <item name="editTextStyle">@style/Woo.TextInputEditText</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- Custom Widgets -->
+        <item name="tagViewStyle">@style/Woo.Tag</item>
+        <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
+        <item name="settingsToggleOptionStyle">@style/Widget.Woo.Settings.OptionToggle</item>
+        <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
+        <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
+        <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+
+        <!-- TODO: convert styles to material -->
+<!--        <item name="android:listViewStyle"></item>-->
+        <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
+    </style>
+
+    <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Colors -->
+        <item name="colorPrimary">@color/color_secondary</item>
+        <item name="colorSecondary">@color/color_primary</item>
+
+        <item name="android:colorBackground">@color/default_window_background</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorError">@color/color_error</item>
+
+        <item name="colorOnPrimary">@color/color_on_primary_high</item>
+        <item name="colorOnPrimarySurface">@color/color_on_primary_surface_high</item>
+        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorOnSurface">@color/color_on_surface_high</item>
+        <item name="colorOnError">@color/color_on_error</item>
+    </style>
+
+    <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">
+        <item name="colorControlNormal">@color/transparent</item>
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Headline6</item>
+    </style>
+
+    <style name="Theme.Woo.DayNight.Zendesk">
+        <item name="colorPrimary">@color/color_primary_surface</item>
+        <item name="colorPrimaryDark">@color/color_primary</item>
+        <item name="colorAccent">@color/color_primary</item>
+    </style>
+</resources>

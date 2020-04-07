@@ -7,12 +7,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
-import android.view.ContextThemeWrapper
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -150,12 +149,12 @@ object WooPermissionUtils {
                 getPermissionName(activity, permission)
         )
 
-        val builder = AlertDialog.Builder(ContextThemeWrapper(activity, R.style.Woo_Dialog))
+        val builder = MaterialAlertDialogBuilder(activity)
                 .setTitle(activity.getString(R.string.permissions_denied_title))
                 .setMessage(HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY))
                 .setPositiveButton(
                         R.string.button_edit_permissions
-                ) { dialog, which -> showAppSettings(activity) }
+                ) { _, _ -> showAppSettings(activity) }
                 .setNegativeButton(R.string.button_not_now, null)
         builder.show()
     }

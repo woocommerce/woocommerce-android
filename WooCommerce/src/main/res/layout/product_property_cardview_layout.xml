@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- The "-1dp" margin is necessary to hide the bottom divider for the last property -->
+    <LinearLayout
+        android:id="@+id/cardContainerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-1dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cardCaptionText"
+            style="@style/Woo.Card.Header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            android:visibility="gone"
+            tools:text="cardCaptionText"
+            tools:visibility="visible"/>
+
+        <View
+            android:id="@+id/cardCaptionDivider"
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
+    
+</merge>

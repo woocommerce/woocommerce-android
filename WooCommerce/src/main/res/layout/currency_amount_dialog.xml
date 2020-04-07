@@ -5,42 +5,45 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/currencyAmount_header"
+        style="@style/Woo.TextView.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/major_125"
+        android:layout_marginBottom="@dimen/minor_100"
         android:duplicateParentState="true"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold" />
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
+        tools:text="Headline 6" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/currencyAmount_refundAmountInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
         android:importantForAccessibility="no">
 
         <com.woocommerce.android.widgets.CurrencyEditText
             android:id="@+id/currencyAmount_refundAmount"
+            style="@style/Woo.EditText"
+            android:layout_margin="@dimen/minor_00"
             android:imeOptions="flagNoExtractUi"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/currencyAmount_message"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/dialog_content_text_color"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        />
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
+        android:layout_marginTop="@dimen/minor_100"
+        tools:text="Does this sound good?"/>
 
 </LinearLayout>
