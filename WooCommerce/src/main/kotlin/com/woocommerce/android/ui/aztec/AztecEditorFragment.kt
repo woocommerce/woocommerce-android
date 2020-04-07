@@ -186,7 +186,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         bundle.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
         bundle.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
         requireActivity().navigateBackWithResult(
-                AZTEC_EDITOR_REQUEST_CODE,
+                navArgs.requestCode,
                 bundle,
                 R.id.nav_host_fragment_main,
                 R.id.productDetailFragment

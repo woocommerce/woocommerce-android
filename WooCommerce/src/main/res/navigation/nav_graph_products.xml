@@ -76,8 +76,8 @@
             app:argType="string" />
         <argument
             android:name="requestCode"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/productInventoryFragment"

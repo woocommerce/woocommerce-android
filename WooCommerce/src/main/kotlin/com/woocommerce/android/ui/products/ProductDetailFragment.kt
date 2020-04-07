@@ -17,6 +17,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
@@ -30,7 +31,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
-import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -256,9 +256,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             val shortDescription = if (product.shortDescription.isEmpty()) {
                 getString(R.string.product_short_description_empty)
             } else {
-                productDescription
+                product.shortDescription
             }
-            val showShortCaption = shortDescription.isNotEmpty()
+            val showShortCaption = product.shortDescription.isNotEmpty()
             addPropertyView(
                     DetailCard.Primary,
                     getString(R.string.product_short_description),
@@ -799,9 +799,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
-            AZTEC_EDITOR_REQUEST_CODE -> {
+            RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                    viewModel.updateProductDraft(result.getString(ARG_AZTEC_EDITOR_TEXT))
+                    viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+            }
+            RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
         }
