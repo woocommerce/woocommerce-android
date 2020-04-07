@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.woocommerce.android.R
 
 /**
  * Extends [SwipeRefreshLayout] to support non-direct descendant scrolling views.
@@ -17,8 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 class ScrollChildSwipeRefreshLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-)
-    : androidx.swiperefreshlayout.widget.SwipeRefreshLayout(context, attrs) {
+) : androidx.swiperefreshlayout.widget.SwipeRefreshLayout(context, attrs) {
     var scrollUpChild: View? = null
 
     override fun canChildScrollUp() =
@@ -26,4 +26,11 @@ class ScrollChildSwipeRefreshLayout @JvmOverloads constructor(
 
     override fun onStartNestedScroll(child: View, target: View, nestedScrollAxes: Int): Boolean =
             (child.canScrollVertically(1) && super.onStartNestedScroll(child, target, nestedScrollAxes))
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        setColorSchemeResources(R.color.color_primary)
+        setProgressBackgroundColorSchemeResource(R.color.color_surface)
+    }
 }

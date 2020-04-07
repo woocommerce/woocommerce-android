@@ -348,8 +348,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
                                 AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                                 AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
-                        )
+                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
                         )
 
                         triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
@@ -357,8 +356,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                         AnalyticsTracker.track(
                                 REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
-                                AnalyticsTracker.KEY_ID to result.model?.id
-                        )
+                                AnalyticsTracker.KEY_ID to result.model?.id)
                         )
 
                         refundSummaryState.refundReason?.let { reason ->
@@ -407,6 +405,14 @@ class IssueRefundViewModel @AssistedInject constructor(
                 CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
                 mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
         )
+    }
+
+    /**
+     * Checks if the refund summary button label should be enabled. If the max length for the text field is
+     * surpassed, the button should be disabled until the text is brought within the maximum length.
+     */
+    fun onRefundSummaryTextChanged(maxLength: Int, currLength: Int) {
+        refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = currLength <= maxLength)
     }
 
     // will be used in the future
@@ -597,6 +603,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     @Parcelize
     data class RefundSummaryViewState(
         val isFormEnabled: Boolean? = null,
+        val isSubmitButtonEnabled: Boolean? = null,
         val previouslyRefunded: String? = null,
         val refundAmount: String? = null,
         val refundMethod: String? = null,

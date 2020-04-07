@@ -8,52 +8,36 @@
 
     <ImageView
         android:id="@+id/orderNote_icon"
-        android:layout_width="@dimen/order_note_icon"
-        android:layout_height="@dimen/order_note_icon"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:layout_width="@dimen/image_minor_60"
+        android:layout_height="@dimen/image_minor_60"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginStart="@dimen/major_100"
         android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_note_private"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/orderNote_header"
-        android:layout_width="wrap_content"
+        style="@style/Woo.ListItem.Subtitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/list_item_padding_start_from_icon"
-        android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
-        android:textColor="@color/wc_grey_mid"
+        android:layout_marginTop="@dimen/minor_100"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/orderNote_icon"
-        app:layout_constraintTop_toTopOf="@id/orderNote_icon"
-        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Nov 13, 2017 at 9:54 AM"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/orderNote_note"
-        android:layout_width="wrap_content"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_gravity="start"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        android:lineSpacingMultiplier="1.2"
+        android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginBottom="@dimen/major_75"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/orderNote_header"
+        app:layout_constraintStart_toEndOf="@id/orderNote_icon"
         app:layout_constraintTop_toBottomOf="@id/orderNote_header"
-        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="Order status changed from pending payment to processing."/>
-
-    <View
-        android:id="@+id/orderNote_bottomSpacer"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/card_item_padding_intra_double"
-        app:layout_constraintStart_toStartOf="@id/orderNote_header"
-        app:layout_constraintTop_toBottomOf="@id/orderNote_note" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

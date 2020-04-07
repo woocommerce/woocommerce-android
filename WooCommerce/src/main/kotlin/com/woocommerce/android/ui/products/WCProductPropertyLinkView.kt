@@ -15,7 +15,7 @@ class WCProductPropertyLinkView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private var view: View = View.inflate(context, R.layout.product_property_link_view, this)
+    private var view: View = View.inflate(context, R.layout.product_property_link_view_layout, this)
 
     fun show(caption: String, url: String, tracksEvent: Stat) {
         with(view.findViewById<TextView>(R.id.textLink)) {

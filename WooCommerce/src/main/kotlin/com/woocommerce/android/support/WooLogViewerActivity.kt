@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.extensions.setHtmlText
+import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -109,7 +110,8 @@ class WooLogViewerActivity : AppCompatActivity() {
     }
 
     private inner class LogAdapter constructor(context: Context) : RecyclerView.Adapter<LogViewHolder>() {
-        private val entries: ArrayList<String> = WooLog.toHtmlList()
+        private val entries: ArrayList<String> =
+                WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity))
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
         override fun getItemCount() = entries.size

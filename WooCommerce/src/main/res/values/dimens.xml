@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="min_tap_target">48dp</dimen>
-
     <!--
         Text Sizes
     -->
@@ -35,8 +33,9 @@
     <!--
         Default Card
     -->
-    <dimen name="card_padding_start">16dp</dimen>
     <dimen name="card_button_padding">12dp</dimen>
+
+    <dimen name="card_padding_start">16dp</dimen>
     <dimen name="card_padding_start_tablet">24dp</dimen>
 
     <dimen name="card_padding_end">16dp</dimen>
@@ -94,22 +93,6 @@
     <dimen name="list_divider_padding_bottom_tablet">12dp</dimen>
 
     <!--
-        Default TagView
-    -->
-    <dimen name="tag_text_size">@dimen/text_small</dimen>
-
-    <dimen name="tag_margin_end">4dp</dimen>
-    <dimen name="tag_margin_top">4dp</dimen>
-    <dimen name="tag_margin_bottom">4dp</dimen>
-    <dimen name="tag_padding_start">8dp</dimen>
-    <dimen name="tag_padding_end">8dp</dimen>
-    <dimen name="tag_padding_top">2dp</dimen>
-    <dimen name="tag_padding_bottom">2dp</dimen>
-
-    <dimen name="tag_layout_margin_end">8dp</dimen>
-    <dimen name="tag_layout_margin_bottom">8dp</dimen>
-
-    <!--
         Default Chart
     -->
     <dimen name="chart_height">200dp</dimen>
@@ -137,7 +120,7 @@
     <!--
          Notifications
      -->
-    <dimen name="notification_badge_sz">12dp</dimen>
+    <dimen name="notification_badge_sz">9dp</dimen>
 
     <!--
         Offline Status Bar
@@ -145,21 +128,9 @@
     <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
 
     <!--
-        Orders and order notes
-    -->
-    <dimen name="order_note_icon">26dp</dimen>
-
-    <!--
         Skeletons
     -->
-    <dimen name="skeleton_bar_chart_padding">30dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
     <dimen name="skeleton_order_note_item_height">96dp</dimen>
-    <dimen name="skeleton_default_text_height">20sp</dimen>
     <dimen name="skeleton_default_text_height_two_lines">40sp</dimen>
 
     <!--

@@ -4,9 +4,9 @@ import android.content.Context
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -16,8 +16,11 @@ import com.woocommerce.android.ui.orders.notes.OrderNoteListItem.Note
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.order_detail_note_list.view.*
 
-class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class OrderDetailOrderNoteListView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_detail_note_list, this)
     }

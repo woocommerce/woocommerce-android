@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/productsRefreshLayout"
@@ -9,13 +10,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/default_window_background">
+        android:layout_height="match_parent">
 
         <!-- Products work in progress notice card -->
         <com.woocommerce.android.ui.products.ProductsWIPNoticeCard
             android:id="@+id/products_wip_card"
-            style="@style/Woo.Stats.Card.Expandable"
+            style="@style/Woo.Card.Expandable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -28,11 +28,15 @@
             android:id="@+id/productsRecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/card_bgColor"
+            android:layout_marginTop="@dimen/minor_100"
+            android:background="?attr/colorSurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/products_wip_card" />
+            app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
+            tools:itemCount="5"
+            tools:listitem="@layout/product_list_item"
+            tools:visibility="visible"/>
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"
@@ -42,7 +46,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/products_wip_card" />
+            app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
+            tools:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/loadMoreProgress"
@@ -51,11 +56,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginBottom="@dimen/major_75"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

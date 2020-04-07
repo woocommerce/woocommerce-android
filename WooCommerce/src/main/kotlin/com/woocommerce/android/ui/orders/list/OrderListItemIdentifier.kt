@@ -16,5 +16,5 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
  */
 sealed class OrderListItemIdentifier {
     class SectionHeaderIdentifier(val title: TimeGroup) : OrderListItemIdentifier()
-    class OrderIdentifier(val remoteId: RemoteId) : OrderListItemIdentifier()
+    class OrderIdentifier(val remoteId: RemoteId, var isLastItemInSection: Boolean = false) : OrderListItemIdentifier()
 }

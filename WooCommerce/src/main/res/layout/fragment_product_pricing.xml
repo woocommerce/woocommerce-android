@@ -135,7 +135,7 @@
 
         <View
             android:id="@+id/divider"
-            style="@style/Woo.Settings.Divider"
+            style="@style/Woo.Divider"
             android:layout_marginTop="@dimen/margin_large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

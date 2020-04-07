@@ -7,9 +7,9 @@
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.products.ProductImagesFragment">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addImageButton"
-        style="@style/Woo.Button.Bordered"
+        style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_extra_large"
@@ -19,7 +19,7 @@
 
     <View
         android:id="@+id/divider"
-        style="@style/Woo.Settings.Divider"
+        style="@style/Woo.Divider"
         android:layout_gravity="bottom"
         android:layout_marginTop="@dimen/margin_extra_large"
         android:layout_marginBottom="@dimen/margin_extra_large" />

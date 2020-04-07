@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar
+<com.google.android.material.appbar.MaterialToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
-    android:elevation="@dimen/appbar_elevation"
-    style="@style/ToolbarTheme"/>
+    android:elevation="@dimen/plane_00"
+    android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+    tools:showIn="@layout/activity_app_settings"
+    tools:menu="@menu/menu_action_bar"/>

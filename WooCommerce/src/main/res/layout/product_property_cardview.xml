@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.woocommerce.android.ui.products.WCProductPropertyCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <LinearLayout
-        android:id="@+id/cardContainerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/cardCaptionText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Settings.Caption"
-            android:visibility="gone"
-            tools:text="cardCaptionText"
-            tools:visibility="visible"/>
-
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+    android:layout_height="wrap_content" />

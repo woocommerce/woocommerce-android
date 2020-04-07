@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.view.ViewGroup.LayoutParams
+import androidx.core.view.children
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
@@ -23,6 +25,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
+import kotlinx.android.synthetic.main.my_store_stats.*
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -57,10 +60,14 @@ class MyStoreFragment : TopLevelFragment(),
     private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
     private val activeGranularity: StatsGranularity
         get() {
-            return tab_layout.getTabAt(tabStatsPosition)?.let {
+            return tabLayout.getTabAt(tabStatsPosition)?.let {
                 it.tag as StatsGranularity
             } ?: DEFAULT_STATS_GRANULARITY
         }
+
+    private val tabLayout: TabLayout by lazy {
+        TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
+    }
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -75,13 +82,6 @@ class MyStoreFragment : TopLevelFragment(),
         val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
             dashboard_refresh_layout.apply {
-                activity?.let { activity ->
-                    setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.colorPrimary),
-                            ContextCompat.getColor(activity, R.color.colorAccent),
-                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                    )
-                }
                 setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
@@ -108,12 +108,13 @@ class MyStoreFragment : TopLevelFragment(),
 
         presenter.takeView(this)
 
+        // Create tabs and add to appbar
         StatsGranularity.values().forEach { granularity ->
-            val tab = tab_layout.newTab().apply {
+            val tab = tabLayout.newTab().apply {
                 setText(my_store_stats.getStringForGranularity(granularity))
                 tag = granularity
             }
-            tab_layout.addTab(tab)
+            tabLayout.addTab(tab)
 
             // Start with the given time period selected
             if (granularity == activeGranularity) {
@@ -132,7 +133,7 @@ class MyStoreFragment : TopLevelFragment(),
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
 
-        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
                 my_store_date_bar.clearDateRangeValues()
@@ -153,17 +154,22 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onResume() {
         super.onResume()
+        addTabLayoutToAppBar(tabLayout)
         AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // silently refresh if this fragment is no longer hidden
-        if (!isHidden && !isStatsRefreshed) {
-            refreshMyStoreStats(forced = false)
+        if (!isHidden) {
+            if (!isStatsRefreshed) {
+                // silently refresh if this fragment is no longer hidden
+                refreshMyStoreStats(forced = false)
+            }
+            addTabLayoutToAppBar(tabLayout)
         } else {
             isStatsRefreshed = false
+            removeTabLayoutFromAppBar(tabLayout)
         }
     }
 
@@ -173,6 +179,7 @@ class MyStoreFragment : TopLevelFragment(),
         if (!deferInit) {
             refreshMyStoreStats(forced = this.isRefreshPending)
         }
+        addTabLayoutToAppBar(tabLayout)
     }
 
     override fun onStop() {
@@ -190,7 +197,7 @@ class MyStoreFragment : TopLevelFragment(),
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putInt(STATE_KEY_TAB_POSITION, tab_layout.selectedTabPosition)
+        outState.putInt(STATE_KEY_TAB_POSITION, tabLayout.selectedTabPosition)
         outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewShowing())
     }
 
@@ -314,6 +321,7 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
+        removeTabLayoutFromAppBar(tabLayout)
         (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
     }
 
@@ -340,10 +348,25 @@ class MyStoreFragment : TopLevelFragment(),
             empty_stats_view.visibility = View.GONE
         }
 
-        tab_layout.visibility = dashboardVisibility
+        tabLayout.visibility = dashboardVisibility
         my_store_date_bar.visibility = dashboardVisibility
         my_store_stats.visibility = dashboardVisibility
         my_store_top_earners.visibility = dashboardVisibility
+    }
+
+    private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
+            if (isActive && !appBar.children.contains(tabLayout)) {
+                appBar.addView(
+                        tabLayout,
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                )
+            }
+        }
+    }
+
+    private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
 
     private fun isEmptyViewShowing() = empty_view.visibility == View.VISIBLE

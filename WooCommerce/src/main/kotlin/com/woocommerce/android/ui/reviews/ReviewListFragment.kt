@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -100,15 +99,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(false)
-            // divider decoration between items
-            addItemDecoration(
-                    androidx.recyclerview.widget.DividerItemDecoration(
-                            context,
-                            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
-                    )
-            )
+
             // unread item decoration
             addItemDecoration(unreadDecoration)
+
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -131,13 +125,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         }
 
         notifsRefreshLayout?.apply {
-            activity.let { activity ->
-                setColorSchemeColors(
-                        ContextCompat.getColor(activity, R.color.colorPrimary),
-                        ContextCompat.getColor(activity, R.color.colorAccent),
-                        ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                )
-            }
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = reviewsList
             setOnRefreshListener {
@@ -275,20 +262,16 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        if (isActive) {
-            notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
-        }
+        notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showSkeleton(show: Boolean) {
-        if (isActive) {
-            when (show) {
-                true -> {
-                    skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
-                    showEmptyView(false)
-                }
-                false -> skeletonView.hide()
+        when (show) {
+            true -> {
+                skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+                showEmptyView(false)
             }
+            false -> skeletonView.hide()
         }
     }
 

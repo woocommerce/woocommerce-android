@@ -1,7 +1,9 @@
 package com.woocommerce.android.widgets
 
+import android.R.attr
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -9,7 +11,6 @@ import android.widget.Checkable
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.view_toggle_single_option.view.*
 
@@ -20,27 +21,25 @@ import kotlinx.android.synthetic.main.view_toggle_single_option.view.*
  *
  * This class could eventually be further genericized for even more flexibility.
  */
-class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), Checkable {
+class WCToggleSingleOptionView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(ctx, attrs, defStyleAttr), Checkable {
     init {
         View.inflate(context, R.layout.view_toggle_single_option, this)
-        orientation = LinearLayout.VERTICAL
+        orientation = VERTICAL
+
+        // Sets the selectable background
+        val outValue = TypedValue()
+        context.theme.resolveAttribute(attr.selectableItemBackground, outValue, true)
+        setBackgroundResource(outValue.resourceId)
 
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCToggleSingleOptionView)
             try {
                 // Set the view title
                 switchSetting_title.text = a.getString(R.styleable.WCToggleSingleOptionView_switchTitle).orEmpty()
-
-                // set the summary text color
-                var textColor = a.getColor(R.styleable.WCToggleSingleOptionView_switchSummaryTextColor, 0)
-                if (textColor == 0) {
-                    val textColorResId = a.getResourceId(
-                            R.styleable.WCToggleSingleOptionView_switchSummaryTextColor, R.color.wc_grey_medium
-                    )
-                    textColor = ContextCompat.getColor(context, textColorResId)
-                }
-                switchSetting_switch.setTextColor(textColor)
 
                 // Set the summary and switch state
                 switchSetting_switch.isChecked =
@@ -53,10 +52,6 @@ class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: At
                 switchSetting_switch.textOn = resources.getString(R.string.toggle_option_checked)
                 switchSetting_switch.textOff = resources.getString(R.string.toggle_option_not_checked)
 
-                // add top padding between the switch title and subtitle
-                val topPadding = a.getDimensionPixelSize(R.styleable.WCToggleSingleOptionView_switchTopPadding, 0)
-                switchSetting_switch.setPadding(0, topPadding, 0, 0)
-
                 setOnClickListener { toggle() }
             } finally {
                 a.recycle()
@@ -67,7 +62,7 @@ class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: At
     private val checkable: CompoundButton by lazy {
         switchSetting_switch
     }
-    var listener: CompoundButton.OnCheckedChangeListener? = null
+    var listener: OnCheckedChangeListener? = null
 
     override fun isChecked() = checkable.isChecked
 

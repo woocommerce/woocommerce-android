@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="woo_purple_30">#B17FD4</color>
+    <color name="woo_purple_50">#7F54B3</color>
+    <color name="woo_purple_60">#674399</color>
+    <color name="woo_purple_80">#3C2861</color>
+
+    <color name="woo_pink_10">#ED9BB8</color>
+    <color name="woo_pink_30">#EB6594</color>
+    <color name="woo_pink_50">#C9356E</color>
+    <color name="woo_pink_70">#880E4F</color>
+    <color name="woo_pink_90">#5C0935</color>
+
+    <color name="woo_red_5">#FACFD2</color>
+    <color name="woo_red_30">#F86368</color>
+    <color name="woo_red_50">#D63638</color>
+
+    <color name="woo_blue_30">#5198D9</color>
+    <color name="woo_blue_50">#2271B1</color>
+
+    <color name="woo_orange_5">#F7DCC6</color>
+    <color name="woo_orange_30">#E68B28</color>
+    <color name="woo_orange_50">#B26200</color>
+
+    <color name="woo_yellow_30">#DBAE17</color>
+    <color name="woo_yellow_50">#907300</color>
+
+    <color name="woo_celadon_5">#A7E8D4</color>
+
+    <color name="woo_white">@android:color/white</color>
+    <color name="woo_white_alpha_005">#0DFFFFFF</color>
+    <color name="woo_white_alpha_012">#1FFFFFFF</color>
+    <color name="woo_white_alpha_038">#61FFFFFF</color>
+    <color name="woo_white_alpha_060">#99FFFFFF</color>
+    <color name="woo_white_alpha_087">#DEFFFFFF</color>
+
+    <color name="woo_gray_5">#DCDCDE</color>
+    <color name="woo_gray_900">#F7F7F7</color>
+
+    <color name="woo_black">@android:color/black</color>
+    <color name="woo_black_90">#121212</color>
+    <color name="woo_black_90_alpha_012">#1F121212</color>
+    <color name="woo_black_90_alpha_020">#33121212</color>
+    <color name="woo_black_90_alpha_038">#61121212</color>
+    <color name="woo_black_90_alpha_060">#99121212</color>
+    <color name="woo_black_90_alpha_087">#DE121212</color>
+    <color name="woo_black_900">#272727</color>
+</resources>

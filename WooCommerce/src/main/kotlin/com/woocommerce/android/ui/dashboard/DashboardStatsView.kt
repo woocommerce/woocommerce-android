@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -23,6 +22,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -46,9 +46,13 @@ import org.wordpress.android.util.DateTimeUtils
 import java.io.Serializable
 import java.util.ArrayList
 import java.util.Date
+import java.util.Locale
 
-class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), OnChartValueSelectedListener, BarChartGestureListener {
+class DashboardStatsView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr), OnChartValueSelectedListener, BarChartGestureListener {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
     }
@@ -95,6 +99,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 // TODO: add a custom empty view
                 chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             }
+            field = value
         }
 
     private val fadeHandler = Handler()
@@ -126,7 +131,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 // Track range change
                 AnalyticsTracker.track(
                         Stat.DASHBOARD_MAIN_STATS_DATE,
-                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
+                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase(Locale.ROOT)))
 
                 isRequestingStats = true
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
@@ -194,6 +199,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
 
                 setLabelCount(2, true) // Only show first and last date
+                textColor = ContextCompat.getColor(context, R.color.graph_label_color)
+
+                // Couldn't use the dimension resource here due to the way this component is written :/
+                textSize = 10f
 
                 valueFormatter = StartEndDateAxisFormatter()
                 yOffset = resources.getDimension(R.dimen.chart_axis_bottom_padding)
@@ -206,8 +215,20 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setDrawTopYLabelEntry(true)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
-                zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
-                gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                zeroLineColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                setLabelCount(3, true)
+                textColor = ContextCompat.getColor(context, R.color.graph_label_color)
+
+                // Couldn't use the dimension resource here due to the way this component is written :/
+                textSize = 10f
+
+                valueFormatter = IAxisValueFormatter { value, _ ->
+                    // Only use non-zero values for the axis
+                    value.toDouble().takeIf { it > 0 }?.let {
+                        getFormattedRevenueValue(it)
+                    }.orEmpty()
+                }
             }
 
             description.isEnabled = false
@@ -449,7 +470,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         // fade in the new value after fade out finishes
         val delay = duration.toMillis(context) + 100
         fadeHandler.postDelayed({
-            val color = ContextCompat.getColor(context, R.color.default_text_title)
+            val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
             view.setTextColor(color)
             view.text = value
             WooAnimUtils.fadeIn(view, duration)

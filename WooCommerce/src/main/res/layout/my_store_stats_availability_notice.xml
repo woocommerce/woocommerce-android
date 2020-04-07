@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:context=".ui.dashboard.DashboardFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,69 +15,58 @@
         <!-- VIEW MORE Button -->
         <ToggleButton
             android:id="@+id/my_store_availability_viewMore"
-            style="@style/Woo.Stats.Availability.CardExtenderButton"
+            style="@style/Woo.Card.ExpanderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:textOff="@string/my_store_stats_availability_title"
-            android:textOn="@string/my_store_stats_availability_title"/>
+            tools:textOff="@string/my_store_stats_availability_title"
+            tools:textOn="@string/my_store_stats_availability_title"
+            android:drawableStart="@drawable/ic_gridicons_gift"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/my_store_availability_morePanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/default_padding"
-            android:paddingTop="@dimen/default_padding"
-            android:paddingStart="@dimen/card_padding_start"
-            android:layout_marginStart="9dp"
-            android:paddingEnd="0dp"
             android:visibility="gone"
             tools:visibility="visible">
 
             <!-- Message -->
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/my_store_availability_message"
+                style="@style/Woo.Card.Body"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_extra_large"
-                android:gravity="start"
-                android:lineSpacingExtra="4sp"
-                android:paddingBottom="@dimen/default_padding"
-                android:paddingEnd="@dimen/card_padding_end"
-                android:paddingStart="@dimen/card_padding_start"
-                android:text="@string/my_store_stats_availability_message"
-                android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
+                android:layout_marginTop="@dimen/minor_100"
+                tools:text="@string/my_store_stats_availability_message"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <!-- TRY IT NOW button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_try"
-                style="@style/Woo.Button"
+            <!-- PRIMARY button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_primary"
+                style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/try_it_now"
+                tools:text="@string/try_it_now"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
 
-            <!-- NO THANKS button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_no_thanks"
-                style="@style/Woo.Button"
+            <!-- SECONDARY button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_secondary"
+                style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/no_thanks"
+                android:layout_marginEnd="@dimen/minor_100"
+                tools:text="@string/no_thanks"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_try"
+                app:layout_constraintEnd_toStartOf="@+id/btn_primary"
                 app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </LinearLayout>
 
 </merge>
-

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,13 +14,13 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/empty_view_text"
-            style="@style/Woo.TextAppearance.Large"
+            style="@style/Woo.Card.StatusMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginStart="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_200"
             android:textAlignment="center"
             tools:text="@string/error_generic_network" />
 
@@ -28,19 +29,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="@dimen/major_200"
             android:importantForAccessibility="no"
-            android:minWidth="100dp"
-            android:minHeight="100dp"
+            android:minWidth="@dimen/image_major_100"
+            android:minHeight="@dimen/image_major_100"
             app:srcCompat="@drawable/ic_woo_error_state" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/empty_view_button"
-            style="@style/Woo.Button.Purple"
+            style="@style/Woo.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="@dimen/major_200"
             android:text="@string/share_store_button" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

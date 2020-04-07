@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.PopupMenu
-import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -19,8 +19,11 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 
-class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class OrderDetailCustomerInfoView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
@@ -73,7 +76,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             }
 
             // display phone only if available, otherwise, hide the view
-            if (!order.billingPhone.isEmpty()) {
+            if (order.billingPhone.isNotEmpty()) {
                 customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
                 customerInfo_phone.visibility = View.VISIBLE
                 customerInfo_divider3.visibility = View.VISIBLE
@@ -88,7 +91,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             }
 
             // display email address info only if available, otherwise, hide the view
-            if (!order.billingEmail.isEmpty()) {
+            if (order.billingEmail.isNotEmpty()) {
                 customerInfo_emailAddr.text = order.billingEmail
                 customerInfo_emailAddr.visibility = View.VISIBLE
                 customerInfo_emailBtn.visibility - View.VISIBLE
