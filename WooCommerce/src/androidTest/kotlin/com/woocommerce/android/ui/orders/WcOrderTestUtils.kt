@@ -22,8 +22,9 @@ object WcOrderTestUtils {
     private val MULTIPLE_PRODUCTS = Gson().toJson(
             listOf(
                     mapOf(
-                            "productId" to "290",
-                            "variationId" to "0",
+                            "id" to "1",
+                            "product_id" to "290",
+                            "variation_id" to "0",
                             "name" to "Black T-shirt",
                             "quantity" to 1,
                             "subtotal" to 10,
@@ -33,8 +34,9 @@ object WcOrderTestUtils {
                             "sku" to "blabla"
                     ),
                     mapOf(
-                            "productId" to "291",
-                            "variationId" to "2",
+                            "id" to "2",
+                            "product_id" to "291",
+                            "variation_id" to "2",
                             "name" to "White Pants",
                             "quantity" to 2,
                             "subtotal" to 12,
