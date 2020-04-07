@@ -28,9 +28,9 @@ import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
-        const val AZTEC_EDITOR_REQUEST_CODE = 3001
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
         const val ARG_AZTEC_HAS_CHANGES = "editor-has-changes"
+
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
         private const val FIELD_IS_HTML_EDITOR_ENABLED = "is_html_editor_enabled"
     }

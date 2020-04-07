@@ -74,6 +74,10 @@
             android:name="aztecTitle"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="requestCode"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/productInventoryFragment"
