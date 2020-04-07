@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,26 +10,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/card_padding_start"
-        android:paddingEnd="@dimen/card_padding_end">
+        android:orientation="vertical">
 
         <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/list_divider"
-            app:srcCompat="@drawable/list_divider" />
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_padding_top">
+            android:layout_height="wrap_content">
 
             <FrameLayout
                 android:id="@+id/issueRefund_shippingIconFrame"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
                 android:background="@drawable/picture_frame"
                 android:padding="1dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -36,28 +34,22 @@
 
                 <ImageView
                     android:id="@+id/issueRefund_shippingIcon"
-                    android:layout_width="@dimen/product_icon_sz"
-                    android:layout_height="@dimen/product_icon_sz"
-                    android:background="#F7F7F7"
+                    android:layout_width="@dimen/image_minor_100"
+                    android:layout_height="@dimen/image_minor_100"
                     android:contentDescription="@string/orderdetail_product_image_contentdesc"
-                    android:padding="8dp"
+                    android:padding="@dimen/minor_100"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/ic_shipping_grey_24dp"
+                    app:srcCompat="@drawable/ic_gridicons_shipping"
                     tools:visibility="visible" />
 
             </FrameLayout>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/issueRefund_shippingName"
-                android:layout_width="wrap_content"
+                style="@style/Woo.Card.Title"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_extra_large"
-                android:layout_marginTop="1dp"
-                android:layout_marginEnd="@dimen/margin_extra_large"
-                android:includeFontPadding="false"
                 android:maxLines="2"
-                android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
-                android:textSize="@dimen/text_medium"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -65,52 +57,49 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="USPS Flatrate shipping" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/issueRefund_shippingDescription"
-                android:layout_width="wrap_content"
+                style="@style/Woo.Card.Body"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:textSize="@dimen/text_caption"
-                android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
-                app:layout_constraintEnd_toEndOf="@+id/issueRefund_shippingName"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/issueRefund_shippingName"
+                app:layout_constraintStart_toEndOf="@+id/issueRefund_shippingIconFrame"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingName"
                 tools:text="$10.00" />
 
             <View
                 android:id="@+id/issueRefund_dividerBelowShipping"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                android:background="@color/list_divider"
+                style="@style/Woo.Divider"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingIconFrame"
-                app:srcCompat="@drawable/list_divider" />
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingIconFrame" />
 
             <LinearLayout
                 android:id="@+id/issueRefund_shippingSubtotalSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
                 android:orientation="horizontal"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowShipping">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/issueRefund_lblShippingSubtotal"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/subtotal"
-                    android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance" />
+                    android:layout_marginTop="@dimen/major_75"
+                    android:text="@string/subtotal" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/issueRefund_shippingSubtotal"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_marginTop="@dimen/major_75"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
                     tools:text="$45.00" />
 
             </LinearLayout>
@@ -119,38 +108,41 @@
                 android:id="@+id/issueRefund_shippingTaxesSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_item_padding_intra_h"
                 android:orientation="horizontal"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingSubtotalSection">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/issueRefund_lblShippingTax"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/taxes"
-                    android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance" />
+                    android:layout_marginTop="@dimen/minor_50"
+                    android:text="@string/taxes" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/issueRefund_shippingTax"
+                    style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                    android:layout_marginTop="@dimen/minor_50"
                     tools:text="$45.00" />
 
             </LinearLayout>
 
             <View
                 android:id="@+id/issueRefund_dividerBelowShippingTaxes"
+                style="@style/Woo.Divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                android:background="@color/list_divider"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"
+                android:layout_marginTop="@dimen/major_75"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingTaxesSection"
-                app:srcCompat="@drawable/list_divider" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingTaxesSection" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -160,23 +152,24 @@
         android:id="@+id/issueRefund_shippingShippingRefundSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
         android:orientation="horizontal">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/issueRefund_lblShippingRefundTotal"
+            style="@style/Woo.Card.Body.Bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/order_refunds_shipping_refund"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
+            android:text="@string/order_refunds_shipping_refund" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/issueRefund_shippingRefundTotalButton"
             style="@style/Woo.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/major_100"
+            android:paddingStart="@dimen/major_100"
+            android:includeFontPadding="false"
             android:textAllCaps="false"
             tools:text="$49.00" />
 

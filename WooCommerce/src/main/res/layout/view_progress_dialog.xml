@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginStart="@dimen/margin_large"
-    android:layout_marginEnd="@dimen/margin_large">
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/progress_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingStart="@dimen/card_padding_start"
-        android:paddingTop="@dimen/card_padding_top"
-        android:paddingEnd="@dimen/card_padding_end"
-        android:paddingBottom="@dimen/card_padding_end">
+        android:layout_height="match_parent">
 
         <!-- Title -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/progress_title"
+            style="@style/Woo.TextView.Headline6"
             android:layout_width="0dp"
+            android:layout_marginStart="@dimen/major_150"
+            android:layout_marginEnd="@dimen/major_150"
+            android:layout_marginTop="@dimen/major_100"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.TextAppearance"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -30,21 +28,27 @@
 
         <ProgressBar
             android:id="@+id/progress_bar"
+            style="@style/Woo.ProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginStart="@dimen/major_150"
+            android:layout_marginEnd="@dimen/major_150"
+            android:layout_marginBottom="@dimen/major_100"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progress_title" />
 
         <!-- Message -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/progress_text"
+            style="@style/Woo.TextView.Body2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginStart="@dimen/major_75"
+            android:layout_marginEnd="@dimen/major_150"
             android:layout_marginTop="@dimen/margin_medium"
-            android:textAppearance="@style/Woo.TextAppearance.Small"
+            android:layout_marginBottom="@dimen/major_100"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/progress_bar"
@@ -52,4 +56,4 @@
             tools:text="@string/product_update_dialog_message" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

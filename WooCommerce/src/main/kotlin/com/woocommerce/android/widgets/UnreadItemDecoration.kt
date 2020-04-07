@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import org.wordpress.android.util.DisplayUtils
+import kotlin.math.roundToInt
 
 /**
- * Item decoration for recycler views which simply shows a vertical green bar to the left to
- * indicate unread items (such as unread notifications)
+ * Item decoration for recycler views which simply shows a vertical indicator bar to the left to
+ * communicate unread items (such as unread product reviews)
  */
-class UnreadItemDecoration(context: Context, val decorListener: ItemDecorationListener) :
+class UnreadItemDecoration(context: Context, private val decorListener: ItemDecorationListener) :
         DividerItemDecoration(context, HORIZONTAL) {
     interface ItemDecorationListener {
         fun getItemTypeAtPosition(position: Int): ItemType
@@ -37,15 +38,14 @@ class UnreadItemDecoration(context: Context, val decorListener: ItemDecorationLi
             val position = child?.let { parent.getChildAdapterPosition(it) }
                     ?: SectionedRecyclerViewAdapter.INVALID_POSITION
             if (position != SectionedRecyclerViewAdapter.INVALID_POSITION) {
-                val itemType = decorListener.getItemTypeAtPosition(position)
                 /*
                  * note that we have to draw the indicator for all items rather than just unread ones
                  * in order to paint over recycled cells that have a previously-drawn indicator
                  */
-                val colorId = when (itemType) {
-                    ItemType.HEADER -> R.color.list_header_bg
-                    ItemType.UNREAD -> R.color.wc_green
-                    else -> R.color.list_item_bg
+                val colorId = when (decorListener.getItemTypeAtPosition(position)) {
+                    ItemType.HEADER -> android.R.color.transparent
+                    ItemType.UNREAD -> R.color.unread_indicator_color
+                    else -> android.R.color.transparent
                 }
 
                 val paint = Paint()
@@ -53,7 +53,7 @@ class UnreadItemDecoration(context: Context, val decorListener: ItemDecorationLi
 
                 parent.getDecoratedBoundsWithMargins(child, bounds)
                 val top = bounds.top.toFloat()
-                val bottom = (bounds.bottom + Math.round(child.translationY)).toFloat()
+                val bottom = (bounds.bottom + child.translationY.roundToInt()).toFloat()
                 val left = bounds.left.toFloat()
                 val right = left + dividerWidth
 

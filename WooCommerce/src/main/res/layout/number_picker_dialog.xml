@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/number_picker_header"
+        style="@style/Woo.TextView.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="@dimen/major_100"
         android:layout_marginBottom="8dp"
         android:duplicateParentState="true"
-        android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"/>
+        android:layout_marginEnd="@dimen/major_150"
+        android:layout_marginStart="@dimen/major_150"
+        tools:text="Pick a number"/>
 
     <NumberPicker
         android:id="@+id/number_picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:duplicateParentState="true"
-        android:theme="@style/NumberPickerTheme"/>
+        android:theme="@style/Theme.Woo.NumberPicker"/>
 
 </LinearLayout>

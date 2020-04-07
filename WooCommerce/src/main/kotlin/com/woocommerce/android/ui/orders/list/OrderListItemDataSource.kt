@@ -44,6 +44,9 @@ class OrderListItemDataSource(
     ): List<OrderListItemUIType> {
         val remoteItemIds = itemIdentifiers.mapNotNull { (it as? OrderIdentifier)?.remoteId }
         val ordersMap = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
+        val isLastItemByRemoteIdMap = itemIdentifiers
+                .mapNotNull { (it as? OrderIdentifier) }
+                .associate { it.remoteId to it.isLastItemInSection }
 
         // Fetch missing items
         fetcher.fetchOrders(
@@ -63,7 +66,8 @@ class OrderListItemDataSource(
                             orderTotal = order.total,
                             status = order.status,
                             dateCreated = order.dateCreated,
-                            currencyCode = order.currency
+                            currencyCode = order.currency,
+                            isLastItemInSection = isLastItemByRemoteIdMap[RemoteId(order.remoteOrderId)] ?: false
                     )
                 }
             }
@@ -129,22 +133,28 @@ class OrderListItemDataSource(
 
         val allItems = mutableListOf<OrderListItemIdentifier>()
         if (listFuture.isNotEmpty()) {
+            listFuture.lastOrNull()?.isLastItemInSection = true
             allItems += listOf(SectionHeaderIdentifier(GROUP_FUTURE)) + listFuture
         }
 
         if (listToday.isNotEmpty()) {
+            listToday.lastOrNull()?.isLastItemInSection = true
             allItems += listOf(SectionHeaderIdentifier(GROUP_TODAY)) + listToday
         }
         if (listYesterday.isNotEmpty()) {
+            listYesterday.lastOrNull()?.isLastItemInSection = true
             allItems += listOf(SectionHeaderIdentifier(GROUP_YESTERDAY)) + listYesterday
         }
         if (listTwoDays.isNotEmpty()) {
+            listTwoDays.lastOrNull()?.isLastItemInSection = true
             allItems += listOf(SectionHeaderIdentifier(GROUP_OLDER_TWO_DAYS)) + listTwoDays
         }
         if (listWeek.isNotEmpty()) {
+            listWeek.lastOrNull()?.isLastItemInSection = true
             allItems += listOf(SectionHeaderIdentifier(GROUP_OLDER_WEEK)) + listWeek
         }
         if (listMonth.isNotEmpty()) {
+            listMonth.lastOrNull()?.isLastItemInSection = true
             allItems += listOf(SectionHeaderIdentifier(GROUP_OLDER_MONTH)) + listMonth
         }
         return allItems

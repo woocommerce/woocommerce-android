@@ -4,16 +4,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:drawable="@drawable/button_purple_bg_oval"
+        android:drawable="@drawable/button_bg_oval_secondary"
         android:gravity="center"/>
 
     <item
-        android:left="@dimen/card_level_button_padding"
-        android:right="@dimen/card_level_button_padding"
-        android:end="@dimen/card_level_button_padding"
-        android:start="@dimen/card_level_button_padding"
-        android:top="@dimen/card_level_button_padding"
-        android:bottom="@dimen/card_level_button_padding"
+        android:left="@dimen/minor_75"
+        android:right="@dimen/minor_75"
+        android:end="@dimen/minor_75"
+        android:start="@dimen/minor_75"
+        android:top="@dimen/minor_75"
+        android:bottom="@dimen/minor_75"
         android:drawable="@drawable/ic_close"
         android:gravity="center"
         tools:targetApi="m"/>

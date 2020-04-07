@@ -94,7 +94,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
         verify(reviewListRepository, times(1)).fetchProductReviews(any())
         verify(reviewListRepository, times(2)).getCachedProductReviews()
         Assertions.assertThat(reviewList).isEqualTo(reviews)
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
         assertTrue(hasUnread)
     }
 
@@ -118,7 +117,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
         verify(reviewListRepository, times(0)).fetchProductReviews(any())
         verify(reviewListRepository, times(1)).getCachedProductReviews()
         Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
     }
 
     @Test
@@ -152,7 +150,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
         verify(reviewListRepository, times(1)).fetchProductReviews(any())
         verify(reviewListRepository, times(1)).getCachedProductReviews()
         Assertions.assertThat(reviewList).isEqualTo(reviews)
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
         assertFalse(hasUnread)
         Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.review_fetch_error))
     }

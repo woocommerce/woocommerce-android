@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -117,9 +118,19 @@ class MainActivity : AppUpgradeActivity(),
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
+    /**
+     * Manually set the theme here so the splash screen will be visible while this activity
+     * is loading. Also setting it here ensures all fragments used in this activity will also
+     * use this theme at runtime (in the case of switching the theme at runtime).
+     */
+    override fun getTheme(): Theme {
+        return super.getTheme().also { it.applyStyle(R.style.Theme_Woo_DayNight, true) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         // Set the toolbar
@@ -321,11 +332,11 @@ class MainActivity : AppUpgradeActivity(),
 
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        val showToolbarShadow: Boolean
+        val showBottomNav: Boolean
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
-            showToolbarShadow = true
+            showBottomNav = true
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
@@ -343,10 +354,6 @@ class MainActivity : AppUpgradeActivity(),
                     false
                 }
             }
-            showToolbarShadow = when (destination.id) {
-                R.id.issueRefundFragment -> false
-                else -> true
-            }
         }
         supportActionBar?.let { actionBar ->
             actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
@@ -356,12 +363,6 @@ class MainActivity : AppUpgradeActivity(),
                 R.drawable.ic_back_white_24dp
             }
             actionBar.setHomeAsUpIndicator(icon)
-
-            if (showToolbarShadow) {
-                actionBar.elevation = resources.getDimension(R.dimen.appbar_elevation)
-            } else {
-                actionBar.elevation = 0f
-            }
 
             // the image viewer should be shown full screen and we hide the actionbar since the fragment
             // provides its own toolbar
@@ -531,19 +532,19 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
-            bottomNavView.hideOrderBadgeCount()
+            bottomNavView.clearOrderBadgeCount()
         }
         presenter.fetchUnfilledOrderCount()
     }
 
     override fun showOrderBadge(count: Int) {
         unfilledOrderCount = count
-        bottomNavView.showOrderBadge(count)
+        bottomNavView.setOrderBadgeCount(count)
     }
 
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
-        bottomNavView.hideOrderBadge()
+        bottomNavView.setOrderBadgeCount(0)
     }
 
     override fun fetchRevenueStatsAvailability(site: SiteModel) {

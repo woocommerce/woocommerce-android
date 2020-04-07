@@ -5,8 +5,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 
 /**
@@ -34,7 +34,7 @@ class CustomProgressDialog : DialogFragment() {
         dialogView.findViewById<TextView>(R.id.progress_title).text = progressTitle
         dialogView.findViewById<TextView>(R.id.progress_text).text = progressMessage
 
-        return AlertDialog.Builder(activity as Context)
+        return MaterialAlertDialogBuilder(activity as Context)
                 .setView(dialogView)
                 .setCancelable(false)
                 .create()

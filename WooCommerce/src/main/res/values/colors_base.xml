@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        General colors
+    -->
+    <color name="color_primary">@color/woo_purple_60</color>
+    <color name="color_primary_surface">@color/woo_purple_60</color>
+    <color name="color_secondary">@color/woo_pink_50</color>
+    <color name="color_surface">@color/woo_white</color>
+    <color name="color_error">@color/woo_red_50</color>
+    <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
+    <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
+    <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
+    <color name="color_on_primary_high">@color/woo_white</color>
+    <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
+    <color name="color_on_primary_disabled">@color/woo_white_alpha_038</color>
+    <color name="color_alert">@color/woo_yellow_50</color>
+    <color name="color_on_primary_surface_high">@color/color_on_primary_high</color>
+    <color name="color_on_secondary">@color/woo_black</color>
+    <color name="color_on_background">@color/woo_black</color>
+    <color name="color_on_error">@color/woo_white</color>
+
+    <color name="color_accent_1">@color/woo_yellow_50</color>
+    <color name="color_accent_2">@color/woo_orange_50</color>
+    <color name="color_accent_3">@color/woo_blue_50</color>
+
+    <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
+
+    <!--
+        Custom widget tint
+    -->
+    <color name="ratings_bar_progress_tint">@color/color_on_surface_high</color>
+    <color name="unread_indicator_color">@color/color_primary</color>
+
+    <!--
+        App colors
+    -->
+    <color name="default_window_background">#F2F2F2</color>
+    <color name="divider_color">@color/woo_black_90_alpha_012</color>
+    <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
+    <color name="image_border_color">@color/woo_black_90_alpha_012</color>
+
+    <!--
+        Elevation colors
+    -->
+    <color name="color_elevation_overlay_01">@color/color_surface</color>
+
+    <!--
+        Default graph colors
+    -->
+    <color name="graph_data_color">@color/woo_pink_50</color>
+    <color name="graph_grid_color">@color/woo_black_90_alpha_012</color>
+    <color name="graph_highlight_color">@color/woo_pink_90</color>
+    <color name="graph_no_data_text_color">@color/color_on_surface</color>
+    <color name="graph_label_color">@color/color_on_surface_medium</color>
+
+    <!--
+        Rating widget colors
+    -->
+    <color name="rating_star_color">@color/woo_yellow_50</color>
+
+    <!--
+        TagView colors
+    -->
+    <color name="tagView_bg">@color/tag_bg_other</color>
+    <color name="tagView_text">@color/color_on_surface_high</color>
+    <color name="tagView_border_bg">@android:color/transparent</color>
+    <color name="tag_bg_processing">@color/woo_celadon_5</color>
+    <color name="tag_bg_failed">@color/woo_red_5</color>
+    <color name="tag_bg_on_hold">@color/woo_orange_5</color>
+    <color name="tag_bg_other">@color/woo_gray_5</color>
+
+    <!--
+        Nav bar color protection for behavior differences between Android P and Q. All sdk
+        levels should draw fullscreen. P should color the nav bar with a translucent background
+        to guard for contrast. Q should have a transparent nav bar as Q will automatically
+        handles contrast by either dynamically coloring the nav bar handle (gesture nav)
+        or automatically applying a translucent background (3-button mode).
+    -->
+    <color name="nav_bar">@color/woo_black_90_alpha_020</color>
+
+    <!--
+        Products List
+    -->
+    <color name="product_stock_fg">@color/color_on_surface_medium</color>
+    <color name="product_status_fg_other">@color/woo_blue_50</color>
+    <color name="product_status_fg_pending">@color/woo_orange_50</color>
+
+    <!--
+        Aztec Editor
+    -->
+    <color name="editor_attribute_color">@color/color_secondary</color>
+    <color name="editor_bullet_color">@color/color_on_surface</color>
+    <color name="editor_code_bg_color">@android:color/transparent</color>
+    <color name="editor_code_fg_color">@color/color_on_surface</color>
+    <color name="editor_link_color">@color/color_primary</color>
+    <color name="editor_preformat_bg_color">@color/woo_black</color>
+    <color name="editor_preformat_fg_color">@color/color_on_surface_high</color>
+    <color name="editor_quote_bg_color">@color/woo_blue_50</color>
+    <color name="editor_quote_fg_color">@color/color_on_surface_high</color>
+    <color name="editor_tag_color">@color/color_primary</color>
+    <color name="editor_text_color">@color/color_on_surface_high</color>
+    <color name="editor_text_hint_color">@color/color_on_surface_disabled</color>
+
+    <!--
+        Loading Skeletons
+    -->
+    <color name="skeleton_color">@color/woo_black_90_alpha_012</color>
+    <color name="skeleton_color_inverse">@color/color_surface</color>
+</resources>

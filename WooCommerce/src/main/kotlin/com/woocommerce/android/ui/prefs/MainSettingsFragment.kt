@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -32,8 +33,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_H
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -84,7 +87,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         updateStoreViews()
 
-        buttonLogout.setOnClickListener {
+        btn_option_logout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
             settingsListener.onRequestLogout()
         }
@@ -108,9 +111,9 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         }
 
         if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
-            switchImageOptimizaton.visibility = View.VISIBLE
-            switchImageOptimizaton.isChecked = AppPrefs.getImageOptimizationEnabled()
-            switchImageOptimizaton.setOnCheckedChangeListener { _, isChecked ->
+            option_image_optimization.visibility = View.VISIBLE
+            option_image_optimization.isChecked = AppPrefs.getImageOptimizationEnabled()
+            option_image_optimization.setOnCheckedChangeListener { _, isChecked ->
                 AnalyticsTracker.track(
                         SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
                         mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
@@ -118,50 +121,50 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                 AppPrefs.setImageOptimizationEnabled(isChecked)
             }
         } else {
-            switchImageOptimizaton.visibility = View.GONE
+            option_image_optimization.visibility = View.GONE
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notifsContainerOlder.visibility = View.GONE
-            notifsContainerNewer.visibility = View.VISIBLE
-            notifsContainerNewer.setOnClickListener {
+            container_notifs_old.visibility = View.GONE
+            option_notifications.visibility = View.VISIBLE
+            option_notifications.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
                 showDeviceAppNotificationSettings()
             }
         } else {
-            notifsContainerOlder.visibility = View.VISIBLE
-            notifsContainerNewer.visibility = View.GONE
+            container_notifs_old.visibility = View.VISIBLE
+            option_notifications.visibility = View.GONE
 
-            switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
-            switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
+            option_notifs_orders.isChecked = AppPrefs.isOrderNotificationsEnabled()
+            option_notifs_orders.setOnCheckedChangeListener { _, isChecked ->
                 trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
                 AppPrefs.setOrderNotificationsEnabled(isChecked)
-                switchNotifsTone.isEnabled = isChecked
+                option_notifs_tone.isEnabled = isChecked
             }
 
-            switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
-            switchNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
+            option_notifs_reviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
+            option_notifs_reviews.setOnCheckedChangeListener { _, isChecked ->
                 trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
                 AppPrefs.setReviewNotificationsEnabled(isChecked)
             }
 
-            switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
-            switchNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
-            switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
+            option_notifs_tone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
+            option_notifs_tone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
+            option_notifs_tone.setOnCheckedChangeListener { _, isChecked ->
                 trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
                 AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
             }
         }
 
-        betaFeaturesContainer.setOnClickListener {
+        option_beta_features.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
         // TODO: commenting out this code since we are enabling products for all users in the next release.
         // Once product M2 editing features are live, we can enable product editing switch from this screen again.
-        textBetaFeaturesDetail.text = getString(R.string.settings_enable_v4_stats_title)
+        option_beta_features.optionValue = getString(R.string.settings_enable_v4_stats_title)
 
 //         // if v4 stats is available, show both products & stats under the beta setting label, otherwise
 //         // only show products
@@ -173,34 +176,40 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 //            getString(R.string.settings_enable_product_teaser_title)
 //        }
 
-        textPrivacySettings.setOnClickListener {
+        option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
-        textFeatureRequests.setOnClickListener {
+        option_feature_request.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
             context?.let { ChromeCustomTabUtils.launchUrl(it, AppUrls.APP_FEATURE_REQUEST) }
         }
 
-        textAbout.setOnClickListener {
+        option_about.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_aboutFragment)
         }
 
-        textLicenses.setOnClickListener {
+        option_licenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
         if (presenter.hasMultipleStores()) {
-            primaryStoreView.setOnClickListener {
+            option_store.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 SitePickerActivity.showSitePickerForResult(this)
             }
 
             // advertise the site switcher if we haven't already
-            WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
+            WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, option_store)
+        }
+
+        option_theme.optionValue = getString(AppPrefs.getAppTheme().label)
+        option_theme.setOnClickListener {
+            // FIXME AMANDA tracks event
+            showThemeChooser()
         }
     }
 
@@ -236,8 +245,8 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     }
 
     private fun updateStoreViews() {
-        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
-        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
+        option_store.optionTitle = presenter.getStoreDomainName()
+        option_store.optionValue = presenter.getUserDisplayName()
     }
 
     /**
@@ -250,5 +259,19 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                 AnalyticsTracker.KEY_FROM to !newValue,
                 AnalyticsTracker.KEY_TO to newValue)
         )
+    }
+
+    private fun showThemeChooser() {
+        val currentTheme = AppPrefs.getAppTheme()
+        val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
+        MaterialAlertDialogBuilder(context)
+                .setTitle(getString(R.string.settings_app_theme_title))
+                .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
+                    val selectedTheme = ThemeOption.values()[which]
+                    AppThemeUtils.setAppTheme(selectedTheme)
+                    option_theme?.optionValue = getString(selectedTheme.label)
+                    dialog.dismiss()
+                }
+                .show()
     }
 }

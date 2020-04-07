@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_window_background">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,14 +13,15 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/empty_view_title"
-            style="@style/Woo.TextAppearance.Title.Large"
+            style="@style/TextAppearance.Woo.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="@dimen/major_150"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_150"
+            android:layout_marginBottom="@dimen/major_200"
             android:maxWidth="260dp"
             android:textAlignment="center"
             tools:text="@string/get_the_word_out" />
@@ -29,28 +31,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
+            android:layout_marginBottom="@dimen/major_200"
             android:importantForAccessibility="no"
-            tools:srcCompat="@drawable/img_light_empty_my_store" />
+            tools:srcCompat="@drawable/img_empty_my_store" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/empty_view_message"
-            style="@style/Woo.TextAppearance.Large"
+            style="@style/TextAppearance.Woo.Subtitle2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="@dimen/major_150"
+            android:layout_marginEnd="@dimen/major_150"
+            android:layout_marginBottom="@dimen/major_200"
             android:maxWidth="260dp"
             android:textAlignment="center"
             tools:text="@string/share_your_store_message" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/empty_view_button"
-            style="@style/Woo.Button.Purple"
+            style="@style/Woo.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="@dimen/major_200"
             android:text="@string/share_store_button" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

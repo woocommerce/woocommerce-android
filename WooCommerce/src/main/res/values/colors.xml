@@ -6,7 +6,6 @@
     <!--
         Default Colors
     -->
-    <color name="default_window_background">#f7f7f7</color>
     <color name="default_text_color">@color/wc_grey_dark</color>
     <color name="default_button_fg_color">@color/colorPrimary</color>
     <color name="default_text_label_color">@color/colorPrimary</color>
@@ -69,18 +68,12 @@
     <color name="tagView_fgColor">#a7a7a7</color>
 
     <!-- Default List colors -->
-    <color name="list_divider">@color/wc_border_color</color>
     <color name="list_item_text">@color/default_text</color>
     <color name="list_item_text_title">@color/default_text_title</color>
     <color name="list_item_bg">@color/white</color>
     <color name="List_header_text">@color/wc_grey_mid</color>
     <color name="list_header_bg">@color/wc_grey_light</color>
     <color name="list_header_border">@color/wc_grey_17</color>
-
-    <!-- Default Tag colors -->
-    <color name="tagView_bg">@color/wc_border_color</color>
-    <color name="tagView_text">@color/default_text_title</color>
-    <color name="tagView_border_bg">@color/wc_grey_darker</color>
 
     <!-- Default Edit Text -->
     <color name="edit_text_color_control_activated">@color/grey_dark_highlight</color>
@@ -93,57 +86,10 @@
 
     <!-- Default Link Color -->
     <color name="link_text_color">@color/wc_purple</color>
-
-    <!--
-        Bottom Navigation Bar
-    -->
-    <!-- Bar Background color -->
-    <color name="bottomBar_bg">@color/white</color>
-    <!-- Option icon/text color when NOT selected -->
-    <color name="bottomBar_fg_normal">@color/wc_grey_darker</color>
-    <!-- Option icon/text color when selected -->
-    <color name="bottomBar_fg_checked">@color/colorPrimary</color>
-    <!--
-        Default graph colors
-    -->
-    <color name="graph_no_data_text_color">@color/default_text_color</color>
-    <color name="graph_data_color">@color/wc_grey_mid</color>
-    <color name="graph_grid_color">@color/wc_border_color</color>
-    <color name="graph_highlight_color">@color/wc_purple</color>
     <!--
         Dialog colors
     -->
     <color name="dialog_content_text_color">@color/wc_grey_medium</color>
-    <!--
-        Order: status tag background colors
-    -->
-    <color name="orderStatus_processing_text">@color/tagView_text</color>
-    <color name="orderStatus_processing_bg">@color/wc_green_lightest</color>
-    <color name="orderStatus_processing_border">@color/wc_green_light</color>
-
-    <color name="orderStatus_pending_text">@color/tagView_text</color>
-    <color name="orderStatus_pending_bg">@color/wc_green_lightest</color>
-    <color name="orderStatus_pending_border">@color/wc_green_light</color>
-
-    <color name="orderStatus_failed_text">@color/tagView_text</color>
-    <color name="orderStatus_failed_bg">@color/wc_red_lightest</color>
-    <color name="orderStatus_failed_border">@color/wc_red_light</color>
-
-    <color name="orderStatus_completed_text">@color/tagView_text</color>
-    <color name="orderStatus_completed_bg">@color/wc_blue_lightest</color>
-    <color name="orderStatus_completed_border">@color/wc_blue_light</color>
-
-    <color name="orderStatus_hold_text">@color/tagView_text</color>
-    <color name="orderStatus_hold_bg">@color/wc_border_color</color>
-    <color name="orderStatus_hold_border">@color/wc_grey_17</color>
-
-    <color name="orderStatus_cancelled_text">@color/tagView_text</color>
-    <color name="orderStatus_cancelled_bg">@color/wc_border_color</color>
-    <color name="orderStatus_cancelled_border">@color/wc_grey_17</color>
-
-    <color name="orderStatus_refunded_text">@color/tagView_text</color>
-    <color name="orderStatus_refunded_bg">@color/wc_red_lightest</color>
-    <color name="orderStatus_refunded_border">@color/wc_red_light</color>
     <!--
         Order: Order note icon colors
     -->
@@ -154,7 +100,6 @@
     <!-- Login -->
     <!-- Login uses snake_case instead of CamelCase for the main color palette,
     this makes sure they're not used accidentally -->
-    <color name="color_primary">@color/colorPrimary</color>
     <color name="color_primary_dark">@color/colorPrimaryDark</color>
     <color name="color_accent">@color/colorAccent</color>
 
@@ -182,9 +127,6 @@
     <color name="login_input_icon_color">@color/wc_grey_30</color>
     <color name="login_input_password_icon_color">@color/wc_grey_30</color>
     <color name="login_notification_accent_color">@color/colorPrimary</color>
-
-    <color name="skeleton_color">#16000000</color>
-    <color name="skeleton_color_light">@color/white</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#1F000000</color>
 </resources>

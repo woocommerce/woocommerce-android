@@ -82,28 +82,28 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = context.getString(R.string.get_the_word_out)
                 message = context.getString(R.string.share_your_store_message)
                 buttonText = context.getString(R.string.share_store_button)
-                drawableId = R.drawable.img_light_empty_my_store
+                drawableId = R.drawable.img_empty_my_store
             }
             ORDER_LIST -> {
                 isTitleBold = true
                 title = context.getString(R.string.empty_order_list_title)
                 message = context.getString(R.string.empty_order_list_message)
                 buttonText = context.getString(R.string.learn_more)
-                drawableId = R.drawable.img_light_empty_orders_no_orders
+                drawableId = R.drawable.img_empty_orders_no_orders
             }
             ORDER_LIST_LOADING -> {
                 isTitleBold = true
                 title = context.getString(R.string.orderlist_loading)
                 message = null
                 buttonText = null
-                drawableId = R.drawable.img_light_empty_orders_looking_up
+                drawableId = R.drawable.img_empty_orders_loading
             }
             ORDER_LIST_ALL_PROCESSED -> {
                 isTitleBold = true
                 title = context.getString(R.string.empty_order_list_all_processed)
                 message = null
                 buttonText = null
-                drawableId = R.drawable.img_light_empty_orders_all_fulfilled
+                drawableId = R.drawable.img_empty_orders_all_fulfilled
             }
             ORDER_LIST_FILTERED -> {
                 isTitleBold = false
@@ -114,7 +114,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 )
                 message = null
                 buttonText = null
-                drawableId = R.drawable.img_light_empty_search
+                drawableId = R.drawable.img_empty_search
             }
             PRODUCT_LIST -> {
                 // TODO: once adding products is supported, this needs to be updated to match designs
@@ -122,14 +122,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = context.getString(R.string.product_list_empty)
                 message = null
                 buttonText = null
-                drawableId = R.drawable.img_light_empty_products
+                drawableId = R.drawable.img_empty_products
             }
             REVIEW_LIST -> {
                 isTitleBold = true
                 title = context.getString(R.string.empty_review_list_title)
                 message = context.getString(R.string.empty_review_list_message)
                 buttonText = context.getString(R.string.learn_more)
-                drawableId = R.drawable.img_light_empty_reviews
+                drawableId = R.drawable.img_empty_reviews
             }
             SEARCH_RESULTS -> {
                 isTitleBold = false
@@ -137,7 +137,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
                 message = null
                 buttonText = null
-                drawableId = R.drawable.img_light_empty_search
+                drawableId = R.drawable.img_empty_search
             }
             NETWORK_ERROR -> {
                 isTitleBold = false

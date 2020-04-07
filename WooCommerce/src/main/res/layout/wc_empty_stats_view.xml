@@ -1,43 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/Woo.Card.WithoutPadding"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/empty_stats_view_date_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginStart="@dimen/margin_extra_large"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:text="@string/dashboard_stats_todays_stats"
-        android:textColor="@color/wc_grey_medium"
-        android:textSize="@dimen/text_medium"
-        android:textStyle="bold" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:background="@color/list_divider" />
-
-    <include
-        layout="@layout/dashboard_main_stats_row"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_large" />
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:paddingBottom="@dimen/card_padding_bottom"
-        android:text="@string/dashboard_stats_updated_now"
-        android:textColor="@color/wc_grey_mid"
-        android:textSize="@dimen/text_caption" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/empty_stats_view_date_title"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/dashboard_stats_todays_stats"/>
 
-</LinearLayout>
+        <View style="@style/Woo.Divider"/>
+
+        <include
+            layout="@layout/dashboard_main_stats_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100" />
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/Woo.TextView.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:paddingBottom="@dimen/major_100"
+            android:text="@string/dashboard_stats_updated_now"/>
+
+    </LinearLayout>
+</merge>

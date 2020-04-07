@@ -35,8 +35,13 @@ sealed class OrderListItemUIType {
         val orderTotal: String,
         val status: String,
         val dateCreated: String,
-        val currencyCode: String
+        val currencyCode: String,
+        val isLastItemInSection: Boolean = false
     ) : OrderListItemUIType()
 
     override fun equals(other: Any?) = other?.let { this::class == other::class } ?: false
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }

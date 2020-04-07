@@ -15,7 +15,7 @@
             android:translateY="1545.000000">
             <path
                 android:name="Oval"
-                android:fillColor="@color/orderNote_system"
+                android:fillColor="@color/color_primary"
                 android:fillType="evenOdd"
                 android:strokeWidth="1"
                 android:pathData="M 13 0 C 20.1797017478 0 26 5.8202982522 26 13 C 26 20.1797017478 20.1797017478 26 13 26 C 5.8202982522 26 0 20.1797017478 0 13 C 0 5.8202982522 5.8202982522 0 13 0 Z" />
