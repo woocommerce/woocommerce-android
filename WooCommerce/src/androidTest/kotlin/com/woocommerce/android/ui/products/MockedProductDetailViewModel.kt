@@ -1,14 +1,15 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.math.roundToInt
@@ -20,6 +21,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
     productRepository: ProductDetailRepository,
     networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
+    productImagesServiceWrapper: ProductImagesServiceWrapper,
     @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
         arg0,
@@ -28,7 +30,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         productRepository,
         networkStatus,
         currencyFormatter,
-        wooCommerceStore
+        wooCommerceStore,
+        productImagesServiceWrapper
 ) {
     // FIXME: This is a temporary fix that allows the connected test to be built. It fails and should be fixed, though.
 //    override val viewStateData: LiveDataDelegate<ViewState> =
@@ -52,9 +55,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         }.trim()
 
         return ProductDetailViewState(
-                product = product,
+                productDraft = product,
                 storedProduct = product,
-                cachedProduct = product,
                 weightWithUnits = weight,
                 sizeWithUnits = size,
                 priceWithCurrency = formatCurrency(product.price, parameters.currencyCode),

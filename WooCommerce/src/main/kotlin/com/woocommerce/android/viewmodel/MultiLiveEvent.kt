@@ -81,7 +81,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
 
         data class ShowDiscardDialog(
             val positiveBtnAction: OnClickListener? = null,
-            val negativeBtnAction: OnClickListener? = null
+            val negativeBtnAction: OnClickListener? = null,
+            @StringRes val messageId: Int? = null
         ) : Event() {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true

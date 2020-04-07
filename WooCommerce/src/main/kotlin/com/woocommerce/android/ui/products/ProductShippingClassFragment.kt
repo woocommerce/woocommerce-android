@@ -4,25 +4,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_shipping_class_list.*
+import javax.inject.Inject
 
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapterListener {
+class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListener {
     companion object {
         const val TAG = "ProductShippingClassFragment"
+        const val ARG_SELECTED_SHIPPING_CLASS_SLUG = "selected-shipping-class-slug"
+        const val ARG_SELECTED_SHIPPING_CLASS_ID = "selected-shipping-class-id"
     }
+
+    @Inject lateinit var viewModelFactory: ViewModelFactory
+    private val viewModel: ProductShippingClassViewModel by viewModels { viewModelFactory }
+
+    private val navArgs: ProductShippingClassFragmentArgs by navArgs()
 
     private var shippingClassAdapter: ProductShippingClassAdapter? = null
 
@@ -36,7 +49,7 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
         shippingClassAdapter = ProductShippingClassAdapter(
                 requireActivity(),
                 this,
-                viewModel.getProduct().product?.shippingClass
+                navArgs.productShippingClassSlug
         )
 
         with(recycler) {
@@ -80,17 +93,19 @@ class ProductShippingClassFragment : BaseProductFragment(), ShippingClassAdapter
     override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
     override fun onShippingClassClicked(shippingClass: ShippingClass?) {
-        viewModel.updateProductDraft(shippingClass = shippingClass?.slug ?: "")
-        findNavController().navigateUp()
+        val bundle = Bundle()
+        bundle.putString(ARG_SELECTED_SHIPPING_CLASS_SLUG, shippingClass?.slug ?: "")
+        bundle.putLong(ARG_SELECTED_SHIPPING_CLASS_ID, shippingClass?.remoteShippingClassId ?: 0L)
+        requireActivity().navigateBackWithResult(
+                RequestCodes.PRODUCT_SHIPPING_CLASS,
+                bundle,
+                R.id.nav_host_fragment_main,
+                R.id.productShippingFragment
+        )
     }
 
     override fun onRequestLoadMore() {
         viewModel.loadShippingClasses(loadMore = true)
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        // we always return true here because the fragment is left as soon as the user chooses a shipping class
-        return true
     }
 
     private fun showLoadingProgress(show: Boolean) {

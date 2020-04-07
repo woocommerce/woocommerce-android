@@ -378,10 +378,16 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 labelCount = getBarLabelCount()
                 setCenterAxisLabels(false)
                 valueFormatter = StartEndDateAxisFormatter()
-                yOffset = resources.getDimension(R.dimen.chart_axis_bottom_padding)
+                yOffset = if (minRevenue < 0f) {
+                    resources.getDimension(R.dimen.chart_axis_bottom_padding)
+                } else 0f
             }
             with(axisLeft) {
-                setLabelCount(3, true)
+                if (minRevenue < 0f) {
+                    setDrawZeroLine(true)
+                    zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                    setLabelCount(3, true)
+                } else labelCount = 3
                 valueFormatter = RevenueAxisFormatter()
             }
         }

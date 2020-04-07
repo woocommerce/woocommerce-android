@@ -79,6 +79,7 @@
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
+    <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
     <!--
         Date/Time Labels
     -->
@@ -412,12 +413,14 @@
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
+    <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
     <string name="product_schedule_sale_label">Schedule sale</string>
     <string name="product_schedule_sale_sublabel">Automatically start and end a sale</string>
     <string name="product_schedule_sale_from_label">From</string>
     <string name="product_schedule_sale_to_label">To</string>
+    <string name="product_schedule_remove_end_date_link_label">Remove end date</string>
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
     <string name="product_sale_date_from">from %1$s</string>
@@ -487,6 +490,7 @@
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
     <string name="product_inventory_update_stock_quantity_error">Please enter a number</string>
+    <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
 
     <!--
         Product images

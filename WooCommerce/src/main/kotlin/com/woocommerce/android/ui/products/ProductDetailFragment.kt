@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
@@ -98,7 +99,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.product?.takeIfNotEqualTo(old?.product) { showProduct(new) }
+            new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProduct(new) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
@@ -111,6 +112,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
+
+        menu.findItem(R.id.menu_view_product).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -126,6 +129,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
+                true
+            }
+
+            R.id.menu_view_product -> {
+                viewModel.getProduct().productDraft?.permalink?.let {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+                    ChromeCustomTabUtils.launchUrl(requireContext(), it)
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -164,13 +175,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun showProduct(productData: ProductDetailViewState) {
         if (!isAdded) return
 
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
         productName = product.name.fastStripHtml()
         updateActivityTitle()
 
-        if (product.images.isEmpty() && !viewModel.isUploading()) {
+        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
-            if (FeatureFlag.PRODUCT_IMAGE_CHOOSER.isEnabled(requireActivity())) {
+            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
                 addImageContainer.visibility = View.VISIBLE
                 addImageContainer.setOnClickListener {
                     viewModel.onAddImageClicked()
@@ -207,7 +218,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun addPrimaryCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         if (isAddEditProductRelease1Enabled(product.type)) {
             addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productName)?.also { view ->
@@ -236,14 +247,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 it.setClickListener {
                     AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED)
                     viewModel.onEditProductCardClicked(ViewProductDescriptionEditor(
-                                productDescription, getString(R.string.product_description)
+                            productDescription, getString(R.string.product_description)
                     ))
                 }
             }
         }
 
         // we don't show total sales for variations because they're always zero
-        if (!isVariation) {
+        // we are removing the total orders sections from products M2 release
+        if (!isVariation && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_total_orders,
@@ -261,9 +273,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         // show product variants only if product type is variable and if there are variations for the product
-        if (product.type == VARIABLE &&
-                FeatureFlag.PRODUCT_RELEASE_M1.isEnabled(context) &&
-                product.numVariations > 0) {
+        if (product.type == VARIABLE && product.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in product.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
@@ -283,12 +293,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
         }
 
-        addLinkView(
-                DetailCard.Primary,
-                R.string.product_view_in_store,
-                product.permalink,
-                PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-        )
+        // display `View product on Store` in options menu from M2 products release
+        if (!FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            addLinkView(
+                    DetailCard.Primary,
+                    R.string.product_view_in_store,
+                    product.permalink,
+                    PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+            )
+        }
         addLinkView(
                 DetailCard.Primary,
                 R.string.product_view_affiliate,
@@ -301,7 +314,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * New product detail card UI slated for new products release 1
      */
     private fun addSecondaryCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
@@ -395,17 +408,28 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
-                Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
-                Pair(getString(R.string.product_shipping_class), product.shippingClass)
-        )
+        val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
+                productData.sizeWithUnits?.isNotEmpty() == true ||
+                product.shippingClass.isNotEmpty()
+        val shippingGroup = if (hasShippingInfo) {
+            mapOf(
+                    Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                    Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
+                    Pair(getString(R.string.product_shipping_class),
+                            viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId))
+            )
+        } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
+
         addPropertyGroup(
                 DetailCard.Secondary,
                 R.string.product_shipping,
                 shippingGroup,
                 groupIconId = R.drawable.ic_gridicons_shipping
         )?.also {
+            // display shipping caption only if shipping info is not available
+            if (!hasShippingInfo) {
+                it.showPropertyName(false)
+            }
             it.setClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
@@ -418,7 +442,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * Product Release 1 changes are completed.
      */
     private fun addPricingAndInventoryCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
         val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
@@ -461,17 +485,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun addPurchaseDetailsCard(productData: ProductDetailViewState) {
-        val product = requireNotNull(productData.product)
+        val product = requireNotNull(productData.productDraft)
 
         // shipping group is part of the secondary card if edit product is enabled
         if (!isAddEditProductRelease1Enabled(product.type)) {
             val shippingGroup = mapOf(
                     Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
                     Pair(getString(R.string.product_size), requireNotNull(productData.sizeWithUnits)),
-                    Pair(
-                            getString(R.string.product_shipping_class),
-                            viewModel.getShippingClassBySlug(product.shippingClass)
-                    )
+                    Pair(getString(R.string.product_shipping_class), product.shippingClass)
             )
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
         }
@@ -773,8 +794,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     /**
-     * Add/Edit Product Release 1 is enabled only if beta setting is enabled and only for SIMPLE products
+     * Add/Edit Product Release 1 is enabled by default for SIMPLE products
      */
-    private fun isAddEditProductRelease1Enabled(productType: ProductType) =
-            FeatureFlag.PRODUCT_RELEASE_M1.isEnabled() && productType == ProductType.SIMPLE
+    private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
 }

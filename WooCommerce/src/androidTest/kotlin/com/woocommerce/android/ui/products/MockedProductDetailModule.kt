@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -40,6 +41,7 @@ internal abstract class MockedProductDetailModule {
             currencyFormatter: CurrencyFormatter,
             networkStatus: NetworkStatus,
             wcStore: WooCommerceStore,
+            productImagesServiceWrapper: ProductImagesServiceWrapper,
             site: SelectedSite
         ): MockedProductDetailViewModel {
             val mockProductRepository = mock<ProductDetailRepository>()
@@ -54,6 +56,7 @@ internal abstract class MockedProductDetailModule {
                             mockProductRepository,
                             networkStatus,
                             currencyFormatter,
+                            productImagesServiceWrapper,
                             savedState
                     )
             )

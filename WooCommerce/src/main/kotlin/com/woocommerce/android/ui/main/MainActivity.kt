@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -318,15 +319,12 @@ class MainActivity : AppUpgradeActivity(),
             container.visibility = View.INVISIBLE
         }
 
-        // make sure the correct up icon appears
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        val showBottomNav: Boolean
         val showToolbarShadow: Boolean
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
-            showBottomNav = true
             showToolbarShadow = true
         } else {
             showUpIcon = true
@@ -343,20 +341,6 @@ class MainActivity : AppUpgradeActivity(),
                 }
                 else -> {
                     false
-                }
-            }
-            showBottomNav = when (destination.id) {
-                R.id.addOrderShipmentTrackingFragment,
-                R.id.addOrderNoteFragment,
-                R.id.issueRefundFragment,
-                R.id.refundAmountDialog,
-                R.id.refundConfirmationDialog,
-                R.id.refundItemsPickerDialog,
-                R.id.refundSummaryFragment -> {
-                    false
-                }
-                else -> {
-                    true
                 }
             }
             showToolbarShadow = when (destination.id) {
@@ -378,9 +362,20 @@ class MainActivity : AppUpgradeActivity(),
             } else {
                 actionBar.elevation = 0f
             }
+
+            // the image viewer should be shown full screen and we hide the actionbar since the fragment
+            // provides its own toolbar
+            if (destination.id == R.id.productImageViewerFragment) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                actionBar.hide()
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                actionBar.show()
+            }
         }
 
-        if (showBottomNav) {
+        // only show bottom nav if we're at a root fragment
+        if (isAtRoot) {
             showBottomNav()
         } else {
             hideBottomNav()
