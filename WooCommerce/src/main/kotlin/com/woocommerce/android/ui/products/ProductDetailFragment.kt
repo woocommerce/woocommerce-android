@@ -345,12 +345,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
         val pricingGroup = mutableMapOf<String, String>()
         if (hasPricingInfo) {
-            // regular product price
-            pricingGroup[getString(R.string.product_regular_price)] =
-                    requireNotNull(productData.regularPriceWithCurrency)
             // display product sale price, if available
             if (product.salePrice != null) {
+                // regular product price
+                pricingGroup[getString(R.string.product_regular_price)] =
+                        requireNotNull(productData.regularPriceWithCurrency)
                 pricingGroup[getString(R.string.product_sale_price)] = requireNotNull(productData.salePriceWithCurrency)
+            } else {
+                pricingGroup[""] = requireNotNull(productData.priceWithCurrency)
             }
 
             // display product sale dates using the site's timezone, if available

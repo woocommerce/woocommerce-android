@@ -35,7 +35,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.tools.FormattableContentMapper
+import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 @Module
 abstract class MockedOrderDetailModule {
@@ -99,7 +101,7 @@ abstract class MockedOrderDetailModule {
                             mock(),
                             mock()
                     ),
-                    Unconfined,
+                    CoroutineEngine(Unconfined, AppLogWrapper()),
                     RefundMapper()
             )
             val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)

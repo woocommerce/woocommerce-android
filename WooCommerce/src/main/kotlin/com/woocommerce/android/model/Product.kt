@@ -328,8 +328,8 @@ fun WCProductModel.toAppModel(): Product {
         permalink = this.permalink,
         externalUrl = this.externalUrl,
         price = this.price.toBigDecimalOrNull()?.roundError(),
-        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
             // In Core, if a tax class is empty it is considered as standard and we are following the same
             // procedure here
         taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
