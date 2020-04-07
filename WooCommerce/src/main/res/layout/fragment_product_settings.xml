@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,48 +13,6 @@
         android:paddingEnd="@dimen/card_padding_end"
         android:paddingBottom="@dimen/card_padding_bottom">
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_weight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_weight" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_length"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_length" />
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_width" />
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_height"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_height" />
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/product_shipping_class_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="text"
-            app:spinnerHint="@string/product_shipping_class" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
