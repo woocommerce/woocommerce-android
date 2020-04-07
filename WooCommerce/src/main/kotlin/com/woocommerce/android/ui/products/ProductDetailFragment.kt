@@ -252,29 +252,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     ))
                 }
             }
-
-            val shortDescription = if (product.shortDescription.isEmpty()) {
-                getString(R.string.product_short_description_empty)
-            } else {
-                product.shortDescription
-            }
-            val showShortCaption = product.shortDescription.isNotEmpty()
-            addPropertyView(
-                    DetailCard.Primary,
-                    getString(R.string.product_short_description),
-                    SpannableString(HtmlUtils.fromHtml(shortDescription)),
-                    LinearLayout.VERTICAL
-            )?.also {
-                it.showPropertyName(showShortCaption)
-                it.setMaxLines(1)
-                it.setClickListener {
-                    viewModel.onEditProductCardClicked(
-                            ViewProductShortDescriptionEditor(
-                                    product.shortDescription, getString(R.string.product_short_description)
-                            )
-                    )
-                }
-            }
         }
 
         // we don't show total sales for variations because they're always zero
@@ -459,6 +436,31 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             it.setClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
+            }
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            val shortDescription = if (product.shortDescription.isEmpty()) {
+                getString(R.string.product_short_description_empty)
+            } else {
+                product.shortDescription
+            }
+            addPropertyView(
+                    DetailCard.Secondary,
+                    getString(R.string.product_short_description),
+                    SpannableString(HtmlUtils.fromHtml(shortDescription)),
+                    LinearLayout.VERTICAL,
+                    R.drawable.ic_gridicons_align_left
+            )?.also {
+                it.setMaxLines(1)
+                it.setClickListener {
+                    // TODO: track event
+                    viewModel.onEditProductCardClicked(
+                            ViewProductShortDescriptionEditor(
+                                    product.shortDescription, getString(R.string.product_short_description)
+                            )
+                    )
+                }
             }
         }
     }
