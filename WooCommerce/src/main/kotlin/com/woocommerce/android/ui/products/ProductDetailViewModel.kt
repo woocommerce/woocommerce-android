@@ -447,9 +447,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             // fetch product
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
+                val shouldFetch = remoteProductId != getRemoteProductId()
                 updateProductState(productInDb)
 
-                val shouldFetch = remoteProductId != getRemoteProductId()
                 val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
                 if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
