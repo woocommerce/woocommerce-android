@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIn
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatusList
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
@@ -75,6 +76,13 @@ class ProductNavigator @Inject constructor() {
             is ViewProductSettings -> {
                 val action = ProductDetailFragmentDirections
                         .actionProductDetailFragmentToProductSettingsFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductStatusList -> {
+                val status = target.status?.toString() ?: ""
+                val action = ProductDetailFragmentDirections
+                        .actionProductSettingsFragmentToProductStatusListFragment(status)
                 fragment.findNavController().navigate(action)
             }
 

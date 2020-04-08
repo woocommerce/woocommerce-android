@@ -22,11 +22,17 @@ class ProductSettingsFragment : BaseProductFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+
+        productStatus.setOnClickListener {
+            viewModel.onSettingsStatusButtonClicked()
+        }
     }
 
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClicked(ExitSettings())
     }
+
+    override fun getFragmentTitle() = getString(R.string.product_settings)
 
     private fun updateProductView() {
         if (!isAdded) return

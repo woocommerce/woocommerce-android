@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatusList
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -223,6 +224,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onSettingsButtonClicked() {
         viewState.productDraft?.let {
             triggerEvent(ViewProductSettings(it.remoteId))
+        }
+    }
+
+    /**
+     * Called when the user taps the status in product settings
+     */
+    fun onSettingsStatusButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductStatusList(it.status))
         }
     }
 
