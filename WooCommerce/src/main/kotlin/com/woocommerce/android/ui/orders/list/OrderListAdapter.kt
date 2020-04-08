@@ -118,7 +118,7 @@ class OrderListAdapter(
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
             orderDateView.text = getFormattedOrderDate(ctx, orderItemUI.dateCreated)
-            orderNumView.text = orderItemUI.orderNumber
+            orderNumView.text = "#${orderItemUI.orderNumber}"
             orderNameView.text = orderItemUI.orderName
             orderTotalView.text = currencyFormatter.formatCurrency(orderItemUI.orderTotal, orderItemUI.currencyCode)
             divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
