@@ -316,7 +316,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
-        val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
+        val hasPricingInfo = product.regularPrice != null || product.salePrice != null
         val pricingGroup = mutableMapOf<String, String>()
         if (hasPricingInfo) {
             // display product sale price if it's on sale
@@ -326,7 +326,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                         requireNotNull(productData.regularPriceWithCurrency)
                 pricingGroup[getString(R.string.product_sale_price)] = requireNotNull(productData.salePriceWithCurrency)
             } else {
-                pricingGroup[""] = requireNotNull(productData.priceWithCurrency)
+                pricingGroup[""] = requireNotNull(productData.regularPriceWithCurrency)
             }
 
             // display product sale dates using the site's timezone, if available
@@ -445,7 +445,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val product = requireNotNull(productData.productDraft)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
+        val hasPricingInfo = product.regularPrice != null || product.salePrice != null
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
         if (hasPricingInfo) {
@@ -460,7 +460,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 addPropertyView(
                         pricingCard,
                         R.string.product_price,
-                        requireNotNull(productData.priceWithCurrency),
+                        requireNotNull(productData.regularPriceWithCurrency),
                         LinearLayout.VERTICAL
                 )
             }

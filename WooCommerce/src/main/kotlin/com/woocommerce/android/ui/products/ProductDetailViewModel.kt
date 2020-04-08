@@ -580,7 +580,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 storedProduct = storedProduct,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
-                priceWithCurrency = formatCurrency(updatedProduct.price, parameters.currencyCode),
                 salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters.currencyCode),
                 regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
