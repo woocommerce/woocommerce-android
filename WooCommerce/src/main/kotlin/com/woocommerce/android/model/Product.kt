@@ -59,6 +59,7 @@ data class Product(
     val numVariations: Int,
     val images: List<Image>,
     val attributes: List<Attribute>,
+    val isOnSale: Boolean,
     val dateOnSaleToGmt: Date?,
     val dateOnSaleFromGmt: Date?,
     val soldIndividually: Boolean,
@@ -100,6 +101,7 @@ data class Product(
                 description == product.description &&
                 taxClass == product.taxClass &&
                 taxStatus == product.taxStatus &&
+                isOnSale == product.isOnSale &&
                 isSaleScheduled == product.isSaleScheduled &&
                 dateOnSaleToGmt == product.dateOnSaleToGmt &&
                 dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
@@ -141,6 +143,7 @@ data class Product(
                     salePrice != it.salePrice ||
                     dateOnSaleFromGmt != it.dateOnSaleFromGmt ||
                     dateOnSaleToGmt != it.dateOnSaleToGmt ||
+                    isOnSale != it.isOnSale ||
                     taxClass != it.taxClass ||
                     taxStatus != it.taxStatus
         } ?: false
@@ -210,6 +213,7 @@ data class Product(
                     soldIndividually = updatedProduct.soldIndividually,
                     regularPrice = updatedProduct.regularPrice,
                     salePrice = updatedProduct.salePrice,
+                    isOnSale = updatedProduct.isOnSale,
                     isSaleScheduled = updatedProduct.isSaleScheduled,
                     dateOnSaleFromGmt = updatedProduct.dateOnSaleFromGmt,
                     dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
@@ -284,6 +288,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
         it.regularPrice = regularPrice.toString()
         it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
+        it.onSale = isOnSale
         it.length = if (length == 0f) "" else length.formatToString()
         it.width = if (width == 0f) "" else width.formatToString()
         it.weight = if (weight == 0f) "" else weight.formatToString()
@@ -361,6 +366,7 @@ fun WCProductModel.toAppModel(): Product {
         },
         dateOnSaleToGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         dateOnSaleFromGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        isOnSale = this.onSale,
         soldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()

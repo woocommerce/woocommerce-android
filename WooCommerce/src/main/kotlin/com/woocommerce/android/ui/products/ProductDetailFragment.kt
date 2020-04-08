@@ -319,8 +319,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
         val pricingGroup = mutableMapOf<String, String>()
         if (hasPricingInfo) {
-            // display product sale price, if available
-            if (product.salePrice != null) {
+            // display product sale price if it's on sale
+            if (product.isOnSale) {
                 // regular product price
                 pricingGroup[getString(R.string.product_regular_price)] =
                         requireNotNull(productData.regularPriceWithCurrency)
@@ -450,7 +450,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
-            if (product.salePrice != null) {
+            if (product.isOnSale) {
                 val group = mapOf(getString(R.string.product_regular_price)
                         to requireNotNull(productData.regularPriceWithCurrency),
                         getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
