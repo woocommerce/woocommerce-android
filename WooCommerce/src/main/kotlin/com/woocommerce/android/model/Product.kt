@@ -173,6 +173,15 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the product settings
+     */
+    fun hasSettingsChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+                status != it.status
+        } ?: false
+    }
+
+    /**
      * Compares this product's images with the passed list, returns true only if both lists contain
      * the same images in the same order
      */
