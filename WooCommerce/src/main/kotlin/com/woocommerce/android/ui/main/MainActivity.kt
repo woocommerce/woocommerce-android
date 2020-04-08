@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -137,11 +138,11 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
+        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
-
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -362,6 +363,16 @@ class MainActivity : AppUpgradeActivity(),
                 R.drawable.ic_back_white_24dp
             }
             actionBar.setHomeAsUpIndicator(icon)
+
+            // the image viewer should be shown full screen and we hide the actionbar since the fragment
+            // provides its own toolbar
+            if (destination.id == R.id.productImageViewerFragment) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                actionBar.hide()
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                actionBar.show()
+            }
         }
 
         // only show bottom nav if we're at a root fragment

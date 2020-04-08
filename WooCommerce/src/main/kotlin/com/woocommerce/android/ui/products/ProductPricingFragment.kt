@@ -110,23 +110,20 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                 updateProductTaxClassList(it, viewModel.getProduct())
             }
             new.minDate?.takeIfNotEqualTo(old?.minDate) {
-                // update end date to min date if current end date < start date
-                val dateOnSaleToGmt = viewModel.getProduct().productDraft?.dateOnSaleToGmt
-                if (dateOnSaleToGmt?.before(it) == true) {
-                    scheduleSale_endDate.setText(it.formatToMMMddYYYY())
-                }
+                // update end date to min date since current end date < start date
+                scheduleSale_endDate.setText(it.formatToMMMddYYYY())
             }
-
-            // update start date to max date if current start date > end date
-            if (new.maxDate == null) {
-                scheduleSale_endDate.setText("")
-            } else if (new.maxDate.before(viewModel.getProduct().productDraft?.dateOnSaleFromGmt)) {
+            new.maxDate?.takeIfNotEqualTo(old?.maxDate) {
+                // update start date to max date since current start date > end date
                 scheduleSale_startDate.setText(new.maxDate.formatToMMMddYYYY())
             }
-
             new.isRemoveMaxDateButtonVisible.takeIfNotEqualTo(old?.isRemoveMaxDateButtonVisible) { isVisible ->
-                scheduleSale_RemoveEndDateButton.visibility = if (isVisible) View.VISIBLE else View.GONE
+                scheduleSale_RemoveEndDateButton.visibility = if (isVisible == true) View.VISIBLE else {
+                    scheduleSale_endDate.setText("")
+                    View.GONE
+                }
             }
+            new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -159,7 +156,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             initialiseCurrencyEditText(currency, decimals, currencyFormatter)
             product.salePrice?.let { setText(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.updateProductDraft(salePrice = it)
+                viewModel.onSalePriceEntered(it)
             })
         }
 
@@ -251,11 +248,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
         val product = requireNotNull(productData.productDraft)
 
-        val productTaxClass = if (product.taxClass.isEmpty()) {
-            getString(R.string.product_tax_class_standard)
-        } else viewModel.getTaxClassBySlug(product.taxClass)?.name ?: product.taxClass
-        product_tax_class.setText(productTaxClass)
-
+        product_tax_class.setText(viewModel.getTaxClassBySlug(product.taxClass)?.name ?: product.taxClass)
         taxClassList?.let { taxClasses ->
             product_tax_class.setClickListener {
                 productTaxClassSelectorDialog = ProductInventorySelectorDialog.newInstance(
@@ -264,6 +257,16 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                         product_tax_class.getText()
                 ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
             }
+        }
+    }
+
+    private fun displaySalePriceError(messageId: Int) {
+        if (messageId != 0) {
+            product_sale_price.setError(getString(messageId))
+            enablePublishMenuItem(false)
+        } else {
+            product_sale_price.clearError()
+            enablePublishMenuItem(true)
         }
     }
 

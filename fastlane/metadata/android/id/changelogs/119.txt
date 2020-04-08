@@ -1,0 +1,4 @@
+3.9:
+Memperbaiki dua crash: crash yang terjadi bila Anda memilih dua produk dalam Daftar Produk di waktu yang bersamaan, dan crash yang terjadi saat menyunting jumlah stok negatif.
+
+Selalu jaga kesehatan dan cuci tangan semuanya!

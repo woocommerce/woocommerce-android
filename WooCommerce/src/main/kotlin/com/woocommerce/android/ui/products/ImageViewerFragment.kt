@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.imageviewer
+package com.woocommerce.android.ui.products
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -14,6 +14,9 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
 
+/**
+ * Single image viewer used by the ViewPager in [ProductImagesFragment]
+ */
 class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
@@ -35,6 +38,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     }
 
     private lateinit var imageUrl: String
+    private var imageListener: ImageViewerListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +53,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         super.onActivityCreated(savedInstanceState)
         loadImage()
         photoView.setOnPhotoTapListener { _, _, _ ->
-            (activity as? ImageViewerListener)?.onImageTapped()
+            imageListener?.onImageTapped()
         }
     }
 
@@ -61,6 +65,10 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    fun setImageListener(listener: ImageViewerListener) {
+        imageListener = listener
     }
 
     private fun loadImage() {
@@ -86,7 +94,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-        (activity as? ImageViewerListener)?.onImageLoadError()
+        imageListener?.onImageLoadError()
         return false
     }
 

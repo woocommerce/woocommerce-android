@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import android.content.Intent
 import androidx.test.rule.ActivityTestRule
+import com.woocommerce.android.di.MockedProductDetailRepositoryModule
 import com.woocommerce.android.di.MockedSelectedSiteModule
 import com.woocommerce.android.helpers.mockPagedList
 import com.woocommerce.android.model.ProductReview
@@ -13,7 +14,6 @@ import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
-import com.woocommerce.android.ui.products.MockedProductDetailModule
 import com.woocommerce.android.ui.reviews.MockedReviewListModule
 import com.woocommerce.android.ui.reviews.ReviewsTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
@@ -136,7 +136,7 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
     fun setOrderProductDetailWithMockData(
         product: WCProductModel
     ) {
-        MockedProductDetailModule.setMockProduct(product)
+        MockedProductDetailRepositoryModule.setProduct(product)
     }
 
     /**
