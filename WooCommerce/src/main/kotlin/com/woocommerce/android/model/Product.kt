@@ -25,6 +25,7 @@ data class Product(
     val remoteId: Long,
     val name: String,
     val description: String,
+    val shortDescription: String,
     val type: ProductType,
     val status: ProductStatus?,
     val stockStatus: ProductStockStatus,
@@ -98,6 +99,7 @@ data class Product(
                 numVariations == product.numVariations &&
                 name.fastStripHtml() == product.name.fastStripHtml() &&
                 description == product.description &&
+                shortDescription == product.shortDescription &&
                 taxClass == product.taxClass &&
                 taxStatus == product.taxStatus &&
                 isOnSale == product.isOnSale &&
@@ -203,6 +205,7 @@ data class Product(
         return newProduct?.let { updatedProduct ->
             this.copy(
                     description = updatedProduct.description,
+                    shortDescription = updatedProduct.shortDescription,
                     name = updatedProduct.name,
                     sku = updatedProduct.sku,
                     manageStock = updatedProduct.manageStock,
@@ -278,6 +281,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
+        it.shortDescription = shortDescription
         it.name = name
         it.sku = sku
         it.manageStock = manageStock
@@ -313,6 +317,7 @@ fun WCProductModel.toAppModel(): Product {
         remoteId = this.remoteProductId,
         name = this.name,
         description = this.description,
+        shortDescription = this.shortDescription,
         type = ProductType.fromString(this.type),
         status = ProductStatus.fromString(this.status),
         stockStatus = ProductStockStatus.fromString(this.stockStatus),

@@ -359,6 +359,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun updateProductDraft(
         description: String? = null,
+        shortDescription: String? = null,
         title: String? = null,
         sku: String? = null,
         manageStock: Boolean? = null,
@@ -385,6 +386,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             val currentProduct = product.copy()
             val updatedProduct = product.copy(
                     description = description ?: product.description,
+                    shortDescription = shortDescription ?: product.shortDescription,
                     name = title ?: product.name,
                     sku = sku ?: product.sku,
                     manageStock = manageStock ?: product.manageStock,
