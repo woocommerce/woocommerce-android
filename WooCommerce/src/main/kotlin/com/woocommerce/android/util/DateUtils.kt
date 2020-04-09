@@ -37,6 +37,9 @@ object DateUtils {
      * Takes a date string in ISO8601 standard and returns a string, such as Jan 3, 2000
      */
     fun getMediumDateFromString(context: Context, rawDate: String): String {
+        // Note: dateUTCFromIso8601 has an unfortunate method name. It returns a date object appropriately created
+        // from a UTC date string. This means that the date object will properly reflect the local date conversion from
+        // UTC.
         val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
         return DateFormat.getMediumDateFormat(context).format(date)
     }
@@ -61,11 +64,17 @@ object DateUtils {
     }
 
     fun getFriendlyShortDateAtTimeString(context: Context, rawDate: String): String {
+        // Note: dateUTCFromIso8601 has an unfortunate method name. It returns a date object appropriately created
+        // from a UTC date string. This means that the date object will properly reflect the local date conversion from
+        // UTC.
         val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
         return getFriendlyShortDateAtTimeString(context, date)
     }
 
     fun getFriendlyLongDateAtTimeString(context: Context, rawDate: String): String {
+        // Note: dateUTCFromIso8601 has an unfortunate method name. It returns a date object appropriately created
+        // from a UTC date string. This means that the date object will properly reflect the local date conversion from
+        // UTC.
         val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
         return getFriendlyShortDateAtTimeString(context, date)
     }
@@ -181,7 +190,7 @@ object DateUtils {
     fun getShortMonthDayStringForWeek(iso8601Week: String): String {
         return try {
             val date = weekOfYearStartingMondayFormat.parse(iso8601Week)
-            friendlyMonthDayFormat.format(date)
+            friendlyMonthDayFormat.format(date!!)
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format YYYY-'W'WW: $iso8601Week")
         }
@@ -232,7 +241,7 @@ object DateUtils {
             val originalFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.ROOT)
             val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
             val date = originalFormat.parse(dateString)
-            targetFormat.format(date)
+            targetFormat.format(date!!)
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
         }
@@ -256,7 +265,7 @@ object DateUtils {
             val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", Locale.getDefault())
             val targetFormat = SimpleDateFormat("hha", Locale.getDefault())
             val date = originalFormat.parse(iso8601Date)
-            targetFormat.format(date).toLowerCase().trimStart('0')
+            targetFormat.format(date!!).toLowerCase(Locale.getDefault()).trimStart('0')
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd H: $iso8601Date")
         }
@@ -306,7 +315,7 @@ object DateUtils {
     @Throws(IllegalArgumentException::class)
     fun getYearString(iso8601Month: String): String {
         return try {
-            val (year, month) = iso8601Month.split("-")
+            val (year, _) = iso8601Month.split("-")
             year
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format yyyy-MM: $iso8601Month")
@@ -319,7 +328,7 @@ object DateUtils {
     }
 
     /**
-     * Compares two dates to determine if [date2] is after [Date1]. Note that
+     * Compares two dates to determine if [date2] is after [date1]. Note that
      * this method strips the time information from the comparison and is only comparing
      * the dates.
      *
