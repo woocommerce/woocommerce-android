@@ -580,7 +580,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val sizeWithUnits = updatedDraft.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
-                productDraft = productToUpdateFrom,
+                productDraft = updatedDraft,
                 storedProduct = productToUpdateFrom,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
