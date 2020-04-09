@@ -315,7 +315,7 @@ object DateUtils {
     @Throws(IllegalArgumentException::class)
     fun getYearString(iso8601Month: String): String {
         return try {
-            val (year, _) = iso8601Month.split("-")
+            val (year, month) = iso8601Month.split("-")
             year
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format yyyy-MM: $iso8601Month")
