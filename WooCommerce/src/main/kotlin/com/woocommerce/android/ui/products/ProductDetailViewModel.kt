@@ -566,11 +566,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                     ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(productToUpdateFrom: Product) {
-        val updatedDraft = viewState.productDraft?.let {
-            if (productToUpdateFrom.isSameProduct(it)) {
+        val updatedDraft = viewState.productDraft?.let { currentDraft ->
+            if (viewState.storedProduct?.isSameProduct(currentDraft) == true) {
                 productToUpdateFrom
             } else {
-                productToUpdateFrom.mergeProduct(viewState.productDraft)
+                productToUpdateFrom.mergeProduct(currentDraft)
             }
         } ?: productToUpdateFrom
 
@@ -580,7 +580,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val sizeWithUnits = updatedDraft.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
-                productDraft = updatedDraft,
+                productDraft = productToUpdateFrom,
                 storedProduct = productToUpdateFrom,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
