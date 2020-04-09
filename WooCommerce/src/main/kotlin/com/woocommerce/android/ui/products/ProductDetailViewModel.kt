@@ -565,24 +565,28 @@ class ProductDetailViewModel @AssistedInject constructor(
             productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
                     ?: viewState.productDraft?.shippingClass ?: ""
 
-    private fun updateProductState(storedProduct: Product) {
-        val updatedProduct = viewState.productDraft?.let {
-            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.productDraft)
-        } ?: storedProduct
+    private fun updateProductState(productToUpdateFrom: Product) {
+        val updatedDraft = viewState.productDraft?.let {
+            if (productToUpdateFrom.isSameProduct(it)) {
+                productToUpdateFrom
+            } else {
+                productToUpdateFrom.mergeProduct(viewState.productDraft)
+            }
+        } ?: productToUpdateFrom
 
-        loadProductTaxAndShippingClassDependencies(updatedProduct)
+        loadProductTaxAndShippingClassDependencies(updatedDraft)
 
-        val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
-        val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
+        val weightWithUnits = updatedDraft.getWeightWithUnits(parameters.weightUnit)
+        val sizeWithUnits = updatedDraft.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
-                productDraft = updatedProduct,
-                storedProduct = storedProduct,
+                productDraft = updatedDraft,
+                storedProduct = productToUpdateFrom,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
-                priceWithCurrency = formatCurrency(updatedProduct.price, parameters.currencyCode),
-                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters.currencyCode),
-                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
+                priceWithCurrency = formatCurrency(updatedDraft.price, parameters.currencyCode),
+                salePriceWithCurrency = formatCurrency(updatedDraft.salePrice, parameters.currencyCode),
+                regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
 
