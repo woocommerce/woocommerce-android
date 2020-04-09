@@ -11,18 +11,19 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_040"
+msgid ""
+"4.0:\n"
+"* We’re excited to introduce a Products tab!\n"
+"* Users also now have limited editing capabilities for Simple Products, with more to come.\n"
+msgstr ""
+
 msgctxt "release_note_039"
 msgid ""
 "3.9:\n"
 "Fixed two crashes: one that happened when you selected two products in the Product List at the same time, and another that would happen when editing a negative stock quantity.\n"
 "\n"
 "Stay safe and wash your hands, everyone!\n"
-msgstr ""
-
-msgctxt "release_note_038"
-msgid ""
-"3.8:\n"
-"Raise your hand if you’d like to edit products on the go! To give available editing options a try, enable Product Editing in Settings > Beta Features.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
