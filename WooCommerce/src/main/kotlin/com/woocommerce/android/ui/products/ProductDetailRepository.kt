@@ -13,6 +13,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -75,10 +76,10 @@ class ProductDetailRepository @Inject constructor(
                 dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
             }
         } catch (e: CancellationException) {
-            WooLog.d(PRODUCTS, "CancellationException while fetching single product")
+            WooLog.e(PRODUCTS, "CancellationException while fetching single product")
         }
 
-        continuationFetchProduct = null
+        continuationFetchProduct
         return getProduct(remoteProductId)
     }
 
@@ -188,11 +189,15 @@ class ProductDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
-            if (event.isError) {
-                continuationFetchProduct?.resume(false)
+            if (continuationFetchProduct?.isActive == true) {
+                if (event.isError) {
+                    continuationFetchProduct?.resume(false)
+                } else {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
+                    continuationFetchProduct?.resume(true)
+                }
             } else {
-                AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                continuationFetchProduct?.resume(true)
+                WooLog.w(PRODUCTS, "continuationFetchProduct is no longer active")
             }
         }
     }
