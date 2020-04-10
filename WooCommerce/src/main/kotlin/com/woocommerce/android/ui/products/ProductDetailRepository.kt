@@ -78,7 +78,7 @@ class ProductDetailRepository @Inject constructor(
             WooLog.e(PRODUCTS, "CancellationException while fetching single product")
         }
 
-        continuationFetchProduct
+        continuationFetchProduct = null
         return getProduct(remoteProductId)
     }
 
