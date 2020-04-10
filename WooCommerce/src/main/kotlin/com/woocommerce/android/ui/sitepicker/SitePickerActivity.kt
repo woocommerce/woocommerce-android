@@ -115,7 +115,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
             }
-            site_list_container.cardElevation = resources.getDimension(R.dimen.plane_01)
+            site_list_container.elevation = resources.getDimension(R.dimen.plane_01)
         } else {
             // Opened from settings to change active store.
             toolbar.visibility = View.VISIBLE
@@ -125,10 +125,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             title = getString(R.string.site_picker_title)
             button_help.visibility = View.GONE
             site_list_label.visibility = View.GONE
-            site_list_container.cardElevation = 0f
+            site_list_container.elevation = 0f
             (site_list_container.layoutParams as MarginLayoutParams).topMargin = 0
             (site_list_container.layoutParams as MarginLayoutParams).bottomMargin = 0
-            site_list_container.cardElevation = resources.getDimension(R.dimen.plane_00)
         }
 
         presenter.takeView(this)

@@ -13,7 +13,7 @@
         android:id="@+id/toolbar"
         layout="@layout/view_toolbar"/>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -47,7 +47,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/no_stores_view"
                 app:layout_constraintVertical_bias="1.0"
-                tools:visibility="visible"/>
+                tools:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/image_avatar"
@@ -83,13 +83,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/image_avatar"
                 tools:text="droidtester2018"/>
 
-            <com.google.android.material.card.MaterialCardView
+            <com.woocommerce.android.widgets.WCElevatedLinearLayout
                 android:id="@+id/site_list_container"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="@dimen/minor_100"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_200"
-                android:visibility="gone"
+                android:orientation="vertical"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -97,28 +98,22 @@
                 app:layout_constraintVertical_bias="0.0"
                 tools:visibility="visible">
 
-                <LinearLayout
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/site_list_label"
+                    style="@style/Woo.TextView.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_pick_store"
+                    android:textColor="?attr/colorPrimary"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/sites_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/site_list_label"
-                        style="@style/Woo.Card.Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/login_pick_store"
-                        android:textColor="?attr/colorPrimary"/>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/sites_recycler"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        tools:listitem="@layout/site_picker_item"
-                        tools:itemCount="5"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/site_picker_item"
+                    tools:itemCount="5"/>
+            </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/user_info_group"
@@ -132,7 +127,7 @@
                 layout="@layout/view_login_no_stores"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <View
         android:id="@+id/view6"

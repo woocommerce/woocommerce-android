@@ -37,6 +37,7 @@
         Elevation colors
     -->
     <color name="color_elevation_overlay_01">@color/woo_white_alpha_005</color>
+    <color name="color_shadow">@color/transparent</color>
 
     <!--
         Default graph colors
