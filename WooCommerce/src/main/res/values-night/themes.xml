@@ -26,6 +26,7 @@
         <item name="android:statusBarColor">@color/woo_black_900</item>
 
         <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/woo_white</item>
 
         <!--System/Platform attributes-->
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
