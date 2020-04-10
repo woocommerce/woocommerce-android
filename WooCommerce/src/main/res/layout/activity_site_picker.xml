@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             tools:visibility="visible">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_help"
                 style="@style/Woo.Button"
                 android:layout_width="wrap_content"
@@ -33,13 +33,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_email_help"
-                style="@style/Woo.Button.Lowercase"
+                style="@style/Woo.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginBottom="@dimen/major_150"
+                android:layout_marginTop="@dimen/major_150"
+                android:textAllCaps="false"
                 android:text="@string/login_need_help_finding_email"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -47,37 +48,36 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/no_stores_view"
                 app:layout_constraintVertical_bias="1.0"
-                tools:visibility="gone"/>
+                tools:visibility="visible"/>
 
             <ImageView
                 android:id="@+id/image_avatar"
-                android:layout_width="@dimen/login_avatar_size"
-                android:layout_height="@dimen/login_avatar_size"
-                android:layout_marginTop="40dp"
+                android:layout_width="@dimen/image_major_64"
+                android:layout_height="@dimen/image_major_64"
+                android:layout_marginTop="@dimen/major_300"
                 android:contentDescription="@string/login_avatar_content_description"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_username"
+                style="@style/Woo.TextView.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/grey_dark"
-                android:textSize="@dimen/text_large"
+                android:layout_marginTop="@dimen/minor_10"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_displayname"
                 tools:text="\@droidtester2018"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_displayname"
+                style="@style/Woo.TextView.Subtitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
-                android:textColor="@color/grey_dark"
-                android:textSize="@dimen/text_extra_large"
+                android:layout_marginTop="@dimen/minor_100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/image_avatar"
@@ -96,7 +96,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_username"
                 app:layout_constraintVertical_bias="0.0"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/site_list_label"
