@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
@@ -47,7 +49,21 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductDescriptionEditor -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToAztecEditorFragment(target.description, target.title)
+                        .actionProductDetailFragmentToAztecEditorFragment(
+                                target.description,
+                                target.title,
+                                RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION
+                        )
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductShortDescriptionEditor -> {
+                val action = ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToAztecEditorFragment(
+                                target.shortDescription,
+                                target.title,
+                                RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION
+                        )
                 fragment.findNavController().navigate(action)
             }
 
