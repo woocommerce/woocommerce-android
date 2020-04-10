@@ -56,6 +56,7 @@ class ProductDetailRepository @Inject constructor(
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
 
     private var isFetchingTaxClassList = false
+    private var remoteProductId: Long = 0L
 
     init {
         dispatcher.register(this)
@@ -67,6 +68,7 @@ class ProductDetailRepository @Inject constructor(
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
         try {
+            this.remoteProductId = remoteProductId
             continuationFetchProduct?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationFetchProduct = it
@@ -187,7 +189,7 @@ class ProductDetailRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
             if (continuationFetchProduct?.isActive == true) {
                 if (event.isError) {
                     continuationFetchProduct?.resume(false)
