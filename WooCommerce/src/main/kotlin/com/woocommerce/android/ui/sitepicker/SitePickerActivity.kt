@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -45,7 +44,6 @@ import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
-import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
