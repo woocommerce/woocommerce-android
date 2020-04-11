@@ -471,6 +471,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.VISIBLE
+        site_list_container.visibility = View.GONE
 
         no_stores_view.text = getString(R.string.login_not_connected_to_account, url)
 
@@ -513,6 +514,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.GONE
+        site_list_container.visibility = View.GONE
 
         with(no_stores_view) {
             val refreshAppText = getString(R.string.login_refresh_app_continue)
@@ -582,6 +584,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
+        site_list_container.visibility = View.GONE
 
         with(no_stores_view) {
             // Build and configure the error message and make part of the message
