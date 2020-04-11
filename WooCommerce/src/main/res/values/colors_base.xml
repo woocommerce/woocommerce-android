@@ -44,7 +44,6 @@
         Elevation colors
     -->
     <color name="color_elevation_overlay_01">@color/color_surface</color>
-    <color name="color_shadow">@color/woo_black_90_alpha_012</color>
 
     <!--
         Default graph colors

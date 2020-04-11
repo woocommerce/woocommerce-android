@@ -21,8 +21,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:visibility="visible">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_help"
@@ -112,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
                     tools:listitem="@layout/site_picker_item"
-                    tools:itemCount="5"/>
+                    tools:itemCount="3"/>
             </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
             <androidx.constraintlayout.widget.Group
