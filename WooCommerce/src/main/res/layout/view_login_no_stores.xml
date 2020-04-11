@@ -8,7 +8,7 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/major_150"
-    android:drawableTop="@drawable/ic_woo_no_store"
+    android:drawableTop="@drawable/img_woo_no_stores"
     android:gravity="center_horizontal"
     android:lineSpacingExtra="@dimen/line_spacing_extra_50"
     android:text="@string/login_no_stores"

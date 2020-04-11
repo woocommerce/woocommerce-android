@@ -270,6 +270,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         no_stores_view.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
+        button_email_help.visibility = View.GONE
 
         site_list_label.text = when {
             wcSites.size == 1 -> getString(R.string.login_connected_store)
@@ -380,11 +381,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
-
-        val noStoresImage =
-                if (DisplayUtils.isLandscape(this)) null
-                else AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
-        no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
 
         button_primary.text = getString(R.string.login_try_another_account)
         button_primary.isEnabled = true
