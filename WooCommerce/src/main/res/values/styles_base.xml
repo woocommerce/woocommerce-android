@@ -507,4 +507,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="advanced">false</item>
         <item name="mediaToolbarAvailable">false</item>
     </style>
+
+    <style name="Woo.Animations">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
 </resources>
