@@ -327,7 +327,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                         requireNotNull(productData.regularPriceWithCurrency)
                 pricingGroup[getString(R.string.product_sale_price)] = requireNotNull(productData.salePriceWithCurrency)
             } else {
-                pricingGroup[""] = requireNotNull(productData.regularPriceWithCurrency)
+                pricingGroup[getString(R.string.product_regular_price)] =
+                        requireNotNull(productData.regularPriceWithCurrency)
             }
 
             // display product sale dates using the site's timezone, if available
