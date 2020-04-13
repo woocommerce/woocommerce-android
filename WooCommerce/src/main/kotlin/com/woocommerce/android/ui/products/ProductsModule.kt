@@ -10,9 +10,12 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductPricingFragment
 import com.woocommerce.android.ui.products.ProductsModule.ProductSettingsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingClassFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductStatusListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragment
 import com.woocommerce.android.ui.products.settings.ProductSettingsModule
+import com.woocommerce.android.ui.products.settings.ProductStatusListFragment
+import com.woocommerce.android.ui.products.settings.ProductStatusListModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -26,7 +29,8 @@ import dagger.android.ContributesAndroidInjector
     ProductShippingFragmentModule::class,
     ProductShippingClassFragmentModule::class,
     ProductPricingFragmentModule::class,
-    ProductSettingsFragmentModule::class
+    ProductSettingsFragmentModule::class,
+    ProductStatusListFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -97,5 +101,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductSettingsModule::class])
         abstract fun productSettingsFragment(): ProductSettingsFragment
+    }
+
+    @Module
+    internal abstract class ProductStatusListFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductStatusListModule::class])
+        abstract fun productStatusListFragment(): ProductStatusListFragment
     }
 }
