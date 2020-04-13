@@ -24,6 +24,8 @@ import kotlinx.android.synthetic.main.fragment_product_status_list.*
 class ProductStatusListFragment : BaseProductFragment() {
     private val navArgs: ProductStatusListFragmentArgs by navArgs()
 
+    override var shouldUpdateProductWhenEntering = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_status_list, container, false)
     }
@@ -34,7 +36,7 @@ class ProductStatusListFragment : BaseProductFragment() {
         getButtonForStatus(navArgs.status)?.isChecked = true
 
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            getStatusForButton(checkedId)?.let { status ->
+            getStatusForButtonId(checkedId)?.let { status ->
                 viewModel.updateProductDraft(productStatus = status)
                 findNavController().navigateUp()
             }
@@ -60,7 +62,7 @@ class ProductStatusListFragment : BaseProductFragment() {
         }
     }
 
-    private fun getStatusForButton(@IdRes buttonId: Int): ProductStatus? {
+    private fun getStatusForButtonId(@IdRes buttonId: Int): ProductStatus? {
         return when (buttonId) {
             R.id.btnPublished -> PUBLISH
             R.id.btnDraft -> DRAFT
