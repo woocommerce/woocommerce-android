@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -13,8 +14,10 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIn
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatusList
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
+import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -49,7 +52,21 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductDescriptionEditor -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToAztecEditorFragment(target.description, target.title)
+                        .actionProductDetailFragmentToAztecEditorFragment(
+                                target.description,
+                                target.title,
+                                RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION
+                        )
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductShortDescriptionEditor -> {
+                val action = ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToAztecEditorFragment(
+                                target.shortDescription,
+                                target.title,
+                                RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION
+                        )
                 fragment.findNavController().navigate(action)
             }
 
@@ -75,13 +92,13 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductSettings -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductSettingsFragment(target.remoteId)
+                        .actionProductDetailFragmentToProductSettingsFragment()
                 fragment.findNavController().navigate(action)
             }
 
             is ViewProductStatusList -> {
                 val status = target.status?.toString() ?: ""
-                val action = ProductDetailFragmentDirections
+                val action = ProductSettingsFragmentDirections
                         .actionProductSettingsFragmentToProductStatusListFragment(status)
                 fragment.findNavController().navigate(action)
             }

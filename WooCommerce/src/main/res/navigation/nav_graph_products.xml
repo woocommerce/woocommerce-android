@@ -42,16 +42,6 @@
             app:destination="@id/productPricingFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
-            app:destination="@id/productSettingsFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_productSettingsFragment_to_productStatusListFragment"
-            app:destination="@id/productStatusListFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -84,6 +74,10 @@
             android:name="aztecTitle"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="requestCode"
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/productInventoryFragment"
@@ -133,7 +127,12 @@
             android:name="remoteMediaId"
             app:argType="long" />
     </fragment>
+
     <include app:graph="@navigation/nav_graph_product_settings" />
+    <action
+        android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
+        app:destination="@id/nav_graph_product_settings" />
+
     <action
         android:id="@+id/action_global_productImageViewerFragment"
         app:destination="@id/productImageViewerFragment"

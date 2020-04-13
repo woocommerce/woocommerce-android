@@ -9,11 +9,18 @@
     android:orientation="vertical"
     android:visibility="visible">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/view_toolbar"/>
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
-    <ScrollView
+        <include
+            layout="@layout/view_toolbar"
+            android:id="@+id/toolbar"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -21,10 +28,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:visibility="visible">
+            android:layout_height="wrap_content">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_help"
                 style="@style/Woo.Button"
                 android:layout_width="wrap_content"
@@ -33,16 +39,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_email_help"
-                style="@style/Woo.Button.Lowercase"
+                style="@style/Woo.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginBottom="@dimen/major_150"
+                android:layout_marginTop="@dimen/minor_00"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:textAllCaps="false"
                 android:text="@string/login_need_help_finding_email"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/no_stores_view"
@@ -51,74 +59,68 @@
 
             <ImageView
                 android:id="@+id/image_avatar"
-                android:layout_width="@dimen/login_avatar_size"
-                android:layout_height="@dimen/login_avatar_size"
-                android:layout_marginTop="40dp"
+                android:layout_width="@dimen/image_major_64"
+                android:layout_height="@dimen/image_major_64"
+                android:layout_marginTop="@dimen/major_300"
                 android:contentDescription="@string/login_avatar_content_description"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_username"
+                style="@style/Woo.TextView.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/grey_dark"
-                android:textSize="@dimen/text_large"
+                android:layout_marginTop="@dimen/minor_10"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_displayname"
                 tools:text="\@droidtester2018"/>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_displayname"
+                style="@style/Woo.TextView.Subtitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
-                android:textColor="@color/grey_dark"
-                android:textSize="@dimen/text_extra_large"
+                android:layout_marginTop="@dimen/minor_100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/image_avatar"
                 tools:text="droidtester2018"/>
 
-            <com.google.android.material.card.MaterialCardView
+            <com.woocommerce.android.widgets.WCElevatedLinearLayout
                 android:id="@+id/site_list_container"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="@dimen/minor_100"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_200"
-                android:visibility="gone"
+                android:orientation="vertical"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_username"
                 app:layout_constraintVertical_bias="0.0"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
-                <LinearLayout
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/site_list_label"
+                    style="@style/Woo.TextView.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_pick_store"
+                    android:textColor="?attr/colorPrimary"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/sites_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/site_list_label"
-                        style="@style/Woo.Card.Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/login_pick_store"
-                        android:textColor="?attr/colorPrimary"/>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/sites_recycler"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        tools:listitem="@layout/site_picker_item"
-                        tools:itemCount="5"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/site_picker_item"
+                    tools:itemCount="3"/>
+            </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/user_info_group"
@@ -132,7 +134,7 @@
                 layout="@layout/view_login_no_stores"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <View
         android:id="@+id/view6"

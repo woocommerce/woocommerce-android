@@ -13,6 +13,12 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_productSettingsFragment_to_productStatusListFragment"
+            app:destination="@id/productStatusListFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+
     </fragment>
 
     <fragment
