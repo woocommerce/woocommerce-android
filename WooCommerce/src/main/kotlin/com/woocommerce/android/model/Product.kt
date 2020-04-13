@@ -106,8 +106,8 @@ data class Product(
                 isSaleScheduled == product.isSaleScheduled &&
                 dateOnSaleToGmt == product.dateOnSaleToGmt &&
                 dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
-                regularPrice == product.regularPrice &&
-                salePrice == product.salePrice &&
+                isSamePrice(regularPrice, product.regularPrice) &&
+                isSamePrice(salePrice, product.salePrice) &&
                 weight == product.weight &&
                 length == product.length &&
                 height == product.height &&
@@ -115,6 +115,12 @@ data class Product(
                 shippingClass == product.shippingClass &&
                 shippingClassId == product.shippingClassId &&
                 isSameImages(product.images)
+    }
+
+    private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
+        val val1 = first ?: BigDecimal.ZERO
+        val val2 = second ?: BigDecimal.ZERO
+        return val1.isEqualTo(val2)
     }
 
     /**
@@ -289,7 +295,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.stockQuantity = stockQuantity
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-        it.regularPrice = regularPrice.toString()
+        it.regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) "" else regularPrice.toString()
         it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
         it.onSale = isOnSale
         it.length = if (length == 0f) "" else length.formatToString()
