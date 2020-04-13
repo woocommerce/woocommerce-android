@@ -11,11 +11,15 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.settings.ProductStatusListFragment.Companion.ARG_SELECTED_STATUS
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
-class ProductSettingsFragment : BaseProductFragment() {
+class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
     private val navArgs: ProductSettingsFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -45,6 +49,14 @@ class ProductSettingsFragment : BaseProductFragment() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        if (requestCode == RequestCodes.PRODUCT_SETTINGS_STATUS) {
+            (result.getSerializable(ARG_SELECTED_STATUS) as? ProductStatus)?.let {
+                viewModel.updateProductDraft(productStatus = it)
+            }
         }
     }
 

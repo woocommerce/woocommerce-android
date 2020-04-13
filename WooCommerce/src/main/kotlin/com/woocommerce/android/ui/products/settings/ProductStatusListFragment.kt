@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.annotation.IdRes
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
@@ -22,6 +23,10 @@ import kotlinx.android.synthetic.main.fragment_product_status_list.*
  * Dialog which enables choosing a product status
  */
 class ProductStatusListFragment : BaseProductFragment() {
+    companion object {
+        const val ARG_SELECTED_STATUS = "selected_status"
+    }
+
     private val navArgs: ProductStatusListFragmentArgs by navArgs()
 
     override var shouldUpdateProductWhenEntering = false
@@ -37,8 +42,15 @@ class ProductStatusListFragment : BaseProductFragment() {
 
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             getStatusForButtonId(checkedId)?.let { status ->
-                viewModel.updateProductDraft(productStatus = status)
-                findNavController().navigateUp()
+                val bundle = Bundle().also {
+                    it.putSerializable(ARG_SELECTED_STATUS, status)
+                }
+                requireActivity().navigateBackWithResult(
+                        RequestCodes.PRODUCT_SETTINGS_STATUS,
+                        bundle,
+                        R.id.nav_host_fragment_main,
+                        R.id.productSettingsFragment
+                )
             }
         }
     }
