@@ -60,7 +60,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             uploadingImageUris = null,
             weightWithUnits = "10kg",
             sizeWithUnits = "1 x 2 x 3 cm",
-            priceWithCurrency = "CZK20.00",
             salePriceWithCurrency = "CZK10.00",
             regularPriceWithCurrency = "CZK30.00"
     )
