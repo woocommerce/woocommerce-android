@@ -11,7 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.products.BaseProductFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PENDING
@@ -20,16 +20,14 @@ import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import kotlinx.android.synthetic.main.fragment_product_status_list.*
 
 /**
- * Dialog which enables choosing a product status
+ * Settings screen which enables choosing a product status
  */
-class ProductStatusListFragment : BaseProductFragment() {
+class ProductStatusListFragment : BaseFragment() {
     companion object {
         const val ARG_SELECTED_STATUS = "selected_status"
     }
 
     private val navArgs: ProductStatusListFragmentArgs by navArgs()
-
-    override var shouldUpdateProductWhenEntering = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_status_list, container, false)
@@ -61,8 +59,6 @@ class ProductStatusListFragment : BaseProductFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.product_status)
-
-    override fun onRequestAllowBackPress() = true
 
     private fun getButtonForStatus(status: String): RadioButton? {
         return when (ProductStatus.fromString(status)) {
