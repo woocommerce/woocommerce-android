@@ -10,7 +10,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import kotlinx.android.synthetic.main.fragment_product_visibility.*
+import kotlinx.android.synthetic.main.fragment_product_slug.*
 
 /**
  * Settings screen which enables editing a product's slug
@@ -20,7 +20,7 @@ class ProductSlugFragment : BaseFragment() {
         const val ARG_SLUG = "slug"
     }
 
-    private val navArgs: ProductVisibilityFragmentArgs by navArgs()
+    private val navArgs: ProductSlugFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_slug, container, false)
@@ -28,11 +28,12 @@ class ProductSlugFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        editSlug.setText(navArgs.slug)
     }
 
     private fun navigateBackWithResult() {
         val bundle = Bundle().also {
-            it.putBoolean(ARG_SLUG, btnFeatured.isChecked)
+            it.putString(ARG_SLUG, getSlug())
         }
         requireActivity().navigateBackWithResult(
                 RequestCodes.PRODUCT_SETTINGS_SLUG,
@@ -41,6 +42,11 @@ class ProductSlugFragment : BaseFragment() {
                 R.id.productSettingsFragment
         )
     }
+
+    /**
+     * As with the web, we trim the string and replace any spaces with hyphens
+     */
+    private fun getSlug() = editSlug.toString().trim().replace(" ", "-")
 
     override fun onResume() {
         super.onResume()

@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductVisibility
+import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
@@ -69,6 +70,8 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 viewModel.updateProductDraft(visibility = it, isFeatured = result.getBoolean(ARG_IS_FEATURED))
                 updateProductView()
             }
+        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
+            viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
         }
     }
 
@@ -84,6 +87,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
         productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
+        productSlug.optionValue = product.slug
     }
 
     private fun setupObservers() {
