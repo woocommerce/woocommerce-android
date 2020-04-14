@@ -24,6 +24,10 @@ enum class ProductStatus {
         return context.getString(resId)
     }
 
+    /**
+     * This ensures the status is passed as lowercase when updating a product in FluxC (passing
+     * it as uppercase fails with "HTTP 400 Invalid parameter "status")
+     */
     override fun toString(): String {
         return super.toString().toLowerCase(Locale.US)
     }

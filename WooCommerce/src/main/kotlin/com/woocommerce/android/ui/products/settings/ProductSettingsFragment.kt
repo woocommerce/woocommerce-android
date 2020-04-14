@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -20,8 +19,6 @@ import com.woocommerce.android.ui.products.settings.ProductStatusListFragment.Co
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
 class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
-    private val navArgs: ProductSettingsFragmentArgs by navArgs()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_settings, container, false)
