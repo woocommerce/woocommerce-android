@@ -56,6 +56,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         if (requestCode == RequestCodes.PRODUCT_SETTINGS_STATUS) {
             (result.getSerializable(ARG_SELECTED_STATUS) as? ProductStatus)?.let {
                 viewModel.updateProductDraft(productStatus = it)
+                updateProductView()
             }
         }
     }
