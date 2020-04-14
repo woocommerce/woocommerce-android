@@ -15,7 +15,9 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_SELECTED_VISIBILITY
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
 class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
@@ -56,6 +58,11 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         if (requestCode == RequestCodes.PRODUCT_SETTINGS_STATUS) {
             (result.getSerializable(ARG_SELECTED_STATUS) as? ProductStatus)?.let {
                 viewModel.updateProductDraft(productStatus = it)
+                updateProductView()
+            }
+        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
+            (result.getSerializable(ARG_SELECTED_VISIBILITY) as? ProductVisibility)?.let {
+                viewModel.updateProductDraft(visibility = it)
                 updateProductView()
             }
         }

@@ -416,7 +416,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         shippingClass: String? = null,
         images: List<Image>? = null,
         shippingClassId: Long? = null,
-        productStatus: ProductStatus? = null
+        productStatus: ProductStatus? = null,
+        visibility: ProductVisibility? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -450,7 +451,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
                     } else viewState.storedProduct?.dateOnSaleFromGmt,
-                    status = productStatus ?: product.status
+                    status = productStatus ?: product.status,
+                    visibility = visibility ?: product.visibility
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 

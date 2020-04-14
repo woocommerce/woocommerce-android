@@ -772,7 +772,7 @@
     <!-- Product status -->
     <string name="product_status_published">Published</string>
     <string name="product_status_private">Private</string>
-    <string name="product_status_pending">Pending Review</string>
+    <string name="product_status_pending">Pending review</string>
     <string name="product_status_draft">Draft</string>
 
     <!-- permissions -->
