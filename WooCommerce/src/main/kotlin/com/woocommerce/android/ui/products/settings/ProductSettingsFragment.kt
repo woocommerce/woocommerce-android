@@ -71,7 +71,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         if (!isAdded) return
 
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        productStatus.optionValue = product.status?.toString(requireActivity())
+        productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
     }
 
     private fun setupObservers() {

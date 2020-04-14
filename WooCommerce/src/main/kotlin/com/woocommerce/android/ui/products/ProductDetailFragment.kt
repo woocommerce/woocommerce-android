@@ -205,7 +205,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
                 frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toString(requireActivity())
+                textStatusBadge.text = status.toLocalizedString(requireActivity())
             }
         }
 

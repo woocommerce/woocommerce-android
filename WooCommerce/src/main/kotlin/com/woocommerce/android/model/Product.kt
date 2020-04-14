@@ -215,6 +215,7 @@ data class Product(
                     shortDescription = updatedProduct.shortDescription,
                     name = updatedProduct.name,
                     sku = updatedProduct.sku,
+                    status = updatedProduct.status,
                     manageStock = updatedProduct.manageStock,
                     stockStatus = updatedProduct.stockStatus,
                     stockQuantity = updatedProduct.stockQuantity,
@@ -290,6 +291,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.shortDescription = shortDescription
         it.name = name
         it.sku = sku
+        it.status = status.toString()
         it.manageStock = manageStock
         it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
         it.stockQuantity = stockQuantity

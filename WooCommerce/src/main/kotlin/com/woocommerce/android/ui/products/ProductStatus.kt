@@ -13,7 +13,7 @@ enum class ProductStatus {
     PENDING,
     PRIVATE;
 
-    fun toString(context: Context): String {
+    fun toLocalizedString(context: Context): String {
         @StringRes val resId = when (this) {
             PUBLISH -> R.string.product_status_published
             DRAFT -> R.string.product_status_draft
