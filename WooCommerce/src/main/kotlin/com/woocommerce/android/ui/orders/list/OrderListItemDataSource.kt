@@ -110,12 +110,12 @@ class OrderListItemDataSource(
         }
         orderSummaries.forEach {
             // Default to today if the date cannot be parsed. This date is in UTC.
-            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: DateTimeUtils.nowUTC()
+            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
 
             // Check if future-dated orders should be excluded from the results list.
             if (listDescriptor.excludeFutureOrders) {
-                val currentUtcDate = DateTimeUtils.nowUTC()
-                if (DateUtils.isAfterDate(currentUtcDate, date)) {
+                val currentDate = Date()
+                if (DateUtils.isAfterDate(currentDate, date)) {
                     // This order is dated for the future so skip adding it to the list
                     return@forEach
                 }
