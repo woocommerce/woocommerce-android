@@ -23,6 +23,11 @@
             app:destination="@id/productVisibilityFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_productSettingsFragment_to_productSlugFragment"
+            app:destination="@id/productSlugFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
 
     <fragment
@@ -46,6 +51,16 @@
         <argument
             android:name="featured"
             app:argType="boolean"
+            app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productSlugFragment"
+        android:name="com.woocommerce.android.ui.products.settings.ProductSlugFragment"
+        tools:layout="@layout/fragment_product_slug">
+        <argument
+            android:name="slug"
+            app:argType="string"
             app:nullable="false" />
     </fragment>
 

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
@@ -108,6 +109,12 @@ class ProductNavigator @Inject constructor() {
                 val visibility = target.visibility?.toString() ?: ""
                 val action = ProductSettingsFragmentDirections
                         .actionProductSettingsFragmentToProductVisibilityFragment(visibility, target.isFeatured)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductSlug -> {
+                val action = ProductSettingsFragmentDirections
+                        .actionProductSettingsFragmentToProductSlugFragment(target.slug)
                 fragment.findNavController().navigate(action)
             }
 

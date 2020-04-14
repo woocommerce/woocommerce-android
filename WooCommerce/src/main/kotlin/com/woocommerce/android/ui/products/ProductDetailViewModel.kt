@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -243,6 +244,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onSettingsVisibilityButtonClicked() {
         viewState.productDraft?.let {
             triggerEvent(ViewProductVisibility(it.visibility, it.isFeatured))
+        }
+    }
+
+    /**
+     * Called when the user taps the product slug in product settings
+     */
+    fun onSettingsSlugButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductSlug(it.slug))
         }
     }
 

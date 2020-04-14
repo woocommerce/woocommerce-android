@@ -504,6 +504,8 @@
     <string name="product_visibility_hidden">Hidden</string>
     <string name="product_featured">Featured product</string>
     <string name="product_visibility_headline">This setting determines which shop pages products will be listed on</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_slug_label">This is the URL-friendly version of the product title</string>
     <!--
         Product images
     -->

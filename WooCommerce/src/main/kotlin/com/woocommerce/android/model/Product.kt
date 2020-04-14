@@ -27,6 +27,7 @@ data class Product(
     val name: String,
     val description: String,
     val shortDescription: String,
+    val slug: String,
     val type: ProductType,
     val status: ProductStatus?,
     val visibility: ProductVisibility?,
@@ -98,6 +99,7 @@ data class Product(
                 backorderStatus == product.backorderStatus &&
                 soldIndividually == product.soldIndividually &&
                 sku == product.sku &&
+                slug == product.slug &&
                 type == product.type &&
                 numVariations == product.numVariations &&
                 name.fastStripHtml() == product.name.fastStripHtml() &&
@@ -186,7 +188,8 @@ data class Product(
         return updatedProduct?.let {
             status != it.status ||
                     visibility != it.visibility ||
-                    isFeatured != it.isFeatured
+                    isFeatured != it.isFeatured ||
+                    slug != it.slug
         } ?: false
     }
 
@@ -222,6 +225,7 @@ data class Product(
                     shortDescription = updatedProduct.shortDescription,
                     name = updatedProduct.name,
                     sku = updatedProduct.sku,
+                    slug = updatedProduct.slug,
                     status = updatedProduct.status,
                     visibility = updatedProduct.visibility,
                     isFeatured = updatedProduct.isFeatured,
@@ -300,6 +304,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.shortDescription = shortDescription
         it.name = name
         it.sku = sku
+        it.slug = slug
         it.status = status.toString()
         it.catalogVisibility = visibility.toString()
         it.featured = isFeatured
@@ -360,6 +365,7 @@ fun WCProductModel.toAppModel(): Product {
         manageStock = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,
+        slug = this.slug,
         length = this.length.toFloatOrNull() ?: 0f,
         width = this.width.toFloatOrNull() ?: 0f,
         height = this.height.toFloatOrNull() ?: 0f,

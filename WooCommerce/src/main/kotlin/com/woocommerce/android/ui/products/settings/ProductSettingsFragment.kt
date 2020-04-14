@@ -37,6 +37,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productVisibility.setOnClickListener {
             viewModel.onSettingsVisibilityButtonClicked()
         }
+        productSlug.setOnClickListener {
+            viewModel.onSettingsSlugButtonClicked()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

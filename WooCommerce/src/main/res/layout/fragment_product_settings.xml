@@ -28,6 +28,15 @@
 
         <View style="@style/Woo.Divider" />
 
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/productSlug"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/product_slug"
+            tools:optionValue="Slug" />
+
+        <View style="@style/Woo.Divider" />
+
     </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -30,5 +30,6 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()
     data class ViewProductVisibility(val visibility: ProductVisibility?, val isFeatured: Boolean) :
             ProductNavigationTarget()
+    data class ViewProductSlug(val slug: String) : ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
 }
