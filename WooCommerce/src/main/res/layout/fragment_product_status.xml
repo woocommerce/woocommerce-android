@@ -3,7 +3,9 @@
     android:id="@+id/radioGroup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingStart="@dimen/major_100"
+    android:paddingEnd="0dp">
 
     <com.google.android.material.radiobutton.MaterialRadioButton
         android:id="@+id/btnPublished"
