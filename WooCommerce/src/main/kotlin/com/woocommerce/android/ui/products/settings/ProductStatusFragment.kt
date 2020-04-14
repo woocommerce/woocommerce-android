@@ -11,7 +11,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PENDING
@@ -22,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_product_status.*
 /**
  * Settings screen which enables choosing a product status
  */
-class ProductStatusFragment : BaseFragment() {
+class ProductStatusFragment : BaseProductSettingsFragment() {
     companion object {
         const val ARG_SELECTED_STATUS = "selected_status"
     }
@@ -35,27 +34,30 @@ class ProductStatusFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         getButtonForStatus(navArgs.status)?.isChecked = true
+    }
 
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            getStatusForButtonId(checkedId)?.let { status ->
-                val bundle = Bundle().also {
-                    it.putSerializable(ARG_SELECTED_STATUS, status)
-                }
-                requireActivity().navigateBackWithResult(
-                        RequestCodes.PRODUCT_SETTINGS_STATUS,
-                        bundle,
-                        R.id.nav_host_fragment_main,
-                        R.id.productSettingsFragment
-                )
+    override fun navigateBackWithResult() {
+        getStatusForButtonId(radioGroup.checkedRadioButtonId)?.let { status ->
+            val bundle = Bundle().also {
+                it.putSerializable(ARG_SELECTED_STATUS, status)
             }
+            requireActivity().navigateBackWithResult(
+                    RequestCodes.PRODUCT_SETTINGS_STATUS,
+                    bundle,
+                    R.id.nav_host_fragment_main,
+                    R.id.productSettingsFragment
+            )
         }
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return true
     }
 
     override fun getFragmentTitle() = getString(R.string.product_status)
