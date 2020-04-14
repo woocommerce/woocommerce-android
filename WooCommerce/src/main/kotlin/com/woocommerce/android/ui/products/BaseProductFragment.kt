@@ -38,7 +38,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
         // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
         // as it exists now so we can easily discard changes are determine if any changes were made inside
         // this fragment
-        if (savedInstanceState == null ) {
+        if (savedInstanceState == null) {
             viewModel.updateProductBeforeEnteringFragment()
         }
     }
