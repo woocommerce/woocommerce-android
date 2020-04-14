@@ -3,25 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/major_100"
             android:orientation="vertical">
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/btnFeatured"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
                 android:text="@string/product_featured" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/major_100"
             android:orientation="vertical">
 
             <RadioGroup
@@ -65,5 +69,5 @@
             </RadioGroup>
 
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -25,7 +25,8 @@ import kotlinx.android.synthetic.main.fragment_product_visibility.*
  */
 class ProductVisibilityFragment : BaseFragment() {
     companion object {
-        const val ARG_SELECTED_VISIBILITY = "selected_visibility"
+        const val ARG_VISIBILITY = "visibility"
+        const val ARG_IS_FEATURED = "is_featured"
     }
 
     private val navArgs: ProductVisibilityFragmentArgs by navArgs()
@@ -38,20 +39,27 @@ class ProductVisibilityFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         getButtonForVisibility(navArgs.visibility)?.isChecked = true
+        btnFeatured.isChecked = navArgs.featured
 
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            getVisibilityForButtonId(checkedId)?.let { visibility ->
-                val bundle = Bundle().also {
-                    it.putSerializable(ARG_SELECTED_VISIBILITY, visibility)
-                }
-                requireActivity().navigateBackWithResult(
-                        RequestCodes.PRODUCT_SETTINGS_VISIBLITY,
-                        bundle,
-                        R.id.nav_host_fragment_main,
-                        R.id.productSettingsFragment
-                )
-            }
+        radioGroup.setOnCheckedChangeListener { _, _ ->
+            navigateBackWithResult()
         }
+        btnFeatured.setOnCheckedChangeListener { _, _ ->
+            navigateBackWithResult()
+        }
+    }
+
+    private fun navigateBackWithResult() {
+        val bundle = Bundle().also {
+            it.putSerializable(ARG_VISIBILITY, getVisibilityForButtonId(radioGroup.checkedRadioButtonId))
+            it.putBoolean(ARG_IS_FEATURED, btnFeatured.isChecked)
+        }
+        requireActivity().navigateBackWithResult(
+                RequestCodes.PRODUCT_SETTINGS_VISIBLITY,
+                bundle,
+                R.id.nav_host_fragment_main,
+                R.id.productSettingsFragment
+        )
     }
 
     override fun onResume() {
