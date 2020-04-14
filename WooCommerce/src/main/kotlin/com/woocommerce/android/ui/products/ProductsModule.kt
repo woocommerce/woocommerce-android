@@ -16,6 +16,8 @@ import com.woocommerce.android.ui.products.settings.ProductSettingsFragment
 import com.woocommerce.android.ui.products.settings.ProductSettingsModule
 import com.woocommerce.android.ui.products.settings.ProductStatusListFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusListModule
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
+import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -30,7 +32,8 @@ import dagger.android.ContributesAndroidInjector
     ProductShippingClassFragmentModule::class,
     ProductPricingFragmentModule::class,
     ProductSettingsFragmentModule::class,
-    ProductStatusListFragmentModule::class
+    ProductStatusListFragmentModule::class,
+    ProductVisibilityModule::class
 ])
 object ProductsModule {
     @Module
@@ -108,5 +111,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductStatusListModule::class])
         abstract fun productStatusListFragment(): ProductStatusListFragment
+    }
+
+    @Module
+    internal abstract class ProductVisibilityFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductVisibilityModule::class])
+        abstract fun ProductVisibilityFragment(): ProductVisibilityFragment
     }
 }

@@ -5,10 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <com.woocommerce.android.widgets.WCElevatedLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorSurface"
         android:orientation="vertical">
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
@@ -20,5 +19,15 @@
 
         <View style="@style/Woo.Divider" />
 
-    </LinearLayout>
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/productCatalogVisibility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/product_visibility"
+            tools:optionValue="Draft" />
+
+        <View style="@style/Woo.Divider" />
+
+    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
 </androidx.core.widget.NestedScrollView>
