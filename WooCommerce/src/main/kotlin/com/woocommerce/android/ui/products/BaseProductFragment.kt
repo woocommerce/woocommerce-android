@@ -22,7 +22,7 @@ import javax.inject.Inject
  * All product related fragments should extend this class to provide a consistent method
  * of displaying snackbar, handling navigation and discard dialogs
  */
-abstract class BaseProductFragment : BaseFragment(), BackPressListener, BaseProductFragmentInterface {
+abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -30,7 +30,6 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener, BaseProd
     protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
 
     private var publishMenuItem: MenuItem? = null
-    override var shouldUpdateProductWhenEntering = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,7 +38,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener, BaseProd
         // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
         // as it exists now so we can easily discard changes are determine if any changes were made inside
         // this fragment
-        if (savedInstanceState == null && shouldUpdateProductWhenEntering) {
+        if (savedInstanceState == null ) {
             viewModel.updateProductBeforeEnteringFragment()
         }
     }
