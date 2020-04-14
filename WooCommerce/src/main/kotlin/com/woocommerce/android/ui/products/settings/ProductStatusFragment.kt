@@ -17,20 +17,20 @@ import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PENDING
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
-import kotlinx.android.synthetic.main.fragment_product_status_list.*
+import kotlinx.android.synthetic.main.fragment_product_status.*
 
 /**
  * Settings screen which enables choosing a product status
  */
-class ProductStatusListFragment : BaseFragment() {
+class ProductStatusFragment : BaseFragment() {
     companion object {
         const val ARG_SELECTED_STATUS = "selected_status"
     }
 
-    private val navArgs: ProductStatusListFragmentArgs by navArgs()
+    private val navArgs: ProductStatusFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_status_list, container, false)
+        return inflater.inflate(R.layout.fragment_product_status, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

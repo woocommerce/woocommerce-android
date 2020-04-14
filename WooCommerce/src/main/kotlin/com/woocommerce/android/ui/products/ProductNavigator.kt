@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatusList
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.util.FeatureFlag
@@ -96,10 +96,10 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigate(action)
             }
 
-            is ViewProductStatusList -> {
+            is ViewProductStatus -> {
                 val status = target.status?.toString() ?: ""
                 val action = ProductSettingsFragmentDirections
-                        .actionProductSettingsFragmentToProductStatusListFragment(status)
+                        .actionProductSettingsFragmentToProductStatusFragment(status)
                 fragment.findNavController().navigate(action)
             }
 

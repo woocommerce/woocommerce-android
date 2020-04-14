@@ -14,17 +14,17 @@
             android:defaultValue="0L"
             app:argType="long" />
         <action
-            android:id="@+id/action_productSettingsFragment_to_productStatusListFragment"
-            app:destination="@id/productStatusListFragment"
+            android:id="@+id/action_productSettingsFragment_to_productStatusFragment"
+            app:destination="@id/productStatusFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/productStatusListFragment"
-        android:name="com.woocommerce.android.ui.products.settings.ProductStatusListFragment"
-        tools:layout="@layout/fragment_product_status_list">
+        android:id="@+id/productStatusFragment"
+        android:name="com.woocommerce.android.ui.products.settings.ProductStatusFragment"
+        tools:layout="@layout/fragment_product_status">
         <argument
             android:name="status"
             app:argType="string"
