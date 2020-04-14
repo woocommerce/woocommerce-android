@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
@@ -32,7 +35,25 @@ class ProductVisibilityFragment : BaseFragment() {
     private val navArgs: ProductVisibilityFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_visibility, container, false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    // TODO: handle back button
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                navigateBackWithResult()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,13 +61,6 @@ class ProductVisibilityFragment : BaseFragment() {
 
         getButtonForVisibility(navArgs.visibility)?.isChecked = true
         btnFeatured.isChecked = navArgs.featured
-
-        radioGroup.setOnCheckedChangeListener { _, _ ->
-            navigateBackWithResult()
-        }
-        btnFeatured.setOnCheckedChangeListener { _, _ ->
-            navigateBackWithResult()
-        }
     }
 
     private fun navigateBackWithResult() {
