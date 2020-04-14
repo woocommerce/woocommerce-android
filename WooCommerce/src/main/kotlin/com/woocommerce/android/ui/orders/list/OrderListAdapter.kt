@@ -22,6 +22,7 @@ import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
 
 class OrderListAdapter(
     val listener: OrderListListener,
@@ -94,7 +95,7 @@ class OrderListAdapter(
      */
     private fun getFormattedOrderDate(context: Context, orderDate: String): String? {
         DateTimeUtils.dateUTCFromIso8601(orderDate)?.let { date ->
-            val flags = if (DateTimeUtils.isSameYear(date, DateTimeUtils.nowUTC())) {
+            val flags = if (DateTimeUtils.isSameYear(date, Date())) {
                 DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_YEAR
             } else {
                 DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
