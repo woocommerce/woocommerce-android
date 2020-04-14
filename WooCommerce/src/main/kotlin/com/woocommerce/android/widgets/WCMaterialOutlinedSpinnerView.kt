@@ -3,7 +3,7 @@ package com.woocommerce.android.widgets
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.FrameLayout
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
 
@@ -12,8 +12,10 @@ import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
  * This view will display a text box which will open a dialog when clicked.
  * The entire view acts as a single component.
  */
-class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null
+) : FrameLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.view_material_outlined_spinner, this)
         if (attrs != null) {

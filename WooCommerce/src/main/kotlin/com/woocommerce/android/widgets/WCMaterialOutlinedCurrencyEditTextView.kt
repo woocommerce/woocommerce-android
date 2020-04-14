@@ -3,7 +3,7 @@ package com.woocommerce.android.widgets
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.FrameLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyFormatter
 import kotlinx.android.synthetic.main.view_material_outlined_currency_edittext.view.*
@@ -22,8 +22,10 @@ import java.math.BigDecimal
  * and deprecate this class.
  *
  */
-class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null
+) : FrameLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.view_material_outlined_currency_edittext, this)
         if (attrs != null) {

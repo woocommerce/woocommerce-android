@@ -1,187 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/card_padding_top"
-        android:paddingBottom="@dimen/card_padding_bottom">
-
-        <!-- Product Pricing Heading -->
-        <TextView
-            android:id="@+id/product_price_heading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/card_padding_start"
-            android:paddingEnd="@dimen/card_padding_end"
-            android:text="@string/product_price"
-            style="@style/Woo.Product.Label.Large"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Product Regular Price -->
-        <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
-            android:id="@+id/product_regular_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_padding_start"
-            android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginEnd="@dimen/card_padding_end"
-            app:currencyHint="@string/product_regular_price"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_price_heading" />
-
-        <!-- Product Sale Price -->
-        <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
-            android:id="@+id/product_sale_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_padding_start"
-            android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginEnd="@dimen/card_padding_end"
-            app:currencyHint="@string/product_sale_price"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_regular_price" />
-
-        <!-- Managing Product Stock -->
-        <com.woocommerce.android.widgets.WCToggleSingleOptionView
-            android:id="@+id/scheduleSale_switch"
-            style="@style/Woo.Product.Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_padding_start"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/card_padding_end"
-            android:layout_marginBottom="@dimen/margin_extra_large"
-            android:importantForAccessibility="yes"
-            android:paddingStart="@dimen/card_item_padding_intra_v"
-            android:paddingEnd="@dimen/card_item_padding_intra_v"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_sale_price"
-            app:switchSummary="@string/product_schedule_sale_sublabel"
-            app:switchTitle="@string/product_schedule_sale_label" />
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/scheduleSale_morePanel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_padding_start"
-            android:layout_marginEnd="@dimen/card_padding_end"
-            android:layout_marginBottom="@dimen/margin_extra_large"
-            android:paddingTop="@dimen/card_padding_top"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scheduleSale_switch"
-            tools:visibility="visible">
+            android:layout_height="match_parent">
 
-            <!-- Schedule Sale From -->
-            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-                android:id="@+id/scheduleSale_startDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                app:layout_constraintStart_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:spinnerHint="@string/product_schedule_sale_from_label" />
-
-            <!-- Schedule Sale To -->
-            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-                android:id="@+id/scheduleSale_endDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
-                android:inputType="text"
-                app:layout_constraintStart_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/scheduleSale_startDate"
-                app:spinnerHint="@string/product_schedule_sale_to_label" />
-
-            <!-- Remove End Date button -->
-            <TextView
-                android:id="@+id/scheduleSale_RemoveEndDateButton"
+            <!-- Product Pricing Heading -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/product_price_heading"
+                style="@style/Woo.TextView.Headline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_large"
-                android:textColor="@color/wc_purple"
-                android:paddingTop="@dimen/margin_large"
-                android:paddingBottom="@dimen/margin_large"
-                android:background="?attr/selectableItemBackground"
-                android:text="@string/product_schedule_remove_end_date_link_label"
+                android:text="@string/product_price"
                 app:layout_constraintStart_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/scheduleSale_endDate"
-                app:layout_constraintTop_toBottomOf="@id/scheduleSale_endDate" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Product Regular Price -->
+            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+                android:id="@+id/product_regular_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                app:currencyHint="@string/product_regular_price"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_price_heading" />
+
+            <!-- Product Sale Price -->
+            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+                android:id="@+id/product_sale_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_marginBottom="@dimen/minor_100"
+                app:currencyHint="@string/product_sale_price"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_regular_price" />
+
+            <!-- Managing Product Stock -->
+            <com.woocommerce.android.widgets.WCToggleSingleOptionView
+                android:id="@+id/scheduleSale_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_75"
+                android:layout_marginEnd="@dimen/major_75"
+                android:layout_marginTop="@dimen/minor_100"
+                android:importantForAccessibility="yes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_sale_price"
+                app:switchSummary="@string/product_schedule_sale_sublabel"
+                app:switchTitle="@string/product_schedule_sale_label" />
+
+            <LinearLayout
+                android:id="@+id/scheduleSale_morePanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/scheduleSale_switch"
+                tools:visibility="visible">
+
+                <!-- Schedule Sale From -->
+                <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                    android:id="@+id/scheduleSale_startDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:inputType="number"
+                    app:spinnerHint="@string/product_schedule_sale_from_label" />
+
+                <!-- Schedule Sale To -->
+                <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                    android:id="@+id/scheduleSale_endDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:inputType="text"
+                    app:spinnerHint="@string/product_schedule_sale_to_label" />
+
+                <!-- Remove End Date button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/scheduleSale_RemoveEndDateButton"
+                    style="@style/Woo.Button.Lowercase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_75"
+                    android:text="@string/product_schedule_remove_end_date_link_label"/>
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/scheduleSale_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="scheduleSale_morePanel,scheduleSale_switch" />
+
+            <View
+                android:id="@+id/divider"
+                style="@style/Woo.Divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/scheduleSale_barrier" />
+
+            <!-- Product Pricing Heading -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/product_tax"
+                style="@style/Woo.TextView.Headline6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/product_tax_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+            <!-- Product Tax Status -->
+            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                android:id="@+id/product_tax_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_tax"
+                app:spinnerHint="@string/product_tax_status" />
+
+            <!-- Product Tax Class -->
+            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                android:id="@+id/product_tax_class"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_tax_status"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:spinnerHint="@string/product_tax_class" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/scheduleSale_barrier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="scheduleSale_morePanel,scheduleSale_switch" />
-
-        <View
-            android:id="@+id/divider"
-            style="@style/Woo.Divider"
-            android:layout_marginTop="@dimen/margin_large"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scheduleSale_barrier" />
-
-        <!-- Product Pricing Heading -->
-        <TextView
-            android:id="@+id/product_tax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:paddingStart="@dimen/card_padding_start"
-            android:paddingEnd="@dimen/card_padding_end"
-            android:text="@string/product_tax_settings"
-            style="@style/Woo.Product.Label.Large"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider" />
-
-        <!-- Product Tax Status -->
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/product_tax_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_padding_start"
-            android:layout_marginEnd="@dimen/card_padding_end"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="text"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_tax"
-            app:spinnerHint="@string/product_tax_status" />
-
-        <!-- Product Tax Class -->
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/product_tax_class"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_padding_start"
-            android:layout_marginEnd="@dimen/card_padding_end"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="text"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_tax_status"
-            app:spinnerHint="@string/product_tax_class" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+</ScrollView>
