@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -233,6 +234,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onSettingsStatusButtonClicked() {
         viewState.productDraft?.let {
             triggerEvent(ViewProductStatus(it.status))
+        }
+    }
+
+    /**
+     * Called when the user taps the product visibility in product settings
+     */
+    fun onSettingsVisibilityButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductVisibility(it.visibility, it.isFeatured))
         }
     }
 

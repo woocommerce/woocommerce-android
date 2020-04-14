@@ -15,10 +15,10 @@
             app:argType="long" />
         <action
             android:id="@+id/action_productSettingsFragment_to_productStatusFragment"
-            app:destination="@id/productStatusFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-
+            app:destination="@id/productStatusFragment" />
+        <action
+            android:id="@+id/action_productSettingsFragment_to_productVisibilityFragment"
+            app:destination="@id/productVisibilityFragment" />
     </fragment>
 
     <fragment
@@ -28,6 +28,20 @@
         <argument
             android:name="status"
             app:argType="string"
+            app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productVisibilityFragment"
+        android:name="com.woocommerce.android.ui.products.settings.ProductVisibilityFragment"
+        tools:layout="@layout/fragment_product_visibility">
+        <argument
+            android:name="visibility"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="featured"
+            app:argType="boolean"
             app:nullable="false" />
     </fragment>
 
