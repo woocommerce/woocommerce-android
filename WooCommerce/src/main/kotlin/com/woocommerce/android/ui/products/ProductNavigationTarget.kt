@@ -18,6 +18,8 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductPricing(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductShipping(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductDescriptionEditor(val description: String, val title: String) : ProductNavigationTarget()
+    data class ViewProductShortDescriptionEditor(val shortDescription: String, val title: String) :
+            ProductNavigationTarget()
     data class ViewProductImages(
         val product: Product,
         val imageModel: Product.Image? = null,

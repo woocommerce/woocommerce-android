@@ -16,6 +16,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
@@ -29,7 +30,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
-import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -415,31 +416,60 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
-                productData.sizeWithUnits?.isNotEmpty() == true ||
-                product.shippingClass.isNotEmpty()
-        val shippingGroup = if (hasShippingInfo) {
-            mapOf(
-                    Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
-                    Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
-                    Pair(getString(R.string.product_shipping_class),
-                            viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId))
-            )
-        } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
+        if (!product.isVirtual) {
+            val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
+                    productData.sizeWithUnits?.isNotEmpty() == true ||
+                    product.shippingClass.isNotEmpty()
+            val shippingGroup = if (hasShippingInfo) {
+                mapOf(
+                        Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                        Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
+                        Pair(
+                                getString(R.string.product_shipping_class),
+                                viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId)
+                        )
+                )
+            } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
 
-        addPropertyGroup(
-                DetailCard.Secondary,
-                R.string.product_shipping,
-                shippingGroup,
-                groupIconId = R.drawable.ic_gridicons_shipping
-        )?.also {
-            // display shipping caption only if shipping info is not available
-            if (!hasShippingInfo) {
-                it.showPropertyName(false)
+            addPropertyGroup(
+                    DetailCard.Secondary,
+                    R.string.product_shipping,
+                    shippingGroup,
+                    groupIconId = R.drawable.ic_gridicons_shipping
+            )?.also {
+                // display shipping caption only if shipping info is not available
+                if (!hasShippingInfo) {
+                    it.showPropertyName(false)
+                }
+                it.setClickListener {
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
+                    viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
+                }
             }
-            it.setClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
-                viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            val shortDescription = if (product.shortDescription.isEmpty()) {
+                getString(R.string.product_short_description_empty)
+            } else {
+                product.shortDescription
+            }
+            addPropertyView(
+                    DetailCard.Secondary,
+                    getString(R.string.product_short_description),
+                    SpannableString(HtmlUtils.fromHtml(shortDescription)),
+                    LinearLayout.VERTICAL,
+                    R.drawable.ic_gridicons_align_left
+            )?.also {
+                it.setMaxLines(1)
+                it.setClickListener {
+                    // TODO: track event
+                    viewModel.onEditProductCardClicked(
+                            ViewProductShortDescriptionEditor(
+                                    product.shortDescription, getString(R.string.product_short_description)
+                            )
+                    )
+                }
             }
         }
     }
@@ -795,9 +825,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
-            AZTEC_EDITOR_REQUEST_CODE -> {
+            RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                    viewModel.updateProductDraft(result.getString(ARG_AZTEC_EDITOR_TEXT))
+                    viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+            }
+            RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
         }

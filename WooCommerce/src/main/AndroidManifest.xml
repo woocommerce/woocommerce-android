@@ -71,10 +71,6 @@
             android:label="@string/support_help"
             android:theme="@style/Theme.Woo.DayNight" />
 
-        <activity
-            android:name=".ui.imageviewer.ImageViewerActivity"
-            android:theme="@style/ImageViewer.Activity"/>
-
         <activity android:name="zendesk.support.guide.HelpCenterActivity"
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
 

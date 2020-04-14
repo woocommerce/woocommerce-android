@@ -94,6 +94,11 @@
         <attr name="aevTitleAppearance" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="WCElevatedLinearLayout">
+        <!-- Optional: resource id of dimension -->
+        <attr name="wcElevation" format="reference"/>
+    </declare-styleable>
+
     <!--
         Emphasis values are used in combination with each "on" color to create
         three available levels of emphasis for text and content.

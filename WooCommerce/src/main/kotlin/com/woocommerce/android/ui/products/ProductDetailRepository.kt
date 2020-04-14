@@ -56,6 +56,7 @@ class ProductDetailRepository @Inject constructor(
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
 
     private var isFetchingTaxClassList = false
+    private var remoteProductId: Long = 0L
 
     init {
         dispatcher.register(this)
@@ -67,6 +68,7 @@ class ProductDetailRepository @Inject constructor(
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
         try {
+            this.remoteProductId = remoteProductId
             continuationFetchProduct?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationFetchProduct = it
@@ -75,7 +77,7 @@ class ProductDetailRepository @Inject constructor(
                 dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
             }
         } catch (e: CancellationException) {
-            WooLog.d(PRODUCTS, "CancellationException while fetching single product")
+            WooLog.e(PRODUCTS, "CancellationException while fetching single product")
         }
 
         continuationFetchProduct = null
@@ -187,12 +189,16 @@ class ProductDetailRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
-            if (event.isError) {
-                continuationFetchProduct?.resume(false)
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
+            if (continuationFetchProduct?.isActive == true) {
+                if (event.isError) {
+                    continuationFetchProduct?.resume(false)
+                } else {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
+                    continuationFetchProduct?.resume(true)
+                }
             } else {
-                AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                continuationFetchProduct?.resume(true)
+                WooLog.w(PRODUCTS, "continuationFetchProduct is no longer active")
             }
         }
     }

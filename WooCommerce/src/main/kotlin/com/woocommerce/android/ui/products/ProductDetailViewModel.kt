@@ -369,6 +369,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun updateProductDraft(
         description: String? = null,
+        shortDescription: String? = null,
         title: String? = null,
         sku: String? = null,
         manageStock: Boolean? = null,
@@ -395,6 +396,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             val currentProduct = product.copy()
             val updatedProduct = product.copy(
                     description = description ?: product.description,
+                    shortDescription = shortDescription ?: product.shortDescription,
                     name = title ?: product.name,
                     sku = sku ?: product.sku,
                     manageStock = manageStock ?: product.manageStock,
@@ -457,9 +459,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             // fetch product
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
+                val shouldFetch = remoteProductId != getRemoteProductId()
                 updateProductState(productInDb)
 
-                val shouldFetch = remoteProductId != getRemoteProductId()
                 val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
                 if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
@@ -575,24 +577,28 @@ class ProductDetailViewModel @AssistedInject constructor(
             productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
                     ?: viewState.productDraft?.shippingClass ?: ""
 
-    private fun updateProductState(storedProduct: Product) {
-        val updatedProduct = viewState.productDraft?.let {
-            if (storedProduct.isSameProduct(it)) storedProduct else storedProduct.mergeProduct(viewState.productDraft)
-        } ?: storedProduct
+    private fun updateProductState(productToUpdateFrom: Product) {
+        val updatedDraft = viewState.productDraft?.let { currentDraft ->
+            if (viewState.storedProduct?.isSameProduct(currentDraft) == true) {
+                productToUpdateFrom
+            } else {
+                productToUpdateFrom.mergeProduct(currentDraft)
+            }
+        } ?: productToUpdateFrom
 
-        loadProductTaxAndShippingClassDependencies(updatedProduct)
+        loadProductTaxAndShippingClassDependencies(updatedDraft)
 
-        val weightWithUnits = updatedProduct.getWeightWithUnits(parameters.weightUnit)
-        val sizeWithUnits = updatedProduct.getSizeWithUnits(parameters.dimensionUnit)
+        val weightWithUnits = updatedDraft.getWeightWithUnits(parameters.weightUnit)
+        val sizeWithUnits = updatedDraft.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
-                productDraft = updatedProduct,
-                storedProduct = storedProduct,
+                productDraft = updatedDraft,
+                storedProduct = productToUpdateFrom,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
-                priceWithCurrency = formatCurrency(updatedProduct.price, parameters.currencyCode),
-                salePriceWithCurrency = formatCurrency(updatedProduct.salePrice, parameters.currencyCode),
-                regularPriceWithCurrency = formatCurrency(updatedProduct.regularPrice, parameters.currencyCode),
+                priceWithCurrency = formatCurrency(updatedDraft.price, parameters.currencyCode),
+                salePriceWithCurrency = formatCurrency(updatedDraft.salePrice, parameters.currencyCode),
+                regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
 
