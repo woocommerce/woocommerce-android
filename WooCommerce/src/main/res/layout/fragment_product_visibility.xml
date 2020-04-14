@@ -11,6 +11,18 @@
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
+                android:text="@string/product_visibility_headline" />
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginTop="@dimen/major_100"
             android:orientation="vertical">
 
