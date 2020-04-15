@@ -5,7 +5,8 @@ properties necessary. The goal is to make as few modifications as possible to ke
 theme across the entire app. Overridden versions should be added to the styles.xml file.
 -->
 <resources
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <style name="Woo"/>
     <style name="Widget"/>
     <style name="Widget.Woo"/>
@@ -235,6 +236,24 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginEnd">@dimen/minor_00</item>
         <item name="android:layout_marginTop">@dimen/minor_50</item>
         <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
+
+    <!--
+        CheckedTextView style
+    -->
+    <!-- Set at the theme level so no need to set it in the layout -->
+    <style name="Woo.CheckedTextView">
+        <item name="textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:checkMark">?android:attr/listChoiceIndicatorSingle</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/minor_100</item>
+        <item name="android:paddingBottom">@dimen/minor_100</item>
+        <item name="android:minHeight">@dimen/min_tap_target</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <!--
