@@ -52,6 +52,8 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
         }
     }
 
+    fun getText() = edit_text.editableText.toString()
+
     fun setText(selectedText: String) {
         edit_text.post { edit_text.setText(selectedText) }
     }

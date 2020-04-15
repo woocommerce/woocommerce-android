@@ -72,6 +72,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
+            updateProductView()
         }
     }
 

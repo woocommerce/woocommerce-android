@@ -41,7 +41,7 @@ class ProductSlugFragment : BaseProductSettingsFragment() {
     /**
      * As with the web, we trim the string and replace any spaces with hyphens
      */
-    private fun getSlug() = editSlug.toString().trim().replace(" ", "-")
+    private fun getSlug() = editSlug.getText().trim().replace(" ", "-")
 
     override fun onResume() {
         super.onResume()
