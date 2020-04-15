@@ -8,18 +8,17 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_product_slug.*
 
 /**
  * Settings screen which enables editing a product's slug
  */
-class ProductSlugFragment : BaseFragment() {
+class ProductSlugFragment : BaseProductSettingsFragment() {
     companion object {
         const val ARG_SLUG = "slug"
     }
 
+    override val requestCode = RequestCodes.PRODUCT_SETTINGS_SLUG
     private val navArgs: ProductSlugFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -31,16 +30,12 @@ class ProductSlugFragment : BaseFragment() {
         editSlug.setText(navArgs.slug)
     }
 
-    private fun navigateBackWithResult() {
-        val bundle = Bundle().also {
+    override fun hasChanges() = getSlug() != navArgs.slug
+
+    override fun getChangesBundle(): Bundle {
+        return Bundle().also {
             it.putString(ARG_SLUG, getSlug())
         }
-        requireActivity().navigateBackWithResult(
-                RequestCodes.PRODUCT_SETTINGS_SLUG,
-                bundle,
-                R.id.nav_host_fragment_main,
-                R.id.productSettingsFragment
-        )
     }
 
     /**
