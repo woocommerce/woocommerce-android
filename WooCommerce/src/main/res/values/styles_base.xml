@@ -327,6 +327,26 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:src">@drawable/ic_menu_more_vert_compat</item>
     </style>
 
+    <!-- Set at the theme level so no need to set directly on the component -->
+    <style name="Widget.Woo.WCToggleOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="strokeColor">@color/color_on_surface_medium</item>
+        <item name="cornerRadius">@dimen/corner_radius_round_button</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="fontFamily">@font/roboto</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textSize">@dimen/text_minor_125</item>
+        <item name="android:textColor">@color/color_on_surface_medium_selector</item>
+    </style>
+
+    <!-- Set at the theme level so no need to set directly on the component -->
+    <style name="Widget.Woo.WCToggleOutlinedSelectorButton" parent="Widget.Woo.WCToggleOutlinedButton">
+        <item name="android:drawableEnd">@drawable/ic_arrow_drop_down_black</item>
+        <item name="android:paddingEnd">@dimen/minor_100</item>
+        <item name="drawableTint">@color/color_on_surface_medium</item>
+    </style>
+
     <!--
         Divider Style
     -->
