@@ -72,6 +72,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     }
 
     fun setError(error: String) {
+        edit_text_input.isErrorEnabled = true
         edit_text_input.error = error
     }
 
