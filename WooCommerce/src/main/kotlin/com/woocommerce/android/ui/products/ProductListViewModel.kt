@@ -14,6 +14,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -243,7 +244,8 @@ class ProductListViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val query: String? = null,
         val isSearchActive: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val displaySortAndFilterCard: Boolean = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
     ) : Parcelable
 
     @AssistedInject.Factory

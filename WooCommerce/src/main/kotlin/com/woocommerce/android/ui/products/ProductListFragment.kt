@@ -254,6 +254,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                     empty_view.hide()
                 }
             }
+            new.displaySortAndFilterCard.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
+                showProductSortAndFiltersCard(it)
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner, Observer {
@@ -307,6 +310,15 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             products_wip_card.initView()
         } else {
             products_wip_card.visibility = View.GONE
+        }
+    }
+
+    private fun showProductSortAndFiltersCard(show: Boolean) {
+        if (show) {
+            products_sort_filter_card.visibility = View.VISIBLE
+            products_sort_filter_card.initView()
+        } else {
+            products_sort_filter_card.visibility = View.GONE
         }
     }
 

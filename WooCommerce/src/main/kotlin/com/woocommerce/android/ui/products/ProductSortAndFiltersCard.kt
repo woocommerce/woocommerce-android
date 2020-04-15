@@ -14,4 +14,8 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.products_sort_and_filters_card, this)
     }
+
+    fun initView() {
+        // TODO: implement filter & sort actions in a separate PR
+    }
 }
