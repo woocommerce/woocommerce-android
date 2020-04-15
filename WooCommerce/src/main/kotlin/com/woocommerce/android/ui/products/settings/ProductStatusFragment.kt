@@ -51,13 +51,13 @@ class ProductStatusFragment : BaseProductSettingsFragment() {
         }
     }
 
+    override fun hasChanges() = navArgs.status != getSelectedStatus()?.toString()
+
+    private fun getSelectedStatus(): ProductStatus? = getStatusForButtonId(radioGroup.checkedRadioButtonId)
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        return true
     }
 
     override fun getFragmentTitle() = getString(R.string.product_status)
