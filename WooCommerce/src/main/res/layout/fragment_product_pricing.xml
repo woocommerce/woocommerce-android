@@ -118,7 +118,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scheduleSale_barrier" />
 
-            <!-- Product Pricing Heading -->
+            <!-- Product Tax Heading -->
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/product_tax"
                 style="@style/Woo.TextView.Headline6"
