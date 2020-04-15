@@ -403,7 +403,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="codeBackgroundColor">@android:color/transparent</item>
         <item name="android:inputType">textNoSuggestions|textMultiLine</item>
     </style>
-
     <style name="Woo.Product"/>
     <style name="Woo.Product.Label" parent="Woo.TextAppearance.Large">
         <item name="android:textColor">@color/wc_black_darker</item>
