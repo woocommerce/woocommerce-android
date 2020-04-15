@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.products.ProductFilterOption.FilterStockStatus
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 
@@ -59,6 +60,11 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
                 status.value
             }
         }
+
+        fun toFilterProductStockStatusList() =
+                CoreProductStockStatus.values()
+                .map { FilterStockStatus(fromString(it.value).stringResource, it.name) }
+                .toMutableList()
 
         @JvmField
         val CREATOR = object : Creator<ProductStockStatus > {

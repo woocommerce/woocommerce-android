@@ -3,15 +3,16 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.products.ProductFilterOption.FilterProductStatus
 
 /**
  * Similar to PostStatus except only draft, pending, private, and publish are supported
  */
-enum class ProductStatus {
-    PUBLISH,
-    DRAFT,
-    PENDING,
-    PRIVATE;
+enum class ProductStatus(@StringRes val stringResource: Int = 0) {
+    PUBLISH(R.string.product_status_published),
+    DRAFT(R.string.product_status_draft),
+    PENDING(R.string.product_status_pending),
+    PRIVATE(R.string.product_status_private);
 
     fun toString(context: Context): String {
         @StringRes val resId = when (this) {
@@ -31,5 +32,9 @@ enum class ProductStatus {
             }
             return null
         }
+
+        fun toFilterProductStatusList() = values()
+                .map { FilterProductStatus(it.stringResource, it.name) }
+                .toMutableList()
     }
 }
