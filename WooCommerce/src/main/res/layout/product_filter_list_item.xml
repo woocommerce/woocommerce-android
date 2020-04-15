@@ -8,9 +8,9 @@
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/Woo.ListItem"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Woo.ListItem">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/filterItemName"
@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/filterItemSelection"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,9 +27,10 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/filterItemSelection"
-            style="@style/Woo.ListItem.Title"
+            style="@style/Woo.ListItem.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Any" />
