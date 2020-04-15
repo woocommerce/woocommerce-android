@@ -10,7 +10,6 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PENDING
@@ -27,6 +26,7 @@ class ProductStatusFragment : BaseProductSettingsFragment() {
     }
 
     private val navArgs: ProductStatusFragmentArgs by navArgs()
+    override val requestCode = RequestCodes.PRODUCT_SETTINGS_STATUS
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_status, container, false)
@@ -37,18 +37,12 @@ class ProductStatusFragment : BaseProductSettingsFragment() {
         getButtonForStatus(navArgs.status)?.isChecked = true
     }
 
-    override fun navigateBackWithResult() {
+    override fun getChangesBundle(): Bundle {
+        val bundle = Bundle()
         getStatusForButtonId(radioGroup.checkedRadioButtonId)?.let { status ->
-            val bundle = Bundle().also {
-                it.putSerializable(ARG_SELECTED_STATUS, status)
-            }
-            requireActivity().navigateBackWithResult(
-                    RequestCodes.PRODUCT_SETTINGS_STATUS,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.productSettingsFragment
-            )
+            bundle.putSerializable(ARG_SELECTED_STATUS, status)
         }
+        return bundle
     }
 
     override fun hasChanges() = navArgs.status != getSelectedStatus()?.toString()

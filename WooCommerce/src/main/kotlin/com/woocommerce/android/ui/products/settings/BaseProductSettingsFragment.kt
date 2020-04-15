@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -24,6 +25,9 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
     }
 
     private var isConfirmingDiscard = false
+
+    // descendents should override this with a unique request code
+    protected abstract val requestCode: Int
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,7 +51,11 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                navigateBackWithResult()
+                if (hasChanges()) {
+                    navigateBackWithResult()
+                } else {
+                    findNavController().navigateUp()
+                }
                 true
             }
         else ->
@@ -82,9 +90,25 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
     }
 
     /**
-     * Descendants should override this to return changes to the main settings fragment
+     * Called when the Done button is tapped and changes have been made. Navigates back to the main product
+     * settings fragment and passes it a bundle containing the changes.
      */
-    abstract fun navigateBackWithResult()
+    private fun navigateBackWithResult() {
+        requireActivity().navigateBackWithResult(
+                requestCode,
+                getChangesBundle(),
+                R.id.nav_host_fragment_main,
+                R.id.productSettingsFragment
+        )
+    }
 
+    /**
+     * Descendants should override this to return changes as a bundle
+     */
+    abstract fun getChangesBundle(): Bundle
+
+    /**
+     * Descendants should override this to return true if changes have been made
+     */
     abstract fun hasChanges(): Boolean
 }
