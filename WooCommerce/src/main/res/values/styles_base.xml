@@ -502,8 +502,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tagColor">@color/editor_tag_color</item>
     </style>
 
-    <style name="Woo.AztecToolbar">
+    <style name="AztecToolbarStyle">
         <item name="advanced">false</item>
         <item name="mediaToolbarAvailable">false</item>
+        <item name="toolbarBackgroundColor">@color/editor_toolbar_bg_color</item>
+        <item name="toolbarBorderColor">@color/divider_color</item>
+        <item name="toolbarIconNormalColor">@color/color_on_surface_medium</item>
+        <item name="toolbarIconHighlightColor">@color/color_on_surface_high</item>
+        <item name="toolbarIconDisabledColor">@color/color_on_surface_disabled</item>
     </style>
 </resources>

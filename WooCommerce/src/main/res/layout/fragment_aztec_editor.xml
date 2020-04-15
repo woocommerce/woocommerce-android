@@ -8,11 +8,8 @@
 
     <org.wordpress.aztec.toolbar.AztecToolbar
         android:id="@+id/aztecToolbar"
-        style="@style/Woo.AztecToolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
-        app:toolbarBackgroundColor="@color/color_surface"
-        app:toolbarBorderColor="@color/wc_border_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
