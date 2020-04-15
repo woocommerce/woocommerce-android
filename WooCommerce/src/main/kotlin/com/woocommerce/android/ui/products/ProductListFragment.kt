@@ -334,7 +334,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun onFilterOptionSelected() {
-        // TODO: handle filtering in another PR
+        // TODO: handle click event tracking
+        disableSearchListeners()
+        showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showProductFilters()
     }
 
     override fun onSortOptionSelected() {
