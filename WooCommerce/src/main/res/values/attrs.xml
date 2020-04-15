@@ -129,4 +129,16 @@
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->
         <attr name="radius" format="dimension" />
     </declare-styleable>
+
+    <!--
+        Theme-level default style attribute for WCToggleOutlinedSelectorButton since MaterialButton
+        doesn't allow for overriding defStyleRes for some stupid reason.
+    -->
+    <attr name="wcToggleOutlinedSelectorButtonStyle" format="reference"/>
+
+    <!--
+        Theme-level default style attribute for WCToggleOutlinedButton since MaterialButton doesn't
+        allow for overriding defStyleRes for some stupid reason.
+    -->
+    <attr name="wcToggleOutlinedButtonStyle" format="reference"/>
 </resources>
