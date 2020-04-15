@@ -271,6 +271,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/minor_00</item>
         <item name="android:layout_marginBottom">@dimen/minor_75</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.AppCompat.Caption</item>
     </style>
 
     <style name="Woo.TextInputEditText"

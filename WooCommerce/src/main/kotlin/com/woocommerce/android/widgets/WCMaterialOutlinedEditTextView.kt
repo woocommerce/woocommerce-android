@@ -6,9 +6,10 @@ import android.text.InputFilter
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.FrameLayout
 import androidx.core.widget.doAfterTextChanged
 import com.woocommerce.android.R
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.view_material_outlined_edittext.view.*
 
 /**
@@ -16,8 +17,10 @@ import kotlinx.android.synthetic.main.view_material_outlined_edittext.view.*
  * a text box and a summary. The entire view acts as a single component.
  *
  */
-class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null
+) : FrameLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.view_material_outlined_edittext, this)
         if (attrs != null) {
@@ -31,9 +34,10 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
                         .orEmpty()
 
                 // Set the edit text summary
-                edit_text_summary.text =
-                        a.getString(R.styleable.WCMaterialOutlinedEditTextView_editTextSummary)
-                                .orEmpty()
+                a.getString(R.styleable.WCMaterialOutlinedEditTextView_editTextSummary)?.let {
+                    edit_text_input.isHelperTextEnabled = true
+                    edit_text_input.helperText = it
+                }
 
                 // Set the edit text input type
                 edit_text.inputType = a.getInt(
@@ -53,7 +57,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
     }
 
     fun setText(selectedText: String) {
-        edit_text.post { edit_text.setText(selectedText) }
+        edit_text.setText(selectedText)
     }
 
     fun setHint(hintStr: String) {
@@ -69,13 +73,11 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(ctx: Context, att
 
     fun setError(error: String) {
         edit_text_input.error = error
-        edit_text_summary.visibility = View.GONE
     }
 
     fun clearError() {
-        edit_text_input.error = null
         edit_text_input.isErrorEnabled = false
-        edit_text_summary.visibility = View.VISIBLE
+        edit_text_input.error = StringUtils.EMPTY
     }
 
     fun setMaxLength(max: Int) {
