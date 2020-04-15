@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
+import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -32,7 +33,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
-class ProductListFragment : TopLevelFragment(), OnProductClickListener,
+class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductSortAndFilterListener,
         OnLoadMoreListener,
         OnQueryTextListener,
         OnActionExpandListener {
@@ -316,7 +317,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     private fun showProductSortAndFiltersCard(show: Boolean) {
         if (show) {
             products_sort_filter_card.visibility = View.VISIBLE
-            products_sort_filter_card.initView()
+            products_sort_filter_card.initView(this)
         } else {
             products_sort_filter_card.visibility = View.GONE
         }
@@ -330,5 +331,13 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()
+    }
+
+    override fun onFilterOptionSelected() {
+        // TODO: handle filtering in another PR
+    }
+
+    override fun onSortOptionSelected() {
+        // TODO: handle sorting in another PR
     }
 }
