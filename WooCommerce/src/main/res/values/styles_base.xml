@@ -329,6 +329,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <!--
+        Switch Styles
+    -->
+    <style name="Woo.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+    </style>
+
+    <!--
         Divider Style
     -->
     <style name="Woo.Divider">
