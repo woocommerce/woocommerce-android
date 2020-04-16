@@ -99,7 +99,6 @@
         android:drawableStart="@drawable/ic_info_outline_24dp"
         android:drawablePadding="@dimen/major_100"
         android:text="@string/order_refunds_shipping_refund_notice"
-        android:textColor="@color/color_on_surface_disabled"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="@+id/issueRefund_lblTaxes"
