@@ -1,0 +1,25 @@
+{
+  "version": 0.1,
+  "shadow_offset": 0,
+  "background_color": "#ff00ff",
+  "stylesheet": "playstoreres/assets/styles/style.css",
+  "devices": [
+    {
+      "name": "Pixel 3",
+      "canvas_size": [1080,1920],
+      "text_size": [1080, 372],
+      "font_size": "84px",
+      "screenshot_size": [696, 1391],
+      "screenshot_offset": [193, 501]
+    }
+  ],
+  "entries": [
+    {
+      "device": "Pixel 3",
+      "filename": "Pixel_3_01.png",
+      "background": "#ff00ff",
+      "screenshot": "images/phoneScreenshots/1-order-dashboard.png",
+      "text": "{locale}/promo_screenshot_1.txt"
+    }
+  ]
+}
