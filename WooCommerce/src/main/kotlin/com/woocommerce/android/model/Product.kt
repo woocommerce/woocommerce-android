@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.ProductVisibility
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
@@ -28,6 +29,8 @@ data class Product(
     val shortDescription: String,
     val type: ProductType,
     val status: ProductStatus?,
+    val visibility: ProductVisibility?,
+    val isFeatured: Boolean,
     val stockStatus: ProductStockStatus,
     val backorderStatus: ProductBackorderStatus,
     val dateCreated: Date,
@@ -113,6 +116,8 @@ data class Product(
                 width == product.width &&
                 shippingClass == product.shippingClass &&
                 shippingClassId == product.shippingClassId &&
+                visibility == product.visibility &&
+                isFeatured == product.isFeatured &&
                 isSameImages(product.images)
     }
 
@@ -179,7 +184,9 @@ data class Product(
      */
     fun hasSettingsChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
-                status != it.status
+            status != it.status ||
+                    visibility != it.visibility ||
+                    isFeatured != it.isFeatured
         } ?: false
     }
 
@@ -216,6 +223,8 @@ data class Product(
                     name = updatedProduct.name,
                     sku = updatedProduct.sku,
                     status = updatedProduct.status,
+                    visibility = updatedProduct.visibility,
+                    isFeatured = updatedProduct.isFeatured,
                     manageStock = updatedProduct.manageStock,
                     stockStatus = updatedProduct.stockStatus,
                     stockQuantity = updatedProduct.stockQuantity,
@@ -292,6 +301,8 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.name = name
         it.sku = sku
         it.status = status.toString()
+        it.catalogVisibility = visibility.toString()
+        it.featured = isFeatured
         it.manageStock = manageStock
         it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
         it.stockQuantity = stockQuantity
@@ -327,6 +338,8 @@ fun WCProductModel.toAppModel(): Product {
         shortDescription = this.shortDescription,
         type = ProductType.fromString(this.type),
         status = ProductStatus.fromString(this.status),
+        visibility = ProductVisibility.fromString(this.catalogVisibility),
+        isFeatured = this.featured,
         stockStatus = ProductStockStatus.fromString(this.stockStatus),
         backorderStatus = ProductBackorderStatus.fromString(this.backorders),
         dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),

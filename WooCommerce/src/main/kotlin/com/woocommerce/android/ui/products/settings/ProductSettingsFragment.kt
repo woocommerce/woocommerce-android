@@ -15,7 +15,10 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_IS_FEATURED
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
 class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
@@ -30,6 +33,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
 
         productStatus.setOnClickListener {
             viewModel.onSettingsStatusButtonClicked()
+        }
+        productVisibility.setOnClickListener {
+            viewModel.onSettingsVisibilityButtonClicked()
         }
     }
 
@@ -55,6 +61,11 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 viewModel.updateProductDraft(productStatus = it)
                 updateProductView()
             }
+        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
+            (result.getSerializable(ARG_VISIBILITY) as? ProductVisibility)?.let {
+                viewModel.updateProductDraft(visibility = it, isFeatured = result.getBoolean(ARG_IS_FEATURED))
+                updateProductView()
+            }
         }
     }
 
@@ -69,6 +80,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
 
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
+        productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
     }
 
     private fun setupObservers() {

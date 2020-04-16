@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -237,6 +238,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when the user taps the product visibility in product settings
+     */
+    fun onSettingsVisibilityButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductVisibility(it.visibility, it.isFeatured))
+        }
+    }
+
+    /**
      * Called when the date is selected from the date picker in the pricing screen.
      * Keeps track of the min and max date value when scheduling a sale.
      */
@@ -406,7 +416,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         shippingClass: String? = null,
         images: List<Image>? = null,
         shippingClassId: Long? = null,
-        productStatus: ProductStatus? = null
+        productStatus: ProductStatus? = null,
+        visibility: ProductVisibility? = null,
+        isFeatured: Boolean? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -440,7 +452,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
                     } else viewState.storedProduct?.dateOnSaleFromGmt,
-                    status = productStatus ?: product.status
+                    status = productStatus ?: product.status,
+                    visibility = visibility ?: product.visibility,
+                    isFeatured = isFeatured ?: product.isFeatured
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
