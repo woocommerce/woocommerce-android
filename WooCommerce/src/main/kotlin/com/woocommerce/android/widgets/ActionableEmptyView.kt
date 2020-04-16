@@ -11,7 +11,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.wc_simple_empty_view.view.*
+import kotlinx.android.synthetic.main.actionable_empty_view.view.*
 import org.wordpress.android.util.DisplayUtils
 
 class ActionableEmptyView : LinearLayout {
@@ -91,7 +91,7 @@ class ActionableEmptyView : LinearLayout {
 
         if (isSearching) {
             params = RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            layout.setPadding(0, context.resources.getDimensionPixelSize(R.dimen.margin_extra_extra_large), 0, 0)
+            layout.setPadding(0, context.resources.getDimensionPixelSize(R.dimen.major_300), 0, 0)
 
             image.visibility = View.GONE
             button.visibility = View.GONE
