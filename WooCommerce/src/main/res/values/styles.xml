@@ -193,47 +193,12 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <!--
-        Image viewer
-    -->
-    <style name="ImageViewer" />
-    <style name="ImageViewer.Activity" parent="Theme.Woo.DayNight">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <!--
-        Other
+        Login Other
     -->
     <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
-    </style>
-
-    <style name="EditText" parent="Theme.Woo.DayNight">
-        <item name="android:textColor">@color/edit_text_text_color</item>
-        <item name="android:textColorHighlight">@color/edit_text_text_color_highlight</item>
-        <item name="android:textColorHint">@color/edit_text_text_hint_color</item>
-        <item name="android:textSize">@dimen/text_medium</item>
-        <item name="colorControlActivated">@color/edit_text_color_control_activated</item>
-        <item name="colorControlHighlight">@color/edit_text_color_control_highlight</item>
-        <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
-    </style>
-
-    <style name="Woo.OrderTracking.Add.EditText" parent="@style/EditText">
-        <item name="android:textColorHint">@color/edit_text_color_control_normal</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="colorControlNormal">@color/divider_color</item>
-        <item name="colorControlActivated">@color/divider_color</item>
-        <item name="colorControlHighlight">@color/divider_color</item>
-        <item name="android:textAlignment">viewStart</item>
-        <item name="android:gravity">start</item>
-    </style>
-
-    <style name="Woo.TextAppearance.OrderTracking" parent="@style/Woo.TextAppearance">
-        <item name="android:textAlignment">viewStart</item>
-        <item name="android:gravity">start</item>
     </style>
 
     <style name="Woo.Dialog.Promo">
