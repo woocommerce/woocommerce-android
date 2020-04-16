@@ -5,8 +5,7 @@ properties necessary. The goal is to make as few modifications as possible to ke
 theme across the entire app. Overridden versions should be added to the styles.xml file.
 -->
 <resources
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
     <style name="Woo"/>
     <style name="Widget"/>
     <style name="Widget.Woo"/>
@@ -257,6 +256,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <!--
+        SearchView Styles
+    -->
+    <style name="Woo.AutoCompleteTextView" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@drawable/searchview_cursor</item>
+    </style>
+
+    <!--
         EditText styles
     -->
     <!--
@@ -395,6 +401,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
+        <item name="srcCompat">@drawable/list_divider</item>
     </style>
 
     <style name="Woo.Divider.TitleAligned">

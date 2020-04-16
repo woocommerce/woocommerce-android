@@ -88,6 +88,7 @@
         <item name="editTextStyle">@style/Woo.TextInputEditText</item>
         <item name="switchStyle">@style/Woo.Switch</item>
         <item name="android:checkedTextViewStyle">@style/Woo.CheckedTextView</item>
+        <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -104,10 +105,6 @@
         <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
         <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
         <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
-
-        <!-- TODO: convert styles to material -->
-<!--        <item name="android:listViewStyle"></item>-->
-        <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 
     <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">

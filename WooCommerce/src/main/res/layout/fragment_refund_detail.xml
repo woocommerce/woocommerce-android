@@ -107,8 +107,7 @@
                     android:layout_marginTop="@dimen/minor_50"
                     android:layout_marginBottom="@dimen/major_75"
                     tools:text="Refunded via Stripe"
-                    android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.Refunds.TextAppearance" />
+                    android:textAlignment="viewStart" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
