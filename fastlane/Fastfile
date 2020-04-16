@@ -348,7 +348,7 @@ end
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
       use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
       reinstall_app: false,
-      clear_previous_screenshots: true,
+      clear_previous_screenshots: options.fetch(:clear_previous_screenshots, true),
       use_adb_root: true,
       locales: locales,
       use_timestamp_suffix: false,
