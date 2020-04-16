@@ -6,53 +6,43 @@
     android:padding="@dimen/default_padding"
     android:layout_height="wrap_content">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:text="@string/login_update_required_title"
-        android:textAppearance="@style/Woo.TextAppearance.Title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView2"
+        style="@style/Woo.TextView.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:text="@string/login_update_required_desc"
-        android:textAppearance="@style/Woo.TextAppearance.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"/>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/upgrade_instructions"
         style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_margin="@dimen/minor_100"
         android:text="@string/button_update_instructions"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"/>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/upgrade_dismiss"
-        style="@style/Woo.Button.Purple"
+        style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_margin="@dimen/major_100"
         android:text="@string/dismiss"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
