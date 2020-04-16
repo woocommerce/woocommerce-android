@@ -18,8 +18,10 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="?attr/colorSurface"
+        tools:itemCount="3"
+        tools:listitem="@layout/product_variant_list_item"/>
 
         <com.woocommerce.android.widgets.ActionableEmptyView
             android:id="@+id/empty_view"
