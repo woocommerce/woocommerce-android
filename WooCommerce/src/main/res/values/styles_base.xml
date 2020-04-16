@@ -295,6 +295,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:focusableInTouchMode">true</item>
     </style>
 
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedCurrencyEditTextView" parent="Woo.TextInputLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
     <!--
         Button Styles
     -->

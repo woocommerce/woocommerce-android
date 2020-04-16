@@ -81,7 +81,7 @@
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
-        <attr name="currencyHint" format="string"/>
+        <attr name="android:enabled"/>
     </declare-styleable>
 
     <declare-styleable name="ActionableEmptyView">
@@ -130,6 +130,7 @@
         Theme-level Text Input styles
     -->
     <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
+    <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference"/>
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->

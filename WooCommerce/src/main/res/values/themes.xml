@@ -99,6 +99,7 @@
         <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
         <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
         <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
+        <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
 
         <!-- TODO: convert styles to material -->
 <!--        <item name="android:listViewStyle"></item>-->
