@@ -70,14 +70,7 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
-    <style name="Woo.TextAppearance.Medium.Bold">
-        <item name="android:textStyle">bold</item>
-    </style>
 
-    <style name="Woo.TextAppearance.Large">
-        <item name="android:textColor">@color/default_text_title_color</item>
-        <item name="android:textSize">@dimen/text_large</item>
-    </style>
 
     <style name="Woo.TextAppearance.Small">
         <item name="android:textColor">@color/default_text</item>
@@ -135,21 +128,7 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:backgroundTint">@color/wc_grey_light</item>
     </style>
 
-    <style name="Woo.TextView.Title">
-        <item name="android:paddingStart">@dimen/card_padding_start</item>
-        <item name="android:paddingEnd">@dimen/card_padding_end</item>
-        <item name="android:paddingTop">@dimen/card_padding_top</item>
-        <item name="android:paddingBottom">@dimen/card_item_padding_intra_h</item>
-        <item name="android:textAppearance">@style/Woo.TextAppearance.Title</item>
-    </style>
-    <style name="Woo.TextView.Title.Purple">
-        <item name="android:textAppearance">@style/Woo.TextAppearance.Medium.Purple</item>
-    </style>
-    <style name="Woo.CardExtenderButton">
-        <item name="android:textAlignment">viewStart</item>
-        <item name="android:paddingEnd">@dimen/card_padding_end</item>
-        <item name="android:paddingStart">@dimen/card_padding_end</item>
-    </style>
+
 
     <!--
         Default List Style
@@ -171,7 +150,6 @@ Use this file to override styles in the styles_base.xml file.
     <!--
         OrderDetail Styles
     -->
-    <style name="Woo.OrderDetail.CardTitle" parent="Woo.TextView.Title.Purple"/>
     <style name="Woo.OrderDetail.TextAppearance.Heading" parent="Woo.TextAppearance.Medium"/>
     <style name="Woo.OrderDetail.TextAppearance.Content" parent="Woo.TextAppearance.Small"/>
     <style name="Woo.OrderDetail.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
@@ -396,28 +374,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="codeTextColor">@color/wc_black_darker</item>
         <item name="codeBackgroundColor">@android:color/transparent</item>
         <item name="android:inputType">textNoSuggestions|textMultiLine</item>
-    </style>
-
-    <style name="Woo.Product"/>
-    <style name="Woo.Product.Label" parent="Woo.TextAppearance.Large">
-        <item name="android:textColor">@color/wc_black_darker</item>
-    </style>
-    <style name="Woo.Product.Label.Large">
-        <item name="android:textColor">@color/wc_black_darker</item>
-        <item name="android:textSize">@dimen/text_extra_large</item>
-    </style>
-    <style name="Woo.Product.Title" parent="@style/EditText">
-        <item name="android:textColor">@color/wc_black_darker</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
-        <item name="android:textColorHint">@color/wc_black_lighter</item>
-        <item name="android:textSize">@dimen/text_extra_large</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:textAlignment">viewStart</item>
-        <item name="colorControlActivated">@color/edit_text_color_control_activated</item>
-        <item name="colorControlHighlight">@color/edit_text_color_control_highlight</item>
-        <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:inputType">textNoSuggestions|textVisiblePassword</item>
     </style>
 
     <style name="Woo.MaterialComponents.EditText" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
