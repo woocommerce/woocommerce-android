@@ -302,6 +302,30 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_margin">@dimen/minor_00</item>
     </style>
 
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedSpinnerView" parent="Woo.TextInputLayout">
+        <item name="endIconMode">custom</item>
+        <item name="endIconDrawable">@drawable/ic_arrow_drop_down</item>
+        <item name="endIconTint">@color/color_on_surface_medium_selector</item>
+        <item name="endIconTintMode">src_atop</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedCurrencyEditTextView" parent="Woo.TextInputLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedEditTextView" parent="Woo.TextInputLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
     <!--
         Button Styles
     -->

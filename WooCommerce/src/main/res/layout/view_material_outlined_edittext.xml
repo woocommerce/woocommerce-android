@@ -1,26 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Woo.TextInputLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:focusable="true">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edit_text_input"
-        style="@style/Woo.TextInputLayout"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/edit_text"
+        style="@style/Woo.TextInputEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:hintEnabled="true"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text"
-            style="@style/Woo.TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionDone"/>
-    </com.google.android.material.textfield.TextInputLayout>
+        android:imeOptions="actionDone"/>
 </merge>

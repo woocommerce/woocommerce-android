@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -20,45 +19,55 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
                 android:maxLength="@integer/maxlength_dimension_edittext"
-                app:editTextHint="@string/product_weight" />
+                android:hint="@string/product_weight" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/product_length"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
                 android:maxLength="@integer/maxlength_dimension_edittext"
-                app:editTextHint="@string/product_length" />
+                android:hint="@string/product_length" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/product_width"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
                 android:maxLength="@integer/maxlength_dimension_edittext"
-                app:editTextHint="@string/product_width" />
+                android:hint="@string/product_width" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/product_height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
                 android:layout_marginTop="@dimen/major_75"
                 android:maxLength="@integer/maxlength_dimension_edittext"
-                app:editTextHint="@string/product_height" />
+                android:hint="@string/product_height" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
                 android:id="@+id/product_shipping_class_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_75"
                 android:layout_marginBottom="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="text"
-                app:spinnerHint="@string/product_shipping_class" />
+            android:hint="@string/product_shipping_class" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
