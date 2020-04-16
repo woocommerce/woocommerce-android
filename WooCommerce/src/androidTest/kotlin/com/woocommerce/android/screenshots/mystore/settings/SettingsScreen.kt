@@ -6,8 +6,8 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class SettingsScreen : Screen {
     companion object {
-        const val BETA_FEATURES_BUTTON = R.id.textBetaFeatures
-        const val LOG_OUT_BUTTON = R.id.buttonLogout
+        const val BETA_FEATURES_BUTTON = R.id.option_beta_features
+        const val LOG_OUT_BUTTON = R.id.btn_option_logout
     }
 
     constructor(): super(LOG_OUT_BUTTON)
