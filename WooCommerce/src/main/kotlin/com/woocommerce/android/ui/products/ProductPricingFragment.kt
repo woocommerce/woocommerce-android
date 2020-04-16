@@ -148,7 +148,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             initialiseCurrencyEditText(currency, decimals, currencyFormatter)
             product.regularPrice?.let { setText(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.updateProductDraft(regularPrice = it)
+                viewModel.onRegularPriceEntered(it)
             })
         }
 
