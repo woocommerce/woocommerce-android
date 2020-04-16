@@ -391,6 +391,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
+        <item name="srcCompat">@drawable/list_divider</item>
     </style>
 
     <style name="Woo.Divider.TitleAligned">

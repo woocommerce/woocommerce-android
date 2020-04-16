@@ -148,41 +148,6 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <!--
-        OrderDetail Styles
-    -->
-    <style name="Woo.OrderDetail.TextAppearance.Heading" parent="Woo.TextAppearance.Medium"/>
-    <style name="Woo.OrderDetail.TextAppearance.Content" parent="Woo.TextAppearance.Small"/>
-    <style name="Woo.OrderDetail.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
-    <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
-    <style name="Woo.OrderDetail.TextAppearance.Red">
-        <item name="android:textColor">@color/wc_red</item>
-    </style>
-    <style name="Woo.OrderDetail.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
-    <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
-    <style name="Woo.OrderDetail.TextAppearance.Label.Bold" parent="Woo.TextAppearance.Label.Bold"/>
-    <!--
-        Refund Styles
-    -->
-    <style name="Woo.Refunds.TextAppearance" parent="Woo.TextAppearance"/>
-    <style name="Woo.Refunds.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
-
-    <style name="Woo.Refunds.EditText" parent="@style/EditText">
-        <item name="android:textColorHint">@color/edit_text_color_control_normal</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="colorControlNormal">@color/divider_color</item>
-        <item name="colorControlActivated">@color/divider_color</item>
-        <item name="colorControlHighlight">@color/divider_color</item>
-        <item name="android:textAlignment">viewStart</item>
-        <item name="android:gravity">start</item>
-    </style>
-
-    <style name="Woo.Refunds.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
-
-    <style name="Woo.Refunds.Button" parent="Woo.Button">
-        <item name="android:textAlignment">viewEnd</item>
-    </style>
-
-    <!--
         Settings Styles
     -->
     <style name="Woo.Settings"/>
@@ -328,18 +293,6 @@ Use this file to override styles in the styles_base.xml file.
     -->
     <style name="Woo.Delete.Button" parent="android:style/Widget.ActionButton">
         <item name="android:src">@drawable/delete_button_bg</item>
-    </style>
-
-    <!--
-        Product Detail
-    -->
-    <style name="Woo.TextView.CaptionOld">
-        <item name="android:paddingTop">@dimen/default_padding</item>
-        <item name="android:paddingStart">?dialogPreferredPadding</item>
-        <item name="android:paddingEnd">?dialogPreferredPadding</item>
-        <item name="android:textColor">@color/default_text_color</item>
-        <item name="android:textAlignment">viewStart</item>
-        <item name="android:textSize">@dimen/text_large</item>
     </style>
 
     <!--
