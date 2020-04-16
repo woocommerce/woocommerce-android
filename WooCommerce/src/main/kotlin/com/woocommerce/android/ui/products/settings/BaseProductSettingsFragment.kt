@@ -26,7 +26,7 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
 
     private var isConfirmingDiscard = false
 
-    // descendents should override this with a unique request code
+    // descendants should override this with a unique request code
     protected abstract val requestCode: Int
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -1,61 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/card_padding_start"
-        android:paddingTop="@dimen/card_padding_top"
-        android:paddingEnd="@dimen/card_padding_end"
-        android:paddingBottom="@dimen/card_padding_bottom">
+        android:layout_height="wrap_content">
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_weight"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_weight" />
+            android:orientation="vertical">
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_length"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_length" />
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/product_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:inputType="numberDecimal"
+                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:hint="@string/product_weight" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_width" />
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/product_length"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:inputType="numberDecimal"
+                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:hint="@string/product_length" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/product_height"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="numberDecimal"
-            android:maxLength="@integer/maxlength_dimension_edittext"
-            app:editTextHint="@string/product_height" />
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/product_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:inputType="numberDecimal"
+                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:hint="@string/product_width" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/product_shipping_class_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:inputType="text"
-            app:spinnerHint="@string/product_shipping_class" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/product_height"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:inputType="numberDecimal"
+                android:layout_marginTop="@dimen/major_75"
+                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:hint="@string/product_height" />
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                android:id="@+id/product_shipping_class_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:inputType="text"
+                android:hint="@string/product_shipping_class" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</ScrollView>
