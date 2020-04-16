@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -146,8 +147,8 @@ data class Product(
      */
     fun hasPricingChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
-            regularPrice != it.regularPrice ||
-                    salePrice != it.salePrice ||
+            regularPrice.isNotEqualTo(it.regularPrice) ||
+                    salePrice.isNotEqualTo(it.salePrice) ||
                     dateOnSaleFromGmt != it.dateOnSaleFromGmt ||
                     dateOnSaleToGmt != it.dateOnSaleToGmt ||
                     isOnSale != it.isOnSale ||
