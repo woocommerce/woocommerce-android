@@ -4,8 +4,7 @@ Base Woo Styles. Use these styles as a base for custom component styles and over
 properties necessary. The goal is to make as few modifications as possible to keep a consistent
 theme across the entire app. Overridden versions should be added to the styles.xml file.
 -->
-<resources
-    xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Woo"/>
     <style name="Widget"/>
     <style name="Widget.Woo"/>
@@ -238,6 +237,24 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <!--
+        CheckedTextView style
+    -->
+    <!-- Set at the theme level so no need to set it in the layout -->
+    <style name="Woo.CheckedTextView">
+        <item name="textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:checkMark">?android:attr/listChoiceIndicatorSingle</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/minor_100</item>
+        <item name="android:paddingBottom">@dimen/minor_100</item>
+        <item name="android:minHeight">@dimen/min_tap_target</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!--
         EditText styles
     -->
     <!--
@@ -271,6 +288,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/minor_00</item>
         <item name="android:layout_marginBottom">@dimen/minor_75</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.AppCompat.Caption</item>
     </style>
 
     <style name="Woo.TextInputEditText"
@@ -280,6 +298,30 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:gravity">center_vertical|start</item>
         <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
         <item name="android:layout_margin">@dimen/minor_00</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedSpinnerView" parent="Woo.TextInputLayout">
+        <item name="endIconMode">custom</item>
+        <item name="endIconDrawable">@drawable/ic_arrow_drop_down</item>
+        <item name="endIconTint">@color/color_on_surface_medium_selector</item>
+        <item name="endIconTintMode">src_atop</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedCurrencyEditTextView" parent="Woo.TextInputLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedEditTextView" parent="Woo.TextInputLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
     </style>
 
     <!--
@@ -342,9 +384,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <!-- Set at the theme level so no need to set directly on the component -->
     <style name="Widget.Woo.WCToggleOutlinedSelectorButton" parent="Widget.Woo.WCToggleOutlinedButton">
-        <item name="android:drawableEnd">@drawable/ic_arrow_drop_down_black</item>
+        <item name="android:drawableEnd">@drawable/ic_arrow_drop_down</item>
         <item name="android:paddingEnd">@dimen/minor_100</item>
         <item name="drawableTint">@color/color_on_surface_medium</item>
+    </style>
+
+    <!--
+        Switch Styles
+    -->
+    <style name="Woo.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
     </style>
 
     <!--
@@ -523,9 +572,14 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tagColor">@color/editor_tag_color</item>
     </style>
 
-    <style name="Woo.AztecToolbar">
+    <style name="AztecToolbarStyle">
         <item name="advanced">false</item>
         <item name="mediaToolbarAvailable">false</item>
+        <item name="toolbarBackgroundColor">@color/editor_toolbar_bg_color</item>
+        <item name="toolbarBorderColor">@color/divider_color</item>
+        <item name="toolbarIconNormalColor">@color/color_on_surface_medium</item>
+        <item name="toolbarIconHighlightColor">@color/color_on_surface_high</item>
+        <item name="toolbarIconDisabledColor">@color/color_on_surface_disabled</item>
     </style>
 
     <style name="Woo.Animations">
