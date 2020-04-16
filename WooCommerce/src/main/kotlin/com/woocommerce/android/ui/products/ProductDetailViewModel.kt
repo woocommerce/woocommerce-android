@@ -341,7 +341,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productPricingViewState = if (inputValue > regularPrice) {
             productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
-            updateProductDraft(salePrice = inputValue)
+            updateProductDraft(salePrice = inputValue, isOnSale = true)
             productPricingViewState.copy(salePriceErrorMessage = 0)
         }
     }
@@ -369,6 +369,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
+        isOnSale: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         dateOnSaleFromGmt: Date? = null,
         dateOnSaleToGmt: Optional<Date>? = null,
@@ -397,6 +398,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
+                    isOnSale = isOnSale ?: product.isOnSale,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
                     length = length ?: product.length,
@@ -744,7 +746,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
         val gmtOffset: Float = 0f
-    ) : Parcelable
+    ) : Parcelable {
+        val isOnSale: Boolean
+            get() = salePriceWithCurrency != null
+    }
 
     @Parcelize
     data class ProductInventoryViewState(
