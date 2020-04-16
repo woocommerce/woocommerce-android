@@ -67,7 +67,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:inputType="text"
-            android:hint="@string/product_shipping_class" />
+                android:hint="@string/product_shipping_class" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
