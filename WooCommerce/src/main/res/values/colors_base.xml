@@ -101,6 +101,7 @@
     <color name="editor_tag_color">@color/color_primary</color>
     <color name="editor_text_color">@color/color_on_surface_high</color>
     <color name="editor_text_hint_color">@color/color_on_surface_disabled</color>
+    <color name="editor_toolbar_bg_color">@color/woo_white</color>
 
     <!--
         Loading Skeletons

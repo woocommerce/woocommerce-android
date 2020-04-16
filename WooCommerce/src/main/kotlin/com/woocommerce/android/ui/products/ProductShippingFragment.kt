@@ -111,13 +111,11 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
     private fun showValue(view: WCMaterialOutlinedEditTextView, @StringRes hintRes: Int, value: Float?, unit: String?) {
         val valStr = if (value != 0.0f) (value?.toString() ?: "") else ""
         view.setText(valStr)
-        view.setHint(
-                if (unit != null) {
-                    getString(hintRes) + " ($unit)"
-                } else {
-                    getString(hintRes)
-                }
-        )
+        view.hint = if (unit != null) {
+            getString(hintRes) + " ($unit)"
+        } else {
+            getString(hintRes)
+        }
     }
 
     private fun updateProductView(productData: ProductDetailViewState) {
