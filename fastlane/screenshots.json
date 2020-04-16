@@ -19,7 +19,7 @@
       "filename": "Pixel_3_01.png",
       "background": "#ff00ff",
       "screenshot": "images/phoneScreenshots/1-order-dashboard.png",
-      "text": "{locale}/promo_screenshot_1.txt"
+      "text": "metadata/{locale}/promo_screenshot_1.txt"
     }
   ]
 }
