@@ -10,7 +10,9 @@ class SettingsScreen : Screen {
         const val LOG_OUT_BUTTON = R.id.btn_option_logout
     }
 
-    constructor(): super(LOG_OUT_BUTTON)
+    // Using BETA_FEATURES_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
+    // LOG_OUT_BUTTON
+    constructor(): super(BETA_FEATURES_BUTTON)
 
     fun openBetaFeatures(): BetaFeaturesScreen {
         clickOn(BETA_FEATURES_BUTTON)
