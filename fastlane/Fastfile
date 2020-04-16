@@ -351,6 +351,7 @@ end
       clear_previous_screenshots: true,
       use_adb_root: true,
       locales: locales,
+      use_timestamp_suffix: false,
       test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
       launch_arguments: [
         "disableMocks true",
