@@ -342,7 +342,7 @@ end
     ]
 
     screenshot_options = {
-      output_directory: "fastlane/screenshots",
+      output_directory: screenshots_directory,
       app_package_name: "com.woocommerce.android",
       app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
@@ -473,4 +473,8 @@ end
     FileUtils.rm_rf("#{temp_dir}")
   end
 
+end
+
+def screenshots_directory
+  File.join(Dir.pwd, "screenshots")
 end
