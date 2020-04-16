@@ -109,16 +109,16 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.getProduct())
             }
-            new.minDate?.takeIfNotEqualTo(old?.minDate) {
+            new.saleStartDate?.takeIfNotEqualTo(old?.saleStartDate) {
                 // update end date to min date since current end date < start date
                 scheduleSale_endDate.setText(it.formatToMMMddYYYY())
             }
-            new.maxDate?.takeIfNotEqualTo(old?.maxDate) {
+            new.saleEndDate?.takeIfNotEqualTo(old?.saleEndDate) {
                 // update start date to max date since current start date > end date
-                scheduleSale_startDate.setText(new.maxDate.formatToMMMddYYYY())
+                scheduleSale_startDate.setText(new.saleEndDate.formatToMMMddYYYY())
             }
             new.isRemoveMaxDateButtonVisible.takeIfNotEqualTo(old?.isRemoveMaxDateButtonVisible) { isVisible ->
-                scheduleSale_RemoveEndDateButton.visibility = if (isVisible == true) View.VISIBLE else {
+                scheduleSale_RemoveEndDateButton.visibility = if (isVisible) View.VISIBLE else {
                     scheduleSale_endDate.setText("")
                     View.GONE
                 }
@@ -172,13 +172,13 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                 val endDate = DateUtils.localDateToGmtOrNull(scheduleSale_endDate.getText(), gmtOffset, false)
                 viewModel.updateProductDraft(
                         isSaleScheduled = isChecked,
-                        dateOnSaleFromGmt = startDate,
-                        dateOnSaleToGmt = Optional(endDate)
+                        saleStartDate = startDate,
+                        saleEndDate = Optional(endDate)
                 )
             }
         }
 
-        updateSaleStartDate(product.dateOnSaleFromGmt, productData.gmtOffset)
+        updateSaleStartDate(product.saleStartDateGmt, productData.gmtOffset)
         with(scheduleSale_startDate) {
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
@@ -192,7 +192,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
         }
 
-        updateSaleEndDate(product.dateOnSaleToGmt, productData.gmtOffset)
+        updateSaleEndDate(product.saleEndDateGmt, productData.gmtOffset)
         with(scheduleSale_endDate) {
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(scheduleSale_endDate, OnDateSetListener {
@@ -227,16 +227,15 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     private fun updateSaleStartDate(selectedDate: Date?, offset: Float) {
         val date = selectedDate ?: Date()
         scheduleSale_startDate.setText(formatSaleDateForDisplay(date, offset))
-        viewModel.updateProductDraft(dateOnSaleFromGmt = date)
-        viewModel.onDatePickerValueSelected(date, true)
+        viewModel.updateProductDraft(saleStartDate = date)
+        viewModel.onStartDateChanged(date)
     }
 
     private fun updateSaleEndDate(selectedDate: Date?, offset: Float) {
         // The end sale date is optional => null is a valid value
         if (selectedDate != null) {
             scheduleSale_endDate.setText(formatSaleDateForDisplay(selectedDate, offset))
-            viewModel.updateProductDraft(dateOnSaleToGmt = Optional(selectedDate))
-            viewModel.onDatePickerValueSelected(selectedDate, false)
+            viewModel.onEndDateChanged(selectedDate)
         }
     }
 
