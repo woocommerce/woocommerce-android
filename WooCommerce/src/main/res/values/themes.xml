@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- Final top-level theme -->
     <style name="Theme.Woo.DayNight" parent="Theme.Woo"/>
@@ -84,6 +84,7 @@
         <item name="textInputStyle">@style/Woo.TextInputLayout</item>
         <item name="android:textViewStyle">@style/Woo.TextView</item>
         <item name="editTextStyle">@style/Woo.TextInputEditText</item>
+        <item name="switchStyle">@style/Woo.Switch</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -97,6 +98,9 @@
         <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
         <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
         <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+        <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
+        <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
+        <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
 
         <!-- TODO: convert styles to material -->
 <!--        <item name="android:listViewStyle"></item>-->
