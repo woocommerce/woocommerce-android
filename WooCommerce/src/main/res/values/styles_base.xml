@@ -379,6 +379,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <!--
+        Compound Button Styles
+    -->
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Woo.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="paddingStart">@dimen/major_100</item>
+        <item name="android:paddingLeft">@dimen/major_100</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+    </style>
+
+    <!--
         Divider Style
     -->
     <style name="Woo.Divider">
