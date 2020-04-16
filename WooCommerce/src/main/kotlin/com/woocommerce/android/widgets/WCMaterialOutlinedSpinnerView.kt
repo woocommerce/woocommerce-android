@@ -33,7 +33,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCMaterialOutlinedSpinnerView)
             try {
-                // Set the edit text spinner hint
+                // Set the startup text
                 a.getString(R.styleable.WCMaterialOutlinedSpinnerView_android_text)?.let {
                     setText(it)
                 }

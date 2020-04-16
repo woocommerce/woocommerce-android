@@ -69,10 +69,10 @@
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedEditTextView">
-        <attr name="editTextHint" format="string"/>
-        <attr name="editTextSummary" format="string"/>
         <attr name="android:inputType"/>
         <attr name="android:maxLength"/>
+        <attr name="android:enabled"/>
+        <attr name="android:text"/>
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedSpinnerView">
@@ -131,6 +131,7 @@
     -->
     <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
     <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference"/>
+    <attr name="wcMaterialOutlinedEditTextViewStyle" format="reference"/>
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->

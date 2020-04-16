@@ -21,9 +21,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="text"
-                app:editTextHint="@string/product_sku"
-                app:editTextSummary="@string/product_sku_summary"
+                android:hint="@string/product_sku"
+                app:helperText="@string/product_sku_summary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -72,9 +74,11 @@
                     android:id="@+id/product_stock_quantity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
                     android:inputType="numberSigned"
-                    app:editTextHint="@string/product_inventory_quantity"
-                    app:editTextSummary="@string/product_inventory_quantity_summary" />
+                    android:hint="@string/product_inventory_quantity"
+                    app:helperText="@string/product_inventory_quantity_summary" />
 
                 <!-- Product Stock Status -->
                 <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
