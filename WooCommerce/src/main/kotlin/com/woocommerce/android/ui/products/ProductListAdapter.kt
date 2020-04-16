@@ -52,10 +52,10 @@ class ProductListAdapter(
         val statusHtml = product.status?.let {
             when {
                 it == ProductStatus.PENDING -> {
-                    "<font color=$statusPendingColor>${product.status.toString(context)}</font>"
+                    "<font color=$statusPendingColor>${product.status.toLocalizedString(context)}</font>"
                 }
                 it != ProductStatus.PUBLISH -> {
-                    "<font color=$statusColor>${product.status.toString(context)}</font>"
+                    "<font color=$statusColor>${product.status.toLocalizedString(context)}</font>"
                 }
                 else -> {
                     null

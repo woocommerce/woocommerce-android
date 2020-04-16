@@ -42,11 +42,6 @@
             app:destination="@id/productPricingFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
-            app:destination="@id/productSettingsFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -132,15 +127,12 @@
             android:name="remoteMediaId"
             app:argType="long" />
     </fragment>
-    <fragment
-        android:id="@+id/productSettingsFragment"
-        android:name="com.woocommerce.android.ui.products.settings.ProductSettingsFragment"
-        tools:layout="@layout/fragment_product_settings">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
+
+    <include app:graph="@navigation/nav_graph_product_settings" />
+    <action
+        android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
+        app:destination="@id/nav_graph_product_settings" />
+
     <action
         android:id="@+id/action_global_productImageViewerFragment"
         app:destination="@id/productImageViewerFragment"

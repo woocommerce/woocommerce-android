@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_product_settings"
+    app:startDestination="@id/productSettingsFragment">
+
+    <fragment
+        android:id="@+id/productSettingsFragment"
+        android:name="com.woocommerce.android.ui.products.settings.ProductSettingsFragment"
+        tools:layout="@layout/fragment_product_settings">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_productSettingsFragment_to_productStatusFragment"
+            app:destination="@id/productStatusFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/productStatusFragment"
+        android:name="com.woocommerce.android.ui.products.settings.ProductStatusFragment"
+        tools:layout="@layout/fragment_product_status">
+        <argument
+            android:name="status"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
+
+</navigation>

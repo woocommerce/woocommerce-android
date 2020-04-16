@@ -495,6 +495,7 @@
     <string name="product_inventory_update_stock_quantity_error">Please enter a number</string>
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_settings">Product settings</string>
+    <string name="product_status">Status</string>
     <!--
         Product images
     -->
@@ -764,7 +765,7 @@
     <!-- Product status -->
     <string name="product_status_published">Published</string>
     <string name="product_status_private">Private</string>
-    <string name="product_status_pending">Pending Review</string>
+    <string name="product_status_pending">Pending review</string>
     <string name="product_status_draft">Draft</string>
 
     <!-- permissions -->

@@ -27,12 +27,14 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -196,6 +198,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                 // TODO: eventName = ??
                 hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
             }
+            is ExitSettings -> {
+                // TODO: eventName = ??
+                hasChanges = viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) ?: false
+            }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -218,6 +224,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onSettingsButtonClicked() {
         viewState.productDraft?.let {
             triggerEvent(ViewProductSettings(it.remoteId))
+        }
+    }
+
+    /**
+     * Called when the user taps the status in product settings
+     */
+    fun onSettingsStatusButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductStatus(it.status))
         }
     }
 
@@ -390,7 +405,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         weight: Float? = null,
         shippingClass: String? = null,
         images: List<Image>? = null,
-        shippingClassId: Long? = null
+        shippingClassId: Long? = null,
+        productStatus: ProductStatus? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -423,7 +439,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     dateOnSaleFromGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else viewState.storedProduct?.dateOnSaleFromGmt
+                    } else viewState.storedProduct?.dateOnSaleFromGmt,
+                    status = productStatus ?: product.status
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -710,6 +727,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize

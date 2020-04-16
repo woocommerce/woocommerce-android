@@ -175,6 +175,15 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the product settings
+     */
+    fun hasSettingsChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+                status != it.status
+        } ?: false
+    }
+
+    /**
      * Compares this product's images with the passed list, returns true only if both lists contain
      * the same images in the same order
      */
@@ -206,6 +215,7 @@ data class Product(
                     shortDescription = updatedProduct.shortDescription,
                     name = updatedProduct.name,
                     sku = updatedProduct.sku,
+                    status = updatedProduct.status,
                     manageStock = updatedProduct.manageStock,
                     stockStatus = updatedProduct.stockStatus,
                     stockQuantity = updatedProduct.stockQuantity,
@@ -281,6 +291,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.shortDescription = shortDescription
         it.name = name
         it.sku = sku
+        it.status = status.toString()
         it.manageStock = manageStock
         it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
         it.stockQuantity = stockQuantity
