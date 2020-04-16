@@ -89,6 +89,8 @@ fastlane/README.md
 fastlane/report.xml
 fastlane/.env
 google-upload-credentials.json
+# This is a byproduct of the screenshots composition process
+default.profraw
 
 # Ruby Dependencies
 /vendor
