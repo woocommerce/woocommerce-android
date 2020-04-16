@@ -717,7 +717,6 @@ class OrderListFragment : TopLevelFragment(),
         if (isFilterEnabled) {
             isFilterEnabled = false
             searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
-                it.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.default_search_hint_text))
                 it.isEnabled = true
             }
             searchView?.queryHint = getString(R.string.orderlist_search_hint)

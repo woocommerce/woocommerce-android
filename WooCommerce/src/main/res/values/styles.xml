@@ -14,12 +14,6 @@ Use this file to override styles in the styles_base.xml file.
         -
     -->
 
-    <!--
-        Set a custom cursor for search views so they don't inherit colorAccent
-    -->
-    <style name="SearchViewCursor" parent="Widget.AppCompat.AutoCompleteTextView">
-        <item name="android:textCursorDrawable">@drawable/searchview_cursor</item>
-    </style>
 
     <!--
         Text Styles
