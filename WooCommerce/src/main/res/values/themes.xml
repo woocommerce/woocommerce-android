@@ -85,6 +85,7 @@
         <item name="android:textViewStyle">@style/Woo.TextView</item>
         <item name="editTextStyle">@style/Woo.TextInputEditText</item>
         <item name="switchStyle">@style/Woo.Switch</item>
+        <item name="android:checkedTextViewStyle">@style/Woo.CheckedTextView</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
