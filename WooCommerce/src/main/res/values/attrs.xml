@@ -76,7 +76,8 @@
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedSpinnerView">
-        <attr name="spinnerHint" format="string"/>
+        <attr name="android:text"/>
+        <attr name="android:enabled"/>
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
@@ -124,6 +125,11 @@
     -->
     <!-- Sets the thickness of indicators like the tab indicator or new review indicator -->
     <attr name="lineIndicatorThickness" format="dimension" />
+
+    <!--
+        Theme-level Text Input styles
+    -->
+    <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->

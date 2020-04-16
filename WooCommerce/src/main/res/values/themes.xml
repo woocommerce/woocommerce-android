@@ -98,6 +98,7 @@
         <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
         <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
         <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+        <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
 
         <!-- TODO: convert styles to material -->
 <!--        <item name="android:listViewStyle"></item>-->

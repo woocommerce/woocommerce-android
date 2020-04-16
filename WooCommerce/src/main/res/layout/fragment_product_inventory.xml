@@ -47,12 +47,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="text"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/manageStock_switch"
-                app:spinnerHint="@string/product_stock_status" />
+                android:hint="@string/product_stock_status" />
 
             <LinearLayout
                 android:id="@+id/manageStock_morePanel"
@@ -80,8 +82,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_100"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
                     android:inputType="text"
-                    app:spinnerHint="@string/product_backorders" />
+                    android:hint="@string/product_backorders" />
 
             </LinearLayout>
 

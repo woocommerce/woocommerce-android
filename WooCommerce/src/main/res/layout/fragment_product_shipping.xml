@@ -55,7 +55,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
             android:inputType="text"
-            app:spinnerHint="@string/product_shipping_class" />
+            android:hint="@string/product_shipping_class" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -70,6 +70,8 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:orientation="vertical"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scheduleSale_switch"
@@ -82,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_100"
                     android:inputType="number"
-                    app:spinnerHint="@string/product_schedule_sale_from_label" />
+                    android:hint="@string/product_schedule_sale_from_label" />
 
                 <!-- Schedule Sale To -->
                 <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
@@ -91,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_100"
                     android:inputType="text"
-                    app:spinnerHint="@string/product_schedule_sale_to_label" />
+                    android:hint="@string/product_schedule_sale_to_label" />
 
                 <!-- Remove End Date button -->
                 <com.google.android.material.button.MaterialButton
@@ -99,7 +101,6 @@
                     style="@style/Woo.Button.Lowercase"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/major_75"
                     android:text="@string/product_schedule_remove_end_date_link_label"/>
 
             </LinearLayout>
@@ -136,11 +137,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_tax"
-                app:spinnerHint="@string/product_tax_status" />
+                android:hint="@string/product_tax_status" />
 
             <!-- Product Tax Class -->
             <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
@@ -149,12 +152,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
                 android:layout_marginBottom="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 android:inputType="text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_tax_status"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:spinnerHint="@string/product_tax_class" />
+                android:hint="@string/product_tax_class" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
