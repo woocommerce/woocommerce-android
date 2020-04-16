@@ -128,25 +128,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:backgroundTint">@color/wc_grey_light</item>
     </style>
 
-
-
-    <!--
-        Default List Style
-    -->
-    <style name="Woo.List" parent="android:Widget.DeviceDefault.ListView">
-        <item name="android:listDivider">@drawable/list_divider</item>
-    </style>
-    <!--
-        Base List Child Styles
-    -->
-    <style name="Woo.TextAppearance.ListItem">
-        <item name="android:textSize">@dimen/list_item_text_size</item>
-    </style>
-
-    <style name="Woo.TextAppearance.ListItem.Title">
-        <item name="android:textColor">@color/list_item_text_title</item>
-    </style>
-
     <!--
         Offline Status Bar
     -->
