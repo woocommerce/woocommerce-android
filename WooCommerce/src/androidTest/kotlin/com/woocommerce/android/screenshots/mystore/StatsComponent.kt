@@ -6,7 +6,6 @@ import com.woocommerce.android.screenshots.util.Screen
 class StatsComponent : Screen {
     companion object {
         const val STATS_DASHBOARD = R.id.dashboard_stats
-        const val STATS_DASHBOARD_DATE_RANGE = R.id.dashboard_date_range_value
     }
 
     constructor(): super(STATS_DASHBOARD)
