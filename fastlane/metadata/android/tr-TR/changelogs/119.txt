@@ -1,4 +1,0 @@
-3.9:
-İki kilitlenme sorunu düzeltildi: Bu sorunlardan biri, Ürün Listesinde aynı anda iki ürün seçince, diğeri ise negatif bir stok miktarını düzenlerken oluşuyordu.
-
-Herkes güvende kalsın ve ellerini yıkasın!

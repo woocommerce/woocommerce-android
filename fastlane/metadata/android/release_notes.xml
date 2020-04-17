@@ -1,102 +1,86 @@
 <ar>
-3.9:
-تم إصلاح عطلين: أحدهما حدث عند تحديد منتجين في قائمة المنتجات في الوقت نفسه، والآخر حدث عند تحرير كمية مخزون سالبة.
-
-ابقوا بأمان واغسلوا أيديكم جميعًا!
+4.0:
+* متحمسون لتقديم علامة تبويب المنتجات!
+* لدى المستخدمين الآن إمكانات تحرير محدودة للمنتجات البسيطة كذلك، انتظروا المزيد في المستقبل.
 </ar>
 <de-DE>
-3.9:
-Zwei Abstürze behoben: Einer trat auf, wenn man in der Produktliste zwei Produkte gleichzeitig auswählte, und der andere beim Bearbeiten einer negativen Bestandsmenge.
-
-Bleibt alle gesund und wascht eure Hände!
+4.0:
+* Wir freuen uns, den Tab „Produkte“ vorzustellen!
+* Zusätzlich haben Benutzer jetzt begrenzte Bearbeitungsfunktionen für einfache Produkte, mehr Funktionen in Kürze.
 </de-DE>
 <es-ES>
-3.9:
-Se han corregido dos errores: uno que se producía al seleccionar dos productos en la lista de productos a la vez, y otro que se producía al editar una cantidad del inventario negativa.
-
-¡Cuidaos y lavaos las manos!
+4.0:
+* Te presentamos la nueva pestaña Productos.
+* Ahora, los usuarios también tienen funciones de edición limitadas en productos sencillos, y se irán añadiendo más.
 </es-ES>
 <fr-FR>
-3.9 :
-Résolution de deux incidents : l'un qui se produisait lors de la sélection simultanée de deux produits dans la liste de produits et l'autre qui se produisait lors de la modification d'une quantité en stock négative.
-
-Prenez soin de vous et lavez-vous les mains !
+4.0 :
+* Nous sommes heureux de vous présenter l’onglet Produits !
+* Les utilisateurs ont aussi pour l’instant des fonctions d’édition limitées pour les produits simples. Des fonctions supplémentaires seront bientôt ajoutées.
 </fr-FR>
 <iw-IL>
-3.9:
-תיקנו שתי קריסות: קריסה אחת התרחשה בבחירה של בשני מוצרים ברשימת המוצרים במקביל וקריסה נוספת התרחשה בעריכה של כמות שלילית של מלאי.
-
-רחצו ידיים ושמרו על עצמכם!
+4.0:
+* אנחנו שמחים להציג לכם את הלשונית החדשה 'מוצרים'!
+* למשתמשים יש כעת גם יכולות עריכה מוגבלות במוצרים פשוטים, אפשרויות נוספות יפורסמו בעתיד.
 </iw-IL>
 <id>
-3.9:
-Memperbaiki dua crash: crash yang terjadi bila Anda memilih dua produk dalam Daftar Produk di waktu yang bersamaan, dan crash yang terjadi saat menyunting jumlah stok negatif.
-
-Selalu jaga kesehatan dan cuci tangan semuanya!
+4.0:
+* Dengan senang hati kami memperkenalkan tab Produk!
+* Sekarang pengguna juga memiliki kemampuan penyuntingan terbatas untuk Produk Sederhana, dengan lebih banyak fitur di pembaruan mendatang.
 </id>
 <it-IT>
-3.9:
-Risolti due arresti anomali: uno che avveniva quando selezionavi due prodotti nell'Elenco dei prodotti contemporaneamente e un altro quando modificavi una quantità in magazzino negativa.
-
-Lavatevi le mani e state tutti al sicuro!
+4.0:
+*Siamo entusiasti di introdurre la scheda Prodotti.
+*Gli utenti hanno ora opzioni di modifica limitate per i prodotti semplici, con altre in arrivo.
 </it-IT>
 <ja-JP>
-3.9:
-2つのクラッシュを修正しました。1つは商品リストで2つの商品を同時に選択したときに、もう1つは在庫数をマイナスに編集したときに発生していました。
-
-手を洗い、身の安全を守りましょう !
+4.0:
+* 「商品」タブが導入されました !
+* シンプルな商品に制限付きの編集機能が加わりました。今後も追加される予定です。
 </ja-JP>
 <ko-KR>
-3.9:
-두 가지 충돌이 수정되었습니다. 제품 목록에서 두 개의 제품을 동시에 선택했을 때 발생하는 문제와 음의 재고 수량을 편집할 때 발생하는 문제를 수정했습니다.
-
-모두 안전하게 지내고 손을 자주 씻으세요!
+4.0:
+* 제품 탭을 소개하게 되어 기쁩니다!
+* 이제 사용자는 간편 제품에 대한 편집 기능이 제한되어 있으며, 앞으로 더 많은 기능을 사용할 수 있습니다.
 </ko-KR>
 <nl-NL>
-3.9:
-Twee crashes verholpen: een die zich voordeed als je twee producten in de Productlijst samen selecteerde en een andere die zich voordeed als een negatieve voorraad werd bewerkt.
-
-Blijf veilig en was je handen allemaal!
+4.0:
+* We kondigen met trots een Producten-tabblad aan!
+* Gebruikers kunnen nu ook beperkte bewerkingsfuncties voor eenvoudige producten gebruiken en later zullen er meer volgen.
 </nl-NL>
 <pt-BR>
-3.9:
-Correção dos problemas causados ao selecionar dois produtos na Lista de produtos ao mesmo tempo e ao editar uma quantidade de estoque negativa.
-
-Fiquem seguros e lavem suas mãos!
+4.0:
+* Estamos felizes em apresentar a guia Produtos!
+* Agora os usuários têm recursos de edição limitados para produtos simples, e tem muito mais a caminho.
 </pt-BR>
 <ru-RU>
-3.9:
-Исправлено 2 ошибки: первая — при одновременном выборе двух продуктов в списке, а вторая — при изменении отрицательного количества товара в наличии.
-
-Берегите себя и мойте руки!
+4.0:
+* Представляем вкладку "Продукты"!
+* Теперь пользователям доступны некоторые возможности редактирования обычных продуктов, а скоро они будут расширены.
 </ru-RU>
 <sv-SE>
-3.9:
-Två krascher har åtgärdats: en som uppstod när två produkter valdes samtidigt i produktlistan och en som uppstod vid redigering av en negativ lagerkvantitet.
-
-Var försiktiga och tvätta händerna, allihopa!
+4.0:
+* Vi är glada att kunna introducera en Produkter-flik!
+* Användare har nu även begränsade redigeringsmöjligheter för Enkla produkter. Mer kommer.
 </sv-SE>
 <tr-TR>
-3.9:
-İki kilitlenme sorunu düzeltildi: Bu sorunlardan biri, Ürün Listesinde aynı anda iki ürün seçince, diğeri ise negatif bir stok miktarını düzenlerken oluşuyordu.
-
-Herkes güvende kalsın ve ellerini yıkasın!
+4.0:
+* Ürünler sekmesini tanıtmaktan memnuniyet duyuyoruz!
+* Kullanıcılar artık Basit Ürünler için sınırlı düzenleme yetkilerine sahip olacak, zamanla daha fazlası da gelecek.
 </tr-TR>
 <zh-CN>
-3.9：
-修复了两个崩溃问题：一个是在产品列表中同时选择两个产品时发生，另一个是在编辑负数库存量时发生。
-
-请大家注意安全，清洁双手！
+4.0：
+* 隆重推出“产品”选项卡！
+* 此外，用户现在对简单产品已有有限的编辑能力，未来还会有更多。
 </zh-CN>
 <zh-TW>
-3.9：
-修復兩種當機情況︰其一是在你於產品清單中同時選取兩個產品時發生，另一種當機情況則會在你編輯負數庫存數量時發生。
-
-各位，請保持安全並勤洗手！
+4.0：
+* 我們很高興推出「產品」分頁！
+* 使用者現在也能對「簡易產品」使用有限編輯功能，之後會推出更多功能。
 </zh-TW>
 <en-US>
-3.9:
-Fixed two crashes: one that happened when you selected two products in the Product List at the same time, and another that would happen when editing a negative stock quantity.
-
-Stay safe and wash your hands, everyone!
+4.0:
+* We’re excited to introduce a Products tab!
+* Users also now have limited editing capabilities for Simple Products, with more to come.
+* We fixed a date-conversion bug that was hiding some orders and grouping others incorrectly.
 </en-US>
