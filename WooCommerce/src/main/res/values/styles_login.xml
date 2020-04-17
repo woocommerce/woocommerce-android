@@ -13,16 +13,21 @@
 
     <style name="LoginTheme.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
 
-    <style name="LoginTheme.TextLabel" parent="Woo.TextView.Body2">
-        <item name="android:layout_marginStart">@dimen/minor_00</item>
-        <item name="android:layout_marginEnd">@dimen/minor_00</item>
-    </style>
+    <style name="LoginTheme.TextLabel" parent="TextAppearance.Woo.Subtitle1"/>
 
     <style name="LoginTheme.EditText" parent="Woo.TextInputLayout">
         <item name="android:layout_margin">@dimen/minor_00</item>
     </style>
 
-    <style name="LoginTheme.InputLabelStatic" parent="TextAppearance.Woo.Subtitle2"/>
+    <style name="LoginTheme.InputLabelStatic" parent="TextAppearance.Woo.Subtitle2">
+        <item name="android:textColor">@color/color_on_surface_medium</item>
+    </style>
+
+    <style name="LoginTheme.SiteTitle" parent="TextAppearance.MaterialComponents.Subtitle2" />
+
+    <style name="LoginTheme.SiteUrl" parent="TextAppearance.Woo.Subtitle1">
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
 
     <style name="LoginTheme.BottomBar" parent="Woo.Card" />
 
