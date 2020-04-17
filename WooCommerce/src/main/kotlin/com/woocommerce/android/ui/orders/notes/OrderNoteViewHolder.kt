@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.orders.notes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 
 abstract class OrderNoteViewHolder(parent: ViewGroup, @LayoutRes layout: Int) : RecyclerView.ViewHolder(
@@ -14,7 +14,7 @@ abstract class OrderNoteViewHolder(parent: ViewGroup, @LayoutRes layout: Int) : 
 )
 
 class HeaderItemViewHolder(parent: ViewGroup) : OrderNoteViewHolder(parent, R.layout.order_detail_note_list_header) {
-    private val header: TextView = itemView.findViewById(R.id.orderDetail_noteListHeader)
+    private val header: MaterialTextView = itemView.findViewById(R.id.orderDetail_noteListHeader)
 
     fun bind(item: OrderNoteListItem.Header) {
         header.text = item.text

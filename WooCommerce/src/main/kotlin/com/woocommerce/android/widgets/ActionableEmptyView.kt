@@ -8,17 +8,17 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.actionable_empty_view.view.*
 import org.wordpress.android.util.DisplayUtils
 
 class ActionableEmptyView : LinearLayout {
-    lateinit var button: AppCompatButton
+    lateinit var button: MaterialButton
     lateinit var image: ImageView
     lateinit var layout: View
-    lateinit var title: TextView
+    lateinit var title: MaterialTextView
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         initView(context, attrs)
