@@ -145,16 +145,16 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
         val product = requireNotNull(productData.productDraft)
         with(product_regular_price) {
-            initialiseCurrencyEditText(currency, decimals, currencyFormatter)
-            product.regularPrice?.let { setText(it) }
+            initView(currency, decimals, currencyFormatter)
+            product.regularPrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
                 viewModel.updateProductDraft(regularPrice = it)
             })
         }
 
         with(product_sale_price) {
-            initialiseCurrencyEditText(currency, decimals, currencyFormatter)
-            product.salePrice?.let { setText(it) }
+            initView(currency, decimals, currencyFormatter)
+            product.salePrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
                 viewModel.onSalePriceEntered(it)
             })

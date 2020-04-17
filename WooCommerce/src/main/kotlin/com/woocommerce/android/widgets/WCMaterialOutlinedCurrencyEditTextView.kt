@@ -53,7 +53,8 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         }
     }
 
-    fun initialiseCurrencyEditText(
+    val value: LiveData<BigDecimal>
+    fun initView(
         currency: String,
         decimals: Int,
         currencyFormatter: CurrencyFormatter
