@@ -38,6 +38,8 @@
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/woo_white</item>
 
+        <item name="minTouchTargetSize">@dimen/min_tap_target</item>
+
         <!-- Shapes -->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Theme.Woo.MediumComponent</item>
