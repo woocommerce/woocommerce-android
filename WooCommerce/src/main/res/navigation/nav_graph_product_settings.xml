@@ -83,6 +83,11 @@
             android:defaultValue='""'
             app:argType="string" />
         <argument
+            android:name="aztecCaption"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="requestCode"
             android:defaultValue="0"
             app:argType="integer" />

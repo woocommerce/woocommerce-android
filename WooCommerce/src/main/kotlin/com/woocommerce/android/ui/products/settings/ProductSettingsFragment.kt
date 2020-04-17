@@ -52,7 +52,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
             viewModel.onEditProductCardClicked(
                     ViewProductPurchaseNoteEditor(
-                            purchaseNote, getString(R.string.product_purchase_note)
+                            purchaseNote,
+                            getString(R.string.product_purchase_note),
+                            getString(R.string.product_purchase_note_caption)
                     )
             )
         }

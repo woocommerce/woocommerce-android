@@ -58,6 +58,13 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         super.onActivityCreated(savedInstanceState)
         (activity as? MainActivity)?.hideBottomNav()
 
+        if (navArgs.aztecCaption.isNullOrBlank()) {
+            aztecCaption.visibility = View.GONE
+        } else {
+            aztecCaption.visibility = View.VISIBLE
+            aztecCaption.text = navArgs.aztecCaption
+        }
+
         aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
                 .setImageGetter(GlideImageLoader(requireContext()))
 

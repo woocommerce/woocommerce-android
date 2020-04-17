@@ -78,6 +78,7 @@ class ProductNavigator @Inject constructor() {
                         .actionProductSettingsFragmentToAztecEditorFragment(
                                 target.purchaseNote,
                                 target.title,
+                                target.caption,
                                 RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
                         )
                 fragment.findNavController().navigate(action)

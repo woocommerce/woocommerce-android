@@ -509,6 +509,7 @@
     <string name="product_slug">Slug</string>
     <string name="product_slug_label">This is the URL-friendly version of the product title</string>
     <string name="product_enable_reviews">Enable reviews</string>
+    <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
     <!--
         Product images
     -->
