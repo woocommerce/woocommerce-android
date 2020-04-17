@@ -214,10 +214,10 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(WCMatchers.withTagText("Pending"))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_pending_text))
+                matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_pending_bg))
+                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other))
         )
     }
 
@@ -250,10 +250,10 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(WCMatchers.withTagText(wcOrderStatusModel.label))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_processing_text))
+                matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_processing_bg))
+                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_processing))
         )
     }
 
@@ -286,10 +286,12 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(WCMatchers.withTagText(wcOrderStatusModel.label))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_hold_text))
+                matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_hold_bg))
+                // This value is surprising. OrderStatusTag.kt has logic to set the color as `R.color.tag_bg_on_hold`
+                // for the "on hold" status, while `R.color.tagView_bg` is the fallback color value.
+                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tagView_bg))
         )
     }
 
@@ -322,10 +324,10 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(WCMatchers.withTagText(wcOrderStatusModel.label))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_completed_text))
+                matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_completed_bg))
+                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other))
         )
     }
 
@@ -358,10 +360,10 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(WCMatchers.withTagText(wcOrderStatusModel.label))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_cancelled_text))
+                matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_cancelled_bg))
+                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other))
         )
     }
 
@@ -394,10 +396,10 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(WCMatchers.withTagText(wcOrderStatusModel.label))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_refunded_text))
+                matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_refunded_bg))
+                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other))
         )
     }
 
@@ -430,10 +432,10 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(WCMatchers.withTagText(wcOrderStatusModel.label))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_failed_text))
+                matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high))
         )
         onView(withId(R.id.orderStatus_orderTags)).check(
-                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_failed_bg))
+                matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_failed))
         )
     }
 }
