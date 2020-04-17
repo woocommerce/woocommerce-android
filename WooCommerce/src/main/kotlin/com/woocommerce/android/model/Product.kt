@@ -60,8 +60,8 @@ data class Product(
     val numVariations: Int,
     val images: List<Image>,
     val attributes: List<Attribute>,
-    val dateOnSaleToGmt: Date?,
-    val dateOnSaleFromGmt: Date?,
+    val saleEndDateGmt: Date?,
+    val saleStartDateGmt: Date?,
     val soldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean
@@ -103,8 +103,8 @@ data class Product(
                 taxClass == product.taxClass &&
                 taxStatus == product.taxStatus &&
                 isSaleScheduled == product.isSaleScheduled &&
-                dateOnSaleToGmt == product.dateOnSaleToGmt &&
-                dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
+                saleEndDateGmt == product.saleEndDateGmt &&
+                saleStartDateGmt == product.saleStartDateGmt &&
                 regularPrice == product.regularPrice &&
                 salePrice == product.salePrice &&
                 weight == product.weight &&
@@ -141,8 +141,8 @@ data class Product(
         return updatedProduct?.let {
             regularPrice != it.regularPrice ||
                     salePrice != it.salePrice ||
-                    dateOnSaleFromGmt != it.dateOnSaleFromGmt ||
-                    dateOnSaleToGmt != it.dateOnSaleToGmt ||
+                    saleStartDateGmt != it.saleStartDateGmt ||
+                    saleEndDateGmt != it.saleEndDateGmt ||
                     taxClass != it.taxClass ||
                     taxStatus != it.taxStatus
         } ?: false
@@ -214,8 +214,8 @@ data class Product(
                     regularPrice = updatedProduct.regularPrice,
                     salePrice = updatedProduct.salePrice,
                     isSaleScheduled = updatedProduct.isSaleScheduled,
-                    dateOnSaleFromGmt = updatedProduct.dateOnSaleFromGmt,
-                    dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
+                    saleStartDateGmt = updatedProduct.saleStartDateGmt,
+                    saleEndDateGmt = updatedProduct.saleEndDateGmt,
                     taxStatus = updatedProduct.taxStatus,
                     taxClass = updatedProduct.taxClass,
                     length = updatedProduct.length,
@@ -297,10 +297,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.taxClass = taxClass
         it.images = imagesToJson()
         if (isSaleScheduled) {
-            dateOnSaleFromGmt?.let { dateOnSaleFrom ->
+            saleStartDateGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
             }
-            it.dateOnSaleToGmt = dateOnSaleToGmt?.formatToYYYYmmDDhhmmss() ?: ""
+            it.dateOnSaleToGmt = saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
         } else {
             it.dateOnSaleFromGmt = ""
             it.dateOnSaleToGmt = ""
@@ -364,8 +364,8 @@ fun WCProductModel.toAppModel(): Product {
                     it.visible
             )
         },
-        dateOnSaleToGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        dateOnSaleFromGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         soldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()
