@@ -15,5 +15,6 @@
         android:layout_marginEnd="@dimen/major_100"
         android:hint="@string/product_slug"
         android:inputType="text"
+        android:paddingBottom="@dimen/major_100"
         app:helperText="@string/product_slug_label" />
 </LinearLayout>
