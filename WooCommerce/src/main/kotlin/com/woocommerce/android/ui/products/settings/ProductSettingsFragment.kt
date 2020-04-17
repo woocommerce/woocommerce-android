@@ -61,8 +61,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         if (requestCode == RequestCodes.PRODUCT_SETTINGS_STATUS) {
-            (result.getSerializable(ARG_SELECTED_STATUS) as? ProductStatus)?.let {
-                viewModel.updateProductDraft(productStatus = it)
+            (result.getString(ARG_SELECTED_STATUS))?.let {
+                val status = ProductStatus.fromString(it)
+                viewModel.updateProductDraft(productStatus = status)
                 updateProductView()
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
