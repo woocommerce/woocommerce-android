@@ -110,7 +110,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:drawableEnd">@drawable/card_expander_selector</item>
-        <item name="android:foregroundTint">@color/color_on_surface_high</item>
+        <item name="drawableTint">@color/color_on_surface_medium</item>
         <item name="android:drawablePadding">@dimen/major_100</item>
         <item name="android:textAllCaps">false</item>
     </style>
@@ -382,6 +382,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Woo.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
         <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+    </style>
+
+    <!--
+        Compound Button Styles
+    -->
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Woo.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="paddingStart">@dimen/major_100</item>
+        <item name="android:paddingLeft">@dimen/major_100</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
     <!--

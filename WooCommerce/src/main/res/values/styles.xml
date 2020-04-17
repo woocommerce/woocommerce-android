@@ -23,17 +23,9 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:textAlignment">viewStart</item>
     </style>
 
-    <style name="Woo.TextAppearance.Bold">
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="Woo.TextAppearance.Title">
         <item name="android:textColor">@color/default_text_title</item>
         <item name="android:textSize">@dimen/text_large</item>
-    </style>
-
-    <style name="Woo.TextAppearance.Title.Bold">
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Woo.TextAppearance.Title.Large">
@@ -93,8 +85,6 @@ Use this file to override styles in the styles_base.xml file.
     </style>
 
     <style name="Woo.Dialog.Login.WhatIsJetpack" parent="Woo.Dialog.Promo"/>
-
-    <style name="Woo.Dialog.Login.EmailHelp" parent="Woo.Dialog.Promo"/>
 
     <!--
         LOGIN
