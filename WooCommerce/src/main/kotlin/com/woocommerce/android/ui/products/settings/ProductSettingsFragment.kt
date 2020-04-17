@@ -41,7 +41,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productSlug.setOnClickListener {
             viewModel.onSettingsSlugButtonClicked()
         }
-        productEnableReviews.setOnCheckedChangeListener { _, isChecked ->
+        productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
             viewModel.updateProductDraft(reviewsAllowed = isChecked)
         }
     }
@@ -88,10 +88,19 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
     private fun updateProductView() {
         if (!isAdded) return
 
+        fun valueOrNotSet(value: String?): String {
+            return if (value.isNullOrBlank()) {
+                resources.getString(R.string.value_not_set)
+            } else {
+                value
+            }
+        }
+
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
         productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
-        productSlug.optionValue = product.slug
+        productSlug.optionValue = valueOrNotSet(product.slug)
+        productReviewsAllowed.isChecked = product.reviewsAllowed
     }
 
     private fun setupObservers() {

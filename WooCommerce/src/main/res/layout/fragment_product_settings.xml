@@ -42,7 +42,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/Widget.Woo.Settings"
+                style="@style/Widget.Woo.Settings.CategoryHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/major_100"
@@ -52,7 +52,7 @@
             <View style="@style/Woo.Divider" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/productEnableReviews"
+                android:id="@+id/productReviewsAllowed"
                 style="@style/Widget.Woo.Settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
