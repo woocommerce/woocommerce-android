@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Overloads of Login Themes
+     -->
+    <style name="LoginTheme" parent="Theme.Woo.DayNight">
+    </style>
+
+    <style name="LoginTheme.Toolbar"/>
+
+</resources>
