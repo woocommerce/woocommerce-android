@@ -103,7 +103,6 @@ data class Product(
                 shortDescription == product.shortDescription &&
                 taxClass == product.taxClass &&
                 taxStatus == product.taxStatus &&
-                isOnSale == product.isOnSale &&
                 isSaleScheduled == product.isSaleScheduled &&
                 dateOnSaleToGmt == product.dateOnSaleToGmt &&
                 dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
