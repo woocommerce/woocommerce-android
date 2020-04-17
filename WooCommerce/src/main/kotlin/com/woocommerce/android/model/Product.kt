@@ -121,6 +121,7 @@ data class Product(
                 shippingClassId == product.shippingClassId &&
                 visibility == product.visibility &&
                 isFeatured == product.isFeatured &&
+                purchaseNote == product.purchaseNote &&
                 isSameImages(product.images)
     }
 
@@ -191,7 +192,8 @@ data class Product(
                     visibility != it.visibility ||
                     isFeatured != it.isFeatured ||
                     slug != it.slug ||
-                    reviewsAllowed != it.reviewsAllowed
+                    reviewsAllowed != it.reviewsAllowed ||
+                    purchaseNote != it.purchaseNote
         } ?: false
     }
 
@@ -250,7 +252,8 @@ data class Product(
                     shippingClass = updatedProduct.shippingClass,
                     images = updatedProduct.images,
                     shippingClassId = updatedProduct.shippingClassId,
-                    reviewsAllowed = updatedProduct.reviewsAllowed
+                    reviewsAllowed = updatedProduct.reviewsAllowed,
+                    purchaseNote = updatedProduct.purchaseNote
             )
         } ?: this.copy()
     }
@@ -336,6 +339,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
             it.dateOnSaleFromGmt = ""
             it.dateOnSaleToGmt = ""
         }
+        it.purchaseNote = purchaseNote
     }
 }
 
