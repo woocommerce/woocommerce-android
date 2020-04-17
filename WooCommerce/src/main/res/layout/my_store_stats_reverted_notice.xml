@@ -7,61 +7,66 @@
     android:layout_height="wrap_content"
     tools:context=".ui.dashboard.DashboardFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <!-- Info Icon ImageView -->
-        <ImageView
-            android:id="@+id/my_store_info_icon"
-            android:layout_width="wrap_content"
+        <!-- VIEW MORE Button -->
+        <ToggleButton
+            android:id="@+id/my_store_reverted_viewMore"
+            style="@style/Woo.Card.ExpanderButton"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/major_100"
-            android:importantForAccessibility="no"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_error_grey"/>
+            android:textOff="@string/my_store_stats_reverted_title"
+            android:textOn="@string/my_store_stats_reverted_title"
+            android:drawableStart="@drawable/ic_gridicons_sync"/>
 
-        <!-- Message -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/my_store_reverted_title"
-            style="@style/Woo.Card.Body"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/my_store_reverted_morePanel"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            android:gravity="start"
-            android:lineSpacingExtra="4sp"
-            android:text="@string/my_store_stats_reverted_message"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/my_store_info_icon"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:visibility="gone"
+            tools:visibility="visible">
 
-        <!-- LEARN MORE button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_learn_more"
-            style="@style/Woo.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_gravity="center_vertical"
-            android:text="@string/learn_more"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/my_store_reverted_title"/>
+            <!-- Message -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/my_store_reverted_message"
+                style="@style/Woo.Card.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_100"
+                android:text="@string/my_store_stats_reverted_message"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
-        <!-- DISMISS button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_dismiss"
-            style="@style/Woo.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/minor_75"
-            android:layout_gravity="center_vertical"
-            android:text="@string/dismiss"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_learn_more"
-            app:layout_constraintTop_toBottomOf="@+id/my_store_reverted_title"/>
+            <!-- PRIMARY button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_learn_more"
+                style="@style/Woo.Card.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/learn_more"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/my_store_reverted_message"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- SECONDARY button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_dismiss"
+                style="@style/Woo.Card.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/minor_100"
+                android:text="@string/dismiss"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_learn_more"
+                app:layout_constraintTop_toBottomOf="@+id/my_store_reverted_message"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </merge>
