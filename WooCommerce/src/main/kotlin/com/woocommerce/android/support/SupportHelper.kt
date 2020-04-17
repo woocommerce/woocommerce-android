@@ -4,9 +4,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.AccountModel
@@ -94,7 +94,7 @@ private fun supportIdentityInputDialogLayout(
 ): Triple<View, EditText, EditText> {
     val layout = LayoutInflater.from(context).inflate(R.layout.support_email_and_name_dialog, null)
 
-    val messageText = layout.findViewById<TextView>(R.id.support_identity_input_dialog_message)
+    val messageText = layout.findViewById<MaterialTextView>(R.id.support_identity_input_dialog_message)
     val message = if (isNameInputHidden) {
         R.string.support_identity_input_dialog_enter_email
     } else {
