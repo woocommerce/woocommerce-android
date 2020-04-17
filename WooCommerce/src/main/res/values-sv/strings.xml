@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-02 00:54:04+0000
+Translation-Revision-Date: 2020-04-16 10:17:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">Reapriset måste vara lägre än det ordinarie priset</string>
+    <string name="product_schedule_remove_end_date_link_label">Ta bort slutdatum</string>
+    <string name="product_shipping_empty">Lägg till frakt</string>
+    <string name="discard_images_message">Produktbilderna laddas fortfarande upp. Vill du ignorera dina ändringar?</string>
     <string name="product_inventory_update_stock_quantity_error">Ange ett nummer</string>
     <string name="product_wip_message">Vi har lagt till redigeringsfunktioner till enkla produkter. Håll utkik efter fler alternativ snart!</string>
     <string name="product_wip_title">Begränsad redigering tillgänglig</string>
@@ -118,6 +122,7 @@ Language: sv_SE
     <string name="product_variants">Varianter</string>
     <string name="product_property_edit">Redigera produkt</string>
     <string name="product_variants_fetch_product_variants_error">Ett fel uppstod när produktvarianterna skulle hämtas</string>
+    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.22 eller högre</string>
     <string name="login_discovery_error_option_select">Välj ett alternativ</string>
     <string name="login_troubleshooting_tips">Läs våra felsökningstips</string>
     <string name="login_with_wordpress">Logga in med WordPress.com</string>
