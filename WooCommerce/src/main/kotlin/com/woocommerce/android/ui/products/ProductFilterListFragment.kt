@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUIModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_list.*
 import javax.inject.Inject
 
@@ -48,9 +49,10 @@ class ProductFilterListFragment : BaseFragment() {
         productFilterListAdapter = ProductFilterListAdapter(requireContext())
         with(filterList) {
             addItemDecoration(
-                    DividerItemDecoration(
+                    AlignedDividerDecoration(
                             requireActivity(),
-                            DividerItemDecoration.VERTICAL
+                            DividerItemDecoration.VERTICAL,
+                            alignStartToStartOf = R.id.filterItemName
                     )
             )
             layoutManager = LinearLayoutManager(activity)
