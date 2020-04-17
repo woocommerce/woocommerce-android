@@ -5,11 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/color_surface">
+    android:background="?attr/colorSurface">
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchStatsV4UI"
-        style="@style/Woo.Settings.Label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:toggleOptionDesc="@string/settings_enable_v4_stats_message"
@@ -22,7 +21,6 @@
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchProductsUI"
-        style="@style/Woo.Settings.Label"
         android:layout_width="0dp"
         android:visibility="gone"
         android:layout_height="wrap_content"
