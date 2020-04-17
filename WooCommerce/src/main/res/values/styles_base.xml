@@ -345,6 +345,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:drawableEnd">@drawable/ic_arrow_drop_down_black</item>
         <item name="android:paddingEnd">@dimen/minor_100</item>
         <item name="drawableTint">@color/color_on_surface_medium</item>
+        <item name="drawableTintMode">src_atop</item>
     </style>
 
     <!--
