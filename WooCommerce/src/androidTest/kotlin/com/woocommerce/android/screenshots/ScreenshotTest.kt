@@ -43,13 +43,6 @@ class ScreenshotTest {
                 .proceedWithPassword()
                 .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
-                // Enable Products
-                .openSettingsPane()
-                .openBetaFeatures()
-                .enableProductEditing()
-                .goBackToSettingsScreen()
-                .goBackToMyStoreScreen()
-
                 // My Store
                 .dismissTopBannerIfNeeded()
                 .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
