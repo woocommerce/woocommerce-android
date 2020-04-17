@@ -41,6 +41,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productSlug.setOnClickListener {
             viewModel.onSettingsSlugButtonClicked()
         }
+        productEnableReviews.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.updateProductDraft(reviewsAllowed = isChecked)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

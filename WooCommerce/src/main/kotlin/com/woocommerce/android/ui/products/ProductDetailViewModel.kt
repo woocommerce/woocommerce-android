@@ -437,7 +437,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         shippingClassId: Long? = null,
         productStatus: ProductStatus? = null,
         visibility: ProductVisibility? = null,
-        isFeatured: Boolean? = null
+        isFeatured: Boolean? = null,
+        reviewsAllowed: Boolean? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -467,6 +468,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     status = productStatus ?: product.status,
                     visibility = visibility ?: product.visibility,
                     isFeatured = isFeatured ?: product.isFeatured,
+                    reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt

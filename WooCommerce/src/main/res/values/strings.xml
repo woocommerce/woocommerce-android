@@ -80,6 +80,7 @@
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
+    <string name="more_options">More options</string>
     <!--
         Date/Time Labels
     -->
@@ -506,6 +507,7 @@
     <string name="product_visibility_headline">This setting determines which shop pages products will be listed on</string>
     <string name="product_slug">Slug</string>
     <string name="product_slug_label">This is the URL-friendly version of the product title</string>
+    <string name="product_enable_reviews">Enable reviews</string>
     <!--
         Product images
     -->
