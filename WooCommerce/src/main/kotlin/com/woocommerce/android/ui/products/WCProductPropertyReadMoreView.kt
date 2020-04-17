@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 
 /**
@@ -19,8 +19,8 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private var textCaption: TextView
-    private var textContent: TextView
+    private var textCaption: MaterialTextView
+    private var textContent: MaterialTextView
     private var btnReadMore: MaterialButton
 
     init {
@@ -56,7 +56,7 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
 
     private fun showFullContent(caption: String, content: String) {
         val customView = View.inflate(context, R.layout.view_alert_dialog, null)
-        customView.findViewById<TextView>(R.id.product_purchase_note).text = content
+        customView.findViewById<MaterialTextView>(R.id.product_purchase_note).text = content
         MaterialAlertDialogBuilder(context)
                 .setTitle(caption)
                 .setView(customView)

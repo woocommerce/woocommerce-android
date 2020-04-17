@@ -10,7 +10,7 @@
         android:id="@+id/orderNote_itemDivider"
         style="@style/Woo.Divider"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/orderDetail_noteListHeader"
         style="@style/Woo.ListItem.Title"
         android:layout_width="match_parent"

@@ -69,18 +69,19 @@
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedEditTextView">
-        <attr name="editTextHint" format="string"/>
-        <attr name="editTextSummary" format="string"/>
         <attr name="android:inputType"/>
         <attr name="android:maxLength"/>
+        <attr name="android:enabled"/>
+        <attr name="android:text"/>
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedSpinnerView">
-        <attr name="spinnerHint" format="string"/>
+        <attr name="android:text"/>
+        <attr name="android:enabled"/>
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
-        <attr name="currencyHint" format="string"/>
+        <attr name="android:enabled"/>
     </declare-styleable>
 
     <declare-styleable name="ActionableEmptyView">
@@ -92,6 +93,11 @@
         <attr name="aevTitle" format="string"/>
         <!-- Optional: resource id of title style -->
         <attr name="aevTitleAppearance" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="WCElevatedLinearLayout">
+        <!-- Optional: resource id of dimension -->
+        <attr name="wcElevation" format="reference"/>
     </declare-styleable>
 
     <!--
@@ -119,6 +125,13 @@
     -->
     <!-- Sets the thickness of indicators like the tab indicator or new review indicator -->
     <attr name="lineIndicatorThickness" format="dimension" />
+
+    <!--
+        Theme-level Text Input styles
+    -->
+    <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
+    <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference"/>
+    <attr name="wcMaterialOutlinedEditTextViewStyle" format="reference"/>
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->

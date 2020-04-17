@@ -6,74 +6,38 @@
     <!--
         Default Colors
     -->
-    <color name="default_text_color">@color/wc_grey_dark</color>
-    <color name="default_button_fg_color">@color/colorPrimary</color>
-    <color name="default_text_label_color">@color/colorPrimary</color>
-    <color name="default_card_heading_color">@color/colorPrimary</color>
     <!--
         General Color Definitions
     -->
     <!-- Primary Greys -->
     <!-- TODO: Consolidate with rest of wc_greys -->
     <color name="wc_grey">#999999</color>
-    <color name="wc_grey_darker">#787878</color>
-    <color name="wc_grey_darkest">#2a2a2a</color>
-    <color name="wc_grey_lightest">#f7f7f7</color>
     <color name="grey_dark_highlight">#333333</color>
 
     <!-- Primary Blacks -->
-    <color name="wc_black_lighter">#99000000</color>
-    <color name="wc_black_darker">#DE000000</color>
 
     <!-- Primary Greens -->
-    <color name="wc_green_light">#d1dcc7</color>
-    <color name="wc_green_lightest">#e9f4db</color>
 
     <!-- Primary Reds -->
-    <color name="wc_red">#ff0000</color>
-    <color name="wc_red_light">#febdbb</color>
-    <color name="wc_red_lightest">#fededd</color>
 
     <!-- Primary Blues -->
-    <color name="wc_blue_light">#BCDEEE</color>
-    <color name="wc_blue_lightest">#e8f2f9</color>
 
     <!-- STUDIO 2.0.0 -->
-    <color name="blue_50">#2271b1</color>
-    <color name="black_85">#de000000</color>
 
     <!--
         Default Global Colors
     -->
-    <color name="default_window_bg">@color/wc_border_color</color>
-    <color name="default_text">@color/wc_grey_dark</color>
     <color name="default_text_title">@color/grey_dark_highlight</color>
-    <color name="default_text_title_disabled">@color/wc_grey_17</color>
-    <color name="default_search_hint_text">#c5adc3</color>
     <!--
         Default Widget Color Definitions
     -->
     <!-- Menu Text Colors -->
-    <color name="menu_title_text">#FFFFFFFF</color>
-    <color name="menu_action_text">#FFFFFFFF</color>
 
     <!-- Default Card colors -->
-    <color name="card_bgColor">@color/white</color>
-    <color name="card_title_text">@color/default_text_title</color>
-    <color name="card_label_text">@color/default_text_label_color</color>
-    <color name="card_normal_text">@color/default_text_color</color>
 
     <!-- Tag View default colors -->
-    <color name="tagView_bgColor">#d2d2d2</color>
-    <color name="tagView_fgColor">#a7a7a7</color>
 
     <!-- Default List colors -->
-    <color name="list_item_text">@color/default_text</color>
-    <color name="list_item_text_title">@color/default_text_title</color>
-    <color name="list_item_bg">@color/white</color>
-    <color name="List_header_text">@color/wc_grey_mid</color>
-    <color name="list_header_bg">@color/wc_grey_light</color>
-    <color name="list_header_border">@color/wc_grey_17</color>
 
     <!-- Default Edit Text -->
     <color name="edit_text_color_control_activated">@color/grey_dark_highlight</color>
@@ -81,11 +45,9 @@
     <color name="edit_text_color_control_normal">@color/wc_grey_39</color>
     <color name="edit_text_label_text_color">@color/wc_grey_dark</color>
     <color name="edit_text_text_color">@color/wc_grey_dark</color>
-    <color name="edit_text_text_color_highlight">@color/wc_purple_highlight</color>
     <color name="edit_text_text_hint_color">@color/wc_grey_dark</color>
 
     <!-- Default Link Color -->
-    <color name="link_text_color">@color/wc_purple</color>
     <!--
         Dialog colors
     -->
@@ -93,9 +55,6 @@
     <!--
         Order: Order note icon colors
     -->
-    <color name="orderNote_private">@color/wc_grey</color>
-    <color name="orderNote_public">@color/wc_blue_light</color>
-    <color name="orderNote_system">@color/wc_purple</color>
 
     <!-- Login -->
     <!-- Login uses snake_case instead of CamelCase for the main color palette,
@@ -119,10 +78,6 @@
     <color name="login_edit_text_color_control_highlight">@color/edit_text_color_control_highlight</color>
     <color name="login_edit_text_text_color">@color/edit_text_text_color</color>
     <color name="login_edit_text_text_hint_color">@color/edit_text_text_hint_color</color>
-    <color name="login_heading_text_color">@color/wc_grey_17</color>
-    <color name="login_subhead_text_color">@color/wc_grey_dark</color>
-    <color name="login_username_text_color">@color/wc_grey_17</color>
-    <color name="login_footnote_text_color">@color/wc_grey_dark</color>
 
     <color name="login_input_icon_color">@color/wc_grey_30</color>
     <color name="login_input_password_icon_color">@color/wc_grey_30</color>

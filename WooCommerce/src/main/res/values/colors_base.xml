@@ -15,7 +15,8 @@
     <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_primary_disabled">@color/woo_white_alpha_038</color>
     <color name="color_alert">@color/woo_yellow_50</color>
-    <color name="color_on_primary_surface_high">@color/color_on_primary_high</color>
+    <color name="color_on_primary_surface_medium">@color/woo_white_alpha_060</color>
+    <color name="color_on_primary_surface_high">@color/woo_white</color>
     <color name="color_on_secondary">@color/woo_black</color>
     <color name="color_on_background">@color/woo_black</color>
     <color name="color_on_error">@color/woo_white</color>
@@ -101,6 +102,7 @@
     <color name="editor_tag_color">@color/color_primary</color>
     <color name="editor_text_color">@color/color_on_surface_high</color>
     <color name="editor_text_hint_color">@color/color_on_surface_disabled</color>
+    <color name="editor_toolbar_bg_color">@color/woo_white</color>
 
     <!--
         Loading Skeletons

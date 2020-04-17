@@ -145,16 +145,16 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
         val product = requireNotNull(productData.productDraft)
         with(product_regular_price) {
-            initialiseCurrencyEditText(currency, decimals, currencyFormatter)
-            product.regularPrice?.let { setText(it) }
+            initView(currency, decimals, currencyFormatter)
+            product.regularPrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
                 viewModel.onRegularPriceEntered(it)
             })
         }
 
         with(product_sale_price) {
-            initialiseCurrencyEditText(currency, decimals, currencyFormatter)
-            product.salePrice?.let { setText(it) }
+            initView(currency, decimals, currencyFormatter)
+            product.salePrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
                 viewModel.onSalePriceEntered(it)
             })
@@ -262,10 +262,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
 
     private fun displaySalePriceError(messageId: Int) {
         if (messageId != 0) {
-            product_sale_price.setError(getString(messageId))
+            product_sale_price.error = getString(messageId)
             enablePublishMenuItem(false)
         } else {
-            product_sale_price.clearError()
+            product_sale_price.error = null
             enablePublishMenuItem(true)
         }
     }
