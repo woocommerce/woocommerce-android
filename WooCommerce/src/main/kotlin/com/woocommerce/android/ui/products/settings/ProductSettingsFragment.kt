@@ -67,8 +67,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 updateProductView()
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
-            (result.getSerializable(ARG_VISIBILITY) as? ProductVisibility)?.let {
-                viewModel.updateProductDraft(visibility = it, isFeatured = result.getBoolean(ARG_IS_FEATURED))
+            (result.getString(ARG_VISIBILITY))?.let {
+                val visibility = ProductVisibility.fromString(it)
+                viewModel.updateProductDraft(visibility = visibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
                 updateProductView()
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
