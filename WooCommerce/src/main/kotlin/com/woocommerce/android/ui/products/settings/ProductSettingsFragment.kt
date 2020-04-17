@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
@@ -46,6 +47,14 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
         productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
             viewModel.updateProductDraft(reviewsAllowed = isChecked)
+        }
+        productPurchaseNote.setOnClickListener {
+            val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
+            viewModel.onEditProductCardClicked(
+                    ViewProductPurchaseNoteEditor(
+                            purchaseNote, getString(R.string.product_purchase_note)
+                    )
+            )
         }
     }
 

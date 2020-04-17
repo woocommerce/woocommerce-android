@@ -74,8 +74,8 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductPurchaseNoteEditor -> {
-                val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToAztecEditorFragment(
+                val action = ProductSettingsFragmentDirections
+                        .actionProductSettingsFragmentToAztecEditorFragment(
                                 target.purchaseNote,
                                 target.title,
                                 RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
