@@ -84,8 +84,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
 
-    <style name="Woo.Dialog.Login.WhatIsJetpack" parent="Woo.Dialog.Promo"/>
-
     <!--
         LOGIN
     -->
