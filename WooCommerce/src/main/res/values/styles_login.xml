@@ -6,6 +6,9 @@
     <style name="LoginTheme" parent="Theme.Woo.DayNight">
     </style>
 
-    <style name="LoginTheme.Toolbar"/>
+    <style name="LoginTheme.Toolbar">
+        <item name="android:background">@color/color_primary_surface</item>
+        <item name="colorControlNormal">@color/woo_white</item>
+    </style>
 
 </resources>
