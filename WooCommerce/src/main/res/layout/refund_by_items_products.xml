@@ -49,25 +49,23 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_lblShipping"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_padding_start"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:layout_weight="1"
-        android:text="@string/shipping"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/Woo.Refunds.TextAppearance"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
-
-    <TextView
-        android:id="@+id/issueRefund_shippingTotal"
+        style="@style/Woo.Card.Body.High"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_padding_end"
-        android:textAppearance="@style/Woo.Refunds.TextAppearance"
+        android:layout_marginTop="@dimen/minor_50"
+        android:text="@string/shipping"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/issueRefund_shippingTotal"
+        app:layout_constraintTop_toBottomOf="@+id/issueRefund_lblSubtotal" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/issueRefund_shippingTotal"
+        style="@style/Woo.Card.Body.High"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/issueRefund_lblShipping"
+        app:layout_constraintTop_toTopOf="@+id/issueRefund_lblShipping"
         tools:text="$1.00" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -92,16 +90,16 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_shippingRefundNotice"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
-        android:layout_weight="1"
-        android:drawableStart="@drawable/ic_info_outline_light_grey_min_24dp"
-        android:drawablePadding="@dimen/card_item_padding_intra_double"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginStart="@dimen/minor_00"
+        android:layout_marginEnd="@dimen/minor_00"
+        android:drawableStart="@drawable/ic_info_outline_24dp"
+        android:drawablePadding="@dimen/major_100"
         android:text="@string/order_refunds_shipping_refund_notice"
-        android:textAlignment="viewStart"
-        android:textColor="@color/grey_500"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="@+id/issueRefund_lblTaxes"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal" />

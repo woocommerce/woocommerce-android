@@ -4,9 +4,9 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 
 /**
@@ -31,8 +31,8 @@ class CustomProgressDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogView = View.inflate(activity, R.layout.view_progress_dialog, null)
 
-        dialogView.findViewById<TextView>(R.id.progress_title).text = progressTitle
-        dialogView.findViewById<TextView>(R.id.progress_text).text = progressMessage
+        dialogView.findViewById<MaterialTextView>(R.id.progress_title).text = progressTitle
+        dialogView.findViewById<MaterialTextView>(R.id.progress_text).text = progressMessage
 
         return MaterialAlertDialogBuilder(activity as Context)
                 .setView(dialogView)

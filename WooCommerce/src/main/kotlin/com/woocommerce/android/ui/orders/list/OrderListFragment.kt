@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -717,7 +716,6 @@ class OrderListFragment : TopLevelFragment(),
         if (isFilterEnabled) {
             isFilterEnabled = false
             searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
-                it.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.default_search_hint_text))
                 it.isEnabled = true
             }
             searchView?.queryHint = getString(R.string.orderlist_search_hint)

@@ -1,59 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Woo.Card"
+    android:id="@+id/progress_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/progress_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!-- Title -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/progress_title"
+        style="@style/Woo.TextView.Headline6"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/product_update_dialog_title"/>
 
-        <!-- Title -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/progress_title"
-            style="@style/Woo.TextView.Headline6"
-            android:layout_width="0dp"
-            android:layout_marginStart="@dimen/major_150"
-            android:layout_marginEnd="@dimen/major_150"
-            android:layout_marginTop="@dimen/major_100"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/product_update_dialog_title"/>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@style/Woo.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
+        android:layout_marginBottom="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progress_title" />
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="@style/Woo.ProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_75"
-            android:layout_marginStart="@dimen/major_150"
-            android:layout_marginEnd="@dimen/major_150"
-            android:layout_marginBottom="@dimen/major_100"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progress_title" />
+    <!-- Message -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/progress_text"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_75"
+        android:layout_marginEnd="@dimen/major_150"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/progress_bar"
+        app:layout_constraintTop_toBottomOf="@+id/progress_title"
+        tools:text="@string/product_update_dialog_message" />
 
-        <!-- Message -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/progress_text"
-            style="@style/Woo.TextView.Body2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_75"
-            android:layout_marginEnd="@dimen/major_150"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:layout_marginBottom="@dimen/major_100"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/progress_bar"
-            app:layout_constraintTop_toBottomOf="@+id/progress_title"
-            tools:text="@string/product_update_dialog_message" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
