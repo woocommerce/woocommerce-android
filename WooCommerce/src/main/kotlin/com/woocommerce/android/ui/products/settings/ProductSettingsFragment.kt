@@ -7,13 +7,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
-import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
@@ -108,7 +109,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
-        productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote)
+        productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
     }
 
     private fun setupObservers() {
