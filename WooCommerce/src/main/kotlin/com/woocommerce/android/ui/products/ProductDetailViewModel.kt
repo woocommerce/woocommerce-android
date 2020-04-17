@@ -168,8 +168,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the the Remove end date link is clicked
      */
     fun onRemoveEndDateClicked() {
-        productPricingViewState = productPricingViewState.copy(isRemoveMaxDateButtonVisible = false)
-        updateProductDraft(dateOnSaleToGmt = Optional(null))
+        productPricingViewState = productPricingViewState.copy(saleEndDate = null)
+        updateProductDraft(saleEndDate = Optional(null))
     }
 
     /**
@@ -216,11 +216,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Keeps track of the start and end date value when scheduling a sale.
      */
     fun onStartDateChanged(newDate: Date) {
-        // update end date to min date only if current end date < start date
+        // update end date to start date only if current end date < start date
         val saleEndDate = viewState.productDraft?.saleEndDateGmt
         if (saleEndDate?.before(newDate) == true) {
             updateProductDraft(saleEndDate = Optional(newDate))
+            productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
         }
+        updateProductDraft(saleStartDate = newDate)
         productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
     }
 
@@ -228,12 +230,14 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the sale end date is selected from the date picker in the pricing screen.
      * Keeps track of the start and end date value when scheduling a sale.
      */
-    fun onEndDateChanged(newDate: Date) {
-        // update start date to max date only if current start date > end date
+    fun onEndDateChanged(newDate: Date?) {
+        // update start date to end date only if current start date > end date
         val saleStartDate = viewState.productDraft?.saleStartDateGmt
-        if (saleStartDate?.after(newDate) == true) {
+        if (newDate != null && saleStartDate?.after(newDate) == true) {
             updateProductDraft(saleStartDate = newDate)
+            productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
         }
+        updateProductDraft(saleEndDate = Optional(newDate))
         productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
     }
 
@@ -369,8 +373,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         isSaleScheduled: Boolean? = null,
-        dateOnSaleFromGmt: Date? = null,
-        dateOnSaleToGmt: Optional<Date>? = null,
+        saleStartDate: Date? = null,
+        saleEndDate: Optional<Date>? = null,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null,
         length: Float? = null,
@@ -405,14 +409,14 @@ class ProductDetailViewModel @AssistedInject constructor(
                     shippingClass = shippingClass ?: product.shippingClass,
                     shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    dateOnSaleToGmt = if (isSaleScheduled == true ||
+                    saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        if (dateOnSaleToGmt != null) dateOnSaleToGmt.value else product.dateOnSaleToGmt
-                    } else viewState.storedProduct?.dateOnSaleToGmt,
-                    dateOnSaleFromGmt = if (isSaleScheduled == true ||
+                        if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
+                    } else viewState.storedProduct?.saleEndDateGmt,
+                    saleStartDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        dateOnSaleFromGmt ?: product.dateOnSaleFromGmt
-                    } else viewState.storedProduct?.dateOnSaleFromGmt
+                        saleStartDate ?: product.saleStartDateGmt
+                    } else viewState.storedProduct?.saleStartDateGmt
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -757,11 +761,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
-        val minDate: Date? = null,
-        val maxDate: Date? = null,
-        val isRemoveMaxDateButtonVisible: Boolean? = null,
+        val saleStartDate: Date? = null,
+        val saleEndDate: Date? = null,
         val salePriceErrorMessage: Int? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val isRemoveMaxDateButtonVisible: Boolean
+            get() = saleEndDate != null
+    }
 
     @Parcelize
     data class ProductImagesViewState(

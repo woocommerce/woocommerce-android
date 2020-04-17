@@ -110,12 +110,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                 updateProductTaxClassList(it, viewModel.getProduct())
             }
             new.saleStartDate?.takeIfNotEqualTo(old?.saleStartDate) {
-                // update end date to min date since current end date < start date
-                scheduleSale_endDate.setText(it.formatToMMMddYYYY())
+                scheduleSale_startDate.setText(it.formatToMMMddYYYY())
             }
             new.saleEndDate?.takeIfNotEqualTo(old?.saleEndDate) {
-                // update start date to max date since current start date > end date
-                scheduleSale_startDate.setText(new.saleEndDate.formatToMMMddYYYY())
+                scheduleSale_endDate.setText(it.formatToMMMddYYYY())
             }
             new.isRemoveMaxDateButtonVisible.takeIfNotEqualTo(old?.isRemoveMaxDateButtonVisible) { isVisible ->
                 scheduleSale_RemoveEndDateButton.visibility = if (isVisible) View.VISIBLE else {
@@ -227,7 +225,6 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     private fun updateSaleStartDate(selectedDate: Date?, offset: Float) {
         val date = selectedDate ?: Date()
         scheduleSale_startDate.setText(formatSaleDateForDisplay(date, offset))
-        viewModel.updateProductDraft(saleStartDate = date)
         viewModel.onStartDateChanged(date)
     }
 
@@ -235,8 +232,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         // The end sale date is optional => null is a valid value
         if (selectedDate != null) {
             scheduleSale_endDate.setText(formatSaleDateForDisplay(selectedDate, offset))
-            viewModel.onEndDateChanged(selectedDate)
+        } else {
+            scheduleSale_endDate.setText("")
         }
+        viewModel.onEndDateChanged(selectedDate)
     }
 
     private fun updateProductTaxClassList(
