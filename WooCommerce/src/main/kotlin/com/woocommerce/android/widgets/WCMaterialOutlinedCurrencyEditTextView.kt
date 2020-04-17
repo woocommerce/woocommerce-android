@@ -11,6 +11,7 @@ import android.util.SparseArray
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LiveData
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyFormatter
@@ -54,6 +55,8 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 
     val value: LiveData<BigDecimal>
+        get() = currency_edit_text.value
+
     fun initView(
         currency: String,
         decimals: Int,
@@ -62,11 +65,11 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         currency_edit_text.initView(currency, decimals, currencyFormatter)
     }
 
-    fun setText(currentValue: BigDecimal) {
+    fun getText() = currency_edit_text.text.toString()
+
+    fun setValue(currentValue: BigDecimal) {
         currency_edit_text.setValue(currentValue)
     }
-
-    fun getText() = currency_edit_text.text.toString()
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
