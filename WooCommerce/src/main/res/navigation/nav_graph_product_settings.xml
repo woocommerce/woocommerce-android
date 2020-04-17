@@ -70,27 +70,4 @@
             app:nullable="false" />
     </fragment>
 
-    <fragment
-        android:id="@+id/aztecEditorFragment"
-        android:name="com.woocommerce.android.ui.aztec.AztecEditorFragment"
-        tools:layout="@layout/fragment_aztec_editor">
-        <argument
-            android:name="aztecText"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="aztecTitle"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="aztecCaption"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="requestCode"
-            android:defaultValue="0"
-            app:argType="integer" />
-    </fragment>
-
 </navigation>

@@ -18,11 +18,6 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_productDetailFragment_to_aztecEditorFragment"
-            app:destination="@id/aztecEditorFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_productDetailFragment_to_productImagesFragment"
             app:destination="@id/productImagesFragment"
             app:enterAnim="@anim/activity_fade_in"
@@ -74,6 +69,11 @@
             android:name="aztecTitle"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="aztecCaption"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="requestCode"
             android:defaultValue="0"
@@ -136,6 +136,12 @@
     <action
         android:id="@+id/action_global_productImageViewerFragment"
         app:destination="@id/productImageViewerFragment"
+        app:enterAnim="@anim/activity_scale_in"
+        app:popExitAnim="@anim/activity_scale_out" />
+
+    <action
+        android:id="@+id/action_global_aztecEditorFragment"
+        app:destination="@id/aztecEditorFragment"
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
 </navigation>
