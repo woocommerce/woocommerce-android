@@ -44,6 +44,10 @@ class ScreenshotTest {
                 .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
                 // My Store
+                // When debugging these tests, you might want to save time and avoid the logout - login flow above.
+                // To do so, comment the whole block above and then uncomment the line below. Note that this implies the
+                // app in the Emulator is already logged in.
+                //MyStoreScreen()
                 .dismissTopBannerIfNeeded()
                 .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
                 .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
