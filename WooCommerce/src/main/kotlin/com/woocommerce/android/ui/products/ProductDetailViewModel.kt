@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -247,6 +248,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when the user taps the product slug in product settings
+     */
+    fun onSettingsSlugButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductSlug(it.slug))
+        }
+    }
+
+    /**
      * Called when the date is selected from the date picker in the pricing screen.
      * Keeps track of the min and max date value when scheduling a sale.
      */
@@ -397,6 +407,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         shortDescription: String? = null,
         title: String? = null,
         sku: String? = null,
+        slug: String? = null,
         manageStock: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
@@ -427,6 +438,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     shortDescription = shortDescription ?: product.shortDescription,
                     name = title ?: product.name,
                     sku = sku ?: product.sku,
+                    slug = slug ?: product.slug,
                     manageStock = manageStock ?: product.manageStock,
                     stockStatus = stockStatus ?: product.stockStatus,
                     soldIndividually = soldIndividually ?: product.soldIndividually,

@@ -64,11 +64,11 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         }
     }
 
+    fun getText() = edit_text.editableText.toString()
+
     fun setText(selectedText: String) {
         edit_text.setText(selectedText)
     }
-
-    fun getText() = edit_text.text.toString()
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
         edit_text.doAfterTextChanged {

@@ -10,11 +10,14 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductPricingFragment
 import com.woocommerce.android.ui.products.ProductsModule.ProductSettingsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingClassFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragment
 import com.woocommerce.android.ui.products.settings.ProductSettingsModule
+import com.woocommerce.android.ui.products.settings.ProductSlugFragment
+import com.woocommerce.android.ui.products.settings.ProductSlugModule
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
@@ -34,7 +37,8 @@ import dagger.android.ContributesAndroidInjector
     ProductPricingFragmentModule::class,
     ProductSettingsFragmentModule::class,
     ProductVisibilityFragmentModule::class,
-    ProductStatusFragmentModule::class
+    ProductStatusFragmentModule::class,
+    ProductSlugFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -119,5 +123,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductVisibilityModule::class])
         abstract fun productVisibilityFragment(): ProductVisibilityFragment
+    }
+
+    @Module
+    internal abstract class ProductSlugFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductSlugModule::class])
+        abstract fun productSlugFragment(): ProductSlugFragment
     }
 }
