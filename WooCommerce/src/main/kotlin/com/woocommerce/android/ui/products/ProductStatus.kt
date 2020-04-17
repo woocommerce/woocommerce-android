@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductFilterOption.FilterProductStatus
+import java.util.Locale
 
 /**
  * Similar to PostStatus except only draft, pending, private, and publish are supported
@@ -26,9 +27,9 @@ enum class ProductStatus(@StringRes val stringResource: Int = 0) {
 
     companion object {
         fun fromString(status: String): ProductStatus? {
-            val statusLC = status.toLowerCase()
+            val statusLC = status.toLowerCase(Locale.US)
             values().forEach { value ->
-                if (value.toString().toLowerCase() == statusLC) return value
+                if (value.toString().toLowerCase(Locale.US) == statusLC) return value
             }
             return null
         }
