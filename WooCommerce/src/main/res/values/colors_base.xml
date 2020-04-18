@@ -29,11 +29,7 @@
     <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
 
     <!--
-        All icon-related resources should use this as their color. This color is
-        overridden depending on the API version. Since API 21 doesn't support
-        drawable tinting, we set it to a color selector here, but in the v23
-        version it will just be the same color as color_surface. The drawable
-        tinting will add the necessary tint.
+        All icon-related resources should use this as their color.
     -->
     <color name="color_icon">@color/color_on_surface_medium_selector</color>
 
