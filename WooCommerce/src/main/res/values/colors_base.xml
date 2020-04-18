@@ -43,7 +43,7 @@
     <!--
         Toolbar and bottom bar icons should be assigned this resource.
     -->
-    <color name="color_icon_menu">@color/color_on_surface_high_selector</color>
+    <color name="color_icon_menu">@color/woo_white</color>
 
     <!--
         Custom widget tint
