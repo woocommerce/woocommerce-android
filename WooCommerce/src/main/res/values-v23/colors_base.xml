@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        All icon-related resources should use this as their color. This color is
+        overridden depending on the API version. Here we set the value to color_surface.
+        The drawable tinting will add the necessary tint over the surface color to create
+        the desired result.
+    -->
+    <color name="color_icon">@color/color_surface</color>
+</resources>

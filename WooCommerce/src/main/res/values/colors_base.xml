@@ -8,6 +8,7 @@
     <color name="color_secondary">@color/woo_pink_50</color>
     <color name="color_surface">@color/woo_white</color>
     <color name="color_error">@color/woo_red_50</color>
+    <color name="color_on_surface">@color/black</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
@@ -26,6 +27,21 @@
     <color name="color_accent_3">@color/woo_blue_50</color>
 
     <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
+
+    <!--
+        All icon-related resources should use this as their color. This color is
+        overridden depending on the API version. Since API 21 doesn't support
+        drawable tinting, we set it to a color selector here, but in the v23
+        version it will just be the same color as color_surface. The drawable
+        tinting will add the necessary tint.
+    -->
+    <color name="color_icon">@color/color_on_surface_medium_selector</color>
+
+    <!--
+        Icon-related resources that use the secondary color should be assigned
+        this resource. This same value is used no matter API version.
+    -->
+    <color name="color_icon_secondary">@color/color_secondary_selector</color>
 
     <!--
         Custom widget tint
@@ -91,9 +107,9 @@
         Aztec Editor
     -->
     <color name="editor_attribute_color">@color/color_secondary</color>
-    <color name="editor_bullet_color">@color/color_on_surface</color>
+    <color name="editor_bullet_color">@color/color_on_surface_medium_selector</color>
     <color name="editor_code_bg_color">@android:color/transparent</color>
-    <color name="editor_code_fg_color">@color/color_on_surface</color>
+    <color name="editor_code_fg_color">@color/color_on_surface_medium_selector</color>
     <color name="editor_link_color">@color/color_primary</color>
     <color name="editor_preformat_bg_color">@color/woo_black</color>
     <color name="editor_preformat_fg_color">@color/color_on_surface_high</color>

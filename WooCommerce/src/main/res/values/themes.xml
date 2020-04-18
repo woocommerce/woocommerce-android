@@ -19,14 +19,14 @@
         <item name="colorSecondaryVariant">@color/woo_pink_70</item>
 
         <item name="android:colorBackground">@color/default_window_background</item>
-        <item name="colorSurface">@color/woo_white</item>
+        <item name="colorSurface">@color/color_surface</item>
         <item name="colorError">@color/woo_red_50</item>
 
         <item name="colorOnPrimary">@color/woo_white</item>
         <item name="colorOnPrimarySurface">@color/woo_white</item>
         <item name="colorOnSecondary">@color/woo_black</item>
         <item name="colorOnBackground">@color/woo_black</item>
-        <item name="colorOnSurface">@color/woo_black</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
         <item name="colorOnError">@color/woo_white</item>
 
         <item name="colorAccent">@color/woo_purple_60</item>

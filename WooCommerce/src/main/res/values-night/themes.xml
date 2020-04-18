@@ -12,14 +12,12 @@
         <item name="colorSecondaryVariant">@color/woo_pink_50</item>
 
         <item name="android:colorBackground">@color/woo_black_90</item>
-        <item name="colorSurface">@color/woo_black_90</item>
         <item name="colorError">@color/woo_red_30</item>
 
         <item name="colorOnPrimary">@color/woo_black</item>
         <item name="colorOnPrimarySurface">@color/woo_white</item>
         <item name="colorOnSecondary">@color/woo_black</item>
         <item name="colorOnBackground">@color/woo_white</item>
-        <item name="colorOnSurface">@color/woo_white</item>
         <item name="colorOnError">@color/woo_black</item>
 
         <item name="colorAccent">@color/woo_purple_30</item>
