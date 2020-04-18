@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -25,7 +26,7 @@
             style="Woo.TextView.Caption"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_100"
             android:orientation="vertical">
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -39,49 +40,55 @@
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_100"
             android:orientation="vertical">
 
-            <RadioGroup
-                android:id="@+id/radioGroup"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/major_100"
-                android:paddingEnd="0dp">
+                android:orientation="vertical">
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilityVisible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/product_visibility_visible" />
 
-                <View style="@style/Woo.Divider" />
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"/>
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilityCatalog"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/product_visibility_catalog" />
 
-                <View style="@style/Woo.Divider" />
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"/>
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilitySearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/product_visibility_search" />
 
-                <View style="@style/Woo.Divider" />
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"/>
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilityHidden"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/product_visibility_hidden" />
 
-                <View style="@style/Woo.Divider" />
-            </RadioGroup>
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"/>
+            </LinearLayout>
 
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</ScrollView>
