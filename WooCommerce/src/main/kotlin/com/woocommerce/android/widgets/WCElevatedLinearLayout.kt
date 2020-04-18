@@ -13,7 +13,7 @@ open class WCElevatedLinearLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
-    private var shapeElevation = context.resources.getDimension(R.dimen.plane_02)
+    private var shapeElevation = context.resources.getDimension(R.dimen.plane_01)
     private var elevatedBackground: MaterialShapeDrawable
 
     init {
