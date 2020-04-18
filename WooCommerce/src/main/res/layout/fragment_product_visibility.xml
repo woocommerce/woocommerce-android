@@ -42,14 +42,14 @@
             android:layout_marginTop="@dimen/major_100"
             android:orientation="vertical">
 
-            <RadioGroup
-                android:id="@+id/radioGroup"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:paddingStart="@dimen/major_100"
                 android:paddingEnd="0dp">
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilityVisible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
 
                 <View style="@style/Woo.Divider" />
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilityCatalog"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
 
                 <View style="@style/Woo.Divider" />
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilitySearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -73,14 +73,14 @@
 
                 <View style="@style/Woo.Divider" />
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
+                <CheckedTextView
                     android:id="@+id/btnVisibilityHidden"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/product_visibility_hidden" />
 
                 <View style="@style/Woo.Divider" />
-            </RadioGroup>
+            </LinearLayout>
 
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
     </LinearLayout>

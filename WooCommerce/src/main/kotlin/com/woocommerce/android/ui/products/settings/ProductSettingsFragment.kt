@@ -61,13 +61,15 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         if (requestCode == RequestCodes.PRODUCT_SETTINGS_STATUS) {
-            (result.getSerializable(ARG_SELECTED_STATUS) as? ProductStatus)?.let {
-                viewModel.updateProductDraft(productStatus = it)
+            (result.getString(ARG_SELECTED_STATUS))?.let {
+                val status = ProductStatus.fromString(it)
+                viewModel.updateProductDraft(productStatus = status)
                 updateProductView()
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
-            (result.getSerializable(ARG_VISIBILITY) as? ProductVisibility)?.let {
-                viewModel.updateProductDraft(visibility = it, isFeatured = result.getBoolean(ARG_IS_FEATURED))
+            (result.getString(ARG_VISIBILITY))?.let {
+                val visibility = ProductVisibility.fromString(it)
+                viewModel.updateProductDraft(visibility = visibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
                 updateProductView()
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
