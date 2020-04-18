@@ -17,7 +17,7 @@
             app:optionTitle="@string/product_status"
             tools:optionValue="Draft" />
 
-        <View style="@style/Woo.Divider" />
+        <View style="@style/Woo.Divider.TitleAligned" />
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
             android:id="@+id/productVisibility"
@@ -26,7 +26,7 @@
             app:optionTitle="@string/product_visibility"
             tools:optionValue="Draft" />
 
-        <View style="@style/Woo.Divider" />
+        <View style="@style/Woo.Divider.TitleAligned" />
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
             android:id="@+id/productSlug"
@@ -35,7 +35,7 @@
             app:optionTitle="@string/product_slug"
             tools:optionValue="Slug" />
 
-        <View style="@style/Woo.Divider" />
+        <View style="@style/Woo.Divider.TitleAligned" />
 
     </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
