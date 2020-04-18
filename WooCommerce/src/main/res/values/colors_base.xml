@@ -5,19 +5,26 @@
     -->
     <color name="color_primary">@color/woo_purple_60</color>
     <color name="color_primary_surface">@color/woo_purple_60</color>
+    <color name="color_primary_variant">@color/woo_purple_80</color>
     <color name="color_secondary">@color/woo_pink_50</color>
+    <color name="color_secondary_variant">@color/woo_pink_70</color>
     <color name="color_surface">@color/woo_white</color>
     <color name="color_error">@color/woo_red_50</color>
+    <color name="color_alert">@color/woo_yellow_50</color>
+
     <color name="color_on_surface">@color/black</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
+
+    <color name="color_on_primary">@color/woo_white</color>
     <color name="color_on_primary_high">@color/woo_white</color>
     <color name="color_on_primary_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_primary_disabled">@color/woo_white_alpha_038</color>
-    <color name="color_alert">@color/woo_yellow_50</color>
+    <color name="color_on_primary_surface">@color/woo_white</color>
     <color name="color_on_primary_surface_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_primary_surface_high">@color/woo_white</color>
+
     <color name="color_on_secondary">@color/woo_black</color>
     <color name="color_on_background">@color/woo_black</color>
     <color name="color_on_error">@color/woo_white</color>
@@ -27,6 +34,7 @@
     <color name="color_accent_3">@color/woo_blue_50</color>
 
     <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
+    <color name="color_scrim_background">@color/woo_white_alpha_038</color>
 
     <!--
         Icon-related resources that use the surface color should be assigned
@@ -54,6 +62,7 @@
     <!--
         App colors
     -->
+    <color name="color_status_bar">@color/woo_purple_60</color>
     <color name="default_window_background">#F2F2F2</color>
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
