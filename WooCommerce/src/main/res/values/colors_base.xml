@@ -29,15 +29,21 @@
     <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
 
     <!--
-        All icon-related resources should use this as their color.
+        Icon-related resources that use the surface color should be assigned
+        this resource.
     -->
     <color name="color_icon">@color/color_on_surface_medium_selector</color>
 
     <!--
         Icon-related resources that use the secondary color should be assigned
-        this resource. This same value is used no matter API version.
+        this resource.
     -->
     <color name="color_icon_secondary">@color/color_secondary_selector</color>
+
+    <!--
+        Toolbar and bottom bar icons should be assigned this resource.
+    -->
+    <color name="color_icon_menu">@color/color_on_surface_high_selector</color>
 
     <!--
         Custom widget tint
