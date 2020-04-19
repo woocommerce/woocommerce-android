@@ -334,10 +334,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             // display product sale dates using the site's timezone, if available
             if (product.isSaleScheduled) {
                 val gmtOffset = productData.gmtOffset
-                var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
+                var dateOnSaleFrom = product.saleStartDateGmt?.let {
                     DateUtils.offsetGmtDate(it, gmtOffset)
                 }
-                val dateOnSaleTo = product.dateOnSaleToGmt?.let {
+                val dateOnSaleTo = product.saleEndDateGmt?.let {
                     DateUtils.offsetGmtDate(it, gmtOffset)
                 }
                 if (dateOnSaleTo != null && dateOnSaleFrom == null) {
