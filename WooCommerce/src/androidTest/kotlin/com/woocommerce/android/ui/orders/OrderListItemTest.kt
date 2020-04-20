@@ -166,36 +166,38 @@ class OrderListItemTest : TestBase() {
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(processingStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_processing_text)))
+                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_processing_bg)))
+                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_processing)))
 
         // PENDING PAYMENT: Check if order status label name, label text color, label background color
         val pendingStatusPosition = 3
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(pendingStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(pendingStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(pendingStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_pending_text)))
+                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(pendingStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_pending_bg)))
+                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other)))
 
         // ON HOLD: Check if order status label name, label text color, label background color
         val onHoldStatusPosition = 5
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(onHoldStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(onHoldStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(onHoldStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_hold_text)))
+                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
+        // This value is surprising. OrderStatusTag.kt has logic to set the color as `R.color.tag_bg_on_hold` for the
+        // "on hold" status, while `R.color.tag_bg_other` is the color for other cases of the status.
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(onHoldStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_hold_bg)))
+                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other)))
 
         // COMPLETED: Check if order status label name, label text color, label background color
         val completedStatusPosition = 6
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(completedStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(completedStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(completedStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_completed_text)))
+                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(completedStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_completed_bg)))
+                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other)))
 
         // scroll to the end of the RecyclerView first to avoid the "no matching
         // views in hierarchy" error.
@@ -206,27 +208,27 @@ class OrderListItemTest : TestBase() {
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(cancelledStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(cancelledStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(cancelledStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_cancelled_text)))
+                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(cancelledStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_cancelled_bg)))
+                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other)))
 
         // REFUNDED: Check if order status label name, label text color, label background color
         val refundedStatusPosition = 8
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(refundedStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(refundedStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(refundedStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_refunded_text)))
+                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(refundedStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_refunded_bg)))
+                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_other)))
 
         // FAILED: Check if order status label name, label text color, label background color
         val failedStatusPosition = 9
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(failedStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagText(getAsOrderItem(failedStatusPosition).status)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(failedStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.orderStatus_failed_text)))
+                .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(failedStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_failed_bg)))
+                .check(matches(WCMatchers.withTagBackgroundColor(appContext, R.color.tag_bg_failed)))
     }
 
     @Test

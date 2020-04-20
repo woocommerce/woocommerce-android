@@ -5,6 +5,6 @@
         android:alpha="@dimen/alpha_emphasis_disabled"
         android:color="@color/color_on_surface"/>
     <item
-        android:alpha="@dimen/alpha_emphasis_medium"
+        android:alpha="@dimen/alpha_emphasis_high"
         android:color="@color/color_on_surface"/>
 </selector>
