@@ -51,7 +51,7 @@
 
         <RatingBar
             android:id="@+id/notif_rating"
-            style="?attr/ratingBarStyleSmall"
+            style="@style/Woo.RatingsBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_100"
