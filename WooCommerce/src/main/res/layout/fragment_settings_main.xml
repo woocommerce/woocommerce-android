@@ -169,7 +169,6 @@
             android:scaleType="center"
             android:layout_gravity="center"
             android:importantForAccessibility="no"
-            android:tint="@color/wc_purple"
             app:srcCompat="@drawable/ic_gridicons_heart_outline"/>
 
         <com.google.android.material.textview.MaterialTextView

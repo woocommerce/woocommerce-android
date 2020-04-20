@@ -10,4 +10,12 @@
     <item name="alpha_plane_12" format="float" type="dimen">0.14</item>
     <item name="alpha_plane_16" format="float" type="dimen">0.14</item>
     <item name="alpha_plane_24" format="float" type="dimen">0.16</item>
+
+    <item name="alpha_high_primary" format="float" type="dimen">1.00</item>
+    <item name="alpha_medium_primary" format="float" type="dimen">0.74</item>
+    <item name="alpha_disabled_primary" format="float" type="dimen">0.38</item>
+
+    <item name="alpha_emphasis_high" format="float" type="dimen">0.87</item>
+    <item name="alpha_emphasis_medium" format="float" type="dimen">0.60</item>
+    <item name="alpha_emphasis_disabled" format="float" type="dimen">0.38</item>
 </resources>
