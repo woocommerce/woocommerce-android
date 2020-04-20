@@ -334,7 +334,11 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun onFilterOptionSelected() {
-        // TODO: handle filtering in another PR
+        (activity as? MainNavigationRouter)?.showProductFilters(
+                viewModel.getFilterByStockStatus(),
+                viewModel.getFilterByProductType(),
+                viewModel.getFilterByProductStatus()
+        )
     }
 
     override fun onSortOptionSelected() {

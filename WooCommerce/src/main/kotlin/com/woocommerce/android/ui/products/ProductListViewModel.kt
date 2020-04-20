@@ -94,6 +94,12 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
+    fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]
+
+    fun getFilterByProductStatus() = productFilterOptions[ProductFilterOption.STATUS]
+
+    fun getFilterByProductType() = productFilterOptions[ProductFilterOption.TYPE]
+
     fun onRefreshRequested() {
         AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
