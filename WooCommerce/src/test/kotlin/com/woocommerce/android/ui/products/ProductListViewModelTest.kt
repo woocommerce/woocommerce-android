@@ -52,7 +52,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product list view correctly`() = test {
-        doReturn(productList).whenever(productRepository).fetchProductList()
+        doReturn(productList).whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
 
         createViewModel()
 
@@ -75,16 +75,16 @@ class ProductListViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        verify(productRepository, times(1)).getProductList()
-        verify(productRepository, times(0)).fetchProductList()
+        verify(productRepository, times(1)).getProductList(any())
+        verify(productRepository, times(0)).fetchProductList(productFilterOptions = emptyMap())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
     fun `Shows and hides product list skeleton correctly`() = test {
-        doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
+        doReturn(emptyList<Product>()).whenever(productRepository).getProductList(any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
 
         createViewModel()
 
@@ -101,7 +101,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list load more progress correctly`() = test {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
 
         createViewModel()
 
