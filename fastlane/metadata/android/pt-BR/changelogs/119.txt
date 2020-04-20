@@ -1,4 +1,0 @@
-3.9:
-Correção dos problemas causados ao selecionar dois produtos na Lista de produtos ao mesmo tempo e ao editar uma quantidade de estoque negativa.
-
-Fiquem seguros e lavem suas mãos!

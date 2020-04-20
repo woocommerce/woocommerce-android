@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-02 00:54:04+0000
+Translation-Revision-Date: 2020-04-17 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">El precio de venta debe ser inferior al precio normal</string>
+    <string name="product_schedule_remove_end_date_link_label">Eliminar fecha de finalización</string>
+    <string name="product_shipping_empty">Añadir envío</string>
+    <string name="discard_images_message">Las imágenes del producto se están subiendo. ¿Quieres descartar los cambios?</string>
     <string name="product_inventory_update_stock_quantity_error">Introduce un número</string>
     <string name="product_wip_message">Hemos añadido la función de edición a productos sencillos. Pronto estarán disponibles más opciones.</string>
     <string name="product_wip_title">Edición limitada disponible</string>

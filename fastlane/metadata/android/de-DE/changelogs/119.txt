@@ -1,4 +1,0 @@
-3.9:
-Zwei Abstürze behoben: Einer trat auf, wenn man in der Produktliste zwei Produkte gleichzeitig auswählte, und der andere beim Bearbeiten einer negativen Bestandsmenge.
-
-Bleibt alle gesund und wascht eure Hände!

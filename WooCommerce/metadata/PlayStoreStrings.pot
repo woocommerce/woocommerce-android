@@ -16,6 +16,7 @@ msgid ""
 "4.0:\n"
 "* We’re excited to introduce a Products tab!\n"
 "* Users also now have limited editing capabilities for Simple Products, with more to come.\n"
+"* We fixed a date-conversion bug that was hiding some orders and grouping others incorrectly.\n"
 msgstr ""
 
 msgctxt "release_note_039"
