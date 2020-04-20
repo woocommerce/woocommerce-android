@@ -334,6 +334,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun onFilterOptionSelected() {
+        disableSearchListeners()
+        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductFilters(
                 viewModel.getFilterByStockStatus(),
                 viewModel.getFilterByProductType(),
