@@ -11,15 +11,51 @@
       "font_size": "84px",
       "screenshot_size": [696, 1391],
       "screenshot_offset": [193, 501]
+    },
+    {
+      "name": "Pixel 2 XL",
+      "canvas_size": [1080,1920],
+      "text_size": [1080, 372],
+      "font_size": "84px",
+      "screenshot_size": [696, 1391],
+      "screenshot_offset": [193, 501]
     }
   ],
   "entries": [
     {
-      "device": "Pixel 3",
-      "filename": "Pixel_3_01.png",
-      "background": "#ff00ff",
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_01.png",
+      "background": "#674399",
       "screenshot": "images/phoneScreenshots/1-order-dashboard.png",
       "text": "metadata/{locale}/promo_screenshot_1.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_02.png",
+      "background": "#C9356E",
+      "screenshot": "images/phoneScreenshots/2-order-list.png",
+      "text": "metadata/{locale}/promo_screenshot_2.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_03.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/3-order-detail.png",
+      "text": "metadata/{locale}/promo_screenshot_3.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_04.png",
+      "background": "#C9356E",
+      "screenshot": "images/phoneScreenshots/5-product-list.png",
+      "text": "metadata/{locale}/promo_screenshot_4.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_05.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/4-review-list.png",
+      "text": "metadata/{locale}/promo_screenshot_5.txt"
     }
   ]
 }
