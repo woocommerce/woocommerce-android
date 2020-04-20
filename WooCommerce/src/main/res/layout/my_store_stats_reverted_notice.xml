@@ -14,16 +14,16 @@
 
         <!-- VIEW MORE Button -->
         <ToggleButton
-            android:id="@+id/my_store_availability_viewMore"
+            android:id="@+id/my_store_reverted_viewMore"
             style="@style/Woo.Card.ExpanderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textOff="@string/my_store_stats_availability_title"
-            android:textOn="@string/my_store_stats_availability_title"
-            android:drawableStart="@drawable/ic_gridicons_gift"/>
+            android:textOff="@string/my_store_stats_reverted_title"
+            android:textOn="@string/my_store_stats_reverted_title"
+            android:drawableStart="@drawable/ic_gridicons_sync"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/my_store_availability_morePanel"
+            android:id="@+id/my_store_reverted_morePanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -31,40 +31,40 @@
 
             <!-- Message -->
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/my_store_availability_message"
+                android:id="@+id/my_store_reverted_message"
                 style="@style/Woo.Card.Body"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
-                android:text="@string/my_store_stats_availability_message"
+                android:text="@string/my_store_stats_reverted_message"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <!-- PRIMARY button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_try"
+                android:id="@+id/btn_learn_more"
                 style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/try_it_now"
+                android:text="@string/learn_more"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
+                app:layout_constraintTop_toBottomOf="@+id/my_store_reverted_message"/>
 
             <!-- SECONDARY button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_no_thanks"
+                android:id="@+id/btn_dismiss"
                 style="@style/Woo.Card.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/minor_100"
-                android:text="@string/no_thanks"
+                android:text="@string/dismiss"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_try"
-                app:layout_constraintTop_toBottomOf="@+id/my_store_availability_message"/>
+                app:layout_constraintEnd_toStartOf="@+id/btn_learn_more"
+                app:layout_constraintTop_toBottomOf="@+id/my_store_reverted_message"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

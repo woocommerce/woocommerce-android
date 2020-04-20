@@ -27,31 +27,15 @@ class MyStoreStatsAvailabilityCard @JvmOverloads constructor(
                 WooAnimUtils.fadeOut(my_store_availability_morePanel)
             }
         }
-        with(my_store_availability_viewMore) {
-            text = context.getString(R.string.my_store_stats_availability_title)
-            textOff = context.getString(R.string.my_store_stats_availability_title)
-            textOn = context.getString(R.string.my_store_stats_availability_title)
-            setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_gridicons_gift, 0, R.drawable.card_expander_selector, 0
-            )
+
+        btn_try.setOnClickListener {
+            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED)
+            listener.onMyStoreStatsAvailabilityAccepted()
         }
 
-        my_store_availability_message.setText(R.string.my_store_stats_availability_message)
-
-        with(btn_primary) {
-            text = context.getString(R.string.try_it_now)
-            setOnClickListener {
-                AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED)
-                listener.onMyStoreStatsAvailabilityAccepted()
-            }
-        }
-
-        with(btn_secondary) {
-            text = context.getString(R.string.no_thanks)
-            setOnClickListener {
-                AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED)
-                listener.onMyStoreStatsAvailabilityRejected()
-            }
+        btn_no_thanks.setOnClickListener {
+            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED)
+            listener.onMyStoreStatsAvailabilityRejected()
         }
     }
 }
