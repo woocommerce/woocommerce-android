@@ -349,6 +349,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/button_fg_selector</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="drawableTintMode">src_atop</item>
     </style>
 
     <!--  Button filled with color  -->

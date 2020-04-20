@@ -8,5 +8,17 @@
         android:id="@+id/productFilterListFragment"
         android:name="com.woocommerce.android.ui.products.ProductFilterListFragment"
         tools:layout="@layout/fragment_product_filter_list">
+        <argument
+            android:name="selectedStockStatus"
+            app:nullable="true"
+            app:argType="string" />
+        <argument
+            android:name="selectedProductStatus"
+            app:nullable="true"
+            app:argType="string" />
+        <argument
+            android:name="selectedProductType"
+            app:nullable="true"
+            app:argType="string" />
     </fragment>
 </navigation>
