@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -43,7 +44,6 @@ data class Product(
     val averageRating: Float,
     val permalink: String,
     val externalUrl: String,
-    val price: BigDecimal?,
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
@@ -66,6 +66,7 @@ data class Product(
     val attributes: List<Attribute>,
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
+    val isOnSale: Boolean,
     val soldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean
@@ -111,8 +112,8 @@ data class Product(
                 isSaleScheduled == product.isSaleScheduled &&
                 saleEndDateGmt == product.saleEndDateGmt &&
                 saleStartDateGmt == product.saleStartDateGmt &&
-                regularPrice == product.regularPrice &&
-                salePrice == product.salePrice &&
+                isSamePrice(regularPrice, product.regularPrice) &&
+                isSamePrice(salePrice, product.salePrice) &&
                 weight == product.weight &&
                 length == product.length &&
                 height == product.height &&
@@ -123,6 +124,12 @@ data class Product(
                 isFeatured == product.isFeatured &&
                 purchaseNote == product.purchaseNote &&
                 isSameImages(product.images)
+    }
+
+    private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
+        val val1 = first ?: BigDecimal.ZERO
+        val val2 = second ?: BigDecimal.ZERO
+        return val1.isEqualTo(val2)
     }
 
     /**
@@ -148,10 +155,11 @@ data class Product(
      */
     fun hasPricingChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
-            regularPrice != it.regularPrice ||
-                    salePrice != it.salePrice ||
+            regularPrice.isNotEqualTo(it.regularPrice) ||
+                    salePrice.isNotEqualTo(it.salePrice) ||
                     saleStartDateGmt != it.saleStartDateGmt ||
                     saleEndDateGmt != it.saleEndDateGmt ||
+                    isOnSale != it.isOnSale ||
                     taxClass != it.taxClass ||
                     taxStatus != it.taxStatus
         } ?: false
@@ -240,6 +248,7 @@ data class Product(
                     soldIndividually = updatedProduct.soldIndividually,
                     regularPrice = updatedProduct.regularPrice,
                     salePrice = updatedProduct.salePrice,
+                    isOnSale = updatedProduct.isOnSale,
                     isSaleScheduled = updatedProduct.isSaleScheduled,
                     saleStartDateGmt = updatedProduct.saleStartDateGmt,
                     saleEndDateGmt = updatedProduct.saleEndDateGmt,
@@ -319,8 +328,9 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.stockQuantity = stockQuantity
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-        it.regularPrice = regularPrice.toString()
+        it.regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) "" else regularPrice.toString()
         it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
+        it.onSale = isOnSale
         it.length = if (length == 0f) "" else length.formatToString()
         it.width = if (width == 0f) "" else width.formatToString()
         it.weight = if (weight == 0f) "" else weight.formatToString()
@@ -364,7 +374,6 @@ fun WCProductModel.toAppModel(): Product {
         averageRating = this.averageRating.toFloatOrNull() ?: 0f,
         permalink = this.permalink,
         externalUrl = this.externalUrl,
-        price = this.price.toBigDecimalOrNull()?.roundError(),
         salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
         regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
             // In Core, if a tax class is empty it is considered as standard and we are following the same
@@ -404,6 +413,7 @@ fun WCProductModel.toAppModel(): Product {
         },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        isOnSale = this.onSale,
         soldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()

@@ -128,7 +128,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         productPricingViewState = productPricingViewState.copy(
                 currency = parameters.currencyCode,
                 decimals = decimals,
-                taxClassList = productRepository.getTaxClassesForSite()
+                taxClassList = productRepository.getTaxClassesForSite(),
+                regularPrice = viewState.storedProduct?.regularPrice,
+                salePrice = viewState.storedProduct?.salePrice
         )
     }
 
@@ -389,12 +391,26 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onRegularPriceEntered(inputValue: BigDecimal) {
+        productPricingViewState = productPricingViewState.copy(regularPrice = inputValue)
+        val salePrice = productPricingViewState.salePrice ?: BigDecimal.ZERO
+
+        productPricingViewState = if (salePrice > inputValue) {
+            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
+        } else {
+            updateProductDraft(regularPrice = inputValue)
+            productPricingViewState.copy(salePriceErrorMessage = 0)
+        }
+    }
+
     fun onSalePriceEntered(inputValue: BigDecimal) {
-        val regularPrice = viewState.productDraft?.regularPrice ?: BigDecimal.ZERO
+        productPricingViewState = productPricingViewState.copy(salePrice = inputValue)
+        val regularPrice = productPricingViewState.regularPrice ?: BigDecimal.ZERO
+
         productPricingViewState = if (inputValue > regularPrice) {
             productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
-            updateProductDraft(salePrice = inputValue)
+            updateProductDraft(salePrice = inputValue, isOnSale = true)
             productPricingViewState.copy(salePriceErrorMessage = 0)
         }
     }
@@ -423,6 +439,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
+        isOnSale: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         saleStartDate: Date? = null,
         saleEndDate: Optional<Date>? = null,
@@ -457,6 +474,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
+                    isOnSale = isOnSale ?: product.isOnSale,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
                     length = length ?: product.length,
@@ -651,7 +669,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 storedProduct = productToUpdateFrom,
                 weightWithUnits = weightWithUnits,
                 sizeWithUnits = sizeWithUnits,
-                priceWithCurrency = formatCurrency(updatedDraft.price, parameters.currencyCode),
                 salePriceWithCurrency = formatCurrency(updatedDraft.salePrice, parameters.currencyCode),
                 regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
@@ -811,7 +828,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
         val gmtOffset: Float = 0f
-    ) : Parcelable
+    ) : Parcelable {
+        val isOnSale: Boolean
+            get() = salePriceWithCurrency != null
+    }
 
     @Parcelize
     data class ProductInventoryViewState(
@@ -826,7 +846,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val saleStartDate: Date? = null,
         val saleEndDate: Date? = null,
-        val salePriceErrorMessage: Int? = null
+        val salePriceErrorMessage: Int? = null,
+        val regularPrice: BigDecimal? = null,
+        val salePrice: BigDecimal? = null
     ) : Parcelable {
         val isRemoveMaxDateButtonVisible: Boolean
             get() = saleEndDate != null

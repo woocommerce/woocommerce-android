@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companio
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
 class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
@@ -45,8 +46,15 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productSlug.setOnClickListener {
             viewModel.onSettingsSlugButtonClicked()
         }
-        productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.updateProductDraft(reviewsAllowed = isChecked)
+        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            productReviewsAllowed.visibility = View.VISIBLE
+            productReviewsAllowedDivider.visibility = View.VISIBLE
+            productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
+                viewModel.updateProductDraft(reviewsAllowed = isChecked)
+            }
+        } else {
+            productReviewsAllowed.visibility = View.GONE
+            productReviewsAllowedDivider.visibility = View.GONE
         }
         productPurchaseNote.setOnClickListener {
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""

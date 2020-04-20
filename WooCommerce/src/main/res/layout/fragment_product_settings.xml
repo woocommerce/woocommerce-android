@@ -58,7 +58,8 @@
                 android:padding="@dimen/major_100"
                 android:text="@string/product_enable_reviews" />
 
-            <View style="@style/Woo.Divider.TitleAligned" />
+            <View style="@style/Woo.Divider.TitleAligned"
+                android:id="@+id/productReviewsAllowedDivider"/>
 
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
                 android:id="@+id/productSlug"

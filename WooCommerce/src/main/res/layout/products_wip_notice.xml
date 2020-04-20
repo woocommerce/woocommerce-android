@@ -19,8 +19,6 @@
             android:drawableStart="@drawable/ic_gridicons_tools"
             android:textOff="@string/product_wip_title"
             android:textOn="@string/product_wip_title"
-            app:drawableTint="@color/color_on_surface_medium"
-            app:drawableTintMode="src_atop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
