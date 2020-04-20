@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,14 @@ import com.woocommerce.android.ui.products.ProductFilterListAdapter.ProductFilte
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import kotlinx.android.synthetic.main.product_filter_list_item.view.*
 
-class ProductFilterListAdapter(val context: Context) : RecyclerView.Adapter<ProductFilterViewHolder>() {
+class ProductFilterListAdapter(
+    private val clickListener: OnProductFilterClickListener
+) : RecyclerView.Adapter<ProductFilterViewHolder>() {
     private val filterList = mutableListOf<FilterListItemUiModel>()
+
+    interface OnProductFilterClickListener {
+        fun onProductFilterClick(selectedFilterPosition: Int)
+    }
 
     init {
         setHasStableIds(true)
@@ -28,6 +33,11 @@ class ProductFilterListAdapter(val context: Context) : RecyclerView.Adapter<Prod
         val filter = filterList[position]
         holder.txtFilterName.text = filter.filterItemName
         holder.txtFilterSelection.text = filter.childListItems.first { it.isSelected }.filterChildItemName
+
+        holder.itemView.setOnClickListener {
+            // TODO: Add tracking event here
+            clickListener.onProductFilterClick(position)
+        }
     }
 
     override fun getItemId(position: Int) = position.toLong()

@@ -11,13 +11,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_list.*
 import javax.inject.Inject
 
-class ProductFilterListFragment : BaseFragment() {
+class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
     }
@@ -44,7 +45,7 @@ class ProductFilterListFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        productFilterListAdapter = ProductFilterListAdapter(requireContext())
+        productFilterListAdapter = ProductFilterListAdapter(this)
         with(filterList) {
             addItemDecoration(
                     AlignedDividerDecoration(
@@ -74,6 +75,10 @@ class ProductFilterListFragment : BaseFragment() {
 
     private fun showProductFilterList(productFilterList: List<FilterListItemUiModel>) {
         productFilterListAdapter.setProductFilterList(productFilterList)
+    }
+
+    override fun onProductFilterClick(selectedFilterPosition: Int) {
+        // TODO: redirect to child fragment
     }
 
     override fun onResume() {
