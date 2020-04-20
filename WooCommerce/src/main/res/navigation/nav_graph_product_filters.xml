@@ -20,5 +20,24 @@
             android:name="selectedProductType"
             app:nullable="true"
             app:argType="string" />
+        <action
+            android:id="@+id/action_productFilterListFragment_to_productFilterChildListFragment"
+            app:destination="@id/productFilterChildListFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="selectedFilterItemPosition"
+                app:nullable="false"
+                app:argType="integer" />
+        </action>
     </fragment>
+    <fragment
+        android:id="@+id/productFilterChildListFragment"
+        android:name="com.woocommerce.android.ui.products.ProductFilterChildListFragment"
+        android:label="ProductFilterChildListFragment"
+        tools:layout="@layout/fragment_product_filter_child_list"/>
+    <argument
+        android:name="selectedFilterItemPosition"
+        app:nullable="false"
+        app:argType="integer" />
 </navigation>

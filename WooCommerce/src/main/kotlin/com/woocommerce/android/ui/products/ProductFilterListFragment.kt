@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -78,7 +79,9 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     }
 
     override fun onProductFilterClick(selectedFilterPosition: Int) {
-        // TODO: redirect to child fragment
+        val action = ProductFilterListFragmentDirections
+                .actionProductFilterListFragmentToProductFilterChildListFragment(selectedFilterPosition)
+        findNavController().navigate(action)
     }
 
     override fun onResume() {
