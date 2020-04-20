@@ -15,7 +15,9 @@ fi
 
 # This block allows for chaining pre-commit hooks if this hook is a global hook (via core.hooksPath) and there also exists a repo-specific pre-commit hook
 if [[ -f ".git/hooks/pre-commit" ]]; then
-  type realpath >/dev/null 2>&1 || { echo "NOTE: the realpath binary is required to chain to the repo-specific pre-commit hook.\n\nOn macOS, you can install it via \"brew install coreutils\".\n\nIgnoring." >&2; exit 0; }
+  red='\033[0;31m'
+  reset='\033[0m'
+  type realpath >/dev/null 2>&1 || { echo -e "$(echo -e $red)NOTE: the realpath binary is required to chain to the repo-specific pre-commit hook.\n\nOn macOS, you can install it via \"brew install coreutils\".\n\nIgnoring.$reset" >&2; exit 0; }
   if [[ "$(realpath "${BASH_SOURCE[0]}")" != "$(realpath ".git/hooks/pre-commit")" ]]; then
     .git/hooks/pre-commit
     exit $?
