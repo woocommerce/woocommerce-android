@@ -14,11 +14,15 @@
     },
     {
       "name": "Pixel 2 XL",
-      "canvas_size": [1080,1920],
-      "text_size": [1080, 372],
-      "font_size": "84px",
+      "canvas_size": [1242,2208],
+      "text_size": [838, 173],
+      "text_offset": [200, 115],
+      "font_size": "68px",
       "screenshot_size": [696, 1391],
-      "screenshot_offset": [193, 501]
+      "screenshot_offset": [193, 501],
+      "device_frame": "playstoreres/assets/google_pixel_2_xl.png",
+      "device_frame_size": [1242,2208],
+      "device_frame_offset": [0, 0]
     }
   ],
   "entries": [
