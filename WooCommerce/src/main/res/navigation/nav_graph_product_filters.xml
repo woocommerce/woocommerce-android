@@ -35,9 +35,10 @@
         android:id="@+id/productFilterChildListFragment"
         android:name="com.woocommerce.android.ui.products.ProductFilterChildListFragment"
         android:label="ProductFilterChildListFragment"
-        tools:layout="@layout/fragment_product_filter_child_list"/>
+        tools:layout="@layout/fragment_product_filter_child_list">
     <argument
         android:name="selectedFilterItemPosition"
         app:nullable="false"
         app:argType="integer" />
+    </fragment>
 </navigation>

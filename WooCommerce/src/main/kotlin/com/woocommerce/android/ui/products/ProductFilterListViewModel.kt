@@ -27,8 +27,21 @@ class ProductFilterListViewModel @AssistedInject constructor(
     final val productFilterListViewStateData = LiveDataDelegate(savedState, ProductFilterListViewState())
     private var viewState by productFilterListViewStateData
 
+    final val productFilterChildListViewStateData = LiveDataDelegate(savedState, ProductFilterChildListViewState())
+    private var productFilterChildListViewState by productFilterChildListViewStateData
+
     fun loadFilters() {
         viewState = viewState.copy(filterList = buildFilterListItemUiModel())
+    }
+
+    fun loadChildFilters(selectedFilterListItemPosition: Int) {
+        viewState.filterList?.let {
+            val filterChildItem = it[selectedFilterListItemPosition]
+            productFilterChildListViewState = productFilterChildListViewState.copy(
+                    filterChildListItems = filterChildItem.childListItems,
+                    screenTitle = filterChildItem.filterItemName
+            )
+        }
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
@@ -91,6 +104,12 @@ class ProductFilterListViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductFilterListViewState(
         val filterList: List<FilterListItemUiModel>? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductFilterChildListViewState(
+        val filterChildListItems: List<FilterListChildItemUiModel>? = null,
+        val screenTitle: String? = null
     ) : Parcelable
 
     @Parcelize
