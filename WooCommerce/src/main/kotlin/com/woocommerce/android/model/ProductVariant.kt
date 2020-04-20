@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
@@ -24,7 +25,7 @@ data class ProductVariant(
         return remoteVariationId == variant.remoteVariationId &&
                 remoteProductId == variant.remoteProductId &&
                 imageUrl == variant.imageUrl &&
-                price == variant.price &&
+                price.isEqualTo(variant.price) &&
                 stockQuantity == variant.stockQuantity &&
                 stockStatus == variant.stockStatus &&
                 optionName == variant.optionName &&

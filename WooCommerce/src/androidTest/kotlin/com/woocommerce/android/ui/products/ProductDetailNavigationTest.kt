@@ -502,7 +502,7 @@ class ProductDetailNavigationTest : TestBase() {
                 .check(matches(withText(mockProductModel.purchaseNote)))
 
         // verify that the purchase note read more is not displayed
-        onView(WCMatchers.matchesWithIndex(withId(R.id.textReadMore), 0))
+        onView(WCMatchers.matchesWithIndex(withId(R.id.btnReadMore), 0))
                 .check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
     }
 
@@ -530,10 +530,10 @@ class ProductDetailNavigationTest : TestBase() {
                 .check(matches(withText(mockProductModel.purchaseNote)))
 
         // verify that the purchase note read more is displayed
-        onView(withId(R.id.textReadMore)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.btnReadMore)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
         // verify dialog is displayed when read more button is clicked
-        onView(withId(R.id.textReadMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.btnReadMore)).perform(WCMatchers.scrollTo(), click())
 
         onView(withText(appContext.getString(R.string.product_purchase_note)))
                 .inRoot(isDialog()).check(matches(isDisplayed()))

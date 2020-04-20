@@ -1,9 +1,9 @@
 <vector android:autoMirrored="true" android:height="24dp"
     android:viewportHeight="24" android:viewportWidth="24"
     android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="#000000" android:pathData="M14.5,11.5C15.1,11.8 15.8,12 16.5,12C19,12 21,10 21,7.5C21,6.8 20.8,6.1 20.5,5.5L17,9L15,7L18.5,3.5C17.9,3.2 17.2,3 16.5,3C14,3 12,5 12,7.5C12,8.2 12.2,8.9 12.5,9.5L2,20L4,22L10.8,15.2L13.1,12.9L14.5,11.5Z"/>
+    <path android:fillColor="@color/color_icon" android:pathData="M14.5,11.5C15.1,11.8 15.8,12 16.5,12C19,12 21,10 21,7.5C21,6.8 20.8,6.1 20.5,5.5L17,9L15,7L18.5,3.5C17.9,3.2 17.2,3 16.5,3C14,3 12,5 12,7.5C12,8.2 12.2,8.9 12.5,9.5L2,20L4,22L10.8,15.2L13.1,12.9L14.5,11.5Z"/>
     <group>
         <clip-path android:pathData="M14.5,11.5C15.1,11.8 15.8,12 16.5,12C19,12 21,10 21,7.5C21,6.8 20.8,6.1 20.5,5.5L17,9L15,7L18.5,3.5C17.9,3.2 17.2,3 16.5,3C14,3 12,5 12,7.5C12,8.2 12.2,8.9 12.5,9.5L2,20L4,22L10.8,15.2L13.1,12.9L14.5,11.5Z M 0,0"/>
-        <path android:fillColor="#A2AAB2" android:pathData="M0,0h24v24h-24z"/>
+        <path android:fillColor="@color/color_icon" android:pathData="M0,0h24v24h-24z"/>
     </group>
 </vector>

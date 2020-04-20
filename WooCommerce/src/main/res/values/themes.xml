@@ -12,31 +12,33 @@
 
     <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Colors -->
-        <item name="colorPrimary">@color/woo_purple_60</item>
+        <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimarySurface">@color/color_primary_surface</item>
-        <item name="colorPrimaryVariant">@color/woo_purple_80</item>
-        <item name="colorSecondary">@color/woo_pink_50</item>
-        <item name="colorSecondaryVariant">@color/woo_pink_70</item>
+        <item name="colorPrimaryVariant">@color/color_primary_variant</item>
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">@color/color_secondary_variant</item>
 
         <item name="android:colorBackground">@color/default_window_background</item>
-        <item name="colorSurface">@color/woo_white</item>
-        <item name="colorError">@color/woo_red_50</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorError">@color/color_error</item>
 
-        <item name="colorOnPrimary">@color/woo_white</item>
-        <item name="colorOnPrimarySurface">@color/woo_white</item>
-        <item name="colorOnSecondary">@color/woo_black</item>
-        <item name="colorOnBackground">@color/woo_black</item>
-        <item name="colorOnSurface">@color/woo_black</item>
-        <item name="colorOnError">@color/woo_white</item>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorOnPrimarySurface">@color/color_on_primary_surface</item>
+        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnError">@color/color_on_error</item>
 
-        <item name="colorAccent">@color/woo_purple_60</item>
-        <item name="colorControlNormal">@color/woo_purple_60</item>
-        <item name="android:colorControlActivated">@color/woo_purple_60</item>
-        <item name="scrimBackground">@color/woo_white_alpha_038</item>
-        <item name="android:statusBarColor">@color/woo_purple_60</item>
+        <item name="colorAccent">@color/color_primary</item>
+        <item name="colorControlNormal">@color/color_primary</item>
+        <item name="android:colorControlActivated">@color/color_primary</item>
+        <item name="scrimBackground">@color/color_scrim_background</item>
+        <item name="android:statusBarColor">@color/color_status_bar</item>
         <item name="android:navigationBarColor">@color/nav_bar</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/woo_white</item>
+
+        <item name="minTouchTargetSize">@dimen/min_tap_target</item>
 
         <!-- Shapes -->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>
@@ -59,14 +61,6 @@
         <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
         <item name="textAppearanceBadge">@style/TextAppearance.Woo.Badge</item>
 
-        <!-- Custom attrs for setting alpha values -->
-        <item name="emphasisHighAlpha">0.87</item>
-        <item name="emphasisMediumAlpha">0.60</item>
-        <item name="emphasisDisabledAlpha">0.38</item>
-        <item name="emphasisHighAlphaPrimary">1.00</item>
-        <item name="emphasisMediumAlphaPrimary">0.74</item>
-        <item name="emphasisDisabledAlphaPrimary">0.38</item>
-
         <!-- Styles -->
         <item name="bottomNavigationStyle">@style/Widget.Woo.BottomNavigationView</item>
         <item name="bottomSheetStyle">@style/Widget.MaterialComponents.BottomSheet.Modal</item>
@@ -86,6 +80,7 @@
         <item name="editTextStyle">@style/Woo.TextInputEditText</item>
         <item name="switchStyle">@style/Woo.Switch</item>
         <item name="android:checkedTextViewStyle">@style/Woo.CheckedTextView</item>
+        <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -104,10 +99,6 @@
         <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
         <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
         <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
-
-        <!-- TODO: convert styles to material -->
-        <!--        <item name="android:listViewStyle"></item>-->
-        <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 
     <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
@@ -119,7 +110,7 @@
         <item name="colorSurface">@color/color_surface</item>
         <item name="colorError">@color/color_error</item>
 
-        <item name="colorOnPrimary">@color/color_on_primary_high</item>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
         <item name="colorOnPrimarySurface">@color/color_on_primary_surface_high</item>
         <item name="colorOnSecondary">@color/color_on_secondary</item>
         <item name="colorOnBackground">@color/color_on_background</item>
