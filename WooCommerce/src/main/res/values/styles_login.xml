@@ -4,7 +4,7 @@
         Overloads of Login Themes
      -->
     <style name="LoginTheme" parent="Theme.Woo.DayNight">
-        <item name="android:statusBarColor">@color/color_surface</item>
+        <item name="android:statusBarColor">@color/color_status_bar</item>
     </style>
 
     <style name="LoginTheme.Toolbar">
