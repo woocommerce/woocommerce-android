@@ -18,6 +18,9 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
 
 @OpenClassOnDebug
 class ProductFilterListViewModel @AssistedInject constructor(
@@ -25,6 +28,10 @@ class ProductFilterListViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+    }
+
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
 
     private val _filterListItems = MutableLiveData<List<FilterListItemUiModel>>()
@@ -35,6 +42,16 @@ class ProductFilterListViewModel @AssistedInject constructor(
 
     final val productFilterChildListViewStateData = LiveDataDelegate(savedState, ProductFilterChildListViewState())
     private var productFilterChildListViewState by productFilterChildListViewStateData
+
+    private final val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
+        val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
+                ?: mutableMapOf()
+        arguments.selectedStockStatus?.let { params.put(STOCK_STATUS, it) }
+        arguments.selectedProductType?.let { params.put(TYPE, it) }
+        arguments.selectedProductStatus?.let { params.put(STATUS, it) }
+        savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
+        params
+    }
 
     fun loadFilters() {
         _filterListItems.value = buildFilterListItemUiModel()
@@ -61,6 +78,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
                         isSelected = filterChildItem.filterChildItemValue == selectedFilterItem.filterChildItemValue
                 )
             }
+            productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterChildItemValue
             _filterChildListItems.value = filterChildItemList
         }
 
@@ -70,42 +88,42 @@ class ProductFilterListViewModel @AssistedInject constructor(
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
         return listOf(
                 FilterListItemUiModel(
-                        ProductFilterOption.STOCK_STATUS,
+                        STOCK_STATUS,
                         resourceProvider.getString(string.product_stock_status),
                         addDefaultFilterOption(
                                 CoreProductStockStatus.values().map {
                                     FilterListChildItemUiModel(
                                             resourceProvider.getString(fromString(it.value).stringResource),
                                             filterChildItemValue = it.value,
-                                            isSelected = arguments.selectedStockStatus == it.value
+                                            isSelected = productFilterOptions[STOCK_STATUS] == it.value
                                     )
-                                }.toMutableList(), arguments.selectedStockStatus.isNullOrEmpty()
+                                }.toMutableList(), productFilterOptions[STOCK_STATUS].isNullOrEmpty()
                         )
                 ),
                 FilterListItemUiModel(
-                        ProductFilterOption.STATUS,
+                        STATUS,
                         resourceProvider.getString(string.product_status),
                         addDefaultFilterOption(
                                 ProductStatus.values().map {
                                     FilterListChildItemUiModel(
                                             resourceProvider.getString(it.stringResource),
                                             filterChildItemValue = it.value,
-                                            isSelected = arguments.selectedProductStatus == it.value
+                                            isSelected = productFilterOptions[STATUS] == it.value
                                     )
-                                }.toMutableList(), arguments.selectedProductStatus.isNullOrEmpty()
+                                }.toMutableList(), productFilterOptions[STATUS].isNullOrEmpty()
                         )
                 ),
                 FilterListItemUiModel(
-                        ProductFilterOption.TYPE,
+                        TYPE,
                         resourceProvider.getString(string.product_type),
                         addDefaultFilterOption(
                                 ProductType.values().map {
                                     FilterListChildItemUiModel(
                                             resourceProvider.getString(it.stringResource),
                                             filterChildItemValue = it.value,
-                                            isSelected = arguments.selectedProductType == it.value
+                                            isSelected = productFilterOptions[TYPE] == it.value
                                     )
-                                }.toMutableList(), arguments.selectedProductType.isNullOrEmpty()
+                                }.toMutableList(), productFilterOptions[TYPE].isNullOrEmpty()
                         )
                 )
         )
