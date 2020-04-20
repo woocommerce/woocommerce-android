@@ -361,6 +361,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="backgroundTint">@color/button_colored_bg_selector</item>
     </style>
 
+    <style name="Woo.Button.Colored.White">
+        <item name="android:textColor">@color/color_on_secondary</item>
+        <item name="backgroundTint">@color/button_colored_bg_white_selector</item>
+    </style>
+
     <style name="Woo.Button.Toggle">
         <item name="android:textColor">@color/toggle_button_text_color</item>
         <item name="android:background">@android:color/transparent</item>
