@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
@@ -66,11 +66,9 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     }
 
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
-        viewModel.productFilterListViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.filterList?.takeIfNotEqualTo(old?.filterList) {
-                showProductFilterList(it)
-            }
-        }
+        viewModel.filterListItems.observe(viewLifecycleOwner, Observer {
+            showProductFilterList(it)
+        })
         viewModel.loadFilters()
     }
 

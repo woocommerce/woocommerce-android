@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -13,6 +15,7 @@ import kotlinx.android.parcel.Parcelize
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
@@ -24,24 +27,44 @@ class ProductFilterListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
 
-    final val productFilterListViewStateData = LiveDataDelegate(savedState, ProductFilterListViewState())
-    private var viewState by productFilterListViewStateData
+    private val _filterListItems = MutableLiveData<List<FilterListItemUiModel>>()
+    final val filterListItems: LiveData<List<FilterListItemUiModel>> = _filterListItems
+
+    private val _filterChildListItems = MutableLiveData<List<FilterListChildItemUiModel>>()
+    final val filterChildListItems: LiveData<List<FilterListChildItemUiModel>> = _filterChildListItems
 
     final val productFilterChildListViewStateData = LiveDataDelegate(savedState, ProductFilterChildListViewState())
     private var productFilterChildListViewState by productFilterChildListViewStateData
 
     fun loadFilters() {
-        viewState = viewState.copy(filterList = buildFilterListItemUiModel())
+        _filterListItems.value = buildFilterListItemUiModel()
     }
 
     fun loadChildFilters(selectedFilterListItemPosition: Int) {
-        viewState.filterList?.let {
+        _filterListItems.value?.let {
             val filterChildItem = it[selectedFilterListItemPosition]
+            _filterChildListItems.value = filterChildItem.childListItems
             productFilterChildListViewState = productFilterChildListViewState.copy(
-                    filterChildListItems = filterChildItem.childListItems,
                     screenTitle = filterChildItem.filterItemName
             )
         }
+    }
+
+    fun onChildFilterItemSelected(
+        selectedFilterListItemPosition: Int,
+        selectedFilterItem: FilterListChildItemUiModel
+    ) {
+        _filterListItems.value?.let {
+            val filterItem = it[selectedFilterListItemPosition]
+            val filterChildItemList = filterItem.childListItems.map { filterChildItem ->
+                filterChildItem.copy(
+                        isSelected = filterChildItem.filterChildItemValue == selectedFilterItem.filterChildItemValue
+                )
+            }
+            _filterChildListItems.value = filterChildItemList
+        }
+
+        triggerEvent(Exit)
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
@@ -102,13 +125,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
     }
 
     @Parcelize
-    data class ProductFilterListViewState(
-        val filterList: List<FilterListItemUiModel>? = null
-    ) : Parcelable
-
-    @Parcelize
     data class ProductFilterChildListViewState(
-        val filterChildListItems: List<FilterListChildItemUiModel>? = null,
         val screenTitle: String? = null
     ) : Parcelable
 

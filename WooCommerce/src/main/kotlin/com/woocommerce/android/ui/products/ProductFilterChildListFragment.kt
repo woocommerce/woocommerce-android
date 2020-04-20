@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -11,13 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.products.ProductFilterChildListAdapter.OnProductFilterChildClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListChildItemUiModel
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_child_list.*
 import javax.inject.Inject
 
-class ProductFilterChildListFragment : BaseFragment() {
+class ProductFilterChildListFragment : BaseFragment(), OnProductFilterChildClickListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(
             R.id.nav_graph_product_filters
@@ -40,7 +43,7 @@ class ProductFilterChildListFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        productFilterChildListAdapter = ProductFilterChildListAdapter()
+        productFilterChildListAdapter = ProductFilterChildListAdapter(this)
         with(filterChildList) {
             addItemDecoration(
                     AlignedDividerDecoration(
@@ -62,15 +65,27 @@ class ProductFilterChildListFragment : BaseFragment() {
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
         viewModel.productFilterChildListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
-            new.filterChildListItems?.takeIfNotEqualTo(old?.filterChildListItems) {
-                showProductFilterList(it)
-            }
         }
+
+        viewModel.filterChildListItems.observe(viewLifecycleOwner, Observer {
+            showProductFilterList(it)
+        })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is Exit -> requireActivity().onBackPressed()
+                else -> event.isHandled = false
+            }
+        })
 
         viewModel.loadChildFilters(arguments.selectedFilterItemPosition)
     }
 
     private fun showProductFilterList(productFilterChildList: List<FilterListChildItemUiModel>) {
-        productFilterChildListAdapter.setProductChildFilterList(productFilterChildList)
+        productFilterChildListAdapter.filterList = productFilterChildList
+    }
+
+    override fun onChildFilterItemClick(selectedFilter: FilterListChildItemUiModel) {
+        viewModel.onChildFilterItemSelected(arguments.selectedFilterItemPosition, selectedFilter)
     }
 }
