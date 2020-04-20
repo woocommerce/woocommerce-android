@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
@@ -34,8 +35,6 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_filter_list, container, false)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_list_filters)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,6 +65,9 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     }
 
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
+        viewModel.productFilterListViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
+        }
         viewModel.filterListItems.observe(viewLifecycleOwner, Observer {
             showProductFilterList(it)
         })

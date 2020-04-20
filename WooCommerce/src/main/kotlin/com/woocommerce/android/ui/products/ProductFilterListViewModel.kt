@@ -40,6 +40,9 @@ class ProductFilterListViewModel @AssistedInject constructor(
     private val _filterChildListItems = MutableLiveData<List<FilterListChildItemUiModel>>()
     final val filterChildListItems: LiveData<List<FilterListChildItemUiModel>> = _filterChildListItems
 
+    final val productFilterListViewStateData = LiveDataDelegate(savedState, ProductFilterListViewState())
+    private var productFilterListViewState by productFilterListViewStateData
+
     final val productFilterChildListViewStateData = LiveDataDelegate(savedState, ProductFilterChildListViewState())
     private var productFilterChildListViewState by productFilterChildListViewStateData
 
@@ -55,6 +58,14 @@ class ProductFilterListViewModel @AssistedInject constructor(
 
     fun loadFilters() {
         _filterListItems.value = buildFilterListItemUiModel()
+
+        val screenTitle = if (productFilterOptions.isNotEmpty()) {
+            resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
+        } else resourceProvider.getString(string.product_list_filters)
+
+        productFilterListViewState = productFilterListViewState.copy(
+                screenTitle = screenTitle
+        )
     }
 
     fun loadChildFilters(selectedFilterListItemPosition: Int) {
@@ -78,7 +89,12 @@ class ProductFilterListViewModel @AssistedInject constructor(
                         isSelected = filterChildItem.filterChildItemValue == selectedFilterItem.filterChildItemValue
                 )
             }
-            productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterChildItemValue
+
+            if (selectedFilterItem.filterChildItemName == resourceProvider.getString(string.product_filter_default)) {
+                productFilterOptions.remove(filterItem.filterItemKey)
+            } else {
+                productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterChildItemValue
+            }
             _filterChildListItems.value = filterChildItemList
         }
 
@@ -141,6 +157,11 @@ class ProductFilterListViewModel @AssistedInject constructor(
             ))
         }
     }
+
+    @Parcelize
+    data class ProductFilterListViewState(
+        val screenTitle: String? = null
+    ) : Parcelable
 
     @Parcelize
     data class ProductFilterChildListViewState(

@@ -476,6 +476,7 @@
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_list_sorting">Newest</string>
     <string name="product_list_filters">Filters</string>
+    <string name="product_list_filters_count">Filters (%d)</string>
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
