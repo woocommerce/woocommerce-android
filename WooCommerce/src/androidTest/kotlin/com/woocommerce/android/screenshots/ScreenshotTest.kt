@@ -59,21 +59,12 @@ class ScreenshotTest {
                 .thenTakeScreenshot<SingleOrderScreen>("order-detail")
                 .goBackToOrdersScreen()
 
-                .openSearchPane()
-                .thenTakeScreenshot<OrderSearchScreen>("order-search")
-                .cancel()
-
                 // Reviews
                 .tabBar.gotoReviewsScreen()
                 .thenTakeScreenshot<ReviewsListScreen>("review-list")
-                .selectReview(3)
-                .thenTakeScreenshot<SingleReviewScreen>("review-details")
-                .goBackToReviewsScreen()
 
                 // Products
                 .tabBar.gotoProductsScreen()
                 .thenTakeScreenshot<ProductListScreen>("product-list")
-                .selectProduct(0)
-                .thenTakeScreenshot<SingleProductScreen>("product-details")
     }
 }
