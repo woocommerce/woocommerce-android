@@ -123,6 +123,7 @@ data class Product(
                 visibility == product.visibility &&
                 isFeatured == product.isFeatured &&
                 purchaseNote == product.purchaseNote &&
+                externalUrl == product.externalUrl &&
                 isSameImages(product.images)
     }
 
@@ -360,6 +361,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
             it.dateOnSaleToGmt = ""
         }
         it.purchaseNote = purchaseNote
+        it.externalUrl = externalUrl
     }
 }
 

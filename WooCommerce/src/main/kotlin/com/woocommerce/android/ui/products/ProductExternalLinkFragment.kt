@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import kotlinx.android.synthetic.main.fragment_product_external_link.*
 import org.wordpress.android.util.ActivityUtils
 
 class ProductExternalLinkFragment : BaseProductFragment() {
@@ -40,6 +41,13 @@ class ProductExternalLinkFragment : BaseProductFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+
+        product_url.setOnTextChangedListener {
+            viewModel.updateProductDraft(externalUrl = it.toString())
+        }
+        product_button_text.setOnTextChangedListener {
+            // TODO viewModel.updateProductDraft(buttonText = it.toString())
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.product_external_link)
@@ -75,6 +83,8 @@ class ProductExternalLinkFragment : BaseProductFragment() {
         if (!isAdded) return
 
         val product = requireNotNull(productData.productDraft)
+        product_url.setText(product.externalUrl)
+        // TODO product_button_text.setText(product.buttonText)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
