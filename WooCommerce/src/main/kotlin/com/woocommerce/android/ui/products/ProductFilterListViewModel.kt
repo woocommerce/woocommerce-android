@@ -46,6 +46,12 @@ class ProductFilterListViewModel @AssistedInject constructor(
     final val productFilterChildListViewStateData = LiveDataDelegate(savedState, ProductFilterChildListViewState())
     private var productFilterChildListViewState by productFilterChildListViewStateData
 
+    /**
+     * Holds the filter properties (stock_status, status, type) already selected by the user in a [Map]
+     * where the key is the [ProductFilterOption] and value is the slug associated with the property.
+     *
+     * If no filters are previously selected, the map is empty.
+     */
     private final val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
         val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
                 ?: mutableMapOf()
@@ -83,21 +89,27 @@ class ProductFilterListViewModel @AssistedInject constructor(
         selectedFilterItem: FilterListChildItemUiModel
     ) {
         _filterListItems.value?.let {
+            // iterate through the child item list and update the `isSelected`value to reflect the item selected and
+            // update the UI of this change
             val filterItem = it[selectedFilterListItemPosition]
             val filterChildItemList = filterItem.childListItems.map { filterChildItem ->
                 filterChildItem.copy(
                         isSelected = filterChildItem.filterChildItemValue == selectedFilterItem.filterChildItemValue
                 )
             }
+            _filterChildListItems.value = filterChildItemList
 
+            // update the filter options map - which is used to load the filter list screen
+            // if the selected child item is the default filter item i.e. ANY, then remove the filter from the map,
+            // since this means the filter for that option has been cleared, otherwise update the filter item.
             if (selectedFilterItem.filterChildItemName == resourceProvider.getString(string.product_filter_default)) {
                 productFilterOptions.remove(filterItem.filterItemKey)
             } else {
                 productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterChildItemValue
             }
-            _filterChildListItems.value = filterChildItemList
         }
 
+        // exit the filter child item screen once a child item has been selected
         triggerEvent(Exit)
     }
 
@@ -145,6 +157,10 @@ class ProductFilterListViewModel @AssistedInject constructor(
         )
     }
 
+    /**
+     * The [FilterListChildItemUiModel] list includes a default option of `Any`
+     * which is added to the list by this method before updating the UI
+     */
     private fun addDefaultFilterOption(
         filterChildList: MutableList<FilterListChildItemUiModel>,
         isDefaultChildItemSelected: Boolean
@@ -168,6 +184,11 @@ class ProductFilterListViewModel @AssistedInject constructor(
         val screenTitle: String? = null
     ) : Parcelable
 
+    /**
+     * [filterItemKey] includes the [ProductFilterOption] which can be [STATUS], [TYPE] or [STOCK_STATUS]
+     * [filterItemName] is the display name of the filter list item i.e Product Status, Stock Status
+     * [childListItems] includes a list of [FilterListChildItemUiModel]
+     */
     @Parcelize
     data class FilterListItemUiModel(
         val filterItemKey: ProductFilterOption,
@@ -175,6 +196,17 @@ class ProductFilterListViewModel @AssistedInject constructor(
         val childListItems: List<FilterListChildItemUiModel>
     ) : Parcelable
 
+    /**
+     * [filterChildItemName] is the display name of the filter option
+     * Eg: for stock status, this would be In Stock, Out of stock.
+     * for product type, this would be Simple, Grouped.
+     * for product type, this would be Pending, Draft
+     *
+     * [filterChildItemValue] is the slug for the filter option.
+     * Eg: for stock status, this would be instock, outofstock
+     * for product type, this would be simple, grouped, variable
+     * for product status, this would be pending, draft
+     */
     @Parcelize
     data class FilterListChildItemUiModel(
         val filterChildItemName: String,
