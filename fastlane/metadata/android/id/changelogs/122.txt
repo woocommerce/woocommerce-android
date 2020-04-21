@@ -1,0 +1,3 @@
+4.0:
+* Dengan senang hati kami memperkenalkan tab Produk!
+* Sekarang pengguna juga memiliki kemampuan penyuntingan terbatas untuk Produk Sederhana, dengan lebih banyak fitur di pembaruan mendatang.

@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
@@ -299,21 +300,25 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
         }
 
-        // display `View product on Store` in options menu from M2 products release
         if (!FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            // display `View product on Store` (in M2 this is in the options menu)
             addLinkView(
                     DetailCard.Primary,
                     R.string.product_view_in_store,
                     product.permalink,
                     PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
             )
+
+            // enable viewing affiliate link for external products (in M2 this is editable)
+            if (product.type == ProductType.EXTERNAL) {
+                addLinkView(
+                        DetailCard.Primary,
+                        R.string.product_view_affiliate,
+                        product.externalUrl,
+                        PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+                )
+            }
         }
-        addLinkView(
-                DetailCard.Primary,
-                R.string.product_view_affiliate,
-                product.externalUrl,
-                PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
-        )
     }
 
     /**
@@ -385,15 +390,25 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // enable editing external product link
         if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled() && product.type == ProductType.EXTERNAL) {
-            val externalGroup = mapOf(
-                    Pair("", resources.getString(R.string.product_external_add_link))
-            )
+            val hasExternalLink = product.externalUrl.isNotEmpty()
+            val externalGroup = if (hasExternalLink) {
+                mapOf(Pair("", product.externalUrl))
+            } else {
+                mapOf(Pair("", resources.getString(R.string.product_external_empty_link)))
+            }
             addPropertyGroup(
                     DetailCard.Secondary,
-                    0,
+                    R.string.product_external_link,
                     externalGroup,
                     groupIconId = R.drawable.ic_gridicons_link
-            )
+            )?.also {
+                if (!hasExternalLink) {
+                    it.showPropertyName(false)
+                }
+                it.setClickListener {
+                    viewModel.onEditProductCardClicked(ViewProductExternalLink(product.remoteId))
+                }
+            }
         }
 
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
@@ -566,7 +581,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_downloads, downloadGroup)
         }
 
-        if (product.purchaseNote.isNotBlank()) {
+        // if add/edit products is enabled, purchase note appears in product settings
+        if (product.purchaseNote.isNotBlank() && !isAddEditProductRelease1Enabled(product.type)) {
             addReadMoreView(
                     DetailCard.PurchaseDetails,
                     R.string.product_purchase_note,
@@ -591,8 +607,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         propertyValue: String,
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
-        val propertyName = if (propertyNameId != 0) getString(propertyNameId) else ""
-        return addPropertyView(card, propertyName, propertyValue, orientation)
+        return addPropertyView(card, getString(propertyNameId), propertyValue, orientation)
     }
 
     private fun addPropertyView(
@@ -639,7 +654,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
 
         // locate the existing property view in the container, add it if not found
-        val propertyTag = "{$propertyName}_tag"
+        val propertyTag = "{$propertyName}_tag_{$propertyValue)"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
             propertyView = View.inflate(context, R.layout.product_property_view, null) as WCProductPropertyView
@@ -869,4 +884,5 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * Add/Edit Product Release 1 is enabled by default for SIMPLE products
      */
     private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
+            || productType == ProductType.EXTERNAL
 }

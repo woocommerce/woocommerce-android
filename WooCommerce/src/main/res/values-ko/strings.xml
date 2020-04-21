@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-02 00:54:04+0000
+Translation-Revision-Date: 2020-04-17 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">할인 가격은 정가보다 낮아야 합니다.</string>
+    <string name="product_schedule_remove_end_date_link_label">종료 날짜 제거</string>
+    <string name="product_shipping_empty">배송 추가</string>
+    <string name="discard_images_message">제품 이미지를 아직 업로드 중입니다. 변경 사항을 삭제하시겠습니까?</string>
     <string name="product_inventory_update_stock_quantity_error">번호를 입력해 주세요.</string>
     <string name="product_wip_message">간단한 제품에 편집 기능을 추가했습니다. 더 많은 옵션이 곧 제공됩니다!</string>
     <string name="product_wip_title">제한적인 편집 가능</string>

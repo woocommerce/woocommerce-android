@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-02 00:54:04+0000
+Translation-Revision-Date: 2020-04-16 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">售价必须低于正常价格</string>
+    <string name="product_schedule_remove_end_date_link_label">移除结束日期</string>
+    <string name="product_shipping_empty">添加运费</string>
+    <string name="discard_images_message">产品图片仍在上传中。要放弃您所做的更改吗？</string>
     <string name="product_inventory_update_stock_quantity_error">请输入一个数字</string>
     <string name="product_wip_message">我们已经为几款简单的产品添加了编辑功能。请关注即将推出的更多选项！</string>
     <string name="product_wip_title">提供有限编辑功能</string>

@@ -70,6 +70,15 @@
 
             <View style="@style/Woo.Divider.TitleAligned" />
 
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/productPurchaseNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/product_purchase_note"
+                app:optionValueMaxLines="2"
+                tools:optionValue="Purchase note" />
+
+            <View style="@style/Woo.Divider" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
     </LinearLayout>
 </ScrollView>

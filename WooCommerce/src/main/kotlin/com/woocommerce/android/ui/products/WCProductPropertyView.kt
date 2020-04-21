@@ -35,7 +35,12 @@ class WCProductPropertyView @JvmOverloads constructor(
     ) {
         ensureViewCreated(orientation)
 
-        propertyNameText?.text = caption
+        if (caption.isNotBlank()) {
+            propertyNameText?.text = caption
+            propertyNameText?.visibility = View.VISIBLE
+        } else {
+            propertyNameText?.visibility = View.GONE
+        }
 
         if (propertyIcon != null) {
             propertyGroupIcon?.visibility = View.VISIBLE

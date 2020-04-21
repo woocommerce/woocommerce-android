@@ -55,6 +55,17 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
                     option_value.visibility = View.VISIBLE
                     option_value.text = it
                 }
+
+                // Set max lines
+                if (a.hasValue(R.styleable.WCSettingsOptionValueView_optionValueMaxLines)) {
+                    option_value.maxLines = StyleAttrUtils.getInt(
+                            a,
+                            isInEditMode,
+                            R.styleable.WCSettingsOptionValueView_optionValueMaxLines,
+                            R.styleable.WCSettingsOptionValueView_tools_optionValueMaxLines,
+                            2
+                    )
+                }
             } finally {
                 a.recycle()
             }

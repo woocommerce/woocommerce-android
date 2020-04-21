@@ -42,8 +42,10 @@
     <declare-styleable name="WCSettingsOptionValueView">
         <attr name="optionTitle" format="reference|string"/>
         <attr name="optionValue" format="reference|string"/>
+        <attr name="optionValueMaxLines" format="reference|integer"/>
         <attr name="tools_optionTitle" format="reference|string"/>
         <attr name="tools_optionValue" format="reference|string"/>
+        <attr name="tools_optionValueMaxLines" format="reference|integer"/>
     </declare-styleable>
 
     <declare-styleable name="WCSettingsToggleOptionView">
