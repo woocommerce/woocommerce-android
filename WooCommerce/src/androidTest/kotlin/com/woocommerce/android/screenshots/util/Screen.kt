@@ -184,7 +184,7 @@ open class Screen {
         Espresso.pressBack()
     }
 
-    private fun waitForElementToBeDisplayed(elementID: Int) {
+    fun waitForElementToBeDisplayed(elementID: Int) {
         waitForConditionToBeTrue(Supplier<Boolean> {
             isElementDisplayed(elementID)
         })
