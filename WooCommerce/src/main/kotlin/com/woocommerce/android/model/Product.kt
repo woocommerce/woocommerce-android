@@ -192,6 +192,16 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the external link settings
+     */
+    fun hasExternalLinkChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            externalUrl != it.externalUrl
+                    // TODO || buttonText != it.buttonText
+        } ?: false
+    }
+
+    /**
      * Verifies if there are any changes made to the product settings
      */
     fun hasSettingsChanges(updatedProduct: Product?): Boolean {

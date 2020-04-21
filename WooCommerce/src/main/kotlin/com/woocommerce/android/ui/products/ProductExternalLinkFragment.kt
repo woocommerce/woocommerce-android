@@ -22,7 +22,7 @@ class ProductExternalLinkFragment : BaseProductFragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_inventory, container, false)
+        return inflater.inflate(R.layout.fragment_product_external_link, container, false)
     }
 
     override fun onResume() {

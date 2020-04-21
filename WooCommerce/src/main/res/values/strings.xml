@@ -511,6 +511,8 @@
     <string name="product_enable_reviews">Enable reviews</string>
     <string name="product_external_empty_link">Add product link</string>
     <string name="product_external_link">Product link</string>
+    <string name="product_external_link_label">Where customers can purchase the product</string>
+    <string name="product_external_link_button_text">Button text</string>
     <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
     <!--
         Product images

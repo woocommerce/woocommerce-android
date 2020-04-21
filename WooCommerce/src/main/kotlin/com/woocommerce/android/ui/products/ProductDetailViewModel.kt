@@ -23,6 +23,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
@@ -205,6 +206,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitSettings -> {
                 // TODO: eventName = ??
                 hasChanges = viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) ?: false
+            }
+            is ExitExternalLink -> {
+                hasChanges = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }

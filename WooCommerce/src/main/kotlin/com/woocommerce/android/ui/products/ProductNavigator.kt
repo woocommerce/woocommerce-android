@@ -100,7 +100,9 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductExternalLink -> {
-                // TODO
+                val action = ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductExternalLinkFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
             }
 
             is ViewProductShipping -> {
