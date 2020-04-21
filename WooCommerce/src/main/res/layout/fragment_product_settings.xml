@@ -5,38 +5,71 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/productStatus"
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:optionTitle="@string/product_status"
-            tools:optionValue="Draft" />
+            android:orientation="vertical">
 
-        <View style="@style/Woo.Divider.TitleAligned" />
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/productStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/product_status"
+                tools:optionValue="Draft" />
 
-        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/productVisibility"
+            <View style="@style/Woo.Divider.TitleAligned" />
+
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/productVisibility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/product_visibility"
+                tools:optionValue="Draft" />
+
+            <View style="@style/Woo.Divider.TitleAligned" />
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:optionTitle="@string/product_visibility"
-            tools:optionValue="Draft" />
+            android:layout_marginTop="@dimen/major_100"
+            android:orientation="vertical">
 
-        <View style="@style/Woo.Divider.TitleAligned" />
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Widget.Woo.Settings.CategoryHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
+                android:text="@string/more_options"
+                android:textColor="@color/color_on_surface_high" />
 
-        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/productSlug"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:optionTitle="@string/product_slug"
-            tools:optionValue="Slug" />
+            <View style="@style/Woo.Divider.TitleAligned" />
 
-        <View style="@style/Woo.Divider.TitleAligned" />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/productReviewsAllowed"
+                style="@style/Widget.Woo.Settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
+                android:text="@string/product_enable_reviews" />
 
-    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+            <View style="@style/Woo.Divider.TitleAligned"
+                android:id="@+id/productReviewsAllowedDivider"/>
 
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/productSlug"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/product_slug"
+                tools:optionValue="Slug" />
+
+            <View style="@style/Woo.Divider.TitleAligned" />
+
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+    </LinearLayout>
 </ScrollView>

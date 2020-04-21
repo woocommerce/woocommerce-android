@@ -99,6 +99,7 @@ data class Product(
                 manageStock == product.manageStock &&
                 backorderStatus == product.backorderStatus &&
                 soldIndividually == product.soldIndividually &&
+                reviewsAllowed == product.reviewsAllowed &&
                 sku == product.sku &&
                 slug == product.slug &&
                 type == product.type &&
@@ -197,7 +198,8 @@ data class Product(
             status != it.status ||
                     visibility != it.visibility ||
                     isFeatured != it.isFeatured ||
-                    slug != it.slug
+                    slug != it.slug ||
+                    reviewsAllowed != it.reviewsAllowed
         } ?: false
     }
 
@@ -256,7 +258,8 @@ data class Product(
                     weight = updatedProduct.weight,
                     shippingClass = updatedProduct.shippingClass,
                     images = updatedProduct.images,
-                    shippingClassId = updatedProduct.shippingClassId
+                    shippingClassId = updatedProduct.shippingClassId,
+                    reviewsAllowed = updatedProduct.reviewsAllowed
             )
         } ?: this.copy()
     }
@@ -333,6 +336,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
         it.images = imagesToJson()
+        it.reviewsAllowed = reviewsAllowed
         if (isSaleScheduled) {
             saleStartDateGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()

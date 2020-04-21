@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companio
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
 class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
@@ -40,6 +41,16 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
         productSlug.setOnClickListener {
             viewModel.onSettingsSlugButtonClicked()
+        }
+        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            productReviewsAllowed.visibility = View.VISIBLE
+            productReviewsAllowedDivider.visibility = View.VISIBLE
+            productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
+                viewModel.updateProductDraft(reviewsAllowed = isChecked)
+            }
+        } else {
+            productReviewsAllowed.visibility = View.GONE
+            productReviewsAllowedDivider.visibility = View.GONE
         }
     }
 
@@ -87,10 +98,19 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
     private fun updateProductView() {
         if (!isAdded) return
 
+        fun valueOrNotSet(value: String?): String {
+            return if (value.isNullOrBlank()) {
+                resources.getString(R.string.value_not_set)
+            } else {
+                value
+            }
+        }
+
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
         productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
-        productSlug.optionValue = product.slug
+        productSlug.optionValue = valueOrNotSet(product.slug)
+        productReviewsAllowed.isChecked = product.reviewsAllowed
     }
 
     private fun setupObservers() {
