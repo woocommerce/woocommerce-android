@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-01 00:54:04+0000
+Translation-Revision-Date: 2020-04-16 00:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">Harga penjualan harus kurang dari harga biasa</string>
+    <string name="product_schedule_remove_end_date_link_label">Hapus tanggal akhir</string>
+    <string name="product_shipping_empty">Tambahkan pengiriman</string>
+    <string name="discard_images_message">Gambar produk sedang diunggah. Ingin membuang perubahan?</string>
     <string name="product_inventory_update_stock_quantity_error">Masukkan nomor</string>
     <string name="product_wip_message">Kami telah menambahkan fungsionalitas penyuntingan ke produk sederhana. Nantikan lebih banyak opsi lainnya segera!</string>
     <string name="product_wip_title">Penyuntingan terbatas tersedia</string>
