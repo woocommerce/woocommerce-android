@@ -299,10 +299,6 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    override fun onChildFragmentOpened() {
-        removeTabLayoutFromAppBar(tabLayout)
-    }
-
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
@@ -460,6 +456,7 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun openOrderDetail(remoteOrderId: Long) {
         showOptionsMenu(false)
+        removeTabLayoutFromAppBar(tabLayout)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }
 

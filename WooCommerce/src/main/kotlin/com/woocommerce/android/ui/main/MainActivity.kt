@@ -382,12 +382,10 @@ class MainActivity : AppUpgradeActivity(),
             hideBottomNav()
         }
 
-        getActiveTopLevelFragment()?.let {
-            if (isAtRoot) {
+        if (isAtRoot) {
+            getActiveTopLevelFragment()?.let {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
-            } else {
-                it.onChildFragmentOpened()
             }
         }
 
