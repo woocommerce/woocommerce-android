@@ -54,6 +54,9 @@ class ScreenshotTest {
 
                 // Orders
                 .tabBar.gotoOrdersScreen()
+                // This is a workaround to make sure the data has loaded
+                .selectOrder(0)
+                .goBackToOrdersScreen()
                 .thenTakeScreenshot<OrderListScreen>("order-list")
                 .selectOrder(0)
                 .thenTakeScreenshot<SingleOrderScreen>("order-detail")
