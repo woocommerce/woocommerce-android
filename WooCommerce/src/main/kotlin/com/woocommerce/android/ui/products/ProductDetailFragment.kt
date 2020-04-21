@@ -383,6 +383,19 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
+        // enable editing external product link
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled() && product.type == ProductType.EXTERNAL) {
+            val externalGroup = mapOf(
+                    Pair("", resources.getString(R.string.product_external_add_link))
+            )
+            addPropertyGroup(
+                    DetailCard.Secondary,
+                    0,
+                    externalGroup,
+                    groupIconId = R.drawable.ic_gridicons_link
+            )
+        }
+
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
         val inventoryGroup = when {
             product.manageStock -> mapOf(
@@ -578,7 +591,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         propertyValue: String,
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
-        return addPropertyView(card, getString(propertyNameId), propertyValue, orientation)
+        val propertyName = if (propertyNameId != 0) getString(propertyNameId) else ""
+        return addPropertyView(card, propertyName, propertyValue, orientation)
     }
 
     private fun addPropertyView(
