@@ -473,8 +473,10 @@
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_list_sorting">Newest</string>
     <string name="product_list_filters">Filters</string>
+    <string name="product_list_sorting_header">Sort by</string>
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_list_sorting_list_item">Selected sorting option</string>
     <string name="product_wip_title">Limited editing available</string>
     <string name="product_wip_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
