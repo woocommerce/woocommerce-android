@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-03 00:54:51+0000
+Translation-Revision-Date: 2020-04-16 00:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">Satış fiyatı normal fiyattan düşük olmalıdır</string>
+    <string name="product_schedule_remove_end_date_link_label">Bitiş tarihini kaldır</string>
+    <string name="product_shipping_empty">Nakliye bilgisi ekle</string>
+    <string name="discard_images_message">Ürün görselleri hala yükleniyor. Değişikliklerinizi iptal etmek mi istiyorsunuz?</string>
     <string name="product_inventory_update_stock_quantity_error">Lütfen bir numara girin</string>
     <string name="product_wip_message">Basit ürünlere düzenleme işlevi ekledik. Yakında sunulacak daha fazla seçeneği takip edin!</string>
     <string name="product_wip_title">Sınırlı düzenleme mevcut</string>

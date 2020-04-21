@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-03 00:54:54+0000
+Translation-Revision-Date: 2020-04-16 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">セール価格は標準価格未満である必要があります</string>
+    <string name="product_schedule_remove_end_date_link_label">終了日を削除</string>
+    <string name="product_shipping_empty">配送を追加</string>
+    <string name="discard_images_message">商品画像をアップロードしています。変更を破棄しますか ?</string>
     <string name="product_inventory_update_stock_quantity_error">数字を入力してください</string>
     <string name="product_wip_message">シンプルな商品に編集機能が加わりました。その他のオプションもまもなく加わる予定です。</string>
     <string name="product_wip_title">一部の編集機能が利用可能</string>

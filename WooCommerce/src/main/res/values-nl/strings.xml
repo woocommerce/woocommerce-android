@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-02 00:54:04+0000
+Translation-Revision-Date: 2020-04-16 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">Prijs in de aanbieding moet lager zijn dan de normale prijs</string>
+    <string name="product_schedule_remove_end_date_link_label">Verwijder einddatum</string>
+    <string name="product_shipping_empty">Voeg verzendkosten toe</string>
+    <string name="discard_images_message">Productafbeeldingen worden nog geüpload. Wil je de wijzigingen ongedaan maken?</string>
     <string name="product_inventory_update_stock_quantity_error">Voer een nummer in</string>
     <string name="product_wip_message">We hebben bewerkingsfuncties toegevoegd aan simpele producten. Houd de nieuwe functies in de gaten!</string>
     <string name="product_wip_title">Beperkte bewerkingsmogelijkheden beschikbaar</string>
