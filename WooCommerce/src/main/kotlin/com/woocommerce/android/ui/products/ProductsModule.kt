@@ -38,7 +38,8 @@ import dagger.android.ContributesAndroidInjector
     ProductSettingsFragmentModule::class,
     ProductVisibilityFragmentModule::class,
     ProductStatusFragmentModule::class,
-    ProductSlugFragmentModule::class
+    ProductSlugFragmentModule::class,
+    ProductExternalLinkModule::class
 ])
 object ProductsModule {
     @Module
@@ -130,5 +131,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductSlugModule::class])
         abstract fun productSlugFragment(): ProductSlugFragment
+    }
+
+    @Module
+    internal abstract class ProductExternalLinkFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductExternalLinkModule::class])
+        abstract fun productExternalLinkFragment(): ProductExternalLinkFragment
     }
 }
