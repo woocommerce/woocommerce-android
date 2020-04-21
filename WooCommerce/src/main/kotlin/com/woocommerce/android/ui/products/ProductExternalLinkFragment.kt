@@ -46,7 +46,7 @@ class ProductExternalLinkFragment : BaseProductFragment() {
             viewModel.updateProductDraft(externalUrl = it.toString())
         }
         product_button_text.setOnTextChangedListener {
-            // TODO viewModel.updateProductDraft(buttonText = it.toString())
+            viewModel.updateProductDraft(buttonText = it.toString())
         }
     }
 
@@ -84,7 +84,7 @@ class ProductExternalLinkFragment : BaseProductFragment() {
 
         val product = requireNotNull(productData.productDraft)
         product_url.setText(product.externalUrl)
-        // TODO product_button_text.setText(product.buttonText)
+        product_button_text.setText(product.buttonText)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
