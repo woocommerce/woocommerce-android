@@ -3,6 +3,9 @@
  
 4.1
 -----
+* App colors have been updated for a fresh new look
+* Dark mode is now available!
+* Misc bug fixes
  
 4.0
 -----
