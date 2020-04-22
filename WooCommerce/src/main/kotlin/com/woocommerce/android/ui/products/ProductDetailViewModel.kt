@@ -227,7 +227,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-<<<<<<< HEAD
      * Called when the user taps the Product settings menu item
      */
     fun onSettingsButtonClicked() {
@@ -264,12 +263,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the date is selected from the date picker in the pricing screen.
-     * Keeps track of the min and max date value when scheduling a sale.
-=======
      * Called when the sale start date is selected from the date picker in the pricing screen.
      * Keeps track of the start and end date value when scheduling a sale.
->>>>>>> fcd04506e30b034c62eb74210c5de6ceeadd7111
      */
     fun onStartDateChanged(newDate: Date) {
         // update end date to start date only if current end date < start date
@@ -462,7 +457,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         reviewsAllowed: Boolean? = null,
         purchaseNote: String? = null,
         externalUrl: String? = null,
-        buttonText: String? = null
+        buttonText: String? = null,
+        menuOrder: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -497,6 +493,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     purchaseNote = purchaseNote ?: product.purchaseNote,
                     externalUrl = externalUrl ?: product.externalUrl,
                     buttonText = buttonText ?: product.buttonText,
+                    menuOrder = menuOrder ?: product.menuOrder,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt

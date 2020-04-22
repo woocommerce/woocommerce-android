@@ -70,7 +70,8 @@ data class Product(
     val isOnSale: Boolean,
     val soldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
-    val isSaleScheduled: Boolean
+    val isSaleScheduled: Boolean,
+    val menuOrder: Int
 ) : Parcelable {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -126,6 +127,7 @@ data class Product(
                 purchaseNote == product.purchaseNote &&
                 externalUrl == product.externalUrl &&
                 buttonText == product.buttonText &&
+                menuOrder == product.menuOrder
                 isSameImages(product.images)
     }
 
@@ -214,7 +216,8 @@ data class Product(
                     isFeatured != it.isFeatured ||
                     slug != it.slug ||
                     reviewsAllowed != it.reviewsAllowed ||
-                    purchaseNote != it.purchaseNote
+                    purchaseNote != it.purchaseNote ||
+                    menuOrder != it.menuOrder
         } ?: false
     }
 
@@ -277,7 +280,8 @@ data class Product(
                     reviewsAllowed = updatedProduct.reviewsAllowed,
                     purchaseNote = updatedProduct.purchaseNote,
                     externalUrl = updatedProduct.externalUrl,
-                    buttonText = updatedProduct.buttonText
+                    buttonText = updatedProduct.buttonText,
+                    menuOrder = updatedProduct.menuOrder
             )
         } ?: this.copy()
     }
@@ -367,6 +371,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.purchaseNote = purchaseNote
         it.externalUrl = externalUrl
         it.buttonText = buttonText
+        it.menuOrder = menuOrder
     }
 }
 
@@ -434,7 +439,8 @@ fun WCProductModel.toAppModel(): Product {
         isOnSale = this.onSale,
         soldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
-        isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()
+        isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
+        menuOrder = this.menuOrder
     )
 }
 
