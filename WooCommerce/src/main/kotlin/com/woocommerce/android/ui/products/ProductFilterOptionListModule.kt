@@ -13,18 +13,18 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class ProductFilterChildListModule {
+abstract class ProductFilterOptionListModule {
     @Module
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(fragment: ProductFilterChildListFragment): Bundle? {
+        fun provideDefaultArgs(fragment: ProductFilterOptionListFragment): Bundle? {
             return fragment.arguments
         }
 
         @JvmStatic
         @Provides
-        fun provideSavedStateRegistryOwner(fragment: ProductFilterChildListFragment): SavedStateRegistryOwner {
+        fun provideSavedStateRegistryOwner(fragment: ProductFilterOptionListFragment): SavedStateRegistryOwner {
             return fragment.findNavController().getBackStackEntry(R.id.nav_graph_product_filters)
         }
     }

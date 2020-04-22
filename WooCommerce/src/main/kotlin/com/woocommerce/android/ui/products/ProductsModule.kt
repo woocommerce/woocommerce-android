@@ -46,8 +46,8 @@ object ProductsModule {
     @Module
     abstract class ProductFilterChildListFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductFilterChildListModule::class])
-        abstract fun productFilterChildListFragment(): ProductFilterChildListFragment
+        @ContributesAndroidInjector(modules = [ProductFilterOptionListModule::class])
+        abstract fun productFilterChildListFragment(): ProductFilterOptionListFragment
     }
 
     @Module

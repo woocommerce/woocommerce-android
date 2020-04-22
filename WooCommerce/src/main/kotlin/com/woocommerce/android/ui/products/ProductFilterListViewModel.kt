@@ -37,14 +37,14 @@ class ProductFilterListViewModel @AssistedInject constructor(
     private val _filterListItems = MutableLiveData<List<FilterListItemUiModel>>()
     final val filterListItems: LiveData<List<FilterListItemUiModel>> = _filterListItems
 
-    private val _filterChildListItems = MutableLiveData<List<FilterListChildItemUiModel>>()
-    final val filterChildListItems: LiveData<List<FilterListChildItemUiModel>> = _filterChildListItems
+    private val _filterOptionListItems = MutableLiveData<List<FilterListOptionItemUiModel>>()
+    final val filterOptionListItems: LiveData<List<FilterListOptionItemUiModel>> = _filterOptionListItems
 
     final val productFilterListViewStateData = LiveDataDelegate(savedState, ProductFilterListViewState())
     private var productFilterListViewState by productFilterListViewStateData
 
-    final val productFilterChildListViewStateData = LiveDataDelegate(savedState, ProductFilterChildListViewState())
-    private var productFilterChildListViewState by productFilterChildListViewStateData
+    final val productFilterOptionListViewStateData = LiveDataDelegate(savedState, ProductFilterOptionListViewState())
+    private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
     /**
      * Holds the filter properties (stock_status, status, type) already selected by the user in a [Map]
@@ -74,42 +74,43 @@ class ProductFilterListViewModel @AssistedInject constructor(
         )
     }
 
-    fun loadChildFilters(selectedFilterListItemPosition: Int) {
+    fun loadFilterOptions(selectedFilterListItemPosition: Int) {
         _filterListItems.value?.let {
-            val filterChildItem = it[selectedFilterListItemPosition]
-            _filterChildListItems.value = filterChildItem.childListItems
-            productFilterChildListViewState = productFilterChildListViewState.copy(
-                    screenTitle = filterChildItem.filterItemName
+            val filterItem = it[selectedFilterListItemPosition]
+            _filterOptionListItems.value = filterItem.filterOptionListItems
+            productFilterOptionListViewState = productFilterOptionListViewState.copy(
+                    screenTitle = filterItem.filterItemName
             )
         }
     }
 
-    fun onChildFilterItemSelected(
+    fun onFilterOptionItemSelected(
         selectedFilterListItemPosition: Int,
-        selectedFilterItem: FilterListChildItemUiModel
+        selectedFilterItem: FilterListOptionItemUiModel
     ) {
         _filterListItems.value?.let {
-            // iterate through the child item list and update the `isSelected`value to reflect the item selected and
+            // iterate through the filter option list and update the `isSelected`value to reflect the item selected and
             // update the UI of this change
             val filterItem = it[selectedFilterListItemPosition]
-            val filterChildItemList = filterItem.childListItems.map { filterChildItem ->
-                filterChildItem.copy(
-                        isSelected = filterChildItem.filterChildItemValue == selectedFilterItem.filterChildItemValue
+            val filterOptionItemList = filterItem.filterOptionListItems.map { filterOptionItem ->
+                filterOptionItem.copy(
+                        isSelected = filterOptionItem.filterOptionItemValue == selectedFilterItem.filterOptionItemValue
                 )
             }
-            _filterChildListItems.value = filterChildItemList
+            _filterOptionListItems.value = filterOptionItemList
 
             // update the filter options map - which is used to load the filter list screen
-            // if the selected child item is the default filter item i.e. ANY, then remove the filter from the map,
-            // since this means the filter for that option has been cleared, otherwise update the filter item.
-            if (selectedFilterItem.filterChildItemName == resourceProvider.getString(string.product_filter_default)) {
+            // if the selected filter option item is the default filter item i.e. ANY,
+            // then remove the filter from the map, since this means the filter for that option has been cleared,
+            // otherwise update the filter item.
+            if (selectedFilterItem.filterOptionItemName == resourceProvider.getString(string.product_filter_default)) {
                 productFilterOptions.remove(filterItem.filterItemKey)
             } else {
-                productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterChildItemValue
+                productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterOptionItemValue
             }
         }
 
-        // exit the filter child item screen once a child item has been selected
+        // exit the filter option list screen once a filter option item has been selected
         triggerEvent(Exit)
     }
 
@@ -120,9 +121,9 @@ class ProductFilterListViewModel @AssistedInject constructor(
                         resourceProvider.getString(string.product_stock_status),
                         addDefaultFilterOption(
                                 CoreProductStockStatus.values().map {
-                                    FilterListChildItemUiModel(
+                                    FilterListOptionItemUiModel(
                                             resourceProvider.getString(fromString(it.value).stringResource),
-                                            filterChildItemValue = it.value,
+                                            filterOptionItemValue = it.value,
                                             isSelected = productFilterOptions[STOCK_STATUS] == it.value
                                     )
                                 }.toMutableList(), productFilterOptions[STOCK_STATUS].isNullOrEmpty()
@@ -133,9 +134,9 @@ class ProductFilterListViewModel @AssistedInject constructor(
                         resourceProvider.getString(string.product_status),
                         addDefaultFilterOption(
                                 ProductStatus.values().map {
-                                    FilterListChildItemUiModel(
+                                    FilterListOptionItemUiModel(
                                             resourceProvider.getString(it.stringResource),
-                                            filterChildItemValue = it.value,
+                                            filterOptionItemValue = it.value,
                                             isSelected = productFilterOptions[STATUS] == it.value
                                     )
                                 }.toMutableList(), productFilterOptions[STATUS].isNullOrEmpty()
@@ -146,9 +147,9 @@ class ProductFilterListViewModel @AssistedInject constructor(
                         resourceProvider.getString(string.product_type),
                         addDefaultFilterOption(
                                 ProductType.values().map {
-                                    FilterListChildItemUiModel(
+                                    FilterListOptionItemUiModel(
                                             resourceProvider.getString(it.stringResource),
-                                            filterChildItemValue = it.value,
+                                            filterOptionItemValue = it.value,
                                             isSelected = productFilterOptions[TYPE] == it.value
                                     )
                                 }.toMutableList(), productFilterOptions[TYPE].isNullOrEmpty()
@@ -158,18 +159,18 @@ class ProductFilterListViewModel @AssistedInject constructor(
     }
 
     /**
-     * The [FilterListChildItemUiModel] list includes a default option of `Any`
+     * The [FilterListOptionItemUiModel] list includes a default option of `Any`
      * which is added to the list by this method before updating the UI
      */
     private fun addDefaultFilterOption(
-        filterChildList: MutableList<FilterListChildItemUiModel>,
-        isDefaultChildItemSelected: Boolean
-    ): MutableList<FilterListChildItemUiModel> {
-        return filterChildList.apply {
-            add(0, FilterListChildItemUiModel(
-                filterChildItemName = resourceProvider.getString(string.product_filter_default),
-                filterChildItemValue = "",
-                isSelected = isDefaultChildItemSelected
+        filterOptionList: MutableList<FilterListOptionItemUiModel>,
+        isDefaultFilterOptionSelected: Boolean
+    ): MutableList<FilterListOptionItemUiModel> {
+        return filterOptionList.apply {
+            add(0, FilterListOptionItemUiModel(
+                filterOptionItemName = resourceProvider.getString(string.product_filter_default),
+                filterOptionItemValue = "",
+                isSelected = isDefaultFilterOptionSelected
             ))
         }
     }
@@ -180,37 +181,37 @@ class ProductFilterListViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @Parcelize
-    data class ProductFilterChildListViewState(
+    data class ProductFilterOptionListViewState(
         val screenTitle: String? = null
     ) : Parcelable
 
     /**
      * [filterItemKey] includes the [ProductFilterOption] which can be [STATUS], [TYPE] or [STOCK_STATUS]
      * [filterItemName] is the display name of the filter list item i.e Product Status, Stock Status
-     * [childListItems] includes a list of [FilterListChildItemUiModel]
+     * [filterOptionListItems] includes a list of [FilterListOptionItemUiModel]
      */
     @Parcelize
     data class FilterListItemUiModel(
         val filterItemKey: ProductFilterOption,
         val filterItemName: String,
-        val childListItems: List<FilterListChildItemUiModel>
+        val filterOptionListItems: List<FilterListOptionItemUiModel>
     ) : Parcelable
 
     /**
-     * [filterChildItemName] is the display name of the filter option
+     * [filterOptionItemName] is the display name of the filter option
      * Eg: for stock status, this would be In Stock, Out of stock.
      * for product type, this would be Simple, Grouped.
      * for product type, this would be Pending, Draft
      *
-     * [filterChildItemValue] is the slug for the filter option.
+     * [filterOptionItemValue] is the slug for the filter option.
      * Eg: for stock status, this would be instock, outofstock
      * for product type, this would be simple, grouped, variable
      * for product status, this would be pending, draft
      */
     @Parcelize
-    data class FilterListChildItemUiModel(
-        val filterChildItemName: String,
-        val filterChildItemValue: String,
+    data class FilterListOptionItemUiModel(
+        val filterOptionItemName: String,
+        val filterOptionItemValue: String,
         val isSelected: Boolean = false
     ) : Parcelable
 

@@ -32,7 +32,7 @@ class ProductFilterListAdapter(
     override fun onBindViewHolder(holder: ProductFilterViewHolder, position: Int) {
         val filter = filterList[position]
         holder.txtFilterName.text = filter.filterItemName
-        holder.txtFilterSelection.text = filter.childListItems.first { it.isSelected }.filterChildItemName
+        holder.txtFilterSelection.text = filter.filterOptionListItems.first { it.isSelected }.filterOptionItemName
 
         holder.itemView.setOnClickListener {
             // TODO: Add tracking event here

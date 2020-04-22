@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/productFilterChildListFragment"
-        android:name="com.woocommerce.android.ui.products.ProductFilterChildListFragment"
+        android:name="com.woocommerce.android.ui.products.ProductFilterOptionListFragment"
         android:label="ProductFilterChildListFragment"
         tools:layout="@layout/fragment_product_filter_child_list">
     <argument

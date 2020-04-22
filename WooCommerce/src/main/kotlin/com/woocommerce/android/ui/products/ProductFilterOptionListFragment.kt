@@ -12,23 +12,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.ProductFilterChildListAdapter.OnProductFilterChildClickListener
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListChildItemUiModel
+import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterChildClickListener
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_child_list.*
 import javax.inject.Inject
 
-class ProductFilterChildListFragment : BaseFragment(), OnProductFilterChildClickListener {
+class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterChildClickListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(
             R.id.nav_graph_product_filters
     ) { viewModelFactory }
 
-    private val arguments: ProductFilterChildListFragmentArgs by navArgs()
+    private val arguments: ProductFilterOptionListFragmentArgs by navArgs()
 
-    private lateinit var productFilterChildListAdapter: ProductFilterChildListAdapter
+    private lateinit var mProductFilterOptionListAdapter: ProductFilterOptionListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_filter_child_list, container, false)
@@ -43,7 +43,7 @@ class ProductFilterChildListFragment : BaseFragment(), OnProductFilterChildClick
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        productFilterChildListAdapter = ProductFilterChildListAdapter(this)
+        mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
         with(filterChildList) {
             addItemDecoration(
                     AlignedDividerDecoration(
@@ -53,7 +53,7 @@ class ProductFilterChildListFragment : BaseFragment(), OnProductFilterChildClick
                     )
             )
             layoutManager = LinearLayoutManager(activity)
-            adapter = productFilterChildListAdapter
+            adapter = mProductFilterOptionListAdapter
 
             // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
             // and only processes the first click event. More details on this issue can be found here:
@@ -63,11 +63,11 @@ class ProductFilterChildListFragment : BaseFragment(), OnProductFilterChildClick
     }
 
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
-        viewModel.productFilterChildListViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.productFilterOptionListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
         }
 
-        viewModel.filterChildListItems.observe(viewLifecycleOwner, Observer {
+        viewModel.filterOptionListItems.observe(viewLifecycleOwner, Observer {
             showProductFilterList(it)
         })
 
@@ -78,14 +78,14 @@ class ProductFilterChildListFragment : BaseFragment(), OnProductFilterChildClick
             }
         })
 
-        viewModel.loadChildFilters(arguments.selectedFilterItemPosition)
+        viewModel.loadFilterOptions(arguments.selectedFilterItemPosition)
     }
 
-    private fun showProductFilterList(productFilterChildList: List<FilterListChildItemUiModel>) {
-        productFilterChildListAdapter.filterList = productFilterChildList
+    private fun showProductFilterList(productFilterChildList: List<FilterListOptionItemUiModel>) {
+        mProductFilterOptionListAdapter.filterList = productFilterChildList
     }
 
-    override fun onChildFilterItemClick(selectedFilter: FilterListChildItemUiModel) {
-        viewModel.onChildFilterItemSelected(arguments.selectedFilterItemPosition, selectedFilter)
+    override fun onChildFilterItemClick(selectedFilter: FilterListOptionItemUiModel) {
+        viewModel.onFilterOptionItemSelected(arguments.selectedFilterItemPosition, selectedFilter)
     }
 }

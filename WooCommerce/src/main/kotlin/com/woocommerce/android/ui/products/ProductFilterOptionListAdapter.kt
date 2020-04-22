@@ -7,14 +7,14 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R.layout
-import com.woocommerce.android.ui.products.ProductFilterChildListAdapter.ProductFilterChildViewHolder
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListChildItemUiModel
+import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.ProductFilterChildViewHolder
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import kotlinx.android.synthetic.main.product_filter_child_list_item.view.*
 
-class ProductFilterChildListAdapter(
+class ProductFilterOptionListAdapter(
     private val clickListener: OnProductFilterChildClickListener
 ) : RecyclerView.Adapter<ProductFilterChildViewHolder>() {
-    var filterList = listOf<FilterListChildItemUiModel>()
+    var filterList = listOf<FilterListOptionItemUiModel>()
         set(value) {
             if (!isSameList(value)) {
                 field = value
@@ -27,7 +27,7 @@ class ProductFilterChildListAdapter(
     }
 
     interface OnProductFilterChildClickListener {
-        fun onChildFilterItemClick(selectedFilter: FilterListChildItemUiModel)
+        fun onChildFilterItemClick(selectedFilter: FilterListOptionItemUiModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductFilterChildViewHolder {
@@ -37,7 +37,7 @@ class ProductFilterChildListAdapter(
 
     override fun onBindViewHolder(holder: ProductFilterChildViewHolder, position: Int) {
         val filter = filterList[position]
-        holder.txtFilterName.text = filter.filterChildItemName
+        holder.txtFilterName.text = filter.filterOptionItemName
 
         val isChecked = filter.isSelected
         holder.selectedFilterItemRadioButton.visibility = if (isChecked) View.VISIBLE else View.GONE
@@ -52,7 +52,7 @@ class ProductFilterChildListAdapter(
 
     override fun getItemCount() = filterList.size
 
-    private fun isSameList(newList: List<FilterListChildItemUiModel>): Boolean {
+    private fun isSameList(newList: List<FilterListOptionItemUiModel>): Boolean {
         if (newList.size != filterList.size) {
             return false
         }
@@ -66,11 +66,11 @@ class ProductFilterChildListAdapter(
         return true
     }
 
-    private fun isSameFilterChildItem(filterChildItem: FilterListChildItemUiModel): Boolean {
+    private fun isSameFilterChildItem(filterOptionItem: FilterListOptionItemUiModel): Boolean {
         filterList.forEach {
-            if (it.isSelected == filterChildItem.isSelected &&
-                    it.filterChildItemName == filterChildItem.filterChildItemName &&
-                    it.filterChildItemValue == filterChildItem.filterChildItemValue) {
+            if (it.isSelected == filterOptionItem.isSelected &&
+                    it.filterOptionItemName == filterOptionItem.filterOptionItemName &&
+                    it.filterOptionItemValue == filterOptionItem.filterOptionItemValue) {
                 return true
             }
         }
