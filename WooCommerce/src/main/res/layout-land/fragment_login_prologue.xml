@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/color_surface">
 
     <ImageView
         android:layout_width="0dp"
@@ -21,22 +21,20 @@
         android:id="@+id/image_prologue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginStart="@dimen/major_200"
+        android:layout_marginTop="@dimen/major_200"
         android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/img_woo_logo"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_prologue"
+        style="@style/TextAppearance.Woo.Headline6"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/login_prologue_padding"
+        android:layout_marginTop="@dimen/major_175"
         android:text="@string/login_prologue_banner"
-        android:textColor="@color/wc_purple"
-        android:textSize="@dimen/text_medium_extra_large"
-        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline6"
         app:layout_constraintStart_toStartOf="@+id/image_prologue"
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"/>
@@ -60,25 +58,23 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/img_bubbles"/>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/wc_purple"
+        android:background="@color/color_primary"
         android:clipToPadding="false"
-        android:orientation="horizontal"
-        android:padding="@dimen/login_prologue_padding"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:padding="@dimen/major_175"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login"
-            android:layout_width="0dp"
+            style="@style/Woo.Button.Colored.White"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin_large"
-            android:layout_weight="2"
-            android:text="@string/login"
-            android:theme="@style/Woo.Button.White"/>
-    </LinearLayout>
+            android:text="@string/login"/>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
