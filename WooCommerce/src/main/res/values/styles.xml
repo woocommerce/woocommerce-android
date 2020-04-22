@@ -49,10 +49,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:colorButtonNormal">@color/black</item>
     </style>
 
-    <style name="Woo.Button.White" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:textColor">@color/wc_purple</item>
-        <item name="android:colorButtonNormal">@color/white</item>
-    </style>
 
 
     <!--
@@ -83,8 +79,6 @@ Use this file to override styles in the styles_base.xml file.
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
-
-    <style name="Woo.Dialog.Login.WhatIsJetpack" parent="Woo.Dialog.Promo"/>
 
     <!--
         LOGIN
