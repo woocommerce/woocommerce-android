@@ -42,6 +42,7 @@
                 android:layout_marginEnd="@dimen/major_200"
                 android:textAppearance="?attr/textAppearanceBody1"
                 android:lineSpacingExtra="@dimen/line_spacing_extra_50"
+                android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
