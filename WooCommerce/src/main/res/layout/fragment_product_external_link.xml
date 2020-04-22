@@ -30,7 +30,8 @@
             android:layout_marginTop="@dimen/major_75"
             android:layout_marginEnd="@dimen/major_100"
             android:hint="@string/product_external_link_button_text"
-            android:inputType="text" />
+            android:inputType="text"
+            app:helperText="@string/product_external_link_button_text_label" />
     </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
 </ScrollView>
