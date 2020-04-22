@@ -338,7 +338,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun onSortOptionSelected() {
-        val bottomSheet = ProductListSortingBottomSheetDialogFragment()
+        val bottomSheet = ProductSortingFragment()
         bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 }
