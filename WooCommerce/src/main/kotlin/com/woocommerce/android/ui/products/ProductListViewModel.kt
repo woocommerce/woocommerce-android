@@ -14,7 +14,6 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -167,7 +166,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoading = true,
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
-                        isEmptyViewVisible = false
+                        isEmptyViewVisible = false,
+                        displaySortAndFilterCard = false
                 )
                 fetchProductList(viewState.query, loadMore = loadMore)
             }
@@ -193,7 +193,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoading = true,
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
-                        isEmptyViewVisible = false
+                        isEmptyViewVisible = false,
+                        displaySortAndFilterCard = !showSkeleton
                 )
                 fetchProductList(loadMore = loadMore)
             }
@@ -242,7 +243,8 @@ class ProductListViewModel @AssistedInject constructor(
             viewState = viewState.copy(
                     isLoading = true,
                     canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = _productList.value?.isEmpty() == true
+                    isEmptyViewVisible = _productList.value?.isEmpty() == true,
+                    displaySortAndFilterCard = _productList.value?.isNotEmpty() == true
             )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
@@ -271,9 +273,8 @@ class ProductListViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val query: String? = null,
         val isSearchActive: Boolean? = null,
-        val isFilterActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val displaySortAndFilterCard: Boolean = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        val displaySortAndFilterCard: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

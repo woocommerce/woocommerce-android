@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.A
 import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -272,7 +273,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                     empty_view.hide()
                 }
             }
-            new.displaySortAndFilterCard.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
+            new.displaySortAndFilterCard?.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
                 showProductSortAndFiltersCard(it)
             }
         }
@@ -332,7 +333,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
-        if (show) {
+        if (show && FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
             products_sort_filter_card.visibility = View.VISIBLE
             products_sort_filter_card.initView(this)
         } else {
