@@ -55,6 +55,9 @@ class ProductListViewModel @AssistedInject constructor(
         params
     }
 
+    private final val isFilterActive: Boolean
+    get() = productFilterOptions.isNotEmpty()
+
     private var searchJob: Job? = null
     private var loadJob: Job? = null
 
@@ -244,7 +247,7 @@ class ProductListViewModel @AssistedInject constructor(
                     isLoading = true,
                     canLoadMore = productRepository.canLoadMoreProducts,
                     isEmptyViewVisible = _productList.value?.isEmpty() == true,
-                    displaySortAndFilterCard = _productList.value?.isNotEmpty() == true
+                    displaySortAndFilterCard = isFilterActive || _productList.value?.isNotEmpty() == true
             )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
