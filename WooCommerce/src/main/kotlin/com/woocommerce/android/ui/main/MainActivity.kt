@@ -340,6 +340,7 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
+                R.id.productFilterListFragment,
                 R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
@@ -743,6 +744,13 @@ class MainActivity : AppUpgradeActivity(),
                 remoteReviewId,
                 tempStatus,
                 launchedFromNotification)
+        navController.navigate(action)
+    }
+
+    override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
+        val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
+                stockStatus, productStatus, productType
+        )
         navController.navigate(action)
     }
 

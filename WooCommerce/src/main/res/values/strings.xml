@@ -435,6 +435,9 @@
     <string name="product_sku">SKU</string>
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
+    <string name="product_status">Product status</string>
+    <string name="product_type">Product type</string>
+    <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
     <string name="product_sold_individually">Limit one per order</string>
     <string name="product_stock_quantity">Stock quantity</string>
@@ -473,7 +476,10 @@
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_list_sorting">Newest</string>
     <string name="product_list_filters">Filters</string>
+    <string name="product_list_filters_count">Filters (%d)</string>
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
+    <string name="product_list_filters_show_products">Show products</string>
+    <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_wip_title">Limited editing available</string>
     <string name="product_wip_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
@@ -769,6 +775,13 @@
     <string name="product_status_private">Private</string>
     <string name="product_status_pending">Pending Review</string>
     <string name="product_status_draft">Draft</string>
+
+    <!-- Product type -->
+    <string name="product_type_simple">Simple</string>
+    <string name="product_type_grouped">Grouped</string>
+    <string name="product_type_external">External</string>
+    <string name="product_type_variable">Variable</string>
+    <string name="product_type_variation">Variation</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

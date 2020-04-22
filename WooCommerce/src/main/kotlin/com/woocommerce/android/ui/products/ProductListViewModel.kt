@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
@@ -39,6 +40,7 @@ class ProductListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
+        private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
     }
 
     private val _productList = MutableLiveData<List<Product>>()
@@ -46,6 +48,12 @@ class ProductListViewModel @AssistedInject constructor(
 
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
+
+    final val productFilterOptions: Map<ProductFilterOption, String> by lazy {
+        val params = savedState.get<Map<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS) ?: emptyMap()
+        savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
+        params
+    }
 
     private var searchJob: Job? = null
     private var loadJob: Job? = null
@@ -86,6 +94,12 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
+    fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]
+
+    fun getFilterByProductStatus() = productFilterOptions[ProductFilterOption.STATUS]
+
+    fun getFilterByProductType() = productFilterOptions[ProductFilterOption.TYPE]
+
     fun onRefreshRequested() {
         AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
@@ -116,7 +130,7 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     final fun reloadProductsFromDb() {
-        _productList.value = productRepository.getProductList()
+        _productList.value = productRepository.getProductList(productFilterOptions)
     }
 
     final fun loadProducts(loadMore: Boolean = false) {
@@ -154,7 +168,7 @@ class ProductListViewModel @AssistedInject constructor(
                     showSkeleton = false
                 } else {
                     // if this is the initial load, first get the products from the db and show them immediately
-                    val productsInDb = productRepository.getProductList()
+                    val productsInDb = productRepository.getProductList(productFilterOptions)
                     if (productsInDb.isEmpty()) {
                         showSkeleton = true
                     } else {
@@ -196,7 +210,7 @@ class ProductListViewModel @AssistedInject constructor(
     private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
-                _productList.value = productRepository.fetchProductList(loadMore)
+                _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
             } else {
                 productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
                     // make sure the search query hasn't changed while the fetch was processing
