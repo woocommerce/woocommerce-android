@@ -335,6 +335,25 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:focusableInTouchMode">true</item>
     </style>
 
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCSingleOptionTextView">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high_selector</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">?attr/listPreferredItemHeight</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/major_100</item>
+        <item name="android:paddingBottom">@dimen/major_100</item>
+        <item name="android:drawablePadding">@dimen/major_200</item>
+        <item name="drawableTint">@color/color_on_surface_medium_selector</item>
+        <item name="drawableTintMode">src_atop</item>
+
+        <!-- Override and set to @null in the layout if no right arrow is needed -->
+        <item name="android:drawableEnd">@drawable/ic_arrow_right</item>
+    </style>
+
     <!--
         Button Styles
     -->
@@ -425,6 +444,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         List Styles
     -->
     <style name="Woo.ListHeader" parent="Woo.TextView.Subtitle2"/>
+
+    <!--  Use with a list item container -->
     <style name="Woo.ListItem">
         <item name="android:minHeight">?attr/listPreferredItemHeight</item>
         <item name="android:background">?attr/selectableItemBackground</item>

@@ -30,6 +30,7 @@
 
     <color name="woo_white">@android:color/white</color>
     <color name="woo_white_alpha_005">#0DFFFFFF</color>
+    <color name="woo_white_alpha_009">#17FFFFFF</color>
     <color name="woo_white_alpha_012">#1FFFFFFF</color>
     <color name="woo_white_alpha_038">#61FFFFFF</color>
     <color name="woo_white_alpha_060">#99FFFFFF</color>
