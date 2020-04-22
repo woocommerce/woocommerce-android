@@ -3,11 +3,8 @@
     <!--
         Text Sizes
     -->
-    <dimen name="text_caption">13sp</dimen>
-    <dimen name="text_medium">14sp</dimen>
     <dimen name="text_large">16sp</dimen>
     <dimen name="text_extra_large">20sp</dimen>
-    <dimen name="text_double_extra_large">24sp</dimen>
 
     <!--
         Default Padding
@@ -29,18 +26,6 @@
         Default Card
     -->
 
-    <dimen name="card_padding_start">16dp</dimen>
-    <dimen name="card_padding_start_tablet">24dp</dimen>
-
-    <dimen name="card_padding_end">16dp</dimen>
-    <dimen name="card_padding_end_tablet">24dp</dimen>
-
-    <dimen name="card_padding_top">16dp</dimen>
-    <dimen name="card_padding_top_tablet">24dp</dimen>
-
-    <dimen name="card_padding_bottom">16dp</dimen>
-    <dimen name="card_padding_bottom_tablet">24dp</dimen>
-
     <!--
         Default List
     -->
@@ -56,7 +41,6 @@
         Login
     -->
     <dimen name="login_avatar_size">64dp</dimen>
-    <dimen name="login_prologue_padding">28dp</dimen>
 
     <!--
         Settings
@@ -74,7 +58,6 @@
     <!--
         Offline Status Bar
     -->
-    <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
 
     <!--
         Skeletons

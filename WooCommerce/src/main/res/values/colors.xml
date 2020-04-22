@@ -11,7 +11,6 @@
     -->
     <!-- Primary Greys -->
     <!-- TODO: Consolidate with rest of wc_greys -->
-    <color name="wc_grey">#999999</color>
     <color name="grey_dark_highlight">#333333</color>
 
     <!-- Primary Blacks -->
@@ -27,7 +26,6 @@
     <!--
         Default Global Colors
     -->
-    <color name="default_text_title">@color/grey_dark_highlight</color>
     <!--
         Default Widget Color Definitions
     -->
@@ -59,8 +57,6 @@
     <!-- Login -->
     <!-- Login uses snake_case instead of CamelCase for the main color palette,
     this makes sure they're not used accidentally -->
-    <color name="color_primary_dark">@color/colorPrimaryDark</color>
-    <color name="color_accent">@color/colorAccent</color>
 
     <color name="status_bar">@color/colorPrimaryDark</color>
     <color name="login_theme_accent_color">@color/colorAccent</color>
@@ -79,8 +75,6 @@
     <color name="login_edit_text_text_color">@color/edit_text_text_color</color>
     <color name="login_edit_text_text_hint_color">@color/edit_text_text_hint_color</color>
 
-    <color name="login_input_icon_color">@color/wc_grey_30</color>
-    <color name="login_input_password_icon_color">@color/wc_grey_30</color>
     <color name="login_notification_accent_color">@color/colorPrimary</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#1F000000</color>
