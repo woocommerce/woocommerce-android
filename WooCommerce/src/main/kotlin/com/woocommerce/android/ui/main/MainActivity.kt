@@ -387,7 +387,12 @@ class MainActivity : AppUpgradeActivity(),
             getActiveTopLevelFragment()?.let {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
-                it.onReturnedToChildFragmentWithResult(arguments)
+
+                // hack to pass filters selected back to the product list fragment
+                // should only called when the previous fragment id is product filter screen
+//                if (previousDestinationId == R.id.productFilterListFragment) {
+                    it.onReturnedToChildFragmentWithResult(arguments)
+//                }
             }
         }
 
