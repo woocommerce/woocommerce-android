@@ -474,6 +474,10 @@
     <string name="product_list_sorting">Newest</string>
     <string name="product_list_filters">Filters</string>
     <string name="product_list_sorting_header">Sort by</string>
+    <string name="product_list_sorting_newest_to_oldest">Date: Newest to oldest</string>
+    <string name="product_list_sorting_oldest_to_newest">Date: Oldest to newest</string>
+    <string name="product_list_sorting_a_to_z">Title: A to Z</string>
+    <string name="product_list_sorting_z_to_a">Title: Z to A</string>
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
