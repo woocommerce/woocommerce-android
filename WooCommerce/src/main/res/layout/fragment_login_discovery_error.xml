@@ -7,7 +7,6 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/toolbar"
         layout="@layout/toolbar_login" />
 
     <ScrollView
@@ -21,15 +20,13 @@
             android:layout_height="wrap_content"
             tools:context=".ui.login.LoginDiscoveryErrorFragment">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/discovery_error_title"
-                style="@style/Woo.Login.DiscoveryError.Title"
+                style="@style/Woo.TextView.Headline5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="30dp"
-                android:lineSpacingExtra="4sp"
+                android:layout_marginBottom="@dimen/major_200"
+                android:gravity="center"
                 android:text="@string/login_discovery_error_title"
                 app:layout_constraintBottom_toTopOf="@+id/discovery_error_message"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -37,14 +34,14 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/discovery_error_message"
-                style="@style/Woo.Login.DiscoveryError.Message"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="35dp"
-                android:layout_marginEnd="35dp"
-                android:lineSpacingExtra="2sp"
+                android:layout_marginStart="@dimen/major_200"
+                android:layout_marginEnd="@dimen/major_200"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:lineSpacingExtra="@dimen/line_spacing_extra_50"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -52,14 +49,14 @@
                 app:layout_constraintVertical_bias="0.20"
                 tools:text="@string/login_discovery_error_http_auth" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/discovery_error_tip_message"
-                style="@style/Woo.Login.DiscoveryError.Message"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="35dp"
-                android:layout_marginEnd="35dp"
-                android:lineSpacingExtra="2sp"
+                android:layout_marginStart="@dimen/major_200"
+                android:layout_marginEnd="@dimen/major_200"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:lineSpacingExtra="@dimen/line_spacing_extra_50"
                 android:text="@string/login_discovery_error_options"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -67,199 +64,50 @@
                 app:layout_constraintTop_toBottomOf="@+id/discovery_error_message"
                 app:layout_constraintVertical_bias="0.05" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/discovery_wordpress_option_view"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:cardElevation="0dp"
+                android:background="@color/color_surface_elevated_04"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/major_150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/discovery_error_tip_message">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    style="@style/Woo.ListItem"
+                <com.woocommerce.android.widgets.WCSingleOptionTextView
+                    android:id="@+id/discovery_wordpress_option_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:paddingTop="@dimen/card_padding_top"
-                    android:paddingBottom="@dimen/card_padding_bottom">
+                    android:drawablePadding="@dimen/major_150"
+                    android:drawableStart="@drawable/ic_wordpress"
+                    android:text="@string/login_with_wordpress"/>
 
-                    <ImageView
-                        android:id="@+id/wordpress_option_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_wordpress"
-                        android:contentDescription="@string/login_with_wordpress"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible" />
+                <View
+                    android:id="@+id/view1"
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="65dp"/>
 
-                    <TextView
-                        android:id="@+id/wordpress_option_message"
-                        style="@style/Woo.Login.DiscoveryError.Message"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/default_padding"
-                        android:paddingStart="@dimen/card_padding_start"
-                        android:paddingEnd="@dimen/card_padding_end"
-                        android:text="@string/login_with_wordpress"
-                        android:textAlignment="textStart"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/wordpress_option_arrow"
-                        app:layout_constraintStart_toEndOf="@+id/wordpress_option_icon"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/wordpress_option_arrow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_arrow_right"
-                        android:contentDescription="@string/login_discovery_error_option_select"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-            <View
-                android:id="@+id/view1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginStart="65dp"
-                android:background="@drawable/shadow_top"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/discovery_wordpress_option_view"/>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/discovery_troubleshoot_option_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardElevation="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view1">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    style="@style/Woo.ListItem"
+                <com.woocommerce.android.widgets.WCSingleOptionTextView
+                    android:id="@+id/discovery_troubleshoot_option_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:paddingTop="@dimen/card_padding_top"
-                    android:paddingBottom="@dimen/card_padding_bottom">
+                    android:drawablePadding="@dimen/major_150"
+                    android:drawableStart="@drawable/ic_folder_open"
+                    android:text="@string/login_troubleshooting_tips"/>
 
-                    <ImageView
-                        android:id="@+id/troubleshoot_option_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_folder_open"
-                        android:contentDescription="@string/login_troubleshooting_tips"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible" />
+                <View
+                    android:id="@+id/view2"
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="65dp"/>
 
-                    <TextView
-                        android:id="@+id/troubleshoot_option_message"
-                        style="@style/Woo.Login.DiscoveryError.Message"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/default_padding"
-                        android:paddingStart="@dimen/card_padding_start"
-                        android:paddingEnd="@dimen/card_padding_end"
-                        android:text="@string/login_troubleshooting_tips"
-                        android:textAlignment="textStart"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/troubleshoot_option_arrow"
-                        app:layout_constraintStart_toEndOf="@+id/troubleshoot_option_icon"
-                        app:layout_constraintTop_toTopOf="parent"/>
-
-                    <ImageView
-                        android:id="@+id/troubleshoot_option_arrow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_arrow_right"
-                        android:contentDescription="@string/login_discovery_error_option_select"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-            <View
-                android:id="@+id/view2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginStart="65dp"
-                android:background="@drawable/shadow_top"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/discovery_troubleshoot_option_view"/>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/discovery_try_option_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardElevation="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view2">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    style="@style/Woo.ListItem"
+                <com.woocommerce.android.widgets.WCSingleOptionTextView
+                    android:id="@+id/discovery_try_option_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:paddingTop="@dimen/card_padding_top"
-                    android:paddingBottom="@dimen/card_padding_bottom">
-
-                    <ImageView
-                        android:id="@+id/try_option_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_refresh_grey"
-                        android:contentDescription="@string/try_again"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible" />
-
-                    <TextView
-                        android:id="@+id/try_option_message"
-                        style="@style/Woo.Login.DiscoveryError.Message"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/default_padding"
-                        android:paddingStart="@dimen/card_padding_start"
-                        android:paddingEnd="@dimen/card_padding_end"
-                        android:text="@string/try_again"
-                        android:textAlignment="textStart"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/try_option_arrow"
-                        app:layout_constraintStart_toEndOf="@+id/try_option_icon"
-                        app:layout_constraintTop_toTopOf="parent"/>
-
-                    <ImageView
-                        android:id="@+id/try_option_arrow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_arrow_right"
-                        android:contentDescription="@string/login_discovery_error_option_select"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-
+                    android:drawablePadding="@dimen/major_150"
+                    android:drawableStart="@drawable/ic_refresh_grey"
+                    android:text="@string/try_again"/>
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
