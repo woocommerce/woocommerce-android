@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-01 00:54:03+0000
+Translation-Revision-Date: 2020-04-15 00:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
+    <string name="product_schedule_remove_end_date_link_label">Удалить дату окончания</string>
+    <string name="product_shipping_empty">Добавить доставку</string>
+    <string name="discard_images_message">Выполняется загрузка изображений продуктов. Отменить изменения?</string>
     <string name="product_inventory_update_stock_quantity_error">Введите номер</string>
     <string name="product_wip_message">Мы добавили функцию редактирования простых продуктов. Следите за новостями, планируется дополнительное расширение возможностей!</string>
     <string name="product_wip_title">Доступны ограниченные возможности редактирования</string>

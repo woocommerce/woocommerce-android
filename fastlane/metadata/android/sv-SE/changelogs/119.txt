@@ -1,4 +1,0 @@
-3.9:
-Två krascher har åtgärdats: en som uppstod när två produkter valdes samtidigt i produktlistan och en som uppstod vid redigering av en negativ lagerkvantitet.
-
-Var försiktiga och tvätta händerna, allihopa!

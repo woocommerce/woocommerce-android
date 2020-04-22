@@ -1,2 +1,3 @@
 * We’re excited to introduce a Products tab!
 * Users also now have limited editing capabilities for Simple Products, with more to come.
+* We fixed a date-conversion bug that was hiding some orders and grouping others incorrectly.
