@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.ProductFilterChildViewHolder
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
-import kotlinx.android.synthetic.main.product_filter_child_list_item.view.*
+import kotlinx.android.synthetic.main.product_filter_option_list_item.view.*
 
 class ProductFilterOptionListAdapter(
     private val clickListener: OnProductFilterChildClickListener
@@ -32,7 +32,7 @@ class ProductFilterOptionListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductFilterChildViewHolder {
         return ProductFilterChildViewHolder(LayoutInflater.from(parent.context)
-                .inflate(layout.product_filter_child_list_item, parent, false))
+                .inflate(layout.product_filter_option_list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ProductFilterChildViewHolder, position: Int) {

@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterList
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import kotlinx.android.synthetic.main.fragment_product_filter_child_list.*
+import kotlinx.android.synthetic.main.fragment_product_filter_option_list.*
 import javax.inject.Inject
 
 class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterChildClickListener {
@@ -31,7 +31,7 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterChildClic
     private lateinit var mProductFilterOptionListAdapter: ProductFilterOptionListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_filter_child_list, container, false)
+        return inflater.inflate(R.layout.fragment_product_filter_option_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,7 +49,7 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterChildClic
                     AlignedDividerDecoration(
                             requireActivity(),
                             DividerItemDecoration.VERTICAL,
-                            alignStartToStartOf = R.id.filterItemName
+                            alignStartToStartOf = R.id.filterChildItem_name
                     )
             )
             layoutManager = LinearLayoutManager(activity)
