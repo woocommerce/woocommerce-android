@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -45,6 +46,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
         productSlug.setOnClickListener {
             viewModel.onSettingsSlugButtonClicked()
+        }
+        productMenuOrder.setOnClickListener {
+            viewModel.onSettingsMenuOrderButtonClicked()
         }
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             productReviewsAllowed.visibility = View.VISIBLE
@@ -89,23 +93,23 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             (result.getString(ARG_SELECTED_STATUS))?.let {
                 val status = ProductStatus.fromString(it)
                 viewModel.updateProductDraft(productStatus = status)
-                updateProductView()
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
             (result.getString(ARG_VISIBILITY))?.let {
                 val visibility = ProductVisibility.fromString(it)
                 viewModel.updateProductDraft(visibility = visibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
-                updateProductView()
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
-            updateProductView()
         } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                 viewModel.updateProductDraft(purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT))
-                updateProductView()
             }
+        } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
+            viewModel.updateProductDraft(menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0))
         }
+
+        updateProductView()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
@@ -131,6 +135,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
+        productMenuOrder.optionValue = product.menuOrder.toString()
     }
 
     private fun setupObservers() {

@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
@@ -259,6 +260,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onSettingsSlugButtonClicked() {
         viewState.productDraft?.let {
             triggerEvent(ViewProductSlug(it.slug))
+        }
+    }
+
+    /**
+     * Called when the user taps the product slug in product settings
+     */
+    fun onSettingsMenuOrderButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductMenuOrder(it.menuOrder))
         }
     }
 

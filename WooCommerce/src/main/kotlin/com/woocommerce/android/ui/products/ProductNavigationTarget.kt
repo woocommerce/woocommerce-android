@@ -38,5 +38,6 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductVisibility(val visibility: ProductVisibility?, val isFeatured: Boolean) :
             ProductNavigationTarget()
     data class ViewProductSlug(val slug: String) : ProductNavigationTarget()
+    data class ViewProductMenuOrder(val menuOrder: Int) : ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
 }
