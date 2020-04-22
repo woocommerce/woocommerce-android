@@ -1,6 +1,7 @@
 package com.woocommerce.android.screenshots.util
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
@@ -61,13 +62,23 @@ open class Screen {
 
     inline fun <reified T> thenTakeScreenshot(name: String): T {
         screenshotCount += 1
-        val screenshotName = "$screenshotCount-$name"
+        val modeSuffix = if (isDarkTheme()) "dark" else "light"
+        val screenshotName = "$screenshotCount-$name-$modeSuffix"
 //        try {
             Screengrab.screenshot(screenshotName)
 //        } catch (e: Throwable) {
 //            Log.w("screenshots", "Error capturing $screenshotName", e)
 //        }
         return this as T
+    }
+
+    fun isDarkTheme(): Boolean {
+        if (mCurrentActivity == null) {
+            return false
+        }
+
+        return mCurrentActivity!!.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 
     fun clickOn(elementID: Int) {
