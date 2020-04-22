@@ -1,0 +1,3 @@
+4.0:
+* Wir freuen uns, den Tab „Produkte“ vorzustellen!
+* Zusätzlich haben Benutzer jetzt begrenzte Bearbeitungsfunktionen für einfache Produkte, mehr Funktionen in Kürze.

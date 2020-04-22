@@ -1,4 +1,0 @@
-3.9 :
-Résolution de deux incidents : l'un qui se produisait lors de la sélection simultanée de deux produits dans la liste de produits et l'autre qui se produisait lors de la modification d'une quantité en stock négative.
-
-Prenez soin de vous et lavez-vous les mains !
