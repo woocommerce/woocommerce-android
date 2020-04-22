@@ -80,7 +80,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
 
     override fun onProductFilterClick(selectedFilterPosition: Int) {
         val action = ProductFilterListFragmentDirections
-                .actionProductFilterListFragmentToProductFilterChildListFragment(selectedFilterPosition)
+                .actionProductFilterListFragmentToProductFilterOptionListFragment(selectedFilterPosition)
         findNavController().navigate(action)
     }
 
