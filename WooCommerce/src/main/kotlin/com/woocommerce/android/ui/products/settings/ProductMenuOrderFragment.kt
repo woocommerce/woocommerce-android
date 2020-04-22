@@ -9,7 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import kotlinx.android.synthetic.main.fragment_product_menu_order.*
-import kotlinx.android.synthetic.main.fragment_product_slug.*
 import org.wordpress.android.util.StringUtils
 
 /**
