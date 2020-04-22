@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
@@ -33,6 +36,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_filter_list, container, false)
     }
 
@@ -64,6 +68,23 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_clear, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_clear -> {
+                // TODO: add tracking event
+                viewModel.onClearFilterSelected()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
         viewModel.productFilterListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
@@ -75,7 +96,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     }
 
     private fun showProductFilterList(productFilterList: List<FilterListItemUiModel>) {
-        productFilterListAdapter.setProductFilterList(productFilterList)
+        productFilterListAdapter.filterList = productFilterList
     }
 
     override fun onProductFilterClick(selectedFilterPosition: Int) {
