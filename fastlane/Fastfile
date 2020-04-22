@@ -336,7 +336,7 @@ end
     screenshot_devices = [
       {
         screenshot_type: 'phone',
-        device_name: 'Pixel_3_API_28',
+        device_name: 'Pixel_2_XL_API_29',
         device_serial: options[:phone_serial],
       }
     ]
@@ -399,6 +399,7 @@ end
 
     emulators = [
         Dir.pwd + "/emulators/Pixel_3_API_28.ini",
+        Dir.pwd + "/emulators/Pixel_2_XL_API_29.ini",
     ]
 
     emulators.each do |emulator_configuration|

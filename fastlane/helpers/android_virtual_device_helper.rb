@@ -110,6 +110,16 @@ module Fastlane
           AndroidVirtualDevicePathHelper.emulator_path,
           "-avd \"#{device_name}\"",
           "-no-snapshot",
+          # The Pixel 2 XL Emulator with API 29 gave me trouble staying stuck
+          # on: "emulator: Revoking microphone permissions for Google App."
+          # This option solved the issue.
+          #
+          # I think it's fine to not have audio in the context of WooCommerce
+          # and screenshot automation, which is where this code is being used.
+          #
+          # See
+          # https://forum.katalon.com/t/avd-stuck-on-permission-revoke-when-running-jenkin-build/34088
+          "-no-audio",
           "-gpu auto",
         ]
         command << "-wipe-data" if wipe_data
