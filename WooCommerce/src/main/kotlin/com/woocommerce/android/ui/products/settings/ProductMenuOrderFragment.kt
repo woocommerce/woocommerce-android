@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_product_menu_order.*
 import org.wordpress.android.util.StringUtils
 
 /**
- * Settings screen which enables editing a product's slug
+ * Settings screen which enables editing a product's menu order
  */
 class ProductMenuOrderFragment : BaseProductSettingsFragment() {
     companion object {
