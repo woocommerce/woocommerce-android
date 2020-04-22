@@ -25,6 +25,9 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_REQUEST_CODE
+import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -143,7 +146,11 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     override fun onReturnedToChildFragmentWithResult(result: Bundle?) {
         when (result?.get(ARG_PRODUCT_FILTER_REQUEST_CODE) ?: 0) {
             RequestCodes.PRODUCT_LIST_FILTERS -> {
-                // TODO: update product filters here
+                viewModel.onFiltersChanged(
+                        stockStatus = result?.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
+                        productStatus = result?.getString(ARG_PRODUCT_FILTER_STATUS),
+                        productType = result?.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
+                )
             }
         }
     }

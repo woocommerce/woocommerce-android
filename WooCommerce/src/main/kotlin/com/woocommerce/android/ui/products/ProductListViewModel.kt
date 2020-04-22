@@ -49,8 +49,9 @@ class ProductListViewModel @AssistedInject constructor(
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    final val productFilterOptions: Map<ProductFilterOption, String> by lazy {
-        val params = savedState.get<Map<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS) ?: emptyMap()
+    private final val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
+        val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
+                ?: mutableMapOf()
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
         params
     }
@@ -94,6 +95,18 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
+    fun onFiltersChanged(
+        stockStatus: String?,
+        productStatus: String?,
+        productType: String?
+    ) {
+        productFilterOptions.clear()
+        stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
+        productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
+        productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+        refreshProducts()
+    }
+
     fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]
 
     fun getFilterByProductStatus() = productFilterOptions[ProductFilterOption.STATUS]
@@ -126,7 +139,7 @@ class ProductListViewModel @AssistedInject constructor(
         AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
                 mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
         )
-        loadProducts()
+        refreshProducts()
     }
 
     final fun reloadProductsFromDb() {
@@ -173,7 +186,7 @@ class ProductListViewModel @AssistedInject constructor(
                         showSkeleton = true
                     } else {
                         _productList.value = productsInDb
-                        showSkeleton = isRefreshing()
+                        showSkeleton = !isRefreshing()
                     }
                 }
                 viewState = viewState.copy(
@@ -258,6 +271,7 @@ class ProductListViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val query: String? = null,
         val isSearchActive: Boolean? = null,
+        val isFilterActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val displaySortAndFilterCard: Boolean = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
     ) : Parcelable
