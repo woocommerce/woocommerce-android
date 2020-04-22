@@ -13,6 +13,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -26,6 +27,10 @@ import javax.inject.Inject
 class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
+        const val ARG_PRODUCT_FILTER_REQUEST_CODE = "arg_product_filter_request_code"
+        const val ARG_PRODUCT_FILTER_STOCK_STATUS = "arg_product_filter_stock_status"
+        const val ARG_PRODUCT_FILTER_STATUS = "arg_product_filter_status"
+        const val ARG_PRODUCT_FILTER_TYPE_STATUS = "arg_product_type"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -65,6 +70,16 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
             // and only processes the first click event. More details on this issue can be found here:
             // https://github.com/woocommerce/woocommerce-android/issues/2074
             isMotionEventSplittingEnabled = false
+        }
+
+        filterList_btnShowProducts.setOnClickListener {
+            // TODO: add tracking event
+            val bundle = Bundle()
+            bundle.putInt(ARG_PRODUCT_FILTER_REQUEST_CODE, RequestCodes.PRODUCT_LIST_FILTERS)
+            bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
+            bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
+            bundle.putString(ARG_PRODUCT_FILTER_TYPE_STATUS, viewModel.getFilterByProductType())
+            findNavController().navigate(R.id.rootFragment, bundle)
         }
     }
 

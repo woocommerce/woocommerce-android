@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -23,6 +24,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_REQUEST_CODE
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -135,6 +137,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         if (!viewModel.isSearching()) {
             viewModel.reloadProductsFromDb()
+        }
+    }
+
+    override fun onReturnedToChildFragmentWithResult(result: Bundle?) {
+        when (result?.get(ARG_PRODUCT_FILTER_REQUEST_CODE) ?: 0) {
+            RequestCodes.PRODUCT_LIST_FILTERS -> {
+                // TODO: update product filters here
+            }
         }
     }
 

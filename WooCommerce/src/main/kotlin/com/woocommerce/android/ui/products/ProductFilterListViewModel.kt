@@ -62,6 +62,12 @@ class ProductFilterListViewModel @AssistedInject constructor(
         params
     }
 
+    fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
+
+    fun getFilterByProductStatus() = productFilterOptions[STATUS]
+
+    fun getFilterByProductType() = productFilterOptions[TYPE]
+
     fun loadFilters() {
         _filterListItems.value = buildFilterListItemUiModel()
 

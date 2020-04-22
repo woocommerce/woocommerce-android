@@ -387,6 +387,7 @@ class MainActivity : AppUpgradeActivity(),
             getActiveTopLevelFragment()?.let {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
+                it.onReturnedToChildFragmentWithResult(arguments)
             }
         }
 
