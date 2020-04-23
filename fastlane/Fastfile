@@ -12,6 +12,7 @@ ENV["PROJECT_ROOT_FOLDER"]="./"
 ENV["validate_translations"]="buildVanillaRelease"
 
 SUPPORTED_LOCALES = [
+  { glotpress: "en", google_play: "en-US", emulator: "en", promo_config: {}},
   { glotpress: "ar", google_play: "ar", emulator: "ar", promo_config: {}},
   { glotpress: "de", google_play: "de-DE", emulator: "de", promo_config: {} },
   { glotpress: "es", google_play: "es-ES", emulator: "es", promo_config: {} },
