@@ -23,7 +23,7 @@ class ProductSortingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productListRepository: ProductListRepository
-): ScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         val SORTING_OPTIONS = listOf(
             SortingListItemUIModel(R.string.product_list_sorting_newest_to_oldest, DATE_DESC),

@@ -200,7 +200,7 @@ class ProductListViewModel @AssistedInject constructor(
         loadProducts(scrollToTop = scrollToTop)
     }
 
-    private suspend fun  fetchProductList(
+    private suspend fun fetchProductList(
         searchQuery: String? = null,
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
