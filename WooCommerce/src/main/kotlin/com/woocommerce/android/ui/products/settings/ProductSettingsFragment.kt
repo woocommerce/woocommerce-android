@@ -20,11 +20,11 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductVisibility
+import com.woocommerce.android.ui.products.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_IS_FEATURED
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
@@ -95,8 +95,8 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 viewModel.updateProductDraft(productStatus = status)
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
-            (result.getString(ARG_VISIBILITY))?.let {
-                val visibility = ProductVisibility.fromString(it)
+            (result.getString(ARG_CATALOG_VISIBILITY))?.let {
+                val visibility = ProductCatalogVisibility.fromString(it)
                 viewModel.updateProductDraft(visibility = visibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
@@ -132,7 +132,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
 
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
-        productCatalogVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
+        productCatalogVisibility.optionValue = product.catalogVisibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())

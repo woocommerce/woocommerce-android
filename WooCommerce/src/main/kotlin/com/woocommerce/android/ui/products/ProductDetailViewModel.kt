@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -250,7 +250,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onSettingsVisibilityButtonClicked() {
         viewState.productDraft?.let {
-            triggerEvent(ViewProductVisibility(it.visibility, it.isFeatured))
+            triggerEvent(ViewProductCatalogVisibility(it.catalogVisibility, it.isFeatured))
         }
     }
 
@@ -462,7 +462,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         images: List<Image>? = null,
         shippingClassId: Long? = null,
         productStatus: ProductStatus? = null,
-        visibility: ProductVisibility? = null,
+        visibility: ProductCatalogVisibility? = null,
         isFeatured: Boolean? = null,
         reviewsAllowed: Boolean? = null,
         purchaseNote: String? = null,
@@ -497,7 +497,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     status = productStatus ?: product.status,
-                    visibility = visibility ?: product.visibility,
+                    catalogVisibility = visibility ?: product.catalogVisibility,
                     isFeatured = isFeatured ?: product.isFeatured,
                     reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
                     purchaseNote = purchaseNote ?: product.purchaseNote,

@@ -11,39 +11,39 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.products.ProductVisibility
-import com.woocommerce.android.ui.products.ProductVisibility.CATALOG
-import com.woocommerce.android.ui.products.ProductVisibility.HIDDEN
-import com.woocommerce.android.ui.products.ProductVisibility.SEARCH
-import com.woocommerce.android.ui.products.ProductVisibility.VISIBLE
-import kotlinx.android.synthetic.main.fragment_product_visibility.*
+import com.woocommerce.android.ui.products.ProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductCatalogVisibility.CATALOG
+import com.woocommerce.android.ui.products.ProductCatalogVisibility.HIDDEN
+import com.woocommerce.android.ui.products.ProductCatalogVisibility.SEARCH
+import com.woocommerce.android.ui.products.ProductCatalogVisibility.VISIBLE
+import kotlinx.android.synthetic.main.fragment_product_catalog_visibility.*
 
 /**
  * Settings screen which enables choosing a product's catalog visibility
  */
-class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener {
+class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(), OnClickListener {
     companion object {
-        const val ARG_VISIBILITY = "visibility"
+        const val ARG_CATALOG_VISIBILITY = "visibility"
         const val ARG_IS_FEATURED = "is_featured"
     }
 
     override val requestCode = RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 
-    private val navArgs: ProductVisibilityFragmentArgs by navArgs()
-    private var selectedVisibility: String? = null
+    private val navArgs: ProductCatalogVisibilityFragmentArgs by navArgs()
+    private var selectedCatalogVisibility: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_visibility, container, false)
+        return inflater.inflate(R.layout.fragment_product_catalog_visibility, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        selectedVisibility = savedInstanceState?.getString(ARG_VISIBILITY) ?: navArgs.visibility
+        selectedCatalogVisibility = savedInstanceState?.getString(ARG_CATALOG_VISIBILITY) ?: navArgs.catalogVisibility
         btnFeatured.isChecked = savedInstanceState?.getBoolean(ARG_IS_FEATURED) ?: navArgs.featured
 
-        selectedVisibility?.let {
+        selectedCatalogVisibility?.let {
             getButtonForVisibility(it)?.isChecked = true
         }
 
@@ -55,7 +55,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(ARG_VISIBILITY, selectedVisibility)
+        outState.putString(ARG_CATALOG_VISIBILITY, selectedCatalogVisibility)
         outState.putBoolean(ARG_IS_FEATURED, btnFeatured.isChecked)
     }
 
@@ -65,20 +65,20 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
             btnVisibilityCatalog.isChecked = it == btnVisibilityCatalog
             btnVisibilitySearch.isChecked = it == btnVisibilitySearch
             btnVisibilityHidden.isChecked = it == btnVisibilityHidden
-            selectedVisibility = getVisibilityForButtonId(it.id)
+            selectedCatalogVisibility = getVisibilityForButtonId(it.id)
         }
     }
 
     override fun getChangesBundle(): Bundle {
         return Bundle().also {
-            it.putString(ARG_VISIBILITY, selectedVisibility)
+            it.putString(ARG_CATALOG_VISIBILITY, selectedCatalogVisibility)
             it.putBoolean(ARG_IS_FEATURED, btnFeatured.isChecked)
         }
     }
 
     override fun hasChanges(): Boolean {
         return navArgs.featured != btnFeatured.isChecked ||
-                navArgs.visibility != selectedVisibility
+                navArgs.catalogVisibility != selectedCatalogVisibility
     }
 
     override fun onResume() {
@@ -89,7 +89,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
     override fun getFragmentTitle() = getString(R.string.product_catalog_visibility)
 
     private fun getButtonForVisibility(visibility: String): CheckedTextView? {
-        return when (ProductVisibility.fromString(visibility)) {
+        return when (ProductCatalogVisibility.fromString(visibility)) {
             VISIBLE -> btnVisibilityVisible
             CATALOG -> btnVisibilityCatalog
             SEARCH -> btnVisibilitySearch

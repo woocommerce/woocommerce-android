@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
+import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductExternalLinkFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductImageViewerFragmentModule
@@ -15,7 +16,6 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmen
 import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderModule
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragment
@@ -24,8 +24,8 @@ import com.woocommerce.android.ui.products.settings.ProductSlugFragment
 import com.woocommerce.android.ui.products.settings.ProductSlugModule
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
-import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -40,7 +40,7 @@ import dagger.android.ContributesAndroidInjector
     ProductShippingClassFragmentModule::class,
     ProductPricingFragmentModule::class,
     ProductSettingsFragmentModule::class,
-    ProductVisibilityFragmentModule::class,
+    ProductCatalogVisibilityFragmentModule::class,
     ProductStatusFragmentModule::class,
     ProductSlugFragmentModule::class,
     ProductExternalLinkFragmentModule::class,
@@ -125,10 +125,10 @@ object ProductsModule {
     }
 
     @Module
-    internal abstract class ProductVisibilityFragmentModule {
+    internal abstract class ProductCatalogVisibilityFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductVisibilityModule::class])
-        abstract fun productVisibilityFragment(): ProductVisibilityFragment
+        @ContributesAndroidInjector(modules = [ProductCatalogVisibilityModule::class])
+        abstract fun productCatalogVisibilityFragment(): ProductCatalogVisibilityFragment
     }
 
     @Module

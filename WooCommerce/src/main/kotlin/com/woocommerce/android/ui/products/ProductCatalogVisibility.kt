@@ -8,7 +8,7 @@ import java.util.Locale
 /**
  * Enum for a product's catalog visibility
  */
-enum class ProductVisibility {
+enum class ProductCatalogVisibility {
     VISIBLE,
     CATALOG,
     SEARCH,
@@ -29,7 +29,7 @@ enum class ProductVisibility {
     }
 
     companion object {
-        fun fromString(visibility: String): ProductVisibility? {
+        fun fromString(visibility: String): ProductCatalogVisibility? {
             val lcVisibility = visibility.toLowerCase(Locale.US)
             values().forEach { value ->
                 if (value.toString().toLowerCase(Locale.US) == lcVisibility) return value
