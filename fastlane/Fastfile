@@ -358,7 +358,26 @@ end
       ]
     }
 
-    take_android_emulator_screenshots(devices: screenshot_devices, screenshot_options: screenshot_options)
+    # Originally, we used this custom action, which is excellent because it
+    # manages the Emulator state etc. But, I can't get it to work with
+    # scripting a change between light and dark mode.
+    #
+    #take_android_emulator_screenshots(devices: screenshot_devices, screenshot_options: screenshot_options)
+    #
+    # So, for the moment, in the interest of getting the screenshots done, I'm
+    # using a more manual approach...
+    screengrab(
+      screenshot_options.merge(
+        {
+          # This is inherently brittle, there's no guarantee we'll have an
+          # emulator on port 5554 open
+          specific_device: "emulator-5554",
+          # Don't clear previous because we differentiate between light and
+          # dark mode
+          clear_previous_screenshots: false
+        }
+      )
+    )
   end
 
   desc 'Compose screenshots'
