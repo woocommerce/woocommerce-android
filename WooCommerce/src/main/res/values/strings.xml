@@ -471,13 +471,16 @@
     <string name="product_backorders_notify">Allow, but notify customer</string>
     <string name="product_list_empty">No products yet</string>
     <string name="product_list_empty_search">No matching products</string>
-    <string name="product_list_sorting">Newest</string>
     <string name="product_list_filters">Filters</string>
     <string name="product_list_sorting_header">Sort by</string>
     <string name="product_list_sorting_newest_to_oldest">Date: Newest to oldest</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Newest</string>
     <string name="product_list_sorting_oldest_to_newest">Date: Oldest to newest</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Oldest</string>
     <string name="product_list_sorting_a_to_z">Title: A to Z</string>
+    <string name="product_list_sorting_a_to_z_short">A to Z</string>
     <string name="product_list_sorting_z_to_a">Title: Z to A</string>
+    <string name="product_list_sorting_z_to_a_short">Z to A</string>
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>

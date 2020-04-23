@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/minor_100"
             android:drawableEnd="@drawable/ic_arrow_drop_down"
-            android:text="@string/product_list_sorting"
+            android:text="@string/product_list_sorting_newest_to_oldest_short"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
