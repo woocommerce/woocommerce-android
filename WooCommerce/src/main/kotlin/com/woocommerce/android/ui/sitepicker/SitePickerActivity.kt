@@ -41,6 +41,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
+import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -221,7 +222,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             GlideApp.with(this)
                     .load(presenter.getUserAvatarUrl())
-                    .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
+                    .placeholder(R.drawable.img_gravatar_placeholder)
                     .circleCrop()
                     .into(image_avatar)
         } else {
