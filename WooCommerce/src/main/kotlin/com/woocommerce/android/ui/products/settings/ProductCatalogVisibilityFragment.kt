@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.fragment_product_catalog_visibility.*
  */
 class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(), OnClickListener {
     companion object {
-        const val ARG_CATALOG_VISIBILITY = "visibility"
+        const val ARG_CATALOG_VISIBILITY = "catalog_visibility"
         const val ARG_IS_FEATURED = "is_featured"
     }
 

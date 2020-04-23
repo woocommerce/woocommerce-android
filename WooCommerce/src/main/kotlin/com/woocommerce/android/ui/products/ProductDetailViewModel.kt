@@ -246,9 +246,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the user taps the product visibility in product settings
+     * Called when the user taps the product catalog visibility in product settings
      */
-    fun onSettingsVisibilityButtonClicked() {
+    fun onSettingsCatalogVisibilityButtonClicked() {
         viewState.productDraft?.let {
             triggerEvent(ViewProductCatalogVisibility(it.catalogVisibility, it.isFeatured))
         }
@@ -462,7 +462,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         images: List<Image>? = null,
         shippingClassId: Long? = null,
         productStatus: ProductStatus? = null,
-        visibility: ProductCatalogVisibility? = null,
+        catalogVisibility: ProductCatalogVisibility? = null,
         isFeatured: Boolean? = null,
         reviewsAllowed: Boolean? = null,
         purchaseNote: String? = null,
@@ -497,7 +497,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
                     status = productStatus ?: product.status,
-                    catalogVisibility = visibility ?: product.catalogVisibility,
+                    catalogVisibility = catalogVisibility ?: product.catalogVisibility,
                     isFeatured = isFeatured ?: product.isFeatured,
                     reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
                     purchaseNote = purchaseNote ?: product.purchaseNote,

@@ -29,10 +29,10 @@ enum class ProductCatalogVisibility {
     }
 
     companion object {
-        fun fromString(visibility: String): ProductCatalogVisibility? {
-            val lcVisibility = visibility.toLowerCase(Locale.US)
+        fun fromString(catalogVisibility: String): ProductCatalogVisibility? {
+            val lcCatalogVisibility = catalogVisibility.toLowerCase(Locale.US)
             values().forEach { value ->
-                if (value.toString().toLowerCase(Locale.US) == lcVisibility) return value
+                if (value.toString().toLowerCase(Locale.US) == lcCatalogVisibility) return value
             }
             return null
         }

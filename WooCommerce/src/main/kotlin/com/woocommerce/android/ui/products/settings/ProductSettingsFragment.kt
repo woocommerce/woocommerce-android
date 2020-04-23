@@ -42,7 +42,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             viewModel.onSettingsStatusButtonClicked()
         }
         productCatalogVisibility.setOnClickListener {
-            viewModel.onSettingsVisibilityButtonClicked()
+            viewModel.onSettingsCatalogVisibilityButtonClicked()
         }
         productSlug.setOnClickListener {
             viewModel.onSettingsSlugButtonClicked()
@@ -96,8 +96,8 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
             (result.getString(ARG_CATALOG_VISIBILITY))?.let {
-                val visibility = ProductCatalogVisibility.fromString(it)
-                viewModel.updateProductDraft(visibility = visibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
+                val catalogVisibility = ProductCatalogVisibility.fromString(it)
+                viewModel.updateProductDraft(catalogVisibility = catalogVisibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
