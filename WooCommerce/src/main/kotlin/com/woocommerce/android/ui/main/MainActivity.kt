@@ -390,9 +390,9 @@ class MainActivity : AppUpgradeActivity(),
 
                 // hack to pass filters selected back to the product list fragment
                 // should only called when the previous fragment id is product filter screen
-//                if (previousDestinationId == R.id.productFilterListFragment) {
+                if (previousDestinationId == R.id.productFilterListFragment) {
                     it.onReturnedToChildFragmentWithResult(arguments)
-//                }
+                }
             }
         }
 
