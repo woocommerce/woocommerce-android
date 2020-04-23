@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -108,7 +107,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         if (calledFromLogin) {
             toolbar.visibility = View.GONE
-            ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
             button_help.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
