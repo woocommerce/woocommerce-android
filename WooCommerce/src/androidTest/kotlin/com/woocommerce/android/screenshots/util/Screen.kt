@@ -73,11 +73,7 @@ open class Screen {
     }
 
     fun isDarkTheme(): Boolean {
-        if (mCurrentActivity == null) {
-            return false
-        }
-
-        return mCurrentActivity!!.resources.configuration.uiMode and
+        return getCurrentActivity()!!.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 
