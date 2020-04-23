@@ -76,7 +76,8 @@ class ProductFilterListViewModel @AssistedInject constructor(
         } else resourceProvider.getString(string.product_list_filters)
 
         productFilterListViewState = productFilterListViewState.copy(
-                screenTitle = screenTitle
+                screenTitle = screenTitle,
+                displayClearButton = productFilterOptions.isNotEmpty()
         )
     }
 
@@ -188,7 +189,8 @@ class ProductFilterListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductFilterListViewState(
-        val screenTitle: String? = null
+        val screenTitle: String? = null,
+        val displayClearButton: Boolean? = null
     ) : Parcelable
 
     @Parcelize

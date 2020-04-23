@@ -40,6 +40,8 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
 
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
 
+    private var clearAllMenuItem: MenuItem? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_filter_list, container, false)
@@ -86,6 +88,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_clear, menu)
+        clearAllMenuItem = menu.findItem(R.id.menu_clear)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -103,6 +106,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
         viewModel.productFilterListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
+            new.displayClearButton?.takeIfNotEqualTo(old?.displayClearButton) { showClearAllAction(it) }
         }
         viewModel.filterListItems.observe(viewLifecycleOwner, Observer {
             showProductFilterList(it)
@@ -112,6 +116,10 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
 
     private fun showProductFilterList(productFilterList: List<FilterListItemUiModel>) {
         productFilterListAdapter.filterList = productFilterList
+    }
+
+    private fun showClearAllAction(show: Boolean) {
+        view?.post { clearAllMenuItem?.isVisible = show }
     }
 
     override fun onProductFilterClick(selectedFilterPosition: Int) {

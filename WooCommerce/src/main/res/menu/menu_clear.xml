@@ -5,5 +5,6 @@
     <item
         android:id="@+id/menu_clear"
         android:title="@string/clear"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:visible="false"/>
 </menu>
