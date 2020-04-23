@@ -6,11 +6,13 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductListViewModel.OnProductSortingChanged
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
@@ -40,6 +42,7 @@ class ProductSortingViewModel @AssistedInject constructor(
 
     fun onSortingOptionChanged(option: ProductSorting) {
         productListRepository.productSortingChoice = option
+        EventBus.getDefault().post(OnProductSortingChanged)
         triggerEvent(Exit)
     }
 

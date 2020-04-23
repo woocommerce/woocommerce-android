@@ -249,6 +249,15 @@ class ProductListViewModel @AssistedInject constructor(
         loadProducts()
     }
 
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshProducts(event: OnProductSortingChanged) {
+        viewState = viewState.copy(sortingTitleResource = getSortingTitle())
+        reloadProductsFromDb()
+    }
+
+    object OnProductSortingChanged
+
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
