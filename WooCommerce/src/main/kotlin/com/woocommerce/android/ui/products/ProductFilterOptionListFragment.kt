@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterChildClickListener
+import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -20,7 +20,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_option_list.*
 import javax.inject.Inject
 
-class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterChildClickListener {
+class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionClickListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(
             R.id.nav_graph_product_filters
@@ -44,12 +44,12 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterChildClic
         super.onActivityCreated(savedInstanceState)
 
         mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
-        with(filterChildList) {
+        with(filterOptionList) {
             addItemDecoration(
                     AlignedDividerDecoration(
                             requireActivity(),
                             DividerItemDecoration.VERTICAL,
-                            alignStartToStartOf = R.id.filterChildItem_name
+                            alignStartToStartOf = R.id.filterOptionItem_name
                     )
             )
             layoutManager = LinearLayoutManager(activity)
@@ -85,7 +85,7 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterChildClic
         mProductFilterOptionListAdapter.filterList = productFilterChildList
     }
 
-    override fun onChildFilterItemClick(selectedFilter: FilterListOptionItemUiModel) {
+    override fun onFilterOptionClick(selectedFilter: FilterListOptionItemUiModel) {
         viewModel.onFilterOptionItemSelected(arguments.selectedFilterItemPosition, selectedFilter)
     }
 }
