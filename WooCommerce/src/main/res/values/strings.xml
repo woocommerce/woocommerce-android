@@ -499,6 +499,9 @@
     <string name="product_settings">Product settings</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
+    <string name="product_visibility_public">Public</string>
+    <string name="product_visibility_private">Private</string>
+    <string name="product_visibility_password_protected">Password protected</string>
     <string name="product_catalog_visibility">Catalog visibility</string>
     <string name="product_catalog_visibility_visible">Shop and search results</string>
     <string name="product_catalog_visibility_catalog">Shop only</string>

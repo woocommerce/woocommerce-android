@@ -11,11 +11,10 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.products.ProductCatalogVisibility
-import com.woocommerce.android.ui.products.ProductCatalogVisibility.CATALOG
-import com.woocommerce.android.ui.products.ProductCatalogVisibility.HIDDEN
-import com.woocommerce.android.ui.products.ProductCatalogVisibility.SEARCH
-import com.woocommerce.android.ui.products.ProductCatalogVisibility.VISIBLE
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.CATALOG
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.HIDDEN
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.SEARCH
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import kotlinx.android.synthetic.main.fragment_product_catalog_visibility.*
 
 /**

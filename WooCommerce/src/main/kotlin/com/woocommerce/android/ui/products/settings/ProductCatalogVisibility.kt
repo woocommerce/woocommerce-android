@@ -1,13 +1,10 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.settings
 
 import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import java.util.Locale
 
-/**
- * Enum for a product's catalog visibility
- */
 enum class ProductCatalogVisibility {
     VISIBLE,
     CATALOG,

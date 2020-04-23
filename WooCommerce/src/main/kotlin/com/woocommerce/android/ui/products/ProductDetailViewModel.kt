@@ -39,6 +39,8 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -108,11 +110,35 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
+    // password is a property of a WP.com post and is not stored with the product
+    private var storedProductPassword: String = ""
+    private var draftProductPassword: String = ""
+
     init {
         EventBus.getDefault().register(this)
     }
 
     fun getProduct() = viewState
+
+    fun getStoredProductVisibility(): ProductVisibility {
+        return if (storedProductPassword.isNotEmpty()) {
+            ProductVisibility.PASSWORD_PROTECTED
+        } else if (getProduct().storedProduct?.status == ProductStatus.PRIVATE) {
+            ProductVisibility.PRIVATE
+        } else {
+            ProductVisibility.PUBLIC
+        }
+    }
+
+    fun getDraftProductVisibility(): ProductVisibility {
+        return if (draftProductPassword.isNotEmpty()) {
+            ProductVisibility.PASSWORD_PROTECTED
+        } else if (getProduct().productDraft?.status == ProductStatus.PRIVATE) {
+            ProductVisibility.PRIVATE
+        } else {
+            ProductVisibility.PUBLIC
+        }
+    }
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
 

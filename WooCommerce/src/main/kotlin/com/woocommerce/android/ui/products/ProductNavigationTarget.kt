@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.view.View
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.lang.ref.WeakReference
 
