@@ -104,6 +104,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                 viewModel.updateProductDraft(purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT))
+                updateProductView()
             }
         } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
             viewModel.updateProductDraft(menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0))
