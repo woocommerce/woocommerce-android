@@ -23,6 +23,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
@@ -31,6 +32,7 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductPasswordChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
@@ -52,6 +54,7 @@ class ProductDetailRepository @Inject constructor(
 
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
+    private var continuationFetchProductPassword: CancellableContinuation<String?>? = null
     private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
 
@@ -82,6 +85,24 @@ class ProductDetailRepository @Inject constructor(
 
         continuationFetchProduct = null
         return getProduct(remoteProductId)
+    }
+
+    suspend fun fetchProductPassword(remoteProductId: Long): String? {
+        var password: String? = null
+        try {
+            continuationFetchProductPassword?.cancel()
+            password = suspendCancellableCoroutineWithTimeout<String?>(ACTION_TIMEOUT) {
+                continuationFetchProductPassword = it
+
+                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.e(PRODUCTS, "CancellationException while fetching single product")
+        }
+
+        continuationFetchProductPassword = null
+        return password
     }
 
     /**
@@ -201,6 +222,21 @@ class ProductDetailRepository @Inject constructor(
                 WooLog.w(PRODUCTS, "continuationFetchProduct is no longer active")
             }
         }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductPasswordChanged(event: OnProductPasswordChanged) {
+        if (event.causeOfChange  == FETCH_PRODUCT_PASSWORD && event.remoteProductId == remoteProductId) {
+            if (continuationFetchProductPassword?.isActive == true) {
+                if (event.isError) {
+                    continuationFetchProductPassword?.resume(null)
+                } else {
+                    continuationFetchProductPassword?.resume(event.password)
+                }
+            } else {
+                WooLog.w(PRODUCTS, "continuationFetchProductPassword is no longer active")
+            }        }
     }
 
     @SuppressWarnings("unused")

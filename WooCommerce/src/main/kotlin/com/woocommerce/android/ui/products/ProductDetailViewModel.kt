@@ -112,8 +112,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var productImagesViewState by productImagesViewStateData
 
     // password is a property of a WP.com post and is not stored with the product
-    private var storedProductPassword: String = ""
-    private var draftProductPassword: String = ""
+    private var storedProductPassword: String? = null
+    private var draftProductPassword: String? = null
 
     init {
         EventBus.getDefault().register(this)
@@ -139,7 +139,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun getStoredProductVisibility(): ProductVisibility {
-        return if (storedProductPassword.isNotEmpty()) {
+        return if (storedProductPassword?.isNotEmpty() == true) {
             ProductVisibility.PASSWORD_PROTECTED
         } else if (getProduct().storedProduct?.status == ProductStatus.PRIVATE) {
             ProductVisibility.PRIVATE
@@ -149,7 +149,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun getDraftProductVisibility(): ProductVisibility {
-        return if (draftProductPassword.isNotEmpty()) {
+        return if (draftProductPassword?.isNotEmpty() == true) {
             ProductVisibility.PASSWORD_PROTECTED
         } else if (getProduct().productDraft?.status == ProductStatus.PRIVATE) {
             ProductVisibility.PRIVATE
@@ -606,6 +606,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
                 if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
+                    storedProductPassword = productRepository.fetchProductPassword(remoteProductId)
                 }
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)

@@ -69,12 +69,15 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
     override fun getChangesBundle(): Bundle {
         return Bundle().also {
             it.putString(ARG_VISIBILITY, selectedVisibility)
-            it.putString(ARG_PASSWORD, getPassword())
+            if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
+                it.putString(ARG_PASSWORD, getPassword())
+            }
         }
     }
 
     override fun hasChanges(): Boolean {
-        return navArgs.visibility != selectedVisibility
+        return navArgs.visibility != selectedVisibility ||
+                navArgs.password != getPassword()
     }
 
     override fun onResume() {
