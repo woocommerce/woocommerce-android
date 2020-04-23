@@ -6,12 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.products.ProductSortingViewModel.SortingListItemUIModel
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -40,22 +40,29 @@ class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
+        showSortingOptions()
     }
 
     private fun setupObservers() {
-        viewModel.productSortingViewState.observe(viewLifecycleOwner) { old, new ->
-            new.sortingOptions?.takeIfNotEqualTo(old?.sortingOptions) {
-                showSortingOptions(it)
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is Exit -> {
+                    dismiss()
+                }
+                else -> event.isHandled = false
             }
-        }
+        })
     }
 
-    private fun showSortingOptions(options: List<SortingListItemUIModel>) {
+    private fun showSortingOptions() {
         val adapter = sorting_optionsList.adapter as? ProductSortingListAdapter
-                ?: ProductSortingListAdapter(viewModel::onSortingOptionChanged)
+                ?: ProductSortingListAdapter(
+                        viewModel::onSortingOptionChanged,
+                        ProductSortingViewModel.SORTING_OPTIONS,
+                        viewModel.sortingChoice
+                )
         sorting_optionsList.adapter = adapter
         sorting_optionsList.layoutManager = LinearLayoutManager(activity)
-        adapter.update(options)
     }
 
     override fun androidInjector(): AndroidInjector<Any> {
