@@ -14,12 +14,15 @@ import kotlinx.android.synthetic.main.product_sorting_list_item.view.*
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 class ProductSortingListAdapter(
-    private val onItemClicked: (option: ProductSorting) -> Unit
+    private val onItemClicked: (option: ProductSorting) -> Unit,
+    private val options: List<SortingListItemUIModel>,
+    private val selectedOption: ProductSorting
 ) : RecyclerView.Adapter<ProductSortingViewHolder>() {
-    private val items = mutableListOf<SortingListItemUIModel>()
-
     init {
         setHasStableIds(true)
+
+        val diffResult = DiffUtil.calculateDiff(ProductSortingItemDiffUtil(this.options.toList(), options))
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductSortingViewHolder {
@@ -28,28 +31,24 @@ class ProductSortingListAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductSortingViewHolder, position: Int) {
-        holder.bind(items[position], onItemClicked)
+        holder.bind(options[position], onItemClicked, selectedOption)
     }
 
     override fun getItemId(position: Int) = position.toLong()
 
-    override fun getItemCount() = items.size
-
-    fun update(items: List<SortingListItemUIModel>) {
-        val diffResult = DiffUtil.calculateDiff(ProductSortingItemDiffUtil(this.items.toList(), items))
-        this.items.clear()
-        this.items.addAll(items)
-
-        diffResult.dispatchUpdatesTo(this)
-    }
+    override fun getItemCount() = options.size
 
     class ProductSortingViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val txtSortingName: TextView = view.sortingItem_name
         private val txtSortingSelection: RadioButton = view.sortingItem_tick
 
-        fun bind(item: SortingListItemUIModel, onItemClicked: (option: ProductSorting) -> Unit) {
+        fun bind(
+            item: SortingListItemUIModel,
+            onItemClicked: (option: ProductSorting) -> Unit,
+            selectedOption: ProductSorting
+        ) {
             txtSortingName.text = view.context.getString(item.stringResource)
-            txtSortingSelection.isChecked = item.isSelected
+            txtSortingSelection.isChecked = item.value == selectedOption
             view.setOnClickListener {
                 onItemClicked(item.value)
             }
