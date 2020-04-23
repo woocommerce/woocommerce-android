@@ -7,7 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/minor_50"
-        android:paddingBottom="@dimen/minor_50">
+        android:paddingBottom="@dimen/minor_50"
+        android:background="?attr/colorSurface">
 
         <com.woocommerce.android.widgets.WCToggleOutlinedSelectorButton
             android:id="@+id/btn_product_sorting"
