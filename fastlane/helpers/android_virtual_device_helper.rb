@@ -141,7 +141,7 @@ module Fastlane
             end
           end
         rescue Timeout::Error
-          UI.user_error!("Timed out waiting for the device to boot")
+          UI.user_error!("Timed out waiting for the device to boot (timeout = #{LAUNCH_TIMEOUT}s)")
         end
       end
     end
