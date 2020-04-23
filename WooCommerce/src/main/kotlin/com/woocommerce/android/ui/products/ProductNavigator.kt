@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIm
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -54,9 +55,10 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductDescriptionEditor -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToAztecEditorFragment(
+                        .actionGlobalAztecEditorFragment(
                                 target.description,
                                 target.title,
+                                null,
                                 RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION
                         )
                 fragment.findNavController().navigate(action)
@@ -64,10 +66,22 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShortDescriptionEditor -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToAztecEditorFragment(
+                        .actionGlobalAztecEditorFragment(
                                 target.shortDescription,
                                 target.title,
+                                null,
                                 RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION
+                        )
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductPurchaseNoteEditor -> {
+                val action = ProductDetailFragmentDirections
+                        .actionGlobalAztecEditorFragment(
+                                target.purchaseNote,
+                                target.title,
+                                target.caption,
+                                RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
                         )
                 fragment.findNavController().navigate(action)
             }

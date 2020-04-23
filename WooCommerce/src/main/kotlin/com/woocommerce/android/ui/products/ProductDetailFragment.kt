@@ -553,7 +553,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_downloads, downloadGroup)
         }
 
-        if (product.purchaseNote.isNotBlank()) {
+        // if add/edit products is enabled, purchase note appears in product settings
+        if (product.purchaseNote.isNotBlank() && !isAddEditProductRelease1Enabled(product.type)) {
             addReadMoreView(
                     DetailCard.PurchaseDetails,
                     R.string.product_purchase_note,

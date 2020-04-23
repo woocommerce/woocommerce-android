@@ -11,9 +11,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
@@ -52,6 +56,16 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productReviewsAllowed.visibility = View.GONE
             productReviewsAllowedDivider.visibility = View.GONE
         }
+        productPurchaseNote.setOnClickListener {
+            val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
+            viewModel.onEditProductCardClicked(
+                    ViewProductPurchaseNoteEditor(
+                            purchaseNote,
+                            getString(R.string.product_purchase_note),
+                            getString(R.string.product_purchase_note_caption)
+                    )
+            )
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -86,6 +100,11 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
             updateProductView()
+        } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
+            if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                viewModel.updateProductDraft(purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT))
+                updateProductView()
+            }
         }
     }
 
@@ -111,6 +130,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
+        productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
     }
 
     private fun setupObservers() {
