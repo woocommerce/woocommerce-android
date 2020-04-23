@@ -31,7 +31,7 @@
       "device": "Pixel 2 XL",
       "filename": "Pixel_2_XL_01.png",
       "background": "#674399",
-      "screenshot": "images/phoneScreenshots/1-order-dashboard-light.png",
+      "screenshot": "images/phoneScreenshots/1-order-dashboard-dark.png",
       "text": "metadata/{locale}/promo_screenshot_1.txt"
     },
     {
@@ -45,7 +45,7 @@
       "device": "Pixel 2 XL",
       "filename": "Pixel_2_XL_03.png",
       "background": "#674399",
-      "screenshot": "images/phoneScreenshots/3-order-detail-light.png",
+      "screenshot": "images/phoneScreenshots/3-order-detail-dark.png",
       "text": "metadata/{locale}/promo_screenshot_3.txt"
     },
     {
@@ -59,7 +59,7 @@
       "device": "Pixel 2 XL",
       "filename": "Pixel_2_XL_05.png",
       "background": "#674399",
-      "screenshot": "images/phoneScreenshots/4-review-list-light.png",
+      "screenshot": "images/phoneScreenshots/4-review-list-dark.png",
       "text": "metadata/{locale}/promo_screenshot_5.txt"
     }
   ]
