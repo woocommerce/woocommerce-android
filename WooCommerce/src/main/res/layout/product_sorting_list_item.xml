@@ -22,15 +22,14 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Canada Post" />
 
-        <com.google.android.material.radiobutton.MaterialRadioButton
+        <ImageView
             android:id="@+id/sortingItem_tick"
-            style="@style/Woo.Button.Toggle"
-            android:layout_width="@dimen/min_tap_target"
-            android:layout_height="wrap_content"
-            android:button="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/major_100"
             android:contentDescription="@string/product_list_sorting_list_item"
-            android:drawableEnd="@drawable/ic_done_secondary"
-            android:visibility="gone"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_done_secondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

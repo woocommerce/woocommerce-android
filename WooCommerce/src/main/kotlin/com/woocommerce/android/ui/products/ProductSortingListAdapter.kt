@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -40,7 +40,7 @@ class ProductSortingListAdapter(
 
     class ProductSortingViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val txtSortingName: TextView = view.sortingItem_name
-        private val txtSortingSelection: RadioButton = view.sortingItem_tick
+        private val txtSortingSelection: ImageView = view.sortingItem_tick
 
         fun bind(
             item: SortingListItemUIModel,
@@ -48,7 +48,7 @@ class ProductSortingListAdapter(
             selectedOption: ProductSorting
         ) {
             txtSortingName.text = view.context.getString(item.stringResource)
-            txtSortingSelection.isChecked = item.value == selectedOption
+            txtSortingSelection.visibility = if (item.value == selectedOption) View.VISIBLE else View.GONE
             view.setOnClickListener {
                 onItemClicked(item.value)
             }
