@@ -348,7 +348,10 @@ end
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
       use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
       reinstall_app: false,
-      clear_previous_screenshots: options.fetch(:clear_previous_screenshots, true),
+      # By default, don't clear previous because we differentiate between light
+      # and dark mode
+      clear_previous_screenshots: options.fetch(:clear_previous_screenshots, false),
+      # Needs to be root to save screenshots consistently
       use_adb_root: true,
       locales: locales,
       use_timestamp_suffix: false,
@@ -362,22 +365,55 @@ end
     # manages the Emulator state etc. But, I can't get it to work with
     # scripting a change between light and dark mode.
     #
-    #take_android_emulator_screenshots(devices: screenshot_devices, screenshot_options: screenshot_options)
+    # This is just a debug flag to roll back to the previous implementation.
+    no_dark_mode = false
+    if no_dark_mode
+      take_android_emulator_screenshots(devices: screenshot_devices, screenshot_options: screenshot_options)
+      exit 1
+    end
     #
     # So, for the moment, in the interest of getting the screenshots done, I'm
     # using a more manual approach...
+
+    # These would be handled by the custom lane
+    #
+    # This is inherently brittle, there's no guarantee we'll have an emulator
+    # on port 5554 open
+    emulator_serial = "emulator-5554"
+    # The commands here run ok, but then when screengrab runs it resets their
+    # effect on the status bar
+    adb_enter_demo_mode(emulator_serial)
+
+    adb_toggle_dark_mode(true, emulator_serial) unless options.fetch(:skip_ui_modes, true)
+
     screengrab(
       screenshot_options.merge(
         {
-          # This is inherently brittle, there's no guarantee we'll have an
-          # emulator on port 5554 open
-          specific_device: "emulator-5554",
-          # Don't clear previous because we differentiate between light and
-          # dark mode
-          clear_previous_screenshots: false
+          specific_device: emulator_serial
         }
       )
     )
+
+    # If asked to try both UI modes, continue
+    exit 0 if options.fetch(:skip_ui_modes, true)
+
+    adb_toggle_dark_mode(false, emulator_serial)
+
+    screengrab(
+      screenshot_options.merge(
+        {
+          specific_device: emulator_serial,
+          # if true, will fail with:
+          # [hh:mm:ss]: $ /Users/gio/Library/Android/sdk/platform-tools/adb -s emulator-5554 root
+          # restarting adbd as root
+          # timeout expired while waiting for device
+          # [hh:mm:ss]: Exit status: 1
+          use_adb_root: false,
+        }
+      )
+    )
+
+    adb_exit_demo_mode(emulator_serial)
   end
 
   desc 'Compose screenshots'
@@ -538,4 +574,75 @@ def install_font(source_font_path)
 
     UI.success("#{font_name} installed at #{user_font_path}.")
   end
+end
+
+def adb_toggle_dark_mode(enable, emulator_serial)
+  value = enable ? "2" : "1"
+
+  # This runs successfully, but they don't toggle the dark mode as the do
+  # when run manually...
+  #
+  # Why?!?!
+=begin
+      adb(
+        command: "shell settings put secure ui_night_mode #{value}",
+        serial: emulator_serial
+      )
+      # I also tried with `system("adb shell...")` instead, same result
+=end
+  if UI.interactive?
+    UI.message("I cannot toggle dark mode manually, so you'll have to do it for me.")
+
+    UI.message("Please run the following command in a new window:")
+    UI.message("\tadb shell settings put secure ui_night_mode #{value}")
+
+    unless UI.confirm("Did it run successfully?")
+      UI.abort_with_message!("Sorry. All commands need to succeed to continue. Please try again.")
+    end
+  else
+    UI.abort_with_message!("This needs to run in an interactive session")
+  end
+  UI.command("adb shell settings put secure ui_night_mode #{value}")
+
+  UI.message("Rebooting the emulator for the UI mode change to take place.")
+  UI.message("This might take a while...")
+  adb(command: "reboot", serial: emulator_serial)
+
+  max_attempts = 100
+  sleep_time_s = 1
+  attempt = 0
+
+  UI.message("Making sure emulator is online. This might take a while too...")
+
+  begin
+    attempt += 1
+    result = adb(command: "devices")
+    UI.verbose("Attempt #{attempt}, result #{result}")
+    sleep(sleep_time_s)
+  end while (attempt < max_attempts) && (result.gsub("devices", "").include?("device") == false)
+end
+
+def adb_enter_demo_mode(emulator_serial)
+  # Enter demo mode
+  adb(
+    command: "shell settings put global sysui_demo_allowed 1",
+    serial: emulator_serial
+  )
+  # Disable system notifications
+  adb(
+    command: "shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false",
+    serial: emulator_serial
+  )
+  # Set clock time for consisten screenshots
+  adb(
+    command: "shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 1337",
+    serial: emulator_serial
+  )
+end
+
+def adb_exit_demo_mode(emulator_serial)
+  adb(
+    command: "shell am broadcast -a com.android.systemui.demo -e command exit",
+    serial: emulator_serial
+  )
 end
