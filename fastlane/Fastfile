@@ -362,6 +362,8 @@ end
       locales: locales,
       use_timestamp_suffix: false,
       test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
+      # Don't care about the .html summary
+      skip_open_summary: true,
       launch_arguments: [
         "disableMocks true",
       ]
