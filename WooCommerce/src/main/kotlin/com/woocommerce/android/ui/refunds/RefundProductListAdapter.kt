@@ -94,7 +94,7 @@ class RefundProductListAdapter(
             quantityTextView.text = item.quantity.toString()
 
             imageMap.get(item.orderItem.productId)?.let {
-                val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+                val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
                         .load(imageUrl)
@@ -131,7 +131,7 @@ class RefundProductListAdapter(
             }
 
             imageMap.get(item.orderItem.productId)?.let {
-                val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+                val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
                         .load(imageUrl)
