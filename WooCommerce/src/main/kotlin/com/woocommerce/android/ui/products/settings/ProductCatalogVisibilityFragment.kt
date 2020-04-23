@@ -26,7 +26,7 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(), OnClickL
         const val ARG_IS_FEATURED = "is_featured"
     }
 
-    override val requestCode = RequestCodes.PRODUCT_SETTINGS_VISIBLITY
+    override val requestCode = RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY
 
     private val navArgs: ProductCatalogVisibilityFragmentArgs by navArgs()
     private var selectedCatalogVisibility: String? = null

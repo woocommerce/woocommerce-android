@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmen
 import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderModule
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragment
@@ -26,6 +27,8 @@ import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityModule
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
+import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -44,7 +47,8 @@ import dagger.android.ContributesAndroidInjector
     ProductStatusFragmentModule::class,
     ProductSlugFragmentModule::class,
     ProductExternalLinkFragmentModule::class,
-    ProductMenuOrderFragmentModule::class
+    ProductMenuOrderFragmentModule::class,
+    ProductVisibilityFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -129,6 +133,13 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductCatalogVisibilityModule::class])
         abstract fun productCatalogVisibilityFragment(): ProductCatalogVisibilityFragment
+    }
+
+    @Module
+    internal abstract class ProductVisibilityFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductVisibilityModule::class])
+        abstract fun productVisibilityFragment(): ProductVisibilityFragment
     }
 
     @Module

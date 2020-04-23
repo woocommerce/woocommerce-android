@@ -32,13 +32,14 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -119,6 +120,23 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun getProduct() = viewState
+
+    fun updateDraftVisibility(visibility: ProductVisibility, password: String) {
+        when (visibility) {
+            ProductVisibility.PUBLIC -> {
+                draftProductPassword = ""
+                updateProductDraft(productStatus = ProductStatus.PUBLISH)
+            }
+            ProductVisibility.PRIVATE -> {
+                draftProductPassword = ""
+                updateProductDraft(productStatus = ProductStatus.PRIVATE)
+            }
+            ProductVisibility.PASSWORD_PROTECTED -> {
+                draftProductPassword = password
+                updateProductDraft(productStatus = ProductStatus.PUBLISH) // TODO: not sure about this
+            }
+        }
+    }
 
     fun getStoredProductVisibility(): ProductVisibility {
         return if (storedProductPassword.isNotEmpty()) {
@@ -277,6 +295,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onSettingsCatalogVisibilityButtonClicked() {
         viewState.productDraft?.let {
             triggerEvent(ViewProductCatalogVisibility(it.catalogVisibility, it.isFeatured))
+        }
+    }
+
+    /**
+     * Called when the user taps the product visibility in product settings
+     */
+    fun onSettingsVisibilityButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductVisibility(getDraftProductVisibility(), draftProductPassword))
         }
     }
 

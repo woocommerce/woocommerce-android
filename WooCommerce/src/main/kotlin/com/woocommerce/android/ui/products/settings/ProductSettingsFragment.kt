@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
+import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -24,6 +25,8 @@ import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companio
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_PASSWORD
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
@@ -42,6 +45,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
         productCatalogVisibility.setOnClickListener {
             viewModel.onSettingsCatalogVisibilityButtonClicked()
+        }
+        productVisibility.setOnClickListener {
+            viewModel.onSettingsVisibilityButtonClicked()
         }
         productSlug.setOnClickListener {
             viewModel.onSettingsSlugButtonClicked()
@@ -93,7 +99,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 val status = ProductStatus.fromString(it)
                 viewModel.updateProductDraft(productStatus = status)
             }
-        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
+        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY) {
             (result.getString(ARG_CATALOG_VISIBILITY))?.let {
                 val catalogVisibility = ProductCatalogVisibility.fromString(it)
                 viewModel.updateProductDraft(catalogVisibility = catalogVisibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
@@ -103,10 +109,14 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                 viewModel.updateProductDraft(purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT))
-                updateProductView()
             }
         } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
             viewModel.updateProductDraft(menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0))
+        } else if (requestCode == PRODUCT_SETTINGS_VISIBLITY) {
+            ProductVisibility.fromString(result.getString(ARG_VISIBILITY) ?: "")?.let { visibility ->
+                val password = result.getString(ARG_PASSWORD) ?: ""
+                viewModel.updateDraftVisibility(visibility, password)
+            }
         }
 
         updateProductView()
@@ -136,6 +146,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productReviewsAllowed.isChecked = product.reviewsAllowed
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         productMenuOrder.optionValue = product.menuOrder.toString()
+        productVisibility.optionValue = viewModel.getDraftProductVisibility().toLocalizedString(requireActivity())
     }
 
     private fun setupObservers() {

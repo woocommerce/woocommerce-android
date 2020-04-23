@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
@@ -131,6 +132,13 @@ class ProductNavigator @Inject constructor() {
                 val catalogVisibility = target.catalogVisibility?.toString() ?: ""
                 val action = ProductSettingsFragmentDirections
                         .actionProductSettingsFragmentToProductCatalogVisibilityFragment(catalogVisibility, target.isFeatured)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductVisibility -> {
+                val visibility = target.visibility.toString()
+                val action = ProductSettingsFragmentDirections
+                        .actionProductSettingsFragmentToProductVisibilityFragment(visibility, target.password)
                 fragment.findNavController().navigate(action)
             }
 
