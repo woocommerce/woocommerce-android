@@ -10,11 +10,13 @@
         style="@style/Woo.Card.Header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/color_on_surface_medium"
         android:text="@string/product_list_sorting_header"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_100"
         android:id="@+id/sorting_optionsList"
         tools:listitem="@layout/product_sorting_list_item" />
 

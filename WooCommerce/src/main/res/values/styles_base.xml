@@ -606,4 +606,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
+
+    <style name="Woo.Theme.BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Theme.Woo.BottomSheet</item>
+    </style>
+
+    <style name="Theme.Woo.BottomSheet" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottomsheet_rounded</item>
+    </style>
 </resources>
