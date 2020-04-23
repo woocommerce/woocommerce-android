@@ -165,7 +165,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         TextView Styles
     -->
-    <style name="Woo.TextView" parent="Widget.MaterialComponents.TextView">
+    <style name="Woo.TextView">
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/major_75</item>
@@ -200,8 +200,22 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
-        <item name="drawableTint">@color/color_on_surface_high_selector</item>
-        <item name="drawableTintMode">src_atop</item>
+    </style>
+
+    <!--
+        Use this style with TextViews the font color in use is "On Primary High"
+    -->
+    <style name="Woo.TextView.Subtitle1.OnPrimary">
+        <item name="android:textColor">@color/color_on_primary_high_selector</item>
+    </style>
+
+    <!--
+        Use this variation of the above style if the TextView is also displaying a drawable
+        where the foreground font color in use is "On Primary High"
+    -->
+    <style name="Woo.TextView.Subtitle1.OnPrimary.Icon">
+        <item name="drawableTint">@color/color_surface</item>
+        <item name="drawableTintMode">src_over</item>
     </style>
 
     <style name="Woo.TextView.Subtitle2">
