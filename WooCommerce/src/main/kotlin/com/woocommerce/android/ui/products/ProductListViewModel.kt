@@ -29,6 +29,10 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 
 @OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
@@ -55,6 +59,7 @@ class ProductListViewModel @AssistedInject constructor(
         if (_productList.value == null) {
             loadProducts()
         }
+        viewState = viewState.copy(sortingTitleResource = getSortingTitle())
     }
 
     override fun onCleared() {
@@ -193,7 +198,7 @@ class ProductListViewModel @AssistedInject constructor(
         loadProducts()
     }
 
-    private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
+    private suspend fun  fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
@@ -229,6 +234,15 @@ class ProductListViewModel @AssistedInject constructor(
         )
     }
 
+    private fun getSortingTitle(): Int {
+        return when (productRepository.productSortingChoice) {
+            DATE_ASC -> R.string.product_list_sorting_oldest_to_newest_short
+            DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
+            TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
+            TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
@@ -245,7 +259,8 @@ class ProductListViewModel @AssistedInject constructor(
         val query: String? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val displaySortAndFilterCard: Boolean = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        val displaySortAndFilterCard: Boolean = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(),
+        val sortingTitleResource: Int? = null
     ) : Parcelable
 
     @AssistedInject.Factory

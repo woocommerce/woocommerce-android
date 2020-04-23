@@ -258,6 +258,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             new.displaySortAndFilterCard.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
                 showProductSortAndFiltersCard(it)
             }
+            new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
+                products_sort_filter_card.setSortingTitle(getString(it))
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner, Observer {

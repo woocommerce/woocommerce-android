@@ -25,4 +25,8 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
         btn_product_filter.setOnClickListener { listener.onFilterOptionSelected() }
         btn_product_sorting.setOnClickListener { listener.onSortOptionSelected() }
     }
+
+    fun setSortingTitle(title: String) {
+        btn_product_sorting.text = title
+    }
 }
