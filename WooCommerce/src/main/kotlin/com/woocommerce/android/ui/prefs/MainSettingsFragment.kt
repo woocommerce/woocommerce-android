@@ -107,7 +107,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
-            setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
         }
 
         if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {

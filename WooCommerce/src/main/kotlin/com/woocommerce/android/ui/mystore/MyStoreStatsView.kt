@@ -398,7 +398,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             with(axisLeft) {
                 if (minRevenue < 0f) {
                     setDrawZeroLine(true)
-                    zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                    zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                     setLabelCount(3, true)
                 } else labelCount = 3
                 valueFormatter = RevenueAxisFormatter()
