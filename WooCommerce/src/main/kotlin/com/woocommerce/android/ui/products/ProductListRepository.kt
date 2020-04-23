@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products
 
+import android.content.Context
+import androidx.preference.PreferenceManager
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
@@ -20,11 +22,13 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
 final class ProductListRepository @Inject constructor(
+    context: Context,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
@@ -32,18 +36,30 @@ final class ProductListRepository @Inject constructor(
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
-        private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
+        private const val PRODUCT_SORTING_PREF_KEY = "product_sorting_pref_key"
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
     private var searchContinuation: CancellableContinuation<List<Product>>? = null
     private var offset = 0
 
+    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
+
     final var canLoadMoreProducts = true
         private set
 
     final var lastSearchQuery: String? = null
         private set
+
+    var productSortingChoice: ProductSorting
+        get() {
+            return ProductSorting.valueOf(
+                    sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, DATE_DESC.name) ?: DATE_DESC.name
+            )
+        }
+        set(value) {
+            sharedPreferences.edit().putString(PRODUCT_SORTING_PREF_KEY, value.name).commit()
+        }
 
     init {
         dispatcher.register(this)
@@ -67,7 +83,7 @@ final class ProductListRepository @Inject constructor(
                         selectedSite.get(),
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        PRODUCT_SORTING
+                        productSortingChoice
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
@@ -98,7 +114,7 @@ final class ProductListRepository @Inject constructor(
                         searchQuery,
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        PRODUCT_SORTING
+                        productSortingChoice
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
             }
@@ -115,7 +131,7 @@ final class ProductListRepository @Inject constructor(
      */
     fun getProductList(): List<Product> {
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
+            val wcProducts = productStore.getProductsForSite(selectedSite.get(), productSortingChoice)
             wcProducts.map { it.toAppModel() }
         } else {
             WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")

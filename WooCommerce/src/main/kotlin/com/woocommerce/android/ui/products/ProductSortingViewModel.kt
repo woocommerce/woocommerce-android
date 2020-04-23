@@ -19,7 +19,8 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DES
 
 class ProductSortingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers
+    dispatchers: CoroutineDispatchers,
+    private val productListRepository: ProductListRepository
 ): ScopedViewModel(savedState, dispatchers) {
     companion object {
         val SORTING_OPTIONS = listOf(
@@ -34,10 +35,11 @@ class ProductSortingViewModel @AssistedInject constructor(
         private set
 
     init {
-        sortingChoice = DATE_DESC
+        sortingChoice = productListRepository.productSortingChoice
     }
 
     fun onSortingOptionChanged(option: ProductSorting) {
+        productListRepository.productSortingChoice = option
         triggerEvent(Exit)
     }
 
