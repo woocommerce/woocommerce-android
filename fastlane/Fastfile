@@ -325,13 +325,18 @@ end
     # Build the app and test targets
     gradle(task: "assembleVanillaDebug assembleVanillaDebugAndroidTest")
 
-    locales = SUPPORTED_LOCALES
-      .reject { |locale| locale[:glotpress == 'zh-cn' ]} #breaks due to Pinwin Keyboard wanting contacts access
-      .map { |locale|  locale[:emulator] }
-      
+    if options[:locales]
+      locales = options[:locales].split(',')
+    else
+      locales = SUPPORTED_LOCALES
+        .reject { |locale| locale[:glotpress] == 'zh-cn' } # breaks due to Pinwin Keyboard wanting contacts access
+        .reject { |locale| locale[:glotpress] == 'tr' } # breaks but not sure why yet
+        .map { |locale|  locale[:emulator] }
+    end
+
     rebuild_screenshot_devices
 
-    puts locales
+    UI.message("Attempting screenshots for locales: #{locales}")
 
     screenshot_devices = [
       {
