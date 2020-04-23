@@ -127,7 +127,7 @@ data class Product(
                 purchaseNote == product.purchaseNote &&
                 externalUrl == product.externalUrl &&
                 buttonText == product.buttonText &&
-                menuOrder == product.menuOrder
+                menuOrder == product.menuOrder &&
                 isSameImages(product.images)
     }
 
