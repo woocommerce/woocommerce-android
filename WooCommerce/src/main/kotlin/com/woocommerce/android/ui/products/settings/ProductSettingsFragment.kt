@@ -41,7 +41,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productStatus.setOnClickListener {
             viewModel.onSettingsStatusButtonClicked()
         }
-        productVisibility.setOnClickListener {
+        productCatalogVisibility.setOnClickListener {
             viewModel.onSettingsVisibilityButtonClicked()
         }
         productSlug.setOnClickListener {
@@ -132,7 +132,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
 
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
-        productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
+        productCatalogVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())

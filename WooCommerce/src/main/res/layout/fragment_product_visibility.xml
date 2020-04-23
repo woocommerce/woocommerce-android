@@ -52,7 +52,7 @@
                     android:id="@+id/btnVisibilityVisible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_visible" />
+                    android:text="@string/product_catalog_visibility_visible" />
 
                 <View
                     style="@style/Woo.Divider"
@@ -62,7 +62,7 @@
                     android:id="@+id/btnVisibilityCatalog"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_catalog" />
+                    android:text="@string/product_catalog_visibility_catalog" />
 
                 <View
                     style="@style/Woo.Divider"
@@ -72,7 +72,7 @@
                     android:id="@+id/btnVisibilitySearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_search" />
+                    android:text="@string/product_catalog_visibility_search" />
 
                 <View
                     style="@style/Woo.Divider"
@@ -82,7 +82,7 @@
                     android:id="@+id/btnVisibilityHidden"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_hidden" />
+                    android:text="@string/product_catalog_visibility_hidden" />
 
                 <View
                     style="@style/Woo.Divider"

@@ -16,10 +16,10 @@ enum class ProductVisibility {
 
     fun toLocalizedString(context: Context): String {
         @StringRes val resId = when (this) {
-            VISIBLE -> R.string.product_visibility_visible
-            CATALOG -> R.string.product_visibility_catalog
-            SEARCH -> R.string.product_visibility_search
-            HIDDEN -> R.string.product_visibility_hidden
+            VISIBLE -> R.string.product_catalog_visibility_visible
+            CATALOG -> R.string.product_catalog_visibility_catalog
+            SEARCH -> R.string.product_catalog_visibility_search
+            HIDDEN -> R.string.product_catalog_visibility_hidden
         }
         return context.getString(resId)
     }

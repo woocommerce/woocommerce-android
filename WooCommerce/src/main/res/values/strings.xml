@@ -498,12 +498,12 @@
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_settings">Product settings</string>
     <string name="product_status">Status</string>
-    <string name="product_catalog_visibility">Catalog visibility</string>
     <string name="product_visibility">Visibility</string>
-    <string name="product_visibility_visible">Shop and search results</string>
-    <string name="product_visibility_catalog">Shop only</string>
-    <string name="product_visibility_search">Search results only</string>
-    <string name="product_visibility_hidden">Hidden</string>
+    <string name="product_catalog_visibility">Catalog visibility</string>
+    <string name="product_catalog_visibility_visible">Shop and search results</string>
+    <string name="product_catalog_visibility_catalog">Shop only</string>
+    <string name="product_catalog_visibility_search">Search results only</string>
+    <string name="product_catalog_visibility_hidden">Hidden</string>
     <string name="product_featured">Featured product</string>
     <string name="product_visibility_headline">This setting determines which shop pages products will be listed on</string>
     <string name="product_slug">Slug</string>
