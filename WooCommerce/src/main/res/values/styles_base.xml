@@ -215,7 +215,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Woo.TextView.Subtitle1.OnPrimary.Icon">
         <item name="drawableTint">@color/color_surface</item>
-        <item name="drawableTintMode">src_over</item>
+        <item name="drawableTintMode">src_atop</item>
     </style>
 
     <style name="Woo.TextView.Subtitle2">
