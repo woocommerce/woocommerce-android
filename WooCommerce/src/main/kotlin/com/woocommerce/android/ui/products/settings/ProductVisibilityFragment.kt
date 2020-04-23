@@ -15,7 +15,9 @@ import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.HID
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
+import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.fragment_product_visibility.*
+import org.wordpress.android.util.ActivityUtils
 
 /**
  * Settings screen which enables choosing a product's visibility
@@ -62,7 +64,20 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
             btnPublic.isChecked = it == btnPublic
             btnPrivate.isChecked = it == btnPrivate
             btnPasswordProtected.isChecked = it == btnPasswordProtected
+
             selectedVisibility = getVisibilityForButtonId(it.id)
+            showPassword(it == btnPasswordProtected)
+        }
+    }
+
+    private fun showPassword(show: Boolean) {
+        if (show && editPassword.visibility != View.VISIBLE) {
+            WooAnimUtils.scaleIn(editPassword)
+            editPassword.requestFocus()
+            ActivityUtils.showKeyboard(editPassword)
+        } else if (!show && editPassword.visibility == View.VISIBLE) {
+            WooAnimUtils.scaleOut(editPassword)
+            ActivityUtils.hideKeyboardForced(editPassword)
         }
     }
 
