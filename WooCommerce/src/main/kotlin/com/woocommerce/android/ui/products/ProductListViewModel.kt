@@ -13,10 +13,12 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -124,7 +126,7 @@ class ProductListViewModel @AssistedInject constructor(
         _productList.value = productRepository.getProductList()
     }
 
-    final fun loadProducts(loadMore: Boolean = false) {
+    final fun loadProducts(loadMore: Boolean = false, scrollToTop: Boolean = false) {
         if (isLoading()) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
             return
@@ -173,7 +175,7 @@ class ProductListViewModel @AssistedInject constructor(
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false
                 )
-                fetchProductList(loadMore = loadMore)
+                fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
             }
         }
     }
@@ -193,12 +195,16 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun refreshProducts() {
+    fun refreshProducts(scrollToTop: Boolean = false) {
         viewState = viewState.copy(isRefreshing = true)
-        loadProducts()
+        loadProducts(scrollToTop = scrollToTop)
     }
 
-    private suspend fun  fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
+    private suspend fun  fetchProductList(
+        searchQuery: String? = null,
+        loadMore: Boolean = false,
+        scrollToTop: Boolean = false
+    ) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore)
@@ -232,6 +238,10 @@ class ProductListViewModel @AssistedInject constructor(
                 isLoadingMore = false,
                 isRefreshing = false
         )
+
+        if (scrollToTop) {
+            triggerEvent(ScrollToTop)
+        }
     }
 
     private fun getSortingTitle(): Int {
@@ -253,7 +263,7 @@ class ProductListViewModel @AssistedInject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshProducts(event: OnProductSortingChanged) {
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
-        reloadProductsFromDb()
+        refreshProducts(scrollToTop = true)
     }
 
     object OnProductSortingChanged
@@ -271,6 +281,10 @@ class ProductListViewModel @AssistedInject constructor(
         val displaySortAndFilterCard: Boolean = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(),
         val sortingTitleResource: Int? = null
     ) : Parcelable
+
+    sealed class ProductListEvent : Event() {
+        object ScrollToTop : ProductListEvent()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductListViewModel>
