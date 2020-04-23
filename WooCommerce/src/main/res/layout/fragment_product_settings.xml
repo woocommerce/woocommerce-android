@@ -28,8 +28,8 @@
                 android:id="@+id/productVisibility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:optionTitle="@string/product_visibility"
-                tools:optionValue="Draft" />
+                app:optionTitle="@string/product_catalog_visibility"
+                tools:optionValue="Shop only" />
 
             <View style="@style/Woo.Divider.TitleAligned" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
