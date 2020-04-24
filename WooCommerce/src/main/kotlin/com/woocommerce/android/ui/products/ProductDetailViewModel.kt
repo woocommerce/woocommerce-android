@@ -594,7 +594,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 updateProductDraft(productStatus = ProductStatus.PRIVATE)
             }
             ProductVisibility.PASSWORD_PROTECTED -> {
-                updateProductDraft(productStatus = ProductStatus.PUBLISH) // // TODO: not sure about this
+                updateProductDraft(productStatus = ProductStatus.PUBLISH)
             }
         }
     }

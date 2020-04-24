@@ -50,9 +50,10 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
         btnPrivate.setOnClickListener(this)
         btnPasswordProtected.setOnClickListener(this)
 
-        val password = savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password
-        editPassword.setText(password)
-        showPassword(if (password.isNullOrBlank()) false else true)
+        (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?. let { password ->
+            editPassword.setText(password)
+            showPassword(if (password.isNotBlank()) true else false)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -130,5 +131,5 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
         }
     }
 
-    private fun getPassword() = editPassword.text.toString()
+    private fun getPassword() = editPassword.getText()
 }

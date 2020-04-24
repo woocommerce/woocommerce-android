@@ -30,30 +30,29 @@
                 <View style="@style/Woo.Divider.TitleAligned" />
 
                 <CheckedTextView
-                    android:id="@+id/btnPrivate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_private" />
-
-                <View style="@style/Woo.Divider.TitleAligned" />
-
-                <CheckedTextView
                     android:id="@+id/btnPasswordProtected"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/product_visibility_password_protected" />
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                     android:id="@+id/editPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/major_100"
                     android:layout_marginEnd="@dimen/major_100"
                     android:layout_marginBottom="@dimen/minor_100"
-                    android:background="@drawable/border_primary"
                     android:inputType="textPassword"
                     android:visibility="gone"
                     tools:visibility="visible" />
+
+                <View style="@style/Woo.Divider.TitleAligned" />
+
+                <CheckedTextView
+                    android:id="@+id/btnPrivate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/product_visibility_private" />
 
                 <View style="@style/Woo.Divider" />
             </LinearLayout>
