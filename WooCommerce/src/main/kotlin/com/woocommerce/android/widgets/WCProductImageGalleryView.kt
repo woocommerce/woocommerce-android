@@ -106,7 +106,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .transition(DrawableTransitionOptions.withCrossFade())
 
         // create a reusable Glide rounded corner transformation for all images
-        val borderRadius = context.resources.getDimensionPixelSize(R.dimen.image_border_radius)
+        val borderRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_small)
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
         imageSize = if (isGridView) {
@@ -114,7 +114,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
             (screenWidth / 2) - (margin * 2)
         } else {
-            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_size)
+            context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
     }
 

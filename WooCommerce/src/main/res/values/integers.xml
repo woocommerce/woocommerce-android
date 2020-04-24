@@ -8,7 +8,7 @@
     <integer name="stats_label_count_years">6</integer>
 
     <!-- max # of chars that can be entered in dimension fields (ex: length, height, width) -->
-    <integer name="maxlength_dimension_edittext">8</integer>
+    <integer name="maxlength_product_shipping_properties">8</integer>
 
     <integer name="maxlength_order_refund_summary_reason">255</integer>
 </resources>
