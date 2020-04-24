@@ -383,13 +383,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Widget.Woo.WCToggleOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
-        <item name="strokeColor">@color/color_on_surface_medium</item>
+        <item name="strokeColor">@color/button_outlined_stroke_selector</item>
         <item name="cornerRadius">@dimen/corner_radius_round_button</item>
         <item name="android:textAllCaps">false</item>
         <item name="fontFamily">@font/roboto</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_125</item>
-        <item name="android:textColor">@color/color_on_surface_medium_selector</item>
+        <item name="android:textColor">@color/button_outlined_text_selector</item>
     </style>
 
     <!-- Set at the theme level so no need to set directly on the component -->

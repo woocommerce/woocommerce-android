@@ -344,7 +344,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun updateFilterSelection(filterCount: Int) {
-        // TODO: update filter selection in the next commit
+        products_sort_filter_card.updateFilterSelection(filterCount)
     }
 
     override fun onProductClick(remoteProductId: Long) {

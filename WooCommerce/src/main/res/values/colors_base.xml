@@ -113,6 +113,7 @@
     <color name="product_stock_fg">@color/color_on_surface_medium</color>
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
+    <color name="product_filer_bg_selected">@color/color_primary_surface</color>
 
     <!--
         Aztec Editor
