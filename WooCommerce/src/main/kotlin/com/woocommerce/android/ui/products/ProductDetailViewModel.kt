@@ -265,9 +265,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onSettingsVisibilityButtonClicked() {
         val visibility = productVisibilityViewState.draftVisibility ?: productVisibilityViewState.storedVisibility
-        viewState.productDraft?.let {
-            triggerEvent(ViewProductVisibility(visibility.visibility!!, visibility.password))
-        }
+        triggerEvent(ViewProductVisibility(visibility?.visibility, visibility?.password))
     }
 
     /**
@@ -611,30 +609,31 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun getStoredProductVisibility(): ProductVisibility {
-        return when {
-            productVisibilityViewState.storedVisibility.password?.isNotEmpty() == true -> {
-                ProductVisibility.PASSWORD_PROTECTED
-            }
-            getProduct().storedProduct?.status == ProductStatus.PRIVATE -> {
-                ProductVisibility.PRIVATE
-            }
-            else -> {
-                ProductVisibility.PUBLIC
-            }
-        }
+        return productVisibilityFromStatusAndPassword(
+                getProduct().storedProduct?.status,
+                productVisibilityViewState.storedVisibility?.password
+        )
     }
 
     private fun getDraftProductVisibility(): ProductVisibility {
-        return when {
-            productVisibilityViewState.draftVisibility?.password?.isNotEmpty() == true -> {
-                ProductVisibility.PASSWORD_PROTECTED
-            }
-            getProduct().productDraft?.status == ProductStatus.PRIVATE -> {
-                ProductVisibility.PRIVATE
-            }
-            else -> {
-                ProductVisibility.PUBLIC
-            }
+        return productVisibilityFromStatusAndPassword(
+                getProduct().productDraft?.status,
+                productVisibilityViewState.draftVisibility?.password
+        )
+    }
+
+    /**
+     * The visibility is determined by the status and the password. If the password isn't empty, then
+     * visibility is `PASSWORD_PROTECTED`. If there's no password and the product status is `PRIVATE`
+     * then the visibility is `PRIVATE`, otherwise it's `PUBLIC`.
+     */
+    private fun productVisibilityFromStatusAndPassword(status: ProductStatus?, password: String?): ProductVisibility {
+        return if (password?.isNotEmpty() == true) {
+            ProductVisibility.PASSWORD_PROTECTED
+        } else if (status == ProductStatus.PRIVATE) {
+            ProductVisibility.PRIVATE
+        } else {
+            ProductVisibility.PUBLIC
         }
     }
 
@@ -643,8 +642,12 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun fetchPassword(remoteProductId: Long) {
         val password = productRepository.fetchProductPassword(remoteProductId)
+        val visibility = productVisibilityFromStatusAndPassword(
+                getProduct().storedProduct?.status,
+                password
+        )
         productVisibilityViewState = productVisibilityViewState.copy(
-                storedVisibility = Visibility(getStoredProductVisibility(), password)
+                storedVisibility = Visibility(visibility, password)
         )
     }
 
@@ -982,11 +985,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductVisibilityViewState(
-        val storedVisibility: Visibility = Visibility(ProductVisibility.PUBLIC),
+        val storedVisibility: Visibility? = null,
         val draftVisibility: Visibility? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
-            get() = storedVisibility.password != draftVisibility?.password
+            get() = storedVisibility?.password != draftVisibility?.password
     }
 
     @AssistedInject.Factory

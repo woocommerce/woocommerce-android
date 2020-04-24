@@ -11,7 +11,6 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.HIDDEN
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
@@ -47,12 +46,14 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
         }
 
         btnPublic.setOnClickListener(this)
-        btnPrivate.setOnClickListener(this)
         btnPasswordProtected.setOnClickListener(this)
+        btnPrivate.setOnClickListener(this)
 
-        (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?. let { password ->
-            editPassword.setText(password)
-            showPassword(if (password.isNotBlank()) true else false)
+        if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
+            (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?.let { password ->
+                editPassword.setText(password)
+                showPassword(if (password.isNotBlank()) true else false)
+            }
         }
 
         editPassword.setOnTextChangedListener {
@@ -132,7 +133,6 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
             R.id.btnPublic -> PUBLIC.toString()
             R.id.btnPrivate -> PRIVATE.toString()
             R.id.btnPasswordProtected -> PASSWORD_PROTECTED.toString()
-            R.id.btnVisibilityHidden -> HIDDEN.toString()
             else -> null
         }
     }

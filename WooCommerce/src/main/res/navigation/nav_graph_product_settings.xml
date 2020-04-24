@@ -76,7 +76,7 @@
         <argument
             android:name="visibility"
             app:argType="string"
-            app:nullable="false" />
+            app:nullable="true" />
         <argument
             android:name="password"
             app:argType="string"
