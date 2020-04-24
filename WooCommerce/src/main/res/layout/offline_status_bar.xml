@@ -2,13 +2,17 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/Woo.StatusBar.Background"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <com.woocommerce.android.widgets.WCTextViewCompat
-        style="@style/Woo.StatusBar.Label"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface_variant">
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.TextView.Subtitle1.OnPrimary.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:layout_gravity="center"
+        android:padding="@dimen/minor_100"
         android:text="@string/offline_message"
-        app:drawableStartCompat="@drawable/ic_offline"/>
+        app:drawableStartCompat="@drawable/ic_offline" />
 </FrameLayout>
