@@ -20,6 +20,9 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -29,9 +32,6 @@ import javax.inject.Inject
 class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
-        const val ARG_PRODUCT_FILTER_STOCK_STATUS = "arg_product_filter_stock_status"
-        const val ARG_PRODUCT_FILTER_STATUS = "arg_product_filter_status"
-        const val ARG_PRODUCT_FILTER_TYPE_STATUS = "arg_product_type"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
