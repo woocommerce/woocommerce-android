@@ -13,11 +13,25 @@ if [[ "$BRANCH" == "master" || "$BRANCH" == "develop" ]]; then
   exit 1
 fi
 
-# This block allows for chaining pre-commit hooks if this hook is a global hook (via core.hooksPath) and there also exists a repo-specific pre-commit hook
+# This block allows for chaining pre-commit hooks if this hook is a global hook
+# (via core.hooksPath) and there also exists a repo-specific pre-commit hook
 if [[ -f ".git/hooks/pre-commit" ]]; then
-  red='\033[0;31m'
-  reset='\033[0m'
-  type realpath >/dev/null 2>&1 || { echo -e "$(echo -e $red)NOTE: the realpath binary is required to chain to the repo-specific pre-commit hook.\n\nOn macOS, you can install it via \"brew install coreutils\".\n\nIgnoring.$reset" >&2; exit 0; }
+  type realpath >/dev/null 2>&1 # Check if realpath is available
+  # If the command above failed, then we don't have realpath and we should exit
+  if [ $? -ne 0 ]; then
+    red='\033[0;31m'
+    reset='\033[0m'
+
+    message=$red
+    message+="NOTE: the realpath binary is required to chain to the repo-specific pre-commit hook.\n\n"
+    message+="On macOS, you can install it via \"brew install coreutils\".\n\n"
+    message+="Ignoring."
+    message+="$reset"
+
+    echo $message >&2
+    exit 0 # exit 0 won't fail the commit, just show the message
+  fi
+
   if [[ "$(realpath "${BASH_SOURCE[0]}")" != "$(realpath ".git/hooks/pre-commit")" ]]; then
     .git/hooks/pre-commit
     exit $?
