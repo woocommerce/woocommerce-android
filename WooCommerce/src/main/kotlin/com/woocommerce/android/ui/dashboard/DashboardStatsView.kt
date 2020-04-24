@@ -243,7 +243,7 @@ class DashboardStatsView @JvmOverloads constructor(
             isDragEnabled = true
 
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
-            getPaint(Chart.PAINT_INFO).textSize = context.resources.getDimension(R.dimen.text_large)
+            getPaint(Chart.PAINT_INFO).textSize = context.resources.getDimension(R.dimen.text_minor_125)
         }
 
         chart.setOnChartValueSelectedListener(this)

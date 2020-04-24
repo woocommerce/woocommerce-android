@@ -2,7 +2,7 @@
 <View
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/skeleton_default_text_height_two_lines"
+    android:layout_height="40sp"
     android:layout_marginBottom="@dimen/margin_medium"
     android:layout_marginTop="8dp"
     android:background="@drawable/skeleton_background"/>

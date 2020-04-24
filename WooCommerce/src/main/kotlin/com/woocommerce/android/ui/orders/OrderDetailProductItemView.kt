@@ -81,7 +81,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         }
 
         productImage?.let {
-            val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+            val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             GlideApp.with(context)
                     .load(imageUrl)
