@@ -123,6 +123,7 @@
     <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
     <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference"/>
     <attr name="wcMaterialOutlinedEditTextViewStyle" format="reference"/>
+    <attr name="wcSingleOptionTextViewStyle" format="reference"/>
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->
