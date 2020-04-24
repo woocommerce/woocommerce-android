@@ -52,6 +52,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
         val password = savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password
         editPassword.setText(password)
+        showPassword(if (password.isNullOrBlank()) false else true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

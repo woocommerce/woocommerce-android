@@ -51,6 +51,7 @@
                     android:layout_marginEnd="@dimen/major_100"
                     android:layout_marginBottom="@dimen/minor_100"
                     android:background="@drawable/border_primary"
+                    android:inputType="textPassword"
                     android:visibility="gone"
                     tools:visibility="visible" />
 

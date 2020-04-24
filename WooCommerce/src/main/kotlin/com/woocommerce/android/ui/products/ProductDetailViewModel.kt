@@ -4,8 +4,6 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
 import android.view.View
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -113,10 +111,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
-    // password is a property of a WP.com post and is not stored with the product
-    private var storedProductPassword: String? = null
-    private var draftProductPassword: String? = null
-
     final val productVisibilityViewStateData = LiveDataDelegate(savedState, ProductVisibilityViewState())
     private var productVisibilityViewState by productVisibilityViewStateData
 
@@ -127,24 +121,23 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun getProduct() = viewState
 
     fun updateDraftVisibility(visibility: ProductVisibility, password: String) {
+        productVisibilityViewState = productVisibilityViewState.copy(draftVisibility = Visibility(visibility, password))
+
         when (visibility) {
             ProductVisibility.PUBLIC -> {
-                draftProductPassword = ""
                 updateProductDraft(productStatus = ProductStatus.PUBLISH)
             }
             ProductVisibility.PRIVATE -> {
-                draftProductPassword = ""
                 updateProductDraft(productStatus = ProductStatus.PRIVATE)
             }
             ProductVisibility.PASSWORD_PROTECTED -> {
-                draftProductPassword = password
                 updateProductDraft(productStatus = ProductStatus.PUBLISH) // TODO: not sure about this
             }
         }
     }
 
     fun getStoredProductVisibility(): ProductVisibility {
-        return if (storedProductPassword?.isNotEmpty() == true) {
+        return if (productVisibilityViewState.storedVisibility.password?.isNotEmpty() == true) {
             ProductVisibility.PASSWORD_PROTECTED
         } else if (getProduct().storedProduct?.status == ProductStatus.PRIVATE) {
             ProductVisibility.PRIVATE
@@ -154,7 +147,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun getDraftProductVisibility(): ProductVisibility {
-        return if (draftProductPassword?.isNotEmpty() == true) {
+        return if (productVisibilityViewState.draftVisibility?.password?.isNotEmpty() == true) {
             ProductVisibility.PASSWORD_PROTECTED
         } else if (getProduct().productDraft?.status == ProductStatus.PRIVATE) {
             ProductVisibility.PRIVATE
@@ -307,8 +300,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the user taps the product visibility in product settings
      */
     fun onSettingsVisibilityButtonClicked() {
+        val visibility = productVisibilityViewState.draftVisibility ?: productVisibilityViewState.storedVisibility
         viewState.productDraft?.let {
-            triggerEvent(ViewProductVisibility(getDraftProductVisibility(), draftProductPassword))
+            triggerEvent(ViewProductVisibility(visibility.visibility!!, visibility.password))
         }
     }
 
@@ -622,7 +616,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     suspend private fun fetchPassword(remoteProductId: Long) {
-        productVisibilityViewStateData.password = productRepository.fetchProductPassword(remoteProductId)
+        val password = productRepository.fetchProductPassword(remoteProductId)
+        productVisibilityViewState = productVisibilityViewState.copy(
+                storedVisibility = Visibility(getStoredProductVisibility(), password)
+        )
+        if (productVisibilityViewState.draftVisibility == null) {
+            productVisibilityViewState = productVisibilityViewState.copy(
+                    draftVisibility = Visibility(getStoredProductVisibility(), password)
+            )
+        }
     }
 
     /**
@@ -938,12 +940,22 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isUploadingImages: Boolean = false
     ) : Parcelable
 
+    /**
+     * Password is a property of a WP.com post and is not stored with the product.
+     * Visibility is determined by the status and password.
+     */
     @Parcelize
-    data class ProductVisibilityViewState(
-        val visibility: ProductVisibility? = null,
-        val password: String? = null
+    data class Visibility (
+        var visibility: ProductVisibility? = null,
+        var password: String? = null
     ) : Parcelable
 
-        @AssistedInject.Factory
+    @Parcelize
+    data class ProductVisibilityViewState(
+        val storedVisibility: Visibility = Visibility(ProductVisibility.PUBLIC),
+        val draftVisibility: Visibility? = null
+    ) : Parcelable
+
+    @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }
