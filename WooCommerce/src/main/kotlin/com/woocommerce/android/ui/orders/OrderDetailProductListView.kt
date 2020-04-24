@@ -5,10 +5,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -25,8 +25,11 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 
-class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+class OrderDetailProductListView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_detail_product_list, this)
     }
@@ -85,6 +88,22 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productListener
         )
 
+        productList_products.apply {
+            setHasFixedSize(false)
+            layoutManager = viewManager
+            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
+            adapter = viewAdapter
+
+            // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
+            // and only processes the first click event. More details on this issue can be found here:
+            // https://github.com/woocommerce/woocommerce-android/issues/2074
+            isMotionEventSplittingEnabled = false
+        }
+
+        updateView(orderModel, orderListener)
+    }
+
+    fun updateView(orderModel: WCOrderModel, orderListener: OrderActionListener? = null) {
         orderListener?.let {
             if (orderModel.status == CoreOrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
@@ -100,42 +119,6 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productList_btnDetails.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED)
                     orderListener.openOrderProductList(orderModel)
-                }
-                productList_btnFulfill.setOnClickListener(null)
-            }
-        } ?: hideButtons()
-
-        productList_products.apply {
-            setHasFixedSize(false)
-            layoutManager = viewManager
-            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
-            adapter = viewAdapter
-
-            // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
-            // and only processes the first click event. More details on this issue can be found here:
-            // https://github.com/woocommerce/woocommerce-android/issues/2074
-            isMotionEventSplittingEnabled = false
-        }
-
-        if (isExpanded) {
-            productList_products.addItemDecoration(divider)
-        }
-    }
-
-    fun updateView(order: WCOrderModel, listener: OrderActionListener? = null) {
-        listener?.let {
-            if (order.status == CoreOrderStatus.PROCESSING.value) {
-                productList_btnFulfill.visibility = View.VISIBLE
-                productList_btnDetails.visibility = View.GONE
-                productList_btnDetails.setOnClickListener(null)
-                productList_btnFulfill.setOnClickListener {
-                    listener.openOrderFulfillment(order)
-                }
-            } else {
-                productList_btnFulfill.visibility = View.GONE
-                productList_btnDetails.visibility = View.VISIBLE
-                productList_btnDetails.setOnClickListener {
-                    listener.openOrderProductList(order)
                 }
                 productList_btnFulfill.setOnClickListener(null)
             }

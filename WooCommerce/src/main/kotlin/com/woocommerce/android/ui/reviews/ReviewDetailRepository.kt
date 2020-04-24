@@ -180,7 +180,7 @@ class ReviewDetailRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
             continuationProduct?.let {
                 if (event.isError) {
                     AnalyticsTracker.track(Stat.REVIEW_PRODUCT_LOAD_FAILED, mapOf(

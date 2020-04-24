@@ -17,9 +17,13 @@
         <attr name="tagBorderColor" format="reference|color"/>
     </declare-styleable>
 
-    <declare-styleable name="AppTheme">
+    <declare-styleable name="WooTheme">
         <attr name="tagViewStyle" format="reference"/>
         <attr name="flowLayoutStyle" format="reference"/>
+        <attr name="settingsToggleOptionStyle" format="reference"/>
+        <attr name="settingsOptionValueStyle" format="reference"/>
+        <attr name="settingsCategoryHeaderStyle" format="reference"/>
+        <attr name="settingsButtonStyle" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">
@@ -33,8 +37,24 @@
         <attr name="switchTitle" format="reference|string"/>
         <attr name="switchSummary" format="reference|string"/>
         <attr name="switchChecked" format="boolean"/>
-        <attr name="switchSummaryTextColor" format="reference|color"/>
-        <attr name="switchTopPadding" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="WCSettingsOptionValueView">
+        <attr name="optionTitle" format="reference|string"/>
+        <attr name="optionValue" format="reference|string"/>
+        <attr name="tools_optionTitle" format="reference|string"/>
+        <attr name="tools_optionValue" format="reference|string"/>
+    </declare-styleable>
+
+    <declare-styleable name="WCSettingsToggleOptionView">
+        <attr name="toggleOptionTitle" format="reference|string"/>
+        <attr name="toggleOptionDesc" format="reference|string"/>
+        <attr name="toggleOptionIcon" format="reference"/>
+        <attr name="toggleOptionChecked" format="boolean"/>
+        <attr name="tools_toggleOptionTitle" format="reference|string"/>
+        <attr name="tools_toggleOptionDesc" format="reference|string"/>
+        <attr name="tools_toggleOptionIcon" format="reference"/>
+        <attr name="tools_toggleOptionChecked" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="WCProductImageGalleryView">
@@ -49,18 +69,19 @@
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedEditTextView">
-        <attr name="editTextHint" format="string"/>
-        <attr name="editTextSummary" format="string"/>
         <attr name="android:inputType"/>
         <attr name="android:maxLength"/>
+        <attr name="android:enabled"/>
+        <attr name="android:text"/>
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedSpinnerView">
-        <attr name="spinnerHint" format="string"/>
+        <attr name="android:text"/>
+        <attr name="android:enabled"/>
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
-        <attr name="currencyHint" format="string"/>
+        <attr name="android:enabled"/>
     </declare-styleable>
 
     <declare-styleable name="ActionableEmptyView">
@@ -73,6 +94,33 @@
         <!-- Optional: resource id of title style -->
         <attr name="aevTitleAppearance" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="WCElevatedLinearLayout">
+        <!-- Optional: resource id of dimension -->
+        <attr name="wcElevation" format="reference"/>
+    </declare-styleable>
+
+    <!--
+        Badge attributes for the bottom bar
+    -->
+    <attr name="textAppearanceBadge" format="reference"/>
+
+    <!--
+        Attribute for defining different types of TabLayout styles
+    -->
+    <attr name="scrollableTabStyle" format="reference"/>
+    <!--
+        General app attributes
+    -->
+    <!-- Sets the thickness of indicators like the tab indicator or new review indicator -->
+    <attr name="lineIndicatorThickness" format="dimension" />
+
+    <!--
+        Theme-level Text Input styles
+    -->
+    <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
+    <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference"/>
+    <attr name="wcMaterialOutlinedEditTextViewStyle" format="reference"/>
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->

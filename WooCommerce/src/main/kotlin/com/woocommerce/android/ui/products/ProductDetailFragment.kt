@@ -14,9 +14,9 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
@@ -30,7 +30,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
-import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.AZTEC_EDITOR_REQUEST_CODE
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -38,6 +37,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -146,7 +146,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
-            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageGallery.height
         } else {
             skeletonView.hide()
         }
@@ -318,24 +317,27 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
-        val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
+        val hasPricingInfo = product.regularPrice != null || product.salePrice != null
         val pricingGroup = mutableMapOf<String, String>()
         if (hasPricingInfo) {
-            // regular product price
-            pricingGroup[getString(R.string.product_regular_price)] =
-                    requireNotNull(productData.regularPriceWithCurrency)
-            // display product sale price, if available
-            if (product.salePrice != null) {
+            // display product sale price if it's on sale
+            if (product.isOnSale) {
+                // regular product price
+                pricingGroup[getString(R.string.product_regular_price)] =
+                        requireNotNull(productData.regularPriceWithCurrency)
                 pricingGroup[getString(R.string.product_sale_price)] = requireNotNull(productData.salePriceWithCurrency)
+            } else {
+                pricingGroup[getString(R.string.product_regular_price)] =
+                        requireNotNull(productData.regularPriceWithCurrency)
             }
 
             // display product sale dates using the site's timezone, if available
             if (product.isSaleScheduled) {
                 val gmtOffset = productData.gmtOffset
-                var dateOnSaleFrom = product.dateOnSaleFromGmt?.let {
+                var dateOnSaleFrom = product.saleStartDateGmt?.let {
                     DateUtils.offsetGmtDate(it, gmtOffset)
                 }
-                val dateOnSaleTo = product.dateOnSaleToGmt?.let {
+                val dateOnSaleTo = product.saleEndDateGmt?.let {
                     DateUtils.offsetGmtDate(it, gmtOffset)
                 }
                 if (dateOnSaleTo != null && dateOnSaleFrom == null) {
@@ -408,31 +410,60 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
-                productData.sizeWithUnits?.isNotEmpty() == true ||
-                product.shippingClass.isNotEmpty()
-        val shippingGroup = if (hasShippingInfo) {
-            mapOf(
-                    Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
-                    Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
-                    Pair(getString(R.string.product_shipping_class),
-                            viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId))
-            )
-        } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
+        if (!product.isVirtual) {
+            val hasShippingInfo = productData.weightWithUnits?.isNotEmpty() == true ||
+                    productData.sizeWithUnits?.isNotEmpty() == true ||
+                    product.shippingClass.isNotEmpty()
+            val shippingGroup = if (hasShippingInfo) {
+                mapOf(
+                        Pair(getString(R.string.product_weight), requireNotNull(productData.weightWithUnits)),
+                        Pair(getString(R.string.product_dimensions), requireNotNull(productData.sizeWithUnits)),
+                        Pair(
+                                getString(R.string.product_shipping_class),
+                                viewModel.getShippingClassByRemoteShippingClassId(product.shippingClassId)
+                        )
+                )
+            } else mapOf(Pair("", getString(R.string.product_shipping_empty)))
 
-        addPropertyGroup(
-                DetailCard.Secondary,
-                R.string.product_shipping,
-                shippingGroup,
-                groupIconId = R.drawable.ic_gridicons_shipping
-        )?.also {
-            // display shipping caption only if shipping info is not available
-            if (!hasShippingInfo) {
-                it.showPropertyName(false)
+            addPropertyGroup(
+                    DetailCard.Secondary,
+                    R.string.product_shipping,
+                    shippingGroup,
+                    groupIconId = R.drawable.ic_gridicons_shipping
+            )?.also {
+                // display shipping caption only if shipping info is not available
+                if (!hasShippingInfo) {
+                    it.showPropertyName(false)
+                }
+                it.setClickListener {
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
+                    viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
+                }
             }
-            it.setClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED)
-                viewModel.onEditProductCardClicked(ViewProductShipping(product.remoteId))
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            val shortDescription = if (product.shortDescription.isEmpty()) {
+                getString(R.string.product_short_description_empty)
+            } else {
+                product.shortDescription
+            }
+            addPropertyView(
+                    DetailCard.Secondary,
+                    getString(R.string.product_short_description),
+                    SpannableString(HtmlUtils.fromHtml(shortDescription)),
+                    LinearLayout.VERTICAL,
+                    R.drawable.ic_gridicons_align_left
+            )?.also {
+                it.setMaxLines(1)
+                it.setClickListener {
+                    // TODO: track event
+                    viewModel.onEditProductCardClicked(
+                            ViewProductShortDescriptionEditor(
+                                    product.shortDescription, getString(R.string.product_short_description)
+                            )
+                    )
+                }
             }
         }
     }
@@ -445,12 +476,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val product = requireNotNull(productData.productDraft)
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
+        val hasPricingInfo = product.regularPrice != null || product.salePrice != null
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
-            if (product.salePrice != null) {
+            if (productData.isOnSale) {
                 val group = mapOf(getString(R.string.product_regular_price)
                         to requireNotNull(productData.regularPriceWithCurrency),
                         getString(R.string.product_sale_price) to requireNotNull(productData.salePriceWithCurrency)
@@ -460,7 +491,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 addPropertyView(
                         pricingCard,
                         R.string.product_price,
-                        requireNotNull(productData.priceWithCurrency),
+                        requireNotNull(productData.regularPriceWithCurrency),
                         LinearLayout.VERTICAL
                 )
             }
@@ -590,7 +621,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
-            propertyView = WCProductPropertyView(requireActivity())
+            propertyView = View.inflate(context, R.layout.product_property_view, null) as WCProductPropertyView
             propertyView.tag = propertyTag
             container.addView(propertyView)
         }
@@ -635,7 +666,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var linkView = container.findViewWithTag<WCProductPropertyLinkView>(linkViewTag)
 
         if (linkView == null) {
-            linkView = WCProductPropertyLinkView(requireActivity())
+            linkView = View.inflate(
+                    context,
+                    R.layout.product_property_link_view,
+                    null
+            ) as WCProductPropertyLinkView
             linkView.tag = linkViewTag
             container.addView(linkView)
         }
@@ -657,7 +692,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var readMoreView = container.findViewWithTag<WCProductPropertyReadMoreView>(readMoreTag)
 
         if (readMoreView == null) {
-            readMoreView = WCProductPropertyReadMoreView(requireActivity())
+            readMoreView = View.inflate(
+                    context,
+                    R.layout.product_property_read_more_view,
+                    null
+            ) as WCProductPropertyReadMoreView
             readMoreView.tag = readMoreTag
             container.addView(readMoreView)
         }
@@ -681,7 +720,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         var editableView = container.findViewWithTag<WCProductPropertyEditableView>(editableViewTag)
 
         if (editableView == null) {
-            editableView = WCProductPropertyEditableView(requireActivity())
+            editableView = View.inflate(
+                    context,
+                    R.layout.product_property_editable_view,
+                    null
+            ) as WCProductPropertyEditableView
             editableView.tag = editableViewTag
             container.addView(editableView)
         }
@@ -704,7 +747,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             addCardDividerView(requireActivity())
         }
 
-        val cardView = WCProductPropertyCardView(requireActivity())
+        val cardView = View.inflate(
+                requireActivity(),
+                R.layout.product_property_cardview,
+                null
+        ) as WCProductPropertyCardView
         cardView.tag = cardTag
 
         val cardViewCaption: String? = when (card) {
@@ -753,12 +800,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      * Adds a divider between cards
      */
     private fun addCardDividerView(context: Context) {
-        val divider = View(context)
+        val divider = View(context, null, android.R.attr.listDivider)
         divider.layoutParams = LayoutParams(
                 MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen.product_detail_card_divider_height)
+                resources.getDimensionPixelSize(R.dimen.minor_100)
         )
-        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.default_window_background))
         productDetail_container.addView(divider)
     }
 
@@ -773,9 +819,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
-            AZTEC_EDITOR_REQUEST_CODE -> {
+            RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                    viewModel.updateProductDraft(result.getString(ARG_AZTEC_EDITOR_TEXT))
+                    viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+            }
+            RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
         }

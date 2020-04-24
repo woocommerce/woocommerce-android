@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -72,7 +72,7 @@ class OrderStatusSelectorDialog : androidx.fragment.app.DialogFragment() {
         } else {
             resources.getString(R.string.orderstatus_select_status)
         }
-        return AlertDialog.Builder(context)
+        return MaterialAlertDialogBuilder(context)
                 .setTitle(title)
                 .setCancelable(true)
                 .setSingleChoiceItems(orderStatusMap.values.toTypedArray(), selectedIndex) { _, which ->

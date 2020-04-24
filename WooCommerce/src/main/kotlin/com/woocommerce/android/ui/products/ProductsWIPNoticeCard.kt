@@ -3,13 +3,16 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.LinearLayout
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.products_wip_notice.view.*
 
-class ProductsWIPNoticeCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+class ProductsWIPNoticeCard @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.products_wip_notice, this)
     }
@@ -19,9 +22,9 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(ctx: Context, attrs: Attri
             if (value != field) {
                 field = value
                 if (value) {
-                    WooAnimUtils.fadeIn(products_wip_morePanel)
+                    WooAnimUtils.fadeIn(products_wip_message)
                 } else {
-                    WooAnimUtils.fadeOut(products_wip_morePanel)
+                WooAnimUtils.fadeOut(products_wip_message)
                 }
             }
         }

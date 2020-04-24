@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Base Woo Styles. Use these styles as a base for custom component styles and override only the
+properties necessary. The goal is to make as few modifications as possible to keep a consistent
+theme across the entire app. Overridden versions should be added to the styles.xml file.
+-->
+<resources
+    xmlns:tools="http://schemas.android.com/tools">
+    <style name="Woo"/>
+    <style name="Widget"/>
+    <style name="Widget.Woo"/>
+
+    <!--
+        Toolbar Style
+    -->
+    <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+
+    <!--
+        AppBarLayout Style
+    -->
+    <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.PrimarySurface">
+        <item name="android:elevation">@dimen/plane_04</item>
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <!--
+        Bottom Bar Style
+    -->
+    <style name="Widget.Woo.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="itemIconTint">@color/button_toggle_fg_selector</item>
+        <item name="itemTextColor">@color/button_toggle_fg_selector</item>
+        <item name="android:elevation">@dimen/plane_08</item>
+    </style>
+
+    <!--
+        TabLayout Styles
+    -->
+    <style name="Woo.TabLayout" parent="Widget.MaterialComponents.TabLayout.PrimarySurface">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">25dp</item>
+        <item name="tabPaddingEnd">25dp</item>
+        <item name="android:elevation">@dimen/plane_00</item>
+    </style>
+
+    <style name="Woo.TabLayout.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+
+    <style name="Woo.TabLayout.Surface" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabMode">fixed</item>
+        <item name="tabTextAppearance">?attr/textAppearanceButton</item>
+        <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
+    </style>
+
+    <style name="Woo.TabLayout.Surface.Scrollable">
+        <!--
+        Designs call for a 52dp gap at the start for scrollable Tabs, but Android calculates
+        this number as being (tabContentStart - tabPaddingStart), so you have to add the
+        padding amount of 40dp on top to make sure the tab actually starts at 52dp
+        -->
+        <item name="tabContentStart">92dp</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+
+    <!--
+        Card Styles
+    -->
+    <style name="Woo.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/minor_00</item>
+        <item name="android:checkable">false</item>
+        <item name="contentPaddingTop">@dimen/minor_25</item>
+        <item name="contentPaddingBottom">@dimen/minor_25</item>
+        <item name="android:layout_marginBottom">@dimen/minor_100</item>
+    </style>
+
+    <style name="Woo.Card.Tabbed">
+        <item name="contentPaddingTop">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.Card.Expandable">
+        <item name="contentPaddingBottom">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.Card.WithoutPadding">
+        <item name="contentPaddingTop">@dimen/minor_00</item>
+        <item name="contentPaddingBottom">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.Card.ExpanderButton" parent="Woo.Button">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:drawableEnd">@drawable/card_expander_selector</item>
+        <item name="drawableTint">@color/color_on_surface_medium</item>
+        <item name="drawableTintMode">src_atop</item>
+        <item name="android:drawablePadding">@dimen/major_100</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Woo.Card.Button" parent="Woo.Button">
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/major_100</item>
+    </style>
+
+    <style name="Woo.Card.Title" parent="Woo.TextView.Subtitle1">
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
+    <style name="Woo.Card.Header" parent="Woo.TextView.Subtitle2">
+        <item name="android:layout_marginTop">@dimen/major_100</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:textColor">@color/color_on_surface_disabled</item>
+    </style>
+
+    <style name="Woo.Card.Body" parent="Woo.TextView.Body2"/>
+
+    <style name="Woo.Card.Body.High" parent="Woo.TextView.Body2">
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
+    <style name="Woo.Card.Body.Bold">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
+    <style name="Woo.Card.StatusMessage" parent="Woo.TextView.Subtitle1"/>
+
+    <style name="Woo.Card.ListHeader" parent="Woo.TextView.Subtitle2">
+        <item name="android:layout_marginTop">@dimen/major_100</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+    </style>
+
+    <style name="Woo.Card.ListItem.Title" parent="Woo.TextView.Subtitle1">
+        <item name="android:layout_margin">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.Card.ListItem.Body" parent="Woo.TextView.Body2">
+        <item name="android:layout_margin">@dimen/minor_00</item>
+    </style>
+
+    <!--
+        TextView Styles
+    -->
+    <style name="Woo.TextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/major_75</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+    </style>
+
+    <style name="Woo.TextView.Headline1">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline1</item>
+    </style>
+
+    <style name="Woo.TextView.Headline2">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline2</item>
+    </style>
+
+    <style name="Woo.TextView.Headline3">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline3</item>
+    </style>
+
+    <style name="Woo.TextView.Headline4">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline4</item>
+    </style>
+
+    <style name="Woo.TextView.Headline5">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline5</item>
+    </style>
+
+    <style name="Woo.TextView.Headline6">
+        <item name="android:textAppearance">?attr/textAppearanceHeadline6</item>
+    </style>
+
+    <style name="Woo.TextView.Subtitle1">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical|start</item>
+    </style>
+
+    <style name="Woo.TextView.Subtitle2">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:gravity">center_vertical|start</item>
+    </style>
+
+    <style name="Woo.TextView.Body1">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+    </style>
+
+    <style name="Woo.TextView.Body2">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:gravity">center_horizontal|start</item>
+        <item name="android:layout_marginTop">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
+
+    <style name="Woo.TextView.Caption">
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
+    </style>
+
+    <style name="Woo.TextView.Overline">
+        <item name="android:textAppearance">?attr/textAppearanceOverline</item>
+    </style>
+
+    <style name="Woo.TextView.Badge">
+        <item name="android:textAppearance">?attr/textAppearanceBadge</item>
+        <item name="android:textColor">@color/color_surface</item>
+        <item name="android:layout_marginStart">@dimen/major_75</item>
+        <item name="android:layout_marginEnd">@dimen/minor_00</item>
+        <item name="android:layout_marginTop">@dimen/minor_50</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
+
+    <!--
+        CheckedTextView style
+    -->
+    <!-- Set at the theme level so no need to set it in the layout -->
+    <style name="Woo.CheckedTextView">
+        <item name="textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:checkMark">?android:attr/listChoiceIndicatorSingle</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/minor_100</item>
+        <item name="android:paddingBottom">@dimen/minor_100</item>
+        <item name="android:minHeight">@dimen/min_tap_target</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!--
+        SearchView Styles
+    -->
+    <style name="Woo.AutoCompleteTextView" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@drawable/searchview_cursor</item>
+    </style>
+
+    <!--
+        EditText styles
+    -->
+    <!--
+        Most edit text widgets in the app should use TextInputLayout + TextInputEditText which
+        will use the outlined box style. This specific style is to be used with EditText and
+        will not show an outlined box.
+    -->
+    <style name="Woo.EditText" parent="Woo.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
+        <item name="android:layout_marginTop">@dimen/major_75</item>
+        <item name="android:layout_marginBottom">@dimen/minor_75</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingStart" tools:ignore="NewApi">0dp</item>
+        <item name="android:paddingEnd" tools:ignore="NewApi">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <!--
+        TextInputLayout styles
+    -->
+    <style name="Woo.TextInputLayout"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_75</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.Woo.Caption</item>
+    </style>
+
+    <style name="Woo.TextInputEditText"
+        parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
+        <item name="android:layout_margin">@dimen/minor_00</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedSpinnerView" parent="Woo.TextInputLayout">
+        <item name="endIconMode">custom</item>
+        <item name="endIconDrawable">@drawable/ic_arrow_drop_down</item>
+        <item name="endIconTint">@color/color_on_surface_medium_selector</item>
+        <item name="endIconTintMode">src_atop</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedCurrencyEditTextView" parent="Woo.TextInputLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCMaterialOutlinedEditTextView" parent="Woo.TextInputLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <!--
+        Button Styles
+    -->
+    <!--  Borderless button (i.e: text button)  -->
+    <style name="Woo.Button" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/button_fg_selector</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+    </style>
+
+    <!--  Borderless button with smaller text used for inner options  -->
+    <style name="Woo.Button.Secondary">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Caption</item>
+    </style>
+
+    <!--  Button with only a border and no color fill  -->
+    <style name="Woo.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/button_fg_selector</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+    </style>
+
+    <!--  Button filled with color  -->
+    <style name="Woo.Button.Colored" parent="Widget.MaterialComponents.Button">
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="backgroundTint">@color/button_colored_bg_selector</item>
+    </style>
+
+    <style name="Woo.Button.Colored.White">
+        <item name="android:textColor">@color/color_on_secondary</item>
+        <item name="backgroundTint">@color/button_colored_bg_white_selector</item>
+    </style>
+
+    <style name="Woo.Button.Toggle">
+        <item name="android:textColor">@color/button_toggle_fg_secondary_selector</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Woo.ImageButton">
+        <item name="android:layout_width">@dimen/min_tap_target</item>
+        <item name="android:layout_height">@dimen/min_tap_target</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Woo.ImageButton.Delete">
+        <item name="android:src">@drawable/delete_button_bg</item>
+        <item name="android:padding">@dimen/major_85</item>
+    </style>
+
+    <style name="Woo.ImageButton.More">
+        <item name="android:src">@drawable/ic_menu_more_vert_compat</item>
+    </style>
+
+    <!--
+        Switch Styles
+    -->
+    <style name="Woo.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+    </style>
+
+    <!--
+        Compound Button Styles
+    -->
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Woo.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="paddingStart">@dimen/major_100</item>
+        <item name="android:paddingLeft">@dimen/major_100</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+    </style>
+
+    <!--
+        Divider Style
+    -->
+    <style name="Woo.Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+        <item name="srcCompat">@drawable/list_divider</item>
+    </style>
+
+    <style name="Woo.Divider.TitleAligned">
+        <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
+    </style>
+
+    <!--
+        List Styles
+    -->
+    <style name="Woo.ListHeader" parent="Woo.TextView.Subtitle2"/>
+    <style name="Woo.ListItem">
+        <item name="android:minHeight">?attr/listPreferredItemHeight</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/minor_100</item>
+        <item name="android:paddingBottom">@dimen/minor_100</item>
+    </style>
+    <style name="Woo.ListItem.Title" parent="Woo.TextView.Subtitle1"/>
+    <style name="Woo.ListItem.Subtitle" parent="Woo.TextView.Subtitle2"/>
+    <style name="Woo.ListItem.Overline" parent="Woo.TextView.Overline"/>
+    <style name="Woo.ListItem.Caption" parent="Woo.TextView.Caption"/>
+    <style name="Woo.ListItem.Body" parent="Woo.TextView.Body2"/>
+
+    <!--
+        FlowLayout Style
+    -->
+    <style name="Woo.FlowLayout">
+        <item name="android:layout_marginTop">@dimen/minor_100</item>
+        <item name="android:layout_marginBottom">@dimen/major_100</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="horizontalSpacing">@dimen/minor_50</item>
+        <item name="verticalSpacing">@dimen/minor_50</item>
+    </style>
+
+    <!--
+        Progressbar Style
+    -->
+    <style name="Woo.ProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
+    <!--
+        TagView Style
+    -->
+    <style name="Woo.Tag" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/minor_50</item>
+        <item name="android:layout_marginRight">@dimen/minor_50</item>
+        <item name="android:layout_marginBottom">@dimen/minor_50</item>
+        <item name="android:paddingStart">@dimen/major_75</item>
+        <item name="android:paddingEnd">@dimen/major_75</item>
+        <item name="android:paddingTop">@dimen/minor_50</item>
+        <item name="android:paddingBottom">@dimen/minor_50</item>
+        <!-- Custom View Attributes -->
+        <item name="tagTextColor">@color/color_on_primary_high</item>
+        <item name="tagColor">@color/tagView_bg</item>
+        <item name="tagBorderColor">@color/tagView_border_bg</item>
+    </style>
+
+    <!--
+        Misc Widgets
+    -->
+    <style name="Woo.RatingsBar.Small" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:progressTint">@color/ratings_bar_progress_tint</item>
+        <item name="android:numStars">5</item>
+        <item name="android:rating">0</item>
+        <item name="android:stepSize">1</item>
+    </style>
+
+    <style name="Woo.RatingsBar.Small.Colored">
+        <item name="android:progressTint">@color/rating_star_color</item>
+    </style>
+
+    <!--
+        Settings
+    -->
+    <style name="Widget.Woo.Settings">
+        <item name="android:paddingStart">@dimen/margin_app_title_aligned</item>
+        <item name="android:paddingTop">@dimen/major_100</item>
+        <item name="android:paddingBottom">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+    </style>
+
+    <style name="Widget.Woo.Settings.OptionValue"/>
+
+    <style name="Widget.Woo.Settings.OptionToggle">
+        <item name="android:paddingStart">@dimen/major_100</item>
+    </style>
+
+    <style name="Widget.Woo.Settings.CategoryHeader">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:paddingBottom">@dimen/minor_00</item>
+    </style>
+
+    <style name="Widget.Woo.Settings.Button" parent="Woo.Button">
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:paddingStart">@dimen/margin_app_title_aligned</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+    </style>
+
+    <!--
+        Skeleton Styles
+    -->
+    <style name="Woo.Skeleton">
+        <item name="android:background">@drawable/skeleton_background</item>
+        <item name="android:layout_marginStart">@dimen/major_100</item>
+        <item name="android:layout_marginEnd">@dimen/major_100</item>
+        <item name="android:layout_marginTop">@dimen/major_75</item>
+        <item name="android:layout_marginBottom">@dimen/major_75</item>
+    </style>
+
+    <style name="Woo.Skeleton.ListItem"/>
+    <style name="Woo.Skeleton.ListItem.Single">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/skeleton_text_height_200</item>
+        <item name="android:layout_marginTop">@dimen/minor_75</item>
+        <item name="android:layout_marginBottom">@dimen/minor_75</item>
+    </style>
+
+
+    <!--
+        Aztec Editor Styles
+    -->
+    <style name="Woo.AztecText">
+        <item name="android:gravity">top|start</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/major_100</item>
+        <item name="android:paddingBottom">@dimen/major_100</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="backgroundColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Woo.AztecText.VisualEditor">
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="bulletColor">@color/editor_bullet_color</item>
+        <item name="codeBackground">@color/editor_code_bg_color</item>
+        <item name="codeColor">@color/editor_code_fg_color</item>
+        <item name="lineSpacingExtra">@dimen/line_spacing_extra_50</item>
+        <item name="linkColor">@color/editor_link_color</item>
+        <item name="linkUnderline">true</item>
+        <item name="historyEnable">true</item>
+        <item name="historySize">10</item>
+        <item name="preformatBackground">@color/editor_preformat_bg_color</item>
+        <item name="preformatBackgroundAlpha">15%</item>
+        <item name="preformatColor">@color/editor_preformat_fg_color</item>
+        <item name="quoteBackground">@color/editor_quote_bg_color</item>
+        <item name="quoteBackgroundAlpha">25%</item>
+        <item name="quoteColor">@color/editor_quote_fg_color</item>
+        <item name="quoteMargin">0dp</item>
+        <item name="textColor">@color/editor_text_color</item>
+        <item name="textColorHint">@color/editor_text_hint_color</item>
+    </style>
+
+    <style name="Woo.AztecText.SourceEditor">
+        <item name="android:inputType">textNoSuggestions|textMultiLine</item>
+        <item name="attributeColor">@color/editor_attribute_color</item>
+        <item name="codeBackgroundColor">@color/editor_code_bg_color</item>
+        <item name="codeTextColor">@color/editor_code_fg_color</item>
+        <item name="tagColor">@color/editor_tag_color</item>
+    </style>
+
+    <style name="AztecToolbarStyle">
+        <item name="advanced">false</item>
+        <item name="mediaToolbarAvailable">false</item>
+        <item name="toolbarBackgroundColor">@color/editor_toolbar_bg_color</item>
+        <item name="toolbarBorderColor">@color/divider_color</item>
+        <item name="toolbarIconNormalColor">@color/color_on_surface_medium</item>
+        <item name="toolbarIconHighlightColor">@color/color_on_surface_high</item>
+        <item name="toolbarIconDisabledColor">@color/color_on_surface_disabled</item>
+    </style>
+
+    <style name="Woo.Animations">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+</resources>

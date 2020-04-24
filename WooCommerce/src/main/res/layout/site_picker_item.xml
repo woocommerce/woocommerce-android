@@ -1,40 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/margin_large"
-                android:paddingTop="@dimen/margin_large">
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.ListItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <RadioButton
+    <com.google.android.material.radiobutton.MaterialRadioButton
         android:id="@+id/radio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="@dimen/margin_large"/>
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_site_name"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/radio"
-        android:orientation="vertical">
+        android:layout_marginTop="@dimen/minor_00"
+        android:layout_marginBottom="@dimen/minor_00"
+        android:layout_marginEnd="@dimen/minor_00"
+        android:layout_marginStart="@dimen/minor_100"
+        app:layout_constraintBottom_toTopOf="@+id/text_site_domain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/radio"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Woo Test Shop" />
 
-        <TextView
-            android:id="@+id/text_site_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/grey_dark"
-            android:textSize="@dimen/text_large"
-            tools:text="text_site_name"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_site_domain"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_00"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/text_site_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_site_name"
+        tools:text="store.mytestdomain.com"
+        tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/text_site_domain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/grey_dark"
-            android:textSize="@dimen/text_medium"
-            tools:text="text_site_domain"/>
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

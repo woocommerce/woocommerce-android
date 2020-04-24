@@ -64,8 +64,8 @@ class RefundByAmountFragment : BaseFragment() {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowValidationError -> issueRefund_refundAmountInputLayout.error = event.message
-                is HideValidationError -> issueRefund_refundAmountInputLayout.error = null
+                is ShowValidationError -> issueRefund_refundAmount.error = event.message
+                is HideValidationError -> issueRefund_refundAmount.error = null
                 else -> event.isHandled = false
             }
         })

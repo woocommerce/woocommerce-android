@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/skeleton_list_header"/>
+
+    <View
+        style="@style/Woo.Skeleton.ListItem.Single"
+        android:layout_width="200dp"
+        android:layout_marginTop="@dimen/major_75"/>
+
+    <View
+        style="@style/Woo.Skeleton.ListItem.Single"
+        android:layout_width="150dp"/>
+
+    <View
+        style="@style/Woo.Skeleton.ListItem.Single"
+        android:layout_width="100dp"/>
+
+    <View
+        style="@style/Woo.Skeleton.ListItem.Single"
+        android:layout_width="200dp"
+        android:layout_marginBottom="@dimen/major_75"/>
+
+
+</LinearLayout>

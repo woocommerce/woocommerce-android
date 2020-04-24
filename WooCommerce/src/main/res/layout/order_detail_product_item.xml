@@ -8,122 +8,110 @@
 
     <FrameLayout
         android:id="@+id/productInfo_iconFrame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
         android:layout_gravity="center_vertical"
         android:background="@drawable/picture_frame"
+        android:layout_margin="@dimen/major_100"
         android:padding="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/productInfo_icon"
-            android:layout_width="@dimen/product_icon_sz"
-            android:layout_height="@dimen/product_icon_sz"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
             android:contentDescription="@string/orderdetail_product_image_contentdesc"
+            android:layout_gravity="center"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_product"
             tools:visibility="visible"/>
     </FrameLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_name"
-        android:layout_width="wrap_content"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/margin_large"
         android:ellipsize="end"
-        android:paddingEnd="8dp"
-        android:paddingStart="0dp"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
         app:layout_constrainedWidth="true"
         app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_qty"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         tools:text="Candle"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_qty"
+        style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="2"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_productTotal"
-        android:layout_width="wrap_content"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/card_section_padding_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:paddingTop="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
         tools:text="$30.00 ($15.00 x 2)"
         tools:visibility="visible"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_lblTax"
+        style="@style/Woo.ListItem.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_section_padding_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:paddingEnd="@dimen/card_label_padding_intra_h"
-        android:paddingStart="0dp"
         android:text="@string/orderdetail_product_lineitem_tax"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
         tools:text="Tax:"
         tools:visibility="visible"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_totalTax"
+        style="@style/Woo.ListItem.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
+        android:layout_marginStart="@dimen/minor_50"
+        android:layout_marginEnd="@dimen/minor_50"
         app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblTax"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
         tools:text="$0.75"
         tools:visibility="visible"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_lblSku"
+        style="@style/Woo.ListItem.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_section_padding_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:paddingEnd="@dimen/card_label_padding_intra_h"
-        android:paddingStart="0dp"
+        android:layout_marginBottom="@dimen/major_75"
         android:text="@string/orderdetail_product_lineitem_sku"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:visibility="visible"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_sku"
+        style="@style/Woo.ListItem.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
+        android:layout_marginStart="@dimen/minor_50"
+        android:layout_marginEnd="@dimen/minor_50"
+        android:layout_marginBottom="@dimen/major_75"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblSku"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="T3124"
         tools:visibility="visible"/>
 </merge>

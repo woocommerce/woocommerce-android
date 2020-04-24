@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_marginStart="56dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginStart="@dimen/major_325">
 
     <View
         android:id="@+id/orderNote_itemDivider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
-        android:background="@color/list_divider" />
+        style="@style/Woo.Divider"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/orderDetail_noteListHeader"
+        style="@style/Woo.ListItem.Title"
         android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:layout_marginStart="@dimen/minor_00"
         android:layout_height="wrap_content"
-        tools:text="Jan 21, 2019"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
-
+        tools:text="Jan 21, 2019" />
 </LinearLayout>

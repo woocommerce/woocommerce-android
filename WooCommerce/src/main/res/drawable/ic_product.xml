@@ -8,6 +8,6 @@
     <path
         android:pathData="M 0 0 H 24 V 24 H 0 V 0 Z" />
     <path
-        android:fillColor="@color/wc_border_color"
+        android:fillColor="@color/color_icon"
         android:pathData="M22 3H2v6h1v11c0 1.105 0.895 2 2 2h14c1.105 0 2-0.895 2-2V9h1V3zM4 5h16v2H4V5zm15 15H5V9h14v11zM9 11h6c0 1.105-0.895 2-2 2h-2c-1.105 0-2-0.895-2-2z" />
 </vector>

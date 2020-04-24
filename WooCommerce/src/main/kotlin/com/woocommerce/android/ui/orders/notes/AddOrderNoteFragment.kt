@@ -86,8 +86,6 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
             }
         } else {
             addNote_switch.visibility = View.GONE
-            addNote_switchDivider.visibility = View.GONE
-            addNote_editDivider.visibility = View.GONE
         }
 
         if (savedInstanceState == null) {

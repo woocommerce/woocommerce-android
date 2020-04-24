@@ -4,9 +4,9 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_GOT_IT
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_TRY_IT
@@ -87,12 +87,12 @@ class WCPromoDialog : androidx.fragment.app.DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogView = View.inflate(activity, R.layout.dialog_promo, null)
 
-        dialogView.findViewById<AppCompatButton>(R.id.button1)?.setOnClickListener {
+        dialogView.findViewById<MaterialButton>(R.id.button1)?.setOnClickListener {
             dialog?.dismiss()
             listener?.onPromoButtonClicked(promoType.button1)
         }
 
-        dialogView.findViewById<AppCompatButton>(R.id.button2)?.setOnClickListener {
+        dialogView.findViewById<MaterialButton>(R.id.button2)?.setOnClickListener {
             dialog?.dismiss()
             listener?.onPromoButtonClicked(promoType.button2)
         }
@@ -101,7 +101,7 @@ class WCPromoDialog : androidx.fragment.app.DialogFragment() {
         promoImage = dialogView.findViewById(R.id.imagePromo)
         checkOrientation()
 
-        return AlertDialog.Builder(activity as Context)
+        return MaterialAlertDialogBuilder(activity as Context)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create()

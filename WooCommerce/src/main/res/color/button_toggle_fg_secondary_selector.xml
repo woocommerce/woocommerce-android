@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_enabled="false"
+        android:alpha="@dimen/alpha_emphasis_disabled"
+        android:color="@color/color_on_surface"/>
+    <item
+        android:state_checked="true"
+        android:color="@color/woo_green_5"/>
+    <item
+        android:color="@color/color_secondary"/>
+</selector>

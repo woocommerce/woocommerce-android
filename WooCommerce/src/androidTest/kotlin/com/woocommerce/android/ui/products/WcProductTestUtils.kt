@@ -39,6 +39,8 @@ object WcProductTestUtils {
                     mapOf("src" to "https://jamosova3.mystagingwebsite.com/wp-content/uploads/2018/11/eleven.jpg")))
             this.downloads = Gson().toJson(listOf(
                     mapOf("file" to "https://jamosova3.mystagingwebsite.com/wp-content/uploads/2018/11/eleven.jpg")))
+            this.variations = "[]"
+            this.attributes = "[]"
         }
     }
 }

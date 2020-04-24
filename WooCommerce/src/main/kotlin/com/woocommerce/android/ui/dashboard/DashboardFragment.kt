@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -68,13 +67,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
         with(view) {
             dashboard_refresh_layout.apply {
-                activity?.let { activity ->
-                    setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.colorPrimary),
-                            ContextCompat.getColor(activity, R.color.colorAccent),
-                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                    )
-                }
                 setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)

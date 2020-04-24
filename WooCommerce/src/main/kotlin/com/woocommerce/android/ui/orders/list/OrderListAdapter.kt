@@ -113,14 +113,16 @@ class OrderListAdapter(
         private val orderNameView = itemView.orderName
         private val orderTotalView = itemView.orderTotal
         private val orderTagList = itemView.orderTags
+        private val divider = itemView.divider
 
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
             orderDateView.text = getFormattedOrderDate(ctx, orderItemUI.dateCreated)
-            orderNumView.text = orderItemUI.orderNumber
+            orderNumView.text = "#${orderItemUI.orderNumber}"
             orderNameView.text = orderItemUI.orderName
             orderTotalView.text = currencyFormatter.formatCurrency(orderItemUI.orderTotal, orderItemUI.currencyCode)
+            divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
 
             // clear existing tags and add new ones
             orderTagList.removeAllViews()

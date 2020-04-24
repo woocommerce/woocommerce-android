@@ -60,7 +60,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             uploadingImageUris = null,
             weightWithUnits = "10kg",
             sizeWithUnits = "1 x 2 x 3 cm",
-            priceWithCurrency = "CZK20.00",
             salePriceWithCurrency = "CZK10.00",
             regularPriceWithCurrency = "CZK30.00"
     )
@@ -261,9 +260,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(true).whenever(productRepository).updateProduct(any())
 
-        var snackbar: ShowSnackbar? = null
+        var successSnackbarShown = false
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+                successSnackbarShown = true
+            }
         }
 
         var productData: ProductDetailViewState? = null
@@ -275,7 +276,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(1)).updateProduct(any())
         verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
 
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_success))
+        assertThat(successSnackbarShown).isTrue()
         assertThat(productData?.isProgressDialogShown).isFalse()
         assertThat(productData?.isProductUpdated).isFalse()
         assertThat(productData?.productDraft).isEqualTo(product)

@@ -2,6 +2,7 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/roboto</item>
+        <item>@font/roboto_light</item>
         <item>@font/roboto_medium</item>
     </array>
 </resources>

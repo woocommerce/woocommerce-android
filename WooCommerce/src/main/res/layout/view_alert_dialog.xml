@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingTop="@dimen/major_100"
+    android:paddingStart="@dimen/minor_100"
+    android:paddingEnd="@dimen/minor_100"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/product_purchase_note"
+        android:theme="@style/Woo.TextView.Subtitle1"
+        android:layout_marginStart="@dimen/major_100"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Woo.TextView.Caption" />
+        android:layout_height="wrap_content" />
+
 </ScrollView>

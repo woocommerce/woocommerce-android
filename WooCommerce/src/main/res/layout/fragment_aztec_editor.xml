@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/color_surface">
 
     <org.wordpress.aztec.toolbar.AztecToolbar
         android:id="@+id/aztecToolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/aztec_format_bar_height"
-        app:advanced="false"
+        android:layout_height="@dimen/min_tap_target"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:mediaToolbarAvailable="false" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -30,15 +29,15 @@
 
             <org.wordpress.aztec.AztecText
                 android:id="@+id/visualEditor"
-                style="@style/Woo.Aztec.VisualEditor"
+                style="@style/Woo.AztecText.VisualEditor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/product_description_hint"
-                android:scrollbars="vertical" />
+                android:scrollbars="vertical"/>
 
             <org.wordpress.aztec.source.SourceViewEditText
                 android:id="@+id/sourceEditor"
-                style="@style/Woo.Aztec.SourceEditor"
+                style="@style/Woo.AztecText.SourceEditor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/product_description_hint"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,7 +16,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ordersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            tools:itemCount="5"
+            tools:listitem="@layout/order_list_item"
+            tools:visibility="gone"/>
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"
@@ -26,12 +30,12 @@
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"
-            style="?android:attr/progressBarStyle"
+            style="@style/Woo.ProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginBottom="@dimen/major_75"
             android:visibility="gone"
             tools:visibility="visible" />
     </RelativeLayout>

@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -15,10 +15,10 @@ class WCProductPropertyLinkView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private var view: View = View.inflate(context, R.layout.product_property_link_view, this)
+    private var view: View = View.inflate(context, R.layout.product_property_link_view_layout, this)
 
     fun show(caption: String, url: String, tracksEvent: Stat) {
-        with(view.findViewById<TextView>(R.id.textLink)) {
+        with(view.findViewById<MaterialTextView>(R.id.textLink)) {
             text = caption
         }
         view.setOnClickListener {

@@ -2,58 +2,58 @@
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
 
-    <TextView
-        android:id="@+id/orderStatus_orderNum"
-        android:layout_width="wrap_content"
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:fontFamily="@font/roboto"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
-        tools:text="#51 Michelle Fredrickson"/>
-
-    <TextView
-        android:id="@+id/orderStatus_created"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/orderStatus_orderNum"
-        android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        tools:text="Created today at 9:51 AM"/>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/orderStatus_edit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@+id/orderStatus_created"
-        android:focusable="true"
-        android:clickable="true"
-        android:padding="4dp"
-        android:contentDescription="@string/orderdetail_change_order_status"
-        android:background="?attr/selectableItemBackground">
+        android:orientation="vertical">
 
-        <com.woocommerce.android.widgets.FlowLayout
-            android:id="@+id/orderStatus_orderTags"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/orderstatus_contentDesc"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <ImageView
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderStatus_orderNum"
+            style="@style/Woo.TextView.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:focusable="false"
-            android:clickable="false"
-            android:importantForAccessibility="no"
-            android:background="@drawable/ic_edit_pencil"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</merge>
+            android:layout_marginBottom="@dimen/minor_50"
+            tools:text="#51 Michelle Fredrickson"/>
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderStatus_created"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_00"
+            tools:text="Created today at 9:51 AM"/>
+
+        <LinearLayout
+            android:id="@+id/orderStatus_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:focusable="true"
+            android:clickable="true"
+            android:paddingEnd="@dimen/major_100"
+            android:paddingStart="@dimen/major_100"
+            android:paddingBottom="@dimen/major_75"
+            android:paddingTop="@dimen/major_75"
+            android:contentDescription="@string/orderdetail_change_order_status"
+            android:background="?attr/selectableItemBackground">
+
+            <com.woocommerce.android.widgets.FlowLayout
+                android:id="@+id/orderStatus_orderTags"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/orderstatus_contentDesc"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="false"
+                android:importantForAccessibility="no"
+                android:background="@drawable/ic_edit_pencil"/>
+        </LinearLayout>
+    </LinearLayout>
+</merge>

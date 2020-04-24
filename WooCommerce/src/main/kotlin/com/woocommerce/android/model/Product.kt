@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -25,6 +26,7 @@ data class Product(
     val remoteId: Long,
     val name: String,
     val description: String,
+    val shortDescription: String,
     val type: ProductType,
     val status: ProductStatus?,
     val stockStatus: ProductStockStatus,
@@ -38,7 +40,6 @@ data class Product(
     val averageRating: Float,
     val permalink: String,
     val externalUrl: String,
-    val price: BigDecimal?,
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
@@ -59,8 +60,9 @@ data class Product(
     val numVariations: Int,
     val images: List<Image>,
     val attributes: List<Attribute>,
-    val dateOnSaleToGmt: Date?,
-    val dateOnSaleFromGmt: Date?,
+    val saleEndDateGmt: Date?,
+    val saleStartDateGmt: Date?,
+    val isOnSale: Boolean,
     val soldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean
@@ -98,13 +100,14 @@ data class Product(
                 numVariations == product.numVariations &&
                 name.fastStripHtml() == product.name.fastStripHtml() &&
                 description == product.description &&
+                shortDescription == product.shortDescription &&
                 taxClass == product.taxClass &&
                 taxStatus == product.taxStatus &&
                 isSaleScheduled == product.isSaleScheduled &&
-                dateOnSaleToGmt == product.dateOnSaleToGmt &&
-                dateOnSaleFromGmt == product.dateOnSaleFromGmt &&
-                regularPrice == product.regularPrice &&
-                salePrice == product.salePrice &&
+                saleEndDateGmt == product.saleEndDateGmt &&
+                saleStartDateGmt == product.saleStartDateGmt &&
+                isSamePrice(regularPrice, product.regularPrice) &&
+                isSamePrice(salePrice, product.salePrice) &&
                 weight == product.weight &&
                 length == product.length &&
                 height == product.height &&
@@ -112,6 +115,12 @@ data class Product(
                 shippingClass == product.shippingClass &&
                 shippingClassId == product.shippingClassId &&
                 isSameImages(product.images)
+    }
+
+    private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
+        val val1 = first ?: BigDecimal.ZERO
+        val val2 = second ?: BigDecimal.ZERO
+        return val1.isEqualTo(val2)
     }
 
     /**
@@ -137,10 +146,11 @@ data class Product(
      */
     fun hasPricingChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
-            regularPrice != it.regularPrice ||
-                    salePrice != it.salePrice ||
-                    dateOnSaleFromGmt != it.dateOnSaleFromGmt ||
-                    dateOnSaleToGmt != it.dateOnSaleToGmt ||
+            regularPrice.isNotEqualTo(it.regularPrice) ||
+                    salePrice.isNotEqualTo(it.salePrice) ||
+                    saleStartDateGmt != it.saleStartDateGmt ||
+                    saleEndDateGmt != it.saleEndDateGmt ||
+                    isOnSale != it.isOnSale ||
                     taxClass != it.taxClass ||
                     taxStatus != it.taxStatus
         } ?: false
@@ -201,6 +211,7 @@ data class Product(
         return newProduct?.let { updatedProduct ->
             this.copy(
                     description = updatedProduct.description,
+                    shortDescription = updatedProduct.shortDescription,
                     name = updatedProduct.name,
                     sku = updatedProduct.sku,
                     manageStock = updatedProduct.manageStock,
@@ -210,9 +221,10 @@ data class Product(
                     soldIndividually = updatedProduct.soldIndividually,
                     regularPrice = updatedProduct.regularPrice,
                     salePrice = updatedProduct.salePrice,
+                    isOnSale = updatedProduct.isOnSale,
                     isSaleScheduled = updatedProduct.isSaleScheduled,
-                    dateOnSaleFromGmt = updatedProduct.dateOnSaleFromGmt,
-                    dateOnSaleToGmt = updatedProduct.dateOnSaleToGmt,
+                    saleStartDateGmt = updatedProduct.saleStartDateGmt,
+                    saleEndDateGmt = updatedProduct.saleEndDateGmt,
                     taxStatus = updatedProduct.taxStatus,
                     taxClass = updatedProduct.taxClass,
                     length = updatedProduct.length,
@@ -275,6 +287,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
+        it.shortDescription = shortDescription
         it.name = name
         it.sku = sku
         it.manageStock = manageStock
@@ -282,8 +295,9 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.stockQuantity = stockQuantity
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-        it.regularPrice = regularPrice.toString()
+        it.regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) "" else regularPrice.toString()
         it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
+        it.onSale = isOnSale
         it.length = if (length == 0f) "" else length.formatToString()
         it.width = if (width == 0f) "" else width.formatToString()
         it.weight = if (weight == 0f) "" else weight.formatToString()
@@ -293,10 +307,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.taxClass = taxClass
         it.images = imagesToJson()
         if (isSaleScheduled) {
-            dateOnSaleFromGmt?.let { dateOnSaleFrom ->
+            saleStartDateGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
             }
-            it.dateOnSaleToGmt = dateOnSaleToGmt?.formatToYYYYmmDDhhmmss() ?: ""
+            it.dateOnSaleToGmt = saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
         } else {
             it.dateOnSaleFromGmt = ""
             it.dateOnSaleToGmt = ""
@@ -309,6 +323,7 @@ fun WCProductModel.toAppModel(): Product {
         remoteId = this.remoteProductId,
         name = this.name,
         description = this.description,
+        shortDescription = this.shortDescription,
         type = ProductType.fromString(this.type),
         status = ProductStatus.fromString(this.status),
         stockStatus = ProductStockStatus.fromString(this.stockStatus),
@@ -322,9 +337,8 @@ fun WCProductModel.toAppModel(): Product {
         averageRating = this.averageRating.toFloatOrNull() ?: 0f,
         permalink = this.permalink,
         externalUrl = this.externalUrl,
-        price = this.price.toBigDecimalOrNull()?.roundError(),
-        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
             // In Core, if a tax class is empty it is considered as standard and we are following the same
             // procedure here
         taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
@@ -359,8 +373,9 @@ fun WCProductModel.toAppModel(): Product {
                     it.visible
             )
         },
-        dateOnSaleToGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        dateOnSaleFromGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        isOnSale = this.onSale,
         soldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty()

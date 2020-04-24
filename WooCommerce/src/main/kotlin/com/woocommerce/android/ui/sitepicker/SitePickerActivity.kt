@@ -15,10 +15,9 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -45,7 +44,6 @@ import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
-import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
@@ -115,11 +113,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
             }
+            site_list_container.elevation = resources.getDimension(R.dimen.plane_01)
         } else {
             // Opened from settings to change active store.
-            site_picker_root.setBackgroundColor(
-                    ContextCompat.getColor(this, R.color.white))
-
             toolbar.visibility = View.VISIBLE
             setSupportActionBar(toolbar as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -127,14 +123,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             title = getString(R.string.site_picker_title)
             button_help.visibility = View.GONE
             site_list_label.visibility = View.GONE
-            site_list_container.cardElevation = 0f
+            site_list_container.elevation = 0f
             (site_list_container.layoutParams as MarginLayoutParams).topMargin = 0
             (site_list_container.layoutParams as MarginLayoutParams).bottomMargin = 0
-            sites_recycler.setPadding(
-                    resources.getDimensionPixelSize(R.dimen.margin_extra_large),
-                    resources.getDimensionPixelSize(R.dimen.margin_large),
-                    resources.getDimensionPixelSize(R.dimen.margin_extra_large),
-                    resources.getDimensionPixelSize(R.dimen.margin_large))
         }
 
         presenter.takeView(this)
@@ -277,6 +268,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         no_stores_view.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
+        button_email_help.visibility = View.GONE
 
         site_list_label.text = when {
             wcSites.size == 1 -> getString(R.string.login_connected_store)
@@ -366,6 +358,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
 
+    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
+    @Suppress("WrongConstant")
     override fun siteVerificationError(site: SiteModel) {
         progressDialog?.dismiss()
 
@@ -373,7 +367,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         Snackbar.make(
                 site_picker_root as ViewGroup,
                 getString(R.string.login_verifying_site_error, siteName),
-                Snackbar.LENGTH_LONG
+                BaseTransientBottomBar.LENGTH_LONG
         ).show()
     }
 
@@ -385,11 +379,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
-
-        val noStoresImage =
-                if (DisplayUtils.isLandscape(this)) null
-                else AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
-        no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
 
         button_primary.text = getString(R.string.login_try_another_account)
         button_primary.isEnabled = true
@@ -476,6 +465,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.VISIBLE
+        site_list_container.visibility = View.GONE
 
         no_stores_view.text = getString(R.string.login_not_connected_to_account, url)
 
@@ -518,6 +508,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.GONE
+        site_list_container.visibility = View.GONE
 
         with(no_stores_view) {
             val refreshAppText = getString(R.string.login_refresh_app_continue)
@@ -587,6 +578,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
+        site_list_container.visibility = View.GONE
 
         with(no_stores_view) {
             // Build and configure the error message and make part of the message
