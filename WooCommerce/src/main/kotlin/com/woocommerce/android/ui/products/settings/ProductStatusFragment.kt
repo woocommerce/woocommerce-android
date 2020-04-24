@@ -76,6 +76,8 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
 
     override fun hasChanges() = navArgs.status != selectedStatus
 
+    override fun validateChanges() = true
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)

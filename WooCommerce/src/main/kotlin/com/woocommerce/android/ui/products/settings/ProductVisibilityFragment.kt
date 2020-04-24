@@ -103,6 +103,14 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
     override fun getFragmentTitle() = getString(R.string.product_visibility)
 
+    override fun validateChanges(): Boolean {
+        if (selectedVisibility == PASSWORD_PROTECTED.toString() && getPassword().isEmpty()) {
+            editPassword.error = getString(R.string.product_visibility_password_required)
+            return false
+        }
+        return true
+    }
+
     private fun getButtonForVisibility(visibility: String): CheckedTextView? {
         return when (ProductVisibility.fromString(visibility)) {
             PUBLIC -> btnPublic

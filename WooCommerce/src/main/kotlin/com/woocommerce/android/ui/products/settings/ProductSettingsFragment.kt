@@ -55,6 +55,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productMenuOrder.setOnClickListener {
             viewModel.onSettingsMenuOrderButtonClicked()
         }
+
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             productReviewsAllowed.visibility = View.VISIBLE
             productReviewsAllowedDivider.visibility = View.VISIBLE
@@ -65,6 +66,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productReviewsAllowed.visibility = View.GONE
             productReviewsAllowedDivider.visibility = View.GONE
         }
+
         productPurchaseNote.setOnClickListener {
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
             viewModel.onEditProductCardClicked(
@@ -115,7 +117,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         } else if (requestCode == PRODUCT_SETTINGS_VISIBLITY) {
             ProductVisibility.fromString(result.getString(ARG_VISIBILITY) ?: "")?.let { visibility ->
                 val password = result.getString(ARG_PASSWORD) ?: ""
-                viewModel.updateDraftVisibility(visibility, password)
+                viewModel.updateProductVisibility(visibility, password)
             }
         }
 
@@ -146,7 +148,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productReviewsAllowed.isChecked = product.reviewsAllowed
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         productMenuOrder.optionValue = product.menuOrder.toString()
-        productVisibility.optionValue = viewModel.getDraftProductVisibility().toLocalizedString(requireActivity())
+        productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
     }
 
     private fun setupObservers() {
@@ -156,6 +158,15 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 else -> event.isHandled = false
             }
         })
+
+        viewModel.productVisibilityViewStateData.observe(viewLifecycleOwner) { old, new ->
+            if (old?.draftVisibility != new.draftVisibility) {
+                new.draftVisibility?.visibility?.toLocalizedString(requireActivity())?.let {
+                    productVisibility.optionValue = it
+                }
+            }
+        }
+
         updateProductView()
     }
 }

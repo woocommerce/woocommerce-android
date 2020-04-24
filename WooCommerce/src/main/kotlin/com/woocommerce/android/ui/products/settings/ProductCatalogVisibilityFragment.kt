@@ -80,6 +80,8 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(), OnClickL
                 navArgs.catalogVisibility != selectedCatalogVisibility
     }
 
+    override fun validateChanges() = true
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)

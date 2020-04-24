@@ -38,6 +38,8 @@ class ProductSlugFragment : BaseProductSettingsFragment() {
         }
     }
 
+    override fun validateChanges() = true
+
     /**
      * As with the web, we trim the string and replace any spaces with hyphens
      */

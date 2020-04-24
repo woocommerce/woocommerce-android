@@ -52,7 +52,9 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
         return when (item.itemId) {
             R.id.menu_done -> {
                 if (hasChanges()) {
-                    navigateBackWithResult()
+                    if (validateChanges()) {
+                        navigateBackWithResult()
+                    }
                 } else {
                     findNavController().navigateUp()
                 }
@@ -111,4 +113,9 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
      * Descendants should override this to return true if changes have been made
      */
     abstract fun hasChanges(): Boolean
+
+    /**
+     * Descendants should override this to validate any changes and return true if validation passes
+     */
+    abstract fun validateChanges(): Boolean
 }

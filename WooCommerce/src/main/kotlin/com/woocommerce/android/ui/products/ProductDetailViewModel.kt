@@ -120,42 +120,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProduct() = viewState
 
-    fun updateDraftVisibility(visibility: ProductVisibility, password: String) {
-        productVisibilityViewState = productVisibilityViewState.copy(draftVisibility = Visibility(visibility, password))
-
-        when (visibility) {
-            ProductVisibility.PUBLIC -> {
-                updateProductDraft(productStatus = ProductStatus.PUBLISH)
-            }
-            ProductVisibility.PRIVATE -> {
-                updateProductDraft(productStatus = ProductStatus.PRIVATE)
-            }
-            ProductVisibility.PASSWORD_PROTECTED -> {
-                updateProductDraft(productStatus = ProductStatus.PUBLISH) // TODO: not sure about this
-            }
-        }
-    }
-
-    fun getStoredProductVisibility(): ProductVisibility {
-        return if (productVisibilityViewState.storedVisibility.password?.isNotEmpty() == true) {
-            ProductVisibility.PASSWORD_PROTECTED
-        } else if (getProduct().storedProduct?.status == ProductStatus.PRIVATE) {
-            ProductVisibility.PRIVATE
-        } else {
-            ProductVisibility.PUBLIC
-        }
-    }
-
-    fun getDraftProductVisibility(): ProductVisibility {
-        return if (productVisibilityViewState.draftVisibility?.password?.isNotEmpty() == true) {
-            ProductVisibility.PASSWORD_PROTECTED
-        } else if (getProduct().productDraft?.status == ProductStatus.PRIVATE) {
-            ProductVisibility.PRIVATE
-        } else {
-            ProductVisibility.PUBLIC
-        }
-    }
-
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
@@ -615,16 +579,65 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Called from the product visibility settings fragment when the user updates
+     * the product's visibility and/or password
+     */
+    fun updateProductVisibility(visibility: ProductVisibility, password: String?) {
+        productVisibilityViewState = productVisibilityViewState.copy(draftVisibility = Visibility(visibility, password))
+
+        when (visibility) {
+            ProductVisibility.PUBLIC -> {
+                updateProductDraft(productStatus = ProductStatus.PUBLISH)
+            }
+            ProductVisibility.PRIVATE -> {
+                updateProductDraft(productStatus = ProductStatus.PRIVATE)
+            }
+            ProductVisibility.PASSWORD_PROTECTED -> {
+                updateProductDraft(productStatus = ProductStatus.PUBLISH) // // TODO: not sure about this
+            }
+        }
+    }
+
+    /**
+     * Returns the draft visibility if it has been set otherwise it returns the stored visibility
+     */
+    fun getProductVisibility() : ProductVisibility {
+        return if (productVisibilityViewState.draftVisibility != null) {
+            getDraftProductVisibility()
+        } else {
+            getStoredProductVisibility()
+        }
+    }
+
+    private fun getStoredProductVisibility(): ProductVisibility {
+        return if (productVisibilityViewState.storedVisibility.password?.isNotEmpty() == true) {
+            ProductVisibility.PASSWORD_PROTECTED
+        } else if (getProduct().storedProduct?.status == ProductStatus.PRIVATE) {
+            ProductVisibility.PRIVATE
+        } else {
+            ProductVisibility.PUBLIC
+        }
+    }
+
+    private fun getDraftProductVisibility(): ProductVisibility {
+        return if (productVisibilityViewState.draftVisibility?.password?.isNotEmpty() == true) {
+            ProductVisibility.PASSWORD_PROTECTED
+        } else if (getProduct().productDraft?.status == ProductStatus.PRIVATE) {
+            ProductVisibility.PRIVATE
+        } else {
+            ProductVisibility.PUBLIC
+        }
+    }
+
+    /**
+     * Sends a request to fetch the product's password then updates the stored visibility and password
+     */
     suspend private fun fetchPassword(remoteProductId: Long) {
         val password = productRepository.fetchProductPassword(remoteProductId)
         productVisibilityViewState = productVisibilityViewState.copy(
                 storedVisibility = Visibility(getStoredProductVisibility(), password)
         )
-        if (productVisibilityViewState.draftVisibility == null) {
-            productVisibilityViewState = productVisibilityViewState.copy(
-                    draftVisibility = Visibility(getStoredProductVisibility(), password)
-            )
-        }
     }
 
     /**
