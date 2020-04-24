@@ -23,6 +23,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
@@ -205,6 +206,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitSettings -> {
                 // TODO: eventName = ??
                 hasChanges = viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) ?: false
+            }
+            is ExitExternalLink -> {
+                hasChanges = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -451,7 +455,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         visibility: ProductVisibility? = null,
         isFeatured: Boolean? = null,
         reviewsAllowed: Boolean? = null,
-        purchaseNote: String? = null
+        purchaseNote: String? = null,
+        externalUrl: String? = null,
+        buttonText: String? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -484,6 +490,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     isFeatured = isFeatured ?: product.isFeatured,
                     reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
                     purchaseNote = purchaseNote ?: product.purchaseNote,
+                    externalUrl = externalUrl ?: product.externalUrl,
+                    buttonText = buttonText ?: product.buttonText,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -777,6 +785,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 

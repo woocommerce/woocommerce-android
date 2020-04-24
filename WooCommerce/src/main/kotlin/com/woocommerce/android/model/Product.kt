@@ -44,6 +44,7 @@ data class Product(
     val averageRating: Float,
     val permalink: String,
     val externalUrl: String,
+    val buttonText: String,
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
@@ -123,6 +124,8 @@ data class Product(
                 visibility == product.visibility &&
                 isFeatured == product.isFeatured &&
                 purchaseNote == product.purchaseNote &&
+                externalUrl == product.externalUrl &&
+                buttonText == product.buttonText &&
                 isSameImages(product.images)
     }
 
@@ -188,6 +191,16 @@ data class Product(
     fun hasImageChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             !isSameImages(it.images)
+        } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes made to the external link settings
+     */
+    fun hasExternalLinkChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            externalUrl != it.externalUrl ||
+                    buttonText != it.buttonText
         } ?: false
     }
 
@@ -262,7 +275,9 @@ data class Product(
                     images = updatedProduct.images,
                     shippingClassId = updatedProduct.shippingClassId,
                     reviewsAllowed = updatedProduct.reviewsAllowed,
-                    purchaseNote = updatedProduct.purchaseNote
+                    purchaseNote = updatedProduct.purchaseNote,
+                    externalUrl = updatedProduct.externalUrl,
+                    buttonText = updatedProduct.buttonText
             )
         } ?: this.copy()
     }
@@ -350,6 +365,8 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
             it.dateOnSaleToGmt = ""
         }
         it.purchaseNote = purchaseNote
+        it.externalUrl = externalUrl
+        it.buttonText = buttonText
     }
 }
 
@@ -374,6 +391,7 @@ fun WCProductModel.toAppModel(): Product {
         averageRating = this.averageRating.toFloatOrNull() ?: 0f,
         permalink = this.permalink,
         externalUrl = this.externalUrl,
+        buttonText = this.buttonText,
         salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
         regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
             // In Core, if a tax class is empty it is considered as standard and we are following the same

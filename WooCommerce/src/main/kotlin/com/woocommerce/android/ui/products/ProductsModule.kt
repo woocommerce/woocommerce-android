@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductExternalLinkFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductImageViewerFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductImagesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductInventoryFragmentModule
@@ -38,7 +39,8 @@ import dagger.android.ContributesAndroidInjector
     ProductSettingsFragmentModule::class,
     ProductVisibilityFragmentModule::class,
     ProductStatusFragmentModule::class,
-    ProductSlugFragmentModule::class
+    ProductSlugFragmentModule::class,
+    ProductExternalLinkFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -130,5 +132,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductSlugModule::class])
         abstract fun productSlugFragment(): ProductSlugFragment
+    }
+
+    @Module
+    internal abstract class ProductExternalLinkFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductExternalLinkModule::class])
+        abstract fun productExternalLinkFragment(): ProductExternalLinkFragment
     }
 }

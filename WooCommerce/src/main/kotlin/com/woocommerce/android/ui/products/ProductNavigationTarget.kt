@@ -17,6 +17,7 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductInventory(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductPricing(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductShipping(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductExternalLink(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductDescriptionEditor(val description: String, val title: String) : ProductNavigationTarget()
     data class ViewProductPurchaseNoteEditor(
         val purchaseNote: String,

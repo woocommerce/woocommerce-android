@@ -8,6 +8,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
@@ -95,6 +96,12 @@ class ProductNavigator @Inject constructor() {
             is ViewProductPricing -> {
                 val action = ProductDetailFragmentDirections
                         .actionProductDetailFragmentToProductPricingFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductExternalLink -> {
+                val action = ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductExternalLinkFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
             }
 
