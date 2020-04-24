@@ -111,9 +111,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
-    final val productPasswordViewStateData = LiveDataDelegate(savedState, ProductPasswordViewState())
-    private var productPasswordViewState by productPasswordViewStateData
-
     init {
         EventBus.getDefault().register(this)
     }
@@ -215,7 +212,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
                     true
                 } else {
-                    productPasswordViewState.isPasswordChanged
+                    viewState.isPasswordChanged
                 }
             }
             is ExitExternalLink -> {
@@ -269,7 +266,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
-        val password = productPasswordViewState.draftPassword ?: productPasswordViewState.storedPassword
+        val password = viewState.draftPassword ?: viewState.storedPassword
         triggerEvent(ViewProductVisibility(visibility, password))
     }
 
@@ -338,7 +335,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                    productPasswordViewState.isPasswordChanged
+                    viewState.isPasswordChanged
         }
 
         val isProductUpdated = when (event) {
@@ -590,7 +587,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * the product's visibility and/or password
      */
     fun updateProductVisibility(visibility: ProductVisibility, password: String?) {
-        productPasswordViewState = productPasswordViewState.copy(draftPassword = password)
+        viewState = viewState.copy(draftPassword = password)
 
         when (visibility) {
             ProductVisibility.PUBLIC -> {
@@ -613,7 +610,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun getProductVisibility(): ProductVisibility {
         val status = viewState.productDraft?.status ?: viewState.storedProduct?.status
-        val password = productPasswordViewState.draftPassword ?: productPasswordViewState.storedPassword
+        val password = viewState.draftPassword ?: viewState.storedPassword
         return when {
             password?.isNotEmpty() == true -> {
                 ProductVisibility.PASSWORD_PROTECTED
@@ -633,13 +630,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     private suspend fun fetchProductPassword(remoteProductId: Long) {
         val password = productRepository.fetchProductPassword(remoteProductId)
 
-        productPasswordViewState = if (productPasswordViewState.draftPassword == null) {
-            productPasswordViewState.copy(
+        viewState = if (viewState.draftPassword == null) {
+            viewState.copy(
                     storedPassword = password,
                     draftPassword = password
             )
         } else {
-            productPasswordViewState.copy(
+            viewState.copy(
                     storedPassword = password
             )
         }
@@ -681,9 +678,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      * the viewState.product with viewState.storedProduct model.
      */
     private fun updateProductEditAction() {
-        viewState.productDraft?.let {draft ->
-            val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false
-                    || productPasswordViewState.isPasswordChanged
+        viewState.productDraft?.let { draft ->
+            val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
+                    viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
     }
@@ -720,10 +717,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
-                if (productPasswordViewState.isPasswordChanged) {
-                    val password = productPasswordViewState.draftPassword
+                if (viewState.isPasswordChanged) {
+                    val password = viewState.draftPassword
                     if (productRepository.updateProductPassword(product.remoteId, password)) {
-                        productPasswordViewState = productPasswordViewState.copy(storedPassword = password)
+                        viewState = viewState.copy(storedPassword = password)
                         triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                     } else {
                         triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
@@ -937,10 +934,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f
+        val gmtOffset: Float = 0f,
+        val storedPassword: String? = null,
+        val draftPassword: String? = null
     ) : Parcelable {
         val isOnSale: Boolean
             get() = salePriceWithCurrency != null
+        val isPasswordChanged: Boolean
+            get() = storedPassword != draftPassword
     }
 
     @Parcelize
@@ -968,19 +969,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class ProductImagesViewState(
         val isUploadingImages: Boolean = false
     ) : Parcelable
-
-    /**
-     * Password is a property of a WP.com post and is not stored with the product.
-     * Visibility is determined by the product status and password.
-     */
-    @Parcelize
-    data class ProductPasswordViewState(
-        val storedPassword: String? = null,
-        val draftPassword: String? = null
-    ) : Parcelable {
-        val isPasswordChanged: Boolean
-            get() = storedPassword != draftPassword
-    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
