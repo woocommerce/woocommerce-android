@@ -132,7 +132,7 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun updateProductPassword(remoteProductId: Long, password: String): Boolean {
+    suspend fun updateProductPassword(remoteProductId: Long, password: String?): Boolean {
         return try {
             continuationUpdateProductPassword?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -141,7 +141,7 @@ class ProductDetailRepository @Inject constructor(
                 val payload = WCProductStore.UpdateProductPasswordPayload(
                         selectedSite.get(),
                         remoteProductId,
-                        password
+                        password ?: ""
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newUpdateProductPasswordAction(payload))
             } ?: false // request timed out
