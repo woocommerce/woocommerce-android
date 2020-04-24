@@ -104,16 +104,23 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY) {
             (result.getString(ARG_CATALOG_VISIBILITY))?.let {
                 val catalogVisibility = ProductCatalogVisibility.fromString(it)
-                viewModel.updateProductDraft(catalogVisibility = catalogVisibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
+                viewModel.updateProductDraft(
+                        catalogVisibility = catalogVisibility,
+                        isFeatured = result.getBoolean(ARG_IS_FEATURED)
+                )
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
         } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                viewModel.updateProductDraft(purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT))
+                viewModel.updateProductDraft(
+                        purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                )
             }
         } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
-            viewModel.updateProductDraft(menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0))
+            viewModel.updateProductDraft(
+                        menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0)
+            )
         } else if (requestCode == PRODUCT_SETTINGS_VISIBLITY) {
             ProductVisibility.fromString(result.getString(ARG_VISIBILITY) ?: "")?.let { visibility ->
                 val password = result.getString(ARG_PASSWORD) ?: ""

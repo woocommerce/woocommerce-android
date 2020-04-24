@@ -131,7 +131,10 @@ class ProductNavigator @Inject constructor() {
             is ViewProductCatalogVisibility -> {
                 val catalogVisibility = target.catalogVisibility?.toString() ?: ""
                 val action = ProductSettingsFragmentDirections
-                        .actionProductSettingsFragmentToProductCatalogVisibilityFragment(catalogVisibility, target.isFeatured)
+                        .actionProductSettingsFragmentToProductCatalogVisibilityFragment(
+                                catalogVisibility,
+                                target.isFeatured
+                        )
                 fragment.findNavController().navigate(action)
             }
 

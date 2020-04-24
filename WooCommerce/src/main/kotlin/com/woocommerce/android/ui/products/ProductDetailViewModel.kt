@@ -602,7 +602,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Returns the draft visibility if it has been set otherwise it returns the stored visibility
      */
-    fun getProductVisibility() : ProductVisibility {
+    fun getProductVisibility(): ProductVisibility {
         return if (productVisibilityViewState.draftVisibility != null) {
             getDraftProductVisibility()
         } else {
@@ -611,29 +611,37 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun getStoredProductVisibility(): ProductVisibility {
-        return if (productVisibilityViewState.storedVisibility.password?.isNotEmpty() == true) {
-            ProductVisibility.PASSWORD_PROTECTED
-        } else if (getProduct().storedProduct?.status == ProductStatus.PRIVATE) {
-            ProductVisibility.PRIVATE
-        } else {
-            ProductVisibility.PUBLIC
+        return when {
+            productVisibilityViewState.storedVisibility.password?.isNotEmpty() == true -> {
+                ProductVisibility.PASSWORD_PROTECTED
+            }
+            getProduct().storedProduct?.status == ProductStatus.PRIVATE -> {
+                ProductVisibility.PRIVATE
+            }
+            else -> {
+                ProductVisibility.PUBLIC
+            }
         }
     }
 
     private fun getDraftProductVisibility(): ProductVisibility {
-        return if (productVisibilityViewState.draftVisibility?.password?.isNotEmpty() == true) {
-            ProductVisibility.PASSWORD_PROTECTED
-        } else if (getProduct().productDraft?.status == ProductStatus.PRIVATE) {
-            ProductVisibility.PRIVATE
-        } else {
-            ProductVisibility.PUBLIC
+        return when {
+            productVisibilityViewState.draftVisibility?.password?.isNotEmpty() == true -> {
+                ProductVisibility.PASSWORD_PROTECTED
+            }
+            getProduct().productDraft?.status == ProductStatus.PRIVATE -> {
+                ProductVisibility.PRIVATE
+            }
+            else -> {
+                ProductVisibility.PUBLIC
+            }
         }
     }
 
     /**
      * Sends a request to fetch the product's password then updates the stored visibility and password
      */
-    suspend private fun fetchPassword(remoteProductId: Long) {
+    private suspend fun fetchPassword(remoteProductId: Long) {
         val password = productRepository.fetchProductPassword(remoteProductId)
         productVisibilityViewState = productVisibilityViewState.copy(
                 storedVisibility = Visibility(getStoredProductVisibility(), password)
@@ -714,17 +722,26 @@ class ProductDetailViewModel @AssistedInject constructor(
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
-                triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
-                viewState = viewState.copy(productDraft = null, isProductUpdated = false, isProgressDialogShown = false)
+                if (productVisibilityViewState.isPasswordChanged) {
+                    val password = productVisibilityViewState.draftVisibility?.password ?: ""
+                    if (productRepository.updateProductPassword(product.remoteId, password)) {
+                        triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                    } else {
+                        triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
+                    }
+                } else {
+                    triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                }
+                viewState = viewState.copy(productDraft = null, isProductUpdated = false)
                 loadProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
-                viewState = viewState.copy(isProgressDialogShown = false)
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
-            viewState = viewState.copy(isProgressDialogShown = false)
         }
+
+        viewState = viewState.copy(isProgressDialogShown = false)
     }
 
     private suspend fun verifyProductExistsBySkuRemotely(sku: String) {
@@ -958,7 +975,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Visibility is determined by the status and password.
      */
     @Parcelize
-    data class Visibility (
+    data class Visibility(
         var visibility: ProductVisibility? = null,
         var password: String? = null
     ) : Parcelable
@@ -967,7 +984,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class ProductVisibilityViewState(
         val storedVisibility: Visibility = Visibility(ProductVisibility.PUBLIC),
         val draftVisibility: Visibility? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val isPasswordChanged: Boolean
+            get() = storedVisibility.password != draftVisibility?.password
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>

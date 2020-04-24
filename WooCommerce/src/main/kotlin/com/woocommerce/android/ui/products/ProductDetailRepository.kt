@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAI
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
+import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
@@ -252,7 +253,7 @@ class ProductDetailRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductPasswordChanged(event: OnProductPasswordChanged) {
-        if (event.causeOfChange  == FETCH_PRODUCT_PASSWORD && event.remoteProductId == remoteProductId) {
+        if (event.causeOfChange == FETCH_PRODUCT_PASSWORD && event.remoteProductId == remoteProductId) {
             if (continuationFetchProductPassword?.isActive == true) {
                 if (event.isError) {
                     continuationFetchProductPassword?.resume(null)
@@ -261,7 +262,16 @@ class ProductDetailRepository @Inject constructor(
                 }
             } else {
                 WooLog.w(PRODUCTS, "continuationFetchProductPassword is no longer active")
-            }        }
+            }
+        } else if (event.causeOfChange == UPDATE_PRODUCT_PASSWORD && event.remoteProductId == remoteProductId) {
+            if (continuationUpdateProductPassword?.isActive == true) {
+                if (event.isError) {
+                    continuationUpdateProductPassword?.resume(false)
+                } else {
+                    continuationUpdateProductPassword?.resume(true)
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unused")
