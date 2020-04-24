@@ -392,7 +392,8 @@ end
     # effect on the status bar
     adb_enter_demo_mode(emulator_serial)
 
-    adb_toggle_dark_mode(true, emulator_serial) unless options.fetch(:skip_ui_modes, true)
+    skip_ui_modes_toggling = options.fetch(:skip_ui_modes, true)
+    adb_toggle_dark_mode(true, emulator_serial) unless skip_ui_modes_toggling
 
     screengrab(
       screenshot_options.merge(
@@ -403,25 +404,25 @@ end
     )
 
     # If asked to try both UI modes, continue
-    exit 0 if options.fetch(:skip_ui_modes, true)
+    unless skip_ui_modes_toggling
+      adb_toggle_dark_mode(false, emulator_serial)
 
-    adb_toggle_dark_mode(false, emulator_serial)
-
-    screengrab(
-      screenshot_options.merge(
-        {
-          specific_device: emulator_serial,
-          # if true, will fail with:
-          # [hh:mm:ss]: $ /Users/gio/Library/Android/sdk/platform-tools/adb -s emulator-5554 root
-          # restarting adbd as root
-          # timeout expired while waiting for device
-          # [hh:mm:ss]: Exit status: 1
-          use_adb_root: false,
-        }
+      screengrab(
+        screenshot_options.merge(
+          {
+            specific_device: emulator_serial,
+            # if true, will fail with:
+            # [hh:mm:ss]: $ /Users/gio/Library/Android/sdk/platform-tools/adb -s emulator-5554 root
+            # restarting adbd as root
+            # timeout expired while waiting for device
+            # [hh:mm:ss]: Exit status: 1
+            use_adb_root: false,
+          }
+        )
       )
-    )
 
-    adb_exit_demo_mode(emulator_serial)
+      adb_exit_demo_mode(emulator_serial)
+    end
   end
 
   desc 'Compose screenshots'
