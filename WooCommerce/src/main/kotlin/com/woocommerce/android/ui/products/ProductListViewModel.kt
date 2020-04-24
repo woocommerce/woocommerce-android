@@ -55,9 +55,6 @@ class ProductListViewModel @AssistedInject constructor(
         params
     }
 
-    private final val isFilterActive: Boolean
-    get() = productFilterOptions.isNotEmpty()
-
     private var searchJob: Job? = null
     private var loadJob: Job? = null
 
@@ -106,6 +103,8 @@ class ProductListViewModel @AssistedInject constructor(
         stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
         productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
         productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+
+        viewState = viewState.copy(filterCount = productFilterOptions.size)
         refreshProducts()
     }
 
@@ -247,7 +246,9 @@ class ProductListViewModel @AssistedInject constructor(
                     isLoading = true,
                     canLoadMore = productRepository.canLoadMoreProducts,
                     isEmptyViewVisible = _productList.value?.isEmpty() == true,
-                    displaySortAndFilterCard = isFilterActive || _productList.value?.isNotEmpty() == true
+                    displaySortAndFilterCard = (
+                            productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
+                            )
             )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
@@ -275,6 +276,7 @@ class ProductListViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val query: String? = null,
+        val filterCount: Int? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val displaySortAndFilterCard: Boolean? = null
