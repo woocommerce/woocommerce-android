@@ -437,7 +437,7 @@ end
 
     promo_screenshots(
       orig_folder: options.fetch(:source, screenshots_directory),
-      metadata_folder: File.join(Dir.pwd, "playstoreres/metadata"),
+      metadata_folder: File.join(Dir.pwd, "metadata"),
       output_folder: File.join(Dir.pwd, "promo_sceenshots"),
       force: options.fetch(:force, true)
     )
