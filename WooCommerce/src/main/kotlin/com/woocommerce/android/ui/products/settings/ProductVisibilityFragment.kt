@@ -14,7 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
-import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.fragment_product_visibility.*
 import org.wordpress.android.util.ActivityUtils
 
@@ -81,11 +80,11 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
     private fun showPassword(show: Boolean) {
         if (show && editPassword.visibility != View.VISIBLE) {
-            WooAnimUtils.scaleIn(editPassword)
+            editPassword.visibility = View.VISIBLE
             editPassword.requestFocus()
             ActivityUtils.showKeyboard(editPassword)
         } else if (!show && editPassword.visibility == View.VISIBLE) {
-            WooAnimUtils.scaleOut(editPassword)
+            editPassword.visibility = View.GONE
             ActivityUtils.hideKeyboardForced(editPassword)
         }
     }
