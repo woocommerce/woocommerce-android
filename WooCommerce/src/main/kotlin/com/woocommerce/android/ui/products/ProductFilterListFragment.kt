@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -27,7 +29,6 @@ import javax.inject.Inject
 class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
-        const val ARG_PRODUCT_FILTER_REQUEST_CODE = "arg_product_filter_request_code"
         const val ARG_PRODUCT_FILTER_STOCK_STATUS = "arg_product_filter_stock_status"
         const val ARG_PRODUCT_FILTER_STATUS = "arg_product_filter_status"
         const val ARG_PRODUCT_FILTER_TYPE_STATUS = "arg_product_type"
@@ -77,11 +78,15 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
         filterList_btnShowProducts.setOnClickListener {
             // TODO: add tracking event
             val bundle = Bundle()
-            bundle.putInt(ARG_PRODUCT_FILTER_REQUEST_CODE, RequestCodes.PRODUCT_LIST_FILTERS)
             bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
             bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
             bundle.putString(ARG_PRODUCT_FILTER_TYPE_STATUS, viewModel.getFilterByProductType())
-            findNavController().navigate(R.id.rootFragment, bundle)
+            (requireActivity() as? MainActivity)?.navigateBackWithResult(
+                    RequestCodes.PRODUCT_LIST_FILTERS,
+                    bundle,
+                    R.id.nav_host_fragment_main,
+                    R.id.rootFragment
+            )
         }
     }
 

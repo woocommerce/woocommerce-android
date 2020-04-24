@@ -23,8 +23,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_REQUEST_CODE
 import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListFragment.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
@@ -42,7 +42,8 @@ import javax.inject.Inject
 class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductSortAndFilterListener,
         OnLoadMoreListener,
         OnQueryTextListener,
-        OnActionExpandListener {
+        OnActionExpandListener,
+        NavigationResult {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
@@ -144,13 +145,13 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         }
     }
 
-    override fun onReturnedToChildFragmentWithResult(result: Bundle?) {
-        when (result?.get(ARG_PRODUCT_FILTER_REQUEST_CODE) ?: 0) {
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
             RequestCodes.PRODUCT_LIST_FILTERS -> {
                 viewModel.onFiltersChanged(
-                        stockStatus = result?.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
-                        productStatus = result?.getString(ARG_PRODUCT_FILTER_STATUS),
-                        productType = result?.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
+                        stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
+                        productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
+                        productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
                 )
             }
         }

@@ -294,7 +294,7 @@ class MainActivity : AppUpgradeActivity(),
     /**
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
-    private fun getActiveTopLevelFragment(): TopLevelFragment? {
+    internal fun getActiveTopLevelFragment(): TopLevelFragment? {
         val tag = bottomNavView.currentPosition.getTag()
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
@@ -387,12 +387,6 @@ class MainActivity : AppUpgradeActivity(),
             getActiveTopLevelFragment()?.let {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
-
-                // hack to pass filters selected back to the product list fragment
-                // should only called when the previous fragment id is product filter screen
-                if (previousDestinationId == R.id.productFilterListFragment) {
-                    it.onReturnedToChildFragmentWithResult(arguments)
-                }
             }
         }
 
