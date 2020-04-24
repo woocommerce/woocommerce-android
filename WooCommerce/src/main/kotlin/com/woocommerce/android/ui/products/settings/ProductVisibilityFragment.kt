@@ -54,6 +54,12 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
             editPassword.setText(password)
             showPassword(if (password.isNotBlank()) true else false)
         }
+
+        editPassword.setOnTextChangedListener {
+            if (it.toString().isNotBlank()) {
+                editPassword.clearError()
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

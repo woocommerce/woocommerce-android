@@ -55,6 +55,7 @@ class ProductDetailRepository @Inject constructor(
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
     private var continuationFetchProductPassword: CancellableContinuation<String?>? = null
+    private var continuationUpdateProductPassword: CancellableContinuation<Boolean>? = null
     private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
 
@@ -121,6 +122,30 @@ class ProductDetailRepository @Inject constructor(
             } ?: false // request timed out
         } catch (e: CancellationException) {
             WooLog.e(PRODUCTS, "Exception encountered while updating product", e)
+            false
+        }
+    }
+
+    /**
+     * Fires the request to update the product password
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun updateProductPassword(remoteProductId: Long, password: String): Boolean {
+        return try {
+            continuationUpdateProductPassword?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationUpdateProductPassword = it
+
+                val payload = WCProductStore.UpdateProductPasswordPayload(
+                        selectedSite.get(),
+                        remoteProductId,
+                        password
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newUpdateProductPasswordAction(payload))
+            } ?: false // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(PRODUCTS, "Exception encountered while updating product password", e)
             false
         }
     }
