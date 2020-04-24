@@ -94,8 +94,8 @@ class ProductDetailRepository @Inject constructor(
             password = suspendCancellableCoroutineWithTimeout<String?>(ACTION_TIMEOUT) {
                 continuationFetchProductPassword = it
 
-                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+                val payload = WCProductStore.FetchProductPasswordPayload(selectedSite.get(), remoteProductId)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductPasswordAction(payload))
             }
         } catch (e: CancellationException) {
             WooLog.e(PRODUCTS, "CancellationException while fetching single product")

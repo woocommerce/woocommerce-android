@@ -4,6 +4,8 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
 import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -114,6 +116,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     // password is a property of a WP.com post and is not stored with the product
     private var storedProductPassword: String? = null
     private var draftProductPassword: String? = null
+
+    final val productVisibilityViewStateData = LiveDataDelegate(savedState, ProductVisibilityViewState())
+    private var productVisibilityViewState by productVisibilityViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -606,7 +611,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
                 if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
-                    storedProductPassword = productRepository.fetchProductPassword(remoteProductId)
+                    fetchPassword(remoteProductId)
                 }
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
@@ -614,6 +619,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             viewState = viewState.copy(isSkeletonShown = false)
         }
+    }
+
+    suspend private fun fetchPassword(remoteProductId: Long) {
+        productVisibilityViewStateData.password = productRepository.fetchProductPassword(remoteProductId)
     }
 
     /**
@@ -929,6 +938,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isUploadingImages: Boolean = false
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @Parcelize
+    data class ProductVisibilityViewState(
+        val visibility: ProductVisibility? = null,
+        val password: String? = null
+    ) : Parcelable
+
+        @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }
