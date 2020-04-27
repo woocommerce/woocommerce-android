@@ -14,12 +14,12 @@ enum class ProductStatus {
     PENDING,
     PRIVATE;
 
-    fun toLocalizedString(context: Context): String {
+    fun toLocalizedString(context: Context, long: Boolean = false): String {
         @StringRes val resId = when (this) {
             PUBLISH -> R.string.product_status_published
             DRAFT -> R.string.product_status_draft
             PENDING -> R.string.product_status_pending
-            PRIVATE -> R.string.product_status_private
+            PRIVATE -> if (long) R.string.product_status_privately_published else R.string.product_status_private
         }
         return context.getString(resId)
     }
@@ -31,8 +31,6 @@ enum class ProductStatus {
     override fun toString(): String {
         return super.toString().toLowerCase(Locale.US)
     }
-
-    fun toCapitalizedString() = super.toString().capitalize()
 
     companion object {
         fun fromString(status: String): ProductStatus? {

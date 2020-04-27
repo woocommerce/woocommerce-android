@@ -149,7 +149,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
+        productStatus.optionValue = product.status?.toLocalizedString(requireActivity(), true)
         productCatalogVisibility.optionValue = product.catalogVisibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
