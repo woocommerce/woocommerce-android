@@ -265,10 +265,15 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
-                    if (new.isSearchActive == true) {
-                        empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQueryOrFilter = viewModel.getSearchQuery())
-                    } else {
-                        empty_view.show(EmptyViewType.PRODUCT_LIST)
+                    when {
+                        new.isSearchActive == true -> {
+                            empty_view.show(
+                                    EmptyViewType.SEARCH_RESULTS,
+                                    searchQueryOrFilter = viewModel.getSearchQuery()
+                            )
+                        }
+                        new.filterCount?.compareTo(0) == 1 -> empty_view.show(EmptyViewType.FILTER_RESULTS)
+                        else -> empty_view.show(EmptyViewType.PRODUCT_LIST)
                     }
                 } else {
                     empty_view.hide()
