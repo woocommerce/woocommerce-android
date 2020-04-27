@@ -83,7 +83,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_ProviderList
+        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations
 
         with(toolbar as Toolbar) {
             title = getString(R.string.order_shipment_tracking_provider_toolbar_title)

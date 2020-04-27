@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
@@ -21,7 +20,7 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_Login_WhatIsJetpack
+        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -39,7 +38,7 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
             dialog?.dismiss()
         }
 
-        return AlertDialog.Builder(ContextThemeWrapper(activity, R.style.Woo_Dialog))
+        return AlertDialog.Builder(requireActivity())
                 .setView(dialogView)
                 .setCancelable(true)
                 .create()
