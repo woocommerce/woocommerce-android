@@ -6,22 +6,27 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.orders.OrderListScreen
-import com.woocommerce.android.screenshots.orders.OrderSearchScreen
 import com.woocommerce.android.screenshots.orders.SingleOrderScreen
 import com.woocommerce.android.screenshots.products.ProductListScreen
-import com.woocommerce.android.screenshots.products.SingleProductScreen
 import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
-import com.woocommerce.android.screenshots.reviews.SingleReviewScreen
 import com.woocommerce.android.ui.main.MainActivity
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
+import tools.fastlane.screengrab.cleanstatusbar.BarsMode.TRANSLUCENT
+import tools.fastlane.screengrab.cleanstatusbar.BarsMode.TRANSPARENT
+import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
+import tools.fastlane.screengrab.cleanstatusbar.IconVisibility.SHOW
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @RunWith(AndroidJUnit4::class)
+// CheckStyle gives a warning here, but I'm not sure why. It happened after I added the companion object.
 class ScreenshotTest {
+
     @Rule @JvmField
     val localeTestRule = LocaleTestRule()
 
@@ -32,6 +37,14 @@ class ScreenshotTest {
     fun screenshots() {
 //        activityRule.launchActivity(null)
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+
+        // Configure the status bar so it looks the same in all screenshots
+        CleanStatusBar()
+                .setBatteryLevel(100)
+                .setClock("1231")
+                .setWifiVisibility(SHOW)
+                .setBarsMode(TRANSPARENT)
+                .enable()
 
         WelcomeScreen.logoutIfNeeded()
                 .selectLogin()
@@ -69,5 +82,13 @@ class ScreenshotTest {
                 // Products
                 .tabBar.gotoProductsScreen()
                 .thenTakeScreenshot<ProductListScreen>("product-list")
+    }
+
+    companion object {
+        // The matching `.enable()` call for CleanStatusBar is done inline in the test, to keep the configuration closer
+        // to where it's used.
+        @AfterClass @JvmStatic fun afterAll() {
+            CleanStatusBar.disable()
+        }
     }
 }

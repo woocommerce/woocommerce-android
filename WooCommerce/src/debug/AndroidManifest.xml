@@ -15,6 +15,13 @@
     <!-- Allows changing locales -->
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
 
+    <!-- Clean the status bar for screenshots automation
+    See https://docs.fastlane.tools/actions/screengrab/#clean-status-bar -->
+    <!-- Indicates the use of the clean status bar feature -->
+    <uses-feature android:name="tools.fastlane.screengrab.cleanstatusbar" />
+    <!-- Allows for changing the status bar -->
+    <uses-permission android:name="android.permission.DUMP" tools:ignore="ProtectedPermissions" />
+
     <application
         android:name=".WooCommerceDebug"
         tools:replace="android:name" />

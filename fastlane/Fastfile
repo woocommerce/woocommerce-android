@@ -352,6 +352,8 @@ end
       app_package_name: "com.woocommerce.android",
       app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
+      # Because the screenshot tests are together with other UI tests, we need
+      # to specify to run only them and not all of the others.
       use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
       reinstall_app: false,
       # By default, don't clear previous because we differentiate between light
@@ -388,9 +390,6 @@ end
     # This is inherently brittle, there's no guarantee we'll have an emulator
     # on port 5554 open
     emulator_serial = "emulator-5554"
-    # The commands here run ok, but then when screengrab runs it resets their
-    # effect on the status bar
-    adb_enter_demo_mode(emulator_serial)
 
     skip_ui_modes_toggling = options.fetch(:skip_ui_modes, true)
     adb_toggle_dark_mode(true, emulator_serial) unless skip_ui_modes_toggling
@@ -420,8 +419,6 @@ end
           }
         )
       )
-
-      adb_exit_demo_mode(emulator_serial)
     end
   end
 
@@ -629,29 +626,4 @@ def adb_toggle_dark_mode(enable, emulator_serial)
     UI.verbose("Attempt #{attempt}, result #{result}")
     sleep(sleep_time_s)
   end while (attempt < max_attempts) && (result.gsub("devices", "").include?("device") == false)
-end
-
-def adb_enter_demo_mode(emulator_serial)
-  # Enter demo mode
-  adb(
-    command: "shell settings put global sysui_demo_allowed 1",
-    serial: emulator_serial
-  )
-  # Disable system notifications
-  adb(
-    command: "shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false",
-    serial: emulator_serial
-  )
-  # Set clock time for consisten screenshots
-  adb(
-    command: "shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 1337",
-    serial: emulator_serial
-  )
-end
-
-def adb_exit_demo_mode(emulator_serial)
-  adb(
-    command: "shell am broadcast -a com.android.systemui.demo -e command exit",
-    serial: emulator_serial
-  )
 end
