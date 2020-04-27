@@ -541,6 +541,8 @@
     <string name="image_source_title">Select an upload method</string>
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
+    <string name="image_source_wp_media_library">WordPress media library</string>
+    <string name="product_wpmedia_title">WordPress media library</string>
     <!--
         Empty list messages
     -->

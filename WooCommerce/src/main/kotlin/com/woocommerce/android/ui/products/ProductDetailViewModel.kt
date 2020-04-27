@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitWPMediaPicker
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -40,6 +41,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewWPMediaPicker
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -169,6 +171,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when the user wants to add a product image from their WP media library
+     */
+    fun onAddWPMediaClicked() {
+        // TODO: analytics
+        viewState.productDraft?.let {
+            triggerEvent(ViewWPMediaPicker(it.remoteId))
+        }
+    }
+
+    /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product detail screen
      */
@@ -203,7 +215,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
             }
-            is ExitImages -> {
+            is ExitImages, is ExitWPMediaPicker -> {
                 // TODO: eventName = ??
                 hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
             }
@@ -890,6 +902,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitWPMediaPicker(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize

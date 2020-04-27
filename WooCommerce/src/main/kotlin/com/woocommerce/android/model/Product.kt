@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import kotlinx.android.parcel.Parcelize
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -441,6 +442,15 @@ fun WCProductModel.toAppModel(): Product {
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         menuOrder = this.menuOrder
+    )
+}
+
+fun MediaModel.toAppModel(): Product.Image {
+    return Product.Image(
+            id = this.mediaId,
+            name = this.fileName,
+            source = this.url,
+            dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )
 }
 

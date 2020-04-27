@@ -49,6 +49,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private var imageSize = 0
     private var isGridView = false
+    private var isWPMediaPicker = false
     private var showAddImageIcon = false
 
     private val adapter: ImageGalleryAdapter
@@ -64,6 +65,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
             try {
                 isGridView = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isGridView, false)
+                isWPMediaPicker = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isWPMediaPicker, false)
                 if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(context)) {
                     showAddImageIcon = attrArray.getBoolean(
                             R.styleable.WCProductImageGalleryView_showAddImageIcon,
@@ -121,6 +123,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
         this.listener = listener
         adapter.showImages(product.images)
+    }
+
+    fun showWPMediaImages(images: ArrayList<Product.Image>, listener: OnGalleryImageClickListener) {
+        this.listener = listener
+        adapter.showImages(images)
     }
 
     /**

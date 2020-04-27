@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/productImages_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.woocommerce.android.widgets.WCProductImageGalleryView
+        android:id="@+id/imageGallery"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:isGridView="true"
+        app:isWPMediaPicker="true"
+        app:showAddImageIcon="false" />
+</LinearLayout>

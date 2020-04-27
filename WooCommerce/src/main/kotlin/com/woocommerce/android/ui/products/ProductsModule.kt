@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentMod
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderModule
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragment
@@ -48,7 +49,8 @@ import dagger.android.ContributesAndroidInjector
     ProductSlugFragmentModule::class,
     ProductExternalLinkFragmentModule::class,
     ProductMenuOrderFragmentModule::class,
-    ProductVisibilityFragmentModule::class
+    ProductVisibilityFragmentModule::class,
+    WPMediaPickerFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -161,5 +163,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductMenuOrderModule::class])
         abstract fun productMenuOrderFragment(): ProductMenuOrderFragment
+    }
+
+    @Module
+    internal abstract class WPMediaPickerFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [WPMediaPickerModule::class])
+        abstract fun productSettingsFragment(): WPMediaPickerFragment
     }
 }
