@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
-import androidx.preference.PreferenceManager
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
@@ -9,6 +7,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
@@ -28,7 +27,7 @@ import kotlin.coroutines.resume
 
 @OpenClassOnDebug
 final class ProductListRepository @Inject constructor(
-    context: Context,
+    prefsWrapper: PreferencesWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
@@ -43,7 +42,7 @@ final class ProductListRepository @Inject constructor(
     private var searchContinuation: CancellableContinuation<List<Product>>? = null
     private var offset = 0
 
-    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
+    private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
 
     final var canLoadMoreProducts = true
         private set
