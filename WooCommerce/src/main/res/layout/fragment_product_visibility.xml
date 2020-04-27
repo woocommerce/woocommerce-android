@@ -28,7 +28,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/product_visibility_public" />
 
-                <View style="@style/Woo.Divider.TitleAligned" />
+                <View style="@style/Woo.Divider" />
 
                 <CheckedTextView
                     android:id="@+id/btnPasswordProtected"
@@ -48,7 +48,7 @@
                     app:hintEnabled="false"
                     tools:visibility="visible" />
 
-                <View style="@style/Woo.Divider.TitleAligned" />
+                <View style="@style/Woo.Divider" />
 
                 <CheckedTextView
                     android:id="@+id/btnPrivate"

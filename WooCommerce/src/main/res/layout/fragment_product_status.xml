@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/radioGroup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <CheckedTextView
+        android:id="@+id/btnPublishedPrivately"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/product_status_privately_published"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <CheckedTextView
         android:id="@+id/btnPublished"
@@ -13,7 +22,7 @@
 
     <View
         style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/major_100"/>
+        android:layout_marginStart="@dimen/major_100" />
 
     <CheckedTextView
         android:id="@+id/btnDraft"
@@ -23,7 +32,7 @@
 
     <View
         style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/major_100"/>
+        android:layout_marginStart="@dimen/major_100" />
 
     <CheckedTextView
         android:id="@+id/btnPending"
@@ -33,16 +42,6 @@
 
     <View
         style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/major_100"/>
-
-    <CheckedTextView
-        android:id="@+id/btnPrivate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/product_status_private" />
-
-    <View
-        style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/major_100"/>
+        android:layout_marginStart="@dimen/major_100" />
 
 </LinearLayout>

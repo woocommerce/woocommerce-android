@@ -790,6 +790,7 @@
 
     <!-- Product status -->
     <string name="product_status_published">Published</string>
+    <string name="product_status_privately_published">Privately published</string>
     <string name="product_status_private">Private</string>
     <string name="product_status_pending">Pending review</string>
     <string name="product_status_draft">Draft</string>

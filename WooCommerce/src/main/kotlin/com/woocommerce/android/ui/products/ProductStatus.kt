@@ -32,6 +32,8 @@ enum class ProductStatus {
         return super.toString().toLowerCase(Locale.US)
     }
 
+    fun toCapitalizedString() = super.toString().capitalize()
+
     companion object {
         fun fromString(status: String): ProductStatus? {
             val statusLC = status.toLowerCase(Locale.US)
