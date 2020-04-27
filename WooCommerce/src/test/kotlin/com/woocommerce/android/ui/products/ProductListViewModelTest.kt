@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
@@ -37,6 +38,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(ProductSorting.DATE_ASC).whenever(productRepository).productSortingChoice
     }
 
     private fun createViewModel() {
