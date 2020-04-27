@@ -29,4 +29,15 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
     fun setSortingTitle(title: String) {
         btn_product_sorting.text = title
     }
+
+    fun updateFilterSelection(filterCount: Int) {
+        val isFilterEnabled = filterCount > 0
+        with(btn_product_filter) {
+            text = if (isFilterEnabled) {
+                context.getString(R.string.product_list_filters_selected, filterCount)
+            } else context.getString(R.string.product_list_filters)
+
+            isSelected = isFilterEnabled
+        }
+    }
 }

@@ -294,7 +294,7 @@ class MainActivity : AppUpgradeActivity(),
     /**
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
-    private fun getActiveTopLevelFragment(): TopLevelFragment? {
+    internal fun getActiveTopLevelFragment(): TopLevelFragment? {
         val tag = bottomNavView.currentPosition.getTag()
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
@@ -340,6 +340,7 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
+                R.id.productFilterListFragment,
                 R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
@@ -382,10 +383,12 @@ class MainActivity : AppUpgradeActivity(),
             hideBottomNav()
         }
 
-        if (isAtRoot) {
-            getActiveTopLevelFragment()?.let {
+        getActiveTopLevelFragment()?.let {
+            if (isAtRoot) {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
+            } else {
+                it.onChildFragmentOpened()
             }
         }
 
@@ -743,6 +746,13 @@ class MainActivity : AppUpgradeActivity(),
                 remoteReviewId,
                 tempStatus,
                 launchedFromNotification)
+        navController.navigate(action)
+    }
+
+    override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
+        val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
+                stockStatus, productStatus, productType
+        )
         navController.navigate(action)
     }
 

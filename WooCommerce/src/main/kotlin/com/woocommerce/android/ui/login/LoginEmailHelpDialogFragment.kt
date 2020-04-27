@@ -25,7 +25,7 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations
+        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

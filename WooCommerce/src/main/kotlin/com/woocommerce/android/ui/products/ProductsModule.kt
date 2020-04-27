@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductFilterOptionListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductFilterListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductImageViewerFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductImagesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductInventoryFragmentModule
@@ -17,6 +19,8 @@ import dagger.android.ContributesAndroidInjector
 @Module(includes = [
     ProductDetailFragmentModule::class,
     ProductListFragmentModule::class,
+    ProductFilterListFragmentModule::class,
+    ProductFilterOptionListFragmentModule::class,
     ProductVariantsFragmentModule::class,
     ProductImagesFragmentModule::class,
     ProductImageViewerFragmentModule::class,
@@ -32,6 +36,20 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductListModule::class])
         abstract fun productListFragment(): ProductListFragment
+    }
+
+    @Module
+    abstract class ProductFilterListFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductFilterListModule::class])
+        abstract fun productFilterListFragment(): ProductFilterListFragment
+    }
+
+    @Module
+    abstract class ProductFilterOptionListFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductFilterOptionListModule::class])
+        abstract fun productFilterOptionListFragment(): ProductFilterOptionListFragment
     }
 
     @Module

@@ -1,0 +1,3 @@
+4.0:
+* We kondigen met trots een Producten-tabblad aan!
+* Gebruikers kunnen nu ook beperkte bewerkingsfuncties voor eenvoudige producten gebruiken en later zullen er meer volgen.

@@ -40,7 +40,6 @@
         style="@style/Woo.TextView.Body2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/dialog_content_text_color"
         android:layout_marginStart="@dimen/major_150"
         android:layout_marginEnd="@dimen/major_150"
         android:layout_marginTop="@dimen/minor_100"

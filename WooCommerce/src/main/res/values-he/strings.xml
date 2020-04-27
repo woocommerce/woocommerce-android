@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-02 00:54:04+0000
+Translation-Revision-Date: 2020-04-17 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_pricing_update_sale_price_error">מחיר המבצע חייב להיות פחות מהמחיר הרגיל</string>
+    <string name="product_schedule_remove_end_date_link_label">להסיר את תאריך הסיום</string>
+    <string name="product_shipping_empty">להוסיף משלוח</string>
+    <string name="discard_images_message">תמונות המוצר עוד מועלות. האם למחוק את השינויים שביצעת?</string>
     <string name="product_inventory_update_stock_quantity_error">יש להזין מספר</string>
     <string name="product_wip_message">הוספנו אפשרות עריכה למוצרים פשוטים. כדאי לשים לב לאפשרויות נוספות שיופיעו בקרוב!</string>
     <string name="product_wip_title">עריכה מוגבלת זמינה</string>

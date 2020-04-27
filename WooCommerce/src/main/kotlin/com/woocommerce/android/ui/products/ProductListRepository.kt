@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import javax.inject.Inject
@@ -72,7 +73,10 @@ final class ProductListRepository @Inject constructor(
      * Submits a fetch request to get a page of products for the current site and returns the full
      * list of products from the database
      */
-    suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
+    suspend fun fetchProductList(
+        loadMore: Boolean = false,
+        productFilterOptions: Map<ProductFilterOption, String>
+    ): List<Product> {
         try {
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
@@ -82,7 +86,8 @@ final class ProductListRepository @Inject constructor(
                         selectedSite.get(),
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        productSortingChoice
+                        productSortingChoice,
+                        filterOptions = productFilterOptions
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
@@ -90,7 +95,7 @@ final class ProductListRepository @Inject constructor(
             WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching products")
         }
 
-        return getProductList()
+        return getProductList(productFilterOptions)
     }
 
     /**
@@ -128,9 +133,13 @@ final class ProductListRepository @Inject constructor(
     /**
      * Returns all products for the current site that are in the database
      */
-    fun getProductList(): List<Product> {
+    fun getProductList(productFilterOptions: Map<ProductFilterOption, String>): List<Product> {
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProductsForSite(selectedSite.get(), productSortingChoice)
+            val wcProducts = productStore.getProductsByFilterOptions(
+                    selectedSite.get(),
+                    filterOptions = productFilterOptions,
+                    sortType = productSortingChoice
+            )
             wcProducts.map { it.toAppModel() }
         } else {
             WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")

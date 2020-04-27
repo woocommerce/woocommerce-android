@@ -223,7 +223,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             isDragEnabled = true
 
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
-            getPaint(Chart.PAINT_INFO).textSize = context.resources.getDimension(R.dimen.text_large)
+            getPaint(Chart.PAINT_INFO).textSize = context.resources.getDimension(R.dimen.text_minor_125)
         }
         chart.setOnChartValueSelectedListener(this)
         chart.onChartGestureListener = this
@@ -398,7 +398,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             with(axisLeft) {
                 if (minRevenue < 0f) {
                     setDrawZeroLine(true)
-                    zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                    zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                     setLabelCount(3, true)
                 } else labelCount = 3
                 valueFormatter = RevenueAxisFormatter()

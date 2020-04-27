@@ -1,2 +1,5 @@
-* We’re excited to introduce a Products tab!
-* Users also now have limited editing capabilities for Simple Products, with more to come.
+* We just gave the app a fresh coat of paint — enjoy the new colors!
+* Dark mode is now available for anyone who prefers less-bright screens.
+* We removed the Shipping section from virtual products’ detail view (because, well, you don’t ship them).
+* If you have a smaller product list, items would sometimes disappear from it, but not anymore — we fixed that bug.
+* On very rare occasions, attempting to view the details of a product would crash the app. We fixed that bug, too.

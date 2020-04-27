@@ -1,0 +1,3 @@
+4.0:
+* Estamos felizes em apresentar a guia Produtos!
+* Agora os usuários têm recursos de edição limitados para produtos simples, e tem muito mais a caminho.

@@ -1,5 +1,12 @@
+4.2
+-----
+* Bugfix: Removed detached and non-functioning text counter in the support email dialog
+ 
 4.1
 -----
+* App colors have been updated for a fresh new look
+* Dark mode is now available!
+* Misc bug fixes
  
 4.0
 -----

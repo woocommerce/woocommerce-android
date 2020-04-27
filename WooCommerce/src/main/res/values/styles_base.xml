@@ -165,7 +165,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         TextView Styles
     -->
-    <style name="Woo.TextView" parent="Widget.MaterialComponents.TextView">
+    <style name="Woo.TextView">
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/major_75</item>
@@ -200,6 +200,22 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
+    </style>
+
+    <!--
+        Use this style with TextViews the font color in use is "On Primary High"
+    -->
+    <style name="Woo.TextView.Subtitle1.OnPrimary">
+        <item name="android:textColor">@color/color_on_primary_high_selector</item>
+    </style>
+
+    <!--
+        Use this variation of the above style if the TextView is also displaying a drawable
+        where the foreground font color in use is "On Primary High"
+    -->
+    <style name="Woo.TextView.Subtitle1.OnPrimary.Icon">
+        <item name="drawableTint">@color/color_surface</item>
+        <item name="drawableTintMode">src_atop</item>
     </style>
 
     <style name="Woo.TextView.Subtitle2">
@@ -297,7 +313,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/minor_00</item>
         <item name="android:layout_marginBottom">@dimen/minor_75</item>
-        <item name="helperTextTextAppearance">@style/TextAppearance.AppCompat.Caption</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.Woo.Caption</item>
     </style>
 
     <style name="Woo.TextInputEditText"
@@ -333,6 +349,25 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:focusableInTouchMode">true</item>
     </style>
 
+    <!--  Style set at the theme level, no need to set in layout files  -->
+    <style name="Widget.Woo.WCSingleOptionTextView">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="android:textColor">@color/color_on_surface_high_selector</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">?attr/listPreferredItemHeight</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="android:paddingTop">@dimen/major_100</item>
+        <item name="android:paddingBottom">@dimen/major_100</item>
+        <item name="android:drawablePadding">@dimen/major_200</item>
+        <item name="drawableTint">@color/color_on_surface_medium_selector</item>
+        <item name="drawableTintMode">src_atop</item>
+
+        <!-- Override and set to @null in the layout if no right arrow is needed -->
+        <item name="android:drawableEnd">@drawable/ic_arrow_right</item>
+    </style>
+
     <!--
         Button Styles
     -->
@@ -344,11 +379,17 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingEnd">@dimen/major_100</item>
     </style>
 
+    <!--  Borderless button with smaller text used for inner options  -->
+    <style name="Woo.Button.Secondary">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Caption</item>
+    </style>
+
     <!--  Button with only a border and no color fill  -->
     <style name="Woo.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textColor">@color/button_fg_selector</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="drawableTintMode">src_atop</item>
     </style>
 
     <!--  Button filled with color  -->
@@ -356,6 +397,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="backgroundTint">@color/button_colored_bg_selector</item>
+    </style>
+
+    <style name="Woo.Button.Colored.White">
+        <item name="android:textColor">@color/color_on_secondary</item>
+        <item name="backgroundTint">@color/button_colored_bg_white_selector</item>
     </style>
 
     <style name="Woo.Button.Toggle">
@@ -382,13 +428,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Widget.Woo.WCToggleOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
-        <item name="strokeColor">@color/color_on_surface_medium</item>
+        <item name="strokeColor">@color/button_outlined_stroke_selector</item>
         <item name="cornerRadius">@dimen/corner_radius_round_button</item>
         <item name="android:textAllCaps">false</item>
         <item name="fontFamily">@font/roboto</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_125</item>
-        <item name="android:textColor">@color/color_on_surface_medium_selector</item>
+        <item name="android:textColor">@color/button_outlined_text_selector</item>
     </style>
 
     <!-- Set at the theme level so no need to set directly on the component -->
@@ -433,6 +479,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         List Styles
     -->
     <style name="Woo.ListHeader" parent="Woo.TextView.Subtitle2"/>
+
+    <!--  Use with a list item container -->
     <style name="Woo.ListItem">
         <item name="android:minHeight">?attr/listPreferredItemHeight</item>
         <item name="android:background">?attr/selectableItemBackground</item>
@@ -603,6 +651,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Animations">
+        <item name="android:windowEnterAnimation">@anim/activity_slide_in_from_right</item>
+        <item name="android:windowExitAnimation">@anim/activity_slide_out_to_right</item>
+    </style>
+
+    <style name="Woo.Animations.Dialog">
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>

@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -42,6 +41,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
+import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -108,7 +108,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         if (calledFromLogin) {
             toolbar.visibility = View.GONE
-            ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
             button_help.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
@@ -223,7 +222,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             GlideApp.with(this)
                     .load(presenter.getUserAvatarUrl())
-                    .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
+                    .placeholder(R.drawable.img_gravatar_placeholder)
                     .circleCrop()
                     .into(image_avatar)
         } else {
