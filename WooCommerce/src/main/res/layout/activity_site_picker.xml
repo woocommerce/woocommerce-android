@@ -39,57 +39,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_email_help"
-                style="@style/Woo.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/major_150"
-                android:layout_marginTop="@dimen/minor_00"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:textAllCaps="false"
-                android:text="@string/login_need_help_finding_email"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/no_stores_view"
-                app:layout_constraintVertical_bias="1.0"
-                tools:visibility="visible"/>
-
-            <ImageView
-                android:id="@+id/image_avatar"
-                android:layout_width="@dimen/image_major_64"
-                android:layout_height="@dimen/image_major_64"
-                android:layout_marginTop="@dimen/major_300"
-                android:contentDescription="@string/login_avatar_content_description"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text_username"
-                style="@style/Woo.TextView.Caption"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_10"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_displayname"
-                tools:text="\@droidtester2018"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text_displayname"
-                style="@style/Woo.TextView.Subtitle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_100"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image_avatar"
-                tools:text="droidtester2018"/>
-
             <com.woocommerce.android.widgets.WCElevatedLinearLayout
                 android:id="@+id/site_list_container"
                 android:layout_width="match_parent"
@@ -101,7 +50,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_username"
+                app:layout_constraintTop_toBottomOf="@+id/user_info_group"
                 app:layout_constraintVertical_bias="0.0"
                 tools:visibility="gone">
 
@@ -122,16 +71,29 @@
                     tools:itemCount="3"/>
             </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/user_info_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:constraint_referenced_ids="image_avatar,text_displayname,text_username"
-                tools:visibility="visible"/>
+            <include
+                layout="@layout/view_login_user_info"/>
 
             <include
                 layout="@layout/view_login_no_stores"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_email_help"
+                style="@style/Woo.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_150"
+                android:layout_marginTop="@dimen/minor_00"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:textAllCaps="false"
+                android:text="@string/login_need_help_finding_email"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/no_stores_view"
+                app:layout_constraintVertical_bias="1.0"
+                tools:visibility="visible"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
