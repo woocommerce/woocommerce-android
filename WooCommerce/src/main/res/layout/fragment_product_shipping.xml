@@ -22,7 +22,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
-                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:maxLength="@integer/maxlength_product_shipping_properties"
                 android:hint="@string/product_weight" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -33,7 +33,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
-                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:maxLength="@integer/maxlength_product_shipping_properties"
                 android:hint="@string/product_length" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -44,7 +44,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
-                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:maxLength="@integer/maxlength_product_shipping_properties"
                 android:hint="@string/product_width" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -55,7 +55,7 @@
                 android:layout_marginEnd="@dimen/major_100"
                 android:inputType="numberDecimal"
                 android:layout_marginTop="@dimen/major_75"
-                android:maxLength="@integer/maxlength_dimension_edittext"
+                android:maxLength="@integer/maxlength_product_shipping_properties"
                 android:hint="@string/product_height" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView

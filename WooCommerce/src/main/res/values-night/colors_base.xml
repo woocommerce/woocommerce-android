@@ -12,6 +12,8 @@
     <color name="color_error">@color/woo_red_30</color>
     <color name="color_alert">@color/woo_yellow_30</color>
 
+    <color name="color_surface_elevated_04">@color/woo_white_alpha_009</color>
+
     <color name="color_on_surface">@color/woo_white</color>
     <color name="color_on_surface_high">@color/woo_white_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_white_alpha_060</color>

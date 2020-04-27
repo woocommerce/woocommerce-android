@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/color_surface">
 
     <ImageView
         android:id="@+id/imageView"
@@ -29,18 +29,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/img_woo_logo"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_prologue"
+        style="@style/TextAppearance.Woo.Headline6"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/login_prologue_padding"
-        android:layout_marginStart="@dimen/login_prologue_padding"
-        android:layout_marginTop="@dimen/login_prologue_padding"
+        android:layout_marginEnd="@dimen/major_175"
+        android:layout_marginStart="@dimen/major_175"
+        android:layout_marginTop="@dimen/major_175"
         android:gravity="center"
         android:text="@string/login_prologue_banner"
-        android:textColor="@color/wc_purple"
-        android:textSize="@dimen/text_medium_extra_large"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"/>
@@ -50,21 +48,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="@dimen/login_prologue_padding"
+        android:layout_marginEnd="@dimen/major_175"
         android:importantForAccessibility="no"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/img_bubbles"/>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login"
+        style="@style/Woo.Button.Colored.White"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/margin_extra_large"
+        android:layout_margin="@dimen/major_175"
         android:text="@string/login"
-        android:theme="@style/Woo.Button.White"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
