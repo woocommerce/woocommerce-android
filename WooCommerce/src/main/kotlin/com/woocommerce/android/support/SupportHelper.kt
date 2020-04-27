@@ -3,12 +3,12 @@ package com.woocommerce.android.support
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -43,8 +43,8 @@ class SupportHelper {
         dialog.setOnShowListener {
             val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
-                val newEmail = emailEditText.text.toString()
-                val newName = nameEditText.text.toString()
+                val newEmail = emailEditText.getText()
+                val newName = nameEditText.getText()
                 if (StringUtils.isValidEmail(newEmail)) {
                     emailAndNameSelected(newEmail, newName)
                     dialog.dismiss()
@@ -91,7 +91,7 @@ private fun supportIdentityInputDialogLayout(
     isNameInputHidden: Boolean,
     emailSuggestion: String?,
     nameSuggestion: String?
-): Triple<View, EditText, EditText> {
+): Triple<View, WCMaterialOutlinedEditTextView, WCMaterialOutlinedEditTextView> {
     val layout = LayoutInflater.from(context).inflate(R.layout.support_email_and_name_dialog, null)
 
     val messageText = layout.findViewById<MaterialTextView>(R.id.support_identity_input_dialog_message)
@@ -102,12 +102,20 @@ private fun supportIdentityInputDialogLayout(
     }
     messageText.setText(message)
 
-    val emailEditText = layout.findViewById<EditText>(R.id.support_identity_input_dialog_email_edit_text)
-    emailEditText.setText(emailSuggestion)
-    emailEditText.setSelection(0, emailSuggestion?.length ?: 0)
+    val emailEditText = layout.findViewById<WCMaterialOutlinedEditTextView>(
+            R.id.support_identity_input_dialog_email_edit_text
+    )
+    emailSuggestion?.let {
+        emailEditText.setText(it)
+        emailEditText.setSelection(0, it.length)
+    }
 
-    val nameEditText = layout.findViewById<EditText>(R.id.support_identity_input_dialog_name_edit_text)
-    nameEditText.setText(nameSuggestion)
+    val nameEditText = layout.findViewById<WCMaterialOutlinedEditTextView>(
+            R.id.support_identity_input_dialog_name_edit_text
+    )
+    nameSuggestion?.let {
+        nameEditText.setText(it)
+    }
     nameEditText.visibility = if (isNameInputHidden) View.GONE else View.VISIBLE
 
     return Triple(layout, emailEditText, nameEditText)
