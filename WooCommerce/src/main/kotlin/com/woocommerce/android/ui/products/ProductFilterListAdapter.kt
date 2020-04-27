@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.ProductFilterViewHolder
@@ -14,7 +13,13 @@ import kotlinx.android.synthetic.main.product_filter_list_item.view.*
 class ProductFilterListAdapter(
     private val clickListener: OnProductFilterClickListener
 ) : RecyclerView.Adapter<ProductFilterViewHolder>() {
-    private val filterList = mutableListOf<FilterListItemUiModel>()
+    var filterList = listOf<FilterListItemUiModel>()
+        set(value) {
+            if (!isSameList(value)) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
 
     interface OnProductFilterClickListener {
         fun onProductFilterClick(selectedFilterPosition: Int)
@@ -44,34 +49,22 @@ class ProductFilterListAdapter(
 
     override fun getItemCount() = filterList.size
 
-    fun setProductFilterList(newList: List<FilterListItemUiModel>) {
-        val diffResult = DiffUtil.calculateDiff(ProductFilterItemDiffUtil(filterList.toList(), newList))
-        filterList.clear()
-        filterList.addAll(newList)
-
-        diffResult.dispatchUpdatesTo(this)
+    private fun isSameList(newList: List<FilterListItemUiModel>): Boolean {
+        if (newList.size != filterList.size) {
+            return false
+        }
+        for (index in newList.indices) {
+            val oldItem = filterList[index]
+            val newItem = newList[index]
+            if (!oldItem.isSameFilter(newItem)) {
+                return false
+            }
+        }
+        return true
     }
 
     class ProductFilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtFilterName: TextView = view.filterItemName
         val txtFilterSelection: TextView = view.filterItemSelection
-    }
-
-    private class ProductFilterItemDiffUtil(
-        val items: List<FilterListItemUiModel>,
-        val result: List<FilterListItemUiModel>
-    ) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                items[oldItemPosition].filterItemKey == result[newItemPosition].filterItemKey
-
-        override fun getOldListSize(): Int = items.size
-
-        override fun getNewListSize(): Int = result.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = items[oldItemPosition]
-            val newItem = result[newItemPosition]
-            return oldItem.filterItemKey == newItem.filterItemKey
-        }
     }
 }

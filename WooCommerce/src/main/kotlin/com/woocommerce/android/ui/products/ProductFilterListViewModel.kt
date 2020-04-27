@@ -15,7 +15,6 @@ import kotlinx.android.parcel.Parcelize
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
@@ -30,6 +29,9 @@ class ProductFilterListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+        const val ARG_PRODUCT_FILTER_STOCK_STATUS = "arg_product_filter_stock_status"
+        const val ARG_PRODUCT_FILTER_STATUS = "arg_product_filter_status"
+        const val ARG_PRODUCT_FILTER_TYPE_STATUS = "arg_product_type"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
@@ -62,6 +64,12 @@ class ProductFilterListViewModel @AssistedInject constructor(
         params
     }
 
+    fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
+
+    fun getFilterByProductStatus() = productFilterOptions[STATUS]
+
+    fun getFilterByProductType() = productFilterOptions[TYPE]
+
     fun loadFilters() {
         _filterListItems.value = buildFilterListItemUiModel()
 
@@ -70,7 +78,8 @@ class ProductFilterListViewModel @AssistedInject constructor(
         } else resourceProvider.getString(string.product_list_filters)
 
         productFilterListViewState = productFilterListViewState.copy(
-                screenTitle = screenTitle
+                screenTitle = screenTitle,
+                displayClearButton = productFilterOptions.isNotEmpty()
         )
     }
 
@@ -82,6 +91,11 @@ class ProductFilterListViewModel @AssistedInject constructor(
                     screenTitle = filterItem.filterItemName
             )
         }
+    }
+
+    fun onClearFilterSelected() {
+        productFilterOptions.clear()
+        loadFilters()
     }
 
     fun onFilterOptionItemSelected(
@@ -109,9 +123,6 @@ class ProductFilterListViewModel @AssistedInject constructor(
                 productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterOptionItemValue
             }
         }
-
-        // exit the filter option list screen once a filter option item has been selected
-        triggerEvent(Exit)
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
@@ -177,7 +188,8 @@ class ProductFilterListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductFilterListViewState(
-        val screenTitle: String? = null
+        val screenTitle: String? = null,
+        val displayClearButton: Boolean? = null
     ) : Parcelable
 
     @Parcelize
@@ -195,7 +207,35 @@ class ProductFilterListViewModel @AssistedInject constructor(
         val filterItemKey: ProductFilterOption,
         val filterItemName: String,
         val filterOptionListItems: List<FilterListOptionItemUiModel>
-    ) : Parcelable
+    ) : Parcelable {
+        fun isSameFilter(updatedFilterOption: FilterListItemUiModel): Boolean {
+            if (this.filterItemName == updatedFilterOption.filterItemName &&
+                    this.filterItemKey == updatedFilterOption.filterItemKey &&
+                    this.filterOptionListItems.isSameFilterOptions(updatedFilterOption.filterOptionListItems)) {
+                return true
+            }
+            return false
+        }
+
+        /**
+         * Compares this filter's options with the passed list, returns true only if both lists contain
+         * the same filter options in the same order
+         */
+        fun List<FilterListOptionItemUiModel>.isSameFilterOptions(
+            updatedFilterOptions: List<FilterListOptionItemUiModel>
+        ): Boolean {
+            if (this.size != updatedFilterOptions.size) {
+                return false
+            }
+
+            for (i in this.indices) {
+                if (!this[i].isSameFilterOption(updatedFilterOptions[i])) {
+                    return false
+                }
+            }
+            return true
+        }
+    }
 
     /**
      * [filterOptionItemName] is the display name of the filter option
@@ -213,7 +253,16 @@ class ProductFilterListViewModel @AssistedInject constructor(
         val filterOptionItemName: String,
         val filterOptionItemValue: String,
         val isSelected: Boolean = false
-    ) : Parcelable
+    ) : Parcelable {
+        fun isSameFilterOption(updatedFilterOption: FilterListOptionItemUiModel): Boolean {
+            if (this.isSelected == updatedFilterOption.isSelected &&
+                    this.filterOptionItemName == updatedFilterOption.filterOptionItemName &&
+                    this.filterOptionItemValue == updatedFilterOption.filterOptionItemValue) {
+                return true
+            }
+            return false
+        }
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductFilterListViewModel>

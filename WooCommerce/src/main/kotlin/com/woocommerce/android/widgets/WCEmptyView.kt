@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
@@ -34,6 +35,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         PRODUCT_LIST,
         REVIEW_LIST,
         SEARCH_RESULTS,
+        FILTER_RESULTS,
         NETWORK_ERROR,
         NETWORK_OFFLINE,
     }
@@ -120,6 +122,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 // TODO: once adding products is supported, this needs to be updated to match designs
                 isTitleBold = true
                 title = context.getString(R.string.product_list_empty)
+                message = null
+                buttonText = null
+                drawableId = R.drawable.img_empty_products
+            }
+            FILTER_RESULTS -> {
+                isTitleBold = true
+                title = context.getString(R.string.product_list_empty_filters)
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_products

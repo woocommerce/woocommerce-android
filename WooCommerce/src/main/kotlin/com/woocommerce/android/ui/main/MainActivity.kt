@@ -294,7 +294,7 @@ class MainActivity : AppUpgradeActivity(),
     /**
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
-    private fun getActiveTopLevelFragment(): TopLevelFragment? {
+    internal fun getActiveTopLevelFragment(): TopLevelFragment? {
         val tag = bottomNavView.currentPosition.getTag()
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }

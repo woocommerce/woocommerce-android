@@ -64,6 +64,7 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
@@ -473,6 +474,7 @@
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
     <string name="product_list_empty">No products yet</string>
+    <string name="product_list_empty_filters">No products found</string>
     <string name="product_list_empty_search">No matching products</string>
     <string name="product_list_sorting">Newest</string>
     <string name="product_list_filters">Filters</string>

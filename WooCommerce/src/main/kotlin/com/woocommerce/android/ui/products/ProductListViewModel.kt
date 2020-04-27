@@ -14,7 +14,6 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -49,8 +48,9 @@ class ProductListViewModel @AssistedInject constructor(
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    final val productFilterOptions: Map<ProductFilterOption, String> by lazy {
-        val params = savedState.get<Map<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS) ?: emptyMap()
+    private final val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
+        val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
+                ?: mutableMapOf()
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
         params
     }
@@ -94,6 +94,20 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
+    fun onFiltersChanged(
+        stockStatus: String?,
+        productStatus: String?,
+        productType: String?
+    ) {
+        productFilterOptions.clear()
+        stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
+        productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
+        productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+
+        viewState = viewState.copy(filterCount = productFilterOptions.size)
+        refreshProducts()
+    }
+
     fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]
 
     fun getFilterByProductStatus() = productFilterOptions[ProductFilterOption.STATUS]
@@ -126,7 +140,7 @@ class ProductListViewModel @AssistedInject constructor(
         AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
                 mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
         )
-        loadProducts()
+        refreshProducts()
     }
 
     final fun reloadProductsFromDb() {
@@ -154,7 +168,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoading = true,
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
-                        isEmptyViewVisible = false
+                        isEmptyViewVisible = false,
+                        displaySortAndFilterCard = false
                 )
                 fetchProductList(viewState.query, loadMore = loadMore)
             }
@@ -173,14 +188,15 @@ class ProductListViewModel @AssistedInject constructor(
                         showSkeleton = true
                     } else {
                         _productList.value = productsInDb
-                        showSkeleton = isRefreshing()
+                        showSkeleton = !isRefreshing()
                     }
                 }
                 viewState = viewState.copy(
                         isLoading = true,
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
-                        isEmptyViewVisible = false
+                        isEmptyViewVisible = false,
+                        displaySortAndFilterCard = !showSkeleton
                 )
                 fetchProductList(loadMore = loadMore)
             }
@@ -229,7 +245,10 @@ class ProductListViewModel @AssistedInject constructor(
             viewState = viewState.copy(
                     isLoading = true,
                     canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = _productList.value?.isEmpty() == true
+                    isEmptyViewVisible = _productList.value?.isEmpty() == true,
+                    displaySortAndFilterCard = (
+                            productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
+                            )
             )
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
@@ -257,9 +276,10 @@ class ProductListViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val query: String? = null,
+        val filterCount: Int? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val displaySortAndFilterCard: Boolean = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        val displaySortAndFilterCard: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

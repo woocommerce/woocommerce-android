@@ -57,24 +57,14 @@ class ProductFilterOptionListAdapter(
             return false
         }
 
-        newList.forEach {
-            if (!isSameFilterChildItem(it)) {
+        for (index in newList.indices) {
+            val oldItem = filterList[index]
+            val newItem = newList[index]
+            if (!oldItem.isSameFilterOption(newItem)) {
                 return false
             }
         }
-
         return true
-    }
-
-    private fun isSameFilterChildItem(filterOptionItem: FilterListOptionItemUiModel): Boolean {
-        filterList.forEach {
-            if (it.isSelected == filterOptionItem.isSelected &&
-                    it.filterOptionItemName == filterOptionItem.filterOptionItemName &&
-                    it.filterOptionItemValue == filterOptionItem.filterOptionItemValue) {
-                return true
-            }
-        }
-        return false
     }
 
     class ProductFilterOptionViewHolder(view: View) : RecyclerView.ViewHolder(view) {

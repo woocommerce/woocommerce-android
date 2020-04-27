@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
@@ -10,10 +13,16 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -32,7 +41,10 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
 
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
 
+    private var clearAllMenuItem: MenuItem? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_filter_list, container, false)
     }
 
@@ -62,11 +74,44 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
             // https://github.com/woocommerce/woocommerce-android/issues/2074
             isMotionEventSplittingEnabled = false
         }
+
+        filterList_btnShowProducts.setOnClickListener {
+            // TODO: add tracking event
+            val bundle = Bundle()
+            bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
+            bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
+            bundle.putString(ARG_PRODUCT_FILTER_TYPE_STATUS, viewModel.getFilterByProductType())
+            (requireActivity() as? MainActivity)?.navigateBackWithResult(
+                    RequestCodes.PRODUCT_LIST_FILTERS,
+                    bundle,
+                    R.id.nav_host_fragment_main,
+                    R.id.rootFragment
+            )
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_clear, menu)
+        clearAllMenuItem = menu.findItem(R.id.menu_clear)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_clear -> {
+                // TODO: add tracking event
+                viewModel.onClearFilterSelected()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
         viewModel.productFilterListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
+            new.displayClearButton?.takeIfNotEqualTo(old?.displayClearButton) { showClearAllAction(it) }
         }
         viewModel.filterListItems.observe(viewLifecycleOwner, Observer {
             showProductFilterList(it)
@@ -75,7 +120,11 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     }
 
     private fun showProductFilterList(productFilterList: List<FilterListItemUiModel>) {
-        productFilterListAdapter.setProductFilterList(productFilterList)
+        productFilterListAdapter.filterList = productFilterList
+    }
+
+    private fun showClearAllAction(show: Boolean) {
+        view?.post { clearAllMenuItem?.isVisible = show }
     }
 
     override fun onProductFilterClick(selectedFilterPosition: Int) {

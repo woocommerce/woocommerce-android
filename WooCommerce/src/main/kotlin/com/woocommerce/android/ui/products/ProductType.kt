@@ -9,7 +9,7 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
     GROUPED(R.string.product_type_grouped, CoreProductType.GROUPED.value),
     EXTERNAL(R.string.product_type_external, CoreProductType.EXTERNAL.value),
     VARIABLE(R.string.product_type_variable, CoreProductType.VARIABLE.value),
-    VARIATION(R.string.product_type_variation, CoreProductType.VARIABLE.value);
+    VARIATION(R.string.product_type_variation, CoreProductType.VARIATION.value);
 
     companion object {
         fun fromString(type: String): ProductType {

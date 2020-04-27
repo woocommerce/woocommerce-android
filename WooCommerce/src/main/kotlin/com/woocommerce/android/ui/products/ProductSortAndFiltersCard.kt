@@ -25,4 +25,15 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
         btn_product_filter.setOnClickListener { listener.onFilterOptionSelected() }
         btn_product_sorting.setOnClickListener { listener.onSortOptionSelected() }
     }
+
+    fun updateFilterSelection(filterCount: Int) {
+        val isFilterEnabled = filterCount > 0
+        with(btn_product_filter) {
+            text = if (isFilterEnabled) {
+                context.getString(R.string.product_list_filters_selected, filterCount)
+            } else context.getString(R.string.product_list_filters)
+
+            isSelected = isFilterEnabled
+        }
+    }
 }

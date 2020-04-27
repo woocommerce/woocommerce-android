@@ -10,11 +10,16 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_option_list.*
@@ -60,6 +65,20 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionCli
             // https://github.com/woocommerce/woocommerce-android/issues/2074
             isMotionEventSplittingEnabled = false
         }
+
+        filterOptionList_btnShowProducts.setOnClickListener {
+            // TODO: add tracking event
+            val bundle = Bundle()
+            bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
+            bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
+            bundle.putString(ARG_PRODUCT_FILTER_TYPE_STATUS, viewModel.getFilterByProductType())
+            (requireActivity() as? MainActivity)?.navigateBackWithResult(
+                    RequestCodes.PRODUCT_LIST_FILTERS,
+                    bundle,
+                    R.id.nav_host_fragment_main,
+                    R.id.rootFragment
+            )
+        }
     }
 
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
@@ -71,18 +90,11 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionCli
             showProductFilterList(it)
         })
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is Exit -> requireActivity().onBackPressed()
-                else -> event.isHandled = false
-            }
-        })
-
         viewModel.loadFilterOptions(arguments.selectedFilterItemPosition)
     }
 
-    private fun showProductFilterList(productFilterChildList: List<FilterListOptionItemUiModel>) {
-        mProductFilterOptionListAdapter.filterList = productFilterChildList
+    private fun showProductFilterList(productFilterOptionList: List<FilterListOptionItemUiModel>) {
+        mProductFilterOptionListAdapter.filterList = productFilterOptionList
     }
 
     override fun onFilterOptionClick(selectedFilter: FilterListOptionItemUiModel) {
