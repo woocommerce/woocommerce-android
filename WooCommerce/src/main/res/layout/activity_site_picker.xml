@@ -79,11 +79,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_email_help"
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_150"
-                android:layout_marginTop="@dimen/minor_00"
+                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:textAllCaps="false"
