@@ -381,7 +381,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <!--  Borderless button with smaller text used for inner options  -->
     <style name="Woo.Button.Secondary">
-        <item name="android:textAppearance">@style/TextAppearance.Woo.Caption</item>
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Body2</item>
     </style>
 
     <!--  Button with only a border and no color fill  -->
