@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="@dimen/minor_50"
+        android:layout_margin="@dimen/minor_25"
         android:contentDescription="@string/product_image_content_description"
         android:scaleType="centerCrop"
         tools:layout_height="@dimen/image_major_150"

@@ -86,7 +86,7 @@ class WPMediaLibraryImageGalleryView @JvmOverloads constructor(
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
         val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
-        val margin = context.resources.getDimensionPixelSize(R.dimen.minor_50)
+        val margin = context.resources.getDimensionPixelSize(R.dimen.minor_25)
         imageSize = (screenWidth / NUM_COLUMNS) - (margin * NUM_COLUMNS)
     }
 
