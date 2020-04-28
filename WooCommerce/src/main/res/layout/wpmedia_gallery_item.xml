@@ -15,4 +15,21 @@
         tools:layout_height="@dimen/image_major_150"
         tools:layout_width="@dimen/image_major_150"
         tools:src="@drawable/ic_product" />
+
+    <TextView
+        android:id="@+id/textSelectionCount"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="@dimen/margin_medium"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:background="@drawable/wpmedia_picker_circle_selector"
+        android:elevation="4dp"
+        android:importantForAccessibility="no"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_minor_60"
+        tools:text="5"
+        tools:ignore="UnusedAttribute"/>
 </FrameLayout>

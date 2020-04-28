@@ -5,6 +5,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
+import com.woocommerce.android.widgets.WPMediaLibraryImageGalleryView
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
@@ -13,8 +14,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaListFetched
-import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -25,8 +24,7 @@ class WPMediaPickerRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val MEDIA_PAGE_SIZE = MediaStore.DEFAULT_NUM_MEDIA_PER_FETCH
-        private const val MEDIA_MIME_TYPE = "image/*"
+        private const val MEDIA_PAGE_SIZE = WPMediaLibraryImageGalleryView.NUM_COLUMNS * 2
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
@@ -53,8 +51,7 @@ class WPMediaPickerRepository @Inject constructor(
                 val payload = MediaStore.FetchMediaListPayload(
                         selectedSite.get(),
                         MEDIA_PAGE_SIZE,
-                        loadMore,
-                        MEDIA_MIME_TYPE
+                        loadMore
                 )
                 dispatcher.dispatch(MediaActionBuilder.newFetchMediaListAction(payload))
             }

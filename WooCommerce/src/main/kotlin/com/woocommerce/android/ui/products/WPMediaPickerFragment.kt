@@ -80,7 +80,7 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
         )
     }
 
-    override fun onWPMediaClicked(image: Image, imageView: View) {
-        // TODO
+    override fun onRequestLoadMore() {
+        viewModel.onLoadMoreRequested()
     }
 }
