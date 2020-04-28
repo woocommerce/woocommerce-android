@@ -792,7 +792,6 @@
     <string name="product_type_grouped">Grouped</string>
     <string name="product_type_external">External</string>
     <string name="product_type_variable">Variable</string>
-    <string name="product_type_variation">Variation</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
