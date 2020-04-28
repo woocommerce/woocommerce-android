@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/filterOptionList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="?attr/colorSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:itemCount="5"
+        tools:listitem="@layout/product_filter_option_list_item" />
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintBottom_toTopOf="@+id/filterOptionList_btnFrame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filterOptionList"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        android:id="@+id/filterOptionList_btnFrame"
+        style="@style/Woo.Card.WithoutPadding"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/filterOptionList_btnShowProducts"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_100"
+            android:text="@string/product_list_filters_show_products" />
+
+    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

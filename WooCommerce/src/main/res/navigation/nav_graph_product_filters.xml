@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_product_filters"
+    app:startDestination="@id/productFilterListFragment">
+    <fragment
+        android:id="@+id/productFilterListFragment"
+        android:name="com.woocommerce.android.ui.products.ProductFilterListFragment"
+        tools:layout="@layout/fragment_product_filter_list">
+        <argument
+            android:name="selectedStockStatus"
+            app:nullable="true"
+            app:argType="string" />
+        <argument
+            android:name="selectedProductStatus"
+            app:nullable="true"
+            app:argType="string" />
+        <argument
+            android:name="selectedProductType"
+            app:nullable="true"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_productFilterListFragment_to_productFilterOptionListFragment"
+            app:destination="@id/productFilterOptionListFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="selectedFilterItemPosition"
+                app:nullable="false"
+                app:argType="integer" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/productFilterOptionListFragment"
+        android:name="com.woocommerce.android.ui.products.ProductFilterOptionListFragment"
+        android:label="ProductFilterOptionListFragment"
+        tools:layout="@layout/fragment_product_filter_option_list">
+    <argument
+        android:name="selectedFilterItemPosition"
+        app:nullable="false"
+        app:argType="integer" />
+    </fragment>
+</navigation>

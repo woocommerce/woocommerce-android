@@ -64,7 +64,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private var productName = ""
-    private var isVariation = false
     private val skeletonView = SkeletonView()
 
     private var progressDialog: CustomProgressDialog? = null
@@ -192,8 +191,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             imageGallery.showProductImages(product, this)
         }
 
-        isVariation = product.type == ProductType.VARIATION
-
         // show status badge for unpublished products
         product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
@@ -254,7 +251,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // we don't show total sales for variations because they're always zero
         // we are removing the total orders sections from products M2 release
-        if (!isVariation && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+        if (product.type != VARIABLE && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_total_orders,
@@ -263,7 +260,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         // we don't show reviews for variations because they're always empty
-        if (!isVariation && product.reviewsAllowed) {
+        if (product.type != VARIABLE && product.reviewsAllowed) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_reviews,
