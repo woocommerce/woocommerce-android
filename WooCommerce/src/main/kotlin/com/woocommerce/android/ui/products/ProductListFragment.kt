@@ -370,6 +370,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun onFilterOptionSelected() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductFilters(
@@ -380,6 +381,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun onSortOptionSelected() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
         val bottomSheet = ProductSortingFragment()
         bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }

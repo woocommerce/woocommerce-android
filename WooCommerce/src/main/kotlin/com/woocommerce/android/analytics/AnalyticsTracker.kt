@@ -256,6 +256,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_LIST_PULLED_TO_REFRESH,
         PRODUCT_LIST_SEARCHED,
         PRODUCT_LIST_MENU_SEARCH_TAPPED,
+        PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED,
+        PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
@@ -269,11 +271,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED,
         PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED,
         PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED,
+        PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED,
         PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
+        PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
+        PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_DETAIL_UPDATE_SUCCESS,
         PRODUCT_DETAIL_UPDATE_ERROR,
+
+        // -- Product filters
+        PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
+        PRODUCT_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED,
 
         // -- Aztec editor
         AZTEC_EDITOR_DONE_BUTTON_TAPPED,
@@ -502,6 +511,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_REVIEW_ID = "review_id"
         const val KEY_NOTE_ID = "note_id"
         const val KEY_IMAGE_SOURCE = "source"
+        const val KEY_FILTERS = "filters"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"

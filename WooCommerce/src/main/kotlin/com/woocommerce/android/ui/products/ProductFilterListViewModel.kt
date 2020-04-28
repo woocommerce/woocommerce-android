@@ -64,6 +64,8 @@ class ProductFilterListViewModel @AssistedInject constructor(
         params
     }
 
+    fun getFilterString() = productFilterOptions.values.joinToString(", ")
+
     fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
 
     fun getFilterByProductStatus() = productFilterOptions[STATUS]
