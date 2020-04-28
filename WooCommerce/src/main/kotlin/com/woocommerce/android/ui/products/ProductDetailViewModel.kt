@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
@@ -263,6 +264,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when the user taps the product menu order in product settings
+     */
+    fun onSettingsMenuOrderButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductMenuOrder(it.menuOrder))
+        }
+    }
+
+    /**
      * Called when the sale start date is selected from the date picker in the pricing screen.
      * Keeps track of the start and end date value when scheduling a sale.
      */
@@ -457,7 +467,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         reviewsAllowed: Boolean? = null,
         purchaseNote: String? = null,
         externalUrl: String? = null,
-        buttonText: String? = null
+        buttonText: String? = null,
+        menuOrder: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -492,6 +503,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     purchaseNote = purchaseNote ?: product.purchaseNote,
                     externalUrl = externalUrl ?: product.externalUrl,
                     buttonText = buttonText ?: product.buttonText,
+                    menuOrder = menuOrder ?: product.menuOrder,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt

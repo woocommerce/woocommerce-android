@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductImageViewerFrag
 import com.woocommerce.android.ui.products.ProductsModule.ProductImagesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductInventoryFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductMenuOrderFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductPricingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSettingsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingClassFragmentModule
@@ -15,6 +16,8 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentMod
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
+import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
+import com.woocommerce.android.ui.products.settings.ProductMenuOrderModule
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragment
 import com.woocommerce.android.ui.products.settings.ProductSettingsModule
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment
@@ -40,7 +43,8 @@ import dagger.android.ContributesAndroidInjector
     ProductVisibilityFragmentModule::class,
     ProductStatusFragmentModule::class,
     ProductSlugFragmentModule::class,
-    ProductExternalLinkFragmentModule::class
+    ProductExternalLinkFragmentModule::class,
+    ProductMenuOrderFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -139,5 +143,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductExternalLinkModule::class])
         abstract fun productExternalLinkFragment(): ProductExternalLinkFragment
+    }
+
+    @Module
+    internal abstract class ProductMenuOrderFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductMenuOrderModule::class])
+        abstract fun productMenuOrderFragment(): ProductMenuOrderFragment
     }
 }

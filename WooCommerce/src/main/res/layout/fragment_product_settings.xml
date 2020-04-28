@@ -58,8 +58,9 @@
                 android:padding="@dimen/major_100"
                 android:text="@string/product_enable_reviews" />
 
-            <View style="@style/Woo.Divider.TitleAligned"
-                android:id="@+id/productReviewsAllowedDivider"/>
+            <View
+                android:id="@+id/productReviewsAllowedDivider"
+                style="@style/Woo.Divider.TitleAligned" />
 
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
                 android:id="@+id/productSlug"
@@ -78,7 +79,17 @@
                 app:optionValueMaxLines="2"
                 tools:optionValue="Purchase note" />
 
+            <View style="@style/Woo.Divider.TitleAligned" />
+
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/productMenuOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/product_menu_order"
+                tools:optionValue="0" />
+
             <View style="@style/Woo.Divider" />
+
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
     </LinearLayout>
 </ScrollView>

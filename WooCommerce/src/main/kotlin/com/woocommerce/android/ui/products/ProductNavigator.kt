@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductEx
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
@@ -145,6 +146,12 @@ class ProductNavigator @Inject constructor() {
                 } else if (target.imageModel != null) {
                     viewProductImageViewer(fragment, target.product.remoteId)
                 }
+            }
+
+            is ViewProductMenuOrder -> {
+                val action = ProductSettingsFragmentDirections
+                        .actionProductSettingsFragmentToProductMenuOrderFragment(target.menuOrder)
+                fragment.findNavController().navigate(action)
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()
