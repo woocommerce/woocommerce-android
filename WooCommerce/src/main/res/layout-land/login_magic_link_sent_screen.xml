@@ -4,61 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:orientation="vertical">
 
     <include layout="@layout/toolbar_login" />
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:contentDescription="@null"
-        android:layout_marginTop="@dimen/major_100"
-        android:scaleType="centerInside"
-        app:srcCompat="@drawable/login_email_alert" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/label"
-        style="@style/LoginTheme.TextLabel"
-        android:textColor="@color/color_on_surface_high"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/major_150"
-        android:layout_marginStart="@dimen/major_325"
-        android:layout_marginEnd="@dimen/major_325"
-        android:layout_marginBottom="@dimen/major_150"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/login_magic_links_sent_label" />
-
-    <com.woocommerce.android.widgets.WCElevatedLinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/minor_100"
-        android:paddingBottom="@dimen/minor_100"
-        android:paddingStart="@dimen/minor_100"
-        android:paddingEnd="@dimen/major_100">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_enter_password"
-            style="@style/LoginTheme.Button.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="@dimen/major_100"
-            android:gravity="start|center_vertical"
-            android:text="@string/enter_your_password_instead" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_open_email_client"
-            style="@style/LoginTheme.Button.Primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="@string/open_mail" />
-
-    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-
+    <include layout="@layout/login_magic_link_sent_content"/>
 </LinearLayout>
