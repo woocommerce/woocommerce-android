@@ -1,0 +1,38 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/minor_50"
+        android:paddingBottom="@dimen/minor_50"
+        android:background="?attr/colorSurface">
+
+        <com.woocommerce.android.widgets.WCToggleOutlinedSelectorButton
+            android:id="@+id/btn_product_sorting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_100"
+            android:drawableEnd="@drawable/ic_arrow_drop_down"
+            android:text="@string/product_list_sorting_newest_to_oldest_short"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.woocommerce.android.widgets.WCToggleOutlinedButton
+            android:id="@+id/btn_product_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_100"
+            android:text="@string/product_list_filters"
+            app:backgroundTint="@color/button_outlined_bg_selector"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/btn_product_sorting"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>
