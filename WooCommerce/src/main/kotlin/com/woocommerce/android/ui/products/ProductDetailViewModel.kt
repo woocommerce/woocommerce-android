@@ -280,7 +280,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the user taps the product slug in product settings
+     * Called when the user taps the product menu order in product settings
      */
     fun onSettingsMenuOrderButtonClicked() {
         viewState.productDraft?.let {

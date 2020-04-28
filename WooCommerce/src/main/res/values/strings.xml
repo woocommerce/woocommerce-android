@@ -521,7 +521,7 @@
     <string name="product_external_link_button_text_label">This text will be shown on the button linking to the external product</string>
     <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
     <string name="product_menu_order">Menu order</string>
-    <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog</string>
+    <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog. The lower the value of the number, the higher the item will be on the product list. You can also use negative numbers.</string>
     <!--
         Product images
     -->
@@ -570,7 +570,7 @@
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
-    <string name="settings_enable_v4_stats_message">Try the new stats available with the\nWooCommerce admin plugin</string>
+    <string name="settings_enable_v4_stats_message">Try the new stats available with the WooCommerce admin plugin</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>

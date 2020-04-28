@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 /**
@@ -76,5 +77,8 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     override fun onStop() {
         super.onStop()
         CustomDiscardDialog.onCleared()
+        activity?.let {
+            ActivityUtils.hideKeyboard(it)
+        }
     }
 }
