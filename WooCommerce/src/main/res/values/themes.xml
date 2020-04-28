@@ -69,6 +69,7 @@
         <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
         <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
+        <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
         <item name="tabStyle">@style/Woo.TabLayout</item>
         <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
         <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
@@ -116,6 +117,17 @@
         <item name="colorOnBackground">@color/color_on_background</item>
         <item name="colorOnSurface">@color/color_on_surface_high</item>
         <item name="colorOnError">@color/color_on_error</item>
+
+        <item name="buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
+        <item name="android:buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
+    </style>
+
+    <style name="Woo.Dialog"/>
+    <style name="Woo.Dialog.ButtonBar">
+        <item name="android:paddingStart">@dimen/minor_100</item>
+        <item name="android:paddingEnd">@dimen/minor_100</item>
+        <item name="android:paddingTop">@dimen/minor_50</item>
+        <item name="android:paddingBottom">@dimen/minor_50</item>
     </style>
 
     <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">

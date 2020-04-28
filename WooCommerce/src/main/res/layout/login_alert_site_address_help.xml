@@ -30,8 +30,8 @@
         style="@style/TextAppearance.Woo.Subtitle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
         android:layout_marginBottom="@dimen/major_100"
         android:textColor="@color/color_on_surface_high"
         android:text="@string/login_site_address_help_title"/>
@@ -41,7 +41,7 @@
         android:textColor="@color/color_on_surface_high"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
         android:text="@string/login_site_address_help_content" />
 </LinearLayout>
