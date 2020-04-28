@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -171,7 +172,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showErrorView(false)
-            dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
+
+            if (granularity == DAYS) {
+                dashboard_stats.updateView(fakeRevenueStats, fakeSalesStats, presenter.getStatsCurrency())
+            } else {
+                dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
+            }
         }
     }
 
@@ -199,6 +205,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
+        if (dashboard_stats.activeGranularity == DAYS) {
+            dashboard_stats.showVisitorStats(mapOf("2020-04-27" to 1387))
+            return
+        }
+
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showVisitorStats(visitorStats)
         }
@@ -349,4 +360,39 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
         showV4StatsAvailabilityBanner(false)
     }
+
+    private val fakeRevenueStats: Map<String, Double> = mapOf(
+            "2020-03-29" to 500.0,
+            "2020-03-30" to 490.0,
+            "2020-03-31" to 475.0,
+            "2020-04-01" to 510.0,
+            "2020-04-02" to 575.0,
+            "2020-04-03" to 475.0,
+            "2020-04-04" to 520.0,
+            "2020-04-05" to 625.0,
+            "2020-04-06" to 600.0,
+            "2020-04-07" to 575.0,
+            "2020-04-08" to 625.0,
+            "2020-04-09" to 460.0,
+            "2020-04-10" to 475.0,
+            "2020-04-11" to 600.0,
+            "2020-04-12" to 625.0,
+            "2020-04-13" to 600.0,
+            "2020-04-14" to 575.0,
+            "2020-04-15" to 550.0,
+            "2020-04-16" to 540.0,
+            "2020-04-17" to 525.0,
+            "2020-04-18" to 525.0,
+            "2020-04-19" to 600.0,
+            "2020-04-20" to 655.0,
+            "2020-04-21" to 525.0,
+            "2020-04-22" to 650.0,
+            "2020-04-23" to 635.0,
+            "2020-04-24" to 525.0,
+            "2020-04-25" to 475.0,
+            "2020-04-26" to 525.0,
+            "2020-04-27" to 610.0
+    )
+
+    val fakeSalesStats: Map<String, Int> = mapOf("2020-03-29" to 42)
 }

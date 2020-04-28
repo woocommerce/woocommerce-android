@@ -62,7 +62,7 @@ class ScreenshotTest {
                 // app in the Emulator is already logged in.
                 //MyStoreScreen()
                 .dismissTopBannerIfNeeded()
-                .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
+                //.then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
                 .then<MyStoreScreen> { it.stats.waitForGraphToLoad() }
                 .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
 
