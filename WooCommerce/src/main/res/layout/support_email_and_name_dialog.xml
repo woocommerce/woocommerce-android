@@ -17,46 +17,24 @@
         android:paddingBottom="@dimen/minor_100"
         tools:text="@string/support_identity_input_dialog_enter_email_and_name"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Woo.TextInputLayout"
-        android:layout_height="wrap_content"
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/support_identity_input_dialog_email_edit_text"
         android:layout_width="match_parent"
-        android:hint="@string/support_identity_input_dialog_email_label">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/support_identity_input_dialog_email_edit_text"
-            style="@style/Woo.TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/minor_00"
-            android:layout_marginEnd="@dimen/minor_00"
-            android:inputType="textEmailAddress"
-            android:layout_marginBottom="@dimen/major_75">
-        </com.google.android.material.textfield.TextInputEditText>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Woo.TextInputLayout"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_75"
+        android:hint="@string/support_identity_input_dialog_email_label"
+        android:inputType="textEmailAddress" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/support_identity_input_dialog_name_edit_text"
         android:layout_width="match_parent"
-        app:counterEnabled="true"
-        app:counterMaxLength="50"
-        tools:visibility="visible">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/support_identity_input_dialog_name_edit_text"
-            style="@style/Woo.TextInputEditText"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_marginStart="@dimen/minor_00"
-            android:layout_marginEnd="@dimen/minor_00"
-            android:inputType="text"
-            android:hint="@string/support_identity_input_dialog_name_label"
-            android:maxLength="50"
-            tools:visibility="visible">
-        </com.google.android.material.textfield.TextInputEditText>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_75"
+        android:inputType="text"
+        android:hint="@string/support_identity_input_dialog_name_label"
+        android:maxLength="50"/>
 </LinearLayout>
