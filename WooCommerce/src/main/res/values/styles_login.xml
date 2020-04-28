@@ -34,7 +34,9 @@
 
     <style name="LoginTheme.Button.Primary" parent="Woo.Button.Colored"/>
 
-    <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary"/>
+    <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary">
+        <item name="android:textSize">@dimen/text_minor_100</item>
+    </style>
 
     <style name="LoginTheme.TextLabel.Icon">
         <item name="drawableTint">@color/color_on_surface_medium</item>
