@@ -331,7 +331,6 @@ end
     else
       locales = SUPPORTED_LOCALES
         .reject { |locale| locale[:glotpress] == 'zh-cn' } # breaks due to Pinwin Keyboard wanting contacts access
-        .reject { |locale| locale[:glotpress] == 'tr' } # breaks but not sure why yet
         .map { |locale|  locale[:emulator] }
     end
 
