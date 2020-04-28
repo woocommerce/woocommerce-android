@@ -34,7 +34,6 @@
         android:layout_marginStart="@dimen/minor_00"
         android:layout_marginEnd="@dimen/minor_00"
         android:layout_marginTop="@dimen/minor_00"
-        android:layout_marginBottom="@dimen/major_75"
         android:paddingStart="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
         android:gravity="center_vertical"

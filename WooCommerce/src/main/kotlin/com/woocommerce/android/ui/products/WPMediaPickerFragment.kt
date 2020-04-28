@@ -7,15 +7,21 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitWPMediaPicker
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
+import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 
-class WPMediaPickerFragment : BaseProductFragment(), OnGalleryImageClickListener {
+// TODO: finish making this a base fragment
+class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
+    private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_wpmedia_picker, container, false)
@@ -25,6 +31,11 @@ class WPMediaPickerFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers(viewModel)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -52,6 +63,10 @@ class WPMediaPickerFragment : BaseProductFragment(), OnGalleryImageClickListener
                 is ExitWPMediaPicker -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
+        })
+
+        mediaViewModel.mediaList.observe(viewLifecycleOwner, Observer {
+            wpMediaGallery.showWPMediaImages(it, this)
         })
     }
 

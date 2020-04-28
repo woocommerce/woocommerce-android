@@ -125,7 +125,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.showImages(product.images)
     }
 
-    fun showWPMediaImages(images: ArrayList<Product.Image>, listener: OnGalleryImageClickListener) {
+    fun showWPMediaImages(images: List<Product.Image>, listener: OnGalleryImageClickListener) {
         this.listener = listener
         adapter.showImages(images)
     }
