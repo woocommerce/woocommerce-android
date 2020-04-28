@@ -457,7 +457,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )?.also {
                 it.setMaxLines(1)
                 it.setClickListener {
-                    // TODO: track event
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED)
                     viewModel.onEditProductCardClicked(
                             ViewProductShortDescriptionEditor(
                                     product.shortDescription, getString(R.string.product_short_description)
