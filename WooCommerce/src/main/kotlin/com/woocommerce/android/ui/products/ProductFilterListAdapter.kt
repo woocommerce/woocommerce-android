@@ -40,7 +40,6 @@ class ProductFilterListAdapter(
         holder.txtFilterSelection.text = filter.filterOptionListItems.first { it.isSelected }.filterOptionItemName
 
         holder.itemView.setOnClickListener {
-            // TODO: Add tracking event here
             clickListener.onProductFilterClick(position)
         }
     }
