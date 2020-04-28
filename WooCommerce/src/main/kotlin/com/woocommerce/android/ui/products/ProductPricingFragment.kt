@@ -70,13 +70,6 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onStop() {
-        super.onStop()
-        activity?.let {
-            ActivityUtils.hideKeyboard(it)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
