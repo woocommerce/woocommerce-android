@@ -71,9 +71,6 @@ so that's the baseline as defined in `major_100`.
     <dimen name="image_major_120">128dp</dimen>
     <dimen name="image_major_150">156dp</dimen>
 
-    <!-- Corner Radius -->
-    <dimen name="corner_radius_small">2dp</dimen>
-
     <!-- Skeleton sizes -->
     <dimen name="skeleton_list_item_icon_100">@dimen/image_minor_50</dimen>
     <dimen name="skeleton_list_item_icon_200">@dimen/image_minor_100</dimen>
@@ -92,6 +89,10 @@ so that's the baseline as defined in `major_100`.
     <dimen name="skeleton_text_height_200">@dimen/text_major_75</dimen>
     <dimen name="skeleton_tagview_height">24dp</dimen>
     <dimen name="skeleton_text_button_height">24dp</dimen>
+
+    <!-- Corner Radius -->
+    <dimen name="corner_radius_small">2dp</dimen>
+    <dimen name="corner_radius_round_button">20dp</dimen>
 
     <!-- Chart dimens -->
     <dimen name="chart_height">200dp</dimen>

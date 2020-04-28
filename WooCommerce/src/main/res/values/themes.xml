@@ -82,6 +82,7 @@
         <item name="switchStyle">@style/Woo.Switch</item>
         <item name="android:checkedTextViewStyle">@style/Woo.CheckedTextView</item>
         <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
+        <item name="bottomSheetDialogTheme">@style/Woo.Theme.BottomSheetDialog</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -95,6 +96,8 @@
         <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
         <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
         <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+        <item name="wcToggleOutlinedButtonStyle">@style/Widget.Woo.WCToggleOutlinedButton</item>
+        <item name="wcToggleOutlinedSelectorButtonStyle">@style/Widget.Woo.WCToggleOutlinedSelectorButton</item>
         <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
         <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
         <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>

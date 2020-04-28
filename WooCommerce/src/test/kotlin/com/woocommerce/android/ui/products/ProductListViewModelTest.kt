@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
@@ -37,6 +38,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(ProductSorting.DATE_ASC).whenever(productRepository).productSortingChoice
     }
 
     private fun createViewModel() {
@@ -52,7 +54,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product list view correctly`() = test {
-        doReturn(productList).whenever(productRepository).fetchProductList()
+        doReturn(productList).whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
 
         createViewModel()
 
@@ -75,16 +77,16 @@ class ProductListViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        verify(productRepository, times(1)).getProductList()
-        verify(productRepository, times(0)).fetchProductList()
+        verify(productRepository, times(1)).getProductList(any())
+        verify(productRepository, times(0)).fetchProductList(productFilterOptions = emptyMap())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
     fun `Shows and hides product list skeleton correctly`() = test {
-        doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
+        doReturn(emptyList<Product>()).whenever(productRepository).getProductList(any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
 
         createViewModel()
 
@@ -101,7 +103,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list load more progress correctly`() = test {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
 
         createViewModel()
 
