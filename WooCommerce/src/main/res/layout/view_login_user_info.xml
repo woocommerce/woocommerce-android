@@ -23,7 +23,8 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_displayname"
-        android:textAppearance="@style/TextAppearance.Woo.Headline6"
+        android:textAppearance="@style/TextAppearance.Woo.Body1"
+        android:textColor="@color/color_on_surface_high"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="0dp"
@@ -31,7 +32,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_username"
-        style="@style/Woo.TextView.Body1"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="0dp"
