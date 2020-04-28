@@ -3,16 +3,17 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import java.util.Locale
 
 /**
  * Similar to PostStatus except only draft, pending, private, and publish are supported
  */
-enum class ProductStatus {
-    PUBLISH,
-    DRAFT,
-    PENDING,
-    PRIVATE;
+enum class ProductStatus(@StringRes val stringResource: Int = 0, val value: String = "") {
+    PUBLISH(R.string.product_status_published, CoreProductStatus.PUBLISH.value),
+    DRAFT(R.string.product_status_draft, CoreProductStatus.DRAFT.value),
+    PENDING(R.string.product_status_pending, CoreProductStatus.PENDING.value),
+    PRIVATE(R.string.product_status_private, CoreProductStatus.PRIVATE.value);
 
     fun toLocalizedString(context: Context): String {
         @StringRes val resId = when (this) {
