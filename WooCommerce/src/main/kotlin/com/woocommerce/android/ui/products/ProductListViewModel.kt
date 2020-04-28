@@ -13,9 +13,11 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -28,6 +30,10 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
 @OpenClassOnDebug
@@ -63,6 +69,7 @@ class ProductListViewModel @AssistedInject constructor(
         if (_productList.value == null) {
             loadProducts()
         }
+        viewState = viewState.copy(sortingTitleResource = getSortingTitle())
     }
 
     override fun onCleared() {
@@ -147,7 +154,7 @@ class ProductListViewModel @AssistedInject constructor(
         _productList.value = productRepository.getProductList(productFilterOptions)
     }
 
-    final fun loadProducts(loadMore: Boolean = false) {
+    final fun loadProducts(loadMore: Boolean = false, scrollToTop: Boolean = false) {
         if (isLoading()) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
             return
@@ -198,7 +205,7 @@ class ProductListViewModel @AssistedInject constructor(
                         isEmptyViewVisible = false,
                         displaySortAndFilterCard = !showSkeleton
                 )
-                fetchProductList(loadMore = loadMore)
+                fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
             }
         }
     }
@@ -218,12 +225,16 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun refreshProducts() {
+    fun refreshProducts(scrollToTop: Boolean = false) {
         viewState = viewState.copy(isRefreshing = true)
-        loadProducts()
+        loadProducts(scrollToTop = scrollToTop)
     }
 
-    private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
+    private suspend fun fetchProductList(
+        searchQuery: String? = null,
+        loadMore: Boolean = false,
+        scrollToTop: Boolean = false
+    ) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
@@ -260,6 +271,19 @@ class ProductListViewModel @AssistedInject constructor(
                 isLoadingMore = false,
                 isRefreshing = false
         )
+
+        if (scrollToTop) {
+            triggerEvent(ScrollToTop)
+        }
+    }
+
+    private fun getSortingTitle(): Int {
+        return when (productRepository.productSortingChoice) {
+            DATE_ASC -> R.string.product_list_sorting_oldest_to_newest_short
+            DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
+            TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
+            TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
+        }
     }
 
     @Suppress("unused")
@@ -267,6 +291,15 @@ class ProductListViewModel @AssistedInject constructor(
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         loadProducts()
     }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshProducts(event: OnProductSortingChanged) {
+        viewState = viewState.copy(sortingTitleResource = getSortingTitle())
+        refreshProducts(scrollToTop = true)
+    }
+
+    object OnProductSortingChanged
 
     @Parcelize
     data class ViewState(
@@ -279,8 +312,13 @@ class ProductListViewModel @AssistedInject constructor(
         val filterCount: Int? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
+        val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null
     ) : Parcelable
+
+    sealed class ProductListEvent : Event() {
+        object ScrollToTop : ProductListEvent()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductListViewModel>

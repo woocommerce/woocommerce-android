@@ -26,6 +26,10 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
         btn_product_sorting.setOnClickListener { listener.onSortOptionSelected() }
     }
 
+    fun setSortingTitle(title: String) {
+        btn_product_sorting.text = title
+    }
+
     fun updateFilterSelection(filterCount: Int) {
         val isFilterEnabled = filterCount > 0
         with(btn_product_filter) {

@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -283,6 +284,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 showProductSortAndFiltersCard(it)
             }
             new.filterCount?.takeIfNotEqualTo(old?.filterCount) { updateFilterSelection(it) }
+
+            new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
+                products_sort_filter_card.setSortingTitle(getString(it))
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner, Observer {
@@ -292,6 +297,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ScrollToTop -> scrollToTop()
+                else -> event.isHandled = false
             }
         })
     }
@@ -373,6 +380,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun onSortOptionSelected() {
-        // TODO: handle sorting in another PR
+        val bottomSheet = ProductSortingFragment()
+        bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 }

@@ -7,6 +7,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
@@ -21,11 +22,13 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
 final class ProductListRepository @Inject constructor(
+    prefsWrapper: PreferencesWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
@@ -33,18 +36,30 @@ final class ProductListRepository @Inject constructor(
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
-        private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
+        private const val PRODUCT_SORTING_PREF_KEY = "product_sorting_pref_key"
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
     private var searchContinuation: CancellableContinuation<List<Product>>? = null
     private var offset = 0
 
+    private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
+
     final var canLoadMoreProducts = true
         private set
 
     final var lastSearchQuery: String? = null
         private set
+
+    var productSortingChoice: ProductSorting
+        get() {
+            return ProductSorting.valueOf(
+                    sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, DATE_DESC.name) ?: DATE_DESC.name
+            )
+        }
+        set(value) {
+            sharedPreferences.edit().putString(PRODUCT_SORTING_PREF_KEY, value.name).commit()
+        }
 
     init {
         dispatcher.register(this)
@@ -71,7 +86,7 @@ final class ProductListRepository @Inject constructor(
                         selectedSite.get(),
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        PRODUCT_SORTING,
+                        productSortingChoice,
                         filterOptions = productFilterOptions
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
@@ -103,7 +118,7 @@ final class ProductListRepository @Inject constructor(
                         searchQuery,
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        PRODUCT_SORTING
+                        productSortingChoice
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
             }
@@ -123,7 +138,7 @@ final class ProductListRepository @Inject constructor(
             val wcProducts = productStore.getProductsByFilterOptions(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
-                    sortType = PRODUCT_SORTING
+                    sortType = productSortingChoice
             )
             wcProducts.map { it.toAppModel() }
         } else {
