@@ -30,7 +30,7 @@ class WPMediaPickerViewModel @AssistedInject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    fun start(remoteProductId: Long) {
+    fun start() {
         loadMedia()
     }
 

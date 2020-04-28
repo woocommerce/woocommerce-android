@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -38,7 +39,7 @@ class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupObservers(viewModel)
+        initializeViewModel()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -54,6 +55,11 @@ class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    private fun initializeViewModel() {
+        setupObservers(viewModel)
+        viewModel.start()
     }
 
     private fun setupObservers(viewModel: WPMediaPickerViewModel) {

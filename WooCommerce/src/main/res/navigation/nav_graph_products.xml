@@ -145,11 +145,7 @@
         android:id="@+id/wpMediaPickerFragment"
         android:name="com.woocommerce.android.ui.products.WPMediaPickerFragment"
         android:label="WPMediaPickerFragment"
-        tools:layout="@layout/fragment_wpmedia_picker">
-        <argument
-            android:name="remoteMediaId"
-            app:argType="long" />
-    </fragment>
+        tools:layout="@layout/fragment_wpmedia_picker" />
 
     <include app:graph="@navigation/nav_graph_product_settings" />
 

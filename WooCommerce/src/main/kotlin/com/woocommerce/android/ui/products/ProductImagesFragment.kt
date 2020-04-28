@@ -24,7 +24,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
@@ -143,7 +142,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun showWPMediaPicker() {
-        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment(viewModel.getRemoteProductId())
+        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
         findNavController().navigate(action)
     }
 
