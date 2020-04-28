@@ -11,15 +11,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitWPMediaPicker
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
+import javax.inject.Inject
 
-// TODO: finish making this a base fragment
 class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -41,15 +44,11 @@ class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitWPMediaPicker(shouldShowDiscardDialog = false))
+                navigateBackWithResult()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitWPMediaPicker())
     }
 
     override fun onResume() {
@@ -57,15 +56,8 @@ class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitWPMediaPicker -> findNavController().navigateUp()
-                else -> event.isHandled = false
-            }
-        })
-
-        mediaViewModel.mediaList.observe(viewLifecycleOwner, Observer {
+    private fun setupObservers(viewModel: WPMediaPickerViewModel) {
+        viewModel.mediaList.observe(viewLifecycleOwner, Observer {
             wpMediaGallery.showWPMediaImages(it, this)
         })
     }
@@ -77,5 +69,17 @@ class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
                 image.id
         )
         findNavController().navigate(action)
+    }
+
+    private fun navigateBackWithResult() {
+        val bundle = Bundle().also {
+            // TODO
+        }
+        requireActivity().navigateBackWithResult(
+                RequestCodes.WPMEDIA_LIBRARY_PICKER,
+                bundle,
+                R.id.nav_host_fragment_main,
+                R.id.productDetailFragment
+        )
     }
 }

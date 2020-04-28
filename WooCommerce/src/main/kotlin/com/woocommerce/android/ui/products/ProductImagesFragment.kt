@@ -133,13 +133,18 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         captureProductImage()
                     }
                     it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
-                        viewModel.onAddWPMediaClicked()
+                        showWPMediaPicker()
                     }
                 }
 
         imageSourceDialog = MaterialAlertDialogBuilder(activity)
                 .setView(contentView)
                 .show()
+    }
+
+    private fun showWPMediaPicker() {
+        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment(viewModel.getRemoteProductId())
+        findNavController().navigate(action)
     }
 
     private fun chooseProductImage() {

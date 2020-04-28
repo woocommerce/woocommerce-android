@@ -45,6 +45,5 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
     data class ViewProductSlug(val slug: String) : ProductNavigationTarget()
     data class ViewProductMenuOrder(val menuOrder: Int) : ProductNavigationTarget()
-    data class ViewWPMediaPicker(val remoteProductId: Long): ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
 }

@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
@@ -21,9 +22,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewWPMediaPicker
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
@@ -163,12 +162,6 @@ class ProductNavigator @Inject constructor() {
             is ViewProductMenuOrder -> {
                 val action = ProductSettingsFragmentDirections
                         .actionProductSettingsFragmentToProductMenuOrderFragment(target.menuOrder)
-                fragment.findNavController().navigate(action)
-            }
-
-            is ViewWPMediaPicker -> {
-                val action = ProductDetailFragmentDirections
-                        .actionGlobalWpMediaFragment(target.remoteProductId)
                 fragment.findNavController().navigate(action)
             }
 
