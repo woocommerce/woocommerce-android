@@ -129,13 +129,21 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             }
         }
 
+        fun valueOrNotSet(value: Int): String {
+            return if (value == 0) {
+                resources.getString(R.string.value_not_set)
+            } else {
+                value.toString()
+            }
+        }
+
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
         productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
-        productMenuOrder.optionValue = product.menuOrder.toString()
+        productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)
     }
 
     private fun setupObservers() {
