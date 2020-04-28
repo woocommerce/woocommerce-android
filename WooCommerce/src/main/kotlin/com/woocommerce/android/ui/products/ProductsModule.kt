@@ -169,6 +169,6 @@ object ProductsModule {
     internal abstract class WPMediaPickerFragmentModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [WPMediaPickerModule::class])
-        abstract fun productSettingsFragment(): WPMediaPickerFragment
+        abstract fun wpMediaPickerFragment(): WPMediaPickerFragment
     }
 }

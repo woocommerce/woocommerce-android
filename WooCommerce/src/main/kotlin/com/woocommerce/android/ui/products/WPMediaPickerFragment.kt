@@ -9,20 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
+import com.woocommerce.android.widgets.WPMediaLibraryImageGalleryView.OnWPMediaGalleryClickListener
 import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 import javax.inject.Inject
 
-class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
+class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
 
@@ -64,18 +62,11 @@ class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
 
     private fun setupObservers(viewModel: WPMediaPickerViewModel) {
         viewModel.mediaList.observe(viewLifecycleOwner, Observer {
-            wpMediaGallery.showWPMediaImages(it, this)
+            wpMediaGallery.showImages(it, this)
         })
     }
 
     override fun getFragmentTitle() = getString(R.string.product_wpmedia_title)
-
-    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
-        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
-                image.id
-        )
-        findNavController().navigate(action)
-    }
 
     private fun navigateBackWithResult() {
         val bundle = Bundle().also {
@@ -87,5 +78,9 @@ class WPMediaPickerFragment : BaseFragment(), OnGalleryImageClickListener {
                 R.id.nav_host_fragment_main,
                 R.id.productDetailFragment
         )
+    }
+
+    override fun onWPMediaClicked(image: Image, imageView: View) {
+        // TODO
     }
 }

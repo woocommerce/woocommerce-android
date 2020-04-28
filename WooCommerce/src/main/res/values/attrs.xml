@@ -62,7 +62,6 @@
     <declare-styleable name="WCProductImageGalleryView">
         <attr name="isGridView" format="boolean" />
         <attr name="showAddImageIcon" format="boolean" />
-        <attr name="isWPMediaPicker" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="BorderedImageView">
