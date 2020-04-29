@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.wpmediapicker
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
@@ -27,7 +27,9 @@ class WPMediaPickerViewModel @AssistedInject constructor(
     private val _mediaList = MutableLiveData<List<Product.Image>>()
     val mediaList: LiveData<List<Product.Image>> = _mediaList
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState,
+            ViewState()
+    )
     private var viewState by viewStateLiveData
 
     fun start() {

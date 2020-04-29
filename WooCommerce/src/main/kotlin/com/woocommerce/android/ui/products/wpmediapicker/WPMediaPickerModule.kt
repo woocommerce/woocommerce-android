@@ -1,9 +1,10 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.wpmediapicker
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.wpmediapicker.WPMediaPickerViewModel.Factory
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
@@ -23,7 +24,7 @@ abstract class WPMediaPickerModule {
     @Binds
     @IntoMap
     @ViewModelKey(WPMediaPickerViewModel::class)
-    abstract fun bindFactory(factory: WPMediaPickerViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    abstract fun bindFactory(factory: Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
     abstract fun bindSavedStateRegistryOwner(fragment: WPMediaPickerFragment): SavedStateRegistryOwner

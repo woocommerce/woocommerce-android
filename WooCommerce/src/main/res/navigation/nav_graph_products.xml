@@ -143,7 +143,7 @@
     </fragment>
     <fragment
         android:id="@+id/wpMediaPickerFragment"
-        android:name="com.woocommerce.android.ui.products.WPMediaPickerFragment"
+        android:name="com.woocommerce.android.ui.products.wpmediapicker.WPMediaPickerFragment"
         android:label="WPMediaPickerFragment"
         tools:layout="@layout/fragment_wpmedia_picker" />
 

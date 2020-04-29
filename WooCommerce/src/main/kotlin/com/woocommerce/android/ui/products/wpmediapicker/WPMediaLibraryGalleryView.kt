@@ -1,4 +1,4 @@
-package com.woocommerce.android.widgets
+package com.woocommerce.android.ui.products.wpmediapicker
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -20,6 +20,7 @@ import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.widgets.BorderedImageView
 import kotlinx.android.synthetic.main.wpmedia_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -29,7 +30,7 @@ import java.util.Locale
 /**
  * Custom recycler which displays images from the WP media library
  */
-class WPMediaLibraryImageGalleryView @JvmOverloads constructor(
+class WPMediaLibraryGalleryView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -56,7 +57,9 @@ class WPMediaLibraryImageGalleryView @JvmOverloads constructor(
     private lateinit var listener: OnWPMediaGalleryClickListener
 
     init {
-        layoutManager = GridLayoutManager(context, NUM_COLUMNS)
+        layoutManager = GridLayoutManager(context,
+                NUM_COLUMNS
+        )
         itemAnimator = DefaultItemAnimator()
         layoutInflater = LayoutInflater.from(context)
 

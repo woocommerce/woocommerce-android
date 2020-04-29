@@ -1,11 +1,10 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.wpmediapicker
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
-import com.woocommerce.android.widgets.WPMediaLibraryImageGalleryView
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
@@ -24,7 +23,7 @@ class WPMediaPickerRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val MEDIA_PAGE_SIZE = WPMediaLibraryImageGalleryView.NUM_COLUMNS * 10
+        private const val MEDIA_PAGE_SIZE = WPMediaLibraryGalleryView.NUM_COLUMNS * 10
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null

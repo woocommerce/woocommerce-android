@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.wpmediapicker
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,10 +13,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import com.woocommerce.android.widgets.WPMediaLibraryImageGalleryView.OnWPMediaGalleryClickListener
+import com.woocommerce.android.ui.products.wpmediapicker.WPMediaLibraryGalleryView.OnWPMediaGalleryClickListener
 import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 import javax.inject.Inject
 
