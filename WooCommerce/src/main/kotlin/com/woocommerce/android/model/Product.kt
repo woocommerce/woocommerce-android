@@ -93,7 +93,7 @@ data class Product(
         val id: Long,
         val name: String,
         val slug: String
-    ): Parcelable
+    ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {
         return remoteId == product.remoteId &&

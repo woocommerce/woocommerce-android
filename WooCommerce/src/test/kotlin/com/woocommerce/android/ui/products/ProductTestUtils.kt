@@ -20,6 +20,7 @@ object ProductTestUtils {
             name = "product 1"
             description = "product 1 description"
             images = "[]"
+            categories = "[]"
             downloads = "[]"
             weight = "10"
             length = "1"
