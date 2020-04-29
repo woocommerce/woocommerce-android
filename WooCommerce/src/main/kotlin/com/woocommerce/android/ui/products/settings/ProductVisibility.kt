@@ -1,25 +1,20 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.settings
 
 import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import java.util.Locale
 
-/**
- * Enum for a product's catalog visibility
- */
 enum class ProductVisibility {
-    VISIBLE,
-    CATALOG,
-    SEARCH,
-    HIDDEN;
+    PUBLIC,
+    PRIVATE,
+    PASSWORD_PROTECTED;
 
     fun toLocalizedString(context: Context): String {
         @StringRes val resId = when (this) {
-            VISIBLE -> R.string.product_visibility_visible
-            CATALOG -> R.string.product_visibility_catalog
-            SEARCH -> R.string.product_visibility_search
-            HIDDEN -> R.string.product_visibility_hidden
+            PUBLIC -> R.string.product_visibility_public
+            PRIVATE -> R.string.product_visibility_private
+            PASSWORD_PROTECTED -> R.string.product_visibility_password_protected
         }
         return context.getString(resId)
     }

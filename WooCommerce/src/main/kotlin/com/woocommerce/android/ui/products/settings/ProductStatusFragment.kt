@@ -44,12 +44,22 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         btnPublished.setOnClickListener(this)
+        btnPublishedPrivately.setOnClickListener(this)
         btnDraft.setOnClickListener(this)
         btnPending.setOnClickListener(this)
-        btnPrivate.setOnClickListener(this)
 
-        selectedStatus?.let {
-            getButtonForStatus(it)?.isChecked = true
+        selectedStatus?.let { status ->
+            getButtonForStatus(status)?.isChecked = true
+
+            // if the post is private, we hide the "Published" button and show "Privately published."
+            // making a product private is done on the product visibility screen
+            if (status == PRIVATE.toString()) {
+                btnPublishedPrivately.visibility = View.VISIBLE
+                btnPublished.visibility = View.GONE
+            } else {
+                btnPublishedPrivately.visibility = View.GONE
+                btnPublished.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -61,9 +71,9 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
     override fun onClick(view: View?) {
         (view as? CheckedTextView)?.let {
             btnPublished.isChecked = it == btnPublished
+            btnPublishedPrivately.isChecked = it == btnPublishedPrivately
             btnDraft.isChecked = it == btnDraft
             btnPending.isChecked = it == btnPending
-            btnPrivate.isChecked = it == btnPrivate
             selectedStatus = getStatusForButtonId(it.id)
         }
     }
@@ -75,6 +85,8 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
     }
 
     override fun hasChanges() = navArgs.status != selectedStatus
+
+    override fun validateChanges() = true
 
     override fun onResume() {
         super.onResume()
@@ -88,7 +100,7 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
             PUBLISH -> btnPublished
             DRAFT -> btnDraft
             PENDING -> btnPending
-            PRIVATE -> btnPrivate
+            PRIVATE -> btnPublishedPrivately
             else -> null
         }
     }

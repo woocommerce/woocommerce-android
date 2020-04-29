@@ -33,6 +33,8 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment() {
 
     override fun hasChanges() = getMenuOrder() != navArgs.menuOrder
 
+    override fun validateChanges() = true
+
     override fun getChangesBundle(): Bundle {
         return Bundle().also {
             it.putInt(ARG_MENU_ORDER, getMenuOrder())

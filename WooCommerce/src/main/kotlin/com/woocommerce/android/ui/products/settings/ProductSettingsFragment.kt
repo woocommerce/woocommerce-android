@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
+import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -20,10 +21,11 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductVisibility
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_IS_FEATURED
+import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_PASSWORD
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.fragment_product_settings.*
@@ -41,6 +43,9 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productStatus.setOnClickListener {
             viewModel.onSettingsStatusButtonClicked()
         }
+        productCatalogVisibility.setOnClickListener {
+            viewModel.onSettingsCatalogVisibilityButtonClicked()
+        }
         productVisibility.setOnClickListener {
             viewModel.onSettingsVisibilityButtonClicked()
         }
@@ -50,6 +55,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productMenuOrder.setOnClickListener {
             viewModel.onSettingsMenuOrderButtonClicked()
         }
+
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             productReviewsAllowed.visibility = View.VISIBLE
             productReviewsAllowedDivider.visibility = View.VISIBLE
@@ -60,6 +66,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productReviewsAllowed.visibility = View.GONE
             productReviewsAllowedDivider.visibility = View.GONE
         }
+
         productPurchaseNote.setOnClickListener {
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
             viewModel.onEditProductCardClicked(
@@ -94,19 +101,31 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 val status = ProductStatus.fromString(it)
                 viewModel.updateProductDraft(productStatus = status)
             }
-        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_VISIBLITY) {
-            (result.getString(ARG_VISIBILITY))?.let {
-                val visibility = ProductVisibility.fromString(it)
-                viewModel.updateProductDraft(visibility = visibility, isFeatured = result.getBoolean(ARG_IS_FEATURED))
+        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY) {
+            (result.getString(ARG_CATALOG_VISIBILITY))?.let {
+                val catalogVisibility = ProductCatalogVisibility.fromString(it)
+                viewModel.updateProductDraft(
+                        catalogVisibility = catalogVisibility,
+                        isFeatured = result.getBoolean(ARG_IS_FEATURED)
+                )
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
         } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                viewModel.updateProductDraft(purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT))
+                viewModel.updateProductDraft(
+                        purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                )
             }
         } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
-            viewModel.updateProductDraft(menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0))
+            viewModel.updateProductDraft(
+                        menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0)
+            )
+        } else if (requestCode == PRODUCT_SETTINGS_VISIBLITY) {
+            ProductVisibility.fromString(result.getString(ARG_VISIBILITY) ?: "")?.let { visibility ->
+                val password = result.getString(ARG_PASSWORD) ?: ""
+                viewModel.updateProductVisibility(visibility, password)
+            }
         }
 
         updateProductView()
@@ -138,11 +157,12 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        productStatus.optionValue = product.status?.toLocalizedString(requireActivity())
-        productVisibility.optionValue = product.visibility?.toLocalizedString(requireActivity())
+        productStatus.optionValue = product.status?.toLocalizedString(requireActivity(), true)
+        productCatalogVisibility.optionValue = product.catalogVisibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
+        productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
         productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)
     }
 
@@ -153,6 +173,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
                 else -> event.isHandled = false
             }
         })
+
         updateProductView()
     }
 }

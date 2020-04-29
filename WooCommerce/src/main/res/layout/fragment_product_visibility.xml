@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,81 +13,50 @@
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:textColor="@color/color_on_surface_high"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/major_100"
-                android:text="@string/product_visibility_headline" />
-        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-
-        <com.woocommerce.android.widgets.WCElevatedLinearLayout
-            style="Woo.TextView.Caption"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/minor_100"
-            android:orientation="vertical">
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/btnFeatured"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/major_100"
-                android:text="@string/product_featured" />
-        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-
-        <com.woocommerce.android.widgets.WCElevatedLinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:layout_marginTop="@dimen/minor_100"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:orientation="vertical">
 
                 <CheckedTextView
-                    android:id="@+id/btnVisibilityVisible"
+                    android:id="@+id/btnPublic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_visible" />
+                    android:text="@string/product_visibility_public" />
 
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
+                <View style="@style/Woo.Divider" />
 
                 <CheckedTextView
-                    android:id="@+id/btnVisibilityCatalog"
+                    android:id="@+id/btnPasswordProtected"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_catalog" />
+                    android:text="@string/product_visibility_password_protected" />
 
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
+                <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                    android:id="@+id/editPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_100"
+                    android:inputType="textPassword"
+                    android:visibility="gone"
+                    app:hintEnabled="false"
+                    tools:visibility="visible" />
+
+                <View style="@style/Woo.Divider" />
 
                 <CheckedTextView
-                    android:id="@+id/btnVisibilitySearch"
+                    android:id="@+id/btnPrivate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_search" />
+                    android:text="@string/product_visibility_private" />
 
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
-
-                <CheckedTextView
-                    android:id="@+id/btnVisibilityHidden"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_hidden" />
-
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
+                <View style="@style/Woo.Divider" />
             </LinearLayout>
 
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>

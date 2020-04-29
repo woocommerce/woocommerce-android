@@ -19,6 +19,11 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
+            android:id="@+id/action_productSettingsFragment_to_productCatalogVisibilityFragment"
+            app:destination="@id/productCatalogVisibilityFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
             android:id="@+id/action_productSettingsFragment_to_productVisibilityFragment"
             app:destination="@id/productVisibilityFragment"
             app:enterAnim="@anim/activity_fade_in"
@@ -51,17 +56,31 @@
     </fragment>
 
     <fragment
-        android:id="@+id/productVisibilityFragment"
-        android:name="com.woocommerce.android.ui.products.settings.ProductVisibilityFragment"
-        tools:layout="@layout/fragment_product_visibility">
+        android:id="@+id/productCatalogVisibilityFragment"
+        android:name="com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment"
+        tools:layout="@layout/fragment_product_catalog_visibility">
         <argument
-            android:name="visibility"
+            android:name="catalogVisibility"
             app:argType="string"
             app:nullable="false" />
         <argument
             android:name="featured"
             app:argType="boolean"
             app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productVisibilityFragment"
+        android:name="com.woocommerce.android.ui.products.settings.ProductVisibilityFragment"
+        tools:layout="@layout/fragment_product_visibility">
+        <argument
+            android:name="visibility"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="password"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
     <fragment

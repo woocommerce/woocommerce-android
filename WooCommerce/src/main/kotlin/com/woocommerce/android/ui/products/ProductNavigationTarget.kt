@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products
 
 import android.view.View
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.lang.ref.WeakReference
 
@@ -35,8 +37,12 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductImageChooser(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()
-    data class ViewProductVisibility(val visibility: ProductVisibility?, val isFeatured: Boolean) :
+    data class ViewProductCatalogVisibility(val catalogVisibility: ProductCatalogVisibility?, val isFeatured: Boolean) :
             ProductNavigationTarget()
+    data class ViewProductVisibility(
+        val visibility: ProductVisibility?,
+        val password: String?
+    ) : ProductNavigationTarget()
     data class ViewProductSlug(val slug: String) : ProductNavigationTarget()
     data class ViewProductMenuOrder(val menuOrder: Int) : ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
