@@ -31,6 +31,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.products.ProductDetailFragment.DetailCard.Secondary
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -404,6 +405,22 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             it.setClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductInventory(product.remoteId))
+            }
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            addPropertyView(
+                    Secondary,
+                    getString(R.string.product_categories),
+                    if (product.categories.isEmpty()) {
+                        getString(R.string.product_category_empty)
+                    } else {
+                        product.categories.joinToString(transform = { it.name })
+                    },
+                    LinearLayout.VERTICAL,
+                    R.drawable.ic_gridicons_folder
+            )?.also {
+                it.setMaxLines(5)
             }
         }
 

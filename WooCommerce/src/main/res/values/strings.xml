@@ -411,7 +411,9 @@
     <string name="product_property_variant_formatter" translatable="false">%1$s (%2$s options)</string>
     <string name="product_property_edit">Edit product</string>
     <string name="product_inventory">Inventory</string>
+    <string name="product_categories">Categories</string>
     <string name="product_inventory_empty">Add inventory</string>
+    <string name="product_category_empty">Add category</string>
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
