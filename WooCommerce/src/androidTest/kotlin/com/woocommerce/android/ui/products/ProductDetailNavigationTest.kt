@@ -154,7 +154,7 @@ class ProductDetailNavigationTest : TestBase() {
     @Test
     fun verifyProductDetailForVariationProductsDisplayedCorrectly() {
         // inject mock data to product detail
-        mockProductModel.type = ProductType.VARIATION.name
+        mockProductModel.type = ProductType.VARIABLE.name
         mockProductModel.reviewsAllowed = true
         activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
 
