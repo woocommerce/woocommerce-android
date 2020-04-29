@@ -82,11 +82,10 @@ class WPMediaPickerViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             val fetchedMedia = mediaPickerRepository.fetchSiteMediaList(loadMore)
             if (fetchedMedia.isNullOrEmpty()) {
-                if (!loadMore) {
-                    viewState = viewState.copy(isEmptyViewVisible = true)
-                }
+                viewState = viewState.copy(isEmptyViewVisible = true)
             } else {
                 _mediaList.value = fetchedMedia
+                viewState = viewState.copy(isEmptyViewVisible = false)
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
