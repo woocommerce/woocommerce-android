@@ -13,9 +13,6 @@ import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
-import kotlinx.android.synthetic.main.fragment_image_viewer.*
-import kotlinx.android.synthetic.main.fragment_image_viewer.photoView
-import kotlinx.android.synthetic.main.fragment_image_viewer.progressBar
 import kotlinx.android.synthetic.main.fragment_wpmedia_viewer.*
 
 /**
