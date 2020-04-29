@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.wpmediapicker
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Handler
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -103,6 +104,10 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
 
     fun getSelectedImages() = adapter.getSelectedImages()
 
+    fun setSelectedImages(images: ArrayList<Product.Image>) {
+        adapter.setSelectedImages(images)
+    }
+
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
 
@@ -196,6 +201,14 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
                 }
             }
             return images
+        }
+
+        fun setSelectedImages(images: ArrayList<Product.Image>) {
+            selectedIds.clear()
+            for (image in images) {
+                selectedIds.add(image.id)
+            }
+            notifyDataSetChanged()
         }
 
         private fun setItemSelectedByPosition(

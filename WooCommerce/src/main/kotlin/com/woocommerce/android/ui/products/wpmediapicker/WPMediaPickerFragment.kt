@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -26,7 +27,7 @@ import javax.inject.Inject
 class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, BackPressListener {
     companion object {
         const val ARG_SELECTED_IMAGES = "selected_image_ids"
-        private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        private const val ARG_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -47,15 +48,22 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         initializeViewModel()
 
-        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
-            confirmDiscard()
+        savedInstanceState?.let { bundle ->
+            bundle.getParcelableArrayList<Product.Image>(ARG_SELECTED_IMAGES)?.let { images ->
+                wpMediaGallery.setSelectedImages(images)
+            }
+            if (bundle.getBoolean(ARG_IS_CONFIRMING_DISCARD)) {
+                confirmDiscard()
+            }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(KEY_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
+        outState.putBoolean(ARG_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
+        outState.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
         super.onSaveInstanceState(outState)
     }
 
