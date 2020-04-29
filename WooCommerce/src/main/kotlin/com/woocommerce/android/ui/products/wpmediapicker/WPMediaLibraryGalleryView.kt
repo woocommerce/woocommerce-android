@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.wpmediapicker
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Handler
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
