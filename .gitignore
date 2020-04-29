@@ -89,6 +89,7 @@ fastlane/README.md
 fastlane/report.xml
 fastlane/.env
 google-upload-credentials.json
+fastlane/screenshots
 
 # Ruby Dependencies
 /vendor
