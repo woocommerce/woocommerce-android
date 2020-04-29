@@ -15,6 +15,11 @@ enum class ProductStatus(@StringRes val stringResource: Int = 0, val value: Stri
     PENDING(R.string.product_status_pending, CoreProductStatus.PENDING.value),
     PRIVATE(R.string.product_status_private, CoreProductStatus.PRIVATE.value);
 
+    /**
+     * Returns a localized string used when displaying the status in the UI. The "long" parameter
+     * determines how we show private status - in most cases we want to show only "Private" but
+     * in others we want to show "Privately published."
+     */
     fun toLocalizedString(context: Context, long: Boolean = false): String {
         @StringRes val resId = when (this) {
             PUBLISH -> R.string.product_status_published
