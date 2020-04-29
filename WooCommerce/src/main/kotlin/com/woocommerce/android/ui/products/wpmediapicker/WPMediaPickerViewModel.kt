@@ -43,11 +43,16 @@ class WPMediaPickerViewModel @AssistedInject constructor(
         mediaPickerRepository.onCleanup()
     }
 
+    private fun isLoading() = viewState.isLoading == true
+
     private fun isLoadingMore() = viewState.isLoadingMore == true
 
-    private fun isRefreshing() = viewState.isRefreshing == true
-
     private fun loadMedia(loadMore: Boolean = false) {
+        if (isLoading()) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading media")
+            return
+        }
+
         if (loadMore && !mediaPickerRepository.canLoadMoreMedia) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more media")
             return
@@ -58,17 +63,12 @@ class WPMediaPickerViewModel @AssistedInject constructor(
             return
         }
 
-        if (loadMore && isRefreshing()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already refreshing media")
-            return
-        }
-
         launch {
             viewState = viewState.copy(isLoadingMore = loadMore)
             if (!loadMore) {
                 val mediaInDb = mediaPickerRepository.getSiteMediaList()
                 if (mediaInDb.isNullOrEmpty()) {
-                    viewState = viewState.copy(isSkeletonShown = true)
+                    viewState = viewState.copy(isLoading = true)
                 } else {
                     _mediaList.value = mediaInDb
                 }
@@ -91,19 +91,13 @@ class WPMediaPickerViewModel @AssistedInject constructor(
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
-        viewState = viewState.copy(
-                isSkeletonShown = false,
-                isRefreshing = false,
-                isLoadingMore = false
-        )
+        viewState = viewState.copy(isLoading = false, isLoadingMore = false)
     }
 
     @Parcelize
     data class ViewState(
-        val isSkeletonShown: Boolean? = null,
-        val isRefreshing: Boolean? = null,
+        val isLoading: Boolean? = null,
         val isLoadingMore: Boolean? = null,
-        val canLoadMore: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
 

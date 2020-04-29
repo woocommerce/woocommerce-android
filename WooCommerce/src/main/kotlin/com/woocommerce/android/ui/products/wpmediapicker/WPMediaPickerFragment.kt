@@ -104,8 +104,8 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
         })
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
-            // TODO new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isLoading?.takeIfNotEqualTo(old?.isLoading) { showLoadingProgress(it) }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadingMoreProgress(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -184,7 +184,11 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
                 })
     }
 
-    private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+    private fun showLoadingProgress(show: Boolean) {
+        loadingProgress.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun showLoadingMoreProgress(show: Boolean) {
+        loadingMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
