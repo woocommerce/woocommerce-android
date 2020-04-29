@@ -49,7 +49,7 @@ function fastlane_screenshots() {
   FASTLANE_SKIP_UPDATE_CHECK=1 \
     bundle exec fastlane screenshots \
     skip_ui_modes:true \
-    #locales:en # comment out to run all locales
+    #locales:en,es # use this to specify a subset of locales to run
 }
 
 # with -l, we're telling the script the device is in light mode, so skip
@@ -68,12 +68,16 @@ done
 
 if [ "$mode" = 'light' ]
 then
+  wait_for_emulator_to_be_online
+
   echo "Device in light mode 🌞. Taking screenshots..."
   fastlane_screenshots
 
   toggle_dark_mode true
   fastlane_screenshots
 else
+  wait_for_emulator_to_be_online
+
   echo "Device in dark mode 🌚. Taking screenshots..."
   fastlane_screenshots
 
