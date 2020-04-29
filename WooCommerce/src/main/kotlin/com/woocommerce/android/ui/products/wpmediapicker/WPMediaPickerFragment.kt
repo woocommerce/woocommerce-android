@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -20,6 +21,10 @@ import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 import javax.inject.Inject
 
 class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
+    companion object {
+        const val ARG_SELECTED_IMAGE_IDS = "selected_image_ids"
+    }
+
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
 
@@ -65,21 +70,43 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
         })
     }
 
-    override fun getFragmentTitle() = getString(R.string.product_wpmedia_title)
-
-    private fun navigateBackWithResult() {
-        val bundle = Bundle().also {
-            // TODO
+    override fun getFragmentTitle(): String {
+        val count = wpMediaGallery.getSelectionCount()
+        return if (count == 0) {
+            getString(R.string.product_wpmedia_title)
+        } else {
+            String.format(getString(R.string.selection_count), count)
         }
-        requireActivity().navigateBackWithResult(
-                RequestCodes.WPMEDIA_LIBRARY_PICKER,
-                bundle,
-                R.id.nav_host_fragment_main,
-                R.id.productDetailFragment
-        )
     }
 
+    private fun navigateBackWithResult() {
+        if (wpMediaGallery.getSelectionCount() > 0) {
+            val selectedImageIds = wpMediaGallery.getSelectedImageIds().toLongArray()
+            val bundle = Bundle().also {
+                it.putLongArray(ARG_SELECTED_IMAGE_IDS, selectedImageIds)
+            }
+            requireActivity().navigateBackWithResult(
+                    RequestCodes.WPMEDIA_LIBRARY_PICKER,
+                    bundle,
+                    R.id.nav_host_fragment_main,
+                    R.id.productDetailFragment
+            )
+        } else {
+            findNavController().navigateUp()
+        }
+    }
+
+    /**
+     * User has scrolled to the bottom of the gallery, fire a request to load more
+     */
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()
+    }
+
+    /**
+     * User has selected/deselected in the gallery, update the title to show the selection count
+     */
+    override fun onSelectionCountChanged() {
+        requireActivity().title = getFragmentTitle()
     }
 }

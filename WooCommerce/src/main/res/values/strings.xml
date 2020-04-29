@@ -83,6 +83,7 @@
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
     <string name="more_options">More options</string>
     <string name="value_not_set">Not set</string>
+    <string name="selection_count">%d selected</string>
     <!--
         Date/Time Labels
     -->
@@ -562,6 +563,7 @@
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="product_wpmedia_title">WordPress media library</string>
+
     <!--
         Empty list messages
     -->

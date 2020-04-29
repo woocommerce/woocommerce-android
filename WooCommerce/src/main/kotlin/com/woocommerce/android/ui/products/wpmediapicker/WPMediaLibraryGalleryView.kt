@@ -36,13 +36,14 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
     companion object {
-        const val NUM_COLUMNS = 4
+        const val NUM_COLUMNS = 3
         private const val SCALE_NORMAL = 1.0f
         private const val SCALE_SELECTED = .8f
     }
 
     interface OnWPMediaGalleryClickListener {
         fun onRequestLoadMore()
+        fun onSelectionCountChanged()
     }
 
     private var imageSize = 0
@@ -97,6 +98,12 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
         this.listener = listener
         adapter.showImages(images)
     }
+
+    fun getSelectionCount() = selectedIds.size
+
+    fun getSelectedImages() = adapter.getSelectedImages()
+
+    fun getSelectedImageIds() = selectedIds
 
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
@@ -174,6 +181,25 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
             return isItemSelected(imageList.get(position).id)
         }
 
+        private fun getImageById(imageId: Long): Product.Image? {
+            for (image in imageList) {
+                if (image.id == imageId) {
+                    return image
+                }
+            }
+            return null
+        }
+
+        fun getSelectedImages(): List<Product.Image> {
+            val images = ArrayList<Product.Image>()
+            for (imageId in selectedIds) {
+                getImageById(imageId)?.let {
+                    images.add(it)
+                }
+            }
+            return images
+        }
+
         private fun setItemSelectedByPosition(
             holder: WPMediaViewHolder,
             position: Int,
@@ -222,7 +248,8 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
             // redraw after the scale animation completes
             val delayMs: Long = Duration.SHORT.toMillis(context)
             Handler().postDelayed({ notifyDataSetChanged() }, delayMs)
-            // TODO mCallback.onAdapterSelectionCountChanged(mSelectedItems.size)
+
+            listener.onSelectionCountChanged()
         }
     }
 

@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -860,6 +861,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+            }
+            RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
+                result.getLongArray(WPMediaPickerFragment.ARG_SELECTED_IMAGE_IDS)?.let { selectedImageIds ->
+                    val date = Date()
+                    for (imageId in selectedImageIds) {
+                        val image = Product.Image(
+                                id = imageId,
+                                name = "",
+                                source = "",
+                                dateCreated = date
+                        )
+                        viewModel.addProductImageToDraft(image)
+                    }
                 }
             }
         }

@@ -19,7 +19,6 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -59,7 +58,6 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.DateTimeUtils
 import java.lang.ref.WeakReference
@@ -151,7 +149,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ViewProductImages(it, image, selectedImage))
@@ -478,7 +476,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null,
         shippingClass: String? = null,
-        images: List<Image>? = null,
+        images: List<Product.Image>? = null,
         shippingClassId: Long? = null,
         productStatus: ProductStatus? = null,
         catalogVisibility: ProductCatalogVisibility? = null,
@@ -832,8 +830,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            event.media?.let {
-                addProductImageToDraft(it)
+            event.media?.let { media ->
+                val image = Product.Image(
+                        id = media.mediaId,
+                        name = media.fileName,
+                        source = media.url,
+                        dateCreated = DateTimeUtils.dateFromIso8601(media.uploadDate)
+                )
+                addProductImageToDraft(image)
             }
         }
         checkImageUploads(getRemoteProductId())
@@ -842,18 +846,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called after product image has been uploaded to add the uploaded image to the draft product
      */
-    fun addProductImageToDraft(media: MediaModel) {
+    fun addProductImageToDraft(image: Product.Image) {
         // create a new image list and add the passed media first...
-        val imageList = ArrayList<Image>().also {
-            it.add(
-                    Image
-                    (
-                            media.mediaId,
-                            media.fileName,
-                            media.url,
-                            DateTimeUtils.dateFromIso8601(media.uploadDate)
-                    )
-            )
+        val imageList = ArrayList<Product.Image>().also {
+            it.add(image)
         }
 
         // ...then add the existing product images to the new list...
