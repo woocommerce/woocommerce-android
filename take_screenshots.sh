@@ -3,6 +3,22 @@
 
 set -e
 
+wait_for_emulator_to_be_online() {
+  echo "Waiting for emulator to come online, this can take some time..."
+
+  local interval=5 # 5 seconds
+  local elapsed=0
+  local timeout=300 # 5 minutes
+
+  while [[ $(adb devices | sed -n 2p | grep 'device' | wc -l | tr -d ' ') -eq 0 && $elapsed -lt $timeout ]]
+  do
+    echo "Emulator not online, trying again in $interval seconds..."
+    sleep $interval
+    elapsed=$(expr $elapsed + $interval)
+  done
+  echo "Emulator online"
+}
+
 function toggle_dark_mode() {
   # not sure if this is too much or too little, it works and don't wanna tinker
   # with it for the moment
@@ -24,19 +40,7 @@ function toggle_dark_mode() {
   # need to reboot for the change to take place
   adb reboot
 
-  # wait for the rebooted emulator to be online
-  echo "Waiting for rebooted emulator to come online, this can take some time..."
-
-  local interval=5 # 5 seconds
-  local elapsed=0
-  local timeout=300 # 5 minutes
-
-  while [[ $(adb devices | sed -n 2p | grep 'device' | wc -l | tr -d ' ') -eq 0 && $elapsed -lt $timeout ]]
-  do
-    echo "Emulator not online, trying again in $interval seconds..."
-    sleep $interval
-    elapsed=$(expr $elapsed + $interval)
-  done
+  wait_for_emulator_to_be_online
 
   echo "All good! Taking screenshots now 📸"
 }
