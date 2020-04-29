@@ -13,7 +13,7 @@ class OrderListScreen : Screen {
 
     val tabBar = TabNavComponent()
 
-    constructor(): super(LIST_VIEW)
+    constructor() : super(LIST_VIEW)
 
     fun selectOrder(index: Int): SingleOrderScreen {
         val correctedIndex = index + 1 // account for the header
