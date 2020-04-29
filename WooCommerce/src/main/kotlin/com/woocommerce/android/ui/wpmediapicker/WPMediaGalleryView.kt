@@ -41,9 +41,10 @@ class WPMediaGalleryView @JvmOverloads constructor(
         private const val SCALE_SELECTED = .8f
     }
 
-    interface OnWPMediaGalleryClickListener {
+    interface WPMediaGalleryListener {
         fun onRequestLoadMore()
         fun onSelectionCountChanged()
+        fun onImageLongClicked(image: Product.Image)
     }
 
     private var imageSize = 0
@@ -55,7 +56,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
     private val glideRequest: GlideRequest<Drawable>
     private val glideTransform: RequestOptions
 
-    private lateinit var listener: OnWPMediaGalleryClickListener
+    private lateinit var listener: WPMediaGalleryListener
 
     init {
         layoutManager = GridLayoutManager(context, NUM_COLUMNS)
@@ -92,7 +93,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
         imageSize = (screenWidth / NUM_COLUMNS) - (margin * NUM_COLUMNS)
     }
 
-    fun showImages(images: List<Product.Image>, listener: OnWPMediaGalleryClickListener) {
+    fun showImages(images: List<Product.Image>, listener: WPMediaGalleryListener) {
         this.listener = listener
         adapter.showImages(images)
     }
@@ -103,6 +104,10 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
     fun setSelectedImages(images: ArrayList<Product.Image>) {
         adapter.setSelectedImages(images)
+    }
+
+    fun onImageLongClicked(position: Int) {
+        listener.onImageLongClicked(adapter.getImage(position))
     }
 
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
@@ -270,6 +275,13 @@ class WPMediaGalleryView @JvmOverloads constructor(
                 if (adapterPosition > NO_POSITION) {
                     adapter.toggleItemSelected(this, adapterPosition)
                 }
+            }
+
+            itemView.setOnLongClickListener {
+                if (adapterPosition > NO_POSITION) {
+                    onImageLongClicked(adapterPosition)
+                }
+                true
             }
         }
     }

@@ -23,14 +23,15 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.wpmediapicker.WPMediaGalleryView.OnWPMediaGalleryClickListener
+import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
+import com.woocommerce.android.ui.wpmediapicker.WPMediaGalleryView.WPMediaGalleryListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 import javax.inject.Inject
 
-class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, BackPressListener {
+class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressListener {
     companion object {
         const val ARG_SELECTED_IMAGES = "selected_image_ids"
         private const val ARG_IS_CONFIRMING_DISCARD = "is_confirming_discard"
@@ -163,6 +164,14 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
      */
     override fun onSelectionCountChanged() {
         requireActivity().title = getFragmentTitle()
+    }
+
+    /**
+     * User long clicked an image, show it in the image viewer
+     */
+    override fun onImageLongClicked(image: Product.Image) {
+        val action = ProductDetailFragmentDirections.actionGlobalWpMediaViewerFragment(image.source)
+        findNavController().navigate(action)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
