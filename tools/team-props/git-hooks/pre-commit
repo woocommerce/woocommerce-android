@@ -28,7 +28,7 @@ if [[ -f ".git/hooks/pre-commit" ]]; then
     message+="Ignoring."
     message+="$reset"
 
-    echo $message >&2
+    echo -e $message >&2
     exit 0 # exit 0 won't fail the commit, just show the message
   fi
 
