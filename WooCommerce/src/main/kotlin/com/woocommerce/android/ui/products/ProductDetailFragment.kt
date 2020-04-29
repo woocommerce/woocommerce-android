@@ -876,8 +876,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         return viewModel.onBackButtonClicked(ExitProductDetail())
     }
 
-    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
-        viewModel.onImageGalleryClicked(image, WeakReference(imageView))
+    override fun onGalleryImageClicked(image: Product.Image) {
+        viewModel.onImageGalleryClicked(image)
     }
 
     override fun onGalleryAddImageClicked() {

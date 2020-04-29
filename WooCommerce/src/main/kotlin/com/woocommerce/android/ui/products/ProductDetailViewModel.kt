@@ -149,10 +149,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image, selectedImage))
+            triggerEvent(ViewProductImages(it, image))
         }
     }
 

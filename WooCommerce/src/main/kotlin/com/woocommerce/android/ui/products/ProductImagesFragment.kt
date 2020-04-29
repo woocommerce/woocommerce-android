@@ -113,7 +113,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
-    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
+    override fun onGalleryImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
                 image.id
