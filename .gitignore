@@ -90,6 +90,9 @@ fastlane/report.xml
 fastlane/.env
 google-upload-credentials.json
 fastlane/screenshots
+fastlane/promo_sceenshots
+# This is a byproduct of the screenshots composition process
+default.profraw
 
 # Ruby Dependencies
 /vendor
