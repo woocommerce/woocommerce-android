@@ -17,9 +17,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.wpmediapicker.WPMediaLibraryGalleryView.OnWPMediaGalleryClickListener
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 import javax.inject.Inject
@@ -31,6 +34,8 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
 
     private var isConfirmingDiscard = false
@@ -67,6 +72,11 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
         super.onSaveInstanceState(outState)
     }
 
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
@@ -83,18 +93,25 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
     }
 
     private fun initializeViewModel() {
-        setupObservers(viewModel)
+        setupObservers()
         viewModel.start()
     }
 
-    private fun setupObservers(viewModel: WPMediaPickerViewModel) {
+    private fun setupObservers() {
         viewModel.mediaList.observe(viewLifecycleOwner, Observer {
             wpMediaGallery.showImages(it, this)
+        })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> activity?.onBackPressed()
+            }
         })
     }
 
     override fun getFragmentTitle(): String {
-        val count = wpMediaGallery.getSelectionCount()
+        val count = wpMediaGallery.getSelectedCount()
         return if (count == 0) {
             getString(R.string.product_wpmedia_title)
         } else {
@@ -102,8 +119,11 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
         }
     }
 
+    /**
+     * Pass the selected images back to the product detail fragment
+     */
     private fun navigateBackWithResult() {
-        if (wpMediaGallery.getSelectionCount() > 0) {
+        if (wpMediaGallery.getSelectedCount() > 0) {
             val bundle = Bundle().also {
                 it.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
             }
@@ -133,7 +153,7 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        if (wpMediaGallery.getSelectionCount() > 0) {
+        if (wpMediaGallery.getSelectedCount() > 0) {
             confirmDiscard()
             return false
         } else {

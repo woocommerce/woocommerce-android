@@ -58,18 +58,15 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
     private lateinit var listener: OnWPMediaGalleryClickListener
 
     init {
-        layoutManager = GridLayoutManager(context,
-                NUM_COLUMNS
-        )
+        layoutManager = GridLayoutManager(context, NUM_COLUMNS)
         itemAnimator = DefaultItemAnimator()
         layoutInflater = LayoutInflater.from(context)
 
         setHasFixedSize(true)
-        setItemViewCacheSize(0)
 
         adapter = WPMediaLibraryGalleryAdapter().also {
             it.setHasStableIds(true)
-            setAdapter(it)
+            this.setAdapter(it)
         }
 
         // cancel pending Glide request when a view is recycled
@@ -89,6 +86,7 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
         val borderRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_small)
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
+        // base the image size on the screen width divided by columns, taking margin into account
         val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
         val margin = context.resources.getDimensionPixelSize(R.dimen.minor_25)
         imageSize = (screenWidth / NUM_COLUMNS) - (margin * NUM_COLUMNS)
@@ -99,7 +97,7 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
         adapter.showImages(images)
     }
 
-    fun getSelectionCount() = selectedIds.size
+    fun getSelectedCount() = selectedIds.size
 
     fun getSelectedImages() = adapter.getSelectedImages()
 
@@ -123,7 +121,6 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
             if (images.size != imageList.size) {
                 return false
             }
-
             for (index in images.indices) {
                 if (images[index].id != imageList[index].id) {
                     return false
@@ -136,7 +133,7 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
 
         override fun getItemCount() = imageList.size
 
-        override fun getItemId(position: Int): Long = imageList[position].id
+        override fun getItemId(position: Int) = imageList[position].id
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WPMediaViewHolder {
             return WPMediaViewHolder(
@@ -170,18 +167,14 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
             }
         }
 
-        private fun isItemSelected(imageId: Long): Boolean {
-            return selectedIds.contains(imageId)
-        }
+        private fun isItemSelected(imageId: Long) = selectedIds.contains(imageId)
 
         fun toggleItemSelected(holder: WPMediaViewHolder, position: Int) {
             val isSelected = isItemSelectedByPosition(position)
             setItemSelectedByPosition(holder, position, !isSelected)
         }
 
-        private fun isItemSelectedByPosition(position: Int): Boolean {
-            return isItemSelected(imageList.get(position).id)
-        }
+        private fun isItemSelectedByPosition(position: Int) = isItemSelected(imageList[position].id)
 
         private fun getImageById(imageId: Long): Product.Image? {
             for (image in imageList) {
@@ -215,7 +208,11 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
             position: Int,
             selected: Boolean
         ) {
-            val imageId = imageList.get(position).id
+            if (isItemSelectedByPosition(position) == selected) {
+                return
+            }
+
+            val imageId = imageList[position].id
             if (selected) {
                 selectedIds.add(imageId)
             } else {
@@ -224,21 +221,18 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
 
             // show and animate the count
             if (selected) {
-                holder.textSelectionCount
-                        .setText(
-                                String.format(
-                                        Locale.getDefault(),
-                                        "%d",
-                                        selectedIds.indexOf(imageId) + 1
-                                )
-                        )
+                holder.textSelectionCount.text = String.format(
+                        Locale.getDefault(),
+                        "%d",
+                        selectedIds.indexOf(imageId) + 1
+                )
             } else {
-                holder.textSelectionCount.setText(null)
+                holder.textSelectionCount.text = null
             }
             WooAnimUtils.pop(holder.textSelectionCount)
-            holder.textSelectionCount.setVisibility(if (selected) View.VISIBLE else View.GONE)
+            holder.textSelectionCount.visibility = if (selected) View.VISIBLE else View.GONE
 
-            // scale the thumbnail
+            // scale the thumbnail based on whether it's selected
             if (selected) {
                 WooAnimUtils.scale(
                         holder.imageView,
@@ -259,6 +253,7 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
             val delayMs: Long = Duration.SHORT.toMillis(context)
             Handler().postDelayed({ notifyDataSetChanged() }, delayMs)
 
+            // let the fragment know the count has changed
             listener.onSelectionCountChanged()
         }
     }
