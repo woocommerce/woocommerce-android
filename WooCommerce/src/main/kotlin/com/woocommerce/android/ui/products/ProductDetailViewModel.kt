@@ -204,7 +204,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
             }
             is ExitImages -> {
-                // TODO: eventName = ??
+                eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
             }
             is ExitSettings -> {

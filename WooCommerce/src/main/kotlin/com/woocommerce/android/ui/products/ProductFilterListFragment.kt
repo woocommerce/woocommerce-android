@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -76,7 +77,8 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
         }
 
         filterList_btnShowProducts.setOnClickListener {
-            // TODO: add tracking event
+            AnalyticsTracker.track(Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString()))
             val bundle = Bundle()
             bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
             bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
@@ -100,7 +102,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_clear -> {
-                // TODO: add tracking event
+                AnalyticsTracker.track(Stat.PRODUCT_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
                 viewModel.onClearFilterSelected()
                 true
             }

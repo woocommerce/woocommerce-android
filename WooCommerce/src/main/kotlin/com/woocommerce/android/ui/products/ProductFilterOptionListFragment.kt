@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -67,7 +69,10 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionCli
         }
 
         filterOptionList_btnShowProducts.setOnClickListener {
-            // TODO: add tracking event
+            AnalyticsTracker.track(
+                    Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
+            )
             val bundle = Bundle()
             bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
             bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
