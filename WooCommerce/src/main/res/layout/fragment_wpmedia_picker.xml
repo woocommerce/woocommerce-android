@@ -6,7 +6,7 @@
     android:background="@color/black"
     android:orientation="vertical">
 
-    <com.woocommerce.android.ui.products.wpmediapicker.WPMediaGalleryView
+    <com.woocommerce.android.ui.wpmediapicker.WPMediaGalleryView
         android:id="@+id/wpMediaGallery"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

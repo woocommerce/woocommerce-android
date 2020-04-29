@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.wpmediapicker
+package com.woocommerce.android.ui.wpmediapicker
 
 import android.content.Context
 import android.graphics.drawable.Drawable

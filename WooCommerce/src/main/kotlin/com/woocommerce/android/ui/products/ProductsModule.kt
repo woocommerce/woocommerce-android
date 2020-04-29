@@ -33,8 +33,8 @@ import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
-import com.woocommerce.android.ui.products.wpmediapicker.WPMediaPickerFragment
-import com.woocommerce.android.ui.products.wpmediapicker.WPMediaPickerModule
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

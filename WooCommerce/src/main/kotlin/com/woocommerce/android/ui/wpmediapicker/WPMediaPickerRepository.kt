@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.wpmediapicker
+package com.woocommerce.android.ui.wpmediapicker
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.wpmediapicker
+package com.woocommerce.android.ui.wpmediapicker
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
