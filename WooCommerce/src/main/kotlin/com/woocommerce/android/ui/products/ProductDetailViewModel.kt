@@ -19,6 +19,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
@@ -58,7 +59,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
@@ -829,13 +829,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             event.media?.let { media ->
-                val image = Product.Image(
-                        id = media.mediaId,
-                        name = media.fileName,
-                        source = media.url,
-                        dateCreated = DateTimeUtils.dateFromIso8601(media.uploadDate)
-                )
-                addProductImageToDraft(image)
+                addProductImageToDraft(media.toAppModel())
             }
         }
         checkImageUploads(getRemoteProductId())
