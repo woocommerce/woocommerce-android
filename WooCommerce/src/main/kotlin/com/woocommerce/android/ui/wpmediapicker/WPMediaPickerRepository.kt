@@ -24,6 +24,9 @@ class WPMediaPickerRepository @Inject constructor(
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val MEDIA_PAGE_SIZE = WPMediaGalleryView.NUM_COLUMNS * 10
+
+        // according to the docs, use this to return only images (passing "image/*" doesn't work)
+        private const val MEDIA_MIME_TYPE = "image"
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
@@ -50,7 +53,8 @@ class WPMediaPickerRepository @Inject constructor(
                 val payload = MediaStore.FetchMediaListPayload(
                         selectedSite.get(),
                         MEDIA_PAGE_SIZE,
-                        loadMore
+                        loadMore,
+                        MEDIA_MIME_TYPE
                 )
                 dispatcher.dispatch(MediaActionBuilder.newFetchMediaListAction(payload))
             }
