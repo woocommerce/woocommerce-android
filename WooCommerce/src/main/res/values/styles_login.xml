@@ -30,8 +30,6 @@
         <item name="android:textColor">@color/color_on_surface_high</item>
     </style>
 
-    <style name="LoginTheme.BottomBar" parent="Woo.Card" />
-
     <style name="LoginTheme.Button.Primary" parent="Woo.Button.Colored"/>
 
     <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary"/>
