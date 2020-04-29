@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -102,6 +103,11 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
             wpMediaGallery.showImages(it, this)
         })
 
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            // TODO new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+        }
+
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -110,6 +116,9 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
         })
     }
 
+    /**
+     * If any images are selected set the title to the selection count, otherwise use default title
+     */
     override fun getFragmentTitle(): String {
         val count = wpMediaGallery.getSelectedCount()
         return if (count == 0) {
@@ -120,7 +129,8 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
     }
 
     /**
-     * Pass the selected images back to the product detail fragment
+     * Pass the selected images back to the product detail fragment if any are selected, otherwise
+     * simply navigate back
      */
     private fun navigateBackWithResult() {
         if (wpMediaGallery.getSelectedCount() > 0) {
@@ -172,5 +182,9 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })
+    }
+
+    private fun showLoadMoreProgress(show: Boolean) {
+        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

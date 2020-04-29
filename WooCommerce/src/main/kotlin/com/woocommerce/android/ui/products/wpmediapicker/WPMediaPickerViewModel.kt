@@ -27,7 +27,7 @@ class WPMediaPickerViewModel @AssistedInject constructor(
     private val _mediaList = MutableLiveData<List<Product.Image>>()
     val mediaList: LiveData<List<Product.Image>> = _mediaList
 
-    private val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
     fun start() {
