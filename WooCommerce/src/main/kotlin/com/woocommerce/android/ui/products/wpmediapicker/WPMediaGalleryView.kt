@@ -30,7 +30,7 @@ import java.util.Locale
 /**
  * Custom recycler which displays images from the WP media library
  */
-class WPMediaLibraryGalleryView @JvmOverloads constructor(
+class WPMediaGalleryView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0

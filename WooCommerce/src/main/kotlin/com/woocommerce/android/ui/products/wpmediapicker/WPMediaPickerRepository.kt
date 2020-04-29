@@ -23,7 +23,7 @@ class WPMediaPickerRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val MEDIA_PAGE_SIZE = WPMediaLibraryGalleryView.NUM_COLUMNS * 10
+        private const val MEDIA_PAGE_SIZE = WPMediaGalleryView.NUM_COLUMNS * 10
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
