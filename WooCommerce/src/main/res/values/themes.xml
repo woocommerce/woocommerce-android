@@ -69,6 +69,7 @@
         <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
         <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
+        <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
         <item name="tabStyle">@style/Woo.TabLayout</item>
         <item name="scrollableTabStyle">@style/Woo.TabLayout.Scrollable</item>
         <item name="appBarLayoutStyle">@style/Woo.AppBarLayout</item>
@@ -82,6 +83,7 @@
         <item name="switchStyle">@style/Woo.Switch</item>
         <item name="android:checkedTextViewStyle">@style/Woo.CheckedTextView</item>
         <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
+        <item name="bottomSheetDialogTheme">@style/Woo.Theme.BottomSheetDialog</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -95,6 +97,8 @@
         <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
         <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
         <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+        <item name="wcToggleOutlinedButtonStyle">@style/Widget.Woo.WCToggleOutlinedButton</item>
+        <item name="wcToggleOutlinedSelectorButtonStyle">@style/Widget.Woo.WCToggleOutlinedSelectorButton</item>
         <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
         <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
         <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
@@ -116,6 +120,17 @@
         <item name="colorOnBackground">@color/color_on_background</item>
         <item name="colorOnSurface">@color/color_on_surface_high</item>
         <item name="colorOnError">@color/color_on_error</item>
+
+        <item name="buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
+        <item name="android:buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
+    </style>
+
+    <style name="Woo.Dialog"/>
+    <style name="Woo.Dialog.ButtonBar">
+        <item name="android:paddingStart">@dimen/minor_100</item>
+        <item name="android:paddingEnd">@dimen/minor_100</item>
+        <item name="android:paddingTop">@dimen/minor_50</item>
+        <item name="android:paddingBottom">@dimen/minor_50</item>
     </style>
 
     <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">

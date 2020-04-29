@@ -7,6 +7,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
@@ -19,12 +20,15 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
 final class ProductListRepository @Inject constructor(
+    prefsWrapper: PreferencesWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
@@ -32,18 +36,30 @@ final class ProductListRepository @Inject constructor(
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
-        private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
+        private const val PRODUCT_SORTING_PREF_KEY = "product_sorting_pref_key"
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
     private var searchContinuation: CancellableContinuation<List<Product>>? = null
     private var offset = 0
 
+    private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
+
     final var canLoadMoreProducts = true
         private set
 
     final var lastSearchQuery: String? = null
         private set
+
+    var productSortingChoice: ProductSorting
+        get() {
+            return ProductSorting.valueOf(
+                    sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, DATE_DESC.name) ?: DATE_DESC.name
+            )
+        }
+        set(value) {
+            sharedPreferences.edit().putString(PRODUCT_SORTING_PREF_KEY, value.name).commit()
+        }
 
     init {
         dispatcher.register(this)
@@ -57,7 +73,10 @@ final class ProductListRepository @Inject constructor(
      * Submits a fetch request to get a page of products for the current site and returns the full
      * list of products from the database
      */
-    suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
+    suspend fun fetchProductList(
+        loadMore: Boolean = false,
+        productFilterOptions: Map<ProductFilterOption, String>
+    ): List<Product> {
         try {
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
@@ -67,7 +86,8 @@ final class ProductListRepository @Inject constructor(
                         selectedSite.get(),
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        PRODUCT_SORTING
+                        productSortingChoice,
+                        filterOptions = productFilterOptions
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
@@ -75,7 +95,7 @@ final class ProductListRepository @Inject constructor(
             WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching products")
         }
 
-        return getProductList()
+        return getProductList(productFilterOptions)
     }
 
     /**
@@ -98,7 +118,7 @@ final class ProductListRepository @Inject constructor(
                         searchQuery,
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        PRODUCT_SORTING
+                        productSortingChoice
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
             }
@@ -113,9 +133,13 @@ final class ProductListRepository @Inject constructor(
     /**
      * Returns all products for the current site that are in the database
      */
-    fun getProductList(): List<Product> {
+    fun getProductList(productFilterOptions: Map<ProductFilterOption, String>): List<Product> {
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
+            val wcProducts = productStore.getProductsByFilterOptions(
+                    selectedSite.get(),
+                    filterOptions = productFilterOptions,
+                    sortType = productSortingChoice
+            )
             wcProducts.map { it.toAppModel() }
         } else {
             WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")

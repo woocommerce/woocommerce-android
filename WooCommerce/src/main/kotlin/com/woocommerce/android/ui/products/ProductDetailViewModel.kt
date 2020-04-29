@@ -204,7 +204,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
             }
             is ExitImages -> {
-                // TODO: eventName = ??
+                eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
             }
             is ExitSettings -> {
@@ -280,7 +280,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the user taps the product slug in product settings
+     * Called when the user taps the product menu order in product settings
      */
     fun onSettingsMenuOrderButtonClicked() {
         viewState.productDraft?.let {

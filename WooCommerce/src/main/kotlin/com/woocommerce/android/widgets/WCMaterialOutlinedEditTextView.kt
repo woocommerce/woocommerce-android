@@ -20,9 +20,20 @@ import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.view_material_outlined_edittext.view.*
 
 /**
- * Custom View that mimics a TextInputEditText with a summary TextView below it. This view will display
- * a text box and a summary. The entire view acts as a single component.
+ * Custom View that encapsulates a [TextInputLayout] and [TextInputEditText], and as such has the following
+ * capabilities:
+ * - Show helper text
+ * - Show error text
+ * - Enable/set counter and maxLength
+ * - Set the text on the child [TextInputEditText]
+ * - Set the selected text on the child [TextInputEditText]
  *
+ * The entire view acts as a single component. The following attributes have been exposed to this view as
+ * custom attributes and are used to interact with the nested [TextInputEditText] component:
+ * - [android:inputType]
+ * - [android:maxLength]
+ * - [android:enabled]
+ * - [android:text]
  */
 class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     ctx: Context,
@@ -64,10 +75,14 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         }
     }
 
-    fun getText() = edit_text.editableText.toString()
-
     fun setText(selectedText: String) {
         edit_text.setText(selectedText)
+    }
+
+    fun getText() = edit_text.text.toString()
+
+    fun setSelection(start: Int, stop: Int) {
+        edit_text.setSelection(start, stop)
     }
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {

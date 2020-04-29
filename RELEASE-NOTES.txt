@@ -1,5 +1,7 @@
 4.2
 -----
+* Bugfix: Removed detached and non-functioning text counter in the support email dialog
+* Minor styling tweaks to various login screens
  
 4.1
 -----
