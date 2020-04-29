@@ -864,18 +864,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 }
             }
             RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
-                result.getLongArray(WPMediaPickerFragment.ARG_SELECTED_IMAGE_IDS)?.let { selectedImageIds ->
-                    val date = Date()
-                    for (imageId in selectedImageIds) {
-                        val image = Product.Image(
-                                id = imageId,
-                                name = "",
-                                source = "",
-                                dateCreated = date
-                        )
-                        viewModel.addProductImageToDraft(image)
-                    }
-                }
+                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
+                        ?.let {
+                            viewModel.addProductImageListToDraft(it)
+                        }
             }
         }
     }
@@ -894,7 +886,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     /**
      * Add/Edit Product Release 1 is enabled by default for SIMPLE products
-     * TODO: we can remove this
      */
-    private fun isAddEditProductRelease1Enabled(productType: ProductType) = true
+    private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
 }

@@ -844,20 +844,25 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called after product image has been uploaded to add the uploaded image to the draft product
+     * Adds a single image to the list of product draft's images
      */
     fun addProductImageToDraft(image: Product.Image) {
-        // create a new image list and add the passed media first...
         val imageList = ArrayList<Product.Image>().also {
             it.add(image)
         }
+        addProductImageListToDraft(imageList)
+    }
 
-        // ...then add the existing product images to the new list...
+    /**
+     * Adds multiple images to the list of product draft's images
+     */
+    fun addProductImageListToDraft(imageList: ArrayList<Product.Image>) {
+        // add the existing images to the passed list...
         viewState.productDraft?.let {
             imageList.addAll(it.images)
         }
 
-        // ...and then update the draft with the new list
+        // ...then update the draft's images  with the combined list
         updateProductDraft(images = imageList)
     }
 

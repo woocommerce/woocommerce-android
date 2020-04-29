@@ -103,8 +103,6 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
 
     fun getSelectedImages() = adapter.getSelectedImages()
 
-    fun getSelectedImageIds() = selectedIds
-
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
 
@@ -190,7 +188,7 @@ class WPMediaLibraryGalleryView @JvmOverloads constructor(
             return null
         }
 
-        fun getSelectedImages(): List<Product.Image> {
+        fun getSelectedImages(): ArrayList<Product.Image> {
             val images = ArrayList<Product.Image>()
             for (imageId in selectedIds) {
                 getImageById(imageId)?.let {

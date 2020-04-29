@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.wpmediapicker
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -15,18 +16,23 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.wpmediapicker.WPMediaLibraryGalleryView.OnWPMediaGalleryClickListener
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 import javax.inject.Inject
 
-class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
+class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, BackPressListener {
     companion object {
-        const val ARG_SELECTED_IMAGE_IDS = "selected_image_ids"
+        const val ARG_SELECTED_IMAGES = "selected_image_ids"
+        private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
+
+    private var isConfirmingDiscard = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -42,6 +48,15 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViewModel()
+
+        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
+            confirmDiscard()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(KEY_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -81,9 +96,8 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
 
     private fun navigateBackWithResult() {
         if (wpMediaGallery.getSelectionCount() > 0) {
-            val selectedImageIds = wpMediaGallery.getSelectedImageIds().toLongArray()
             val bundle = Bundle().also {
-                it.putLongArray(ARG_SELECTED_IMAGE_IDS, selectedImageIds)
+                it.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
             }
             requireActivity().navigateBackWithResult(
                     RequestCodes.WPMEDIA_LIBRARY_PICKER,
@@ -108,5 +122,27 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener {
      */
     override fun onSelectionCountChanged() {
         requireActivity().title = getFragmentTitle()
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        if (wpMediaGallery.getSelectionCount() > 0) {
+            confirmDiscard()
+            return false
+        } else {
+            return true
+        }
+    }
+
+    private fun confirmDiscard() {
+        isConfirmingDiscard = true
+        CustomDiscardDialog.showDiscardDialog(
+                requireActivity(),
+                posBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    isConfirmingDiscard = false
+                    findNavController().navigateUp()
+                },
+                negBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    isConfirmingDiscard = false
+                })
     }
 }
