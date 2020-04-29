@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -13,7 +14,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.fragment_image_viewer.*
+import kotlinx.android.synthetic.main.fragment_image_viewer.photoView
+import kotlinx.android.synthetic.main.fragment_image_viewer.progressBar
+import kotlinx.android.synthetic.main.fragment_wpmedia_viewer.*
 
+/**
+ * Fullscreen single image viewer
+ */
 class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
     private val navArgs: WPMediaViewerFragmentArgs by navArgs()
 
@@ -23,6 +30,9 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        iconBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
         loadImage()
     }
 

@@ -3,14 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/black">
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/photoView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no" />
+
+    <FrameLayout
+        android:id="@+id/fakeToolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:importantForAccessibility="no"
-        tools:src="@drawable/ic_woo_waiting_customers" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/black_translucent_40"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/iconBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="@drawable/ripple_grey_oval"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            app:srcCompat="@drawable/ic_arrow_left_white_24dp" />
+
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
