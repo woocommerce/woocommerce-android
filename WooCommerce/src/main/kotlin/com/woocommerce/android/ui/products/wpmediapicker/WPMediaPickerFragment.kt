@@ -14,7 +14,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
@@ -106,6 +108,7 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isLoading?.takeIfNotEqualTo(old?.isLoading) { showLoadingProgress(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadingMoreProgress(it) }
+            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -122,7 +125,7 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
     override fun getFragmentTitle(): String {
         val count = wpMediaGallery.getSelectedCount()
         return if (count == 0) {
-            getString(R.string.product_wpmedia_title)
+            getString(R.string.wpmedia_picker_title)
         } else {
             String.format(getString(R.string.selection_count), count)
         }
@@ -190,5 +193,15 @@ class WPMediaPickerFragment : BaseFragment(), OnWPMediaGalleryClickListener, Bac
 
     private fun showLoadingMoreProgress(show: Boolean) {
         loadingMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            emptyText.show()
+            wpMediaGallery.hide()
+        } else {
+            emptyText.hide()
+            wpMediaGallery.show()
+        }
     }
 }

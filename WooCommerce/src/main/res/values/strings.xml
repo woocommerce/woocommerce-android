@@ -562,7 +562,7 @@
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
-    <string name="product_wpmedia_title">WordPress media library</string>
+    <string name="wpmedia_picker_title">WordPress media library</string>
 
     <!--
         Empty list messages
@@ -574,6 +574,7 @@
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+    <string name="empty_wpmedia_list_message">No images yet</string>
 
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
