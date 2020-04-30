@@ -116,9 +116,9 @@
     <style name="TextAppearance.Woo.Badge" parent="TextAppearance.MaterialComponents.Badge">
         <item name="fontFamily">@font/roboto</item>
         <item name="android:fontFamily">@font/roboto</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">@dimen/text_minor_60</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/color_on_primary_medium</item>
+        <item name="android:textColor">@color/color_on_primary_high</item>
         <item name="android:fontWeight" tools:targetApi="o">500</item>
         <item name="android:fontStyle" tools:targetApi="o">normal</item>
         <item name="android:lineHeight" tools:targetApi="p">16sp</item>
