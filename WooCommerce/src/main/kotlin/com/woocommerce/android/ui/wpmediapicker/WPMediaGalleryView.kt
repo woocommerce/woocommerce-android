@@ -32,9 +32,8 @@ import java.util.Locale
  */
 class WPMediaGalleryView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : RecyclerView(context, attrs, defStyle) {
+    attrs: AttributeSet? = null
+) : RecyclerView(context, attrs) {
     companion object {
         const val NUM_COLUMNS = 3
         private const val SCALE_NORMAL = 1.0f
