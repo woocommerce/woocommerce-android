@@ -47,6 +47,7 @@
         android:layout_height="@dimen/min_tap_target"
         android:paddingStart="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
+        android:layout_marginBottom="@dimen/major_75"
         android:gravity="center_vertical"
         android:background="?android:attr/selectableItemBackground"
         android:drawableStart="@drawable/ic_wordpress"
