@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/min_tap_target"
+    android:paddingTop="@dimen/minor_100"
+    android:paddingBottom="@dimen/minor_100"
+    android:background="?attr/selectableItemBackground">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/filterOptionItem_name"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/filterOptionItem_tick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Canada Post" />
+
+    <com.google.android.material.radiobutton.MaterialRadioButton
+        android:id="@+id/filterOptionItem_tick"
+        style="@style/Woo.Button.Toggle"
+        android:layout_width="@dimen/min_tap_target"
+        android:layout_height="wrap_content"
+        android:button="@null"
+        android:contentDescription="@string/product_list_filters_list_item"
+        android:drawableEnd="@drawable/ic_done_secondary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

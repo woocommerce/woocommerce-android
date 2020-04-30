@@ -1,6 +1,8 @@
 4.2
 -----
 * Bugfix: Removed detached and non-functioning text counter in the support email dialog
+* Fixed issue where dark theme version of placeholder images were not themed properly
+* Minor styling tweaks to various login screens
  
 4.1
 -----

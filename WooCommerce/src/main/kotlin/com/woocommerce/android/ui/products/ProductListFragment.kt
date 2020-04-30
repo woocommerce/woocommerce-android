@@ -16,14 +16,22 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
+import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -32,10 +40,11 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
-class ProductListFragment : TopLevelFragment(), OnProductClickListener,
+class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductSortAndFilterListener,
         OnLoadMoreListener,
         OnQueryTextListener,
-        OnActionExpandListener {
+        OnActionExpandListener,
+        NavigationResult {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
@@ -134,6 +143,18 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
         if (!viewModel.isSearching()) {
             viewModel.reloadProductsFromDb()
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            RequestCodes.PRODUCT_LIST_FILTERS -> {
+                viewModel.onFiltersChanged(
+                        stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
+                        productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
+                        productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
+                )
+            }
         }
     }
 
@@ -245,14 +266,27 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
-                    if (new.isSearchActive == true) {
-                        empty_view.show(EmptyViewType.SEARCH_RESULTS, searchQueryOrFilter = viewModel.getSearchQuery())
-                    } else {
-                        empty_view.show(EmptyViewType.PRODUCT_LIST)
+                    when {
+                        new.isSearchActive == true -> {
+                            empty_view.show(
+                                    EmptyViewType.SEARCH_RESULTS,
+                                    searchQueryOrFilter = viewModel.getSearchQuery()
+                            )
+                        }
+                        new.filterCount?.compareTo(0) == 1 -> empty_view.show(EmptyViewType.FILTER_RESULTS)
+                        else -> empty_view.show(EmptyViewType.PRODUCT_LIST)
                     }
                 } else {
                     empty_view.hide()
                 }
+            }
+            new.displaySortAndFilterCard?.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
+                showProductSortAndFiltersCard(it)
+            }
+            new.filterCount?.takeIfNotEqualTo(old?.filterCount) { updateFilterSelection(it) }
+
+            new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
+                products_sort_filter_card.setSortingTitle(getString(it))
             }
         }
 
@@ -263,6 +297,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ScrollToTop -> scrollToTop()
+                else -> event.isHandled = false
             }
         })
     }
@@ -310,6 +346,19 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         }
     }
 
+    private fun showProductSortAndFiltersCard(show: Boolean) {
+        if (show && FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            products_sort_filter_card.visibility = View.VISIBLE
+            products_sort_filter_card.initView(this)
+        } else {
+            products_sort_filter_card.visibility = View.GONE
+        }
+    }
+
+    private fun updateFilterSelection(filterCount: Int) {
+        products_sort_filter_card.updateFilterSelection(filterCount)
+    }
+
     override fun onProductClick(remoteProductId: Long) {
         disableSearchListeners()
         showOptionsMenu(false)
@@ -318,5 +367,22 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()
+    }
+
+    override fun onFilterOptionSelected() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        disableSearchListeners()
+        showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showProductFilters(
+                viewModel.getFilterByStockStatus(),
+                viewModel.getFilterByProductType(),
+                viewModel.getFilterByProductStatus()
+        )
+    }
+
+    override fun onSortOptionSelected() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        val bottomSheet = ProductSortingFragment()
+        bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 }

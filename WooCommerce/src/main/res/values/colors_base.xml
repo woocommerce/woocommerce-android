@@ -38,6 +38,7 @@
 
     <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
     <color name="color_scrim_background">@color/woo_white_alpha_038</color>
+    <color name="color_default_image_background">@color/woo_gray_5</color>
 
     <!--
         Icon-related resources that use the surface color should be assigned
@@ -116,6 +117,7 @@
     <color name="product_stock_fg">@color/color_on_surface_medium</color>
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
+    <color name="product_filer_bg_selected">@color/color_primary_surface</color>
 
     <!--
         Aztec Editor
