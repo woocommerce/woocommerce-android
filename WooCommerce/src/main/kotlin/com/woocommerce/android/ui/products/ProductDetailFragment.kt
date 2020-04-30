@@ -409,17 +409,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            addPropertyView(
+            addPropertyGroup(
                     Secondary,
-                    getString(R.string.product_categories),
+                    R.string.product_categories,
                     if (product.categories.isEmpty()) {
-                        getString(R.string.product_category_empty)
+                        mapOf(Pair("", getString(R.string.product_category_empty)))
                     } else {
-                        product.categories.joinToString(transform = { it.name })
+                        mapOf(Pair("", product.categories.joinToString(transform = { it.name })))
                     },
-                    LinearLayout.VERTICAL,
-                    R.drawable.ic_gridicons_folder
+                    groupIconId = R.drawable.ic_gridicons_folder
             )?.also {
+                // display the group title only when categories are available
+                if (product.categories.isEmpty()) {
+                    it.showPropertyName(false)
+                }
                 it.setMaxLines(5)
             }
         }
