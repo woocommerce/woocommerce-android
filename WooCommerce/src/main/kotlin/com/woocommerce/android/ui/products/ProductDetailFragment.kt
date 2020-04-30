@@ -34,12 +34,14 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -51,7 +53,6 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
-import java.lang.ref.WeakReference
 import java.util.Date
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
@@ -113,6 +114,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
 
         menu.findItem(R.id.menu_view_product).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        menu.findItem(R.id.menu_product_settings).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -136,6 +139,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
                     ChromeCustomTabUtils.launchUrl(requireContext(), it)
                 }
+                true
+            }
+
+            R.id.menu_product_settings -> {
+                viewModel.onSettingsButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -195,7 +203,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
                 frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toString(requireActivity())
+                textStatusBadge.text = status.toLocalizedString(requireActivity())
             }
         }
 
@@ -289,21 +297,25 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             removePropertyView(DetailCard.Primary, getString(R.string.product_variations))
         }
 
-        // display `View product on Store` in options menu from M2 products release
         if (!FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+            // display `View product on Store` (in M2 this is in the options menu)
             addLinkView(
                     DetailCard.Primary,
                     R.string.product_view_in_store,
                     product.permalink,
                     PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
             )
+
+            // enable viewing affiliate link for external products (in M2 this is editable)
+            if (product.type == ProductType.EXTERNAL) {
+                addLinkView(
+                        DetailCard.Primary,
+                        R.string.product_view_affiliate,
+                        product.externalUrl,
+                        PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+                )
+            }
         }
-        addLinkView(
-                DetailCard.Primary,
-                R.string.product_view_affiliate,
-                product.externalUrl,
-                PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
-        )
     }
 
     /**
@@ -370,6 +382,29 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             it.setClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED)
                 viewModel.onEditProductCardClicked(ViewProductPricing(product.remoteId))
+            }
+        }
+
+        // enable editing external product link
+        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled() && product.type == ProductType.EXTERNAL) {
+            val hasExternalLink = product.externalUrl.isNotEmpty()
+            val externalGroup = if (hasExternalLink) {
+                mapOf(Pair("", product.externalUrl))
+            } else {
+                mapOf(Pair("", resources.getString(R.string.product_external_empty_link)))
+            }
+            addPropertyGroup(
+                    DetailCard.Secondary,
+                    R.string.product_external_link,
+                    externalGroup,
+                    groupIconId = R.drawable.ic_gridicons_link
+            )?.also {
+                if (!hasExternalLink) {
+                    it.showPropertyName(false)
+                }
+                it.setClickListener {
+                    viewModel.onEditProductCardClicked(ViewProductExternalLink(product.remoteId))
+                }
             }
         }
 
@@ -543,7 +578,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_downloads, downloadGroup)
         }
 
-        if (product.purchaseNote.isNotBlank()) {
+        // if add/edit products is enabled, purchase note appears in product settings
+        if (product.purchaseNote.isNotBlank() && !isAddEditProductRelease1Enabled(product.type)) {
             addReadMoreView(
                     DetailCard.PurchaseDetails,
                     R.string.product_purchase_note,
@@ -615,7 +651,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
 
         // locate the existing property view in the container, add it if not found
-        val propertyTag = "{$propertyName}_tag"
+        val propertyTag = "{$propertyName}_tag_{$propertyValue)"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
             propertyView = View.inflate(context, R.layout.product_property_view, null) as WCProductPropertyView
@@ -826,6 +862,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
+            RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
+                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
+                        ?.let {
+                            viewModel.addProductImageListToDraft(it)
+                        }
+            }
         }
     }
 
@@ -833,8 +875,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         return viewModel.onBackButtonClicked(ExitProductDetail())
     }
 
-    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
-        viewModel.onImageGalleryClicked(image, WeakReference(imageView))
+    override fun onGalleryImageClicked(image: Product.Image) {
+        viewModel.onImageGalleryClicked(image)
     }
 
     override fun onGalleryAddImageClicked() {

@@ -9,9 +9,12 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
+import com.woocommerce.android.R
+import com.woocommerce.android.util.WooAnimUtils.Duration.LONG
 
 object WooAnimUtils {
     enum class Duration {
@@ -94,6 +97,32 @@ object WooAnimUtils {
         }
     }
 
+    fun scale(
+        target: View,
+        scaleStart: Float,
+        scaleEnd: Float,
+        duration: Duration
+    ) {
+        val scaleX = PropertyValuesHolder.ofFloat(
+                View.SCALE_X,
+                scaleStart,
+                scaleEnd
+        )
+        val scaleY = PropertyValuesHolder.ofFloat(
+                View.SCALE_Y,
+                scaleStart,
+                scaleEnd
+        )
+        val animator = ObjectAnimator.ofPropertyValuesHolder(
+                target,
+                scaleX,
+                scaleY
+        )
+        animator.duration = duration.toMillis(target.context)
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.start()
+    }
+
     fun animateBottomBar(view: View, show: Boolean, duration: Duration = DEFAULT_DURATION) {
         animateBar(view, show, false, duration)
     }
@@ -132,5 +161,12 @@ object WooAnimUtils {
         view.clearAnimation()
         view.startAnimation(animation)
         view.visibility = newVisibility
+    }
+
+    fun pop(view: View, duration: Duration = LONG) {
+        AnimationUtils.loadAnimation(view.getContext(), R.anim.pop)?.let { animation ->
+            animation.duration = duration.toMillis(view.context)
+            view.startAnimation(animation)
+        }
     }
 }

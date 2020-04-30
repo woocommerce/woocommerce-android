@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/major_100">
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/product_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginEnd="@dimen/major_100"
+            android:hint="@string/product_external_link"
+            android:inputType="text"
+            app:helperText="@string/product_external_link_label" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/product_button_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginEnd="@dimen/major_100"
+            android:hint="@string/product_external_link_button_text"
+            android:inputType="text"
+            app:helperText="@string/product_external_link_button_text_label" />
+    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+</ScrollView>
+
