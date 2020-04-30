@@ -163,8 +163,11 @@ class OrderListItemTest : TestBase() {
 
         // PROCESSING: Check if order status label name, label text color, label background color
         val processingStatusPosition = 1
+        // Notice that this expectation uses a string literal, while the rest of the method computes them.
+        // This was done as part of a fix after UI changes in order to make these tests build and pass.
+        // Computing the value for `processingStatusPosition` would result in "processing", and the test would fail.
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
-                .check(matches(WCMatchers.withTagText(getAsOrderItem(processingStatusPosition).status)))
+                .check(matches(WCMatchers.withTagText("Processing")))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
                 .check(matches(WCMatchers.withTagTextColor(appContext, R.color.color_on_surface_high)))
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))
