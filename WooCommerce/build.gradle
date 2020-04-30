@@ -106,6 +106,10 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dependencies {
@@ -222,6 +226,9 @@ dependencies {
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
     kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
+
+    // Dependencies for screenshots
+    androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
