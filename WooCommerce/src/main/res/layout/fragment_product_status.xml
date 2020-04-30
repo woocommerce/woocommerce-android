@@ -4,6 +4,8 @@
     android:id="@+id/radioGroup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="@dimen/minor_100"
+    android:background="?attr/colorSurface"
     android:orientation="vertical">
 
     <CheckedTextView
