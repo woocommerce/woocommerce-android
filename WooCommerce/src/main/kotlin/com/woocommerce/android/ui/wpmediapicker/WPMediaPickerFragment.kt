@@ -34,7 +34,7 @@ import javax.inject.Inject
 class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressListener {
     companion object {
         const val ARG_SELECTED_IMAGES = "selected_image_ids"
-        private const val ARG_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -60,19 +60,13 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
         initializeViewModel()
 
-        savedInstanceState?.let { bundle ->
-            bundle.getParcelableArrayList<Product.Image>(ARG_SELECTED_IMAGES)?.let { images ->
-                wpMediaGallery.setSelectedImages(images)
-            }
-            if (bundle.getBoolean(ARG_IS_CONFIRMING_DISCARD)) {
-                confirmDiscard()
-            }
+        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
+            confirmDiscard()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(ARG_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
-        outState.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
+        outState.putBoolean(KEY_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         super.onSaveInstanceState(outState)
     }
 
