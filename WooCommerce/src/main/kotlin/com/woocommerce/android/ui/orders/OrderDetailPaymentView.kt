@@ -49,7 +49,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(
         paymentInfo_refunds.layoutManager = LinearLayoutManager(context)
         paymentInfo_refunds.setHasFixedSize(true)
 
-        if (order.paymentMethodTitle.isEmpty()) {
+        if (order.paymentMethodTitle.isEmpty() && order.datePaid == null) {
             paymentInfo_paymentMsg.hide()
             paymentInfo_paidSection.hide()
         } else {
@@ -66,11 +66,15 @@ class OrderDetailPaymentView @JvmOverloads constructor(
                 paymentInfo_paid.text = formatCurrencyForDisplay(order.total)
 
                 val dateStr = DateFormat.getMediumDateFormat(context).format(order.datePaid)
-                paymentInfo_paymentMsg.text = context.getString(
+                if (order.paymentMethodTitle.isNotEmpty()) {
+                    paymentInfo_paymentMsg.text = context.getString(
                         R.string.orderdetail_payment_summary_completed,
                         dateStr,
                         order.paymentMethodTitle
-                )
+                    )
+                } else {
+                    paymentInfo_paymentMsg.text = dateStr
+                }
             }
         }
 

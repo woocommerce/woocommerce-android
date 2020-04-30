@@ -21,7 +21,7 @@
             android:layout_height="@dimen/image_minor_100"
             android:contentDescription="@string/product_image_content_description"
             android:scaleType="centerCrop"
-            tools:src="@drawable/ic_stats_24dp"/>
+            tools:src="@drawable/ic_product"/>
     </FrameLayout>
 
     <LinearLayout

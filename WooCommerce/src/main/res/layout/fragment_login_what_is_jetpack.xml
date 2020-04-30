@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -10,20 +11,24 @@
         style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/major_75"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginBottom="@dimen/minor_50"
         android:text="@string/learn_more"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_ok"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_jetpack_desc"/>
+        app:layout_constraintTop_toBottomOf="@+id/lbl_jetpack_desc"
+        app:layout_constraintHorizontal_bias="0.0"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_ok"
         style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/major_75"
+        android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginBottom="@dimen/minor_50"
+        android:layout_marginEnd="@dimen/minor_100"
         android:text="@android:string/ok"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,6 +38,7 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="180dp"
+        android:background="@color/color_default_image_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -53,9 +59,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
         android:text="@string/login_jetpack_what_is"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout"/>
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+        app:layout_constraintHorizontal_bias="0.0"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/lbl_jetpack_desc"
@@ -63,8 +73,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_150"
+        android:layout_marginEnd="@dimen/major_150"
         android:lineSpacingExtra="5sp"
         android:text="@string/login_jetpack_what_is_description"
+        android:textColor="@color/color_on_surface_high"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lbl_jetpack_title"/>

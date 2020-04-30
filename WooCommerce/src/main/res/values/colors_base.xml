@@ -38,7 +38,7 @@
 
     <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
     <color name="color_scrim_background">@color/woo_white_alpha_038</color>
-    <color name="color_default_image_background">@color/woo_gray_900</color>
+    <color name="color_default_image_background">@color/woo_gray_5</color>
 
     <!--
         Icon-related resources that use the surface color should be assigned
