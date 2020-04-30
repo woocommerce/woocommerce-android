@@ -8,7 +8,6 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_margin="@dimen/minor_25"
         android:contentDescription="@string/product_image_content_description"
         android:scaleType="centerCrop"
@@ -16,20 +15,19 @@
         tools:layout_width="@dimen/image_major_150"
         tools:src="@drawable/ic_product" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textSelectionCount"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        style="@style/TextAppearance.Woo.Badge"
+        android:layout_width="@dimen/major_150"
+        android:layout_height="@dimen/major_150"
         android:layout_gravity="bottom|start"
-        android:layout_marginBottom="@dimen/margin_medium"
-        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:layout_marginStart="@dimen/minor_100"
         android:background="@drawable/wpmedia_picker_circle_selector"
-        android:elevation="4dp"
+        android:elevation="@dimen/plane_04"
         android:importantForAccessibility="no"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_minor_60"
         tools:text="5"
         tools:ignore="UnusedAttribute"/>
 </FrameLayout>

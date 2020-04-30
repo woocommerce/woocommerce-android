@@ -3,8 +3,7 @@
     android:id="@+id/productImages_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    android:orientation="vertical">
+    android:background="@color/color_surface">
 
     <com.woocommerce.android.ui.wpmediapicker.WPMediaGalleryView
         android:id="@+id/wpMediaGallery"
@@ -13,12 +12,11 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/emptyText"
+        style="@style/TextAppearance.Woo.Headline5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/empty_wpmedia_list_message"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_major_50"
         android:visibility="gone"
         tools:visibility="visible" />
 
