@@ -59,6 +59,7 @@ data class Product(
     val purchaseNote: String,
     val numVariations: Int,
     val images: List<Image>,
+    val categories: List<Category>,
     val attributes: List<Attribute>,
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
@@ -85,6 +86,13 @@ data class Product(
         val name: String,
         val options: List<String>,
         val isVisible: Boolean
+    ) : Parcelable
+
+    @Parcelize
+    data class Category(
+        val id: Long,
+        val name: String,
+        val slug: String
     ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {
@@ -114,7 +122,8 @@ data class Product(
                 width == product.width &&
                 shippingClass == product.shippingClass &&
                 shippingClassId == product.shippingClassId &&
-                isSameImages(product.images)
+                isSameImages(product.images) &&
+                isSameCategories(product.categories)
     }
 
     private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
@@ -169,6 +178,33 @@ data class Product(
                     height != it.height ||
                     shippingClass != it.shippingClass
         } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes made to the product categories
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasCategoryChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            !isSameCategories(it.categories)
+        } ?: false
+    }
+
+    /**
+     * Compares this product's categories with the passed list, returns true only if both lists contain
+     * the same categories in the same order
+     */
+    private fun isSameCategories(updatedCategories: List<Category>): Boolean {
+        if (this.categories.size != updatedCategories.size) {
+            return false
+        }
+        for (i in categories.indices) {
+            if (categories[i].id != updatedCategories[i].id) {
+                return false
+            }
+        }
+        return true
     }
 
     /**
@@ -233,6 +269,7 @@ data class Product(
                     weight = updatedProduct.weight,
                     shippingClass = updatedProduct.shippingClass,
                     images = updatedProduct.images,
+                    categories = updatedProduct.categories,
                     shippingClassId = updatedProduct.shippingClassId
             )
         } ?: this.copy()
@@ -284,6 +321,18 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         return jsonArray.toString()
     }
 
+    fun categoriesToJson(): String {
+        val jsonArray = JsonArray()
+        for (category in categories) {
+            jsonArray.add(JsonObject().also { json ->
+                json.addProperty("id", category.id)
+                json.addProperty("name", category.name)
+                json.addProperty("slug", category.slug)
+            })
+        }
+        return jsonArray.toString()
+    }
+
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
@@ -306,6 +355,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
         it.taxClass = taxClass
         it.images = imagesToJson()
+        it.categories = categoriesToJson()
         if (isSaleScheduled) {
             saleStartDateGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
@@ -363,6 +413,13 @@ fun WCProductModel.toAppModel(): Product {
                     it.name,
                     it.src,
                     DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
+            )
+        },
+        categories = this.getCategories().map {
+            Product.Category(
+                    it.id,
+                    it.name,
+                    it.slug
             )
         },
         attributes = this.getAttributes().map {
