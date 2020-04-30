@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/black">
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/photoView"
@@ -14,8 +15,7 @@
     <FrameLayout
         android:id="@+id/fakeToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/woo_black_90_alpha_060">
+        android:layout_height="?attr/actionBarSize">
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/iconBack"
