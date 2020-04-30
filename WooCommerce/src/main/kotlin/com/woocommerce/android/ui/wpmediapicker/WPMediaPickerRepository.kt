@@ -74,11 +74,13 @@ class WPMediaPickerRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMediaListFetched(event: OnMediaListFetched) {
-        if (event.isError) {
-            loadContinuation?.resume(false)
-        } else {
-            canLoadMoreMedia = event.canLoadMore
-            loadContinuation?.resume(true)
+        loadContinuation?.let {
+            if (event.isError) {
+                it.resume(false)
+            } else {
+                canLoadMoreMedia = event.canLoadMore
+                it.resume(true)
+            }
         }
     }
 }
