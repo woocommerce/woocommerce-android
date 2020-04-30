@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -153,7 +154,7 @@ class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Attri
             val imageUrl = PhotonUtils.getPhotonImageUrl(topEarner.image, imageSize, 0)
             GlideApp.with(holder.itemView.context)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_product)
+                    .placeholder(ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_product))
                     .into(holder.productImage)
 
             holder.itemView.setOnClickListener {
