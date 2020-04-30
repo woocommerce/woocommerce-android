@@ -2,11 +2,8 @@ package com.woocommerce.android.ui.wpmediapicker
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
-import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
@@ -14,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +24,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.BorderedImageView
+import com.woocommerce.android.widgets.WCSavedState
 import kotlinx.android.synthetic.main.wpmedia_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -276,7 +273,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         // save the recycler's stat
         super.onSaveInstanceState()?.let { recyclerState ->
-            bundle.putParcelable(KEY_RECYCLER_STATE, SavedState(super.onSaveInstanceState(), recyclerState))
+            bundle.putParcelable(KEY_RECYCLER_STATE, WCSavedState(super.onSaveInstanceState(), recyclerState))
         }
 
         // save the selected images
@@ -287,7 +284,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         // restore the recycler's state
-        (state as? Bundle)?.getParcelable<SavedState>(KEY_RECYCLER_STATE)?.let { recyclerState ->
+        (state as? Bundle)?.getParcelable<WCSavedState>(KEY_RECYCLER_STATE)?.let { recyclerState ->
             super.onRestoreInstanceState(recyclerState)
         }
 
@@ -324,60 +321,6 @@ class WPMediaGalleryView @JvmOverloads constructor(
                     onImageLongClicked(adapterPosition)
                 }
                 true
-            }
-        }
-    }
-
-    internal class SavedState : BaseSavedState {
-        private var recyclerState: Parcelable? = null
-
-        constructor(superState: Parcelable?, inRecyclerState: Parcelable) : super(superState) {
-            recyclerState = inRecyclerState
-        }
-
-        /**
-         * Workaround to differentiate between this method and the one that requires API 24+ because
-         * the super(source, loader) method won't work on older APIs - thus the app will crash.
-         */
-        constructor(source: Parcel, loader: ClassLoader?, superState: Parcelable?): super(superState) {
-            recyclerState = source.readParcelable(loader)
-        }
-
-        constructor(source: Parcel) : super(source) {
-            recyclerState = source.readParcelable(this::class.java.classLoader)
-        }
-
-        @RequiresApi(VERSION_CODES.N)
-        constructor(source: Parcel, loader: ClassLoader?) : super(source, loader) {
-            recyclerState = loader?.let {
-                source.readParcelable<Parcelable>(it)
-            } ?: source.readParcelable<Parcelable>(this::class.java.classLoader)
-        }
-
-        override fun writeToParcel(out: Parcel, flags: Int) {
-            super.writeToParcel(out, flags)
-            out.writeParcelable(recyclerState, 0)
-        }
-
-        companion object {
-            @Suppress("UNUSED")
-            @JvmField
-            val CREATOR = object : Parcelable.ClassLoaderCreator<SavedState> {
-                override fun createFromParcel(source: Parcel, loader: ClassLoader?): SavedState {
-                    return if (VERSION.SDK_INT >= VERSION_CODES.N) {
-                        SavedState(source, loader)
-                    } else {
-                        SavedState(source, loader, source.readParcelable<Parcelable>(loader))
-                    }
-                }
-
-                override fun createFromParcel(source: Parcel): SavedState {
-                    return SavedState(source)
-                }
-
-                override fun newArray(size: Int): Array<SavedState?> {
-                    return arrayOfNulls(size)
-                }
             }
         }
     }
