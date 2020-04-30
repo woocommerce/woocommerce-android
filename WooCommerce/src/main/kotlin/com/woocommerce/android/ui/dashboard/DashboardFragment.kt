@@ -26,6 +26,11 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ISO_DATE
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -171,7 +176,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showErrorView(false)
-            dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
+
+            if (granularity == DAYS) {
+                dashboard_stats.updateView(fakeRevenueStats, fakeSalesStats, presenter.getStatsCurrency())
+            } else {
+                dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
+            }
         }
     }
 
@@ -199,6 +209,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
+        if (dashboard_stats.activeGranularity == DAYS) {
+            dashboard_stats.showVisitorStats(mapOf("2020-04-27" to 1387))
+            return
+        }
+
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showVisitorStats(visitorStats)
         }
@@ -349,4 +364,49 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
         showV4StatsAvailabilityBanner(false)
     }
+
+    private var fakeRevenueStats: Map<String, Double> = {
+        val startDate = LocalDate.parse("2020-04-27", ISO_DATE)
+        val fakeValues = listOf(
+            500.0,
+            490.0,
+            475.0,
+            510.0,
+            575.0,
+            475.0,
+            520.0,
+            625.0,
+            600.0,
+            575.0,
+            625.0,
+            460.0,
+            475.0,
+            600.0,
+            625.0,
+            600.0,
+            575.0,
+            550.0,
+            540.0,
+            525.0,
+            525.0,
+            600.0,
+            655.0,
+            525.0,
+            650.0,
+            635.0,
+            525.0,
+            475.0,
+            525.0,
+            610.0
+        )
+        val valuesCount = fakeValues.count()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        fakeValues.mapIndexed { index, value ->
+            val deltaPeriod = Period.of(0, 0, valuesCount - index - 1)
+            startDate.minus(deltaPeriod).format(formatter)!! to value
+        }.toMap()
+    }()
+
+    private val fakeSalesStats: Map<String, Int> = mapOf("2020-03-29" to 42)
 }
