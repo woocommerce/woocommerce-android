@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.products
 
-import android.view.View
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import java.lang.ref.WeakReference
 
 /**
  * [ProductNavigationTarget] is a utility sealed class that identifies the different types of navigation that can
@@ -31,8 +29,7 @@ sealed class ProductNavigationTarget : Event() {
             ProductNavigationTarget()
     data class ViewProductImages(
         val product: Product,
-        val imageModel: Product.Image? = null,
-        val clickedImage: WeakReference<View>
+        val imageModel: Product.Image? = null
     ) : ProductNavigationTarget()
     data class ViewProductImageChooser(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()

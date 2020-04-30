@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragment
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
@@ -32,6 +33,8 @@ import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -54,6 +57,7 @@ import dagger.android.ContributesAndroidInjector
     ProductExternalLinkFragmentModule::class,
     ProductMenuOrderFragmentModule::class,
     ProductVisibilityFragmentModule::class,
+    WPMediaPickerFragmentModule::class,
     ProductSortingFragmentModule::class
 ])
 object ProductsModule {
@@ -181,6 +185,13 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductMenuOrderModule::class])
         abstract fun productMenuOrderFragment(): ProductMenuOrderFragment
+    }
+
+    @Module
+    internal abstract class WPMediaPickerFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [WPMediaPickerModule::class])
+        abstract fun wpMediaPickerFragment(): WPMediaPickerFragment
     }
 
     @Module

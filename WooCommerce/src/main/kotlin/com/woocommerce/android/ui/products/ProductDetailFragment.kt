@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -52,7 +53,6 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
-import java.lang.ref.WeakReference
 import java.util.Date
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
@@ -862,6 +862,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
+            RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
+                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
+                        ?.let {
+                            viewModel.addProductImageListToDraft(it)
+                        }
+            }
         }
     }
 
@@ -869,8 +875,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         return viewModel.onBackButtonClicked(ExitProductDetail())
     }
 
-    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
-        viewModel.onImageGalleryClicked(image, WeakReference(imageView))
+    override fun onGalleryImageClicked(image: Product.Image) {
+        viewModel.onImageGalleryClicked(image)
     }
 
     override fun onGalleryAddImageClicked() {
@@ -879,7 +885,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     /**
      * Add/Edit Product Release 1 is enabled by default for SIMPLE products
-     * TODO: we can remove this
      */
-    private fun isAddEditProductRelease1Enabled(productType: ProductType) = true
+    private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
 }

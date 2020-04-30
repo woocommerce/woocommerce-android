@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
-import android.view.View
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -19,8 +18,8 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
@@ -59,10 +58,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.util.DateTimeUtils
-import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Date
 
@@ -151,10 +147,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image, selectedImage))
+            triggerEvent(ViewProductImages(it, image))
         }
     }
 
@@ -478,7 +474,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null,
         shippingClass: String? = null,
-        images: List<Image>? = null,
+        images: List<Product.Image>? = null,
         shippingClassId: Long? = null,
         productStatus: ProductStatus? = null,
         catalogVisibility: ProductCatalogVisibility? = null,
@@ -832,36 +828,33 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            event.media?.let {
-                addProductImageToDraft(it)
+            event.media?.let { media ->
+                addProductImageToDraft(media.toAppModel())
             }
         }
         checkImageUploads(getRemoteProductId())
     }
 
     /**
-     * Called after product image has been uploaded to add the uploaded image to the draft product
+     * Adds a single image to the list of product draft's images
      */
-    fun addProductImageToDraft(media: MediaModel) {
-        // create a new image list and add the passed media first...
-        val imageList = ArrayList<Image>().also {
-            it.add(
-                    Image
-                    (
-                            media.mediaId,
-                            media.fileName,
-                            media.url,
-                            DateTimeUtils.dateFromIso8601(media.uploadDate)
-                    )
-            )
+    fun addProductImageToDraft(image: Product.Image) {
+        val imageList = ArrayList<Product.Image>().also {
+            it.add(image)
         }
+        addProductImageListToDraft(imageList)
+    }
 
-        // ...then add the existing product images to the new list...
+    /**
+     * Adds multiple images to the list of product draft's images
+     */
+    fun addProductImageListToDraft(imageList: ArrayList<Product.Image>) {
+        // add the existing images to the passed list...
         viewState.productDraft?.let {
             imageList.addAll(it.images)
         }
 
-        // ...and then update the draft with the new list
+        // ...then update the draft's images  with the combined list
         updateProductDraft(images = imageList)
     }
 

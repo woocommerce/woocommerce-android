@@ -366,9 +366,8 @@ class MainActivity : AppUpgradeActivity(),
             }
             actionBar.setHomeAsUpIndicator(icon)
 
-            // the image viewer should be shown full screen and we hide the actionbar since the fragment
-            // provides its own toolbar
-            if (destination.id == R.id.productImageViewerFragment) {
+            // the image viewers should be shown full screen
+            if (destination.id == R.id.productImageViewerFragment || destination.id == R.id.wpMediaViewerFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 actionBar.hide()
             } else {

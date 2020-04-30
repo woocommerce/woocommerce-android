@@ -113,7 +113,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
-    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
+    override fun onGalleryImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
                 image.id
@@ -131,11 +131,19 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                     it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
                         captureProductImage()
                     }
+                    it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
+                        showWPMediaPicker()
+                    }
                 }
 
         imageSourceDialog = MaterialAlertDialogBuilder(activity)
                 .setView(contentView)
                 .show()
+    }
+
+    private fun showWPMediaPicker() {
+        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
+        findNavController().navigate(action)
     }
 
     private fun chooseProductImage() {
