@@ -22,7 +22,6 @@
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchProductsUI"
         android:layout_width="0dp"
-        android:visibility="gone"
         android:layout_height="wrap_content"
         app:toggleOptionDesc="@string/settings_enable_product_teaser_message"
         app:toggleOptionTitle="@string/settings_enable_product_teaser_title"
