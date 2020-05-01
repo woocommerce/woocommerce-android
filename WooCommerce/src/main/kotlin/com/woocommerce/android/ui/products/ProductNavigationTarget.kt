@@ -31,6 +31,7 @@ sealed class ProductNavigationTarget : Event() {
         val product: Product,
         val imageModel: Product.Image? = null
     ) : ProductNavigationTarget()
+    data class ViewProductCategories(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductImageChooser(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()

@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailFragment.DetailCard.Secondary
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
@@ -460,6 +461,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     it.showPropertyName(false)
                 }
                 it.setMaxLines(5)
+                it.setClickListener {
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED)
+                    viewModel.onEditProductCardClicked(ViewProductCategories(product.remoteId))
+                }
             }
         }
 

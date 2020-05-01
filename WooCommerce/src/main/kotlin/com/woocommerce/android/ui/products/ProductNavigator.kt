@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
@@ -157,6 +158,13 @@ class ProductNavigator @Inject constructor() {
                 } else if (target.imageModel != null) {
                     viewProductImageViewer(fragment, target.product.remoteId)
                 }
+            }
+
+            is ViewProductCategories -> {
+                println()
+                val action = ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToProductCategoriesFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
             }
 
             is ViewProductMenuOrder -> {
