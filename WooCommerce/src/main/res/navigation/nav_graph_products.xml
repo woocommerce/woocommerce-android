@@ -42,6 +42,11 @@
             app:destination="@id/productExternalLinkFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productCategoriesFragment"
+            app:destination="@id/productCategoriesFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -118,6 +123,15 @@
         android:id="@+id/productPricingFragment"
         android:name="com.woocommerce.android.ui.products.ProductPricingFragment"
         tools:layout="@layout/fragment_product_pricing">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/productCategoriesFragment"
+        android:name="com.woocommerce.android.ui.products.ProductCategoriesFragment"
+        tools:layout="@layout/fragment_product_categories_list">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"

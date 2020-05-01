@@ -18,10 +18,13 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Category
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
@@ -106,6 +109,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product images screen
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
+
+    // view state for the product categories screen
+    final val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    private var productCategoriesViewState by productCategoriesViewStateData
 
     init {
         EventBus.getDefault().register(this)
@@ -226,6 +233,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             is ExitExternalLink -> {
                 hasChanges = hasExternalLinkChanges()
+            }
+            is ExitCategories -> {
+                eventName = Stat.PRODUCT_CATEGORIES_SETTINGS_DONE_BUTTON_TAPPED
+                hasChanges = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -488,6 +499,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         weight: Float? = null,
         shippingClass: String? = null,
         images: List<Product.Image>? = null,
+        categories: List<Category>? = null,
         shippingClassId: Long? = null,
         productStatus: ProductStatus? = null,
         catalogVisibility: ProductCatalogVisibility? = null,
@@ -524,6 +536,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     shippingClass = shippingClass ?: product.shippingClass,
                     shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                    categories = categories ?: product.categories,
                     status = productStatus ?: product.status,
                     catalogVisibility = catalogVisibility ?: product.catalogVisibility,
                     isFeatured = isFeatured ?: product.isFeatured,
@@ -896,6 +909,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
@@ -974,6 +988,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductImagesViewState(
         val isUploadingImages: Boolean = false
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductCategoriesViewState(
+        val isUploadingCategories: Boolean = false
     ) : Parcelable
 
     @AssistedInject.Factory

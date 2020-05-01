@@ -11,6 +11,7 @@ import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.CATEGORY_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
@@ -34,6 +35,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         ORDER_LIST_FILTERED,
         PRODUCT_LIST,
         REVIEW_LIST,
+        CATEGORY_LIST,
         SEARCH_RESULTS,
         FILTER_RESULTS,
         NETWORK_ERROR,
@@ -161,6 +163,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = null
                 buttonText = context.getString(R.string.retry)
                 drawableId = R.drawable.ic_woo_error_state
+            }
+            CATEGORY_LIST -> {
+                isTitleBold = true
+                title = context.getString(R.string.empty_categories_list_title)
+                message = context.getString(R.string.empty_categories_list_message)
+                buttonText = context.getString(R.string.learn_more)
+                drawableId = R.drawable.img_empty_reviews
             }
         }
 
