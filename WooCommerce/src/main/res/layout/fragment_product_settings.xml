@@ -40,7 +40,7 @@
                 app:optionTitle="@string/product_catalog_visibility"
                 tools:optionValue="Shop only" />
 
-            <View style="@style/Woo.Divider.TitleAligned" />
+            <View style="@style/Woo.Divider" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout

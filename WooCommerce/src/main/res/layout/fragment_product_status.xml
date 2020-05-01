@@ -4,9 +4,9 @@
     android:id="@+id/radioGroup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/minor_100"
     android:background="?attr/colorSurface"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="@dimen/minor_100">
 
     <CheckedTextView
         android:id="@+id/btnPublishedPrivately"
@@ -42,8 +42,6 @@
         android:layout_height="wrap_content"
         android:text="@string/product_status_pending" />
 
-    <View
-        style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/major_100" />
+    <View style="@style/Woo.Divider" />
 
 </LinearLayout>

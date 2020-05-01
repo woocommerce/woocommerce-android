@@ -50,9 +50,7 @@
             android:layout_height="wrap_content"
             android:text="@string/product_visibility_private" />
 
-        <View
-            style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100" />
+        <View style="@style/Woo.Divider" />
 
     </LinearLayout>
 </ScrollView>
