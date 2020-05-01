@@ -338,7 +338,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+        if (show) {
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView()
         } else {
