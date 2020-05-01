@@ -61,6 +61,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productReviewsAllowedDivider.visibility = View.VISIBLE
             productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
                 viewModel.updateProductDraft(reviewsAllowed = isChecked)
+                activity?.invalidateOptionsMenu()
             }
         } else {
             productReviewsAllowed.visibility = View.GONE
@@ -83,6 +84,11 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = viewModel.hasSettingsChanges()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -129,6 +135,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         updateProductView()
+        activity?.invalidateOptionsMenu()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
