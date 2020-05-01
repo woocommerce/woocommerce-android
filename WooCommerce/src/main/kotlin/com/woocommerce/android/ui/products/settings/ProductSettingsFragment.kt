@@ -59,6 +59,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             viewModel.onSettingsSlugButtonClicked()
         }
         productMenuOrder.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_MENU_ORDER_TAPPED)
             viewModel.onSettingsMenuOrderButtonClicked()
         }
 

@@ -291,6 +291,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_SETTINGS_SLUG_TAPPED,
         PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED,
         PRODUCT_SETTINGS_VISIBILITY_TAPPED,
+        PRODUCT_SETTINGS_MENU_ORDER_TAPPED,
 
         // -- Product filters
         PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
