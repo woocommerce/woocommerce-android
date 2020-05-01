@@ -212,6 +212,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 }
             }
         }
+
+        activity?.invalidateOptionsMenu()
     }
 
     /**
