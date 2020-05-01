@@ -28,6 +28,9 @@ class ProductSlugFragment : BaseProductSettingsFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         editSlug.setText(navArgs.slug)
+        editSlug.setOnTextChangedListener {
+            changesMade()
+        }
     }
 
     override fun hasChanges() = getSlug() != navArgs.slug

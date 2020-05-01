@@ -65,6 +65,8 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(), OnClickL
             btnVisibilitySearch.isChecked = it == btnVisibilitySearch
             btnVisibilityHidden.isChecked = it == btnVisibilityHidden
             selectedCatalogVisibility = getVisibilityForButtonId(it.id)
+
+            changesMade()
         }
     }
 
