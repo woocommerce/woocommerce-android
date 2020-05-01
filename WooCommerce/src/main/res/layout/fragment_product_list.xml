@@ -19,9 +19,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            android:layout_marginBottom="@dimen/minor_100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
             tools:visibility="visible" />
 
         <!-- Products filter and sort view -->
@@ -30,10 +32,11 @@
             style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/minor_100"
             android:visibility="gone"
+            android:layout_marginBottom="@dimen/minor_100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/productsRecycler"
             app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
             tools:visibility="visible" />
 
