@@ -1,3 +1,0 @@
-4.0:
-* Vi är glada att kunna introducera en Produkter-flik!
-* Användare har nu även begränsade redigeringsmöjligheter för Enkla produkter. Mer kommer.
