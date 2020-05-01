@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-16 00:54:04+0000
+Translation-Revision-Date: 2020-04-29 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_status_pending">في انتظار المراجعة</string>
+    <string name="settings_about_title">حول WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">محدَّد بواسطة موفِّر البطارية</string>
+    <string name="settings_app_theme_option_system">الإعداد الافتراضي للنظام</string>
+    <string name="settings_app_theme_option_dark">داكن</string>
+    <string name="settings_app_theme_option_light">فاتح</string>
+    <string name="settings_app_theme_title">المظهر</string>
+    <string name="product_short_description_empty">ملخص موجز حول المنتج</string>
+    <string name="product_short_description">وصف قصير</string>
+    <string name="my_store_stats_availability_message">نطرح تحسينات على إحصاءات المتاجر باستخدام الإصدار 4.0 من WooCommerce أو المتاجر التي يتم تثبيت إضافة مسؤول WooCommerce بها</string>
+    <string name="my_store_stats_reverted_message">طرحنا تحسينات على التحليلات الخاصة بنا. يمكنك الترقية إلى الإصدار 4.0 من WooCommerce أو إصدار أعلى، أو يمكنك تثبيت إضافة مسؤول WooCommerce لمواصلة الاطِّلاع على إحصاءاتك بعد 1 يوليو 2020.</string>
+    <string name="my_store_stats_reverted_title">الترقية لمواصلة الاطِّلاع على إحصاءاتك</string>
     <string name="product_pricing_update_sale_price_error">يجب أن يكون سعر التخفيض أقل من السعر العادي</string>
     <string name="product_schedule_remove_end_date_link_label">إزالة تاريخ الانتهاء</string>
     <string name="product_shipping_empty">إضافة الشحن</string>
@@ -61,7 +73,7 @@ Language: ar
     <string name="product_inventory_empty">إضافة المخزون</string>
     <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
     <string name="product_detail_editable_text_hint">إدخال نص</string>
-    <string name="product_detail_title_hint">إدخال عنوان</string>
+    <string name="product_detail_title_hint">عنوان المنتج</string>
     <string name="product_detail_update_product_success">تم تحديث المنتج</string>
     <string name="product_detail_update_product_error">خطأ في أثناء تحرير المنتج</string>
     <string name="product_update_dialog_message">يُرجى الانتظار…</string>
@@ -185,7 +197,6 @@ Language: ar
     <string name="orderdetail_payment_paid_by_customer">يدفعه العميل</string>
     <string name="orderdetail_payment_summary_onhold">انتظار الدفع بواسطة %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s عبر %2$s</string>
-    <string name="my_store_stats_availability_message">نطرح تحسينات على الإحصاءات الخاصة بالمتاجر باستخدام إضافة مسؤول WooCommerce.</string>
     <string name="my_store_stats_availability_title">تجربة إحصاءاتنا المُحسَّنة</string>
     <string name="dashboard_state_no_data">لا توجد أي إيرادات في هذه الفترة</string>
     <string name="no_thanks">لا شكرًا</string>
@@ -515,7 +526,6 @@ Language: ar
     <string name="read_more">قراءة المزيد</string>
     <string name="error_loading_image">Unable to load image</string>
     <string name="product_status_draft">مسودة</string>
-    <string name="product_status_pending">معلّق</string>
     <string name="product_status_private">خاص</string>
     <string name="product_status_published">منشور</string>
     <string name="product_view_affiliate">View affiliate product</string>
