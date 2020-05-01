@@ -190,6 +190,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
                 addImageContainer.visibility = View.VISIBLE
                 addImageContainer.setOnClickListener {
+                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
                     viewModel.onAddImageClicked()
                 }
             }
@@ -880,6 +881,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onGalleryAddImageClicked() {
+        AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageClicked()
     }
 

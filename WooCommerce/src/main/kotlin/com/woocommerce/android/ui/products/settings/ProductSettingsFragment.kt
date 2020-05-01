@@ -14,6 +14,8 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_VISIBLITY
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -41,15 +43,19 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         setupObservers()
 
         productStatus.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_STATUS_TAPPED)
             viewModel.onSettingsStatusButtonClicked()
         }
         productCatalogVisibility.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_CATALOG_VISIBILITY_TAPPED)
             viewModel.onSettingsCatalogVisibilityButtonClicked()
         }
         productVisibility.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VISIBILITY_TAPPED)
             viewModel.onSettingsVisibilityButtonClicked()
         }
         productSlug.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_SLUG_TAPPED)
             viewModel.onSettingsSlugButtonClicked()
         }
         productMenuOrder.setOnClickListener {
@@ -68,6 +74,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         productPurchaseNote.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED)
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
             viewModel.onEditProductCardClicked(
                     ViewProductPurchaseNoteEditor(
@@ -88,6 +95,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
+                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_DONE_BUTTON_TAPPED)
                 viewModel.onDoneButtonClicked(ExitSettings(shouldShowDiscardDialog = false))
                 true
             }
