@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,11 +14,12 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                android:textColor="@color/color_on_surface_high"
+                style="@style/TextAppearance.Woo.Body2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/major_100"
-                android:text="@string/product_visibility_headline" />
+                android:text="@string/product_visibility_headline"
+                android:textColor="@color/color_on_surface_high" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
@@ -42,51 +42,43 @@
             android:layout_marginTop="@dimen/minor_100"
             android:orientation="vertical">
 
-            <LinearLayout
+            <CheckedTextView
+                android:id="@+id/btnVisibilityVisible"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:text="@string/product_catalog_visibility_visible" />
 
-                <CheckedTextView
-                    android:id="@+id/btnVisibilityVisible"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_catalog_visibility_visible" />
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100" />
 
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
+            <CheckedTextView
+                android:id="@+id/btnVisibilityCatalog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_catalog_visibility_catalog" />
 
-                <CheckedTextView
-                    android:id="@+id/btnVisibilityCatalog"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_catalog_visibility_catalog" />
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100" />
 
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
+            <CheckedTextView
+                android:id="@+id/btnVisibilitySearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_catalog_visibility_search" />
 
-                <CheckedTextView
-                    android:id="@+id/btnVisibilitySearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_catalog_visibility_search" />
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100" />
 
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
+            <CheckedTextView
+                android:id="@+id/btnVisibilityHidden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_catalog_visibility_hidden" />
 
-                <CheckedTextView
-                    android:id="@+id/btnVisibilityHidden"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_catalog_visibility_hidden" />
-
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginStart="@dimen/major_100"/>
-            </LinearLayout>
+            <View style="@style/Woo.Divider" />
 
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
     </LinearLayout>

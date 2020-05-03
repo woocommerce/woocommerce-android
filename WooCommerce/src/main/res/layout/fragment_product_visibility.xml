@@ -3,62 +3,54 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
         android:orientation="vertical">
 
-        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        <CheckedTextView
+            android:id="@+id/btnPublic"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/minor_100"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:text="@string/product_visibility_public" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100" />
 
-                <CheckedTextView
-                    android:id="@+id/btnPublic"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_public" />
+        <CheckedTextView
+            android:id="@+id/btnPasswordProtected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/product_visibility_password_protected" />
 
-                <View style="@style/Woo.Divider" />
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/editPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:inputType="textPassword"
+            android:visibility="gone"
+            app:hintEnabled="false"
+            tools:visibility="visible" />
 
-                <CheckedTextView
-                    android:id="@+id/btnPasswordProtected"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_password_protected" />
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100" />
 
-                <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-                    android:id="@+id/editPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/major_100"
-                    android:layout_marginEnd="@dimen/major_100"
-                    android:layout_marginBottom="@dimen/minor_100"
-                    android:inputType="textPassword"
-                    android:visibility="gone"
-                    app:hintEnabled="false"
-                    tools:visibility="visible" />
+        <CheckedTextView
+            android:id="@+id/btnPrivate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/product_visibility_private" />
 
-                <View style="@style/Woo.Divider" />
+        <View style="@style/Woo.Divider" />
 
-                <CheckedTextView
-                    android:id="@+id/btnPrivate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/product_visibility_private" />
-
-                <View style="@style/Woo.Divider" />
-            </LinearLayout>
-
-        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
     </LinearLayout>
 </ScrollView>
