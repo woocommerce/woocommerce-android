@@ -24,19 +24,21 @@ data class ProductVariant(
     val optionName: String,
     var priceWithCurrency: String? = null,
     val isPurchasable: Boolean,
-    val type: Type
+    val type: Type,
+    val description: String
 ) : Parcelable {
     fun isSameVariant(variant: ProductVariant): Boolean {
         return remoteVariationId == variant.remoteVariationId &&
-                remoteProductId == variant.remoteProductId &&
-                imageUrl == variant.imageUrl &&
-                price.isEqualTo(variant.price) &&
-                stockQuantity == variant.stockQuantity &&
-                stockStatus == variant.stockStatus &&
-                optionName == variant.optionName &&
-                priceWithCurrency == variant.priceWithCurrency &&
-                isPurchasable == variant.isPurchasable &&
-                type == variant.type
+            remoteProductId == variant.remoteProductId &&
+            imageUrl == variant.imageUrl &&
+            price.isEqualTo(variant.price) &&
+            stockQuantity == variant.stockQuantity &&
+            stockStatus == variant.stockStatus &&
+            optionName == variant.optionName &&
+            priceWithCurrency == variant.priceWithCurrency &&
+            isPurchasable == variant.isPurchasable &&
+            type == variant.type &&
+            description == variant.description
     }
 
     enum class Type {
@@ -48,15 +50,16 @@ data class ProductVariant(
 
 fun WCProductVariationModel.toAppModel(): ProductVariant {
     return ProductVariant(
-            this.remoteProductId,
-            this.remoteVariationId,
-            this.imageUrl,
-            this.price.toBigDecimalOrNull()?.roundError(),
-            ProductStockStatus.fromString(this.stockStatus),
-            this.stockQuantity,
-            getAttributeOptionName(this.getProductVariantOptions()),
-            isPurchasable = this.purchasable,
-            type = getVariantType(this.virtual, this.downloadable)
+        this.remoteProductId,
+        this.remoteVariationId,
+        this.imageUrl,
+        this.price.toBigDecimalOrNull()?.roundError(),
+        ProductStockStatus.fromString(this.stockStatus),
+        this.stockQuantity,
+        getAttributeOptionName(this.getProductVariantOptions()),
+        isPurchasable = this.purchasable,
+        type = getVariantType(this.virtual, this.downloadable),
+        description = this.description
     )
 }
 
