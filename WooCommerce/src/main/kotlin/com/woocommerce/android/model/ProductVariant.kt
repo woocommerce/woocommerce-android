@@ -19,7 +19,7 @@ data class ProductVariant(
     val stockQuantity: Int,
     val optionName: String,
     var priceWithCurrency: String? = null,
-    val purchasable: Boolean
+    val isPurchasable: Boolean
 ) : Parcelable {
     fun isSameVariant(variant: ProductVariant): Boolean {
         return remoteVariationId == variant.remoteVariationId &&
@@ -30,7 +30,7 @@ data class ProductVariant(
                 stockStatus == variant.stockStatus &&
                 optionName == variant.optionName &&
                 priceWithCurrency == variant.priceWithCurrency &&
-                purchasable == variant.purchasable
+                isPurchasable == variant.isPurchasable
     }
 }
 
@@ -43,7 +43,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
             ProductStockStatus.fromString(this.stockStatus),
             this.stockQuantity,
             getAttributeOptionName(this.getProductVariantOptions()),
-            purchasable = this.purchasable
+            isPurchasable = this.purchasable
     )
 }
 

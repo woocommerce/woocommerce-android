@@ -46,7 +46,7 @@ class ProductVariantsAdapter(
 
         holder.txtVariantOptionName.text = productVariant.optionName
 
-        val variantPurchasable = if (!productVariant.purchasable) {
+        val variantPurchasable = if (!productVariant.isPurchasable) {
             context.getString(R.string.product_variant_hidden)
         } else {
             null
