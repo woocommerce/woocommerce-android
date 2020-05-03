@@ -3,6 +3,10 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.model.ProductVariant.Type
+import com.woocommerce.android.model.ProductVariant.Type.DOWNLOADABLE
+import com.woocommerce.android.model.ProductVariant.Type.PHYSICAL
+import com.woocommerce.android.model.ProductVariant.Type.VIRTUAL
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -19,7 +23,8 @@ data class ProductVariant(
     val stockQuantity: Int,
     val optionName: String,
     var priceWithCurrency: String? = null,
-    val isPurchasable: Boolean
+    val isPurchasable: Boolean,
+    val type: Type
 ) : Parcelable {
     fun isSameVariant(variant: ProductVariant): Boolean {
         return remoteVariationId == variant.remoteVariationId &&
@@ -30,7 +35,14 @@ data class ProductVariant(
                 stockStatus == variant.stockStatus &&
                 optionName == variant.optionName &&
                 priceWithCurrency == variant.priceWithCurrency &&
-                isPurchasable == variant.isPurchasable
+                isPurchasable == variant.isPurchasable &&
+                type == variant.type
+    }
+
+    enum class Type {
+        VIRTUAL,
+        DOWNLOADABLE,
+        PHYSICAL
     }
 }
 
@@ -43,7 +55,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
             ProductStockStatus.fromString(this.stockStatus),
             this.stockQuantity,
             getAttributeOptionName(this.getProductVariantOptions()),
-            isPurchasable = this.purchasable
+            isPurchasable = this.purchasable,
+            type = getVariantType(this.virtual, this.downloadable)
     )
 }
 
@@ -62,4 +75,12 @@ private fun getAttributeOptionName(variantOptions: List<ProductVariantOption>): 
         }
     }
     return optionName
+}
+
+private fun getVariantType(isVirtual: Boolean, isDownloadable: Boolean): Type {
+    return when {
+        isVirtual -> VIRTUAL
+        isDownloadable -> DOWNLOADABLE
+        else -> PHYSICAL
+    }
 }
