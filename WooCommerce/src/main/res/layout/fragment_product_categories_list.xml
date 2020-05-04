@@ -13,38 +13,14 @@
         android:layout_height="match_parent"
         android:background="@color/background_default">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/addCategoryButton"
-            style="@style/Woo.Button.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"
-            android:layout_margin="@dimen/margin_extra_large"
-            android:text="@string/product_category_empty" />
-
-        <View
-            android:id="@+id/divider"
-            style="@style/Woo.Divider"
-            android:layout_width="0dp"
-            android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginBottom="@dimen/margin_large"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/addCategoryButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/productCategoriesRecycler"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:background="?attr/colorSurface"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider"
-            tools:itemCount="10"
+            tools:itemCount="25"
             tools:listitem="@layout/product_category_list_item"
             tools:visibility="visible"/>
 

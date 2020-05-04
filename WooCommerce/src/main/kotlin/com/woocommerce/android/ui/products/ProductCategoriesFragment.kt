@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_CATEGORIES_ADD_CATEGORY_TAPPED
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.ProductCategoriesAdapter.OnProductCategoryClickListener
@@ -58,9 +57,6 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
         viewModel.initialiseCategories()
-        addCategoryButton.setOnClickListener {
-            navgiateToAddCategoryFragment()
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -81,10 +77,6 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
                 viewModel.refreshProductCategories()
             }
         }
-    }
-
-    fun navgiateToAddCategoryFragment() {
-        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_CATEGORIES_ADD_CATEGORY_TAPPED)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_categories)
