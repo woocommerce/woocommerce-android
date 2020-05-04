@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-15 00:54:04+0000
+Translation-Revision-Date: 2020-04-28 12:54:06+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_status_pending">На утверждении</string>
+    <string name="settings_about_title">О WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">Режим экономии энергии</string>
+    <string name="settings_app_theme_option_system">Системные параметры по умолчанию</string>
+    <string name="settings_app_theme_option_dark">Тёмная</string>
+    <string name="settings_app_theme_option_light">Светлая</string>
+    <string name="settings_app_theme_title">Внешний вид</string>
+    <string name="product_short_description_empty">Короткое описание продукта</string>
+    <string name="product_short_description">Короткое описание</string>
+    <string name="my_store_stats_availability_message">Мы улучшили статистику для магазинов с WooCommerce 4.0 или расширением WooCommerce Admin</string>
+    <string name="my_store_stats_reverted_message">Мы представили улучшения нашим аналитикам. Для просмотра статистики с 1 июля 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
+    <string name="my_store_stats_reverted_title">Установите обновление для работы со статистикой</string>
     <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
     <string name="product_schedule_remove_end_date_link_label">Удалить дату окончания</string>
     <string name="product_shipping_empty">Добавить доставку</string>
@@ -61,7 +73,7 @@ Language: ru
     <string name="product_inventory_empty">Добавить запасы</string>
     <string name="orderlist_loading">Просмотр информации о ваших заказах…</string>
     <string name="product_detail_editable_text_hint">Введите текст</string>
-    <string name="product_detail_title_hint">Введите заголовок</string>
+    <string name="product_detail_title_hint">Название продукта</string>
     <string name="product_detail_update_product_success">Продукт обновлен</string>
     <string name="product_detail_update_product_error">Ошибка обновления продукта</string>
     <string name="product_update_dialog_message">Пожалуйста, подождите…</string>
@@ -122,7 +134,6 @@ Language: ru
     <string name="product_variants">Варианты</string>
     <string name="product_property_edit">Изменить продукт</string>
     <string name="product_variants_fetch_product_variants_error">Ошибка при получении вариантов продукта</string>
-    <string name="my_store_stats_reverted_message">Мы вернулись к старой статистике. Чтобы использовать бета-версию статистики, активируйте плагин WooCommerce Admin 0.22 или более поздней версии</string>
     <string name="login_discovery_error_option_select">Выберите вариант.</string>
     <string name="login_troubleshooting_tips">Просмотрите советы по устранению неполадок</string>
     <string name="login_with_wordpress">Войти с помощью WordPress.com</string>
@@ -186,7 +197,6 @@ Language: ru
     <string name="orderdetail_payment_paid_by_customer">Оплачивается заказчиком</string>
     <string name="orderdetail_payment_summary_onhold">Ожидание оплаты через %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
-    <string name="my_store_stats_availability_message">Представляем вам улучшенную статистику для магазинов, использующих плагин администратора WooCommerce</string>
     <string name="my_store_stats_availability_title">Оцените улучшенный раздел статистики</string>
     <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
     <string name="no_thanks">Нет, спасибо</string>
@@ -516,7 +526,6 @@ Language: ru
     <string name="read_more">Читать далее</string>
     <string name="error_loading_image">Не удалось загрузить изображение</string>
     <string name="product_status_draft">Черновик</string>
-    <string name="product_status_pending">На рассмотрении</string>
     <string name="product_status_private">Личный</string>
     <string name="product_status_published">Опубликовано</string>
     <string name="product_view_affiliate">Показать партнерский продукт</string>

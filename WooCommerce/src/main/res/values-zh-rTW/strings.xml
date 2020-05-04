@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-01 00:54:03+0000
+Translation-Revision-Date: 2020-04-28 10:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_status_pending">待審中</string>
+    <string name="settings_about_title">關於 WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">由省電模式設定</string>
+    <string name="settings_app_theme_option_system">系統預設</string>
+    <string name="settings_app_theme_option_dark">深色系</string>
+    <string name="settings_app_theme_option_light">淡色系</string>
+    <string name="settings_app_theme_title">外觀</string>
+    <string name="product_short_description_empty">關於產品的簡短摘要</string>
+    <string name="product_short_description">簡短說明</string>
+    <string name="my_store_stats_availability_message">我們正在推出統計資料改善功能，適用於使用 WooCommerce 4.0 或安裝 WooCommerce Admin 外掛程式的商店</string>
+    <string name="my_store_stats_reverted_message">我們已推出分析功能的改善項目。請升級至 WooCommerce 4.0 以上版本或安裝 WooCommerce Admin 外掛程式，確保你可於 2020 年 7 月 1 日後繼續查看統計資料。</string>
+    <string name="my_store_stats_reverted_title">升級以繼續查看統計資料</string>
+    <string name="product_pricing_update_sale_price_error">優惠價格必須低於一般價格</string>
+    <string name="product_schedule_remove_end_date_link_label">移除結束日期</string>
+    <string name="product_shipping_empty">新增運費</string>
+    <string name="discard_images_message">產品圖片仍在上傳中。是否要捨棄所做的變更？</string>
     <string name="product_inventory_update_stock_quantity_error">請輸入一個數字</string>
     <string name="product_wip_message">我們已在簡單產品中新增了編輯功能。有更多選項即將登場，敬請密切注意！</string>
     <string name="product_wip_title">僅可進行有限編輯</string>
@@ -57,7 +73,7 @@ Language: zh_TW
     <string name="product_inventory_empty">新增庫存</string>
     <string name="orderlist_loading">查詢你的訂單…</string>
     <string name="product_detail_editable_text_hint">輸入文字</string>
-    <string name="product_detail_title_hint">輸入標題</string>
+    <string name="product_detail_title_hint">商品標題</string>
     <string name="product_detail_update_product_success">商品已更新</string>
     <string name="product_detail_update_product_error">更新商品時發生錯誤</string>
     <string name="product_update_dialog_message">請稍候…</string>
@@ -181,7 +197,6 @@ Language: zh_TW
     <string name="orderdetail_payment_paid_by_customer">顧客付款</string>
     <string name="orderdetail_payment_summary_onhold">等待透過 %s 支付的款項</string>
     <string name="orderdetail_payment_summary_completed">%1$s，付款方式：%2$s</string>
-    <string name="my_store_stats_availability_message">我們即將為使用 WooCommerce 管理員外掛程式的商店推出統計資料改善功能</string>
     <string name="my_store_stats_availability_title">體驗我們改善的統計資料效能</string>
     <string name="dashboard_state_no_data">此期間沒有收益</string>
     <string name="no_thanks">不用了，謝謝</string>
@@ -511,7 +526,6 @@ Language: zh_TW
     <string name="read_more">閱讀更多</string>
     <string name="error_loading_image">無法載入圖片</string>
     <string name="product_status_draft">草稿</string>
-    <string name="product_status_pending">待確認</string>
     <string name="product_status_private">私人</string>
     <string name="product_status_published">已發佈</string>
     <string name="product_view_affiliate">查看附屬商品</string>

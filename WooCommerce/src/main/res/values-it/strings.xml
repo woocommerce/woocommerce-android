@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-16 00:54:04+0000
+Translation-Revision-Date: 2020-04-29 13:54:10+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_status_pending">In attesa di revisione</string>
+    <string name="settings_about_title">Informazioni su WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">Impostato da Risparmio batteria</string>
+    <string name="settings_app_theme_option_system">Sistema predefinito</string>
+    <string name="settings_app_theme_option_dark">Scuro</string>
+    <string name="settings_app_theme_option_light">Chiaro</string>
+    <string name="settings_app_theme_title">Aspetto</string>
+    <string name="product_short_description_empty">Breve riassunto sul prodotto</string>
+    <string name="product_short_description">Breve descrizione</string>
+    <string name="my_store_stats_availability_message">Stiamo distribuendo miglioramenti alle statistiche per i negozi WooCommerce 4.0 o negozi con il plugin WooCommerce Admin installato</string>
+    <string name="my_store_stats_reverted_message">Stiamo distribuendo miglioramenti alla nostra analisi. Aggiorna a WooCommerce 4.0 o superiore o installa il plugin WooCommerce Admin per permetterti di visualizzare le statistiche dopo l\'1 luglio 2020.</string>
+    <string name="my_store_stats_reverted_title">Aggiorna per visualizzare le statistiche</string>
     <string name="product_pricing_update_sale_price_error">Il prezzo di vendita dovrebbe essere minore del prezzo standard</string>
     <string name="product_schedule_remove_end_date_link_label">Rimuovi data di fine</string>
     <string name="product_shipping_empty">Aggiungi spedizione</string>
@@ -61,7 +73,7 @@ Language: it
     <string name="product_inventory_empty">Aggiungi inventario</string>
     <string name="orderlist_loading">Ricerca dei tuoi ordini in corso…</string>
     <string name="product_detail_editable_text_hint">Inserisci testo</string>
-    <string name="product_detail_title_hint">Inserisci titolo</string>
+    <string name="product_detail_title_hint">Titolo del prodotto</string>
     <string name="product_detail_update_product_success">Prodotto aggiornato</string>
     <string name="product_detail_update_product_error">Errore durante l\'aggiornamento del prodotto</string>
     <string name="product_update_dialog_message">Attendi…</string>
@@ -185,7 +197,6 @@ Language: it
     <string name="orderdetail_payment_paid_by_customer">Pagato dal cliente</string>
     <string name="orderdetail_payment_summary_onhold">In attesa di pagamento tramite %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s tramite %2$s</string>
-    <string name="my_store_stats_availability_message">Stiamo distribuendo miglioramenti alle statistiche per i negozi che utilizzano il plugin WooCommerce Admin</string>
     <string name="my_store_stats_availability_title">Prova le nostre statistiche migliorate</string>
     <string name="dashboard_state_no_data">Nessuna entrata per questo periodo</string>
     <string name="no_thanks">No, grazie</string>
@@ -515,7 +526,6 @@ Language: it
     <string name="read_more">Leggi altro</string>
     <string name="error_loading_image">Impossibile caricare le immagini</string>
     <string name="product_status_draft">Bozza</string>
-    <string name="product_status_pending">In attesa</string>
     <string name="product_status_private">Privato</string>
     <string name="product_status_published">Pubblicato</string>
     <string name="product_view_affiliate">Visualizza il prodotto affiliato</string>
