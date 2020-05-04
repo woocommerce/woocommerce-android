@@ -14,9 +14,7 @@ import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @RunWith(AndroidJUnit4::class)
-// CheckStyle gives a warning here, but I'm not sure why. It happened after I added the companion object.
 class ScreenshotTest {
-
     @Rule @JvmField
     val localeTestRule = LocaleTestRule()
 
