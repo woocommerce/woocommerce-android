@@ -27,7 +27,11 @@ class ProductCategoriesAdapter(
         fun onProductCategoryClick(productCategoryViewHolderModel: ProductCategoryViewHolderModel)
     }
 
-    data class ProductCategoryViewHolderModel(val category: ProductCategory, var padding: Int = 0, var isSelected :Boolean = false)
+    data class ProductCategoryViewHolderModel(
+        val category: ProductCategory,
+        var padding: Int = 0,
+        var isSelected: Boolean = false
+    )
 
     init {
         setHasStableIds(true)
@@ -38,7 +42,8 @@ class ProductCategoriesAdapter(
     override fun getItemCount() = productCategoryList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductCategoryViewHolder {
-        return ProductCategoryViewHolder(LayoutInflater.from(context).inflate(R.layout.product_category_list_item, parent, false))
+        return ProductCategoryViewHolder(LayoutInflater.from(context)
+                .inflate(R.layout.product_category_list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ProductCategoryViewHolder, position: Int) {
@@ -50,7 +55,7 @@ class ProductCategoriesAdapter(
             HtmlUtils.fastStripHtml(productCategory.category.name)
         }
 
-        holder.txtCategoryName.setPaddingRelative(productCategory.padding, 0,0,0)
+        holder.txtCategoryName.setPaddingRelative(productCategory.padding, 0, 0, 0)
 
         holder.checkBox.isChecked = productCategory.isSelected
 
@@ -68,7 +73,10 @@ class ProductCategoriesAdapter(
         }
     }
 
-    private fun handleCategoryClick(holder: ProductCategoryViewHolder, productCategory: ProductCategoryViewHolderModel) {
+    private fun handleCategoryClick(
+        holder: ProductCategoryViewHolder,
+        productCategory: ProductCategoryViewHolderModel
+    ) {
         productCategory.isSelected = holder.checkBox.isChecked
         AnalyticsTracker.track(CATEGORY_LIST_ITEM_TAPPED)
         clickListener.onProductCategoryClick(productCategory)
@@ -80,7 +88,8 @@ class ProductCategoriesAdapter(
             productCategoryList.addAll(productsCategories)
             notifyDataSetChanged()
         } else {
-            val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productCategoryList, productsCategories))
+            val diffResult =
+                    DiffUtil.calculateDiff(ProductItemDiffUtil(productCategoryList, productsCategories))
             productCategoryList.clear()
             productCategoryList.addAll(productsCategories)
             diffResult.dispatchUpdatesTo(this)
@@ -92,7 +101,10 @@ class ProductCategoriesAdapter(
         val checkBox: CheckBox = view.categorySelected
     }
 
-    private class ProductItemDiffUtil(val items: List<ProductCategoryViewHolderModel>, val result: List<ProductCategoryViewHolderModel>) : DiffUtil.Callback() {
+    private class ProductItemDiffUtil(
+        val items: List<ProductCategoryViewHolderModel>,
+        val result: List<ProductCategoryViewHolderModel>
+    ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
                 items[oldItemPosition].category.remoteId == result[newItemPosition].category.remoteId
 

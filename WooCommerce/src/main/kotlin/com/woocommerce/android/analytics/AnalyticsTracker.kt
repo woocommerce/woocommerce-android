@@ -274,6 +274,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED,
         PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED,
         PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED,
+        PRODUCT_DETAIL_VIEW_CATEGORIES_ADD_CATEGORY_TAPPED,
         PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
@@ -362,6 +363,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CATEGORIES_LOADED,
         CATEGORIES_LOAD_FAILED,
         CATEGORY_LIST_ITEM_TAPPED,
+        PRODUCT_CATEGORIES_PULLED_TO_REFRESH,
 
         // -- Errors
         JETPACK_TUNNEL_TIMEOUT,
@@ -375,7 +377,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
-        TOP_EARNER_PRODUCT_TAPPED
+        TOP_EARNER_PRODUCT_TAPPED,
     }
     // endregion
 

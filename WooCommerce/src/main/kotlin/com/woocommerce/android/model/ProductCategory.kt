@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.model.Product.Category
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 
@@ -10,13 +11,20 @@ data class ProductCategory(
     val name: String,
     val slug: String,
     val parent: Long
-) : Parcelable
-{
+) : Parcelable {
     fun isSameCategory(productCategory: ProductCategory): Boolean {
         return remoteId == productCategory.remoteId &&
                 name == productCategory.name &&
                 slug == productCategory.slug &&
                 parent == productCategory.parent
+    }
+
+    fun toCategory(): Category {
+        return Category(
+                this.remoteId,
+                this.name,
+                this.slug
+        )
     }
 }
 

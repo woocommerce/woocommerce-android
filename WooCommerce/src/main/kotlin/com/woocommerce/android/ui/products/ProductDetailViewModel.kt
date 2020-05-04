@@ -3,8 +3,12 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -20,10 +24,13 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Category
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductCategoriesListViewModel.ProductCategoriesListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductCategoriesListViewModel.ProductCategoriesViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
@@ -47,6 +54,7 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -71,6 +79,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductDetailRepository,
+    private val productCategoriesRepository: ProductCategoriesRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
@@ -114,6 +123,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
+    private val _productCategories = MutableLiveData<List<ProductCategory>>()
+    val productCategories: LiveData<List<ProductCategory>> = _productCategories
+
     init {
         EventBus.getDefault().register(this)
     }
@@ -140,6 +152,13 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPrice = viewState.storedProduct?.regularPrice,
                 salePrice = viewState.storedProduct?.salePrice
         )
+    }
+
+    fun initialiseCategories() {
+        if (_productCategories.value == null) {
+            loadProductCategories()
+        }
+        productCategoriesViewState = productCategoriesViewState.copy()
     }
 
     /**
@@ -563,6 +582,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
+        productCategoriesRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -661,6 +681,102 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState.copy(
                     storedPassword = password
             )
+        }
+    }
+
+    /**
+     * Refreshes the list of categories by calling the [loadProductCategories] method
+     * which eventually checks, if there is anything new to fetch from the server
+     *
+     * @param scrollToTop whether to scroll to the top of the list after refreshing
+     */
+    fun refreshProductCategories(scrollToTop: Boolean = false) {
+        productCategoriesViewState = productCategoriesViewState.copy(isRefreshing = true)
+        loadProductCategories(scrollToTop = scrollToTop)
+    }
+
+    /**
+     * Loads the list of categories from the database or from the server.
+     * This depends on whether categories are stored in the database, and if any new ones are
+     * required to be fetched.
+     *
+     * @param loadMore Whether to load more categories after the ones loaded
+     * @param scrollToTop Whether to scroll to the top of the list after load
+     */
+    final fun loadProductCategories(loadMore: Boolean = false, scrollToTop: Boolean = false) {
+        if (productCategoriesViewState.isLoading == true) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading product categories")
+            return
+        }
+
+        if (loadMore && !productCategoriesRepository.canLoadMoreProductCategories) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more product categories")
+            return
+        }
+
+        launch {
+            val showSkeleton: Boolean
+            if (loadMore) {
+                showSkeleton = false
+            } else {
+                // if this is the initial load, first get the categories from the db and show them immediately
+                val productsInDb = productCategoriesRepository.getProductCategoriesList()
+                if (productsInDb.isEmpty()) {
+                    showSkeleton = true
+                } else {
+                    _productCategories.value = productsInDb
+                    showSkeleton = productCategoriesViewState.isRefreshing == false
+                }
+            }
+            productCategoriesViewState = productCategoriesViewState.copy(
+                    isLoading = true,
+                    isLoadingMore = loadMore,
+                    isSkeletonShown = showSkeleton,
+                    isEmptyViewVisible = false
+            )
+            fetchProductCategories(loadMore = loadMore, scrollToTop = scrollToTop)
+        }
+    }
+
+    /**
+     * Triggered when the user scrolls past the point of loaded categories
+     * already displayed on the screen or on record.
+     */
+    fun onLoadMoreCategoriesRequested() {
+        loadProductCategories(loadMore = true)
+    }
+
+    /**
+     * This method is used to fetch the categories from the backend. It does not
+     * check the database.
+     *
+     * @param loadMore Whether this is another page or the first one
+     * @param scrollToTop Whether to scroll to the top, this will trigger the [ScrollToTop] event
+     */
+    private suspend fun fetchProductCategories(
+        loadMore: Boolean = false,
+        scrollToTop: Boolean = false
+    ) {
+        if (networkStatus.isConnected()) {
+            _productCategories.value = productCategoriesRepository.fetchProductCategories(loadMore = loadMore)
+
+            productCategoriesViewState = productCategoriesViewState.copy(
+                    isLoading = true,
+                    canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
+                    isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+        } else {
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+        }
+
+        productCategoriesViewState = productCategoriesViewState.copy(
+                isSkeletonShown = false,
+                isLoading = false,
+                isLoadingMore = false,
+                isRefreshing = false
+        )
+
+        if (scrollToTop) {
+            triggerEvent(ScrollToTop)
         }
     }
 
@@ -988,11 +1104,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductImagesViewState(
         val isUploadingImages: Boolean = false
-    ) : Parcelable
-
-    @Parcelize
-    data class ProductCategoriesViewState(
-        val isUploadingCategories: Boolean = false
     ) : Parcelable
 
     @AssistedInject.Factory

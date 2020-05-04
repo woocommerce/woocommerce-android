@@ -27,6 +27,7 @@ class ProductCategoriesRepository @Inject constructor(
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_CATEGORIES_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_CATEGORY_PAGE_SIZE
+        private const val PRODUCT_CATEGORIES_ALL = 999
         private const val PRODUCT_CATEGORIES_PAGE_OFFSET = 1
     }
 
@@ -45,17 +46,27 @@ class ProductCategoriesRepository @Inject constructor(
     }
 
     /**
+     * Submits a fetch request to get all products categories for the current site
+     * and returns the full list of product categories from the database
+     */
+    suspend fun fetchAllProductCategories(): List<ProductCategory> =
+            fetchProductCategories(PRODUCT_CATEGORIES_ALL, false)
+
+    /**
      * Submits a fetch request to get a list of products categories for the current site
      * and returns the full list of product categories from the database
      */
-    suspend fun fetchProductCategories(loadMore: Boolean = false): List<ProductCategory> {
+    suspend fun fetchProductCategories(
+        pageSize: Int = PRODUCT_CATEGORIES_PAGE_SIZE,
+        loadMore: Boolean = false
+    ): List<ProductCategory> {
         try {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_SIZE else PRODUCT_CATEGORIES_PAGE_OFFSET
                 loadContinuation = it
-                val payload = WCProductStore.FetchAllCategoriesPayload(
+                val payload = WCProductStore.FetchAllProductCategoriesPayload(
                         selectedSite.get(),
-                        pageSize = PRODUCT_CATEGORIES_PAGE_SIZE,
+                        pageSize = pageSize,
                         offset = offset
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductCategoriesAction(payload))
@@ -96,4 +107,3 @@ class ProductCategoriesRepository @Inject constructor(
         }
     }
 }
-

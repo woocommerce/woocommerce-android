@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -10,7 +9,6 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -22,23 +20,25 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
 
 @OpenClassOnDebug
 class ProductCategoriesListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val networkStatus: NetworkStatus) : ScopedViewModel(savedState, dispatchers) {
+    private val networkStatus: NetworkStatus
+) : ScopedViewModel(savedState, dispatchers) {
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
-    val productCategories: LiveData<List<ProductCategory>> = _productCategories
 
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateLiveData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var viewState by viewStateLiveData
 
-    private var loadJob: Job? = null
+    // The job used to load categories
+    // this can be used to cancel the fetch, when refreshing
+    private var loadCategoriesJob: Job? = null
 
     init {
+        // Loads the categories into state on viewmodel attach
         if (_productCategories.value == null) {
             loadProductCategories()
         }
@@ -50,64 +50,59 @@ class ProductCategoriesListViewModel @AssistedInject constructor(
         productCategoriesRepository.onCleanup()
     }
 
+    // Helper function to know whether there's already fetch in queue
     private fun isLoading() = viewState.isLoading == true
 
+    // Helper function to know whether the view is already refreshing
     private fun isRefreshing() = viewState.isRefreshing == true
-
-    fun onLoadMoreRequested() {
-        loadProductCategories(loadMore = true)
-    }
 
     final fun reloadProductsFromDb() {
         _productCategories.value = productCategoriesRepository.getProductCategoriesList()
     }
 
-    final fun loadProductCategories(loadMore: Boolean = false, scrollToTop: Boolean = false) {
+    /**
+     * Loads all the product categories from either the database or the server. Note that this method
+     * does not load more categories. It opts to fetch all the categories at once.
+     *
+     * It will take into account whether a fetch for all categories is already active.
+     */
+    final fun loadProductCategories() {
         if (isLoading()) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading product categories")
-            return
-        }
-
-        if (loadMore && !productCategoriesRepository.canLoadMoreProductCategories) {
-            WooLog.d(WooLog.T.PRODUCTS, "can't load more product categories")
             return
         }
 
         // if a fetch is already active, wait for it to finish before we start another one
         waitForExistingLoad()
 
-        loadJob = launch {
+        loadCategoriesJob = launch {
             val showSkeleton: Boolean
-            if (loadMore) {
-                showSkeleton = false
+            // if this is the initial load, first get the categories from the db and show them immediately
+            val productsInDb = productCategoriesRepository.getProductCategoriesList()
+            if (productsInDb.isEmpty()) {
+                showSkeleton = true
             } else {
-                // if this is the initial load, first get the products from the db and show them immediately
-                val productsInDb = productCategoriesRepository.getProductCategoriesList()
-                if (productsInDb.isEmpty()) {
-                    showSkeleton = true
-                } else {
-                    _productCategories.value = productsInDb
-                    showSkeleton = !isRefreshing()
-                }
+                _productCategories.value = productsInDb
+                showSkeleton = !isRefreshing()
             }
             viewState = viewState.copy(
                     isLoading = true,
-                    isLoadingMore = loadMore,
+                    isLoadingMore = false,
                     isSkeletonShown = showSkeleton,
                     isEmptyViewVisible = false
             )
-            fetchProductCategories(loadMore = loadMore, scrollToTop = scrollToTop)
+            fetchProductCategories()
         }
     }
 
     /**
-     * If products are already being fetched, wait for the existing job to finish
+     * If categories are already being fetched, wait for the existing job to finish
      */
     private fun waitForExistingLoad() {
-        if (loadJob?.isActive == true) {
+        if (loadCategoriesJob?.isActive == true) {
             launch {
                 try {
-                    loadJob?.join()
+                    loadCategoriesJob?.join()
                 } catch (e: CancellationException) {
                     WooLog.d(WooLog.T.PRODUCTS, "CancellationException while waiting for existing fetch")
                 }
@@ -117,19 +112,21 @@ class ProductCategoriesListViewModel @AssistedInject constructor(
 
     fun refreshProductCategories(scrollToTop: Boolean = false) {
         viewState = viewState.copy(isRefreshing = true)
-        loadProductCategories(scrollToTop = scrollToTop)
+        loadProductCategories()
     }
 
-    private suspend fun fetchProductCategories(
-        loadMore: Boolean = false,
-        scrollToTop: Boolean = false
-    ) {
+    /**
+     * The helper method that calls the repository's fetchAll categories method. This method will not
+     * load more categories, but instead fetches all categories on a site in a single fetch. This is
+     * required because we want to display all the categories for parent selection to the user.
+     */
+    private suspend fun fetchProductCategories() {
         if (networkStatus.isConnected()) {
-            _productCategories.value = productCategoriesRepository.fetchProductCategories(loadMore)
+            _productCategories.value = productCategoriesRepository.fetchAllProductCategories()
 
             viewState = viewState.copy(
                     isLoading = true,
-                    canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
+                    canLoadMore = false,
                     isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
@@ -141,20 +138,17 @@ class ProductCategoriesListViewModel @AssistedInject constructor(
                 isLoadingMore = false,
                 isRefreshing = false
         )
-
-        if (scrollToTop) {
-            triggerEvent(ScrollToTop)
-        }
     }
 
     @Parcelize
-    data class ViewState(
+    data class ProductCategoriesViewState(
         val isSkeletonShown: Boolean? = null,
         val isLoading: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val isNewCategoryAdded: Boolean? = null
     ) : Parcelable
 
     sealed class ProductCategoriesListEvent : Event() {
