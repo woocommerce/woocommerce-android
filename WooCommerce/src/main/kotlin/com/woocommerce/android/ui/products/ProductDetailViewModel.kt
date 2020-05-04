@@ -799,6 +799,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 gmtOffset = parameters.gmtOffset
         )
 
+        if (viewState.productBeforeEnteringFragment == null) {
+            viewState = viewState.copy(
+                productBeforeEnteringFragment = updatedDraft
+            )
+        }
+
         // make sure to remember uploading images
         checkImageUploads(getRemoteProductId())
     }
