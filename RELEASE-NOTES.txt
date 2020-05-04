@@ -1,3 +1,6 @@
+4.3
+-----
+ 
 4.2
 -----
 * Bugfix: Removed detached and non-functioning text counter in the support email dialog
