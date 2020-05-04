@@ -5,6 +5,6 @@
         android:color="@color/transparent"/>
     <item
         android:state_selected="false"
-        android:color="@color/color_on_surface_medium"/>
+        android:color="@color/divider_color"/>
 </selector>
 
