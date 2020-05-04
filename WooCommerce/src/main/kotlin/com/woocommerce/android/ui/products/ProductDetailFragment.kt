@@ -100,7 +100,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProduct(new) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
@@ -226,7 +225,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         if (isAddEditProductRelease1Enabled(product.type)) {
             addEditableView(DetailCard.Primary, R.string.product_detail_title_hint, productName)?.also { view ->
-                view.setOnTextChangedListener { viewModel.updateProductDraft(title = it.toString()) }
+                view.setOnTextChangedListener {
+                    viewModel.updateProductDraft(title = it.toString())
+                    changesMade()
+                }
             }
         } else {
             addPropertyView(DetailCard.Primary, R.string.product_name, productName, LinearLayout.VERTICAL)
@@ -855,17 +857,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                     viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                    changesMade()
                 }
             }
             RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                    changesMade()
                 }
             }
             RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
                 result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
                         ?.let {
                             viewModel.addProductImageListToDraft(it)
+                            changesMade()
                         }
             }
         }

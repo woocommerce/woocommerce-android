@@ -71,10 +71,6 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
         menu.findItem(R.id.menu_done)?.isVisible = hasChanges()
     }
 
-    protected fun showUpdateProductAction(show: Boolean) {
-        view?.post { publishMenuItem?.isVisible = show }
-    }
-
     protected fun enablePublishMenuItem(enable: Boolean) {
         publishMenuItem?.isEnabled = enable
     }
