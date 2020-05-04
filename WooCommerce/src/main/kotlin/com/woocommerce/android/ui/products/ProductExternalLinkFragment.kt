@@ -90,4 +90,6 @@ class ProductExternalLinkFragment : BaseProductFragment() {
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClicked(ExitExternalLink())
     }
+
+    override fun hasChanges() = viewModel.hasExternalLinkChanges()
 }

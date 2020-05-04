@@ -89,15 +89,19 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
 
         product_weight.setOnTextChangedListener {
             viewModel.updateProductDraft(weight = editableToFloat(it))
+            changesMade()
         }
         product_length.setOnTextChangedListener {
             viewModel.updateProductDraft(length = editableToFloat(it))
+            changesMade()
         }
         product_height.setOnTextChangedListener {
             viewModel.updateProductDraft(height = editableToFloat(it))
+            changesMade()
         }
         product_width.setOnTextChangedListener {
             viewModel.updateProductDraft(width = editableToFloat(it))
+            changesMade()
         }
         product_shipping_class_spinner.setClickListener {
             showShippingClassFragment()
@@ -159,7 +163,10 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
                 product_shipping_class_spinner.setText(
                         viewModel.getShippingClassByRemoteShippingClassId(selectedShippingClassId)
                 )
+                changesMade()
             }
         }
     }
+
+    override fun hasChanges() = viewModel.hasShippingChanges()
 }

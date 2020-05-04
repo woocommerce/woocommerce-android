@@ -198,6 +198,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
+    fun hasChanges(): Boolean {
+        return viewState.storedProduct?.let { product ->
+            viewState.productDraft?.isSameProduct(product) == false
+        } ?: false
+    }
+
     /**
      * Called when the DONE menu button is clicked in all of the product sub detail screen
      */

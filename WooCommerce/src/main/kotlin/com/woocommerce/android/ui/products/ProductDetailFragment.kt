@@ -883,6 +883,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewModel.onAddImageClicked()
     }
 
+    override fun hasChanges() = viewModel.hasChanges()
+
     /**
      * Add/Edit Product Release 1 is enabled by default for SIMPLE products
      */

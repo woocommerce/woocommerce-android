@@ -66,6 +66,11 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
         publishMenuItem = menu.findItem(R.id.menu_done)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = hasChanges()
+    }
+
     protected fun showUpdateProductAction(show: Boolean) {
         view?.post { publishMenuItem?.isVisible = show }
     }
@@ -81,4 +86,16 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
             ActivityUtils.hideKeyboard(it)
         }
     }
+
+    /**
+     * Descendants should call this when edits are made so we can show/hide the done button
+     */
+    fun changesMade() {
+        activity?.invalidateOptionsMenu()
+    }
+
+    /**
+     * Descendants should override this to return true if changes have been made
+     */
+    abstract fun hasChanges(): Boolean
 }
