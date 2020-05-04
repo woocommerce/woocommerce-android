@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-16 00:54:04+0000
+Translation-Revision-Date: 2020-04-29 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_status_pending">Controle in behandeling</string>
+    <string name="settings_about_title">Over WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">Ingesteld door energiebesparing</string>
+    <string name="settings_app_theme_option_system">Systeemstandaard</string>
+    <string name="settings_app_theme_option_dark">Donker</string>
+    <string name="settings_app_theme_option_light">Licht</string>
+    <string name="settings_app_theme_title">Weergave</string>
+    <string name="product_short_description_empty">Korte samenvatting van het product</string>
+    <string name="product_short_description">Korte beschrijving</string>
+    <string name="my_store_stats_availability_message">We voeren verbeteringen door aan statistieken voor winkels met WooCommerce 4.0 of winkels waarvoor de WooCommerce Admin-plugin is geïnstalleerd</string>
+    <string name="my_store_stats_reverted_message">We hebben verbeteringen doorgevoerd voor analyses. Upgrade naar WooCommerce 4.0 of hoger of installeer de WooCommerce Admin-plugin om je statistieken te kunnen blijven bekijken na 1 juli 2020.</string>
+    <string name="my_store_stats_reverted_title">Upgrade om je statistieken te kunnen blijven bekijken</string>
     <string name="product_pricing_update_sale_price_error">Prijs in de aanbieding moet lager zijn dan de normale prijs</string>
     <string name="product_schedule_remove_end_date_link_label">Verwijder einddatum</string>
     <string name="product_shipping_empty">Voeg verzendkosten toe</string>
@@ -61,7 +73,7 @@ Language: nl
     <string name="product_inventory_empty">Voorraad toevoegen</string>
     <string name="orderlist_loading">Je bestellingen worden opgezocht …</string>
     <string name="product_detail_editable_text_hint">Voer tekst in</string>
-    <string name="product_detail_title_hint">Voer titel in</string>
+    <string name="product_detail_title_hint">Producttitel</string>
     <string name="product_detail_update_product_success">Product bijgewerkt</string>
     <string name="product_detail_update_product_error">Bijwerken product mislukt</string>
     <string name="product_update_dialog_message">Een moment geduld…</string>
@@ -185,7 +197,6 @@ Language: nl
     <string name="orderdetail_payment_paid_by_customer">Betaald door klant</string>
     <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
-    <string name="my_store_stats_availability_message">We voeren verbeteringen aan statistieken voor winkels door, via de WooCommerce Admin-plugin</string>
     <string name="my_store_stats_availability_title">Probeer onze verbeterde statistieken</string>
     <string name="dashboard_state_no_data">Geen omzet deze periode</string>
     <string name="no_thanks">Nee, liever niet</string>
@@ -515,7 +526,6 @@ Language: nl
     <string name="read_more">Meer informatie</string>
     <string name="error_loading_image">Kan afbeelding niet laden</string>
     <string name="product_status_draft">Concept</string>
-    <string name="product_status_pending">In behandeling</string>
     <string name="product_status_private">Privé</string>
     <string name="product_status_published">Gepubliceerd</string>
     <string name="product_view_affiliate">Verwant product weergeven</string>

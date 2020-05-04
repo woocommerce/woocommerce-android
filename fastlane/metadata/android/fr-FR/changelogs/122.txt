@@ -1,3 +1,0 @@
-4.0 :
-* Nous sommes heureux de vous présenter l’onglet Produits !
-* Les utilisateurs ont aussi pour l’instant des fonctions d’édition limitées pour les produits simples. Des fonctions supplémentaires seront bientôt ajoutées.
