@@ -30,7 +30,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
 
     protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
 
-    private var publishMenuItem: MenuItem? = null
+    private var doneOrPublishMenuItem: MenuItem? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,16 +63,16 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        publishMenuItem = menu.findItem(R.id.menu_done)
+        doneOrPublishMenuItem = menu.findItem(R.id.menu_done)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.menu_done)?.isVisible = hasChanges()
+        doneOrPublishMenuItem?.isVisible = hasChanges()
     }
 
     protected fun enablePublishMenuItem(enable: Boolean) {
-        publishMenuItem?.isEnabled = enable
+        doneOrPublishMenuItem?.isEnabled = enable
     }
 
     override fun onStop() {
@@ -84,7 +84,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     }
 
     /**
-     * Descendants should call this when edits are made so we can show/hide the done button
+     * Descendants should call this when edits are made so we can show/hide the done/publish button
      */
     fun changesMade() {
         activity?.invalidateOptionsMenu()
