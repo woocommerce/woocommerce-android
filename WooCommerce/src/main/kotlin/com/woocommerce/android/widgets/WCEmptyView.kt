@@ -169,7 +169,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = context.getString(R.string.empty_categories_list_title)
                 message = context.getString(R.string.empty_categories_list_message)
                 buttonText = context.getString(R.string.learn_more)
-                drawableId = R.drawable.img_empty_reviews
+                drawableId = R.drawable.ic_woo_error_state
             }
         }
 

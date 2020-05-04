@@ -5,38 +5,32 @@
     android:id="@+id/categoryItemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/text_minor_60"
     android:background="?android:attr/selectableItemBackground">
 
     <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/categoryName"
-            style="@style/Woo.ListItem.Title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_margin="@dimen/minor_00"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            tools:text="Category" />
+        android:id="@+id/categoryName"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/categorySelected"
+        tools:text="Category" />
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/categorySelected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBaseline_toBaselineOf="@id/categoryName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/categoryName" />
+        app:layout_constraintStart_toEndOf="@id/categoryName"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_width="0dp"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/minor_00"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/categoryName"/>
+        app:layout_constraintStart_toStartOf="@id/categoryName"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

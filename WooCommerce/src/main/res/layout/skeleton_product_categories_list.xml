@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_margin="@dimen/margin_extra_medium_large"
         android:layout_height="@dimen/skeleton_text_button_height"
+        android:visibility="gone"
         android:background="@drawable/skeleton_background"/>
 
     <include layout="@layout/skeleton_product_category_list_item"/>
