@@ -27,7 +27,9 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.ISO_DATE
@@ -180,6 +182,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
             if (granularity == DAYS) {
                 dashboard_stats.updateView(fakeRevenueStats, fakeSalesStats, presenter.getStatsCurrency())
+            } else if (granularity == YEARS) {
+                dashboard_stats.updateView(fakeYearlyRevenueStats, fakeYearlySalesStats, presenter.getStatsCurrency())
             } else {
                 dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
             }
@@ -212,6 +216,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
         if (dashboard_stats.activeGranularity == DAYS) {
             dashboard_stats.showVisitorStats(mapOf("2020-04-27" to 1387))
+            return
+        } else if (dashboard_stats.activeGranularity == YEARS) {
+            dashboard_stats.showVisitorStats(
+                mapOf("2020-01-01" to fakeYearlyVisitorStats.values.reduce() { a, b -> a + b })
+            )
             return
         }
 
@@ -366,6 +375,19 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         showV4StatsAvailabilityBanner(false)
     }
 
+    // See
+    // https://github.com/woocommerce/woocommerce-ios/blob/ea22f8241d18fe4b4a21d0084dc906500452b7a2/WooCommerce/WooCommerceUITests/Mocks/mappings/stats/stats_orders-year.json#L27-L33
+    private val fakeYearlyRevenueStats: Map<String, Double> = {
+        val currentYear = LocalDateTime.now().year
+        mapOf(
+            (currentYear - 4).toString() to 4000.0,
+            (currentYear - 3).toString() to 8400.0,
+            (currentYear - 2).toString() to 12750.0,
+            (currentYear - 1).toString() to 17800.0,
+            currentYear.toString() to 20240.0
+        )
+    }()
+
     private var fakeRevenueStats: Map<String, Double> = {
         val startDate = LocalDate.parse("2020-04-27", ISO_DATE)
         val t = listOf(
@@ -422,4 +444,23 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }()
 
     private val fakeSalesStats: Map<String, Int> = mapOf("2020-03-29" to 42)
+
+    // See
+    // https://github.com/woocommerce/woocommerce-ios/blob/ea22f8241d18fe4b4a21d0084dc906500452b7a2/WooCommerce/WooCommerceUITests/Mocks/mappings/stats/stats_orders-year.json#L36
+    // No runtime evaluation of the current year, because what's the chance that this fixture won't need changing in the
+    // next 5 years?!
+    private val fakeYearlySalesStats: Map<String, Int> = mapOf("2020" to 520)
+
+    // See
+    // https://github.com/woocommerce/woocommerce-ios/blob/ea22f8241d18fe4b4a21d0084dc906500452b7a2/WooCommerce/WooCommerceUITests/Mocks/mappings/stats/stats_visits-year.json#L29-L35
+    private val fakeYearlyVisitorStats: Map<String, Int> = {
+        val currentYear = LocalDateTime.now().year
+        mapOf(
+            (currentYear - 4).toString() to 500,
+            (currentYear - 3).toString() to 900,
+            (currentYear - 2).toString() to 1200,
+            (currentYear - 1).toString() to 1350,
+            currentYear.toString() to 1299
+        )
+    }()
 }
