@@ -330,6 +330,4 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClicked(ExitPricing())
     }
-
-    override fun hasChanges() = viewModel.hasPricingChanges()
 }

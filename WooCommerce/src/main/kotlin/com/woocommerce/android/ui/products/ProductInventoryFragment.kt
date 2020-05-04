@@ -204,6 +204,4 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClicked(ExitInventory())
     }
-
-    override fun hasChanges() = viewModel.hasInventoryChanges()
 }

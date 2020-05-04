@@ -463,7 +463,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * changes in that specific screen
      */
     fun updateProductBeforeEnteringFragment() {
-        viewState.productBeforeEnteringFragment = viewState.productDraft
+        viewState.productBeforeEnteringFragment = viewState.productDraft ?: viewState.storedProduct
     }
 
     /**
@@ -743,8 +743,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 }
-                viewState = viewState.copy(productDraft = null, isProductUpdated = false)
                 loadProduct(product.remoteId)
+                viewState = viewState.copy(
+                    productDraft = null,
+                    productBeforeEnteringFragment = getProduct().storedProduct,
+                    isProductUpdated = false
+                )
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }

@@ -246,6 +246,4 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             (item as? ImageViewerFragment)?.setImageListener(this@ProductImageViewerFragment)
         }
     }
-
-    override fun hasChanges() = false
 }

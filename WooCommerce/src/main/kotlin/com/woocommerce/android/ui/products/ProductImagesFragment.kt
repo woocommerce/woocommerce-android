@@ -250,6 +250,4 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
     }
-
-    override fun hasChanges() = viewModel.hasImageChanges()
 }

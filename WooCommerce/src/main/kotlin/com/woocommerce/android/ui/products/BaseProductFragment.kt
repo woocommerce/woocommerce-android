@@ -68,11 +68,15 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        doneOrPublishMenuItem?.isVisible = hasChanges()
+        showPublishMenuItem(hasChanges())
     }
 
     protected fun enablePublishMenuItem(enable: Boolean) {
         doneOrPublishMenuItem?.isEnabled = enable
+    }
+
+    protected fun showPublishMenuItem(show: Boolean) {
+        doneOrPublishMenuItem?.isVisible = show
     }
 
     override fun onStop() {
@@ -84,14 +88,18 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     }
 
     /**
-     * Descendants should call this when edits are made so we can show/hide the done/publish button
+     * Determines if changes have been made in the active fragment
      */
-    fun changesMade() {
-        activity?.invalidateOptionsMenu()
+    private fun hasChanges(): Boolean {
+        return viewModel.getProduct().productBeforeEnteringFragment?.let {
+            viewModel.getProduct().productDraft?.isSameProduct(it) == false
+        } ?: false
     }
 
     /**
-     * Descendants should override this to return true if changes have been made
+     * Descendants should call this when edits are made so we can show/hide the done/publish button
      */
-    abstract fun hasChanges(): Boolean
+    protected fun changesMade() {
+        showPublishMenuItem(hasChanges())
+    }
 }

@@ -167,6 +167,4 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
             }
         }
     }
-
-    override fun hasChanges() = viewModel.hasShippingChanges()
 }

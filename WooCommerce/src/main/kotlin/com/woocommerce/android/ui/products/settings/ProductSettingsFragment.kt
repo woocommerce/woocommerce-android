@@ -183,6 +183,4 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
 
         updateProductView()
     }
-
-    override fun hasChanges() = viewModel.hasSettingsChanges()
 }
