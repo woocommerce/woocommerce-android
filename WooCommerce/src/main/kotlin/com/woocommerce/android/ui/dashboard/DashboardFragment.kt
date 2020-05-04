@@ -369,47 +369,47 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private var fakeRevenueStats: Map<String, Double> = {
         val startDate = LocalDate.parse("2020-04-27", ISO_DATE)
         val t = listOf(
-                500.0,
-                510.0,
-                520.0,
-                540.0, // Intentional
-                550.0,
-                560.0,
-                575.0, // Intentional
-                580.0,
-                590.0,
-                600.0,
-                610.0,
-                620.0,
-                630.0,
-                640.0,
-                650.0,
-                675.0
+            500.0,
+            510.0,
+            520.0,
+            540.0, // Intentional
+            550.0,
+            560.0,
+            575.0, // Intentional
+            580.0,
+            590.0,
+            600.0,
+            610.0,
+            620.0,
+            630.0,
+            640.0,
+            650.0,
+            675.0
         )
         val q = listOf(
-                600.0,
-                605.0,
-                610.0,
-                615.0,
-                620.0,
-                625.0,
-                630.0,
-                635.0,
-                640.0,
-                645.0,
-                650.0,
-                655.0,
-                660.0,
-                665.0,
-                670.0,
-                675.0
+            600.0,
+            605.0,
+            610.0,
+            615.0,
+            620.0,
+            625.0,
+            630.0,
+            635.0,
+            640.0,
+            645.0,
+            650.0,
+            655.0,
+            660.0,
+            665.0,
+            670.0,
+            675.0
         )
         val r = listOf(
-1.0,
-                2.0,
-                3.0,
-        2.0,
-                3.0
+            1.0,
+            2.0,
+            3.0,
+            2.0,
+            3.0
         )
         val fakeValues = (r + r + r).shuffled(Random(12345678))
         val valuesCount = fakeValues.count()
