@@ -90,7 +90,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     /**
      * Determines if changes have been made in the active fragment
      */
-    private fun hasChanges(): Boolean {
+    open fun hasChanges(): Boolean {
         return viewModel.getProduct().productBeforeEnteringFragment?.let {
             viewModel.getProduct().productDraft?.isSameProduct(it) == false
         } ?: false

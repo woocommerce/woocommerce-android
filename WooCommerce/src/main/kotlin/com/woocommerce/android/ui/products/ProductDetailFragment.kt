@@ -654,7 +654,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
 
         // locate the existing property view in the container, add it if not found
-        val propertyTag = "{$propertyName}_tag_{$propertyValue)"
+        val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
             propertyView = View.inflate(context, R.layout.product_property_view, null) as WCProductPropertyView
@@ -888,6 +888,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onGalleryAddImageClicked() {
         viewModel.onAddImageClicked()
     }
+
+    /**
+     * Override the BaseProductFragment's fun since we want to return True if any changes have been
+     * made to the product draft
+     */
+    override fun hasChanges() = viewModel.hasChanges()
 
     /**
      * Add/Edit Product Release 1 is enabled by default for SIMPLE products
