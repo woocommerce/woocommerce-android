@@ -16,7 +16,7 @@ class StatsComponent : Screen {
         clickOn(R.id.dashboard)
     }
 
-    fun waitForGraphToLoad() {
+    private fun waitForGraphToLoad() {
         // One option to ensure stats load is to idle for n seconds to give time to the network request to
         // finish. The timeout duration may or may not be enough though. Here's an option that hopes to be
         // a bit more flexible. I'm leaving the previous one and this comment for reference, just in case
