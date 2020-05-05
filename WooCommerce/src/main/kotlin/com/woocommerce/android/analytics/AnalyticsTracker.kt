@@ -532,6 +532,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ORDER_FULFILL = "order_fulfill"
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"
+        const val IMAGE_SOURCE_WPMEDIA = "wpmedia"
 
         const val KEY_REFUND_IS_FULL = "is_full"
         const val KEY_REFUND_TYPE = "method"
