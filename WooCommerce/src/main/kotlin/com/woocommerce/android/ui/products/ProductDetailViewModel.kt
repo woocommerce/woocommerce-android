@@ -170,7 +170,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product detail screen
      */
-    fun onEditProductCardClicked(target: ProductNavigationTarget) {
+    fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
+        stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
     }
 
