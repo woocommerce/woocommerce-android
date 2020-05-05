@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -27,9 +28,13 @@ class ProductCategoriesAdapter(
         fun onProductCategoryClick(productCategoryViewHolderModel: ProductCategoryViewHolderModel)
     }
 
+    companion object {
+        const val DEFAULT_CATEGORY_MARGIN = 32
+    }
+
     data class ProductCategoryViewHolderModel(
         val category: ProductCategory,
-        var padding: Int = 0,
+        var margin: Int = DEFAULT_CATEGORY_MARGIN,
         var isSelected: Boolean = false
     )
 
@@ -49,23 +54,27 @@ class ProductCategoriesAdapter(
     override fun onBindViewHolder(holder: ProductCategoryViewHolder, position: Int) {
         val productCategory = productCategoryList[position]
 
-        holder.txtCategoryName.text = if (productCategory.category.name.isEmpty()) {
-            context.getString(R.string.untitled)
-        } else {
-            HtmlUtils.fastStripHtml(productCategory.category.name)
-        }
+        holder.apply {
+            txtCategoryName.text = if (productCategory.category.name.isEmpty()) {
+                context.getString(R.string.untitled)
+            } else {
+                HtmlUtils.fastStripHtml(productCategory.category.name)
+            }
 
-        holder.txtCategoryName.setPaddingRelative(productCategory.padding, 0, 0, 0)
+            val newLayoutParams = txtCategoryName.layoutParams as LayoutParams
+            newLayoutParams.marginStart = productCategory.margin
+            txtCategoryName.layoutParams = newLayoutParams
 
-        holder.checkBox.isChecked = productCategory.isSelected
+            checkBox.isChecked = productCategory.isSelected
 
-        holder.checkBox.setOnClickListener {
-            handleCategoryClick(holder, productCategory)
-        }
+            checkBox.setOnClickListener {
+                handleCategoryClick(this, productCategory)
+            }
 
-        holder.itemView.setOnClickListener {
-            holder.checkBox.isChecked = !holder.checkBox.isChecked
-            handleCategoryClick(holder, productCategory)
+            itemView.setOnClickListener {
+                checkBox.isChecked = !checkBox.isChecked
+                handleCategoryClick(this, productCategory)
+            }
         }
 
         if (position == itemCount - 1) {
