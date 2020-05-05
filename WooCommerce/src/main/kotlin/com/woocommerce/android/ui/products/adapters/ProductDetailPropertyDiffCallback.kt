@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.PROPERT
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.RATING_BAR
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.READ_MORE
 
-class ProductDetailPropertiesDiffCallback(
+class ProductDetailPropertyDiffCallback(
     private val oldList: List<ProductDetailItem>,
     private val newList: List<ProductDetailItem>
 ) : Callback() {

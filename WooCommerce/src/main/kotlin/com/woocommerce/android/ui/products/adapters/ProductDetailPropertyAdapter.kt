@@ -29,12 +29,12 @@ import com.woocommerce.android.ui.products.viewholders.PropertyViewHolder
 import com.woocommerce.android.ui.products.viewholders.RatingBarViewHolder
 import com.woocommerce.android.ui.products.viewholders.ReadMoreViewHolder
 
-class ProductDetailPropertiesAdapter : Adapter<ProductDetailPropertyViewHolder>() {
+class ProductDetailPropertyAdapter : Adapter<ProductDetailPropertyViewHolder>() {
     private var items = listOf<ProductDetailItem>()
 
     fun update(newItems: List<ProductDetailItem>) {
         val diffResult = DiffUtil.calculateDiff(
-            ProductDetailPropertiesDiffCallback(
+            ProductDetailPropertyDiffCallback(
                 items,
                 newItems
             )
