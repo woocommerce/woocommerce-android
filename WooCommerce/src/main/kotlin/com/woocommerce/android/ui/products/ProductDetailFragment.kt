@@ -210,7 +210,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun getFragmentTitle() = productName
 
-    private fun loadData(recyclerView: RecyclerView, data: List<ProductDetailCard>) {
+    private fun loadCards(recyclerView: RecyclerView, data: List<ProductDetailCard>) {
         val adapter: ProductDetailCardsAdapter
         if (recyclerView.adapter == null) {
             adapter = ProductDetailCardsAdapter()
@@ -250,7 +250,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        loadData(cardsRecyclerView, cards)
+        loadCards(cardsRecyclerView, cards)
     }
 
     private fun showProduct(productData: ProductDetailViewState) {
