@@ -14,7 +14,10 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -31,6 +34,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -41,11 +45,15 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.adapters.ProductDetailCardsAdapter
+import com.woocommerce.android.ui.products.models.ProductDetailCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -54,6 +62,7 @@ import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
 import java.util.Date
+import javax.inject.Inject
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     private enum class DetailCard {
@@ -89,7 +98,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeViews()
         initializeViewModel()
+    }
+
+    private fun initializeViews() {
+        cardsRecyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
     }
 
     private fun initializeViewModel() {
@@ -186,6 +200,49 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun getFragmentTitle() = productName
+
+    private fun loadData(recyclerView: RecyclerView, data: List<ProductDetailCard>) {
+        val adapter: ProductDetailCardsAdapter
+        if (recyclerView.adapter == null) {
+            adapter = ProductDetailCardsAdapter()
+            recyclerView.adapter = adapter
+        } else {
+            adapter = recyclerView.adapter as ProductDetailCardsAdapter
+        }
+
+        val recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
+        adapter.update(data)
+        recyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun showProduct(product: Product, cards: List<ProductDetailCard>) {
+        productName = product.name.fastStripHtml()
+        updateActivityTitle()
+
+        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
+            imageGallery.visibility = View.GONE
+            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
+                addImageContainer.visibility = View.VISIBLE
+                addImageContainer.setOnClickListener {
+                    viewModel.onAddImageClicked()
+                }
+            }
+        } else {
+            addImageContainer.visibility = View.GONE
+            imageGallery.visibility = View.VISIBLE
+            imageGallery.showProductImages(product, this)
+        }
+
+        // show status badge for unpublished products
+        product.status?.let { status ->
+            if (status != ProductStatus.PUBLISH) {
+                frameStatusBadge.visibility = View.VISIBLE
+                textStatusBadge.text = status.toLocalizedString(requireActivity())
+            }
+        }
+
+        loadData(cardsRecyclerView, cards)
+    }
 
     private fun showProduct(productData: ProductDetailViewState) {
         if (!isAdded) return
@@ -717,7 +774,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             container.addView(linkView)
         }
 
-        linkView.show(caption, url, tracksEvent)
+//        linkView.show(caption, url, tracksEvent)
         return linkView
     }
 
@@ -780,9 +837,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
      */
     private fun findOrAddCardView(card: DetailCard): WCProductPropertyCardView {
         val cardTag = "${card.name}_tag"
-        productDetail_container.findViewWithTag<WCProductPropertyCardView>(cardTag)?.let {
-            return it
-        }
+//        productDetail_container.findViewWithTag<WCProductPropertyCardView>(cardTag)?.let {
+//            return it
+//        }
 
         // add a divider above the card if this isn't the first card
         if (card != DetailCard.Primary) {
@@ -804,8 +861,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             DetailCard.PurchaseDetails -> getString(R.string.product_purchase_details)
         }
 
-        cardView.show(cardViewCaption)
-        productDetail_container.addView(cardView)
+//        cardView.show(cardViewCaption)
+//        productDetail_container.addView(cardView)
 
         return cardView
     }
@@ -847,7 +904,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 MATCH_PARENT,
                 resources.getDimensionPixelSize(R.dimen.minor_100)
         )
-        productDetail_container.addView(divider)
+//        productDetail_container.addView(divider)
     }
 
     private fun getProductSaleDates(dateOnSaleFrom: Date, dateOnSaleTo: Date): String {
