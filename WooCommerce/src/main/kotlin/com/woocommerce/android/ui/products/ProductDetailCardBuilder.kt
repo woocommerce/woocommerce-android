@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.text.SpannableString
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToMMMdd
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.products.models.ProductDetailItem.ComplexPrope
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Divider
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Editable
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Link
+import com.woocommerce.android.ui.products.models.ProductDetailItem.Property
 import com.woocommerce.android.ui.products.models.ProductDetailItem.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductDetailItem.RatingBar
 import com.woocommerce.android.ui.products.models.ProductDetailItem.ReadMore
@@ -109,12 +111,7 @@ class ProductDetailCardBuilder(
         // we don't show total sales for variations because they're always zero
         // we are removing the total orders sections from products M2 release
         if (product.type != VARIABLE && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            items.add(
-                ComplexProperty(
-                    R.string.product_total_orders,
-                    StringUtils.formatCount(product.totalSales)
-                )
-            )
+            items.add(Property(string.product_total_orders, StringUtils.formatCount(product.totalSales)))
         }
 
         // we don't show reviews for variations because they're always empty
