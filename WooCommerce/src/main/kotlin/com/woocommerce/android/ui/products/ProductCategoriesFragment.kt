@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.ui.products.ProductCategoriesAdapter.Companion.DEFAULT_CATEGORY_MARGIN
 import com.woocommerce.android.ui.products.ProductCategoriesAdapter.OnProductCategoryClickListener
 import com.woocommerce.android.ui.products.ProductCategoriesAdapter.ProductCategoryViewHolderModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitCategories
@@ -33,10 +34,6 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
     ): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_categories_list, container, false)
-    }
-
-    companion object {
-        const val DEFAULT_CATEGORY_PADDING = 32
     }
 
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter
@@ -143,7 +140,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
 
         // Update the indent of the category if it's a child
         for (categoryViewHolderModel in sortedList) {
-            categoryViewHolderModel.padding = computePadding(parentChildMap, categoryViewHolderModel.category)
+            categoryViewHolderModel.margin = computeCascadingMargin(parentChildMap, categoryViewHolderModel.category)
         }
 
         // Mark the product categories as selected in the sorted list
@@ -192,21 +189,21 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
     }
 
     /**
-     * Computes the padding for the category name according to its parent
+     * Computes the cascading margin for the category name according to its parent
      *
      * @param hierarchy the map of parent to child relationship
      * @param category the category for which the padding is being calculated
      *
-     * @return Int the computed padding
+     * @return Int the computed margin
      */
-    private fun computePadding(hierarchy: Map<Long, Long>, category: ProductCategory): Int {
-        var indent = 0
-        var parent = category.parent ?: 0L
+    private fun computeCascadingMargin(hierarchy: Map<Long, Long>, category: ProductCategory): Int {
+        var margin = DEFAULT_CATEGORY_MARGIN
+        var parent = category.parent
         while (parent != 0L) {
-            indent += DEFAULT_CATEGORY_PADDING
+            margin += DEFAULT_CATEGORY_MARGIN
             parent = hierarchy[parent] ?: 0L
         }
-        return indent
+        return margin
     }
 
     private fun showSkeleton(show: Boolean) {
