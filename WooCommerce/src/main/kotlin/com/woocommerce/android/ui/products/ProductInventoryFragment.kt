@@ -165,20 +165,20 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     private fun displaySkuError(messageId: Int) {
         if (messageId != 0) {
             product_sku.setError(getString(messageId))
-            enablePublishMenuItem(false)
+            enableUpdateMenuItem(false)
         } else {
             product_sku.clearError()
-            enablePublishMenuItem(true)
+            enableUpdateMenuItem(true)
         }
     }
 
     private fun displayStockQuantityError(messageId: Int) {
         if (messageId != 0) {
             product_stock_quantity.setError(getString(messageId))
-            enablePublishMenuItem(false)
+            enableUpdateMenuItem(false)
         } else {
             product_stock_quantity.clearError()
-            enablePublishMenuItem(true)
+            enableUpdateMenuItem(true)
         }
     }
 

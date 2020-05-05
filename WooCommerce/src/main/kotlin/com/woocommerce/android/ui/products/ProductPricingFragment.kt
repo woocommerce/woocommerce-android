@@ -260,10 +260,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     private fun displaySalePriceError(messageId: Int) {
         if (messageId != 0) {
             product_sale_price.error = getString(messageId)
-            enablePublishMenuItem(false)
+            enableUpdateMenuItem(false)
         } else {
             product_sale_price.error = null
-            enablePublishMenuItem(true)
+            enableUpdateMenuItem(true)
         }
     }
 

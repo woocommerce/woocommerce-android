@@ -100,7 +100,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProduct(new) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showPublishMenuItem(it) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
