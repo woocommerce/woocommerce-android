@@ -9,6 +9,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNumeric
@@ -282,6 +284,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.productDraft?.let {
             triggerEvent(ViewProductMenuOrder(it.menuOrder))
         }
+    }
+
+    fun onViewProductOnStoreLinkClicked(url: String) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+        triggerEvent(LaunchUrlInChromeTab(url))
+    }
+
+    fun onAffiliateLinkClicked(url: String) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED)
+        triggerEvent(LaunchUrlInChromeTab(url))
     }
 
     /**
@@ -884,6 +896,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
+
+    data class LaunchUrlInChromeTab(val url: String) : Event()
 
     @Parcelize
     data class Parameters(

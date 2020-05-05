@@ -17,13 +17,9 @@ class WCProductPropertyLinkView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
     private var view: View = View.inflate(context, R.layout.product_property_link_view_layout, this)
 
-    fun show(caption: String, url: String, tracksEvent: Stat) {
+    fun show(caption: String) {
         with(view.findViewById<MaterialTextView>(R.id.textLink)) {
             text = caption
-        }
-        view.setOnClickListener {
-            AnalyticsTracker.track(tracksEvent)
-            ChromeCustomTabUtils.launchUrl(context, url)
         }
     }
 }

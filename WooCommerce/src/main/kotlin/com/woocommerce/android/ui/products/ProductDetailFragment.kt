@@ -107,6 +107,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 imageGallery.setPlaceholderImageUris(it)
             }
         }
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is LaunchUrlInChromeTab -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                else -> event.isHandled = false
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
