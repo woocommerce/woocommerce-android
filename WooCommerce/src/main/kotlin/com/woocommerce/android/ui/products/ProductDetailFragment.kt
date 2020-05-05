@@ -651,7 +651,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
 
         // locate the existing property view in the container, add it if not found
-        val propertyTag = "{$propertyName}_tag_{$propertyValue)"
+        val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
             propertyView = View.inflate(context, R.layout.product_property_view, null) as WCProductPropertyView
