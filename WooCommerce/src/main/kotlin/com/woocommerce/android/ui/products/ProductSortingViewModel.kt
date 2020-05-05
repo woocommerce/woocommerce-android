@@ -52,7 +52,7 @@ class ProductSortingViewModel @AssistedInject constructor(
         }
         AnalyticsTracker.track(
             Stat.PRODUCT_LIST_SORTING_OPTION_SELECTED,
-            mapOf(Pair(AnalyticsTracker.KEY_SORT_ORDER, order))
+            mapOf(AnalyticsTracker.KEY_SORT_ORDER to order)
         )
         productListRepository.productSortingChoice = option
         EventBus.getDefault().post(OnProductSortingChanged)
