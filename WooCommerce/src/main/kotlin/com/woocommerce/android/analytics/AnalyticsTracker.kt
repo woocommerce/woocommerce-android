@@ -258,6 +258,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_LIST_MENU_SEARCH_TAPPED,
         PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED,
         PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED,
+        PRODUCT_LIST_SORTING_OPTION_SELECTED,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
@@ -525,6 +526,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_NOTE_ID = "note_id"
         const val KEY_IMAGE_SOURCE = "source"
         const val KEY_FILTERS = "filters"
+
+        const val KEY_SORT_ORDER = "order"
+        const val VALUE_SORT_NAME_ASC = "name,ascending"
+        const val VALUE_SORT_NAME_DESC = "name,descending"
+        const val VALUE_SORT_DATE_ASC = "date,ascending"
+        const val VALUE_SORT_DATE_DESC = "date,descending"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
