@@ -1,15 +1,17 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.adapters
 
 import androidx.recyclerview.widget.DiffUtil.Callback
 import com.woocommerce.android.ui.products.models.ProductDetailItem
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.COMPLEX_PROPERTY
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.DIVIDER
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.EDITABLE
+import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.LINK
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.PROPERTY
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.PROPERTY_GROUP
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.RATING_BAR
+import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.READ_MORE
 
-class ProductDetailDiffCallback(
+class ProductDetailPropertiesDiffCallback(
     private val oldList: List<ProductDetailItem>,
     private val newList: List<ProductDetailItem>
 ) : Callback() {
@@ -23,7 +25,10 @@ class ProductDetailDiffCallback(
                 COMPLEX_PROPERTY,
                 PROPERTY_GROUP,
                 RATING_BAR,
-                EDITABLE -> oldItem == newItem
+                EDITABLE,
+                LINK,
+                READ_MORE
+                    -> oldItem == newItem
             }
         } else {
             false
