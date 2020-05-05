@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-16 00:54:03+0000
+Translation-Revision-Date: 2020-04-30 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_status_pending">レビュー待ち</string>
+    <string name="settings_about_title">WooCommerce について</string>
+    <string name="settings_app_theme_option_battery_saver">バッテリーセーバーで設定</string>
+    <string name="settings_app_theme_option_system">システムの初期設定</string>
+    <string name="settings_app_theme_option_dark">ダーク</string>
+    <string name="settings_app_theme_option_light">ライト</string>
+    <string name="settings_app_theme_title">外観</string>
+    <string name="product_short_description_empty">商品についての簡単な概要</string>
+    <string name="product_short_description">簡単な説明</string>
+    <string name="my_store_stats_availability_message">WooCommerce 4.0 のストアまたは WooCommerce Admin プラグインがインストールされているストアに、強化された統計機能を提供開始します</string>
+    <string name="my_store_stats_reverted_message">アナリティクスの改善を提供開始しました。2020年7月1日以降も統計情報を引き続き表示するには、WooCommerce 4.0以降にアップグレードするか、WooCommerce Admin プラグインをインストールしてください。</string>
+    <string name="my_store_stats_reverted_title">統計情報を引き続き表示するにはアップグレードしてください</string>
     <string name="product_pricing_update_sale_price_error">セール価格は標準価格未満である必要があります</string>
     <string name="product_schedule_remove_end_date_link_label">終了日を削除</string>
     <string name="product_shipping_empty">配送を追加</string>
@@ -61,7 +73,7 @@ Language: ja_JP
     <string name="product_inventory_empty">在庫を追加</string>
     <string name="orderlist_loading">注文を検索しています…</string>
     <string name="product_detail_editable_text_hint">テキストを入力</string>
-    <string name="product_detail_title_hint">タイトルを入力</string>
+    <string name="product_detail_title_hint">商品名</string>
     <string name="product_detail_update_product_success">商品更新</string>
     <string name="product_detail_update_product_error">商品の更新中にエラーが発生しました。</string>
     <string name="product_update_dialog_message">しばらくお待ちください…</string>
@@ -185,7 +197,6 @@ Language: ja_JP
     <string name="orderdetail_payment_paid_by_customer">顧客から支払われた金額</string>
     <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>
     <string name="orderdetail_payment_summary_completed">%2$s により %1$s</string>
-    <string name="my_store_stats_availability_message">WooCommerce Admin プラグインでストアに強化された統計機能を提供開始します</string>
     <string name="my_store_stats_availability_title">強化された統計機能をお試しください</string>
     <string name="dashboard_state_no_data">この期間には収益がありません</string>
     <string name="no_thanks">結構です</string>
@@ -515,7 +526,6 @@ Language: ja_JP
     <string name="read_more">続きを読む</string>
     <string name="error_loading_image">画像を読み込めませんでした</string>
     <string name="product_status_draft">下書き</string>
-    <string name="product_status_pending">保留中</string>
     <string name="product_status_private">非公開</string>
     <string name="product_status_published">公開済み</string>
     <string name="product_view_affiliate">アフィリエイト向け商品を表示</string>

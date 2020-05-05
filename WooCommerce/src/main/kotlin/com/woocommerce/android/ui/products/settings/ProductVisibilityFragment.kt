@@ -56,6 +56,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
         }
 
         editPassword.setOnTextChangedListener {
+            changesMade()
             if (it.toString().isNotBlank()) {
                 editPassword.clearError()
             }
@@ -75,6 +76,8 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
             selectedVisibility = getVisibilityForButtonId(it.id)
             showPassword(it == btnPasswordProtected)
+
+            changesMade()
         }
     }
 

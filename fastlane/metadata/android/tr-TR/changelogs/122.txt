@@ -1,3 +1,0 @@
-4.0:
-* Ürünler sekmesini tanıtmaktan memnuniyet duyuyoruz!
-* Kullanıcılar artık Basit Ürünler için sınırlı düzenleme yetkilerine sahip olacak, zamanla daha fazlası da gelecek.
