@@ -80,6 +80,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
+    @Inject lateinit var resources: ResourceProvider
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
+
+    private val cardBuilder by lazy {
+        ProductDetailCardBuilder(viewModel, resources, currencyFormatter, viewModel.parameters)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
@@ -113,7 +120,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProduct(new) }
+            new.productDraft?.takeIfNotEqualTo(old?.productDraft) {
+                showProduct(new.productDraft, cardBuilder.buildPropertyCards(new.productDraft))
+            }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
