@@ -9,8 +9,11 @@
     <color name="color_secondary">@color/woo_pink_50</color>
     <color name="color_secondary_variant">@color/woo_pink_70</color>
     <color name="color_surface">@color/woo_white</color>
+    <color name="color_surface_variant">@color/woo_gray_40</color>
     <color name="color_error">@color/woo_red_50</color>
     <color name="color_alert">@color/woo_yellow_50</color>
+
+    <color name="color_surface_elevated_04">@color/woo_white</color>
 
     <color name="color_on_surface">@color/black</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
@@ -35,6 +38,7 @@
 
     <color name="inverted_surface_overlay">@color/woo_black_90_alpha_012</color>
     <color name="color_scrim_background">@color/woo_white_alpha_038</color>
+    <color name="color_default_image_background">@color/woo_gray_5</color>
 
     <!--
         Icon-related resources that use the surface color should be assigned
@@ -113,6 +117,7 @@
     <color name="product_stock_fg">@color/color_on_surface_medium</color>
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
+    <color name="product_filer_bg_selected">@color/color_primary_surface</color>
 
     <!--
         Aztec Editor

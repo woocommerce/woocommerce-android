@@ -68,7 +68,7 @@ class WCPromoDialog : androidx.fragment.app.DialogFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_Promo
+        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
     }
 
     // hide the image in landscape

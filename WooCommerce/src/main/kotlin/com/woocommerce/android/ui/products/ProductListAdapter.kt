@@ -30,7 +30,7 @@ class ProductListAdapter(
     private val clickListener: OnProductClickListener,
     private val loadMoreListener: OnLoadMoreListener
 ) : RecyclerView.Adapter<ProductViewHolder>() {
-    private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+    private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
     private val productList = ArrayList<Product>()
     private val bullet = "\u2022"
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
@@ -52,10 +52,10 @@ class ProductListAdapter(
         val statusHtml = product.status?.let {
             when {
                 it == ProductStatus.PENDING -> {
-                    "<font color=$statusPendingColor>${product.status.toString(context)}</font>"
+                    "<font color=$statusPendingColor>${product.status.toLocalizedString(context)}</font>"
                 }
                 it != ProductStatus.PUBLISH -> {
-                    "<font color=$statusColor>${product.status.toString(context)}</font>"
+                    "<font color=$statusColor>${product.status.toLocalizedString(context)}</font>"
                 }
                 else -> {
                     null

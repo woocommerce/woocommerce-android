@@ -42,8 +42,10 @@
     <declare-styleable name="WCSettingsOptionValueView">
         <attr name="optionTitle" format="reference|string"/>
         <attr name="optionValue" format="reference|string"/>
+        <attr name="optionValueMaxLines" format="reference|integer"/>
         <attr name="tools_optionTitle" format="reference|string"/>
         <attr name="tools_optionValue" format="reference|string"/>
+        <attr name="tools_optionValueMaxLines" format="reference|integer"/>
     </declare-styleable>
 
     <declare-styleable name="WCSettingsToggleOptionView">
@@ -121,9 +123,22 @@
     <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
     <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference"/>
     <attr name="wcMaterialOutlinedEditTextViewStyle" format="reference"/>
+    <attr name="wcSingleOptionTextViewStyle" format="reference"/>
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->
         <attr name="radius" format="dimension" />
     </declare-styleable>
+
+    <!--
+        Theme-level default style attribute for WCToggleOutlinedSelectorButton since MaterialButton
+        doesn't allow for overriding defStyleRes for some stupid reason.
+    -->
+    <attr name="wcToggleOutlinedSelectorButtonStyle" format="reference"/>
+
+    <!--
+        Theme-level default style attribute for WCToggleOutlinedButton since MaterialButton doesn't
+        allow for overriding defStyleRes for some stupid reason.
+    -->
+    <attr name="wcToggleOutlinedButtonStyle" format="reference"/>
 </resources>

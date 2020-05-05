@@ -136,6 +136,24 @@
             app:argType="long" />
     </action>
     <action
+        android:id="@+id/action_global_productFilterListFragment"
+        app:destination="@id/nav_graph_product_filters"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out">
+        <argument
+            android:name="selectedStockStatus"
+            app:nullable="true"
+            app:argType="string" />
+        <argument
+            android:name="selectedProductStatus"
+            app:nullable="true"
+            app:argType="string" />
+        <argument
+            android:name="selectedProductType"
+            app:nullable="true"
+            app:argType="string" />
+    </action>
+    <action
         android:id="@+id/action_global_orderDetailFragment"
         app:destination="@id/orderDetailFragment"
         app:enterAnim="@anim/activity_fade_in"
@@ -164,6 +182,7 @@
         app:popExitAnim="@anim/activity_fade_out" />
     <include app:graph="@navigation/nav_graph_refunds" />
     <include app:graph="@navigation/nav_graph_products" />
+    <include app:graph="@navigation/nav_graph_product_filters" />
     <fragment
         android:id="@+id/refundDetailFragment"
         android:name="com.woocommerce.android.ui.refunds.RefundDetailFragment"

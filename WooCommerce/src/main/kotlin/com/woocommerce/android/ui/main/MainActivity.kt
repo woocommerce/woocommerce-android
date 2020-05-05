@@ -294,7 +294,7 @@ class MainActivity : AppUpgradeActivity(),
     /**
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
-    private fun getActiveTopLevelFragment(): TopLevelFragment? {
+    internal fun getActiveTopLevelFragment(): TopLevelFragment? {
         val tag = bottomNavView.currentPosition.getTag()
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
@@ -340,10 +340,12 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
+                R.id.productFilterListFragment,
                 R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
-                R.id.addOrderNoteFragment -> {
+                R.id.addOrderNoteFragment,
+                R.id.productSettingsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -364,9 +366,8 @@ class MainActivity : AppUpgradeActivity(),
             }
             actionBar.setHomeAsUpIndicator(icon)
 
-            // the image viewer should be shown full screen and we hide the actionbar since the fragment
-            // provides its own toolbar
-            if (destination.id == R.id.productImageViewerFragment) {
+            // the image viewers should be shown full screen
+            if (destination.id == R.id.productImageViewerFragment || destination.id == R.id.wpMediaViewerFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 actionBar.hide()
             } else {
@@ -745,6 +746,13 @@ class MainActivity : AppUpgradeActivity(),
                 remoteReviewId,
                 tempStatus,
                 launchedFromNotification)
+        navController.navigate(action)
+    }
+
+    override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
+        val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
+                stockStatus, productStatus, productType
+        )
         navController.navigate(action)
     }
 

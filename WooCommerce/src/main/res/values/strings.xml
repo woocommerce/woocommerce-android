@@ -64,6 +64,7 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
@@ -80,6 +81,9 @@
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
+    <string name="more_options">More options</string>
+    <string name="value_not_set">Not set</string>
+    <string name="selection_count">%d selected</string>
     <!--
         Date/Time Labels
     -->
@@ -435,6 +439,8 @@
     <string name="product_sku">SKU</string>
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
+    <string name="product_type">Product type</string>
+    <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
     <string name="product_sold_individually">Limit one per order</string>
     <string name="product_stock_quantity">Stock quantity</string>
@@ -470,8 +476,24 @@
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
     <string name="product_list_empty">No products yet</string>
+    <string name="product_list_empty_filters">No products found</string>
     <string name="product_list_empty_search">No matching products</string>
+    <string name="product_list_filters">Filters</string>
+    <string name="product_list_sorting_header">Sort by</string>
+    <string name="product_list_sorting_newest_to_oldest">Date: Newest to oldest</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Newest</string>
+    <string name="product_list_sorting_oldest_to_newest">Date: Oldest to newest</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Oldest</string>
+    <string name="product_list_sorting_a_to_z">Title: A to Z</string>
+    <string name="product_list_sorting_a_to_z_short">A to Z</string>
+    <string name="product_list_sorting_z_to_a">Title: Z to A</string>
+    <string name="product_list_sorting_z_to_a_short">Z to A</string>
+    <string name="product_list_filters_count">Filters (%d)</string>
+    <string name="product_list_filters_selected">Filters \u2022 %d</string>
+    <string name="product_list_filters_show_products">Show products</string>
+    <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_list_sorting_list_item">Selected sorting option</string>
     <string name="product_wip_title">Limited editing available</string>
     <string name="product_wip_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
@@ -487,6 +509,7 @@
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
+    <string name="product_detail_update_product_password_error">Error updating password</string>
     <string name="product_detail_title_hint">Product title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
     <string name="product_inventory_quantity">Quantity</string>
@@ -494,7 +517,31 @@
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
     <string name="product_inventory_update_stock_quantity_error">Please enter a number</string>
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
-
+    <string name="product_settings">Product settings</string>
+    <string name="product_status">Status</string>
+    <string name="product_visibility">Visibility</string>
+    <string name="product_visibility_public">Public</string>
+    <string name="product_visibility_private">Private</string>
+    <string name="product_visibility_password_protected">Password protected</string>
+    <string name="product_visibility_password_required">Password is required</string>
+    <string name="product_catalog_visibility">Catalog visibility</string>
+    <string name="product_catalog_visibility_visible">Shop and search results</string>
+    <string name="product_catalog_visibility_catalog">Shop only</string>
+    <string name="product_catalog_visibility_search">Search results only</string>
+    <string name="product_catalog_visibility_hidden">Hidden</string>
+    <string name="product_featured">Featured product</string>
+    <string name="product_visibility_headline">This setting determines which shop pages products will be listed on</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_slug_label">This is the URL-friendly version of the product title</string>
+    <string name="product_enable_reviews">Enable reviews</string>
+    <string name="product_external_empty_link">Add product link</string>
+    <string name="product_external_link">Product link</string>
+    <string name="product_external_link_label">Enter the external URL to the product</string>
+    <string name="product_external_link_button_text">Button text</string>
+    <string name="product_external_link_button_text_label">This text will be shown on the button linking to the external product</string>
+    <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
+    <string name="product_menu_order">Menu order</string>
+    <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog. The lower the value of the number, the higher the item will be on the product list. You can also use negative numbers.</string>
     <!--
         Product images
     -->
@@ -514,6 +561,9 @@
     <string name="image_source_title">Select an upload method</string>
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
+    <string name="image_source_wp_media_library">WordPress media library</string>
+    <string name="wpmedia_picker_title">WordPress media library</string>
+
     <!--
         Empty list messages
     -->
@@ -524,6 +574,7 @@
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+    <string name="empty_wpmedia_list_message">No images yet</string>
 
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
@@ -543,7 +594,7 @@
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
-    <string name="settings_enable_v4_stats_message">Try the new stats available with the\nWooCommerce admin plugin</string>
+    <string name="settings_enable_v4_stats_message">Try the new stats available with the WooCommerce admin plugin</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
@@ -763,9 +814,16 @@
 
     <!-- Product status -->
     <string name="product_status_published">Published</string>
+    <string name="product_status_privately_published">Privately published</string>
     <string name="product_status_private">Private</string>
-    <string name="product_status_pending">Pending Review</string>
+    <string name="product_status_pending">Pending review</string>
     <string name="product_status_draft">Draft</string>
+
+    <!-- Product type -->
+    <string name="product_type_simple">Simple</string>
+    <string name="product_type_grouped">Grouped</string>
+    <string name="product_type_external">External</string>
+    <string name="product_type_variable">Variable</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

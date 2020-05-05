@@ -8,8 +8,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -57,6 +59,13 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as? MainActivity)?.hideBottomNav()
+
+        if (navArgs.aztecCaption.isNullOrBlank()) {
+            aztecCaption.visibility = View.GONE
+        } else {
+            aztecCaption.visibility = View.VISIBLE
+            aztecCaption.text = navArgs.aztecCaption
+        }
 
         aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
                 .setImageGetter(GlideImageLoader(requireContext()))
@@ -182,14 +191,20 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     }
 
     private fun navigateBackWithResult(hasChanges: Boolean) {
-        val bundle = Bundle()
-        bundle.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
-        bundle.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
+        val bundle = Bundle().also {
+            it.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
+            it.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
+        }
+        @IdRes val destinationId = if (navArgs.requestCode == RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE) {
+            R.id.productSettingsFragment
+        } else {
+            R.id.productDetailFragment
+        }
         requireActivity().navigateBackWithResult(
                 navArgs.requestCode,
                 bundle,
                 R.id.nav_host_fragment_main,
-                R.id.productDetailFragment
+                destinationId
         )
     }
 }

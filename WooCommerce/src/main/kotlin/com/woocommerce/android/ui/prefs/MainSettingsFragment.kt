@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
@@ -107,7 +106,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
-            setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
         }
 
         if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {

@@ -22,7 +22,7 @@ class ProductVariantsAdapter(
     private val glideRequest: GlideRequests,
     private val loadMoreListener: OnLoadMoreListener
 ) : RecyclerView.Adapter<ProductVariantViewHolder>() {
-    private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+    private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
     private val productVariantList = ArrayList<ProductVariant>()
 
     init {

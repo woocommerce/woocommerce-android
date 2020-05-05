@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/color_surface">
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/about_image"
@@ -19,25 +18,37 @@
         android:layout_gravity="center"
         app:srcCompat="@drawable/img_woo_bubble_colored"/>
 
-    <View style="@style/Woo.Divider"/>
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/about_privacy"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:optionTitle="@string/settings_privacy_policy_header"/>
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/major_200"
+        android:background="?attr/colorSurface">
 
-    <View style="@style/Woo.Divider"/>
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/about_privacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/minor_00"
+            app:optionTitle="@string/settings_privacy_policy_header"/>
 
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/about_tos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/about_tos"/>
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"/>
 
-    <View
-        style="@style/Woo.Divider"
-        android:layout_marginBottom="@dimen/major_200"/>
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/about_tos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/minor_00"
+            app:optionTitle="@string/about_tos"/>
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100" />
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_version"

@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 /**
@@ -34,6 +35,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+
         // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
         // as it exists now so we can easily discard changes are determine if any changes were made inside
         // this fragment
@@ -75,5 +77,8 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     override fun onStop() {
         super.onStop()
         CustomDiscardDialog.onCleared()
+        activity?.let {
+            ActivityUtils.hideKeyboard(it)
+        }
     }
 }

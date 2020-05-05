@@ -30,12 +30,15 @@
 
     <color name="woo_white">@android:color/white</color>
     <color name="woo_white_alpha_005">#0DFFFFFF</color>
+    <color name="woo_white_alpha_009">#17FFFFFF</color>
     <color name="woo_white_alpha_012">#1FFFFFFF</color>
     <color name="woo_white_alpha_038">#61FFFFFF</color>
     <color name="woo_white_alpha_060">#99FFFFFF</color>
     <color name="woo_white_alpha_087">#DEFFFFFF</color>
 
     <color name="woo_gray_5">#DCDCDE</color>
+    <color name="woo_gray_40">#787C82</color>
+    <color name="woo_gray_80">#2C3338</color>
     <color name="woo_gray_900">#F7F7F7</color>
 
     <color name="woo_black">@android:color/black</color>

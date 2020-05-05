@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
-import android.view.View
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -19,19 +18,29 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -49,10 +58,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.util.DateTimeUtils
-import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Date
 
@@ -141,10 +147,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Image, selectedImage: WeakReference<View>) {
+    fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image, selectedImage))
+            triggerEvent(ViewProductImages(it, image))
         }
     }
 
@@ -194,8 +200,19 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
             }
             is ExitImages -> {
-                // TODO: eventName = ??
+                eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+            }
+            is ExitSettings -> {
+                // TODO: eventName = ??
+                hasChanges = if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
+                    true
+                } else {
+                    viewState.isPasswordChanged
+                }
+            }
+            is ExitExternalLink -> {
+                hasChanges = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -210,6 +227,60 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
+        }
+    }
+
+    /**
+     * Called when the user taps the Product settings menu item
+     */
+    fun onSettingsButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductSettings(it.remoteId))
+        }
+    }
+
+    /**
+     * Called when the user taps the status in product settings
+     */
+    fun onSettingsStatusButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductStatus(it.status))
+        }
+    }
+
+    /**
+     * Called when the user taps the product catalog visibility in product settings
+     */
+    fun onSettingsCatalogVisibilityButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductCatalogVisibility(it.catalogVisibility, it.isFeatured))
+        }
+    }
+
+    /**
+     * Called when the user taps the product visibility in product settings
+     */
+    fun onSettingsVisibilityButtonClicked() {
+        val visibility = getProductVisibility()
+        val password = viewState.draftPassword ?: viewState.storedPassword
+        triggerEvent(ViewProductVisibility(visibility, password))
+    }
+
+    /**
+     * Called when the user taps the product slug in product settings
+     */
+    fun onSettingsSlugButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductSlug(it.slug))
+        }
+    }
+
+    /**
+     * Called when the user taps the product menu order in product settings
+     */
+    fun onSettingsMenuOrderButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductMenuOrder(it.menuOrder))
         }
     }
 
@@ -257,9 +328,12 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated
-        val isProductSubDetailUpdated = viewState.productDraft?.let {
-            viewState.productBeforeEnteringFragment?.isSameProduct(it) == false
+
+        val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
+            viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
+                    viewState.isPasswordChanged
         }
+
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
@@ -381,6 +455,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         shortDescription: String? = null,
         title: String? = null,
         sku: String? = null,
+        slug: String? = null,
         manageStock: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
@@ -399,8 +474,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null,
         shippingClass: String? = null,
-        images: List<Image>? = null,
-        shippingClassId: Long? = null
+        images: List<Product.Image>? = null,
+        shippingClassId: Long? = null,
+        productStatus: ProductStatus? = null,
+        catalogVisibility: ProductCatalogVisibility? = null,
+        isFeatured: Boolean? = null,
+        reviewsAllowed: Boolean? = null,
+        purchaseNote: String? = null,
+        externalUrl: String? = null,
+        buttonText: String? = null,
+        menuOrder: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -409,6 +492,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     shortDescription = shortDescription ?: product.shortDescription,
                     name = title ?: product.name,
                     sku = sku ?: product.sku,
+                    slug = slug ?: product.slug,
                     manageStock = manageStock ?: product.manageStock,
                     stockStatus = stockStatus ?: product.stockStatus,
                     soldIndividually = soldIndividually ?: product.soldIndividually,
@@ -427,6 +511,14 @@ class ProductDetailViewModel @AssistedInject constructor(
                     shippingClass = shippingClass ?: product.shippingClass,
                     shippingClassId = shippingClassId ?: product.shippingClassId,
                     isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                    status = productStatus ?: product.status,
+                    catalogVisibility = catalogVisibility ?: product.catalogVisibility,
+                    isFeatured = isFeatured ?: product.isFeatured,
+                    reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
+                    purchaseNote = purchaseNote ?: product.purchaseNote,
+                    externalUrl = externalUrl ?: product.externalUrl,
+                    buttonText = buttonText ?: product.buttonText,
+                    menuOrder = menuOrder ?: product.menuOrder,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -476,12 +568,73 @@ class ProductDetailViewModel @AssistedInject constructor(
                 val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
                 if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
+                    fetchProductPassword(remoteProductId)
                 }
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
                 fetchProduct(remoteProductId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
+        }
+    }
+
+    /**
+     * Called from the product visibility settings fragment when the user updates
+     * the product's visibility and/or password
+     */
+    fun updateProductVisibility(visibility: ProductVisibility, password: String?) {
+        viewState = viewState.copy(draftPassword = password)
+
+        when (visibility) {
+            ProductVisibility.PUBLIC -> {
+                updateProductDraft(productStatus = ProductStatus.PUBLISH)
+            }
+            ProductVisibility.PRIVATE -> {
+                updateProductDraft(productStatus = ProductStatus.PRIVATE)
+            }
+            ProductVisibility.PASSWORD_PROTECTED -> {
+                updateProductDraft(productStatus = ProductStatus.PUBLISH)
+            }
+        }
+    }
+
+    /**
+     * Returns the draft visibility if a draft exists otherwise it returns the stored visibility.
+     * The visibility is determined by the status and the password. If the password isn't empty, then
+     * visibility is `PASSWORD_PROTECTED`. If there's no password and the product status is `PRIVATE`
+     * then the visibility is `PRIVATE`, otherwise it's `PUBLIC`.
+     */
+    fun getProductVisibility(): ProductVisibility {
+        val status = viewState.productDraft?.status ?: viewState.storedProduct?.status
+        val password = viewState.draftPassword ?: viewState.storedPassword
+        return when {
+            password?.isNotEmpty() == true -> {
+                ProductVisibility.PASSWORD_PROTECTED
+            }
+            status == ProductStatus.PRIVATE -> {
+                ProductVisibility.PRIVATE
+            }
+            else -> {
+                ProductVisibility.PUBLIC
+            }
+        }
+    }
+
+    /**
+     * Sends a request to fetch the product's password
+     */
+    private suspend fun fetchProductPassword(remoteProductId: Long) {
+        val password = productRepository.fetchProductPassword(remoteProductId)
+
+        viewState = if (viewState.draftPassword == null) {
+            viewState.copy(
+                    storedPassword = password,
+                    draftPassword = password
+            )
+        } else {
+            viewState.copy(
+                    storedPassword = password
+            )
         }
     }
 
@@ -521,8 +674,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      * the viewState.product with viewState.storedProduct model.
      */
     private fun updateProductEditAction() {
-        viewState.productDraft?.let {
-            val isProductUpdated = viewState.storedProduct?.isSameProduct(it) == false
+        viewState.productDraft?.let { draft ->
+            val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
+                    viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
     }
@@ -559,17 +713,27 @@ class ProductDetailViewModel @AssistedInject constructor(
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
-                triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
-                viewState = viewState.copy(productDraft = null, isProductUpdated = false, isProgressDialogShown = false)
+                if (viewState.isPasswordChanged) {
+                    val password = viewState.draftPassword
+                    if (productRepository.updateProductPassword(product.remoteId, password)) {
+                        viewState = viewState.copy(storedPassword = password)
+                        triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                    } else {
+                        triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
+                    }
+                } else {
+                    triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                }
+                viewState = viewState.copy(productDraft = null, isProductUpdated = false)
                 loadProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
-                viewState = viewState.copy(isProgressDialogShown = false)
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
-            viewState = viewState.copy(isProgressDialogShown = false)
         }
+
+        viewState = viewState.copy(isProgressDialogShown = false)
     }
 
     private suspend fun verifyProductExistsBySkuRemotely(sku: String) {
@@ -664,36 +828,33 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isError) {
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
-            event.media?.let {
-                addProductImageToDraft(it)
+            event.media?.let { media ->
+                addProductImageToDraft(media.toAppModel())
             }
         }
         checkImageUploads(getRemoteProductId())
     }
 
     /**
-     * Called after product image has been uploaded to add the uploaded image to the draft product
+     * Adds a single image to the list of product draft's images
      */
-    fun addProductImageToDraft(media: MediaModel) {
-        // create a new image list and add the passed media first...
-        val imageList = ArrayList<Image>().also {
-            it.add(
-                    Image
-                    (
-                            media.mediaId,
-                            media.fileName,
-                            media.url,
-                            DateTimeUtils.dateFromIso8601(media.uploadDate)
-                    )
-            )
+    fun addProductImageToDraft(image: Product.Image) {
+        val imageList = ArrayList<Product.Image>().also {
+            it.add(image)
         }
+        addProductImageListToDraft(imageList)
+    }
 
-        // ...then add the existing product images to the new list...
+    /**
+     * Adds multiple images to the list of product draft's images
+     */
+    fun addProductImageListToDraft(imageList: ArrayList<Product.Image>) {
+        // add the existing images to the passed list...
         viewState.productDraft?.let {
             imageList.addAll(it.images)
         }
 
-        // ...and then update the draft with the new list
+        // ...then update the draft's images  with the combined list
         updateProductDraft(images = imageList)
     }
 
@@ -720,6 +881,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     @Parcelize
@@ -764,10 +927,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f
+        val gmtOffset: Float = 0f,
+        val storedPassword: String? = null,
+        val draftPassword: String? = null
     ) : Parcelable {
         val isOnSale: Boolean
             get() = salePriceWithCurrency != null
+        val isPasswordChanged: Boolean
+            get() = storedPassword != draftPassword
     }
 
     @Parcelize

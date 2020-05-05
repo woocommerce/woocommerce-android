@@ -43,7 +43,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(image: Product.Image, imageView: View)
+        fun onGalleryImageClicked(image: Product.Image)
         fun onGalleryAddImageClicked() { }
     }
 
@@ -106,7 +106,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 .transition(DrawableTransitionOptions.withCrossFade())
 
         // create a reusable Glide rounded corner transformation for all images
-        val borderRadius = context.resources.getDimensionPixelSize(R.dimen.image_border_radius)
+        val borderRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_small)
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
         imageSize = if (isGridView) {
@@ -114,7 +114,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
             (screenWidth / 2) - (margin * 2)
         } else {
-            context.resources.getDimensionPixelSize(R.dimen.product_image_gallery_image_size)
+            context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
     }
 
@@ -141,10 +141,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.setPlaceholderImages(placeholders)
     }
 
-    private fun onImageClicked(position: Int, imageView: View) {
+    private fun onImageClicked(position: Int) {
         val viewType = adapter.getItemViewType(position)
         if (viewType == VIEW_TYPE_IMAGE) {
-            listener.onGalleryImageClicked(adapter.getImage(position), imageView)
+            listener.onGalleryImageClicked(adapter.getImage(position))
         } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
             listener.onGalleryAddImageClicked()
         }
@@ -317,7 +317,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             itemView.setOnClickListener {
                 if (adapterPosition > NO_POSITION) {
-                    onImageClicked(adapterPosition, productImageView)
+                    onImageClicked(adapterPosition)
                 }
             }
         }

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -29,6 +30,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_no_jetpack.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
+import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -141,7 +143,7 @@ class LoginNoJetpackFragment : Fragment() {
         userAvatarUrl?.let {
             GlideApp.with(this)
                     .load(it)
-                    .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
+                    .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.img_gravatar_placeholder))
                     .circleCrop()
                     .into(image_avatar)
         }

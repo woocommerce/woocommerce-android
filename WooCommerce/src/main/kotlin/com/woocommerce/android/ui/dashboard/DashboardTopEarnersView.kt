@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.tabs.TabLayout
@@ -147,7 +148,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(
         init {
             setHasStableIds(true)
             orderString = context.getString(R.string.dashboard_top_earners_total_orders)
-            imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+            imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         }
 
         fun setTopEarnersList(newList: List<WCTopEarnerModel>) {
@@ -181,7 +182,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(
             val imageUrl = PhotonUtils.getPhotonImageUrl(topEarner.image, imageSize, 0)
             GlideApp.with(holder.itemView.context)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_product)
+                    .placeholder(ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_product))
                     .into(holder.productImage)
 
             holder.itemView.setOnClickListener {
