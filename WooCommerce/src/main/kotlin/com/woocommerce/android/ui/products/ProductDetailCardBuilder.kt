@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.text.SpannableString
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToMMMdd
@@ -19,7 +18,6 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.models.ProductDetailCard
 import com.woocommerce.android.ui.products.models.ProductDetailItem
 import com.woocommerce.android.ui.products.models.ProductDetailItem.ComplexProperty
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Divider
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Editable
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Link
 import com.woocommerce.android.ui.products.models.ProductDetailItem.Property
@@ -71,6 +69,14 @@ class ProductDetailCardBuilder(
         }
     }
 
+    private fun MutableList<ProductDetailItem>.addProperty(item: ProductDetailItem) {
+        when(item) {
+            is Property -> if (item.value.isNotBlank()) add(item)
+            is ComplexProperty -> if (item.value.isNotBlank()) add(item)
+            is PropertyGroup -> if (item.properties.filter { it.value.isNotBlank() }.isNotEmpty()) add(item)
+        }
+    }
+
     private fun getPrimaryCard(product: Product): ProductDetailCard {
         val items = mutableListOf<ProductDetailItem>()
 
@@ -81,7 +87,7 @@ class ProductDetailCardBuilder(
                 viewModel.updateProductDraft(title = it)
             })
         } else {
-            items.add(ComplexProperty(R.string.product_name, productName))
+            items.addProperty(ComplexProperty(R.string.product_name, productName))
         }
 
         if (isAddEditProductRelease1Enabled(product.type)) {
@@ -92,7 +98,7 @@ class ProductDetailCardBuilder(
             } else {
                 productDescription
             }
-            items.add(
+            items.addProperty(
                 ComplexProperty(
                     R.string.product_description,
                     SpannableString(HtmlUtils.fromHtml(description)).toString(),
@@ -111,7 +117,7 @@ class ProductDetailCardBuilder(
         // we don't show total sales for variations because they're always zero
         // we are removing the total orders sections from products M2 release
         if (product.type != VARIABLE && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            items.add(Property(string.product_total_orders, StringUtils.formatCount(product.totalSales)))
+            items.addProperty(Property(R.string.product_total_orders, StringUtils.formatCount(product.totalSales)))
         }
 
         // we don't show reviews for variations because they're always empty
@@ -132,7 +138,7 @@ class ProductDetailCardBuilder(
                 properties[attribute.name] = attribute.options.size.toString()
             }
 
-            items.add(
+            items.addProperty(
                 PropertyGroup(
                     R.string.product_variations,
                     properties
@@ -231,7 +237,7 @@ class ProductDetailCardBuilder(
             pricingGroup[""] = resources.getString(R.string.product_price_empty)
         }
 
-        items.add(
+        items.addProperty(
             PropertyGroup(
                 R.string.product_price,
                 pricingGroup,
@@ -254,7 +260,7 @@ class ProductDetailCardBuilder(
                 mapOf(Pair("", resources.getString(R.string.product_external_empty_link)))
             }
 
-            items.add(
+            items.addProperty(
                 PropertyGroup(
                     R.string.product_external_link,
                     externalGroup,
@@ -284,7 +290,7 @@ class ProductDetailCardBuilder(
             else -> mapOf(Pair("", resources.getString(R.string.product_inventory_empty)))
         }
 
-        items.add(
+        items.addProperty(
             PropertyGroup(
                 R.string.product_inventory,
                 inventoryGroup,
@@ -315,7 +321,7 @@ class ProductDetailCardBuilder(
                 )
             } else mapOf(Pair("", resources.getString(R.string.product_shipping_empty)))
 
-            items.add(
+            items.addProperty(
                 PropertyGroup(
                     R.string.product_shipping,
                     shippingGroup,
@@ -337,7 +343,7 @@ class ProductDetailCardBuilder(
                 product.shortDescription
             }
 
-            items.add(
+            items.addProperty(
                 ComplexProperty(
                     R.string.product_short_description,
                     SpannableString(HtmlUtils.fromHtml(shortDescription)).toString(),
@@ -366,7 +372,9 @@ class ProductDetailCardBuilder(
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
         val hasPricingInfo = product.regularPrice != null || product.salePrice != null
 
+        val title: String
         if (hasPricingInfo) {
+            title = resources.getString(R.string.product_pricing_and_inventory)
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.isOnSale) {
                 val group = mapOf(
@@ -375,20 +383,17 @@ class ProductDetailCardBuilder(
                     resources.getString(R.string.product_sale_price)
                         to formatCurrency(product.salePrice, parameters.currencyCode)
                 )
-                items.add(
-                    PropertyGroup(
-                        R.string.product_price,
-                        group
-                    )
-                )
+                items.addProperty(PropertyGroup(R.string.product_price, group))
             } else {
-                items.add(
+                items.addProperty(
                     ComplexProperty(
                         R.string.product_price,
                         formatCurrency(product.regularPrice, parameters.currencyCode)
                     )
                 )
             }
+        } else {
+            title = resources.getString(R.string.product_inventory)
         }
 
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
@@ -405,14 +410,14 @@ class ProductDetailCardBuilder(
                 ),
                 Pair(resources.getString(R.string.product_sku), product.sku)
             )
-            items.add(
+            items.addProperty(
                 PropertyGroup(
                     R.string.product_inventory,
                     group
                 )
             )
         } else {
-            items.add(
+            items.addProperty(
                 ComplexProperty(
                     R.string.product_sku,
                     product.sku
@@ -420,7 +425,7 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return ProductDetailCard(resources.getString(R.string.product_pricing_and_inventory), items)
+        return ProductDetailCard(title, items)
     }
 
     private fun getPurchaseDetailsCard(product: Product): ProductDetailCard {
@@ -433,7 +438,7 @@ class ProductDetailCardBuilder(
                 Pair(resources.getString(R.string.product_size), product.getSizeWithUnits(parameters.dimensionUnit)),
                 Pair(resources.getString(R.string.product_shipping_class), product.shippingClass)
             )
-            items.add(
+            items.addProperty(
                 PropertyGroup(
                     R.string.product_shipping,
                     shippingGroup
@@ -456,7 +461,7 @@ class ProductDetailCardBuilder(
                 Pair(resources.getString(R.string.product_download_limit), limit),
                 Pair(resources.getString(R.string.product_download_expiry), expiry)
             )
-            items.add(
+            items.addProperty(
                 PropertyGroup(
                     R.string.product_downloads,
                     downloadGroup
