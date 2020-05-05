@@ -48,6 +48,11 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
         inflater.inflate(R.menu.menu_done, menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = hasChanges()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
@@ -102,6 +107,13 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
                 R.id.nav_host_fragment_main,
                 R.id.productSettingsFragment
         )
+    }
+
+    /**
+     * Descendants should call this when edits are made so we can show/hide the done button
+     */
+    fun changesMade() {
+        activity?.invalidateOptionsMenu()
     }
 
     /**

@@ -50,6 +50,10 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(), OnClickL
         btnVisibilityCatalog.setOnClickListener(this)
         btnVisibilitySearch.setOnClickListener(this)
         btnVisibilityHidden.setOnClickListener(this)
+
+        btnFeatured.setOnCheckedChangeListener { _, isChecked ->
+            changesMade()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -65,6 +69,8 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(), OnClickL
             btnVisibilitySearch.isChecked = it == btnVisibilitySearch
             btnVisibilityHidden.isChecked = it == btnVisibilityHidden
             selectedCatalogVisibility = getVisibilityForButtonId(it.id)
+
+            changesMade()
         }
     }
 

@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-16 00:54:04+0000
+Translation-Revision-Date: 2020-04-28 08:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_status_pending">İnceleme Bekliyor</string>
+    <string name="settings_about_title">WooCommerce Hakkında</string>
+    <string name="settings_app_theme_option_battery_saver">Pil Koruyucu tarafından ayarlandı</string>
+    <string name="settings_app_theme_option_system">Sistem varsayılanı</string>
+    <string name="settings_app_theme_option_dark">Koyu</string>
+    <string name="settings_app_theme_option_light">Açık</string>
+    <string name="settings_app_theme_title">Görünüm</string>
+    <string name="product_short_description_empty">Ürünle ilgili kısa bir özet</string>
+    <string name="product_short_description">Kısa açıklama</string>
+    <string name="my_store_stats_availability_message">WooCommerce 4.0\'ı veya WooCommerce Yönetici eklentisini kullanan mağazalar için istatistiklerde geliştirmeler yapıyoruz</string>
+    <string name="my_store_stats_reverted_message">Analizlerimiz için iyileştirmeler yaptık. İstatistiklerinizi 1 Temmuz 2020\'den sonra görmeye devam etmek için WooCommerce 4.0 veya üstüne yükseltin ya da WooCommerce Yönetici eklentisini yükleyin.</string>
+    <string name="my_store_stats_reverted_title">İstatistiklerinizi görmeye devam etmek için yeni sürüme geçin</string>
     <string name="product_pricing_update_sale_price_error">Satış fiyatı normal fiyattan düşük olmalıdır</string>
     <string name="product_schedule_remove_end_date_link_label">Bitiş tarihini kaldır</string>
     <string name="product_shipping_empty">Nakliye bilgisi ekle</string>
@@ -59,7 +71,7 @@ Language: tr
     <string name="product_inventory_empty">Envanter ekle</string>
     <string name="orderlist_loading">Siparişleriniz aranıyor…</string>
     <string name="product_detail_editable_text_hint">Metin girin</string>
-    <string name="product_detail_title_hint">Başlık girin</string>
+    <string name="product_detail_title_hint">Ürün başlığı</string>
     <string name="product_detail_update_product_success">Ürün güncellendi</string>
     <string name="product_detail_update_product_error">Ürün güncellenirken hata oluştu</string>
     <string name="product_update_dialog_message">Lütfen bekleyin…</string>
@@ -183,7 +195,6 @@ Language: tr
     <string name="orderdetail_payment_paid_by_customer">Müşteri tarafından ödenen</string>
     <string name="orderdetail_payment_summary_onhold">%s üzerinden ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
-    <string name="my_store_stats_availability_message">WooCommerce Yönetici eklentisini kullanan mağazalar için istatistiklerde geliştirmeler yapıyoruz</string>
     <string name="my_store_stats_availability_title">Geliştirilmiş istatistiklerimizi deneyin</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>
     <string name="no_thanks">Hayır, teşekkürler</string>
@@ -513,7 +524,6 @@ Language: tr
     <string name="read_more">Devamını oku</string>
     <string name="error_loading_image">Görsel yüklenemiyor</string>
     <string name="product_status_draft">Taslak</string>
-    <string name="product_status_pending">Bekliyor</string>
     <string name="product_status_private">Özel</string>
     <string name="product_status_published">Yayımlandı</string>
     <string name="product_view_affiliate">Satış ortağı ürününü görüntüleyin</string>
