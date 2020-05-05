@@ -29,8 +29,7 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductCategoriesListViewModel.ProductCategoriesListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.ProductCategoriesListViewModel.ProductCategoriesViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductCategoriesListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
@@ -1105,6 +1104,20 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class ProductImagesViewState(
         val isUploadingImages: Boolean = false
     ) : Parcelable
+
+    @Parcelize
+    data class ProductCategoriesViewState(
+        val isSkeletonShown: Boolean? = null,
+        val isLoading: Boolean? = null,
+        val isLoadingMore: Boolean? = null,
+        val canLoadMore: Boolean? = null,
+        val isRefreshing: Boolean? = null,
+        val isEmptyViewVisible: Boolean? = null
+    ) : Parcelable
+
+    sealed class ProductCategoriesListEvent : Event() {
+        object ScrollToTop : ProductCategoriesListEvent()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
