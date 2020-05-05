@@ -161,7 +161,6 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductCategories -> {
-                println()
                 val action = ProductDetailFragmentDirections
                         .actionProductDetailFragmentToProductCategoriesFragment(target.remoteId)
                 fragment.findNavController().navigate(action)

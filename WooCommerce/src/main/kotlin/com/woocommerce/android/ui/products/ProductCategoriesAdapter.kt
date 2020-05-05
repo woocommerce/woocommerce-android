@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CATEGORY_LIST_ITEM_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_CATEGORY_LIST_ITEM_TAPPED
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.ProductCategoriesAdapter.ProductCategoryViewHolder
 import kotlinx.android.synthetic.main.product_category_list_item.view.*
@@ -87,7 +87,7 @@ class ProductCategoriesAdapter(
         productCategory: ProductCategoryViewHolderModel
     ) {
         productCategory.isSelected = holder.checkBox.isChecked
-        AnalyticsTracker.track(CATEGORY_LIST_ITEM_TAPPED)
+        AnalyticsTracker.track(PRODUCT_CATEGORY_LIST_ITEM_TAPPED)
         clickListener.onProductCategoryClick(productCategory)
     }
 

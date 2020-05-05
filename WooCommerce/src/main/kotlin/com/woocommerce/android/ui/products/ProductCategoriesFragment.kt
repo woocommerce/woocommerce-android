@@ -18,7 +18,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.ProductCategoriesAdapter.Companion.DEFAULT_CATEGORY_MARGIN
 import com.woocommerce.android.ui.products.ProductCategoriesAdapter.OnProductCategoryClickListener
 import com.woocommerce.android.ui.products.ProductCategoriesAdapter.ProductCategoryViewHolderModel
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitCategories
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -88,7 +88,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(ExitCategories(shouldShowDiscardDialog = false))
+                viewModel.onDoneButtonClicked(ExitProductCategories(shouldShowDiscardDialog = false))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -103,7 +103,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     WooAnimUtils.fadeIn(empty_view)
-                    empty_view.show(EmptyViewType.CATEGORY_LIST)
+                    empty_view.show(EmptyViewType.PRODUCT_CATEGORY_LIST)
                 } else {
                     WooAnimUtils.fadeOut(empty_view)
                     empty_view.hide()
@@ -117,7 +117,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ExitCategories -> findNavController().navigateUp()
+                is ExitProductCategories -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         })
@@ -138,7 +138,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         // Sort all incoming categories by their parent
         val sortedList = sortCategoriesByParent(productCategories)
 
-        // Update the indent of the category if it's a child
+        // Update the margin of the category
         for (categoryViewHolderModel in sortedList) {
             categoryViewHolderModel.margin = computeCascadingMargin(parentChildMap, categoryViewHolderModel.category)
         }
@@ -219,7 +219,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitCategories())
+        return viewModel.onBackButtonClicked(ExitProductCategories())
     }
 
     override fun onRequestLoadMore() {

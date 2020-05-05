@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -93,14 +92,14 @@ class ProductCategoriesRepository @Inject constructor(
             if (event.isError) {
                 loadContinuation?.resume(false)
                 AnalyticsTracker.track(
-                        Stat.CATEGORIES_LOAD_FAILED,
+                        Stat.PRODUCT_CATEGORIES_LOAD_FAILED,
                         this.javaClass.simpleName,
                         event.error.type.toString(),
                         event.error.message
                 )
             } else {
                 canLoadMoreProductCategories = event.canLoadMore
-                AnalyticsTracker.track(Stat.CATEGORIES_LOADED)
+                AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_LOADED)
                 loadContinuation?.resume(true)
             }
             loadContinuation = null

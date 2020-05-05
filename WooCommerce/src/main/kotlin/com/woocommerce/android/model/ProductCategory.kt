@@ -31,7 +31,7 @@ data class ProductCategory(
 fun WCProductCategoryModel.toAppModel(): ProductCategory {
     return ProductCategory(
             remoteId = this.remoteCategoryId,
-            name = name,
+            name = this.name,
             slug = this.slug,
             parent = this.parent
     )
