@@ -20,7 +20,6 @@ apply plugin: 'io.sentry.android.gradle'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 repositories {
-    mavenLocal()
     maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
 }
 
@@ -29,7 +28,6 @@ allOpen {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven { url "https://jitpack.io" }
     maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
