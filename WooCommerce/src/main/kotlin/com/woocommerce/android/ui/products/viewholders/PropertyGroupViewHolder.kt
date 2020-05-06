@@ -12,7 +12,12 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
         val context = itemView.context
 
         val propertyView = itemView as WCProductPropertyView
-        propertyView.show(LinearLayout.VERTICAL, context.getString(item.title), getPropertyValue(item.properties), item.icon)
+        propertyView.show(
+            LinearLayout.VERTICAL,
+            context.getString(item.title),
+            getPropertyValue(item.properties),
+            item.icon
+        )
         propertyView.setMaxLines(Integer.MAX_VALUE)
         propertyView.showPropertyName(item.showTitle)
 

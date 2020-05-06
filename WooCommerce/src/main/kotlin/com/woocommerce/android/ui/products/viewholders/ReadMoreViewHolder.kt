@@ -6,7 +6,9 @@ import com.woocommerce.android.ui.products.WCProductPropertyReadMoreView
 import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
 import org.wordpress.android.util.HtmlUtils
 
-class ReadMoreViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.layout.product_property_read_more_view) {
+class ReadMoreViewHolder(
+    parent: ViewGroup
+) : ProductPropertyViewHolder(parent, R.layout.product_property_read_more_view) {
     fun bind(item: ReadMore) {
         val propertyView = itemView as WCProductPropertyReadMoreView
         propertyView.show(

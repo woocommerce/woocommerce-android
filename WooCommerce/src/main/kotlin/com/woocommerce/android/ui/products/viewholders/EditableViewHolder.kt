@@ -5,7 +5,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyEditableView
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 
-class EditableViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.layout.product_property_editable_view) {
+class EditableViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
+    parent,
+    R.layout.product_property_editable_view
+) {
     fun bind(item: Editable) {
         val context = itemView.context
         val hint = context.getString(item.hint)

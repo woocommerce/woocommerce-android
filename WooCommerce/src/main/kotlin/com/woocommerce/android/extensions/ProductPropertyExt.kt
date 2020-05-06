@@ -13,7 +13,7 @@ fun MutableList<ProductPropertyCard>.addIfNotEmpty(card: ProductPropertyCard) {
 }
 
 fun MutableList<ProductProperty>.addPropertyIfNotEmpty(item: ProductProperty) {
-    when(item) {
+    when (item) {
         is Property -> if (item.value.isNotBlank()) add(item)
         is ComplexProperty -> if (item.value.isNotBlank()) add(item)
         is PropertyGroup -> if (item.properties.filter { it.value.isNotBlank() }.isNotEmpty()) add(item)

@@ -6,9 +6,6 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class WCProductPropertyLinkView @JvmOverloads constructor(
     context: Context,

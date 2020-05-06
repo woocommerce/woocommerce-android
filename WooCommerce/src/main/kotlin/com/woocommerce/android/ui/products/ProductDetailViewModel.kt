@@ -572,7 +572,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private fun updateCards() {
         viewState.productDraft?.let {
-            launch (dispatchers.computation) {
+            launch(dispatchers.computation) {
                 val cards = cardBuilder.buildPropertyCards(it)
                 withContext(dispatchers.main) {
                     _productDetailCards.value = cards

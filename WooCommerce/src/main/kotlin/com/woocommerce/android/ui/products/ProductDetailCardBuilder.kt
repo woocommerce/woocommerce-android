@@ -105,7 +105,10 @@ class ProductDetailCardBuilder(
         // we don't show total sales for variations because they're always zero
         // we are removing the total orders sections from products M2 release
         if (product.type != VARIABLE && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            items.addPropertyIfNotEmpty(Property(R.string.product_total_orders, StringUtils.formatCount(product.totalSales)))
+            items.addPropertyIfNotEmpty(Property(
+                R.string.product_total_orders,
+                StringUtils.formatCount(product.totalSales)
+            ))
         }
 
         // we don't show reviews for variations because they're always empty
@@ -191,10 +194,16 @@ class ProductDetailCardBuilder(
         val pricingGroup = mutableMapOf<String, String>()
         if (hasPricingInfo) {
             // regular product price
-            pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(product.regularPrice, parameters.currencyCode)
+            pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(
+                product.regularPrice,
+                parameters.currencyCode
+            )
             // display product sale price if it's on sale
             if (product.isOnSale) {
-                pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(product.salePrice, parameters.currencyCode)
+                pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(
+                    product.salePrice,
+                    parameters.currencyCode
+                )
             }
 
             // display product sale dates using the site's timezone, if available
@@ -263,17 +272,16 @@ class ProductDetailCardBuilder(
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
         val inventoryGroup = when {
             product.manageStock -> mapOf(
-                Pair(resources.getString(R.string.product_backorders), ProductBackorderStatus.backordersToDisplayString(
-                    resources, product.backorderStatus
-                )),
-                Pair(resources.getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
+                Pair(resources.getString(R.string.product_backorders),
+                    ProductBackorderStatus.backordersToDisplayString(resources, product.backorderStatus)),
+                Pair(resources.getString(R.string.product_stock_quantity),
+                    StringUtils.formatCount(product.stockQuantity)),
                 Pair(resources.getString(R.string.product_sku), product.sku)
             )
             product.sku.isNotEmpty() -> mapOf(
                 Pair(resources.getString(R.string.product_sku), product.sku),
-                Pair(resources.getString(R.string.product_stock_status), ProductStockStatus.stockStatusToDisplayString(
-                    resources, product.stockStatus
-                ))
+                Pair(resources.getString(R.string.product_stock_status),
+                    ProductStockStatus.stockStatusToDisplayString(resources, product.stockStatus))
             )
             else -> mapOf(Pair("", resources.getString(R.string.product_inventory_empty)))
         }
