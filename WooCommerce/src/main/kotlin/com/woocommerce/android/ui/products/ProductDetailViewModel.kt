@@ -200,6 +200,24 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductDraft(saleEndDate = Optional(null))
     }
 
+    fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
+
+    fun hasPricingChanges() = viewState.storedProduct?.hasPricingChanges(viewState.productDraft) ?: false
+
+    fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
+
+    fun hasImageChanges() = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+
+    fun hasSettingsChanges(): Boolean {
+        return if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
+            true
+        } else {
+            viewState.isPasswordChanged
+        }
+    }
+
+    fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
+
     /**
      * Called when the DONE menu button is clicked in all of the product sub detail screen
      */
@@ -209,30 +227,25 @@ class ProductDetailViewModel @AssistedInject constructor(
         when (event) {
             is ExitInventory -> {
                 eventName = Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
+                hasChanges = hasInventoryChanges()
             }
             is ExitPricing -> {
                 eventName = Stat.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasPricingChanges(viewState.productDraft) ?: false
+                hasChanges = hasPricingChanges()
             }
             is ExitShipping -> {
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
+                hasChanges = hasShippingChanges()
             }
             is ExitImages -> {
                 eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+                hasChanges = hasImageChanges()
             }
             is ExitSettings -> {
-                // TODO: eventName = ??
-                hasChanges = if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
-                    true
-                } else {
-                    viewState.isPasswordChanged
-                }
+                hasChanges = hasSettingsChanges()
             }
             is ExitExternalLink -> {
-                hasChanges = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
+                hasChanges = hasExternalLinkChanges()
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }

@@ -23,11 +23,12 @@ import kotlinx.android.synthetic.main.fragment_aztec_editor.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText.EditorHasChanges.NO_CHANGES
+import org.wordpress.aztec.IHistoryListener
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
-class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener {
+class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener, IHistoryListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
@@ -74,6 +75,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
         aztec.visualEditor.fromHtml(navArgs.aztecText)
         aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.aztecText)
+        aztec.setHistoryListener(this)
 
         savedInstanceState?.let { state ->
             isHtmlEditorEnabled = state.getBoolean(FIELD_IS_HTML_EDITOR_ENABLED)
@@ -86,6 +88,11 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = editorHasChanges()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -206,5 +213,21 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
                 R.id.nav_host_fragment_main,
                 destinationId
         )
+    }
+
+    override fun onRedo() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onRedoEnabled() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onUndo() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onUndoEnabled() {
+        requireActivity().invalidateOptionsMenu()
     }
 }
