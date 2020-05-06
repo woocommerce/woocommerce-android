@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -19,6 +20,7 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
+@OpenClassOnDebug
 class ProductCategoriesRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
@@ -35,7 +37,6 @@ class ProductCategoriesRepository @Inject constructor(
     private var offset = PRODUCT_CATEGORIES_PAGE_OFFSET
 
     var canLoadMoreProductCategories = true
-        private set
 
     init {
         dispatcher.register(this)
