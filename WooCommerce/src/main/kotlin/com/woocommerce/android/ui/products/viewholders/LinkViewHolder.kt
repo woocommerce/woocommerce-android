@@ -10,15 +10,10 @@ class LinkViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.la
         val context = itemView.context
         val linkView = itemView as WCProductPropertyLinkView
         linkView.show(context.getString(item.title))
-        linkView.setOnClickListener {
-            item.onClick()
-            /*
-                // TODO: Move to ViewModel
-                view.setOnClickListener {
-                    AnalyticsTracker.track(tracksEvent)
-                    ChromeCustomTabUtils.launchUrl(context, url)
-                }
-             */
+        item.onClick?.let { onClick ->
+            linkView.setOnClickListener {
+                onClick()
+            }
         }
     }
 }
