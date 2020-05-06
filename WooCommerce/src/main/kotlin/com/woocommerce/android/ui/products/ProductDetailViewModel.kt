@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -41,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.models.ProductDetailCard
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -51,12 +54,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -73,7 +78,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val resources: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -94,7 +100,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var skuVerificationJob: Job? = null
 
     // view state for the product detail screen
-    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
+    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
+        if (old?.productDraft != new.productDraft) {
+            updateCards()
+        }
+    }
     private var viewState by productDetailViewStateData
 
     // view state for the product inventory screen
@@ -108,6 +118,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product images screen
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
+
+    private val _productDetailCards = MutableLiveData<List<ProductDetailCard>>()
+    val productDetailCards: LiveData<List<ProductDetailCard>> = _productDetailCards
+
+    private val cardBuilder by lazy {
+        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
+    }
 
     init {
         EventBus.getDefault().register(this)
@@ -551,6 +568,17 @@ class ProductDetailViewModel @AssistedInject constructor(
         super.onCleared()
         productRepository.onCleanup()
         EventBus.getDefault().unregister(this)
+    }
+
+    private fun updateCards() {
+        viewState.productDraft?.let {
+            launch (dispatchers.computation) {
+                val cards = cardBuilder.buildPropertyCards(it)
+                withContext(dispatchers.main) {
+                    _productDetailCards.value = cards
+                }
+            }
+        }
     }
 
     /**

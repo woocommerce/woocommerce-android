@@ -49,11 +49,9 @@ import com.woocommerce.android.ui.products.adapters.ProductDetailCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductDetailCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -62,7 +60,6 @@ import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
 import java.util.Date
-import javax.inject.Inject
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     private enum class DetailCard {
@@ -79,13 +76,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private var progressDialog: CustomProgressDialog? = null
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
-
-    @Inject lateinit var resources: ResourceProvider
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-
-    private val cardBuilder by lazy {
-        ProductDetailCardBuilder(viewModel, resources, currencyFormatter, viewModel.parameters)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -120,9 +110,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.productDraft?.takeIfNotEqualTo(old?.productDraft) {
-                showProduct(new.productDraft, cardBuilder.buildPropertyCards(new.productDraft))
-            }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
@@ -130,6 +117,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 imageGallery.setPlaceholderImageUris(it)
             }
         }
+
+        viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
+            showProductCards(viewModel.productDetailViewStateData.liveData.value!!.productDraft!!, it)
+        })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -224,7 +215,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         recyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
-    private fun showProduct(product: Product, cards: List<ProductDetailCard>) {
+    private fun showProductCards(product: Product, cards: List<ProductDetailCard>) {
         productName = product.name.fastStripHtml()
         updateActivityTitle()
 
@@ -253,7 +244,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         loadCards(cardsRecyclerView, cards)
     }
 
-    private fun showProduct(productData: ProductDetailViewState) {
+    private fun showProductCards(productData: ProductDetailViewState) {
         if (!isAdded) return
 
         val product = requireNotNull(productData.productDraft)
