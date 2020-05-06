@@ -1,5 +1,1 @@
-* We just gave the app a fresh coat of paint — enjoy the new colors!
-* Dark mode is now available for anyone who prefers less-bright screens.
-* We removed the Shipping section from virtual products’ detail view (because, well, you don’t ship them).
-* If you have a smaller product list, items would sometimes disappear from it, but not anymore — we fixed that bug.
-* On very rare occasions, attempting to view the details of a product would crash the app. We fixed that bug, too.
+* Fixed a few issues and irregularities with the new dark mode theme with, login screens, and the app icon for a more consistent user experience.
