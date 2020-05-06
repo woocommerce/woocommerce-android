@@ -90,6 +90,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
         addImageButton.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
             showImageSourceDialog()
         }
     }
@@ -131,12 +132,24 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
                 .also {
                     it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                        )
                         chooseProductImage()
                     }
                     it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                        )
                         captureProductImage()
                     }
                     it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+                        )
                         showWPMediaPicker()
                     }
                 }
