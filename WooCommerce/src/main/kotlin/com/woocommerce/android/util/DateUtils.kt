@@ -16,6 +16,7 @@ import java.util.Locale
 
 object DateUtils {
     val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
+    val friendlyTimeFormat by lazy { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
     private val weekOfYearStartingMondayFormat by lazy {
         SimpleDateFormat("yyyy-'W'ww", Locale.getDefault()).apply {
             calendar = Calendar.getInstance().apply {
@@ -227,6 +228,44 @@ object DateUtils {
             (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY)
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Date")
+        }
+    }
+
+    /**
+     * Given a date of format MMMM d, YYYY, returns true if it's today
+     *
+     * @throws IllegalArgumentException if the argument is not a valid date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun isToday(dateString: String): Boolean {
+        try {
+            val now = GregorianCalendar.getInstance()
+            val date = GregorianCalendar.getInstance().also {
+                it.time = DateTimeUtils.dateUTCFromIso8601(dateString)
+            }
+
+            return now[Calendar.YEAR] == date[Calendar.YEAR] &&
+                now[Calendar.MONTH] == date[Calendar.MONTH] &&
+                now[Calendar.DATE] == date[Calendar.DATE]
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
+        }
+    }
+
+    /**
+     * Given a date of format MMMM d, YYYY, returns just the time
+     *
+     * @throws IllegalArgumentException if the argument is not a valid date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getTimeString(dateString: String): String {
+        try {
+            val date = GregorianCalendar.getInstance().also {
+                it.time = DateTimeUtils.dateUTCFromIso8601(dateString)
+            }
+            return friendlyTimeFormat.format(date.time)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
         }
     }
 

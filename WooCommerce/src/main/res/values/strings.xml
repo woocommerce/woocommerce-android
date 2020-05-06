@@ -211,8 +211,8 @@
     <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
-    <string name="orderdetail_orderstatus_created">Created %1$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
     <string name="orderdetail_shipping_method">Shipping method</string>
     <string name="orderdetail_shipping_details">Shipping details</string>
     <string name="orderdetail_billing_details">Billing details</string>
