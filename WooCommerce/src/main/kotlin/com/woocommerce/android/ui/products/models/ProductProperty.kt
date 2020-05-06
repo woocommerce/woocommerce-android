@@ -46,7 +46,7 @@ sealed class ProductProperty(val type: Type) {
 
     data class Link(
         @StringRes val title: Int,
-        val onClick: (() -> Unit)
+        val onClick: (() -> Unit)?
     ) : ProductProperty(LINK)
 
     data class Editable(
