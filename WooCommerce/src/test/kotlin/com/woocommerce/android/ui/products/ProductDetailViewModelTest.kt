@@ -56,20 +56,21 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateWithArgs = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
-            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
+        Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined
+    )
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
-            productDraft = product,
-            storedProduct = product,
-            isSkeletonShown = false,
-            uploadingImageUris = null,
-            weightWithUnits = "10kg",
-            sizeWithUnits = "1 x 2 x 3 cm",
-            salePriceWithCurrency = "CZK10.00",
-            regularPriceWithCurrency = "CZK30.00"
+        productDraft = product,
+        storedProduct = product,
+        isSkeletonShown = false,
+        uploadingImageUris = null,
+        weightWithUnits = "10kg",
+        sizeWithUnits = "1 x 2 x 3 cm",
+        salePriceWithCurrency = "CZK10.00",
+        regularPriceWithCurrency = "CZK30.00"
     )
 
     private val STRING = "Ahoj"
@@ -111,23 +112,23 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(MutableLiveData(ProductDetailViewState()))
-                .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
+            .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
         doReturn(MutableLiveData(ProductImagesViewState()))
             .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
         doReturn(STRING).whenever(resources).getString(any())
 
         viewModel = spy(
-                ProductDetailViewModel(
-                        savedState,
-                        coroutineDispatchers,
-                        selectedSite,
-                        productRepository,
-                        networkStatus,
-                        currencyFormatter,
-                        wooCommerceStore,
-                        productImagesServiceWrapper,
-                        resources
-                )
+            ProductDetailViewModel(
+                savedState,
+                coroutineDispatchers,
+                selectedSite,
+                productRepository,
+                networkStatus,
+                currencyFormatter,
+                wooCommerceStore,
+                productImagesServiceWrapper,
+                resources
+            )
         )
         val prodSettings = WCProductSettingsModel(0).apply {
             dimensionUnit = "cm"
@@ -225,8 +226,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(null).whenever(productRepository).getProduct(any())
 
         val isSkeletonShown = ArrayList<Boolean>()
-        viewModel.productDetailViewStateData.observeForever {
-            old, new -> new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
+        viewModel.productDetailViewStateData.observeForever { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
         }
 
         viewModel.start(PRODUCT_REMOTE_ID)
@@ -279,7 +280,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.productDetailViewStateData.observeForever { old, new ->
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 isProgressDialogShown.add(it)
-            } }
+            }
+        }
 
         viewModel.start(PRODUCT_REMOTE_ID)
         viewModel.onUpdateButtonClicked()
