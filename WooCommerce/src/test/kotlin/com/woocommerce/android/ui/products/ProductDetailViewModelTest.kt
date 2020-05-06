@@ -19,6 +19,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
+    private val resources: ResourceProvider = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
@@ -80,7 +82,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         networkStatus,
                         currencyFormatter,
                         wooCommerceStore,
-                        productImagesServiceWrapper
+                        productImagesServiceWrapper,
+                        resources
                 )
         )
         val prodSettings = WCProductSettingsModel(0).apply {
