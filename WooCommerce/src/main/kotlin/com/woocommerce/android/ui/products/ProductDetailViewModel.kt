@@ -43,7 +43,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
-import com.woocommerce.android.ui.products.models.ProductDetailCard
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -119,8 +119,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
-    private val _productDetailCards = MutableLiveData<List<ProductDetailCard>>()
-    val productDetailCards: LiveData<List<ProductDetailCard>> = _productDetailCards
+    private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
+    val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private val cardBuilder by lazy {
         ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)

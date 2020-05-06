@@ -1,19 +1,19 @@
 package com.woocommerce.android.ui.products.adapters
 
 import androidx.recyclerview.widget.DiffUtil.Callback
-import com.woocommerce.android.ui.products.models.ProductDetailItem
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.COMPLEX_PROPERTY
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.DIVIDER
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.EDITABLE
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.LINK
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.PROPERTY
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.PROPERTY_GROUP
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.RATING_BAR
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Type.READ_MORE
+import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.COMPLEX_PROPERTY
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.DIVIDER
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.EDITABLE
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.LINK
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_GROUP
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
 
-class ProductDetailPropertyDiffCallback(
-    private val oldList: List<ProductDetailItem>,
-    private val newList: List<ProductDetailItem>
+class ProductPropertiesDiffCallback(
+    private val oldList: List<ProductProperty>,
+    private val newList: List<ProductProperty>
 ) : Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val newItem = newList[newItemPosition]

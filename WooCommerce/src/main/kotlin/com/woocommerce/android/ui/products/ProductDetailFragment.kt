@@ -25,8 +25,8 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
-import com.woocommerce.android.ui.products.adapters.ProductDetailCardsAdapter
-import com.woocommerce.android.ui.products.models.ProductDetailCard
+import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -168,13 +168,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun getFragmentTitle() = productName
 
-    private fun loadCards(recyclerView: RecyclerView, data: List<ProductDetailCard>) {
-        val adapter: ProductDetailCardsAdapter
+    private fun loadCards(recyclerView: RecyclerView, data: List<ProductPropertyCard>) {
+        val adapter: ProductPropertyCardsAdapter
         if (recyclerView.adapter == null) {
-            adapter = ProductDetailCardsAdapter()
+            adapter = ProductPropertyCardsAdapter()
             recyclerView.adapter = adapter
         } else {
-            adapter = recyclerView.adapter as ProductDetailCardsAdapter
+            adapter = recyclerView.adapter as ProductPropertyCardsAdapter
         }
 
         val recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
@@ -182,7 +182,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         recyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
-    private fun showProductCards(product: Product, cards: List<ProductDetailCard>) {
+    private fun showProductCards(product: Product, cards: List<ProductPropertyCard>) {
         productName = product.name.fastStripHtml()
         updateActivityTitle()
 

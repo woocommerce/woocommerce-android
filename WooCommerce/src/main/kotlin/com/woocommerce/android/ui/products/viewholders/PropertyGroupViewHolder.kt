@@ -5,9 +5,9 @@ import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyView
-import com.woocommerce.android.ui.products.models.ProductDetailItem.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 
-class PropertyGroupViewHolder(parent: ViewGroup) : ProductDetailPropertyViewHolder(parent, R.layout.product_property_view) {
+class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.layout.product_property_view) {
     fun bind(item: PropertyGroup) {
         val context = itemView.context
 

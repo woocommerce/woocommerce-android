@@ -10,8 +10,8 @@ import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
-import com.woocommerce.android.ui.products.adapters.ProductDetailPropertyAdapter
-import com.woocommerce.android.ui.products.models.ProductDetailItem
+import com.woocommerce.android.ui.products.adapters.ProductPropertiesAdapter
+import com.woocommerce.android.ui.products.models.ProductProperty
 import kotlinx.android.synthetic.main.product_property_cardview_layout.view.*
 
 /**
@@ -24,7 +24,7 @@ class WCProductPropertyCardView @JvmOverloads constructor(
 ) : MaterialCardView(context, attrs, defStyle) {
     private var view: View = View.inflate(context, R.layout.product_property_cardview_layout, this)
 
-    fun show(caption: String?, properties: List<ProductDetailItem>) {
+    fun show(caption: String?, properties: List<ProductProperty>) {
         val captionTextView = view.findViewById<MaterialTextView>(R.id.cardCaptionText)
         val divider = view.findViewById<View>(R.id.cardCaptionDivider)
         if (caption.isNullOrBlank()) {
@@ -41,14 +41,14 @@ class WCProductPropertyCardView @JvmOverloads constructor(
         loadData(properties)
     }
 
-    private fun loadData(data: List<ProductDetailItem>) {
+    private fun loadData(data: List<ProductProperty>) {
         val recyclerView: RecyclerView = view.findViewById(R.id.propertiesRecyclerView)
-        val adapter: ProductDetailPropertyAdapter
+        val adapter: ProductPropertiesAdapter
         if (recyclerView.adapter == null) {
-            adapter = ProductDetailPropertyAdapter()
+            adapter = ProductPropertiesAdapter()
             recyclerView.adapter = adapter
         } else {
-            adapter = recyclerView.adapter as ProductDetailPropertyAdapter
+            adapter = recyclerView.adapter as ProductPropertiesAdapter
         }
 
         val recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()

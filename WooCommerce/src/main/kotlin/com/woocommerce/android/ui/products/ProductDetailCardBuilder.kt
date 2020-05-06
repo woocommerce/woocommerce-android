@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products
 import android.text.SpannableString
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.addIfNotEmpty
+import com.woocommerce.android.extensions.addPropertyIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
@@ -15,15 +17,15 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.models.ProductDetailCard
-import com.woocommerce.android.ui.products.models.ProductDetailItem
-import com.woocommerce.android.ui.products.models.ProductDetailItem.ComplexProperty
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Editable
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Link
-import com.woocommerce.android.ui.products.models.ProductDetailItem.Property
-import com.woocommerce.android.ui.products.models.ProductDetailItem.PropertyGroup
-import com.woocommerce.android.ui.products.models.ProductDetailItem.RatingBar
-import com.woocommerce.android.ui.products.models.ProductDetailItem.ReadMore
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.Link
+import com.woocommerce.android.ui.products.models.ProductProperty.Property
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
+import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -45,8 +47,8 @@ class ProductDetailCardBuilder(
      */
     private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
 
-    fun buildPropertyCards(product: Product): List<ProductDetailCard> {
-        val cards = mutableListOf<ProductDetailCard>()
+    fun buildPropertyCards(product: Product): List<ProductPropertyCard> {
+        val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
 
         // display pricing/inventory card only if product is not a variable product
@@ -63,22 +65,8 @@ class ProductDetailCardBuilder(
         return cards
     }
 
-    private fun MutableList<ProductDetailCard>.addIfNotEmpty(card: ProductDetailCard) {
-        if (card.properties.isNotEmpty()) {
-            add(card)
-        }
-    }
-
-    private fun MutableList<ProductDetailItem>.addProperty(item: ProductDetailItem) {
-        when(item) {
-            is Property -> if (item.value.isNotBlank()) add(item)
-            is ComplexProperty -> if (item.value.isNotBlank()) add(item)
-            is PropertyGroup -> if (item.properties.filter { it.value.isNotBlank() }.isNotEmpty()) add(item)
-        }
-    }
-
-    private fun getPrimaryCard(product: Product): ProductDetailCard {
-        val items = mutableListOf<ProductDetailItem>()
+    private fun getPrimaryCard(product: Product): ProductPropertyCard {
+        val items = mutableListOf<ProductProperty>()
 
         val productName = product.name.fastStripHtml()
 
@@ -87,7 +75,7 @@ class ProductDetailCardBuilder(
                 viewModel.updateProductDraft(title = it)
             })
         } else {
-            items.addProperty(ComplexProperty(R.string.product_name, productName))
+            items.addPropertyIfNotEmpty(ComplexProperty(R.string.product_name, productName))
         }
 
         if (isAddEditProductRelease1Enabled(product.type)) {
@@ -98,7 +86,7 @@ class ProductDetailCardBuilder(
             } else {
                 productDescription
             }
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 ComplexProperty(
                     R.string.product_description,
                     SpannableString(HtmlUtils.fromHtml(description)).toString(),
@@ -117,7 +105,7 @@ class ProductDetailCardBuilder(
         // we don't show total sales for variations because they're always zero
         // we are removing the total orders sections from products M2 release
         if (product.type != VARIABLE && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            items.addProperty(Property(R.string.product_total_orders, StringUtils.formatCount(product.totalSales)))
+            items.addPropertyIfNotEmpty(Property(R.string.product_total_orders, StringUtils.formatCount(product.totalSales)))
         }
 
         // we don't show reviews for variations because they're always empty
@@ -138,7 +126,7 @@ class ProductDetailCardBuilder(
                 properties[attribute.name] = attribute.options.size.toString()
             }
 
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 PropertyGroup(
                     R.string.product_variations,
                     properties
@@ -169,7 +157,7 @@ class ProductDetailCardBuilder(
             }
         }
 
-        return ProductDetailCard(properties = items)
+        return ProductPropertyCard(properties = items)
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -194,8 +182,8 @@ class ProductDetailCardBuilder(
     /**
      * New product detail card UI slated for new products release 1
      */
-    private fun getSecondaryCard(product: Product): ProductDetailCard {
-        val items = mutableListOf<ProductDetailItem>()
+    private fun getSecondaryCard(product: Product): ProductPropertyCard {
+        val items = mutableListOf<ProductProperty>()
 
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
@@ -237,7 +225,7 @@ class ProductDetailCardBuilder(
             pricingGroup[""] = resources.getString(R.string.product_price_empty)
         }
 
-        items.addProperty(
+        items.addPropertyIfNotEmpty(
             PropertyGroup(
                 R.string.product_price,
                 pricingGroup,
@@ -260,7 +248,7 @@ class ProductDetailCardBuilder(
                 mapOf(Pair("", resources.getString(R.string.product_external_empty_link)))
             }
 
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 PropertyGroup(
                     R.string.product_external_link,
                     externalGroup,
@@ -290,7 +278,7 @@ class ProductDetailCardBuilder(
             else -> mapOf(Pair("", resources.getString(R.string.product_inventory_empty)))
         }
 
-        items.addProperty(
+        items.addPropertyIfNotEmpty(
             PropertyGroup(
                 R.string.product_inventory,
                 inventoryGroup,
@@ -321,7 +309,7 @@ class ProductDetailCardBuilder(
                 )
             } else mapOf(Pair("", resources.getString(R.string.product_shipping_empty)))
 
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 PropertyGroup(
                     R.string.product_shipping,
                     shippingGroup,
@@ -343,7 +331,7 @@ class ProductDetailCardBuilder(
                 product.shortDescription
             }
 
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 ComplexProperty(
                     R.string.product_short_description,
                     SpannableString(HtmlUtils.fromHtml(shortDescription)).toString(),
@@ -360,14 +348,14 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return ProductDetailCard(properties = items)
+        return ProductPropertyCard(properties = items)
     }
     /**
      * Existing product detail card UI which that will be replaced by the new design once
      * Product Release 1 changes are completed.
      */
-    private fun getPricingAndInventoryCard(product: Product): ProductDetailCard {
-        val items = mutableListOf<ProductDetailItem>()
+    private fun getPricingAndInventoryCard(product: Product): ProductPropertyCard {
+        val items = mutableListOf<ProductProperty>()
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
         val hasPricingInfo = product.regularPrice != null || product.salePrice != null
@@ -383,9 +371,9 @@ class ProductDetailCardBuilder(
                     resources.getString(R.string.product_sale_price)
                         to formatCurrency(product.salePrice, parameters.currencyCode)
                 )
-                items.addProperty(PropertyGroup(R.string.product_price, group))
+                items.addPropertyIfNotEmpty(PropertyGroup(R.string.product_price, group))
             } else {
-                items.addProperty(
+                items.addPropertyIfNotEmpty(
                     ComplexProperty(
                         R.string.product_price,
                         formatCurrency(product.regularPrice, parameters.currencyCode)
@@ -410,14 +398,14 @@ class ProductDetailCardBuilder(
                 ),
                 Pair(resources.getString(R.string.product_sku), product.sku)
             )
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 PropertyGroup(
                     R.string.product_inventory,
                     group
                 )
             )
         } else {
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 ComplexProperty(
                     R.string.product_sku,
                     product.sku
@@ -425,11 +413,11 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return ProductDetailCard(title, items)
+        return ProductPropertyCard(title, items)
     }
 
-    private fun getPurchaseDetailsCard(product: Product): ProductDetailCard {
-        val items = mutableListOf<ProductDetailItem>()
+    private fun getPurchaseDetailsCard(product: Product): ProductPropertyCard {
+        val items = mutableListOf<ProductProperty>()
 
         // shipping group is part of the secondary card if edit product is enabled
         if (!isAddEditProductRelease1Enabled(product.type)) {
@@ -438,7 +426,7 @@ class ProductDetailCardBuilder(
                 Pair(resources.getString(R.string.product_size), product.getSizeWithUnits(parameters.dimensionUnit)),
                 Pair(resources.getString(R.string.product_shipping_class), product.shippingClass)
             )
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 PropertyGroup(
                     R.string.product_shipping,
                     shippingGroup
@@ -461,7 +449,7 @@ class ProductDetailCardBuilder(
                 Pair(resources.getString(R.string.product_download_limit), limit),
                 Pair(resources.getString(R.string.product_download_expiry), expiry)
             )
-            items.addProperty(
+            items.addPropertyIfNotEmpty(
                 PropertyGroup(
                     R.string.product_downloads,
                     downloadGroup
@@ -479,6 +467,6 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return ProductDetailCard(resources.getString(R.string.product_purchase_details), items)
+        return ProductPropertyCard(resources.getString(R.string.product_purchase_details), items)
     }
 }
