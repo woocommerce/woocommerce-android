@@ -48,6 +48,7 @@ class LiveDataDelegate<T : Parcelable>(
 
     fun observeForever(observer: (T?, T) -> Unit) {
         _liveData.observeForever {
+            onChange(previousValue, it)
             observer(previousValue, it)
             previousValue = it
         }
