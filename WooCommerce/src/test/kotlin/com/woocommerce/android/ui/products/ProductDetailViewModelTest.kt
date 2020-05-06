@@ -41,6 +41,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
+    private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
@@ -77,6 +78,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         coroutineDispatchers,
                         selectedSite,
                         productRepository,
+                        productCategoriesRepository,
                         networkStatus,
                         currencyFormatter,
                         wooCommerceStore,
