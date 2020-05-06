@@ -10,6 +10,11 @@ class EditableViewHolder(parent: ViewGroup) : ProductDetailPropertyViewHolder(pa
         val context = itemView.context
         val hint = context.getString(item.hint)
         val editableView = itemView as WCProductPropertyEditableView
+
+        item.onTextChanged?.let { onTextChanged ->
+            editableView.setOnTextChangedListener { text -> onTextChanged(text.toString()) }
+        }
+
         editableView.show(hint, item.text)
     }
 }
