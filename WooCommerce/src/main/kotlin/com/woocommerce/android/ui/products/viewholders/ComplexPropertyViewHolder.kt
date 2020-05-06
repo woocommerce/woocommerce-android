@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.products.viewholders
 
+import android.text.SpannableString
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyView
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import org.wordpress.android.util.HtmlUtils
 
 class ComplexPropertyViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.layout.product_property_view) {
     fun bind(item: ComplexProperty) {
@@ -14,7 +16,7 @@ class ComplexPropertyViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(p
         propertyView.show(
             LinearLayout.VERTICAL,
             context.getString(item.title ?: R.string.product_name),
-            item.value,
+            SpannableString(HtmlUtils.fromHtml(item.value)),
             item.icon
         )
 

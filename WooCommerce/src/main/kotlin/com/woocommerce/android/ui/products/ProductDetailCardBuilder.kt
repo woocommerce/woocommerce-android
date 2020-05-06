@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.text.SpannableString
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.addIfNotEmpty
@@ -32,7 +31,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
-import org.wordpress.android.util.HtmlUtils
 import java.math.BigDecimal
 import java.util.Date
 
@@ -89,7 +87,7 @@ class ProductDetailCardBuilder(
             items.addPropertyIfNotEmpty(
                 ComplexProperty(
                     R.string.product_description,
-                    SpannableString(HtmlUtils.fromHtml(description)).toString(),
+                    description,
                     showTitle = showTitle
                 ) {
                     viewModel.onEditProductCardClicked(
@@ -342,7 +340,7 @@ class ProductDetailCardBuilder(
             items.addPropertyIfNotEmpty(
                 ComplexProperty(
                     R.string.product_short_description,
-                    SpannableString(HtmlUtils.fromHtml(shortDescription)).toString(),
+                    shortDescription,
                     R.drawable.ic_gridicons_align_left
                 ) {
                     viewModel.onEditProductCardClicked(
