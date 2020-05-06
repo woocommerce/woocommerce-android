@@ -15,6 +15,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductImagesViewState
+import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,6 +32,10 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.Link
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import java.math.BigDecimal
 
 class ProductDetailViewModelTest : BaseUnitTest() {
@@ -66,12 +72,49 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             regularPriceWithCurrency = "CZK30.00"
     )
 
+    private val STRING = "Ahoj"
+    private val EXPECTED_CARDS = listOf(
+        ProductPropertyCard(
+            properties = listOf(
+                Editable(R.string.product_detail_title_hint, product.name),
+                ComplexProperty(R.string.product_description, product.description),
+                RatingBar(R.string.product_reviews, product.ratingCount.toString(), product.averageRating)
+            )
+        ),
+        ProductPropertyCard(
+            properties = listOf(
+                PropertyGroup(
+                    R.string.product_price,
+                    mapOf(
+                        STRING to productWithParameters.regularPriceWithCurrency!!
+                    ),
+                    R.drawable.ic_gridicons_money
+                ),
+                PropertyGroup(
+                    R.string.product_inventory,
+                    mapOf(
+                        "" to STRING
+                    ),
+                    R.drawable.ic_gridicons_list_checkmark,
+                    false
+                ),
+                ComplexProperty(
+                    R.string.product_short_description,
+                    STRING,
+                    R.drawable.ic_gridicons_align_left,
+                    true
+                )
+            )
+        )
+    )
+
     @Before
     fun setup() {
         doReturn(MutableLiveData(ProductDetailViewState()))
                 .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
         doReturn(MutableLiveData(ProductImagesViewState()))
-                .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
+            .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
+        doReturn(STRING).whenever(resources).getString(any())
 
         viewModel = spy(
                 ProductDetailViewModel(
@@ -98,6 +141,34 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(prodSettings).whenever(wooCommerceStore).getProductSettings(any())
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
+    }
+
+    @Test
+    fun `Displays the product detail properties correctly`() = test {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var cards: List<ProductPropertyCard>? = null
+        viewModel.productDetailCards.observeForever {
+            cards = it.map { card -> stripCallbacks(card) }
+        }
+
+        viewModel.start(PRODUCT_REMOTE_ID)
+
+        assertThat(EXPECTED_CARDS).isEqualTo(cards)
+    }
+
+    private fun stripCallbacks(card: ProductPropertyCard): ProductPropertyCard {
+        return card.copy(properties = card.properties.map { p ->
+            when (p) {
+                is ComplexProperty -> p.copy(onClick = null)
+                is Editable -> p.copy(onTextChanged = null)
+                is PropertyGroup -> p.copy(onClick = null)
+                is Link -> p.copy(onClick = null)
+                else -> p
+            }
+        })
     }
 
     @Test
