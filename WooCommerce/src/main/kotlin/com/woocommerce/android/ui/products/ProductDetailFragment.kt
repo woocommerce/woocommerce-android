@@ -77,6 +77,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
@@ -86,7 +87,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
-            showProductCards(viewModel.productDetailViewStateData.liveData.value!!.productDraft!!, it)
+            showProductCards(it)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -97,6 +98,33 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun showProductDetails(product: Product) {
+        productName = product.name.fastStripHtml()
+        updateActivityTitle()
+
+        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
+            imageGallery.visibility = View.GONE
+            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
+                addImageContainer.visibility = View.VISIBLE
+                addImageContainer.setOnClickListener {
+                    viewModel.onAddImageClicked()
+                }
+            }
+        } else {
+            addImageContainer.visibility = View.GONE
+            imageGallery.visibility = View.VISIBLE
+            imageGallery.showProductImages(product, this)
+        }
+
+        // show status badge for unpublished products
+        product.status?.let { status ->
+            if (status != ProductStatus.PUBLISH) {
+                frameStatusBadge.visibility = View.VISIBLE
+                textStatusBadge.text = status.toLocalizedString(requireActivity())
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -168,47 +196,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun getFragmentTitle() = productName
 
-    private fun loadCards(recyclerView: RecyclerView, data: List<ProductPropertyCard>) {
+    private fun showProductCards(cards: List<ProductPropertyCard>) {
         val adapter: ProductPropertyCardsAdapter
-        if (recyclerView.adapter == null) {
+        if (cardsRecyclerView.adapter == null) {
             adapter = ProductPropertyCardsAdapter()
-            recyclerView.adapter = adapter
+            cardsRecyclerView.adapter = adapter
         } else {
-            adapter = recyclerView.adapter as ProductPropertyCardsAdapter
+            adapter = cardsRecyclerView.adapter as ProductPropertyCardsAdapter
         }
 
-        val recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
-        adapter.update(data)
-        recyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
-    }
-
-    private fun showProductCards(product: Product, cards: List<ProductPropertyCard>) {
-        productName = product.name.fastStripHtml()
-        updateActivityTitle()
-
-        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
-            imageGallery.visibility = View.GONE
-            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
-                addImageContainer.visibility = View.VISIBLE
-                addImageContainer.setOnClickListener {
-                    viewModel.onAddImageClicked()
-                }
-            }
-        } else {
-            addImageContainer.visibility = View.GONE
-            imageGallery.visibility = View.VISIBLE
-            imageGallery.showProductImages(product, this)
-        }
-
-        // show status badge for unpublished products
-        product.status?.let { status ->
-            if (status != ProductStatus.PUBLISH) {
-                frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toLocalizedString(requireActivity())
-            }
-        }
-
-        loadCards(cardsRecyclerView, cards)
+        val recyclerViewState = cardsRecyclerView.layoutManager?.onSaveInstanceState()
+        adapter.update(cards)
+        cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
