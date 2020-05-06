@@ -17,7 +17,7 @@ class MockedProductCategoriesRepository constructor(
         productStore,
         selectedSite
 ) {
-    var categoriesList : List<ProductCategory>? = null
+    var categoriesList: List<ProductCategory>? = null
 
     override var canLoadMoreProductCategories: Boolean
         get() = false

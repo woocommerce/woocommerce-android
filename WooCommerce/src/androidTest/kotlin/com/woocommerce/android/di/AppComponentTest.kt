@@ -28,6 +28,7 @@ import javax.inject.Singleton
         MockedActivityBindingModule::class,
         MockedWooStoreModule::class,
         MockedProductDetailRepositoryModule::class,
+        MockedProductCategoriesRepositoryModule::class,
         MockedSelectedSiteModule::class,
         FCMServiceModule::class,
         LoginAnalyticsModule::class,
