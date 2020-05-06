@@ -21,7 +21,6 @@ allprojects {
     apply plugin: 'checkstyle'
 
     repositories {
-        mavenLocal()
         google()
         jcenter()
         maven {
