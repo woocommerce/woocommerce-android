@@ -158,7 +158,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
             } else {
                 outRect.set(0, 0, padding, 0)
             }
-        }  else {
+        } else {
             if (orientation == VERTICAL) {
                 outRect.set(0, 0, 0, divider.intrinsicHeight)
             } else {
