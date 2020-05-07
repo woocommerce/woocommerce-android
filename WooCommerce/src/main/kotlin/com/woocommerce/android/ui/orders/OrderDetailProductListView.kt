@@ -79,6 +79,14 @@ class OrderDetailProductListView @JvmOverloads constructor(
                 productListener
         )
 
+        productList_lblProduct.setText(
+            if (filteredItems.size > 1) {
+                R.string.orderdetail_product_multiple
+            } else {
+                R.string.orderdetail_product
+            }
+        )
+
         productList_products.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
@@ -90,8 +98,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
                     AlignedDividerDecoration(
                         context,
                         DividerItemDecoration.VERTICAL,
-                        R.id.productInfo_name,
-                        clipToMargin = false
+                        R.id.productInfo_name
                     )
                 )
             }
