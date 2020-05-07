@@ -21,7 +21,7 @@ data class ProductCategory(
     }
 }
 
-fun WCProductCategoryModel.toAppModel(): ProductCategory {
+fun WCProductCategoryModel.toAppProductCategoryModel(): ProductCategory {
     return ProductCategory(
             remoteId = this.remoteCategoryId,
             name = this.name,

@@ -314,7 +314,7 @@ data class Product(
                     shippingClass = updatedProduct.shippingClass,
                     images = updatedProduct.images,
                     categories = updatedProduct.categories,
-                    shippingClassId = updatedProduct.shippingClassId
+                    shippingClassId = updatedProduct.shippingClassId,
                     reviewsAllowed = updatedProduct.reviewsAllowed,
                     purchaseNote = updatedProduct.purchaseNote,
                     externalUrl = updatedProduct.externalUrl,

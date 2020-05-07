@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toAppProductCategoryModel
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
@@ -65,6 +65,6 @@ class MockedProductCategoriesRepository constructor(
     }
 
     private fun generateTestProductCategoriesAppModelList(): List<ProductCategory> {
-        return generateTestProductCategoriesList().map { it.toAppModel() }
+        return generateTestProductCategoriesList().map { it.toAppProductCategoryModel() }
     }
 }

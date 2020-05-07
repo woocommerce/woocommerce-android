@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
@@ -23,18 +22,16 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Category
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
