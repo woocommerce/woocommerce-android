@@ -10,15 +10,8 @@ data class ProductCategory(
     val remoteId: Long,
     val name: String,
     val slug: String,
-    val parent: Long
+    val parentId: Long
 ) : Parcelable {
-    fun isSameCategory(productCategory: ProductCategory): Boolean {
-        return remoteId == productCategory.remoteId &&
-                name == productCategory.name &&
-                slug == productCategory.slug &&
-                parent == productCategory.parent
-    }
-
     fun toCategory(): Category {
         return Category(
                 this.remoteId,
@@ -33,6 +26,6 @@ fun WCProductCategoryModel.toAppModel(): ProductCategory {
             remoteId = this.remoteCategoryId,
             name = this.name,
             slug = this.slug,
-            parent = this.parent
+            parentId = this.parent
     )
 }
