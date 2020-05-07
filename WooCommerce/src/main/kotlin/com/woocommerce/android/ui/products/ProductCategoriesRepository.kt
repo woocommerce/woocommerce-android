@@ -12,7 +12,7 @@ import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_CATEGORIES
+import org.wordpress.android.fluxc.action.WCProductAction.FETCHED_PRODUCT_CATEGORIES
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
@@ -29,7 +29,9 @@ class ProductCategoriesRepository @Inject constructor(
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_CATEGORIES_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_CATEGORY_PAGE_SIZE
-        private const val PRODUCT_CATEGORIES_ALL = 999
+        // the maximum categories we can fetch at a time are 100
+        // this is limited by the WP/Woo API, page after that, if need be
+        private const val PRODUCT_CATEGORIES_ALL = 100
         private const val PRODUCT_CATEGORIES_PAGE_OFFSET = 1
     }
 
@@ -63,7 +65,7 @@ class ProductCategoriesRepository @Inject constructor(
     ): List<ProductCategory> {
         try {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_SIZE else PRODUCT_CATEGORIES_PAGE_OFFSET
+                offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_OFFSET else PRODUCT_CATEGORIES_PAGE_OFFSET
                 loadContinuation = it
                 val payload = WCProductStore.FetchAllProductCategoriesPayload(
                         selectedSite.get(),
@@ -90,7 +92,7 @@ class ProductCategoriesRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductCategoriesChanged(event: OnProductCategoryChanged) {
-        if (event.causeOfChange == FETCH_PRODUCT_CATEGORIES) {
+        if (event.causeOfChange == FETCHED_PRODUCT_CATEGORIES) {
             if (event.isError) {
                 loadContinuation?.resume(false)
                 AnalyticsTracker.track(
