@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -33,7 +32,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.order_detail_product_list, this)
     }
-    private lateinit var divider: AlignedDividerDecoration
     private lateinit var viewAdapter: ProductListAdapter
     private var isExpanded = false
 
@@ -58,13 +56,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
         refunds: List<Refund>
     ) {
         isExpanded = expanded
-
-        divider = AlignedDividerDecoration(context,
-                DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = false)
-
-        ContextCompat.getDrawable(context, R.drawable.list_divider)?.let { drawable ->
-            divider.setDrawable(drawable)
-        }
 
         val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
 
@@ -93,6 +84,17 @@ class OrderDetailProductListView @JvmOverloads constructor(
             layoutManager = viewManager
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             adapter = viewAdapter
+
+            if (itemDecorationCount == 0) {
+                addItemDecoration(
+                    AlignedDividerDecoration(
+                        context,
+                        DividerItemDecoration.VERTICAL,
+                        R.id.productInfo_name,
+                        clipToMargin = false
+                    )
+                )
+            }
 
             // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
             // and only processes the first click event. More details on this issue can be found here:
@@ -123,10 +125,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
                 productList_btnFulfill.setOnClickListener(null)
             }
         } ?: hideButtons()
-
-        if (isExpanded) {
-            productList_products.addItemDecoration(divider)
-        }
     }
 
     // called when a product is fetched to ensure we show the correct product image
