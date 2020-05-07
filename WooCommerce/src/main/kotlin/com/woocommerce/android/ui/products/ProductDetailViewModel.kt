@@ -27,6 +27,7 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductCategoriesAdapter.ProductCategoryViewHolderModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
@@ -69,6 +70,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
+import java.util.Stack
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
@@ -776,6 +778,102 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (scrollToTop) {
             triggerEvent(ScrollToTop)
         }
+    }
+
+    /**
+     * The method takes in a list of product categories and calculates the order and grouping of categories
+     * by their parent ids. This creates a stable sorted list of categories by name. The returned list also
+     * has margin data, which can be used to visually represent categories in a hierarchy under their
+     * parent ids.
+     *
+     * @param productCategories the list of product categories to sort and style
+     * @return [List<ProductCategoryViewHolderModel>] the sorted styled list of categories
+     */
+    fun sortAndStyleProductCategories(productCategories: List<ProductCategory>): List<ProductCategoryViewHolderModel> {
+        val product = requireNotNull(getProduct().productDraft)
+
+        // Get the categories of the product
+        val selectedCategories = product.categories
+        val parentChildMap = mutableMapOf<Long, Long>()
+
+        // Build a parent child relationship table
+        for (category in productCategories) {
+            parentChildMap[category.remoteId] = category.parentId
+        }
+
+        // Sort all incoming categories by their parent
+        val sortedList =
+            sortCategoriesByParent(productCategories.sortedByDescending { it.name })
+
+        // Update the margin of the category
+        for (categoryViewHolderModel in sortedList) {
+            categoryViewHolderModel.margin = computeCascadingMargin(parentChildMap, categoryViewHolderModel.category)
+        }
+
+        // Mark the product categories as selected in the sorted list
+        for (productCategoryViewHolderModel in sortedList) {
+            for (selectedCategory in selectedCategories) {
+                if (productCategoryViewHolderModel.category.remoteId == selectedCategory.id &&
+                    productCategoryViewHolderModel.category.name == selectedCategory.name)
+                    productCategoryViewHolderModel.isSelected = true
+            }
+        }
+
+        return sortedList.toList()
+    }
+
+    /**
+     * The method does a Depth First Traversal of the Product Categories and returns an ordered list, which
+     * is grouped by their Parent id. The sort is stable, which means that it should return the same list
+     * when new categories are updated, and the sort is relative to the update.
+     *
+     * @param productCategories All the categories to sort
+     * @return [Set<ProductCategoryViewHolderModel>] a sorted set of view holder models containing category view data
+     */
+    fun sortCategoriesByParent(
+        productCategories: List<ProductCategory>
+    ): Set<ProductCategoryViewHolderModel> {
+        val sortedList = mutableSetOf<ProductCategoryViewHolderModel>()
+        val stack = Stack<ProductCategory>()
+        val visited = mutableSetOf<Long>()
+
+        // add root nodes to the Stack
+        stack.addAll(productCategories.filter { it.parentId == 0L })
+
+        // Go through the nodes until we've finished DFS
+        while (stack.isNotEmpty()) {
+            val category = stack.pop()
+            // Do not revisit a category
+            if (!visited.contains(category.remoteId)) {
+                visited.add(category.remoteId)
+                sortedList.add(ProductCategoryViewHolderModel(category))
+            }
+
+            // Find all children of the node from the main category list
+            val children = productCategories.filter { it.parentId == category.remoteId }
+            if (!children.isNullOrEmpty()) {
+                stack.addAll(children)
+            }
+        }
+        return sortedList
+    }
+
+    /**
+     * Computes the cascading margin for the category name according to its parent
+     *
+     * @param hierarchy the map of parent to child relationship
+     * @param category the category for which the padding is being calculated
+     *
+     * @return Int the computed margin
+     */
+    private fun computeCascadingMargin(hierarchy: Map<Long, Long>, category: ProductCategory): Int {
+        var margin = ProductCategoriesAdapter.DEFAULT_CATEGORY_MARGIN
+        var parent = category.parentId
+        while (parent != 0L) {
+            margin += ProductCategoriesAdapter.DEFAULT_CATEGORY_MARGIN
+            parent = hierarchy[parent] ?: 0L
+        }
+        return margin
     }
 
     /**
