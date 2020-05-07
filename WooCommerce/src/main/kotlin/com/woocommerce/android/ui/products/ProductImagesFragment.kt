@@ -57,6 +57,11 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = viewModel.hasImageChanges()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
@@ -85,6 +90,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
         addImageButton.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
             showImageSourceDialog()
         }
     }
@@ -113,7 +119,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
-    override fun onGalleryImageClicked(image: Product.Image, imageView: View) {
+    override fun onGalleryImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
                 image.id
@@ -126,16 +132,36 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
                 .also {
                     it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                        )
                         chooseProductImage()
                     }
                     it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                        )
                         captureProductImage()
+                    }
+                    it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+                        )
+                        showWPMediaPicker()
                     }
                 }
 
         imageSourceDialog = MaterialAlertDialogBuilder(activity)
                 .setView(contentView)
                 .show()
+    }
+
+    private fun showWPMediaPicker() {
+        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
+        findNavController().navigate(action)
     }
 
     private fun chooseProductImage() {
@@ -199,6 +225,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 }
             }
         }
+
+        activity?.invalidateOptionsMenu()
     }
 
     /**

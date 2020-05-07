@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-17 00:54:04+0000
+Translation-Revision-Date: 2020-04-29 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_status_pending">검토중</string>
+    <string name="settings_about_title">WooCommerce 정보</string>
+    <string name="settings_app_theme_option_battery_saver">배터리 세이버로 설정</string>
+    <string name="settings_app_theme_option_system">시스템 기본값</string>
+    <string name="settings_app_theme_option_dark">검정</string>
+    <string name="settings_app_theme_option_light">밝음</string>
+    <string name="settings_app_theme_title">외모</string>
+    <string name="product_short_description_empty">간단한 제품 요약</string>
+    <string name="product_short_description">간단한 설명</string>
+    <string name="my_store_stats_availability_message">WooCommerce 4.0을 통한 스토어 또는 WooCommerce 관리자 플러그인이 설치된 스토어의 통계 개선 사항을 공개하고 있습니다.</string>
+    <string name="my_store_stats_reverted_message">분석 개선 사항을 공개했습니다. 2020년 7월 1일 이후 계속해서 통계를 확인하려면 WooCommerce 4.0 이상으로 업그레이드하거나 WooCommerce 관리자 플러그인을 설치하세요.</string>
+    <string name="my_store_stats_reverted_title">업그레이드하여 계속 통계 확인</string>
     <string name="product_pricing_update_sale_price_error">할인 가격은 정가보다 낮아야 합니다.</string>
     <string name="product_schedule_remove_end_date_link_label">종료 날짜 제거</string>
     <string name="product_shipping_empty">배송 추가</string>
@@ -61,7 +73,7 @@ Language: ko_KR
     <string name="product_inventory_empty">재고 추가</string>
     <string name="orderlist_loading">주문 검색 중…</string>
     <string name="product_detail_editable_text_hint">텍스트 입력</string>
-    <string name="product_detail_title_hint">제목 입력</string>
+    <string name="product_detail_title_hint">제품 제목</string>
     <string name="product_detail_update_product_success">제품 업데이트됨</string>
     <string name="product_detail_update_product_error">제품을 업데이트하는 중 오류 발생</string>
     <string name="product_update_dialog_message">기다려주세요…</string>
@@ -185,7 +197,6 @@ Language: ko_KR
     <string name="orderdetail_payment_paid_by_customer">고객 결제</string>
     <string name="orderdetail_payment_summary_onhold">%s을(를) 통한 결제 대기 중</string>
     <string name="orderdetail_payment_summary_completed">%2$s을(를) 통한 %1$s</string>
-    <string name="my_store_stats_availability_message">WooCommerce 관리자 플러그인을 사용하여 스토어 통계 개선을 점진적으로 실시합니다.</string>
     <string name="my_store_stats_availability_title">향상된 통계를 사용해 보세요.</string>
     <string name="dashboard_state_no_data">이 기간에 해당하는 수익이 없습니다.</string>
     <string name="no_thanks">괜찮습니다.</string>
@@ -515,7 +526,6 @@ Language: ko_KR
     <string name="read_more">더 보기</string>
     <string name="error_loading_image">이미지를 로드할 수 없음</string>
     <string name="product_status_draft">임시글</string>
-    <string name="product_status_pending">대기 중</string>
     <string name="product_status_private">비공개</string>
     <string name="product_status_published">게시됨</string>
     <string name="product_view_affiliate">제휴사 제품 보기</string>

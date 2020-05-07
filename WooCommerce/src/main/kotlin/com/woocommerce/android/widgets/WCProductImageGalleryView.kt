@@ -43,7 +43,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     interface OnGalleryImageClickListener {
-        fun onGalleryImageClicked(image: Product.Image, imageView: View)
+        fun onGalleryImageClicked(image: Product.Image)
         fun onGalleryAddImageClicked() { }
     }
 
@@ -141,10 +141,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.setPlaceholderImages(placeholders)
     }
 
-    private fun onImageClicked(position: Int, imageView: View) {
+    private fun onImageClicked(position: Int) {
         val viewType = adapter.getItemViewType(position)
         if (viewType == VIEW_TYPE_IMAGE) {
-            listener.onGalleryImageClicked(adapter.getImage(position), imageView)
+            listener.onGalleryImageClicked(adapter.getImage(position))
         } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
             listener.onGalleryAddImageClicked()
         }
@@ -317,7 +317,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             itemView.setOnClickListener {
                 if (adapterPosition > NO_POSITION) {
-                    onImageClicked(adapterPosition, productImageView)
+                    onImageClicked(adapterPosition)
                 }
             }
         }

@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductListViewModel.OnProductSortingChanged
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -41,6 +43,17 @@ class ProductSortingViewModel @AssistedInject constructor(
     }
 
     fun onSortingOptionChanged(option: ProductSorting) {
+        // order="name/date,ascending,descending"
+        val order = when (option) {
+            TITLE_ASC -> AnalyticsTracker.VALUE_SORT_NAME_ASC
+            TITLE_DESC -> AnalyticsTracker.VALUE_SORT_NAME_DESC
+            DATE_ASC -> AnalyticsTracker.VALUE_SORT_DATE_ASC
+            DATE_DESC -> AnalyticsTracker.VALUE_SORT_DATE_DESC
+        }
+        AnalyticsTracker.track(
+            Stat.PRODUCT_LIST_SORTING_OPTION_SELECTED,
+            mapOf(AnalyticsTracker.KEY_SORT_ORDER to order)
+        )
         productListRepository.productSortingChoice = option
         EventBus.getDefault().post(OnProductSortingChanged)
         triggerEvent(Exit)

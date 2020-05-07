@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-16 00:54:05+0000
+Translation-Revision-Date: 2020-04-29 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_status_pending">Menunggu Peninjauan</string>
+    <string name="settings_about_title">Tentang WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">Diatur oleh Penghemat Baterai</string>
+    <string name="settings_app_theme_option_system">Default sistem</string>
+    <string name="settings_app_theme_option_dark">Gelap</string>
+    <string name="settings_app_theme_option_light">Terang</string>
+    <string name="settings_app_theme_title">Tampilan</string>
+    <string name="product_short_description_empty">Rangkuman ringkas tentang produk</string>
+    <string name="product_short_description">Deskripsi singkat</string>
+    <string name="my_store_stats_availability_message">Kami meluncurkan peningkatan pada statistik untuk toko dengan WooCommerce 4.0 atau toko yang menginstal plugin WooCommerce Admin</string>
+    <string name="my_store_stats_reverted_message">Kami telah meluncurkan peningkatan pada analitik kami. Upgrade ke WooCommerce 4.0 atau di atasnya atau instal plugin WooCommerce Admin untuk tetap bisa melihat statistik Anda setelah tanggal 1 Juli 2020.</string>
+    <string name="my_store_stats_reverted_title">Upgrade untuk bisa tetap melihat statistik Anda</string>
     <string name="product_pricing_update_sale_price_error">Harga penjualan harus kurang dari harga biasa</string>
     <string name="product_schedule_remove_end_date_link_label">Hapus tanggal akhir</string>
     <string name="product_shipping_empty">Tambahkan pengiriman</string>
@@ -61,7 +73,7 @@ Language: id
     <string name="product_inventory_empty">Tambahkan inventaris</string>
     <string name="orderlist_loading">Mencari pesanan Anda…</string>
     <string name="product_detail_editable_text_hint">Masukkan teks</string>
-    <string name="product_detail_title_hint">Masukkan judul</string>
+    <string name="product_detail_title_hint">Nama produk</string>
     <string name="product_detail_update_product_success">Produk diperbarui</string>
     <string name="product_detail_update_product_error">Error saat memperbarui produk</string>
     <string name="product_update_dialog_message">Harap tunggu…</string>
@@ -185,7 +197,6 @@ Language: id
     <string name="orderdetail_payment_paid_by_customer">Dibayar oleh pelanggan</string>
     <string name="orderdetail_payment_summary_onhold">Menunggu pembayaran melalui %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s melalui %2$s</string>
-    <string name="my_store_stats_availability_message">Kami merilis penyempurnaan untuk statistik toko menggunakan plugin Admin WooCommerce</string>
     <string name="my_store_stats_availability_title">Cobalah statistik yang disempurnakan</string>
     <string name="dashboard_state_no_data">Tidak ada pendapatan dalam periode ini</string>
     <string name="no_thanks">Tidak, terima kasih</string>
@@ -515,7 +526,6 @@ Language: id
     <string name="read_more">Baca selengkapnya</string>
     <string name="error_loading_image">Tidak dapat memuat gambar</string>
     <string name="product_status_draft">Konsep</string>
-    <string name="product_status_pending">Menunggu Persetujuan</string>
     <string name="product_status_private">Privat</string>
     <string name="product_status_published">Dipublikasikan</string>
     <string name="product_view_affiliate">Lihat produk afiliasi</string>

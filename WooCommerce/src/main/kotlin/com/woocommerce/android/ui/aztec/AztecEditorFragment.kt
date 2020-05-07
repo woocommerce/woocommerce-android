@@ -8,8 +8,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -21,11 +23,12 @@ import kotlinx.android.synthetic.main.fragment_aztec_editor.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText.EditorHasChanges.NO_CHANGES
+import org.wordpress.aztec.IHistoryListener
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
-class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener {
+class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener, IHistoryListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
@@ -58,6 +61,13 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
         super.onActivityCreated(savedInstanceState)
         (activity as? MainActivity)?.hideBottomNav()
 
+        if (navArgs.aztecCaption.isNullOrBlank()) {
+            aztecCaption.visibility = View.GONE
+        } else {
+            aztecCaption.visibility = View.VISIBLE
+            aztecCaption.text = navArgs.aztecCaption
+        }
+
         aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
                 .setImageGetter(GlideImageLoader(requireContext()))
 
@@ -65,6 +75,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
         aztec.visualEditor.fromHtml(navArgs.aztecText)
         aztec.sourceEditor?.displayStyledAndFormattedHtml(navArgs.aztecText)
+        aztec.setHistoryListener(this)
 
         savedInstanceState?.let { state ->
             isHtmlEditorEnabled = state.getBoolean(FIELD_IS_HTML_EDITOR_ENABLED)
@@ -77,6 +88,11 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = editorHasChanges()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -182,14 +198,36 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     }
 
     private fun navigateBackWithResult(hasChanges: Boolean) {
-        val bundle = Bundle()
-        bundle.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
-        bundle.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
+        val bundle = Bundle().also {
+            it.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
+            it.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
+        }
+        @IdRes val destinationId = if (navArgs.requestCode == RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE) {
+            R.id.productSettingsFragment
+        } else {
+            R.id.productDetailFragment
+        }
         requireActivity().navigateBackWithResult(
                 navArgs.requestCode,
                 bundle,
                 R.id.nav_host_fragment_main,
-                R.id.productDetailFragment
+                destinationId
         )
+    }
+
+    override fun onRedo() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onRedoEnabled() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onUndo() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onUndoEnabled() {
+        requireActivity().invalidateOptionsMenu()
     }
 }
