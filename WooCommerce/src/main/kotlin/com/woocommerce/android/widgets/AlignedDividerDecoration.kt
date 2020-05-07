@@ -61,7 +61,8 @@ class AlignedDividerDecoration @JvmOverloads constructor(
     private val orientation: Int,
     private val alignStartToStartOf: Int = 0,
     private val alignEndToEndOf: Int = 0,
-    private val clipToMargin: Boolean = false
+    private val clipToMargin: Boolean = false,
+    private val padding: Int? = null
 )
     : RecyclerView.ItemDecoration() {
     companion object {
@@ -151,10 +152,18 @@ class AlignedDividerDecoration @JvmOverloads constructor(
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-        if (orientation == VERTICAL) {
-            outRect.set(0, 0, 0, divider.intrinsicHeight)
-        } else {
-            outRect.set(0, 0, divider.intrinsicWidth, 0)
+        if (padding != null) {
+            if (orientation == VERTICAL) {
+                outRect.set(0, 0, 0, padding)
+            } else {
+                outRect.set(0, 0, padding, 0)
+            }
+        }  else {
+            if (orientation == VERTICAL) {
+                outRect.set(0, 0, 0, divider.intrinsicHeight)
+            } else {
+                outRect.set(0, 0, divider.intrinsicWidth, 0)
+            }
         }
     }
 

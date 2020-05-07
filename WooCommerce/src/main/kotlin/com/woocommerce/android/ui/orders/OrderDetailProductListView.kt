@@ -98,7 +98,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
                     AlignedDividerDecoration(
                         context,
                         DividerItemDecoration.VERTICAL,
-                        R.id.productInfo_name
+                        R.id.productInfo_name,
+                        padding = context.resources.getDimensionPixelSize(R.dimen.major_100)
                     )
                 )
             }
