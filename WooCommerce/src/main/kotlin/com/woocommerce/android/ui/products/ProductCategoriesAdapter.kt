@@ -93,7 +93,6 @@ class ProductCategoriesAdapter(
 
     fun setProductCategories(productsCategories: List<ProductCategoryViewHolderModel>) {
         if (productCategoryList.isEmpty()) {
-            productCategoryList.clear()
             productCategoryList.addAll(productsCategories)
             notifyDataSetChanged()
         } else {
@@ -124,7 +123,7 @@ class ProductCategoriesAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = items[oldItemPosition]
             val newItem = result[newItemPosition]
-            return oldItem.category.isSameCategory(newItem.category)
+            return oldItem.category == newItem.category
         }
     }
 }
