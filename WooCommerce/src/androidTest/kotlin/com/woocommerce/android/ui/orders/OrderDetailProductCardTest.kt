@@ -72,12 +72,6 @@ class OrderDetailProductCardTest : TestBase() {
                 withText(appContext.getString(R.string.orderdetail_product))
         ))
 
-        // check if order product card quantity label matches this title:
-        // R.string.orderdetail_product_qty
-        onView(withId(R.id.productList_lblQty)).check(matches(
-                withText(appContext.getString(R.string.orderdetail_product_qty))
-        ))
-
         // check if product list is 1
         val recyclerView = activityTestRule.activity.findViewById(R.id.productList_products) as RecyclerView
         assertSame(1, recyclerView.adapter?.itemCount)
@@ -153,7 +147,7 @@ class OrderDetailProductCardTest : TestBase() {
                 .check(matches(withText(mockWCOrderModel.getLineItemList()[0].name)))
 
         // verify if the second product quantity matches: 2
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_qty))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_totalPaid))
                 .check(matches(withText(mockWCOrderModel.getLineItemList()[1].quantity?.toInt().toString())))
     }
 }
