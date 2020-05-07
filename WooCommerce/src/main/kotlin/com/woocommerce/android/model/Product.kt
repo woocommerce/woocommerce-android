@@ -155,11 +155,11 @@ data class Product(
     fun hasInventoryChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             sku != it.sku ||
-                    manageStock != it.manageStock ||
-                    stockStatus != it.stockStatus ||
-                    stockQuantity != it.stockQuantity ||
-                    backorderStatus != it.backorderStatus ||
-                    soldIndividually != it.soldIndividually
+                manageStock != it.manageStock ||
+                stockStatus != it.stockStatus ||
+                stockQuantity != it.stockQuantity ||
+                backorderStatus != it.backorderStatus ||
+                soldIndividually != it.soldIndividually
         } ?: false
     }
 
@@ -171,12 +171,12 @@ data class Product(
     fun hasPricingChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             regularPrice.isNotEqualTo(it.regularPrice) ||
-                    salePrice.isNotEqualTo(it.salePrice) ||
-                    saleStartDateGmt != it.saleStartDateGmt ||
-                    saleEndDateGmt != it.saleEndDateGmt ||
-                    isOnSale != it.isOnSale ||
-                    taxClass != it.taxClass ||
-                    taxStatus != it.taxStatus
+                salePrice.isNotEqualTo(it.salePrice) ||
+                saleStartDateGmt != it.saleStartDateGmt ||
+                saleEndDateGmt != it.saleEndDateGmt ||
+                isOnSale != it.isOnSale ||
+                taxClass != it.taxClass ||
+                taxStatus != it.taxStatus
         } ?: false
     }
 
@@ -188,10 +188,10 @@ data class Product(
     fun hasShippingChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             weight != it.weight ||
-                    length != it.length ||
-                    width != it.width ||
-                    height != it.height ||
-                    shippingClass != it.shippingClass
+                length != it.length ||
+                width != it.width ||
+                height != it.height ||
+                shippingClass != it.shippingClass
         } ?: false
     }
 
@@ -239,7 +239,7 @@ data class Product(
     fun hasExternalLinkChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             externalUrl != it.externalUrl ||
-                    buttonText != it.buttonText
+                buttonText != it.buttonText
         } ?: false
     }
 
@@ -249,12 +249,12 @@ data class Product(
     fun hasSettingsChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             status != it.status ||
-                    catalogVisibility != it.catalogVisibility ||
-                    isFeatured != it.isFeatured ||
-                    slug != it.slug ||
-                    reviewsAllowed != it.reviewsAllowed ||
-                    purchaseNote != it.purchaseNote ||
-                    menuOrder != it.menuOrder
+                catalogVisibility != it.catalogVisibility ||
+                isFeatured != it.isFeatured ||
+                slug != it.slug ||
+                reviewsAllowed != it.reviewsAllowed ||
+                purchaseNote != it.purchaseNote ||
+                menuOrder != it.menuOrder
         } ?: false
     }
 
@@ -347,8 +347,8 @@ data class Product(
         val unit = dimensionUnit ?: ""
         return if (hasLength && hasWidth && hasHeight) {
             "${length.formatToString()} " +
-                    "x ${width.formatToString()} " +
-                    "x ${height.formatToString()} $unit"
+                "x ${width.formatToString()} " +
+                "x ${height.formatToString()} $unit"
         } else if (hasWidth && hasHeight) {
             "${width.formatToString()} x ${height.formatToString()} $unit"
         } else {
@@ -450,8 +450,8 @@ fun WCProductModel.toAppModel(): Product {
         buttonText = this.buttonText,
         salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
         regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
-            // In Core, if a tax class is empty it is considered as standard and we are following the same
-            // procedure here
+        // In Core, if a tax class is empty it is considered as standard and we are following the same
+        // procedure here
         taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
         manageStock = this.manageStock,
         stockQuantity = this.stockQuantity,
@@ -471,25 +471,25 @@ fun WCProductModel.toAppModel(): Product {
         numVariations = this.getNumVariations(),
         images = this.getImages().map {
             Product.Image(
-                    it.id,
-                    it.name,
-                    it.src,
-                    DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
+                it.id,
+                it.name,
+                it.src,
+                DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
         categories = this.getCategories().map {
             Product.Category(
-                    it.id,
-                    it.name,
-                    it.slug
+                it.id,
+                it.name,
+                it.slug
             )
         },
         attributes = this.getAttributes().map {
             Product.Attribute(
-                    it.id,
-                    it.name,
-                    it.options,
-                    it.visible
+                it.id,
+                it.name,
+                it.options,
+                it.visible
             )
         },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
@@ -504,10 +504,10 @@ fun WCProductModel.toAppModel(): Product {
 
 fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(
-            id = this.mediaId,
-            name = this.fileName,
-            source = this.url,
-            dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
+        id = this.mediaId,
+        name = this.fileName,
+        source = this.url,
+        dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )
 }
 
@@ -515,4 +515,4 @@ fun MediaModel.toAppModel(): Product.Image {
  * Returns the product as a [ProductReviewProduct] for use with the product reviews feature.
  */
 fun WCProductModel.toProductReviewProductModel() =
-        ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
+    ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
