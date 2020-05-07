@@ -61,7 +61,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
 
         val activity = requireActivity()
 
-        productCategoriesAdapter = ProductCategoriesAdapter(activity, this, this)
+        productCategoriesAdapter = ProductCategoriesAdapter(activity.baseContext, this, this)
         with(productCategoriesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productCategoriesAdapter
@@ -132,11 +132,12 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
 
         // Build a parent child relationship table
         for (category in productCategories) {
-            parentChildMap[category.remoteId] = category.parent
+            parentChildMap[category.remoteId] = category.parentId
         }
 
         // Sort all incoming categories by their parent
-        val sortedList = sortCategoriesByParent(productCategories)
+        val sortedList =
+                sortCategoriesByParent(productCategories.sortedByDescending { it.name })
 
         // Update the margin of the category
         for (categoryViewHolderModel in sortedList) {
@@ -151,6 +152,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
                     productCategoryViewHolderModel.isSelected = true
             }
         }
+
         productCategoriesAdapter.setProductCategories(sortedList.toList())
     }
 
@@ -168,7 +170,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         val visited = mutableSetOf<Long>()
 
         // add root nodes to the Stack
-        stack.addAll(productCategories.filter { it.parent == 0L })
+        stack.addAll(productCategories.filter { it.parentId == 0L })
 
         // Go through the nodes until we've finished DFS
         while (stack.isNotEmpty()) {
@@ -180,7 +182,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
             }
 
             // Find all children of the node from the main category list
-            val children = productCategories.filter { it.parent == category.remoteId }
+            val children = productCategories.filter { it.parentId == category.remoteId }
             if (!children.isNullOrEmpty()) {
                 stack.addAll(children)
             }
@@ -198,7 +200,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
      */
     private fun computeCascadingMargin(hierarchy: Map<Long, Long>, category: ProductCategory): Int {
         var margin = DEFAULT_CATEGORY_MARGIN
-        var parent = category.parent
+        var parent = category.parentId
         while (parent != 0L) {
             margin += DEFAULT_CATEGORY_MARGIN
             parent = hierarchy[parent] ?: 0L
@@ -231,8 +233,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         val selectedCategories = product.categories.toMutableList()
 
         val found = selectedCategories.find {
-            it.id == productCategoryViewHolderModel.category.remoteId &&
-                    it.name == productCategoryViewHolderModel.category.name }
+            it.id == productCategoryViewHolderModel.category.remoteId  }
         if (!productCategoryViewHolderModel.isSelected && found != null) {
             selectedCategories.remove(found)
             viewModel.updateProductDraft(categories = selectedCategories)
