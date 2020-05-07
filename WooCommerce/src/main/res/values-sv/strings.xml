@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-16 10:17:06+0000
+Translation-Revision-Date: 2020-05-01 12:08:15+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_status_pending">Väntande recension</string>
+    <string name="settings_about_title">Om WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">Ställs in av strömsparläget</string>
+    <string name="settings_app_theme_option_system">Systemstandard</string>
+    <string name="settings_app_theme_option_dark">Mörk</string>
+    <string name="settings_app_theme_option_light">Ljus</string>
+    <string name="settings_app_theme_title">Utseende</string>
+    <string name="product_short_description_empty">Kort sammanfattning om produkten</string>
+    <string name="product_short_description">Kort beskrivning</string>
+    <string name="my_store_stats_availability_message">Vi lanserar förbättringar av statistiken för butiker med WooCommerce 4.0 eller butiker som har WooCommerce Admin-tillägget installerat</string>
+    <string name="my_store_stats_reverted_message">Vi har lanserat förbättringar av våra analyser. Uppgradera till WooCommerce 4.0 eller senare eller installera WooCommerce Admin-tillägget för att fortsätta att se din statistik efter den 1 juli 2020</string>
+    <string name="my_store_stats_reverted_title">Uppgradera för att fortsätta se din statistik</string>
     <string name="product_pricing_update_sale_price_error">Reapriset måste vara lägre än det ordinarie priset</string>
     <string name="product_schedule_remove_end_date_link_label">Ta bort slutdatum</string>
     <string name="product_shipping_empty">Lägg till frakt</string>
@@ -61,7 +73,7 @@ Language: sv_SE
     <string name="product_inventory_empty">Lägg till lager</string>
     <string name="orderlist_loading">Kollar upp din beställning…</string>
     <string name="product_detail_editable_text_hint">Ange text</string>
-    <string name="product_detail_title_hint">Ange rubrik</string>
+    <string name="product_detail_title_hint">Produktrubrik</string>
     <string name="product_detail_update_product_success">Produkt uppdaterad</string>
     <string name="product_detail_update_product_error">Det gick inte att uppdatera produkten</string>
     <string name="product_update_dialog_message">Vänta …</string>
@@ -122,7 +134,6 @@ Language: sv_SE
     <string name="product_variants">Varianter</string>
     <string name="product_property_edit">Redigera produkt</string>
     <string name="product_variants_fetch_product_variants_error">Ett fel uppstod när produktvarianterna skulle hämtas</string>
-    <string name="my_store_stats_reverted_message">Vi har återgått till den gamla statistiken. För att använda betastatistiken, aktivera WooCommerce Admin-tillägget med version 0.22 eller högre</string>
     <string name="login_discovery_error_option_select">Välj ett alternativ</string>
     <string name="login_troubleshooting_tips">Läs våra felsökningstips</string>
     <string name="login_with_wordpress">Logga in med WordPress.com</string>
@@ -186,7 +197,6 @@ Language: sv_SE
     <string name="orderdetail_payment_paid_by_customer">Betald av kund</string>
     <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
-    <string name="my_store_stats_availability_message">Vi lanserar förbättrad statistik för butiker med hjälp av adminplugin-programmet WooCommerce</string>
     <string name="my_store_stats_availability_title">Prova vår förbättrade statistik</string>
     <string name="dashboard_state_no_data">Inga inkomster denna period</string>
     <string name="no_thanks">Nej tack</string>
@@ -516,7 +526,6 @@ Language: sv_SE
     <string name="read_more">Läs mer</string>
     <string name="error_loading_image">Bilden kunde inte laddas</string>
     <string name="product_status_draft">Utkast</string>
-    <string name="product_status_pending">Väntar</string>
     <string name="product_status_private">Privat</string>
     <string name="product_status_published">Publicerad</string>
     <string name="product_view_affiliate">Visa relaterad produkt</string>

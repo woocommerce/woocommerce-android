@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.woocommerce.android.widgets.BorderedImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_25"
+        android:contentDescription="@string/product_image_content_description"
+        android:scaleType="centerCrop"
+        tools:layout_height="@dimen/image_major_150"
+        tools:layout_width="@dimen/image_major_150"
+        tools:src="@drawable/ic_product" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textSelectionCount"
+        style="@style/TextAppearance.Woo.Badge"
+        android:layout_width="@dimen/major_150"
+        android:layout_height="@dimen/major_150"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:layout_marginStart="@dimen/minor_100"
+        android:background="@drawable/wpmedia_picker_circle_selector"
+        android:elevation="@dimen/plane_04"
+        android:importantForAccessibility="no"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        tools:text="5"
+        tools:ignore="UnusedAttribute"/>
+</FrameLayout>

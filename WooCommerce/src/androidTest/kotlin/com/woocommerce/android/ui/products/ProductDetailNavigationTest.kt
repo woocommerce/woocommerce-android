@@ -239,7 +239,7 @@ class ProductDetailNavigationTest : TestBase() {
         onView(withId(R.id.frameStatusBadge)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
         // verify badge text is displayed correctly
-        onView(withId(R.id.textStatusBadge)).check(matches(withText(ProductStatus.DRAFT.toString(appContext))))
+        onView(withId(R.id.textStatusBadge)).check(matches(withText(ProductStatus.DRAFT.toLocalizedString(appContext))))
     }
 
     @Test
