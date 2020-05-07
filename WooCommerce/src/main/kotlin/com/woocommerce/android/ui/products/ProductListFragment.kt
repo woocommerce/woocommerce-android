@@ -29,9 +29,9 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ScrollToListTopEvent.ScrollToTop
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView

@@ -79,6 +79,10 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
 
         object Exit : Event()
 
+        sealed class ScrollToListTopEvent : Event() {
+            object ScrollToTop : ScrollToListTopEvent()
+        }
+
         data class ShowDiscardDialog(
             val positiveBtnAction: OnClickListener? = null,
             val negativeBtnAction: OnClickListener? = null,

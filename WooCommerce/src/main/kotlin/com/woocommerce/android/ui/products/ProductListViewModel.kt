@@ -13,11 +13,10 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ScrollToListTopEvent.ScrollToTop
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -315,10 +314,6 @@ class ProductListViewModel @AssistedInject constructor(
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null
     ) : Parcelable
-
-    sealed class ProductListEvent : Event() {
-        object ScrollToTop : ProductListEvent()
-    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductListViewModel>

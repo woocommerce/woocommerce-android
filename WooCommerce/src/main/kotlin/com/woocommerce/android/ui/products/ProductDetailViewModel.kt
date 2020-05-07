@@ -29,7 +29,6 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductCategoriesListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
@@ -58,6 +57,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ScrollToListTopEvent.ScrollToTop
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -158,7 +158,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (_productCategories.value == null) {
             loadProductCategories()
         }
-        productCategoriesViewState = productCategoriesViewState.copy()
     }
 
     /**
@@ -1115,10 +1114,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
-
-    sealed class ProductCategoriesListEvent : Event() {
-        object ScrollToTop : ProductCategoriesListEvent()
-    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
