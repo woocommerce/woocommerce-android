@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,7 +16,7 @@
             android:layout_height="wrap_content"
             android:text="@string/orderdetail_product"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- List: Products -->
         <androidx.recyclerview.widget.RecyclerView
@@ -30,7 +29,7 @@
             app:layout_constraintTop_toBottomOf="@+id/productList_lblProduct"
             tools:itemCount="3"
             tools:listitem="@layout/order_detail_product_list_item"
-            tools:targetApi="lollipop"/>
+            tools:targetApi="lollipop" />
 
         <!-- Button: Details -->
         <com.google.android.material.button.MaterialButton
@@ -41,10 +40,10 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/minor_50"
             android:text="@string/details"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productList_products"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <!-- Button: Fulfill Order-->
         <com.google.android.material.button.MaterialButton
@@ -52,12 +51,14 @@
             style="@style/Woo.Button.Colored"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
             android:text="@string/order_begin_fulfillment"
-            tools:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/productList_btnDetails"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productList_products"/>
+            app:layout_constraintTop_toBottomOf="@+id/productList_products"
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
