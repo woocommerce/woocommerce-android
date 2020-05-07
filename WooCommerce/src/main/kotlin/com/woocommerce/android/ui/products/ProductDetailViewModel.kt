@@ -786,12 +786,14 @@ class ProductDetailViewModel @AssistedInject constructor(
      * has margin data, which can be used to visually represent categories in a hierarchy under their
      * parent ids.
      *
+     * @param product the product for which the categories are being styled
      * @param productCategories the list of product categories to sort and style
      * @return [List<ProductCategoryViewHolderModel>] the sorted styled list of categories
      */
-    fun sortAndStyleProductCategories(productCategories: List<ProductCategory>): List<ProductCategoryViewHolderModel> {
-        val product = requireNotNull(getProduct().productDraft)
-
+    fun sortAndStyleProductCategories(
+        product: Product,
+        productCategories: List<ProductCategory>
+    ): List<ProductCategoryViewHolderModel> {
         // Get the categories of the product
         val selectedCategories = product.categories
         val parentChildMap = mutableMapOf<Long, Long>()
@@ -802,8 +804,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         // Sort all incoming categories by their parent
-        val sortedList =
-            sortCategoriesByParent(productCategories.sortedByDescending { it.name })
+        val sortedList = sortCategoriesByNameAndParent(productCategories)
 
         // Update the margin of the category
         for (categoryViewHolderModel in sortedList) {
@@ -827,18 +828,21 @@ class ProductDetailViewModel @AssistedInject constructor(
      * is grouped by their Parent id. The sort is stable, which means that it should return the same list
      * when new categories are updated, and the sort is relative to the update.
      *
-     * @param productCategories All the categories to sort
+     * @param productCategoriesUnSorted All the categories to sort
      * @return [Set<ProductCategoryViewHolderModel>] a sorted set of view holder models containing category view data
      */
-    fun sortCategoriesByParent(
-        productCategories: List<ProductCategory>
+    fun sortCategoriesByNameAndParent(
+        productCategoriesUnSorted: List<ProductCategory>
     ): Set<ProductCategoryViewHolderModel> {
         val sortedList = mutableSetOf<ProductCategoryViewHolderModel>()
         val stack = Stack<ProductCategory>()
         val visited = mutableSetOf<Long>()
 
+        // we first sort the list by name in a descending order
+        val productCategoriesSortedByNameDesc = productCategoriesUnSorted.sortedByDescending { it.name }
+
         // add root nodes to the Stack
-        stack.addAll(productCategories.filter { it.parentId == 0L })
+        stack.addAll(productCategoriesSortedByNameDesc.filter { it.parentId == 0L })
 
         // Go through the nodes until we've finished DFS
         while (stack.isNotEmpty()) {
@@ -850,7 +854,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
 
             // Find all children of the node from the main category list
-            val children = productCategories.filter { it.parentId == category.remoteId }
+            val children = productCategoriesSortedByNameDesc.filter { it.parentId == category.remoteId }
             if (!children.isNullOrEmpty()) {
                 stack.addAll(children)
             }

@@ -127,7 +127,8 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
     }
 
     private fun showProductCategories(productCategories: List<ProductCategory>) {
-        val sortedList = viewModel.sortAndStyleProductCategories(productCategories)
+        val product = requireNotNull(viewModel.getProduct().productDraft)
+        val sortedList = viewModel.sortAndStyleProductCategories(product, productCategories)
         productCategoriesAdapter.setProductCategories(sortedList)
     }
 

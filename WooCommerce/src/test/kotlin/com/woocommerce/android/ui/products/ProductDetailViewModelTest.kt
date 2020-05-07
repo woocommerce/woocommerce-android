@@ -11,6 +11,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
@@ -282,5 +283,44 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(productData?.isProgressDialogShown).isFalse()
         assertThat(productData?.isProductUpdated).isFalse()
         assertThat(productData?.productDraft).isEqualTo(product)
+    }
+
+    @Test
+    fun `Correctly sorts the Product Categories By their Parent Ids`() = test {
+        val list = generateTestProductCategories()
+        val sortedByNameAndParent = viewModel.sortCategoriesByNameAndParent(list).toList()
+        assertThat(sortedByNameAndParent[0].category).isEqualTo(list[0])
+        assertThat(sortedByNameAndParent[1].category).isEqualTo(list[1])
+        assertThat(sortedByNameAndParent[2].category).isEqualTo(list[6])
+        assertThat(sortedByNameAndParent[3].category).isEqualTo(list[2])
+        assertThat(sortedByNameAndParent[4].category).isEqualTo(list[3])
+        assertThat(sortedByNameAndParent[5].category).isEqualTo(list[5])
+        assertThat(sortedByNameAndParent[6].category).isEqualTo(list[4])
+    }
+
+    @Test
+    fun `Correctly computes the cascading margin for the product Category by their Parent Ids`() = test {
+        val list = generateTestProductCategories()
+        val sortedAndStyledList = viewModel.sortAndStyleProductCategories(product, list)
+
+        assertThat(sortedAndStyledList[0].category).isEqualTo(list[0])
+        assertThat(sortedAndStyledList[1].category).isEqualTo(list[1])
+        assertThat(sortedAndStyledList[2].category).isEqualTo(list[6])
+
+        assertThat(sortedAndStyledList[3].margin).isEqualTo(32)
+        assertThat(sortedAndStyledList[4].margin).isEqualTo(64)
+        assertThat(sortedAndStyledList[5].margin).isEqualTo(96)
+    }
+
+    private fun generateTestProductCategories(): List<ProductCategory> {
+        val list = mutableListOf<ProductCategory>()
+        list.add(ProductCategory(1, "A", "a", 0))
+        list.add(ProductCategory(2, "B", "b", 0))
+        list.add(ProductCategory(3, "C", "c", 0))
+        list.add(ProductCategory(4, "CA", "ca", 3))
+        list.add(ProductCategory(5, "CAA", "caa", 3))
+        list.add(ProductCategory(6, "CACA", "caca", 4))
+        list.add(ProductCategory(7, "BA", "ba", 2))
+        return list
     }
 }
