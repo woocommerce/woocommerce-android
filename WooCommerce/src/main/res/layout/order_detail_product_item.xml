@@ -105,7 +105,6 @@
         android:layout_marginEnd="@dimen/minor_50"
         android:layout_marginBottom="@dimen/major_75"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_totalPaid"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblSku"
