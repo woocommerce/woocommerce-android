@@ -95,6 +95,11 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = viewModel.hasCategoryChanges()
+    }
+
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productCategoriesViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -234,12 +239,19 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
 
         val found = selectedCategories.find {
             it.id == productCategoryViewHolderModel.category.remoteId  }
+
+        var changeRequired = false
         if (!productCategoryViewHolderModel.isSelected && found != null) {
             selectedCategories.remove(found)
-            viewModel.updateProductDraft(categories = selectedCategories)
+            changeRequired = true
         } else if (productCategoryViewHolderModel.isSelected && found == null) {
             selectedCategories.add(productCategoryViewHolderModel.category.toCategory())
+            changeRequired = true
+        }
+
+        if (changeRequired) {
             viewModel.updateProductDraft(categories = selectedCategories)
+            activity?.invalidateOptionsMenu()
         }
     }
 }

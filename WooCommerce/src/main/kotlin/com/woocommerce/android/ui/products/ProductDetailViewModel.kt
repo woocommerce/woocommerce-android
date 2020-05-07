@@ -210,6 +210,8 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasImageChanges() = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
 
+    fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
+
     fun hasSettingsChanges(): Boolean {
         return if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
             true
@@ -251,7 +253,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             is ExitProductCategories -> {
                 eventName = Stat.PRODUCT_CATEGORIES_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
+                hasChanges = hasCategoryChanges()
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
