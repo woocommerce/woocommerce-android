@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -40,6 +41,7 @@ import org.wordpress.android.util.ActivityUtils
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     private var productName = ""
     private val skeletonView = SkeletonView()
+    private val LIST_STATE_KEY = "list_state"
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -63,12 +65,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViews()
+        initializeViews(savedInstanceState)
         initializeViewModel()
     }
 
-    private fun initializeViews() {
-        cardsRecyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+    private fun initializeViews(savedInstanceState: Bundle?) {
+        val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+            layoutManager.onRestoreInstanceState(it)
+        }
+        cardsRecyclerView.layoutManager = layoutManager
+        cardsRecyclerView.itemAnimator = null
     }
 
     private fun initializeViewModel() {
@@ -210,6 +217,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val recyclerViewState = cardsRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(cards)
         cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        cardsRecyclerView.layoutManager?.let {
+            outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
+        }
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
