@@ -36,6 +36,8 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import java.math.BigDecimal
 
 class ProductDetailViewModelTest : BaseUnitTest() {
@@ -76,6 +78,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val STRING = "Ahoj"
     private val EXPECTED_CARDS = listOf(
         ProductPropertyCard(
+            type = PRIMARY,
             properties = listOf(
                 Editable(R.string.product_detail_title_hint, product.name),
                 ComplexProperty(R.string.product_description, product.description),
@@ -83,6 +86,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             )
         ),
         ProductPropertyCard(
+            type = SECONDARY,
             properties = listOf(
                 PropertyGroup(
                     R.string.product_price,

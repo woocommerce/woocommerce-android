@@ -10,7 +10,7 @@ class ProductPropertiesCardsDiffCallback(
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val newItem = newList[newItemPosition]
         val oldItem = oldList[oldItemPosition]
-        return oldItem.caption == newItem.caption
+        return oldItem.type == newItem.type
     }
 
     override fun getOldListSize(): Int = oldList.size

@@ -24,6 +24,10 @@ class ProductPropertyCardsAdapter : Adapter<ProductPropertyCardViewHolder>() {
         return ProductPropertyCardViewHolder(parent)
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return items[position].type.ordinal
+    }
+
     override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: ProductPropertyCardViewHolder, position: Int) {

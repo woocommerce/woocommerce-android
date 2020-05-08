@@ -25,6 +25,10 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Property
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRICING
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCHASE_DETAILS
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -158,7 +162,7 @@ class ProductDetailCardBuilder(
             }
         }
 
-        return ProductPropertyCard(properties = items)
+        return ProductPropertyCard(type = PRIMARY, properties = items)
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -354,7 +358,7 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return ProductPropertyCard(properties = items)
+        return ProductPropertyCard(type = SECONDARY, properties = items)
     }
     /**
      * Existing product detail card UI which that will be replaced by the new design once
@@ -419,7 +423,7 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return ProductPropertyCard(title, items)
+        return ProductPropertyCard(PRICING, title, items)
     }
 
     private fun getPurchaseDetailsCard(product: Product): ProductPropertyCard {
@@ -473,6 +477,6 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return ProductPropertyCard(resources.getString(R.string.product_purchase_details), items)
+        return ProductPropertyCard(PURCHASE_DETAILS, resources.getString(R.string.product_purchase_details), items)
     }
 }
