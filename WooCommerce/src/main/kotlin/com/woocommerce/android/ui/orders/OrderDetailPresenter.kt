@@ -160,7 +160,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun refreshOrderAfterDelay(refreshDelay: Long) {
-        Handler().postDelayed ({
+        Handler().postDelayed({
             refreshOrderDetail(false)
         }, refreshDelay)
     }
