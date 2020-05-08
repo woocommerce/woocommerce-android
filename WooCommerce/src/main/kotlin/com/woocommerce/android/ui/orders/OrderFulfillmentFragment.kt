@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -207,7 +208,7 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
                             orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
                             isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
                     )
-            findNavController().navigate(action)
+            findNavController().navigateSafely(action)
         }
     }
 

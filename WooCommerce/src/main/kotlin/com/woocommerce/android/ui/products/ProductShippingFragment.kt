@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
@@ -144,7 +145,7 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
                 .actionProductShippingFragmentToProductShippingClassFragment(
                         productShippingClassSlug = viewModel.getProduct().productDraft?.shippingClass ?: ""
                 )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
