@@ -839,7 +839,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val visited = mutableSetOf<Long>()
 
         // we first sort the list by name in a descending order
-        val productCategoriesSortedByNameDesc = productCategoriesUnSorted.sortedByDescending { it.name }
+        val productCategoriesSortedByNameDesc = productCategoriesUnSorted.sortedByDescending { it.name.toLowerCase() }
 
         // add root nodes to the Stack
         stack.addAll(productCategoriesSortedByNameDesc.filter { it.parentId == 0L })

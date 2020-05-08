@@ -286,16 +286,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Correctly sorts the Product Categories By their Parent Ids`() = test {
+    fun `Correctly sorts the Product Categories By their Parent Ids and by name`() = test {
         val list = generateTestProductCategories()
         val sortedByNameAndParent = viewModel.sortCategoriesByNameAndParent(list).toList()
         assertThat(sortedByNameAndParent[0].category).isEqualTo(list[0])
-        assertThat(sortedByNameAndParent[1].category).isEqualTo(list[1])
-        assertThat(sortedByNameAndParent[2].category).isEqualTo(list[6])
-        assertThat(sortedByNameAndParent[3].category).isEqualTo(list[2])
-        assertThat(sortedByNameAndParent[4].category).isEqualTo(list[3])
-        assertThat(sortedByNameAndParent[5].category).isEqualTo(list[5])
-        assertThat(sortedByNameAndParent[6].category).isEqualTo(list[4])
+        assertThat(sortedByNameAndParent[1].category).isEqualTo(list[7])
+        assertThat(sortedByNameAndParent[2].category).isEqualTo(list[10])
+        assertThat(sortedByNameAndParent[3].category).isEqualTo(list[1])
+        assertThat(sortedByNameAndParent[4].category).isEqualTo(list[6])
+        assertThat(sortedByNameAndParent[5].category).isEqualTo(list[8])
+        assertThat(sortedByNameAndParent[6].category).isEqualTo(list[9])
+        assertThat(sortedByNameAndParent[7].category).isEqualTo(list[2])
+        assertThat(sortedByNameAndParent[8].category).isEqualTo(list[3])
+        assertThat(sortedByNameAndParent[9].category).isEqualTo(list[5])
+        assertThat(sortedByNameAndParent[10].category).isEqualTo(list[4])
     }
 
     @Test
@@ -304,12 +308,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val sortedAndStyledList = viewModel.sortAndStyleProductCategories(product, list)
 
         assertThat(sortedAndStyledList[0].category).isEqualTo(list[0])
-        assertThat(sortedAndStyledList[1].category).isEqualTo(list[1])
-        assertThat(sortedAndStyledList[2].category).isEqualTo(list[6])
+        assertThat(sortedAndStyledList[1].category).isEqualTo(list[7])
+        assertThat(sortedAndStyledList[2].category).isEqualTo(list[10])
 
-        assertThat(sortedAndStyledList[3].margin).isEqualTo(32)
-        assertThat(sortedAndStyledList[4].margin).isEqualTo(64)
-        assertThat(sortedAndStyledList[5].margin).isEqualTo(96)
+        assertThat(sortedAndStyledList[7].margin).isEqualTo(32)
+        assertThat(sortedAndStyledList[8].margin).isEqualTo(64)
+        assertThat(sortedAndStyledList[9].margin).isEqualTo(96)
     }
 
     private fun generateTestProductCategories(): List<ProductCategory> {
@@ -321,6 +325,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         list.add(ProductCategory(5, "CAA", "caa", 3))
         list.add(ProductCategory(6, "CACA", "caca", 4))
         list.add(ProductCategory(7, "BA", "ba", 2))
+        list.add(ProductCategory(8, "b", "b1", 0))
+        list.add(ProductCategory(9, "c", "c1", 0))
+        list.add(ProductCategory(10, "ca", "ca1", 9))
+        list.add(ProductCategory(11, "ba", "ba1", 8))
         return list
     }
 }
