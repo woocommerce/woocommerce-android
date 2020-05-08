@@ -58,6 +58,7 @@ class RefundByItemsFragment : BaseFragment() {
     private fun initializeViews() {
         issueRefund_products.layoutManager = LinearLayoutManager(context)
         issueRefund_products.setHasFixedSize(true)
+        issueRefund_products.isMotionEventSplittingEnabled = false
 
         issueRefund_selectButton.setOnClickListener {
             viewModel.onSelectButtonTapped()
