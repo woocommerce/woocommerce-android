@@ -43,17 +43,16 @@ class WCProductPropertyCardView @JvmOverloads constructor(
     }
 
     private fun loadData(data: List<ProductProperty>) {
-        val recyclerView: RecyclerView = view.findViewById(R.id.propertiesRecyclerView)
         val adapter: ProductPropertiesAdapter
-        if (recyclerView.adapter == null) {
+        if (propertiesRecyclerView.adapter == null) {
             adapter = ProductPropertiesAdapter()
-            recyclerView.adapter = adapter
+            propertiesRecyclerView.adapter = adapter
         } else {
-            adapter = recyclerView.adapter as ProductPropertiesAdapter
+            adapter = propertiesRecyclerView.adapter as ProductPropertiesAdapter
         }
 
-        val recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
+        val recyclerViewState = propertiesRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(data)
-        recyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        propertiesRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 }
