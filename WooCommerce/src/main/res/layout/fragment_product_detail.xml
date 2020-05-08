@@ -115,6 +115,7 @@
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false"
                 android:descendantFocusability="beforeDescendants"
+                android:overScrollMode="never"
                 android:scrollbars="vertical" />
 
         </FrameLayout>

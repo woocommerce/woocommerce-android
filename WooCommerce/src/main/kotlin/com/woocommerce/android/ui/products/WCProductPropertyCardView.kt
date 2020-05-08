@@ -37,6 +37,7 @@ class WCProductPropertyCardView @JvmOverloads constructor(
         }
 
         propertiesRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        propertiesRecyclerView.itemAnimator = null
 
         loadData(properties)
     }
