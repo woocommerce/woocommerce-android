@@ -1,5 +1,7 @@
 4.3
 -----
+* Fixed crash is order detail after returning from the refund screen
+
  
 4.2
 -----
