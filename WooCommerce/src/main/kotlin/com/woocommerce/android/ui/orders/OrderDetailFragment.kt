@@ -190,7 +190,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         super.onDestroyView()
     }
 
-    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
+    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number.orEmpty())
 
     override fun showRefunds(order: WCOrderModel, refunds: List<Refund>) {
         // populate the Order Product List Card if not all have been refunded
