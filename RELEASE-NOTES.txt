@@ -1,6 +1,7 @@
 4.3
 -----
 * Fixed a crash in the product image viewer
+* Beta feature: Try out the new product editing functionality
  
 4.2
 -----
