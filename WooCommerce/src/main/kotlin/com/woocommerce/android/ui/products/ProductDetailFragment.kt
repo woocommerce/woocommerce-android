@@ -86,7 +86,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateProductAction(it) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
@@ -230,17 +230,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                     viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                    changesMade()
                 }
             }
             RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                    changesMade()
                 }
             }
             RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
                 result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
                         ?.let {
                             viewModel.addProductImageListToDraft(it)
+                            changesMade()
                         }
             }
         }
@@ -258,4 +261,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageClicked()
     }
+
+    /**
+     * Override the BaseProductFragment's fun since we want to return True if any changes have been
+     * made to the product draft
+     */
+    override fun hasChanges() = viewModel.hasChanges()
 }

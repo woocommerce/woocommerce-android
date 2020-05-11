@@ -65,14 +65,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
-        productDraft = product,
-        storedProduct = product,
-        isSkeletonShown = false,
-        uploadingImageUris = null,
-        weightWithUnits = "10kg",
-        sizeWithUnits = "1 x 2 x 3 cm",
-        salePriceWithCurrency = "CZK10.00",
-        regularPriceWithCurrency = "CZK30.00"
+            productDraft = product,
+            storedProduct = product,
+            productBeforeEnteringFragment = product,
+            isSkeletonShown = false,
+            uploadingImageUris = null,
+            weightWithUnits = "10kg",
+            sizeWithUnits = "1 x 2 x 3 cm",
+            salePriceWithCurrency = "CZK10.00",
+            regularPriceWithCurrency = "CZK30.00"
     )
 
     private val STRING = "Ahoj"

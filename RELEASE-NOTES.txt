@@ -1,5 +1,6 @@
 4.3
 -----
+* Fixed a crash in the product image viewer
  
 4.2
 -----

@@ -218,6 +218,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
+    fun hasChanges(): Boolean {
+        return viewState.storedProduct?.let { product ->
+            viewState.productDraft?.isSameProduct(product) == false
+        } ?: false
+    }
+
     /**
      * Called when the DONE menu button is clicked in all of the product sub detail screen
      */
@@ -482,12 +488,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onProductTitleChanged(title: String) {
+        updateProductDraft(title = title)
+    }
+
     /**
      * Called before entering any product screen to save of copy of the product prior to the user making any
      * changes in that specific screen
      */
     fun updateProductBeforeEnteringFragment() {
-        viewState.productBeforeEnteringFragment = viewState.productDraft
+        viewState.productBeforeEnteringFragment = viewState.productDraft ?: viewState.storedProduct
     }
 
     /**
@@ -778,8 +788,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 }
-                viewState = viewState.copy(productDraft = null, isProductUpdated = false)
                 loadProduct(product.remoteId)
+                viewState = viewState.copy(
+                    productDraft = null,
+                    productBeforeEnteringFragment = getProduct().storedProduct,
+                    isProductUpdated = false
+                )
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
@@ -829,6 +843,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
                 gmtOffset = parameters.gmtOffset
         )
+
+        if (viewState.productBeforeEnteringFragment == null) {
+            viewState = viewState.copy(
+                productBeforeEnteringFragment = updatedDraft
+            )
+        }
 
         // make sure to remember uploading images
         checkImageUploads(getRemoteProductId())
