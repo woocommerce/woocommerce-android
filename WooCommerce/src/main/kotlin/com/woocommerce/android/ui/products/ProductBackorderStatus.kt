@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductBackOrders
 
@@ -55,6 +56,14 @@ sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val 
         fun backordersToDisplayString(context: Context, backorderStatus: ProductBackorderStatus): String {
             return if (backorderStatus.stringResource != 0) {
                 context.getString(backorderStatus.stringResource)
+            } else {
+                backorderStatus.value
+            }
+        }
+
+        fun backordersToDisplayString(resources: ResourceProvider, backorderStatus: ProductBackorderStatus): String {
+            return if (backorderStatus.stringResource != 0) {
+                resources.getString(backorderStatus.stringResource)
             } else {
                 backorderStatus.value
             }

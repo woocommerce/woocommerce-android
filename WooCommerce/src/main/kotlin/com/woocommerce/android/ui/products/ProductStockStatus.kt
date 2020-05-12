@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 
@@ -55,6 +56,14 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
         fun stockStatusToDisplayString(context: Context, status: ProductStockStatus): String {
             return if (status.stringResource != 0) {
                 context.getString(status.stringResource)
+            } else {
+                status.value
+            }
+        }
+
+        fun stockStatusToDisplayString(resources: ResourceProvider, status: ProductStockStatus): String {
+            return if (status.stringResource != 0) {
+                resources.getString(status.stringResource)
             } else {
                 status.value
             }
