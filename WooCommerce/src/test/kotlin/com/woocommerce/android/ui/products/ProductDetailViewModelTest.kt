@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -46,6 +47,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
+        private const val TEST_STRING = "test"
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -79,8 +81,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             regularPriceWithCurrency = "CZK30.00"
     )
 
-    private val STRING = "Ahoj"
-    private val EXPECTED_CARDS = listOf(
+    private val expectedCards = listOf(
         ProductPropertyCard(
             type = PRIMARY,
             properties = listOf(
@@ -95,21 +96,21 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 PropertyGroup(
                     R.string.product_price,
                     mapOf(
-                        STRING to productWithParameters.regularPriceWithCurrency!!
+                        TEST_STRING to productWithParameters.regularPriceWithCurrency!!
                     ),
                     R.drawable.ic_gridicons_money
                 ),
                 PropertyGroup(
                     R.string.product_inventory,
                     mapOf(
-                        "" to STRING
+                        "" to TEST_STRING
                     ),
                     R.drawable.ic_gridicons_list_checkmark,
                     false
                 ),
                 ComplexProperty(
                     R.string.product_short_description,
-                    STRING,
+                    TEST_STRING,
                     R.drawable.ic_gridicons_align_left,
                     true
                 )
@@ -123,7 +124,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
         doReturn(MutableLiveData(ProductImagesViewState()))
             .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
-        doReturn(STRING).whenever(resources).getString(any())
+
+        // Avoids the unnecessary stubbing exception
+        if (BuildConfig.DEBUG) {
+            doReturn(TEST_STRING).whenever(resources).getString(any())
+        }
 
         viewModel = spy(
             ProductDetailViewModel(
@@ -154,18 +159,21 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product detail properties correctly`() = runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
+        // This feature is only enabled in debug mode and would thus fail in release mode
+        if (BuildConfig.DEBUG) {
+            doReturn(product).whenever(productRepository).getProduct(any())
 
-        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-        var cards: List<ProductPropertyCard>? = null
-        viewModel.productDetailCards.observeForever {
-            cards = it.map { card -> stripCallbacks(card) }
+            var cards: List<ProductPropertyCard>? = null
+            viewModel.productDetailCards.observeForever {
+                cards = it.map { card -> stripCallbacks(card) }
+            }
+
+            viewModel.start(PRODUCT_REMOTE_ID)
+
+            assertThat(expectedCards).isEqualTo(cards)
         }
-
-        viewModel.start(PRODUCT_REMOTE_ID)
-
-        assertThat(EXPECTED_CARDS).isEqualTo(cards)
     }
 
     private fun stripCallbacks(card: ProductPropertyCard): ProductPropertyCard {
@@ -281,88 +289,100 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays progress dialog when product is edited`() = runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(false).whenever(productRepository).updateProduct(any())
+        // This feature is only enabled in debug mode and would thus fail in release mode
+        if (BuildConfig.DEBUG) {
+            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(false).whenever(productRepository).updateProduct(any())
 
-        val isProgressDialogShown = ArrayList<Boolean>()
-        viewModel.productDetailViewStateData.observeForever { old, new ->
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
-                isProgressDialogShown.add(it)
+            val isProgressDialogShown = ArrayList<Boolean>()
+            viewModel.productDetailViewStateData.observeForever { old, new ->
+                new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                    isProgressDialogShown.add(it)
+                }
             }
+
+            viewModel.start(PRODUCT_REMOTE_ID)
+            viewModel.onUpdateButtonClicked()
+
+            assertThat(isProgressDialogShown).containsExactly(true, false)
         }
-
-        viewModel.start(PRODUCT_REMOTE_ID)
-        viewModel.onUpdateButtonClicked()
-
-        assertThat(isProgressDialogShown).containsExactly(true, false)
     }
 
     @Test
     fun `Do not update product when not connected`() = runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(false).whenever(networkStatus).isConnected()
+        // This feature is only enabled in debug mode and would thus fail in release mode
+        if (BuildConfig.DEBUG) {
+            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(false).whenever(networkStatus).isConnected()
 
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            var productData: ProductDetailViewState? = null
+            viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+            viewModel.start(PRODUCT_REMOTE_ID)
+            viewModel.onUpdateButtonClicked()
+
+            verify(productRepository, times(0)).updateProduct(any())
+            assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+            assertThat(productData?.isProgressDialogShown).isFalse()
         }
-
-        var productData: ProductDetailViewState? = null
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
-
-        viewModel.start(PRODUCT_REMOTE_ID)
-        viewModel.onUpdateButtonClicked()
-
-        verify(productRepository, times(0)).updateProduct(any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
-        assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test
     fun `Display error message on update product error`() = runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(false).whenever(productRepository).updateProduct(any())
+        // This feature is only enabled in debug mode and would thus fail in release mode
+        if (BuildConfig.DEBUG) {
+            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(false).whenever(productRepository).updateProduct(any())
 
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            var productData: ProductDetailViewState? = null
+            viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+            viewModel.start(PRODUCT_REMOTE_ID)
+            viewModel.onUpdateButtonClicked()
+
+            verify(productRepository, times(1)).updateProduct(any())
+            assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
+            assertThat(productData?.isProgressDialogShown).isFalse()
         }
-
-        var productData: ProductDetailViewState? = null
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
-
-        viewModel.start(PRODUCT_REMOTE_ID)
-        viewModel.onUpdateButtonClicked()
-
-        verify(productRepository, times(1)).updateProduct(any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
-        assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test
     fun `Display success message on update product success`() = runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(true).whenever(productRepository).updateProduct(any())
+        // This feature is only enabled in debug mode and would thus fail in release mode
+        if (BuildConfig.DEBUG) {
+            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(true).whenever(productRepository).updateProduct(any())
 
-        var successSnackbarShown = false
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
-                successSnackbarShown = true
+            var successSnackbarShown = false
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+                    successSnackbarShown = true
+                }
             }
+
+            var productData: ProductDetailViewState? = null
+            viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+            viewModel.start(PRODUCT_REMOTE_ID)
+            viewModel.onUpdateButtonClicked()
+
+            verify(productRepository, times(1)).updateProduct(any())
+            verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
+
+            assertThat(successSnackbarShown).isTrue()
+            assertThat(productData?.isProgressDialogShown).isFalse()
+            assertThat(productData?.isProductUpdated).isFalse()
+            assertThat(productData?.productDraft).isEqualTo(product)
         }
-
-        var productData: ProductDetailViewState? = null
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
-
-        viewModel.start(PRODUCT_REMOTE_ID)
-        viewModel.onUpdateButtonClicked()
-
-        verify(productRepository, times(1)).updateProduct(any())
-        verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
-
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(productData?.isProductUpdated).isFalse()
-        assertThat(productData?.productDraft).isEqualTo(product)
     }
 }
