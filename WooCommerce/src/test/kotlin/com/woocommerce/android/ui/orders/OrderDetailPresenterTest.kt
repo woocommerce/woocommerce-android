@@ -265,15 +265,16 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Request order shipment trackings from api and load cached from db`() = test {
+    fun `Request order shipment trackings from api`() = test {
         doReturn(WooResult(emptyList<WCRefundModel>()))
                 .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
         doReturn(order).whenever(presenter).orderModel
         doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(false).whenever(presenter).isShipmentTrackingsFetched
+        doReturn(false).whenever(presenter).isShipmentTrackingsFailed
         presenter.takeView(orderDetailView)
 
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
     }
 
@@ -286,7 +287,6 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
     }
 
