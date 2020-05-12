@@ -62,7 +62,12 @@ class WCProductPropertyView @JvmOverloads constructor(
         onClickListener?.let {
             propertyGroupImg?.visibility = View.VISIBLE
             view?.setOnClickListener(onClickListener)
+            this.isClickable = true
         }
+    }
+
+    fun removeClickListener() {
+        this.isClickable = false
     }
 
     fun setMaxLines(maxLines: Int) {
