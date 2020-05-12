@@ -10,7 +10,7 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class MyStoreScreen : Screen {
     companion object {
-        const val TOOLBAR = R.id.toolbar
+        const val DASHBOARD = R.id.dashboard_refresh_layout
 
         const val STATS_CARD = R.id.dashboard_stats_availability_card
         const val STATS_CARD_VIEW_MORE = R.id.dashboard_stats_availability_card
@@ -22,7 +22,7 @@ class MyStoreScreen : Screen {
     val tabBar = TabNavComponent()
     val stats = StatsComponent()
 
-    constructor(): super(TOOLBAR)
+    constructor(): super(DASHBOARD)
 
     fun openSettingsPane(): SettingsScreen {
         openToolbarActionMenu()
