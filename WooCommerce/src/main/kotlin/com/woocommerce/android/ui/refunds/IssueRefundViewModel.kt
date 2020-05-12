@@ -92,12 +92,16 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
-    final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = {
-        updateRefundTotal(it.productsRefund)
+    final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = { _, new ->
+        updateRefundTotal(new.productsRefund)
     })
-    final val refundByAmountStateLiveData = LiveDataDelegate(savedState, RefundByAmountViewState(), onChange = {
-        updateRefundTotal(it.enteredAmount)
-    })
+    final val refundByAmountStateLiveData = LiveDataDelegate(
+        savedState,
+        RefundByAmountViewState(),
+        onChange = { _, new ->
+            updateRefundTotal(new.enteredAmount)
+        }
+    )
     final val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
