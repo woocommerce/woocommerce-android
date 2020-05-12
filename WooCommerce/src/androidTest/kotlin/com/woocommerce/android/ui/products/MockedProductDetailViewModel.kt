@@ -8,6 +8,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 
 final class MockedProductDetailViewModel @AssistedInject constructor(
@@ -18,6 +19,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
     networkStatus: NetworkStatus,
     currencyFormatter: CurrencyFormatter,
     productImagesServiceWrapper: ProductImagesServiceWrapper,
+    resources: ResourceProvider,
     @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
         arg0,
@@ -27,7 +29,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         networkStatus,
         currencyFormatter,
         wooCommerceStore,
-        productImagesServiceWrapper
+        productImagesServiceWrapper,
+        resources
 ) {
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<MockedProductDetailViewModel>

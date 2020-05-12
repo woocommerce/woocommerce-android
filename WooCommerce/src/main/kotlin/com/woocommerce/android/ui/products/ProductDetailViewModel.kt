@@ -3,12 +3,16 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNumeric
@@ -39,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -49,12 +54,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -71,7 +78,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val resources: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -92,7 +100,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var skuVerificationJob: Job? = null
 
     // view state for the product detail screen
-    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState())
+    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
+        if (old?.productDraft != new.productDraft) {
+            updateCards()
+        }
+    }
     private var viewState by productDetailViewStateData
 
     // view state for the product inventory screen
@@ -106,6 +118,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product images screen
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
+
+    private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
+    val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
+
+    private val cardBuilder by lazy {
+        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
+    }
 
     init {
         EventBus.getDefault().register(this)
@@ -168,7 +187,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product detail screen
      */
-    fun onEditProductCardClicked(target: ProductNavigationTarget) {
+    fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
+        stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
     }
 
@@ -301,6 +321,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.productDraft?.let {
             triggerEvent(ViewProductMenuOrder(it.menuOrder))
         }
+    }
+
+    fun onViewProductOnStoreLinkClicked(url: String) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+        triggerEvent(LaunchUrlInChromeTab(url))
+    }
+
+    fun onAffiliateLinkClicked(url: String) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED)
+        triggerEvent(LaunchUrlInChromeTab(url))
     }
 
     /**
@@ -458,6 +488,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onProductTitleChanged(title: String) {
+        updateProductDraft(title = title)
+    }
+
     /**
      * Called before entering any product screen to save of copy of the product prior to the user making any
      * changes in that specific screen
@@ -557,6 +591,17 @@ class ProductDetailViewModel @AssistedInject constructor(
         super.onCleared()
         productRepository.onCleanup()
         EventBus.getDefault().unregister(this)
+    }
+
+    private fun updateCards() {
+        viewState.productDraft?.let {
+            launch(dispatchers.computation) {
+                val cards = cardBuilder.buildPropertyCards(it)
+                withContext(dispatchers.main) {
+                    _productDetailCards.value = cards
+                }
+            }
+        }
     }
 
     /**
@@ -743,12 +788,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 }
-                loadProduct(product.remoteId)
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
+                loadProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
@@ -913,6 +958,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
+
+    data class LaunchUrlInChromeTab(val url: String) : Event()
 
     @Parcelize
     data class Parameters(
