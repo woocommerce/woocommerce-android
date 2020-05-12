@@ -20,6 +20,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product
@@ -124,7 +125,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
                 image.id
         )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     private fun showImageSourceDialog() {
@@ -161,7 +162,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun showWPMediaPicker() {
         val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     private fun chooseProductImage() {
@@ -226,7 +227,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
         }
 
-        activity?.invalidateOptionsMenu()
+        changesMade()
     }
 
     /**

@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -54,7 +54,7 @@ final class ProductListRepository @Inject constructor(
     var productSortingChoice: ProductSorting
         get() {
             return ProductSorting.valueOf(
-                    sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, DATE_DESC.name) ?: DATE_DESC.name
+                    sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, TITLE_ASC.name) ?: TITLE_ASC.name
             )
         }
         set(value) {

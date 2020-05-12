@@ -16,6 +16,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -165,7 +166,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      */
     override fun onImageLongClicked(image: Product.Image) {
         val action = ProductDetailFragmentDirections.actionGlobalWpMediaViewerFragment(image.source)
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
