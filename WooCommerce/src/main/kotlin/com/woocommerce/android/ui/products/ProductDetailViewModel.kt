@@ -788,12 +788,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 }
-                loadProduct(product.remoteId)
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
+                loadProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
