@@ -1,5 +1,6 @@
 4.3
 -----
+* Added shipment tracking to the order detail screen
  
 4.2
 -----
