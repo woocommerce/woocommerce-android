@@ -2,6 +2,8 @@
 -----
 * Fixed crash is order detail after returning from the refund screen
 
+* Fixed a crash in the product image viewer
+* Fixed a crash when updating the shipping dimensions of a product.
  
 4.2
 -----

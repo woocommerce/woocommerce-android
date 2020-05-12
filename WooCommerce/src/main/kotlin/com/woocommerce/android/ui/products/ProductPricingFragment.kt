@@ -140,6 +140,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             product.regularPrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
                 viewModel.onRegularPriceEntered(it)
+                changesMade()
             })
         }
 
@@ -148,6 +149,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             product.salePrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
                 viewModel.onSalePriceEntered(it)
+                changesMade()
             })
         }
 
@@ -166,6 +168,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                         saleStartDate = startDate,
                         saleEndDate = Optional(endDate)
                 )
+                changesMade()
             }
         }
 
@@ -179,6 +182,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                     )
 
                     updateSaleStartDate(selectedDate, gmtOffset)
+                    changesMade()
                 })
             }
         }
@@ -193,6 +197,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                     )
 
                     updateSaleEndDate(selectedDate, gmtOffset)
+                    changesMade()
                 })
             }
         }
@@ -200,6 +205,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         with(scheduleSale_RemoveEndDateButton) {
             setOnClickListener {
                 viewModel.onRemoveEndDateClicked()
+                changesMade()
             }
         }
 
@@ -254,10 +260,10 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
     private fun displaySalePriceError(messageId: Int) {
         if (messageId != 0) {
             product_sale_price.error = getString(messageId)
-            enablePublishMenuItem(false)
+            enableUpdateMenuItem(false)
         } else {
             product_sale_price.error = null
-            enablePublishMenuItem(true)
+            enableUpdateMenuItem(true)
         }
     }
 
@@ -317,6 +323,8 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                 }
             }
         }
+
+        changesMade()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
