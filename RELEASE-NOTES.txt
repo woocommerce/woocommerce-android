@@ -1,7 +1,8 @@
 4.3
 -----
 * Fixed a crash in the product image viewer
-* Fixed a crash when updating the shipping dimensions of a product.
+* Fixed a crash when updating the shipping dimensions of a product
+* Fixed a crash when rapidly double clicking to navigate to another screen
  
 4.2
 -----

@@ -14,6 +14,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -65,7 +66,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
                     val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
                             event.title, event.message, event.confirmButtonTitle
                     )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }
