@@ -231,6 +231,31 @@ object DateUtils {
     }
 
     /**
+     * Given a date of format MMMM d, YYYY, returns true if it's today
+     */
+    fun isToday(dateString: String): Boolean {
+        val then = DateTimeUtils.dateUTCFromIso8601(dateString)
+        return DateUtils.isSameDay(Date(), then)
+    }
+
+    /**
+     * Given a date of format MMMM d, YYYY, returns just the time
+     *
+     * @throws IllegalArgumentException if the argument is not a valid date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getTimeString(context: Context, dateString: String): String {
+        try {
+            val date = GregorianCalendar.getInstance().also {
+                it.time = DateTimeUtils.dateUTCFromIso8601(dateString)
+            }
+            return DateFormat.getTimeFormat(context).format(date.time)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
+        }
+    }
+
+    /**
      * Given a date of format MMMM d, YYYY, returns date string in yyyy-MM-dd format
      *
      * @throws IllegalArgumentException if the argument is not a valid date string.
