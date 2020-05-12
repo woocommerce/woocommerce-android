@@ -30,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
@@ -157,7 +158,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         option_beta_features.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
         val productsTeaser = getString(R.string.settings_enable_product_teaser_title)
@@ -166,7 +167,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
         option_feature_request.setOnClickListener {
@@ -176,12 +177,12 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         option_about.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_aboutFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
         }
 
         option_licenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_licensesFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
         if (presenter.hasMultipleStores()) {
