@@ -19,8 +19,7 @@
         <View
             android:id="@+id/shipmentTrack_labelDivider"
             style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_75" />
+            android:layout_marginStart="@dimen/major_100" />
 
         <!-- List: Order Shipment Trackings -->
         <androidx.recyclerview.widget.RecyclerView
