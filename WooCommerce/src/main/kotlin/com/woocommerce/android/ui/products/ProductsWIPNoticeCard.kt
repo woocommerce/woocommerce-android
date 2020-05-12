@@ -29,9 +29,13 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
             }
         }
 
-    fun initView() {
+    fun initView(title: String, message: String) {
         products_wip_viewMore.setOnCheckedChangeListener { _, isChecked ->
             isExpanded = isChecked
         }
+        products_wip_viewMore.isChecked = false
+        products_wip_viewMore.textOn = title
+        products_wip_viewMore.textOff = title
+        products_wip_message.text = message
     }
 }
