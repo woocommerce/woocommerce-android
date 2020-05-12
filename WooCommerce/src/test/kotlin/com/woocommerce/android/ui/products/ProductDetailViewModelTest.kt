@@ -23,8 +23,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -38,8 +36,12 @@ import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.runBlockingTest
 import java.math.BigDecimal
 
+@ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -57,8 +59,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
     private val savedState: SavedStateWithArgs = mock()
 
+    @ExperimentalCoroutinesApi
     private val coroutineDispatchers = CoroutineDispatchers(
-        Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined
+        TestCoroutineDispatcher(), TestCoroutineDispatcher(), TestCoroutineDispatcher()
     )
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
@@ -150,7 +153,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product detail properties correctly`() = test {
+    fun `Displays the product detail properties correctly`() = runBlockingTest {
         doReturn(product).whenever(productRepository).getProduct(any())
 
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
@@ -192,7 +195,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on fetch product error`() = test {
+    fun `Display error message on fetch product error`() = runBlockingTest {
         whenever(productRepository.fetchProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
         whenever(productRepository.getProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
 
@@ -209,7 +212,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product from api when not connected`() = test {
+    fun `Do not fetch product from api when not connected`() = runBlockingTest {
         doReturn(offlineProduct).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -227,7 +230,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product detail skeleton correctly`() = test {
+    fun `Shows and hides product detail skeleton correctly`() = runBlockingTest {
         doReturn(null).whenever(productRepository).getProduct(any())
 
         val isSkeletonShown = ArrayList<Boolean>()
@@ -277,7 +280,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays progress dialog when product is edited`() = test {
+    fun `Displays progress dialog when product is edited`() = runBlockingTest {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(productRepository).updateProduct(any())
 
@@ -295,7 +298,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not update product when not connected`() = test {
+    fun `Do not update product when not connected`() = runBlockingTest {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -316,7 +319,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on update product error`() = test {
+    fun `Display error message on update product error`() = runBlockingTest {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(productRepository).updateProduct(any())
 
@@ -337,7 +340,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display success message on update product success`() = test {
+    fun `Display success message on update product success`() = runBlockingTest {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(true).whenever(productRepository).updateProduct(any())
 
