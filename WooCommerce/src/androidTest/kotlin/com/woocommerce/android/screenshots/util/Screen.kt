@@ -50,8 +50,25 @@ open class Screen {
 
     companion object {
         var screenshotCount: Int = 0
+
         fun isVisible(): Boolean {
             return false
+        }
+
+        // Defined here so that it can be used even if we don't have an instance of `Screen` yet, which is handy when we
+        // want to check for certain properties of the screen the app has been launched with, without knowing which
+        // screen we are dealing with.
+        fun isElementDisplayed(elementID: Int): Boolean {
+            return isElementDisplayed(onView(withId(elementID)))
+        }
+
+        private fun isElementDisplayed(element: ViewInteraction): Boolean {
+            return try {
+                element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
         }
     }
 
@@ -213,16 +230,7 @@ open class Screen {
     }
 
     fun isElementDisplayed(elementID: Int): Boolean {
-        return isElementDisplayed(onView(withId(elementID)))
-    }
-
-    private fun isElementDisplayed(element: ViewInteraction): Boolean {
-        return try {
-            element.check(matches(isDisplayed()))
-            true
-        } catch (e: Throwable) {
-            false
-        }
+        return Screen.isElementDisplayed(elementID)
     }
 
     fun isElementCompletelyDisplayed(elementID: Int): Boolean {

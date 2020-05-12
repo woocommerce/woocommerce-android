@@ -21,19 +21,6 @@ class WelcomeScreen : Screen {
 
             return WelcomeScreen()
         }
-
-        private fun isElementDisplayed(elementID: Int): Boolean {
-            return isElementDisplayed(Espresso.onView(ViewMatchers.withId(elementID)))
-        }
-
-        private fun isElementDisplayed(element: ViewInteraction): Boolean {
-            return try {
-                element.check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-                true
-            } catch (e: Throwable) {
-                false
-            }
-        }
     }
 
     constructor() : super(LOGIN_BUTTON)
