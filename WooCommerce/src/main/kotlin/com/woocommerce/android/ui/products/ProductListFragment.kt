@@ -48,7 +48,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
-        const val KEY_WIP_EXPANDED = "wip_expanded"
         fun newInstance() = ProductListFragment()
     }
 
@@ -80,7 +79,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         val activity = requireActivity()
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
-        products_wip_card.isExpanded = savedInstanceState?.getBoolean(KEY_WIP_EXPANDED) ?: false
 
         productAdapter = ProductListAdapter(activity, this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
@@ -106,7 +104,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(KEY_LIST_STATE, productsRecycler.layoutManager?.onSaveInstanceState())
-        outState.putBoolean(KEY_WIP_EXPANDED, products_wip_card.isExpanded)
         super.onSaveInstanceState(outState)
     }
 
