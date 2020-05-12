@@ -73,7 +73,11 @@ class ProductDetailCardBuilder(
         val productName = product.name.fastStripHtml()
 
         if (isAddEditProductRelease1Enabled(product.type)) {
-            items.add(Editable(R.string.product_detail_title_hint, productName, onTextChanged = viewModel::onProductTitleChanged))
+            items.add(Editable(
+                R.string.product_detail_title_hint,
+                productName,
+                onTextChanged = viewModel::onProductTitleChanged
+            ))
         } else {
             items.addPropertyIfNotEmpty(ComplexProperty(R.string.product_name, productName))
         }
