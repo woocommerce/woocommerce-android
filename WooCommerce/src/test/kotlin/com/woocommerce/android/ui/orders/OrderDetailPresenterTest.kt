@@ -291,11 +291,11 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Request fresh shipment tracking from api on network connected event if using non-updated cached data`() =
+    fun `Request fresh shipment tracking from api on network connected event if not already fetched`() =
             test {
                 doReturn(WooResult(emptyList<WCRefundModel>()))
                         .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-                doReturn(true).whenever(presenter).isUsingCachedShipmentTrackings
+                doReturn(false).whenever(presenter).isShipmentTrackingsFetched
                 doReturn(order).whenever(presenter).orderModel
                 presenter.takeView(orderDetailView)
 
@@ -304,11 +304,11 @@ class OrderDetailPresenterTest {
             }
 
     @Test
-    fun `Do not refresh shipment trackings on network connected event if cached data already refreshed`() =
+    fun `Do not refresh shipment trackings on network connected event if data already fetched`() =
             test {
                 doReturn(WooResult(emptyList<WCRefundModel>()))
                         .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-                doReturn(false).whenever(presenter).isUsingCachedShipmentTrackings
+                doReturn(true).whenever(presenter).isShipmentTrackingsFetched
                 doReturn(order).whenever(presenter).orderModel
                 presenter.takeView(orderDetailView)
 
