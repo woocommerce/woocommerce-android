@@ -13,7 +13,7 @@ fun NavController.navigateSafely(directions: NavDirections) {
 }
 
 fun NavController.navigateSafely(@IdRes resId: Int) {
-    if (currentDestination?.id == resId == false) {
+    if (currentDestination?.id != resId) {
         navigate(resId, null)
     }
 }
