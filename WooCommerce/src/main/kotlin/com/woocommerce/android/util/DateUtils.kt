@@ -233,23 +233,10 @@ object DateUtils {
 
     /**
      * Given a date of format MMMM d, YYYY, returns true if it's today
-     *
-     * @throws IllegalArgumentException if the argument is not a valid date string.
      */
-    @Throws(IllegalArgumentException::class)
     fun isToday(dateString: String): Boolean {
-        try {
-            val now = GregorianCalendar.getInstance()
-            val date = GregorianCalendar.getInstance().also {
-                it.time = DateTimeUtils.dateUTCFromIso8601(dateString)
-            }
-
-            return now[Calendar.YEAR] == date[Calendar.YEAR] &&
-                now[Calendar.MONTH] == date[Calendar.MONTH] &&
-                now[Calendar.DATE] == date[Calendar.DATE]
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
-        }
+        val then = DateTimeUtils.dateUTCFromIso8601(dateString)
+        return DateUtils.isSameDay(Date(), then)
     }
 
     /**
