@@ -60,9 +60,9 @@ class OrderDetailNavigationTest : TestBase() {
 
         // check if order card heading matches this format:
         // #1 Jane Masterson
-        onView(withId(R.id.orderStatus_orderNum)).check(matches(
+        onView(withId(R.id.orderStatus_dateAndOrderNum)).check(matches(
                 withText(appContext.getString(
-                R.string.orderdetail_orderstatus_heading,
+                R.string.orderdetail_orderstatus_date_and_ordernum,
                 mockWCOrderModel.number, mockWCOrderModel.billingFirstName, mockWCOrderModel.billingLastName)))
         )
 
@@ -72,8 +72,11 @@ class OrderDetailNavigationTest : TestBase() {
                 appContext,
                 mockWCOrderModel.dateCreated
         )
-        onView(withId(R.id.orderStatus_created)).check(
-                matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, todayDateString))))
+        onView(withId(R.id.orderStatus_dateAndOrderNum)).check(
+                matches(
+                    withText(appContext.getString(R.string.orderdetail_orderstatus_date_and_ordernum, todayDateString))
+                )
+        )
     }
 
     @Test
@@ -94,8 +97,11 @@ class OrderDetailNavigationTest : TestBase() {
                 appContext,
                 mockWCOrderModel.dateCreated
         )
-        onView(withId(R.id.orderStatus_created)).check(
-                matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, todayDateString))))
+        onView(withId(R.id.orderStatus_dateAndOrderNum)).check(
+                matches(
+                    withText(appContext.getString(R.string.orderdetail_orderstatus_date_and_ordernum, todayDateString))
+                )
+        )
     }
 
     @Test
@@ -116,8 +122,11 @@ class OrderDetailNavigationTest : TestBase() {
                 appContext,
                 mockWCOrderModel.dateCreated
         )
-        onView(withId(R.id.orderStatus_created)).check(
-                matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, yDayDateString))))
+        onView(withId(R.id.orderStatus_dateAndOrderNum)).check(
+                matches(
+                    withText(appContext.getString(R.string.orderdetail_orderstatus_date_and_ordernum, yDayDateString))
+                )
+        )
     }
 
     @Test
@@ -138,8 +147,11 @@ class OrderDetailNavigationTest : TestBase() {
                 appContext,
                 mockWCOrderModel.dateCreated
         )
-        onView(withId(R.id.orderStatus_created)).check(
-                matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, yDayDateString))))
+        onView(withId(R.id.orderStatus_dateAndOrderNum)).check(
+                matches(
+                    withText(appContext.getString(R.string.orderdetail_orderstatus_date_and_ordernum, yDayDateString))
+                )
+        )
     }
 
     @Test
@@ -160,8 +172,11 @@ class OrderDetailNavigationTest : TestBase() {
                 appContext,
                 mockWCOrderModel.dateCreated
         )
-        onView(withId(R.id.orderStatus_created)).check(
-                matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, yDayDateString))))
+        onView(withId(R.id.orderStatus_dateAndOrderNum)).check(
+                matches(
+                    withText(appContext.getString(R.string.orderdetail_orderstatus_date_and_ordernum, yDayDateString))
+                )
+        )
     }
 
     @Test
@@ -182,8 +197,11 @@ class OrderDetailNavigationTest : TestBase() {
                 appContext,
                 mockWCOrderModel.dateCreated
         )
-        onView(withId(R.id.orderStatus_created)).check(
-                matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, yDayDateString))))
+        onView(withId(R.id.orderStatus_dateAndOrderNum)).check(
+                matches(
+                    withText(appContext.getString(R.string.orderdetail_orderstatus_date_and_ordernum, yDayDateString))
+                )
+        )
     }
 
     /**
