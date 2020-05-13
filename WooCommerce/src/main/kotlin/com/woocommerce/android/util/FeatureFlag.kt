@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 
 /**
@@ -14,7 +15,7 @@ enum class FeatureFlag {
         return when (this) {
             // currently only enabled for debug users but once live, this feature will live switched on from the
             // setting screen. i.e. check AppPrefs.isProductsFeatureEnabled() method
-            PRODUCT_RELEASE_M2 -> BuildConfig.DEBUG
+            PRODUCT_RELEASE_M2 -> BuildConfig.DEBUG || AppPrefs.isProductsFeatureEnabled()
             PRODUCT_RELEASE_M3 -> BuildConfig.DEBUG
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)

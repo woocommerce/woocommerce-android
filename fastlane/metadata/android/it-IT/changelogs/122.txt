@@ -1,3 +1,0 @@
-4.0:
-*Siamo entusiasti di introdurre la scheda Prodotti.
-*Gli utenti hanno ora opzioni di modifica limitate per i prodotti semplici, con altre in arrivo.

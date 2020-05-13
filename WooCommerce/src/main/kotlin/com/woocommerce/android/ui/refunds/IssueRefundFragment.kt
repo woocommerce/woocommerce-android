@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
@@ -84,7 +85,7 @@ class IssueRefundFragment : BaseFragment() {
             when (event) {
                 is ShowRefundSummary -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }

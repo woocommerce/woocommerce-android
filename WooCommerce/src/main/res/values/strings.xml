@@ -211,8 +211,8 @@
     <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
-    <string name="orderdetail_orderstatus_created">Created %1$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
     <string name="orderdetail_shipping_method">Shipping method</string>
     <string name="orderdetail_shipping_details">Shipping details</string>
     <string name="orderdetail_billing_details">Billing details</string>
@@ -494,8 +494,8 @@
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
-    <string name="product_wip_title">Limited editing available</string>
-    <string name="product_wip_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
+    <string name="product_wip_title">New editing options available</string>
+    <string name="product_wip_message">We\'ve added more editing functionalities to products. You can now update images, see previews and sort, filter &amp; share products!</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_hidden">Hidden</string>
     <string name="product_variant_list_empty">Add options like size and color from web. These will show up as options on the product page of your site</string>

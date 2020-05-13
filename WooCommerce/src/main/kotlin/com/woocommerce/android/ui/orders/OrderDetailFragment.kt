@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -273,20 +274,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
-        if (trackings.isNotEmpty()) {
-            orderDetail_shipmentList.initView(
-                    trackings = trackings,
-                    uiMessageResolver = uiMessageResolver,
-                    isOrderDetail = true,
-                    shipmentTrackingActionListener = this
-            )
-            if (orderDetail_shipmentList.visibility != View.VISIBLE) {
-                WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
-            }
-        } else {
-            if (orderDetail_shipmentList.visibility == View.VISIBLE) {
-                WooAnimUtils.scaleOut(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
-            }
+        orderDetail_shipmentList.initView(
+            trackings = trackings,
+            uiMessageResolver = uiMessageResolver,
+            isOrderDetail = true,
+            shipmentTrackingActionListener = this
+        )
+        if (orderDetail_shipmentList.visibility != View.VISIBLE) {
+            WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
         }
     }
 
@@ -305,14 +300,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 order.number,
                 presenter.isShipmentTrackingsFetched
         )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun issueOrderRefund(order: Order) {
         AnalyticsTracker.track(ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED)
 
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.remoteId)
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun showRefundDetail(orderId: Long, refundId: Long) {
@@ -322,7 +317,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         ))
 
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundDetailFragment(orderId, refundId)
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun openOrderProductList(order: WCOrderModel) {
@@ -330,14 +325,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 order.getIdentifier(),
                 order.number
         )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun openRefundedProductList(order: WCOrderModel) {
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundDetailFragment(
                 order.remoteOrderId
         )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
@@ -483,7 +478,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 order.getIdentifier(),
                 order.number
         )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun showAddOrderNoteErrorSnack() {
@@ -585,7 +580,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
                     isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
             )
-            findNavController().navigate(action)
+            findNavController().navigateSafely(action)
         }
     }
 

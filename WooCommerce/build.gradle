@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.1-rc-2"
+            versionName "4.2-rc-1"
         }
-        versionCode 124
+        versionCode 126
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -105,6 +105,10 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+    }
+
+    testOptions {
+        animationsDisabled = true
     }
 }
 
@@ -223,6 +227,9 @@ dependencies {
     kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
 
+    // Dependencies for screenshots
+    androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
+
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
@@ -240,6 +247,7 @@ dependencies {
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
     implementation "org.apache.commons:commons-lang3:3.9"
     implementation "org.apache.commons:commons-text:1.8"

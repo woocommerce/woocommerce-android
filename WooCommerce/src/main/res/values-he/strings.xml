@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-17 00:54:04+0000
+Translation-Revision-Date: 2020-04-30 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_status_pending">ביקורת ממתינה לאישור</string>
+    <string name="settings_about_title">אודות WooCommerce</string>
+    <string name="settings_app_theme_option_battery_saver">לקבוע לפי חיסכון בצריכת הסוללה</string>
+    <string name="settings_app_theme_option_system">ברירת המחדל לפי המערכת</string>
+    <string name="settings_app_theme_option_dark">צבעים כהים</string>
+    <string name="settings_app_theme_option_light">צבעים בהירים</string>
+    <string name="settings_app_theme_title">מראה</string>
+    <string name="product_short_description_empty">סיכום קצר לגבי המוצר</string>
+    <string name="product_short_description">תיאור קצר</string>
+    <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות עם WooCommerce 4.0 או בחנויות שבהן הותקן התוסף WooCommerce Admin</string>
+    <string name="my_store_stats_reverted_message">אנחנו מפרסמים שיפורים לכלי הניתוח שלנו. יש לעדכן את WooCommerce לגרסת 4.0 ומעלה או להתקין את התוסף WooCommerce Admin כדי להמשיך להציג את הנתונים הסטטיסטיים שלך אחרי 1 ביולי 2020.</string>
+    <string name="my_store_stats_reverted_title">לעדכן כדי להמשיך להציג את הנתונים הסטטיסטיים שלך</string>
     <string name="product_pricing_update_sale_price_error">מחיר המבצע חייב להיות פחות מהמחיר הרגיל</string>
     <string name="product_schedule_remove_end_date_link_label">להסיר את תאריך הסיום</string>
     <string name="product_shipping_empty">להוסיף משלוח</string>
@@ -61,7 +73,7 @@ Language: he_IL
     <string name="product_inventory_empty">להוסיף מלאי</string>
     <string name="orderlist_loading">מחפש את ההזמנות שלך…</string>
     <string name="product_detail_editable_text_hint">להזין טקסט</string>
-    <string name="product_detail_title_hint">להזין כותרת</string>
+    <string name="product_detail_title_hint">כותרת מוצר</string>
     <string name="product_detail_update_product_success">המוצר עודכן</string>
     <string name="product_detail_update_product_error">שגיאה בעדכון המוצר</string>
     <string name="product_update_dialog_message">נא להמתין…</string>
@@ -185,7 +197,6 @@ Language: he_IL
     <string name="orderdetail_payment_paid_by_customer">שולם על ידי הלקוח</string>
     <string name="orderdetail_payment_summary_onhold">ממתין לתשלום דרך %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s דרך %2$s</string>
-    <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות באמצעות תוסף הניהול של WooCommerce</string>
     <string name="my_store_stats_availability_title">מומלץ לנסות את הנתונים הסטטיסטיים המשופרים</string>
     <string name="dashboard_state_no_data">אין רווחים בתקופה זאת</string>
     <string name="no_thanks">לא תודה</string>
@@ -515,7 +526,6 @@ Language: he_IL
     <string name="read_more">לקרוא עוד</string>
     <string name="error_loading_image">אין אפשרות לטעון את התמונה</string>
     <string name="product_status_draft">טיוטה</string>
-    <string name="product_status_pending">ממתין לאישור</string>
     <string name="product_status_private">פרטי</string>
     <string name="product_status_published">פורסם</string>
     <string name="product_view_affiliate">צפייה במוצר הממומן</string>

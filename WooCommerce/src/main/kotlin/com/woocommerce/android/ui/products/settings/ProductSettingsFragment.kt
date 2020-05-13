@@ -14,6 +14,8 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_VISIBLITY
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -41,18 +43,23 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         setupObservers()
 
         productStatus.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_STATUS_TAPPED)
             viewModel.onSettingsStatusButtonClicked()
         }
         productCatalogVisibility.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_CATALOG_VISIBILITY_TAPPED)
             viewModel.onSettingsCatalogVisibilityButtonClicked()
         }
         productVisibility.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VISIBILITY_TAPPED)
             viewModel.onSettingsVisibilityButtonClicked()
         }
         productSlug.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_SLUG_TAPPED)
             viewModel.onSettingsSlugButtonClicked()
         }
         productMenuOrder.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_MENU_ORDER_TAPPED)
             viewModel.onSettingsMenuOrderButtonClicked()
         }
 
@@ -61,6 +68,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productReviewsAllowedDivider.visibility = View.VISIBLE
             productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
                 viewModel.updateProductDraft(reviewsAllowed = isChecked)
+                activity?.invalidateOptionsMenu()
             }
         } else {
             productReviewsAllowed.visibility = View.GONE
@@ -68,6 +76,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         productPurchaseNote.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED)
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
             viewModel.onEditProductCardClicked(
                     ViewProductPurchaseNoteEditor(
@@ -85,9 +94,15 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = viewModel.hasSettingsChanges()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
+                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_DONE_BUTTON_TAPPED)
                 viewModel.onDoneButtonClicked(ExitSettings(shouldShowDiscardDialog = false))
                 true
             }
@@ -129,6 +144,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         updateProductView()
+        activity?.invalidateOptionsMenu()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
