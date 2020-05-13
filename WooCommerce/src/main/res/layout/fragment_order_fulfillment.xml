@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/order_shipment_tracking_add_label"
             android:visibility="gone"
-            tools:visibility="gone"/>
+            tools:visibility="visible"/>
 
         <!-- Button: Mark Order Complete -->
         <com.google.android.material.button.MaterialButton
