@@ -111,7 +111,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             images.addAll(draft.images)
         }
 
-        pagerAdapter = ImageViewerAdapter(requireActivity().supportFragmentManager, images)
+        pagerAdapter = ImageViewerAdapter(childFragmentManager, images)
         viewPager.adapter = pagerAdapter
 
         val position = pagerAdapter.indexOfImageId(remoteMediaId)
