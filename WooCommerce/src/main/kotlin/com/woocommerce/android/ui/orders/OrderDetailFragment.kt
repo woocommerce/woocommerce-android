@@ -274,20 +274,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
-        if (trackings.isNotEmpty()) {
-            orderDetail_shipmentList.initView(
-                    trackings = trackings,
-                    uiMessageResolver = uiMessageResolver,
-                    isOrderDetail = true,
-                    shipmentTrackingActionListener = this
-            )
-            if (orderDetail_shipmentList.visibility != View.VISIBLE) {
-                WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
-            }
-        } else {
-            if (orderDetail_shipmentList.visibility == View.VISIBLE) {
-                WooAnimUtils.scaleOut(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
-            }
+        orderDetail_shipmentList.initView(
+            trackings = trackings,
+            uiMessageResolver = uiMessageResolver,
+            isOrderDetail = true,
+            shipmentTrackingActionListener = this
+        )
+        if (orderDetail_shipmentList.visibility != View.VISIBLE) {
+            WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
         }
     }
 

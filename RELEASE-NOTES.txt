@@ -1,5 +1,6 @@
 4.3
 -----
+* Added shipment tracking to the order detail screen
 * Fixed a crash in the product image viewer
 * Beta feature: Try out the new product editing functionality
 * Fixed a crash when updating the shipping dimensions of a product
