@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,8 +10,8 @@
         android:layout_width="@dimen/image_minor_100"
         android:layout_height="@dimen/image_minor_100"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/picture_frame"
         android:layout_margin="@dimen/major_100"
+        android:background="@drawable/picture_frame"
         android:padding="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,11 +20,11 @@
             android:id="@+id/productInfo_icon"
             android:layout_width="@dimen/image_minor_100"
             android:layout_height="@dimen/image_minor_100"
-            android:contentDescription="@string/orderdetail_product_image_contentdesc"
             android:layout_gravity="center"
+            android:contentDescription="@string/orderdetail_product_image_contentdesc"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_product"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </FrameLayout>
 
     <com.google.android.material.textview.MaterialTextView
@@ -35,30 +34,29 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_qty"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
+        app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_totalPaid"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_totalPaid"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        tools:text="Candle"/>
+        tools:text="Candle" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_qty"
+        android:id="@+id/productInfo_totalPaid"
         style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="2"/>
+        tools:text="$30.00" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_productTotal"
+        android:id="@+id/productInfo_productQtyAndPrice"
         style="@style/Woo.ListItem.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_totalPaid"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
-        tools:text="$30.00 ($15.00 x 2)"
-        tools:visibility="visible"/>
+        tools:text="$30.00 ($15.00 x 2)" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_lblTax"
@@ -67,9 +65,9 @@
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_product_lineitem_tax"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_productQtyAndPrice"
         tools:text="Tax:"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_totalTax"
@@ -79,12 +77,12 @@
         android:layout_marginStart="@dimen/minor_50"
         android:layout_marginEnd="@dimen/minor_50"
         app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_totalPaid"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblTax"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_productQtyAndPrice"
         tools:text="$0.75"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_lblSku"
@@ -93,10 +91,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/major_75"
         android:text="@string/orderdetail_product_lineitem_sku"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_sku"
@@ -107,11 +105,10 @@
         android:layout_marginEnd="@dimen/minor_50"
         android:layout_marginBottom="@dimen/major_75"
         app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_totalPaid"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblSku"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="T3124"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 </merge>

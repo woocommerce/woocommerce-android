@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Order
@@ -33,11 +32,10 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val numberFormatter = NumberFormat.getNumberInstance().apply {
             maximumFractionDigits = 2
         }
-        productInfo_qty.text = numberFormatter.format(item.quantity)
+        productInfo_totalPaid.text = numberFormatter.format(item.quantity)
 
         // Modify views for expanded or collapsed mode
         val viewMode = if (expanded) View.VISIBLE else View.GONE
-        productInfo_productTotal.visibility = viewMode
         productInfo_totalTax.visibility = viewMode
         productInfo_lblTax.visibility = viewMode
 
@@ -53,31 +51,16 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             productInfo_sku.text = item.sku
         }
 
+        val orderTotal = formatCurrencyForDisplay(item.total)
+        val productPrice = formatCurrencyForDisplay(item.price)
+
+        productInfo_totalPaid.text = orderTotal
+        productInfo_productQtyAndPrice.text = context.getString(
+            R.string.orderdetail_product_lineitem_qty_and_price, item.quantity.toString(), productPrice
+        )
+
         if (expanded) {
-            // Populate formatted total and tax values
-            val res = context.resources
-            val orderTotal = formatCurrencyForDisplay(item.total)
-            val productPrice = formatCurrencyForDisplay(item.price)
-
-            item.quantity.takeIf { it > 1 }?.let {
-                val itemQty = numberFormatter.format(it)
-                productInfo_productTotal.text = res.getString(
-                        R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, itemQty
-                )
-            } ?: run {
-                productInfo_productTotal.text = res.getString(
-                        R.string.orderdetail_product_lineitem_total_single, orderTotal
-                )
-            }
-
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
-        } else {
-            // vertically center the product name and quantity since they're the only text showing
-            val set = ConstraintSet()
-            set.clone(this)
-            set.centerVertically(productInfo_name.id, ConstraintSet.PARENT_ID)
-            set.centerVertically(productInfo_qty.id, ConstraintSet.PARENT_ID)
-            set.applyTo(this)
         }
 
         productImage?.let {
