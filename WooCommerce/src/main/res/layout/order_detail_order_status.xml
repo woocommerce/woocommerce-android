@@ -11,20 +11,20 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orderStatus_orderNum"
-            style="@style/Woo.TextView.Headline6"
+            android:id="@+id/orderStatus_dateAndOrderNum"
+            style="@style/Woo.TextView.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/minor_50"
-            tools:text="#51 Michelle Fredrickson"/>
+            tools:text="Nov 3, 2020 \u2022 #120"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orderStatus_created"
-            style="@style/Woo.TextView.Body2"
+            android:id="@+id/orderStatus_name"
+            style="@style/Woo.TextView.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
-            tools:text="Created today at 9:51 AM"/>
+            tools:text="George Carlin"/>
 
         <LinearLayout
             android:id="@+id/orderStatus_edit"
@@ -36,7 +36,6 @@
             android:paddingEnd="@dimen/major_100"
             android:paddingStart="@dimen/major_100"
             android:paddingBottom="@dimen/major_75"
-            android:paddingTop="@dimen/major_75"
             android:contentDescription="@string/orderdetail_change_order_status"
             android:background="?attr/selectableItemBackground">
 
