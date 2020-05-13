@@ -168,7 +168,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
         StrictMode.setThreadPolicy(
             ThreadPolicy.Builder()
-                .detectDiskReads()
                 .detectDiskWrites()
                 .detectNetwork()
                 .penaltyLog()
