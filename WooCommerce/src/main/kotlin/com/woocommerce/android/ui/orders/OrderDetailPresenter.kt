@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.os.Handler
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
@@ -26,7 +27,6 @@ import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -160,10 +160,9 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun refreshOrderAfterDelay(refreshDelay: Long) {
-        GlobalScope.launch(dispatchers.computation) {
-            delay(refreshDelay)
+        Handler().postDelayed({
             refreshOrderDetail(false)
-        }
+        }, refreshDelay)
     }
 
     override fun loadOrderNotes() {

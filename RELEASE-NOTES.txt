@@ -6,6 +6,7 @@
 * Fixed a crash when updating the shipping dimensions of a product
 * Fixed a crash when rapidly double clicking to navigate to another screen
 * All orders tab now displays future-dated orders
+* Fixed crash in order detail after returning from the refund screen
  
 4.2
 -----
