@@ -19,7 +19,7 @@ if [[ "$BRANCH" == "master" || "$BRANCH" == "develop" ]]; then
 fi
 
 # Runs ktlint to make sure everything matches the desired style
-./gradlew ktlint
+./gradlew ktlint checkstyle
 
 # This block allows for chaining pre-commit hooks if this hook is a global hook
 # (via core.hooksPath) and there also exists a repo-specific pre-commit hook
