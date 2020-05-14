@@ -80,6 +80,11 @@ android {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
         }
+
+        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+            applicationId "com.woocommerce.android.prealpha"
+            dimension "buildType"
+        }
     }
 
     buildTypes {
@@ -257,8 +262,8 @@ dependencies {
 task copyGoogleServicesExampleFile(type: Copy) {
     from('.')
     into('.')
-    include('google-services.json-example')
-    rename('google-services.json-example', 'google-services.json')
+    include('google-services.json')
+    rename('google-services.json', 'google-services.json')
 }
 
 // Add properties named "wc.xxx" to our BuildConfig
@@ -282,7 +287,7 @@ android.buildTypes.all { buildType ->
     }
 
     // Print warning message if example Google services file is used.
-    if ((file("google-services.json").text) == (file("google-services.json-example").text)) {
+    if ((file("google-services.json").text) == (file("google-services.json").text)) {
         println("WARNING: You're using the example google-services.json file. Google login will fail.")
     }
 }
@@ -341,6 +346,19 @@ if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.h
         }
     }
     android.buildTypes.release.signingConfig = android.signingConfigs.release
+}
+
+if (project.hasProperty("debugStoreFile")) {
+    def sharedDebugStore = file(project.debugStoreFile.replaceFirst("^~", System.getProperty("user.home")))
+    if (sharedDebugStore.exists()) {
+        android {
+            signingConfigs {
+                debug {
+                    storeFile sharedDebugStore
+                }
+            }
+        }
+    }
 }
 
 // Keep this at the bottom (https://stackoverflow.com/a/37565535)
