@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_GROUP
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
 
 sealed class ProductProperty(val type: Type) {
     enum class Type {
@@ -20,7 +21,8 @@ sealed class ProductProperty(val type: Type) {
         EDITABLE,
         PROPERTY_GROUP,
         LINK,
-        READ_MORE
+        READ_MORE,
+        SWITCH
     }
 
     object Divider : ProductProperty(DIVIDER)
@@ -69,4 +71,11 @@ sealed class ProductProperty(val type: Type) {
         val showTitle: Boolean = true,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(PROPERTY_GROUP)
+
+    data class Switch(
+        @StringRes val title: Int,
+        val isOn: Boolean,
+        @DrawableRes val icon: Int? = null,
+        val onStateChanged: ((Boolean) -> Unit)
+    ) : ProductProperty(SWITCH)
 }
