@@ -45,8 +45,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private var progressDialog: CustomProgressDialog? = null
 
-    private val navArgs: ProductDetailFragmentArgs by navArgs()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
@@ -80,7 +78,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {

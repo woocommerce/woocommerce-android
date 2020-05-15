@@ -87,6 +87,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
+    private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
+
     /**
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
@@ -128,6 +130,8 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     init {
         EventBus.getDefault().register(this)
+        
+        loadProduct(navArgs.remoteProductId)
     }
 
     fun getProduct() = viewState
@@ -136,10 +140,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
         return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
-    }
-
-    fun start(remoteProductId: Long) {
-        loadProduct(remoteProductId)
     }
 
     fun initialisePricing() {
