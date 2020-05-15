@@ -43,6 +43,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private var productName = ""
+        set(value) {
+            field = value
+            updateActivityTitle()
+        }
+
     private val skeletonView = SkeletonView()
 
     private var progressDialog: CustomProgressDialog? = null
@@ -109,7 +114,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun showProductDetails(product: Product) {
         productName = product.name.fastStripHtml()
-        updateActivityTitle()
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
@@ -202,8 +206,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         progressDialog = null
     }
 
-    override fun getFragmentTitle() = productName
-
     private fun showProductCards(cards: List<ProductPropertyCard>) {
         val adapter: ProductPropertyCardsAdapter
         if (cardsRecyclerView.adapter == null) {
@@ -260,6 +262,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageClicked()
     }
+
+    override fun getFragmentTitle() = productName
 
     /**
      * Override the BaseProductFragment's fun since we want to return True if any changes have been
