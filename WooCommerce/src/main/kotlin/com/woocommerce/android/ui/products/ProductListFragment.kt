@@ -354,7 +354,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
-        if (show && FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+        if (show) {
             products_sort_filter_card.visibility = View.VISIBLE
             products_sort_filter_card.initView(this)
         } else {
