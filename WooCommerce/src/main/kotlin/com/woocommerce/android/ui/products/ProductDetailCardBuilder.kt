@@ -287,7 +287,9 @@ class ProductDetailCardBuilder(
                 Pair(resources.getString(R.string.product_stock_status),
                     ProductStockStatus.stockStatusToDisplayString(resources, product.stockStatus))
             )
-            else -> mapOf(Pair("", resources.getString(R.string.product_inventory_empty)))
+            else -> mapOf(
+                Pair("", ProductStockStatus.stockStatusToDisplayString(resources, product.stockStatus))
+            )
         }
 
         items.addPropertyIfNotEmpty(
@@ -295,7 +297,7 @@ class ProductDetailCardBuilder(
                 R.string.product_inventory,
                 inventoryGroup,
                 R.drawable.ic_gridicons_list_checkmark,
-                product.manageStock || product.sku.isNotEmpty()
+                true
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductInventory(product.remoteId),
