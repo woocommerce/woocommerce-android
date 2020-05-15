@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -39,9 +38,12 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
+    companion object {
+        private const val LIST_STATE_KEY = "list_state"
+    }
+
     private var productName = ""
     private val skeletonView = SkeletonView()
-    private val LIST_STATE_KEY = "list_state"
 
     private var progressDialog: CustomProgressDialog? = null
 
