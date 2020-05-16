@@ -24,8 +24,8 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
@@ -103,6 +103,7 @@ class OrderDetailPresenter @Inject constructor(
     private var isRefreshingOrderStatusOptions = false
 
     private var deferredRefunds: Deferred<WooResult<List<WCRefundModel>>>? = null
+    private val coroutineScope = CoroutineScope(dispatchers.main)
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -145,7 +146,7 @@ class OrderDetailPresenter @Inject constructor(
             val refunds = loadRefundsFromDb(it)
             orderView?.showRefunds(it, refunds)
 
-            GlobalScope.launch(dispatchers.main) {
+            coroutineScope.launch {
                 fetchRefunds(it.remoteOrderId)
                 val freshRefunds = awaitRefunds()
                 orderView?.showRefunds(it, freshRefunds)
@@ -252,7 +253,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     private fun fetchRefunds(remoteOrderId: Long) {
-        deferredRefunds = GlobalScope.async {
+        deferredRefunds = coroutineScope.async {
             refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
         }
     }
@@ -369,7 +370,7 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : $message")
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
-                GlobalScope.launch(dispatchers.main) {
+                coroutineScope.launch {
                     orderModel?.let { order ->
                         fetchRefunds(order.remoteOrderId)
                         val refunds = awaitRefunds()
