@@ -165,7 +165,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         TextView Styles
     -->
-    <style name="Woo.TextView">
+    <style name="Woo.TextView" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/major_75</item>
