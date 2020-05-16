@@ -142,5 +142,6 @@
         <item name="colorPrimary">@color/color_primary_surface</item>
         <item name="colorPrimaryDark">@color/color_primary</item>
         <item name="colorAccent">@color/color_primary</item>
+        <item name="android:colorForeground">@color/woo_black_90</item>
     </style>
 </resources>
