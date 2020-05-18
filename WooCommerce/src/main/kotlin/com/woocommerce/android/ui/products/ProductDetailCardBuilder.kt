@@ -71,7 +71,6 @@ class ProductDetailCardBuilder(
         val items = mutableListOf<ProductProperty>()
 
         val productName = product.name.fastStripHtml()
-
         if (isAddEditProductRelease1Enabled(product.type)) {
             items.add(Editable(
                 R.string.product_detail_title_hint,
