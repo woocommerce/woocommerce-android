@@ -118,9 +118,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
-    fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
+    fun showProductImages(images: List<Product.Image>, listener: OnGalleryImageClickListener) {
         this.listener = listener
-        adapter.showImages(product.images)
+        adapter.showImages(images)
+    }
+
+    fun showProductImage(images: Product.Image, listener: OnGalleryImageClickListener) {
+        this.listener = listener
+        adapter.showImages(listOf(images))
     }
 
     /**

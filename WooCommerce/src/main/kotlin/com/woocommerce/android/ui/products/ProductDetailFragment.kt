@@ -131,7 +131,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         } else {
             addImageContainer.visibility = View.GONE
             imageGallery.visibility = View.VISIBLE
-            imageGallery.showProductImages(product, this)
+            imageGallery.showProductImages(product.images, this)
         }
 
         // show status badge for unpublished products
