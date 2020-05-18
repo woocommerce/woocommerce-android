@@ -1,6 +1,0 @@
-4.1:
-* Vi har just gett appen ett nytt lager färg — njut av de nya färgerna!
-* Mörkt läge är nu tillgängligt för alla som föredrar mindre ljusa skärmar.
-* Vi har tagit bort avsnittet Frakt från detaljvyn för virtuella produkter (eftersom de inte skickas).
-* Om du hade en mindre produktlista kunde det ibland försvinna objekt från den, men så är inte längre fallet — vi har åtgärdat det felet.
-* I mycket sällsynta fall kraschade appen om man försökte visa den detaljerade informationen för en produkt. Vi har åtgärdat det felet också.

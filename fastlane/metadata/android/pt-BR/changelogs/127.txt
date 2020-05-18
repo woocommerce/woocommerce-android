@@ -1,0 +1,2 @@
+4.2:
+* Correção de problemas e irregularidades no novo modo noturno, em telas de login e no ícone do app para uma experiência do usuário mais consistente.

@@ -1,6 +1,0 @@
-4.1:
-* Acabamos de dar uma nova cara ao app. Aproveite as novas cores!
-* Para quem prefere telas mais escuras, disponibilizamos o modo noturno.
-* Removemos a seção Envio da visualização de detalhes dos produtos virtuais (porque não precisam ser enviados, né).
-* Os produtos às vezes desapareciam das listas menores, mas agora já resolvemos esse problema.
-* Em algumas ocasiões, tentar ver os detalhes de um produto travava o aplicativo. Consertamos esse problema também.

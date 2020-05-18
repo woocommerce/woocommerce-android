@@ -1,0 +1,2 @@
+4.2:
+* Een paar problemen en afwijkingen opgelost met het nieuwe nachtmodus-thema, zoals inlogschermen en het app-pictogram voor een consistentere gebruikerservaring.

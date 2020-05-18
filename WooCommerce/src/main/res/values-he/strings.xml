@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-30 09:54:04+0000
+Translation-Revision-Date: 2020-05-13 13:54:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_type_external">חיצוני</string>
+    <string name="product_type_simple">פשוט</string>
+    <string name="product_status_privately_published">פורסם כפרטי</string>
+    <string name="empty_wpmedia_list_message">עדיין אין תמונות</string>
+    <string name="wpmedia_picker_title">ספריית המדיה של WordPress</string>
+    <string name="image_source_wp_media_library">ספריית המדיה של WordPress</string>
+    <string name="product_menu_order_caption">ההגדרה קובעת את המיקום של המוצר בקטלוג. ככל שהערך המספרי נמוך יותר, הפריט יופיע במקום גבוה יותר ברשימת המוצרים. ניתן להשתמש גם במספרים שליליים.</string>
+    <string name="product_menu_order">הסדר בתפריט</string>
+    <string name="product_purchase_note_caption">הערה אופציונלית לשלוח ללקוחות לאחר הרכישה</string>
+    <string name="product_external_link_button_text_label">הטקסט יוצג על הכפתור שמקשר למוצר החיצוני</string>
+    <string name="product_external_link_button_text">טקסט של כפתור</string>
+    <string name="product_external_link_label">להזין את כתובת ה-URL החיצונית במוצר</string>
+    <string name="product_external_link">קישור למוצר</string>
+    <string name="product_external_empty_link">להוסיף קישור למוצר</string>
+    <string name="product_enable_reviews">להפעיל ביקורות</string>
+    <string name="product_slug_label">זאת גרסה ידידותית לכתובות URL בכותרת המוצר</string>
+    <string name="product_slug">מזהה לכתובת</string>
+    <string name="product_visibility_headline">הגדרה זו קובעת על אילו מעמודי החנות תופיע רשימת מוצרים</string>
+    <string name="product_featured">המוצר המוצע</string>
+    <string name="product_catalog_visibility_hidden">מוסתר</string>
+    <string name="product_catalog_visibility_search">תוצאות חיפוש בלבד</string>
+    <string name="product_catalog_visibility_catalog">חנות בלבד</string>
+    <string name="product_catalog_visibility_visible">חנות ותוצאות חיפוש</string>
+    <string name="product_catalog_visibility">נראות הקטלוג</string>
+    <string name="product_visibility_password_required">נדרשת סיסמה</string>
+    <string name="product_visibility_password_protected">מוגן בסיסמה</string>
+    <string name="product_visibility_private">פרטי</string>
+    <string name="product_visibility_public">ציבורי</string>
+    <string name="product_visibility">נראות</string>
+    <string name="product_status">מצב</string>
+    <string name="product_settings">הגדרות מוצר</string>
+    <string name="product_detail_update_product_password_error">שגיאה בעדכון הסיסמה</string>
+    <string name="product_list_sorting_list_item">אפשרות המיון שנבחרה</string>
+    <string name="product_list_filters_list_item">אפשרות הסינון שנבחרה</string>
+    <string name="product_list_filters_show_products">להציג את המוצרים</string>
+    <string name="product_list_filters_selected">מסננים \u2022 %d</string>
+    <string name="product_list_filters_count">מסננים (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">מ-Z ל-A</string>
+    <string name="product_list_sorting_z_to_a">כותרת: מ-Z ל-A</string>
+    <string name="product_list_sorting_a_to_z_short">מ-A ל-Z</string>
+    <string name="product_list_sorting_a_to_z">כותרת: מ-A ל-Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">הישן ביותר</string>
+    <string name="product_list_sorting_oldest_to_newest">תאריך: מהישן לחדש</string>
+    <string name="product_list_sorting_newest_to_oldest_short">החדש ביותר</string>
+    <string name="product_list_sorting_newest_to_oldest">תאריך: מהחדש לישן</string>
+    <string name="product_list_sorting_header">מיון לפי</string>
+    <string name="product_list_filters">מסננים</string>
+    <string name="product_list_empty_filters">לא נמצאו מוצרים</string>
+    <string name="product_filter_default">כל אפשרות</string>
+    <string name="product_type">סוג מוצר</string>
+    <string name="selection_count">נבחרו %d</string>
+    <string name="value_not_set">לא הוגדר</string>
+    <string name="more_options">עוד אפשרויות</string>
+    <string name="clear">לנקות</string>
     <string name="product_status_pending">ביקורת ממתינה לאישור</string>
     <string name="settings_about_title">אודות WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">לקבוע לפי חיסכון בצריכת הסוללה</string>
@@ -517,6 +571,8 @@ Language: he_IL
     <string name="error_user_username_instead_of_email">יש להיכנס באמצעות שם המשתמש ב-WordPress.com במקום כתובת המייל.</string>
     <string name="no_site_error">כתובת האתר שהזנת אינה עבור אתר ב-WordPress. כדי שנוכל להתחבר לאתר, האתר חייב להשתמש בפלטפורמה של WordPress.</string>
     <string name="support_help_center">מרכז העזרה</string>
+    <string name="product_type_grouped">בקבוצה</string>
+    <string name="product_type_variable">משתנה</string>
     <string name="product_backorders_notify">להרשות אך להודיע ללקוח</string>
     <string name="product_backorders_yes">להרשות</string>
     <string name="product_backorders_no">לא להרשות</string>

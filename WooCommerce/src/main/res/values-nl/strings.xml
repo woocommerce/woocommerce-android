@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 13:54:04+0000
+Translation-Revision-Date: 2020-05-13 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_type_external">Extern</string>
+    <string name="product_type_simple">Simpel</string>
+    <string name="product_status_privately_published">Gepubliceerd als privé</string>
+    <string name="empty_wpmedia_list_message">Nog geen afbeeldingen</string>
+    <string name="wpmedia_picker_title">WordPress-mediabibliotheek</string>
+    <string name="image_source_wp_media_library">WordPress-mediabibliotheek</string>
+    <string name="product_menu_order_caption">Bepaalt de positie van het product in de catalogus. Hoe lager de waarde van het cijfer, hoe hoger het artikel in de productlijst wordt weergegeven. Je kunt ook negatieve getallen gebruiken.</string>
+    <string name="product_menu_order">Menuvolgorde</string>
+    <string name="product_purchase_note_caption">Een optionele opmerking om naar de klant te sturen na aankoop</string>
+    <string name="product_external_link_button_text_label">Deze tekst wordt weergegeven op de knop die naar het externe product doorverwijst</string>
+    <string name="product_external_link_button_text">Knoptekst</string>
+    <string name="product_external_link_label">Voer de externe URL naar het product in</string>
+    <string name="product_external_link">Productlink</string>
+    <string name="product_external_empty_link">Productlink toevoegen</string>
+    <string name="product_enable_reviews">Beoordelingen inschakelen</string>
+    <string name="product_slug_label">Dit is de URL-vriendelijke versie van de producttitel</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_visibility_headline">Deze instelling bepaalt op welke winkelpagina\'s producten worden vermeld</string>
+    <string name="product_featured">Uitgelicht product</string>
+    <string name="product_catalog_visibility_hidden">Verborgen</string>
+    <string name="product_catalog_visibility_search">Alleen zoekresultaten</string>
+    <string name="product_catalog_visibility_catalog">Alleen winkel</string>
+    <string name="product_catalog_visibility_visible">Winkel en zoekresultaten</string>
+    <string name="product_catalog_visibility">Zichtbaarheid van de catalogus</string>
+    <string name="product_visibility_password_required">Wachtwoord is vereist</string>
+    <string name="product_visibility_password_protected">Wachtwoord beveiligd</string>
+    <string name="product_visibility_private">Privé</string>
+    <string name="product_visibility_public">Openbaar</string>
+    <string name="product_visibility">Zichtbaarheid</string>
+    <string name="product_status">Status</string>
+    <string name="product_settings">Productinstellingen</string>
+    <string name="product_detail_update_product_password_error">Bijwerken wachtwoord mislukt</string>
+    <string name="product_list_sorting_list_item">Geselecteerde sorteeroptie</string>
+    <string name="product_list_filters_list_item">Geselecteerde filteroptie</string>
+    <string name="product_list_filters_show_products">Producten tonen</string>
+    <string name="product_list_filters_selected">Filters \u2022 %d</string>
+    <string name="product_list_filters_count">Filters (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Van Z naar A</string>
+    <string name="product_list_sorting_z_to_a">Titel: Van Z naar A</string>
+    <string name="product_list_sorting_a_to_z_short">Van A naar Z</string>
+    <string name="product_list_sorting_a_to_z">Titel: Van A naar Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Oudste</string>
+    <string name="product_list_sorting_oldest_to_newest">Datum: Oudste naar nieuwste</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Nieuwste</string>
+    <string name="product_list_sorting_newest_to_oldest">Datum: Nieuwste naar oudste</string>
+    <string name="product_list_sorting_header">Sorteren op</string>
+    <string name="product_list_filters">Filters</string>
+    <string name="product_list_empty_filters">Geen producten gevonden</string>
+    <string name="product_filter_default">Alle</string>
+    <string name="product_type">Producttype</string>
+    <string name="selection_count">%d geselecteerd</string>
+    <string name="value_not_set">Niet ingesteld</string>
+    <string name="more_options">Meer opties</string>
+    <string name="clear">Wissen</string>
     <string name="product_status_pending">Controle in behandeling</string>
     <string name="settings_about_title">Over WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Ingesteld door energiebesparing</string>
@@ -517,6 +571,8 @@ Language: nl
     <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>
     <string name="no_site_error">De site op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet de site gebruikmaken van WordPress.</string>
     <string name="support_help_center">Help Center</string>
+    <string name="product_type_grouped">Gegroepeerd</string>
+    <string name="product_type_variable">Variabele</string>
     <string name="product_backorders_notify">Toestaan, maar melden bij klant</string>
     <string name="product_backorders_yes">Toestaan</string>
     <string name="product_backorders_no">Niet toestaan</string>
