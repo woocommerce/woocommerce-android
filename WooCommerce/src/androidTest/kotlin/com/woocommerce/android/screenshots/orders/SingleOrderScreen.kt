@@ -5,7 +5,7 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class SingleOrderScreen : Screen {
     companion object {
-        const val ORDER_NUMBER_LABEL = R.id.orderStatus_orderNum
+        const val ORDER_NUMBER_LABEL = R.id.orderStatus_dateAndOrderNum
     }
 
     constructor(): super(ORDER_NUMBER_LABEL)
