@@ -127,18 +127,21 @@ class WCProductImageGalleryView @JvmOverloads constructor(
      * Show upload placeholders for the passed local image Uris
      */
     fun setPlaceholderImageUris(imageUriList: List<Uri>?) {
-        val placeholders = ArrayList<Product.Image>()
+        if (imageUriList.isNullOrEmpty()) {
+            adapter.clearPlaceholders()
+            adapter.notifyDataSetChanged()
+        } else {
+            val placeholders = ArrayList<Product.Image>()
 
-        imageUriList?.let { images ->
-            for (index in images.indices) {
+            for (index in imageUriList.indices) {
                 // use a negative id so we can check it in isPlaceholder() below
                 val id = (-index - 1).toLong()
                 // set the image src to this uri so we can preview it while uploading
-                placeholders.add(0, Product.Image(id, "", images[index].toString(), Date()))
+                placeholders.add(0, Product.Image(id, "", imageUriList[index].toString(), Date()))
             }
-        }
 
-        adapter.setPlaceholderImages(placeholders)
+            adapter.setPlaceholderImages(placeholders)
+        }
     }
 
     private fun onImageClicked(position: Int) {
@@ -229,7 +232,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         /**
          * Removes all placeholders, returns true only if any were removed
          */
-        private fun clearPlaceholders(): Boolean {
+        fun clearPlaceholders(): Boolean {
             var result = false
             while (itemCount > 0 && isPlaceholder(0)) {
                 imageList.removeAt(0)
