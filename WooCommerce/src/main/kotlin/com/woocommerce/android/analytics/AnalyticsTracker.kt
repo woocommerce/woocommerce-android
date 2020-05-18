@@ -280,6 +280,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_UPDATE_SUCCESS,
         PRODUCT_DETAIL_UPDATE_ERROR,
 
+        // -- Product variation
+        PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED,
+        PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED,
+        PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED,
+
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_DETAIL_ADD_IMAGE_TAPPED,
