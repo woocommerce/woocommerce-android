@@ -1,9 +1,6 @@
 4.4
 -----
  
-4.4
------
-* Fixes text color on support ticket views for dark mode
 
 4.3
 -----
@@ -15,6 +12,7 @@
 * All orders tab now displays future-dated orders
 * Fixed crash in order detail after returning from the refund screen
 * You can now filter and sort Products by clicking on the Products tab!
+* Fixes text color on support ticket views for dark mode
  
 4.2
 -----
