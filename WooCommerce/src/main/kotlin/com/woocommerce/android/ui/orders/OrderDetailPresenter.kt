@@ -103,7 +103,7 @@ class OrderDetailPresenter @Inject constructor(
     private var isRefreshingOrderStatusOptions = false
 
     private var deferredRefunds: Deferred<WooResult<List<WCRefundModel>>>? = null
-    private val coroutineScope = CoroutineScope(dispatchers.main)
+    override val coroutineScope = CoroutineScope(dispatchers.main)
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -112,6 +112,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun dropView() {
+        super.dropView()
         orderView = null
         isNotesInit = false
         dispatcher.unregister(this)
