@@ -1,5 +1,8 @@
 4.4
 -----
+ 
+4.4
+-----
 * Fixes text color on support ticket views for dark mode
 
 4.3
