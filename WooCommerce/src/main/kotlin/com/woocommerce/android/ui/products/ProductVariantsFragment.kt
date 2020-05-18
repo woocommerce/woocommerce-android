@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,10 +14,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.products.ProductVariantsViewModel.ProductVariantsEvent.ShowVariantDetail
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -92,10 +95,16 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowVariantDetail -> openVariantDetail(event.variant)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> activity?.onBackPressed()
             }
         })
+    }
+
+    private fun openVariantDetail(variant: ProductVariant) {
+        val action = ProductVariantsFragmentDirections.actionProductVariantsFragmentToProductVariantFragment(variant)
+        findNavController().navigateSafely(action)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -103,7 +112,13 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
 
         val activity = requireActivity()
 
-        productVariantsAdapter = ProductVariantsAdapter(activity, GlideApp.with(this), this)
+        productVariantsAdapter = ProductVariantsAdapter(
+            activity,
+            GlideApp.with(this),
+            this,
+            viewModel::onItemClick
+        )
+
         with(productVariantsList) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productVariantsAdapter

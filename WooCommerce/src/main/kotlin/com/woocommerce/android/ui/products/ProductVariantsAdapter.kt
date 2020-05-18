@@ -20,7 +20,8 @@ import org.wordpress.android.util.PhotonUtils
 class ProductVariantsAdapter(
     private val context: Context,
     private val glideRequest: GlideRequests,
-    private val loadMoreListener: OnLoadMoreListener
+    private val loadMoreListener: OnLoadMoreListener,
+    private val onItemClick: (variant: ProductVariant) -> Unit
 ) : RecyclerView.Adapter<ProductVariantViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
     private val productVariantList = ArrayList<ProductVariant>()
@@ -59,8 +60,8 @@ class ProductVariantsAdapter(
                 .appendWithIfNotEmpty(variantPurchasable)
                 .appendWithIfNotEmpty(productVariant.priceWithCurrency, context.getString(R.string.product_bullet))
 
-        productVariant.imageUrl?.let {
-            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
+        productVariant.image?.let {
+            val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
             glideRequest.load(imageUrl)
                     .placeholder(R.drawable.ic_product)
                     .into(holder.imgVariantOption)
@@ -68,6 +69,10 @@ class ProductVariantsAdapter(
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
+        }
+
+        holder.itemView.setOnClickListener {
+            onItemClick(productVariantList[position])
         }
     }
 
