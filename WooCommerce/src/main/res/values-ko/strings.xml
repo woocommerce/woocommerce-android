@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 08:54:03+0000
+Translation-Revision-Date: 2020-05-13 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_type_external">외부</string>
+    <string name="product_type_simple">심플</string>
+    <string name="product_status_privately_published">비공개로 게시됨</string>
+    <string name="empty_wpmedia_list_message">아직 이미지 없음</string>
+    <string name="wpmedia_picker_title">워드프레스 미디어 라이브러리</string>
+    <string name="image_source_wp_media_library">워드프레스 미디어 라이브러리</string>
+    <string name="product_menu_order_caption">카탈로그에서 제품의 위치를 결정합니다. 숫자 값이 낮을수록 아이템이 제품 목록에서 더 위에 옵니다. 음수도 사용할 수 있습니다.</string>
+    <string name="product_menu_order">메뉴 순서</string>
+    <string name="product_purchase_note_caption">구매 후 고객에 보낼 메모(선택 사항)</string>
+    <string name="product_external_link_button_text_label">외부 제품을 링크하는 버튼에 표시될 텍스트</string>
+    <string name="product_external_link_button_text">버튼 텍스트</string>
+    <string name="product_external_link_label">제품의 외부 URL 입력</string>
+    <string name="product_external_link">제품 링크</string>
+    <string name="product_external_empty_link">제품 링크 추가</string>
+    <string name="product_enable_reviews">제품평 활성화</string>
+    <string name="product_slug_label">제품 제목의 URL 친화적인 버전</string>
+    <string name="product_slug">슬러그</string>
+    <string name="product_visibility_headline">이 설정은 제품이 어떤 상점 페이지에 등록될지 결정합니다.</string>
+    <string name="product_featured">추천 제품</string>
+    <string name="product_catalog_visibility_hidden">숨김</string>
+    <string name="product_catalog_visibility_search">검색 결과만</string>
+    <string name="product_catalog_visibility_catalog">상점만</string>
+    <string name="product_catalog_visibility_visible">상점 및 검색 결과</string>
+    <string name="product_catalog_visibility">카탈로그 표시 여부</string>
+    <string name="product_visibility_password_required">비밀번호는 필수입니다.</string>
+    <string name="product_visibility_password_protected">비밀번호로 보호</string>
+    <string name="product_visibility_private">비공개</string>
+    <string name="product_visibility_public">공개</string>
+    <string name="product_visibility">공개 설정</string>
+    <string name="product_status">상태</string>
+    <string name="product_settings">제품 설정</string>
+    <string name="product_detail_update_product_password_error">비밀번호를 업데이트하는 중에 오류가 발생했습니다.</string>
+    <string name="product_list_sorting_list_item">선택한 정렬 옵션</string>
+    <string name="product_list_filters_list_item">선택한 필터 옵션</string>
+    <string name="product_list_filters_show_products">제품 표시</string>
+    <string name="product_list_filters_selected">필터 \u2022 %d</string>
+    <string name="product_list_filters_count">필터(%d개)</string>
+    <string name="product_list_sorting_z_to_a_short">내림차순</string>
+    <string name="product_list_sorting_z_to_a">제목: 내림차순</string>
+    <string name="product_list_sorting_a_to_z_short">오름차순</string>
+    <string name="product_list_sorting_a_to_z">제목: 오름차순</string>
+    <string name="product_list_sorting_oldest_to_newest_short">오래된 항목</string>
+    <string name="product_list_sorting_oldest_to_newest">날짜: 오래된 순</string>
+    <string name="product_list_sorting_newest_to_oldest_short">최신순</string>
+    <string name="product_list_sorting_newest_to_oldest">날짜: 최신순</string>
+    <string name="product_list_sorting_header">정렬 기준</string>
+    <string name="product_list_filters">필터</string>
+    <string name="product_list_empty_filters">제품을 찾을 수 없음</string>
+    <string name="product_filter_default">모두</string>
+    <string name="product_type">제품 유형</string>
+    <string name="selection_count">%d개 선택됨</string>
+    <string name="value_not_set">설정되지 않음</string>
+    <string name="more_options">추가 옵션</string>
+    <string name="clear">지우기</string>
     <string name="product_status_pending">검토중</string>
     <string name="settings_about_title">WooCommerce 정보</string>
     <string name="settings_app_theme_option_battery_saver">배터리 세이버로 설정</string>
@@ -517,6 +571,8 @@ Language: ko_KR
     <string name="error_user_username_instead_of_email">이메일 주소가 아닌 워드프레스닷컴 사용자 이름을 사용하여 로그인하세요.</string>
     <string name="no_site_error">이 주소의 사이트는 워드프레스 사이트가 아닙니다. 연결하려면 사이트에서 워드프레스를 사용해야 합니다.</string>
     <string name="support_help_center">도움말 센터</string>
+    <string name="product_type_grouped">그룹</string>
+    <string name="product_type_variable">옵션</string>
     <string name="product_backorders_notify">허용하지만 고객에게 알림</string>
     <string name="product_backorders_yes">허용</string>
     <string name="product_backorders_no">허용하지 않음</string>

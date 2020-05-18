@@ -1,6 +1,0 @@
-4.1 :
-* De nouvelles couleurs apportent du peps à l'application !
-* Tous les utilisateurs préférant un écran moins lumineux peuvent désormais utiliser le mode sombre.
-* Nous avons supprimé la section Expédition de la vue détaillée des produits virtuels (étant donné que vous n'en expédiez pas).
-* Dans les listes de produits plus petites, certains articles disparaissaient parfois. Cela n'arrivera plus, ce bug ayant été résolu.
-* La tentative d'affichage des détails d'un produit entraînait l'arrêt de l'application en de très rares occasions. Nous avons également résolu ce bug.
