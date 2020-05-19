@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.variations
 
 import androidx.annotation.DrawableRes
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
@@ -73,7 +71,8 @@ class ProductVariantCardBuilder(
             ComplexProperty(
                 R.string.product_description,
                 description,
-                showTitle = showTitle
+                R.drawable.ic_gridicons_align_left,
+                showTitle
             ) {
                 viewModel.onEditVariationCardClicked(
                     ViewProductDescriptionEditor(
@@ -132,9 +131,9 @@ class ProductVariantCardBuilder(
 
         items.addPropertyIfNotEmpty(
             PropertyGroup(
-                string.product_price,
+                R.string.product_price,
                 pricingGroup,
-                drawable.ic_gridicons_money,
+                R.drawable.ic_gridicons_money,
                 hasPricingInfo
             ) {
                 viewModel.onEditVariationCardClicked(
