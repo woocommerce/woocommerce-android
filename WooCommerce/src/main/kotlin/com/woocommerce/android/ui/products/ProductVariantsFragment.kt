@@ -20,6 +20,7 @@ import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductVariantsViewModel.ProductVariantsEvent.ShowVariantDetail
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -103,8 +104,10 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
     }
 
     private fun openVariantDetail(variant: ProductVariant) {
-        val action = ProductVariantsFragmentDirections.actionProductVariantsFragmentToProductVariantFragment(variant)
-        findNavController().navigateSafely(action)
+        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            val action = ProductVariantsFragmentDirections.actionProductVariantsFragmentToProductVariantFragment(variant)
+            findNavController().navigateSafely(action)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
