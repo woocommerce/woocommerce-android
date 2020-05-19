@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -164,10 +165,9 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        // we only have to check the new revenue stats availability
-        // if the activity is starting for the first time
         if (savedInstanceState == null) {
             fetchRevenueStatsAvailability(selectedSite.get())
+            CrashUtils.setCurrentSite(selectedSite.get())
         }
 
         initFragment(savedInstanceState)
