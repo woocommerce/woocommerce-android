@@ -3,26 +3,24 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.util.WooLog.T
-import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.model.SiteModel
-
 import com.automattic.android.tracks.CrashLogging.CrashLogging
 import com.automattic.android.tracks.CrashLogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.TracksUser
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.util.WooLog.T
+import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Locale
 
 object CrashUtils : CrashLoggingDataProvider {
     private const val TAG_KEY = "tag"
     private const val MESSAGE_KEY = "message"
     private const val SITE_ID_KEY = "site_id"
-    private const val SITE_URL_KEY = "site_url"
 
     private var locale: Locale? = null
     private var currentAccount: AccountModel? = null
-    private var currentSite: SiteModel? = null
+    private var currentSiteId: Long? = null
     private var isInitialized = false
 
     fun initCrashLogging(context: Context) {
@@ -43,24 +41,22 @@ object CrashUtils : CrashLoggingDataProvider {
     }
 
     fun setCurrentSite(site: SiteModel?) {
-        this.currentSite = site
+        this.currentSiteId = site?.siteId
         CrashLogging.setNeedsDataRefresh()
     }
 
     fun resetAccountAndSite() {
         this.currentAccount = null
-        this.currentSite = null
+        this.currentSiteId = null
 
         CrashLogging.setNeedsDataRefresh()
     }
 
     override fun applicationContext(): MutableMap<String, Any> {
-        val siteID = this.currentSite?.siteId ?: 0
-        val siteURL = this.currentSite?.url ?: ""
+        val siteID = this.currentSiteId ?: 0
 
         return mutableMapOf(
-                SITE_ID_KEY to siteID,
-                SITE_URL_KEY to siteURL
+            SITE_ID_KEY to siteID
         )
     }
 
