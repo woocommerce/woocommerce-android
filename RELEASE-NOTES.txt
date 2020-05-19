@@ -15,6 +15,7 @@
 * Fixed crash in order detail after returning from the refund screen
 * You can now filter and sort Products by clicking on the Products tab!
 * Fixes text color on support ticket views for dark mode
+* Fixed crash happening on Android 5.1 caused by new dynamic theme
  
 4.2
 -----
