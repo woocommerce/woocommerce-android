@@ -24,7 +24,7 @@ class ProductVariantsAdapter(
     private val onItemClick: (variant: ProductVariant) -> Unit
 ) : RecyclerView.Adapter<ProductVariantViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-    private val productVariantList = ArrayList<ProductVariant>()
+    private var productVariantList = listOf<ProductVariant>()
 
     init {
         setHasStableIds(true)
@@ -95,28 +95,9 @@ class ProductVariantsAdapter(
     }
 
     fun setProductVariantList(productVariants: List<ProductVariant>) {
-        fun isSameList(): Boolean {
-            if (productVariants.size != productVariantList.size) {
-                return false
-            }
-            for (index in productVariants.indices) {
-                val oldItem = productVariantList[index]
-                val newItem = productVariants[index]
-                if (!oldItem.isSameVariant(newItem)) {
-                    return false
-                }
-            }
-            return true
-        }
-
-        if (!isSameList()) {
-            val diffResult = DiffUtil.calculateDiff(
-                    ProductVariantItemDiffUtil(productVariantList, productVariants)
-            )
-            productVariantList.clear()
-            productVariantList.addAll(productVariants)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult = DiffUtil.calculateDiff(ProductVariantItemDiffUtil(productVariantList, productVariants))
+        productVariantList = productVariants
+        diffResult.dispatchUpdatesTo(this)
     }
 
     class ProductVariantViewHolder(view: View) : RecyclerView.ViewHolder(view) {
