@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -44,6 +45,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private val LIST_STATE_KEY = "list_state"
 
     private var progressDialog: CustomProgressDialog? = null
+    private var layoutManager: LayoutManager? = null
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
@@ -71,6 +73,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        this.layoutManager = layoutManager
+
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
@@ -220,7 +224,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        cardsRecyclerView.layoutManager?.let {
+        layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }
     }

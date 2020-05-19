@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-28 10:54:03+0000
+Translation-Revision-Date: 2020-05-12 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_type_external">外部</string>
+    <string name="product_type_simple">簡單</string>
+    <string name="product_status_privately_published">已私密發表</string>
+    <string name="empty_wpmedia_list_message">尚未有圖片</string>
+    <string name="wpmedia_picker_title">WordPress 媒體庫</string>
+    <string name="image_source_wp_media_library">WordPress 媒體庫</string>
+    <string name="product_menu_order_caption">決定產品在目錄中的位置。數值越低，品項在產品清單中的位置越前面。您也可以輸入負數值。</string>
+    <string name="product_menu_order">選單順序</string>
+    <string name="product_purchase_note_caption">可選擇在購買之後傳送備註給客戶</string>
+    <string name="product_external_link_button_text_label">這些文字會顯示在連至外部商品的按鈕上</string>
+    <string name="product_external_link_button_text">按鈕文字</string>
+    <string name="product_external_link_label">輸入此產品的外部網址</string>
+    <string name="product_external_link">產品連結</string>
+    <string name="product_external_empty_link">新增產品連結</string>
+    <string name="product_enable_reviews">啟用評論</string>
+    <string name="product_slug_label">這是用在網址列上的產品標題</string>
+    <string name="product_slug">代稱</string>
+    <string name="product_visibility_headline">此設定可決定要在哪個商店頁面顯示產品</string>
+    <string name="product_featured">特色商品</string>
+    <string name="product_catalog_visibility_hidden">已隱藏</string>
+    <string name="product_catalog_visibility_search">僅限搜尋結果</string>
+    <string name="product_catalog_visibility_catalog">僅限商店</string>
+    <string name="product_catalog_visibility_visible">商店和搜尋結果</string>
+    <string name="product_catalog_visibility">目錄可見度</string>
+    <string name="product_visibility_password_required">必須輸入密碼</string>
+    <string name="product_visibility_password_protected">受密碼保護</string>
+    <string name="product_visibility_private">私人</string>
+    <string name="product_visibility_public">公開</string>
+    <string name="product_visibility">可見度</string>
+    <string name="product_status">狀態</string>
+    <string name="product_settings">產品設定</string>
+    <string name="product_detail_update_product_password_error">更新密碼時發生錯誤</string>
+    <string name="product_list_sorting_list_item">所選排序選項</string>
+    <string name="product_list_filters_list_item">所選篩選選項</string>
+    <string name="product_list_filters_show_products">顯示產品</string>
+    <string name="product_list_filters_selected">篩選條件 \u2022 %d</string>
+    <string name="product_list_filters_count">篩選條件 (%d 個)</string>
+    <string name="product_list_sorting_z_to_a_short">Z 到 A</string>
+    <string name="product_list_sorting_z_to_a">標題：Z 到 A</string>
+    <string name="product_list_sorting_a_to_z_short">A 到 Z</string>
+    <string name="product_list_sorting_a_to_z">標題：A 到 Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">最舊</string>
+    <string name="product_list_sorting_oldest_to_newest">日期：最舊到最新</string>
+    <string name="product_list_sorting_newest_to_oldest_short">最新</string>
+    <string name="product_list_sorting_newest_to_oldest">日期：最新到最舊</string>
+    <string name="product_list_sorting_header">排序依據</string>
+    <string name="product_list_filters">篩選條件</string>
+    <string name="product_list_empty_filters">找不到產品</string>
+    <string name="product_filter_default">任何</string>
+    <string name="product_type">產品類型</string>
+    <string name="selection_count">已選取：%d</string>
+    <string name="value_not_set">未設定</string>
+    <string name="more_options">更多選項</string>
+    <string name="clear">清除</string>
     <string name="product_status_pending">待審中</string>
     <string name="settings_about_title">關於 WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">由省電模式設定</string>
@@ -517,6 +571,8 @@ Language: zh_TW
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>
     <string name="no_site_error">此地址的網站不是 WordPress 網站。若需要我們連接網站，網站必須使用 WordPress。</string>
     <string name="support_help_center">說明中心</string>
+    <string name="product_type_grouped">組合</string>
+    <string name="product_type_variable">款式</string>
     <string name="product_backorders_notify">允許，但通知顧客</string>
     <string name="product_backorders_yes">允許</string>
     <string name="product_backorders_no">不允許</string>

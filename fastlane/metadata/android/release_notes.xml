@@ -1,136 +1,68 @@
 <ar>
-4.1:
-* أضفنا لمسة جديدة من الألوان على التطبيق — استمتع بالألوان الجديدة!
-* يتوافر الآن الوضع الداكن لأي شخص يُفضِّل استخدام الشاشات ذات درجات السطوع الأقل.
-* أزلنا قسم الشحن من عرض تفاصيل المنتجات الافتراضية (لأنَّك لا تشحنها).
-* إذا كانت لديك قائمة منتجات أصغر، فإن العناصر ستختفي منها أحيانًا، ولكن ليس بعد الآن لأنَّنا أصلحنا ذلك الخطأ.
-* ستؤدي محاولة عرض تفاصيل أحد المنتجات إلى تعطُّل التطبيق، وذلك في حالات نادرة جدًا. أصلحنا ذلك الخطأ كذلك.
+4.2:
+* تم إصلاح بعض المشكلات وحالات عدم الانتظام مع قالب الوضع الداكن الجديد الذي يتضمن شاشات تسجيل الدخول وأيقونة التطبيق للاستمتاع بتجربة مستخدم أكثر اتساقًا.
 </ar>
 <de-DE>
-4.1:
-* Unsere App hat einen neuen Look bekommen – wir hoffen, dir gefallen die Farben!
-* Der dunkle Modus ist jetzt für alle verfügbar, die einen dunkleren Bildschirm bevorzugen.
-* Wir haben bei der Detailansicht deiner virtuellen Produkte den Abschnitt zum Versand entfernt, da du diese ja nicht per Post verschickst.
-* Auf kleineren Produktlisten sind manchmal Artikel verschwunden – diesen Fehler haben wir behoben.
-* Manchmal ist beim Anklicken der Detailansicht die App abgestürzt – auch diesen Fehler haben wir behoben.
+4.2:
+* Probleme und Unregelmäßigkeiten im neuen dunklen Modus, mit dem Anmeldebildschirm und dem App-Icon behoben, um eine konsistente Benutzererfahrung zu gewährleisten.
 </de-DE>
 <es-ES>
-4.1:
-* Le hemos dado una mano de pintura a la app. ¡Disfrútalo!
-* El modo Oscuro ya está aquí para los que prefieren pantallas menos brillantes.
-* Hemos eliminado la sección Envío de la vista de detalles de los productos virtuales (básicamente, porque no se envían)
-* Si tenías una lista de productos pequeña, a veces los artículos desaparecían. Ya no, lo hemos solucionado.
-* En muy raras ocasiones, al intentar ver los detalles de un producto la aplicación se bloqueaba. También lo hemos solucionado.
+4.2:
+* Para ofrecer una experiencia de usuario más coherente, hemos corregido algunos errores e irregularidades del nuevo tema oscuro, de las pantallas de acceso y del icono de la aplicación.
 </es-ES>
 <fr-FR>
-4.1 :
-* De nouvelles couleurs apportent du peps à l'application !
-* Tous les utilisateurs préférant un écran moins lumineux peuvent désormais utiliser le mode sombre.
-* Nous avons supprimé la section Expédition de la vue détaillée des produits virtuels (étant donné que vous n'en expédiez pas).
-* Dans les listes de produits plus petites, certains articles disparaissaient parfois. Cela n'arrivera plus, ce bug ayant été résolu.
-* La tentative d'affichage des détails d'un produit entraînait l'arrêt de l'application en de très rares occasions. Nous avons également résolu ce bug.
+4.2 :
+* Correction de quelques problèmes et irrégularités au niveau du nouveau thème du mode sombre, des écrans de connexion et de l’icône d’application pour assurer une expérience utilisateur plus cohérente.
 </fr-FR>
 <iw-IL>
-4.1:
-* צבענו מחדש את האפליקציה – מקווים שהצבעים החדשים ימצאו חן בעיניך!
-* המצב הכהה כעת זמין לכל המשתמשים שמעדיפים מסכים בהירים פחות.
-* הסרנו את המקטע 'משלוח' מתצוגת הפרטים במוצרים וירטואלים (כי לא באמת שולחים אותם).
-* אם רשימת המוצרים שלך קצרה יחסית, לפעמים נעלמו ממנה פריטים אבל אל חשש – תיקנו את הבאג.
-* במקרים נדירים מאוד, האפליקציה הייתה קורסת כאשר ניסו להציג את הפריטים של המוצר. תיקנו גם את הבאג הזה.
+4.2:
+* תיקנו מספר בעיות ותקלות בערכת העיצוב החדשה של המצב הכהה, במסכי ההתחברות ובסמל של האפליקציה כדי לאפשר חוויית משתמש עקבית יותר.
 </iw-IL>
 <id>
-4.1:
-* Kami baru saja memberikan lapisan cat yang baru untuk aplikasi — nikmati warna barunya!
-* Mode gelap kini tersedia bagi yang lebih menyukai layar redup.
-* Kami menghilangkan bagian Pengiriman dari tampilan detail produk virtual (karena, ya, memang Anda tidak mengirimnya).
-* Jika Anda memiliki daftar produk yang lebih kecil, terkadang item menghilang dari daftar, tetapi sekarang tidak akan lagi — kami telah memperbaiki bug tersebut.
-* Di saat-saat tertentu, mencoba menampilkan detail produk dapat menyebabkan crash pada aplikasi. Kami juga telah memperbaiki bug tersebut.
+4.2:
+* Menyelesaikan beberapa masalah dan penyimpangan dengan tema mode gelap dengan, layar login, dan ikon aplikasi demi pengalaman pengguna yang lebih konsisten.
 </id>
 <it-IT>
-4.1:
-*Abbiamo appena rinfrescato all'app. Goditi i nuovi colori!
-*Dark mode è ora disponibile per chi preferisce schermi meno luminosi.
-*Rimossa la sezione Spedizione dalla visualizzazione dei dettagli dei prodotti virtuali (perché, beh, non li spedisci).
-*In un elenco di prodotti ridotto, gli articoli a volte scomparivano da esso, ora non più: bug risolto.
-*In rare occasioni, il tentativo di visualizzare i dettagli di un prodotto provocava l'arresto anomalo dell'app. Abbiamo risolto anche quel bug.
+4.2:
+* Corretti alcuni errori e delle irregolarità nel nuovo tema Dark Mode, nelle schermate di accesso e nell'icona dell'app, per un'esperienza utente più coerente.
 </it-IT>
 <ja-JP>
-4.1:
-* アプリの外観が新しくなりました — 新しい色をお楽しみください !
-* 明るくない画面を好む人はダークモードを利用できるようになりました。
-* バーチャル商品の詳細ビューから「配送」セクションを削除しました (配送の必要がないため)。
-* 商品リストが小さい場合、項目がリストに表示されないことがありましたが、表示されるようになりました。このバグを修正しました。
-* ごくまれに、商品の詳細を表示しようとすると、アプリがクラッシュすることがありました。このバグも修正しました。
+4.2:
+* 新しいダークモードテーマのログイン画面とアプリアイコンの問題と不規則性を、より一貫性のあるユーザーエクスペリエンスのために修正
 </ja-JP>
 <ko-KR>
-4.1:
-* 새로운 색상으로 앱 분위기를 바꾸었습니다. 지금 확인해 보세요!
-* 이제 많이 밝지 않은 화면을 선호하는 사람 누구나 어둡게 모드를 이용할 수 있습니다.
-* 해당 제품을 배송하지 않기 때문에 가상 제품의 세부정보 보기에서 배송 섹션을 제거했습니다.
-* 제품 목록이 상대적으로 작은 경우 경우에 따라 아이템이 사라지는 경우가 있었으나 버그를 수정하여 더 이상 해당 문제가 발생하지 않습니다.
-* 매우 드물지만 제품의 세부정보를 보려고 하면 앱이 중단되는 현상이 발생했습니다. 이 버그도 수정했습니다.
+4.2:
+* 더욱 일관된 사용자 환경을 위한 로그인 화면 및 앱 아이콘에 대한 새로운 다크 모드 테마와 관련하여 몇몇 문제 및 변칙이 해결됨
 </ko-KR>
 <nl-NL>
-4.1:
-* We hebben de kleuren van de app vernieuwd: geniet ervan!
-* De nachtmodus is nu beschikbaar voor iedereen die behoefte heeft aan een minder fel scherm.
-* We hebben het gedeelte Verzending verwijderd uit het detail-overzicht van virtuele producten (omdat je ze natuurlijk niet verzendt).
-* Als je een kleinere productlijst hebt, werden sommige artikelen er soms uit verwijderd, maar nu niet meer, want die bug is opgelost.
-* Heel af en toe vond er een crash van de app plaats wanneer de details van een product werden bekeken. Die bug hebben we ook opgelost.
+4.2:
+* Een paar problemen en afwijkingen opgelost met het nieuwe nachtmodus-thema, zoals inlogschermen en het app-pictogram voor een consistentere gebruikerservaring.
 </nl-NL>
 <pt-BR>
-4.1:
-* Acabamos de dar uma nova cara ao app. Aproveite as novas cores!
-* Para quem prefere telas mais escuras, disponibilizamos o modo noturno.
-* Removemos a seção Envio da visualização de detalhes dos produtos virtuais (porque não precisam ser enviados, né).
-* Os produtos às vezes desapareciam das listas menores, mas agora já resolvemos esse problema.
-* Em algumas ocasiões, tentar ver os detalhes de um produto travava o aplicativo. Consertamos esse problema também.
+4.2:
+* Correção de problemas e irregularidades no novo modo noturno, em telas de login e no ícone do app para uma experiência do usuário mais consistente.
 </pt-BR>
 <ru-RU>
-4.1:
-* Мы освежили цветовую гамму — оцените новые цвета!
-* Темная тема оформления теперь доступна для тех, кто предпочитает умеренную яркость.
-* Мы убрали раздел «Отгрузки» для виртуальных продуктов (потому что они не «отгружаются»).
-* В небольших списках продукты могли иногда пропадать, но больше этого происходить не будет — ошибка исправлена.
-* В очень редких случаях просмотр деталей товара приводил к сбою приложения. Эта ошибка тоже исправлена.
+Версия 4.2:
+* Исправлены ошибки в теме нового темного режима, на экранах входа, а также несколько проблем со значком приложения.
 </ru-RU>
 <sv-SE>
-4.1:
-* Vi har just gett appen ett nytt lager färg — njut av de nya färgerna!
-* Mörkt läge är nu tillgängligt för alla som föredrar mindre ljusa skärmar.
-* Vi har tagit bort avsnittet Frakt från detaljvyn för virtuella produkter (eftersom de inte skickas).
-* Om du hade en mindre produktlista kunde det ibland försvinna objekt från den, men så är inte längre fallet — vi har åtgärdat det felet.
-* I mycket sällsynta fall kraschade appen om man försökte visa den detaljerade informationen för en produkt. Vi har åtgärdat det felet också.
+4.2:
+* Åtgärdade vissa problem och oegentligheter med det nya temat med mörkt läge, inloggningsskärmarna och appikonen för en mer enhetlig användarupplevelse.
 </sv-SE>
 <tr-TR>
-4.1:
-* Uygulamaya yepyeni renkler kazandırdık - yeni renklerin keyfini çıkarın.
-* Artık daha az parlak ekranları tercih eden herkes Karanlık modu kullanılabilir.
-* Sanal ürünlerin ayrıntı görünümünden Gönderim bölümünü kaldırdık (çünkü onlar gönderilmez).
-* Daha küçük bir ürün listeniz olduğunda öğeler bazen listeden kaybolurdu, ancak artık değil. Bu hata düzeltildi.
-* Çok nadir durumlarda, bir ürünün ayrıntılarını görüntülemeye çalışmak uygulamanın çökmesine neden olurdu. Bu hata da düzeltildi.
+4.2:
+* Daha tutarlı bir kullanıcı deneyimi için oturum açma ekranları ve uygulaması simgesi ile yeni koyu mod temasında birkaç sorun ve düzensizlik giderildi.
 </tr-TR>
 <zh-CN>
-4.1：
-* 我们刚刚为应用程序添加了新颜色，快来体验新颜色！
-* 现已面向偏爱弱光屏幕的用户推出夜间模式。
-* 我们已从虚拟产品的详细信息视图中删除了“配送”部分（因为虚拟产品无需配送）。
-* 如果您的产品列表较小，某些商品有时会从列表中消失，那么现在不会了，我们修复了该错误。
-* 在极少数情况下，尝试查看产品详细信息会导致应用程序崩溃，我们也修复了该错误。
+4.2：
+* 修复了新暗黑模式主题、登录屏幕和应用程序图标的一些问题和不规范之处，旨在提供更加一致的用户体验。
 </zh-CN>
 <zh-TW>
-4.1：
-* 我們為應用程式加入全新配色，盡情享受全新色彩設計！
-* 深色模式現已推出，適合偏好將螢幕調暗的使用者選用。
-* 我們從虛擬產品的詳細資訊檢視畫面中移除了「送貨」區段 (因為虛擬產品不需要送貨選項)。
-* 產品清單較小時，有時某些項目會消失不見；我們現已修復此錯誤，不會再有這個問題了。
-* 在極少數情況下，嘗試查看產品的詳細資訊會導致應用程式當機。這個錯誤也已修正。
+4.2：
+* 修正全新深色模式、登入畫面和應用程式圖示的問題和錯誤，提供更一致的使用者體驗。
 </zh-TW>
 <en-US>
-4.1:
-* We just gave the app a fresh coat of paint — enjoy the new colors!
-* Dark mode is now available for anyone who prefers less-bright screens.
-* We removed the Shipping section from virtual products’ detail view (because, well, you don’t ship them).
-* If you have a smaller product list, items would sometimes disappear from it, but not anymore — we fixed that bug.
-* On very rare occasions, attempting to view the details of a product would crash the app. We fixed that bug, too.
+4.2:
+* Fixed a few issues and irregularities with the new dark mode theme with, login screens, and the app icon for a more consistent user experience.
 </en-US>

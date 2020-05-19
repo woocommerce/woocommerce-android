@@ -23,7 +23,7 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
     fun show(hint: String, detail: String?, isFocused: Boolean) {
         editableText.hint = hint
 
-        if (!detail.isNullOrEmpty()) {
+        if (!detail.isNullOrEmpty() && detail != editableText.text.toString()) {
             editableText.setText(detail)
             editableText.setSelection(detail.length)
         }

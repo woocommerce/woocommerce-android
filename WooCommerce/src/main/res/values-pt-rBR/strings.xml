@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-27 22:54:04+0000
+Translation-Revision-Date: 2020-05-12 20:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="product_type_external">Externo</string>
+    <string name="product_type_simple">Simples</string>
+    <string name="product_status_privately_published">Publicado de maneira privada</string>
+    <string name="empty_wpmedia_list_message">Nenhuma imagem ainda</string>
+    <string name="wpmedia_picker_title">Biblioteca de mídia do WordPress</string>
+    <string name="image_source_wp_media_library">Biblioteca de mídia do WordPress</string>
+    <string name="product_menu_order_caption">Determina a posição do produto no catálogo. Quanto menor for o valor do número, maior será a posição do item na lista de produtos. Também é possível usar números negativos.</string>
+    <string name="product_menu_order">Ordem do menu</string>
+    <string name="product_purchase_note_caption">Uma observação opcional para enviar ao cliente após a compra</string>
+    <string name="product_external_link_button_text_label">Este texto será exibido no botão de redirecionamento para o produto externo</string>
+    <string name="product_external_link_button_text">Texto do botão</string>
+    <string name="product_external_link_label">Insira a URL externa do produto</string>
+    <string name="product_external_link">Link do produto</string>
+    <string name="product_external_empty_link">Adicionar link do produto</string>
+    <string name="product_enable_reviews">Permitir avaliações</string>
+    <string name="product_slug_label">Esta é a versão compatível com URL para o título do produto</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_visibility_headline">Esta configuração determina em quais páginas da loja os produtos serão listados</string>
+    <string name="product_featured">Produto destacado</string>
+    <string name="product_catalog_visibility_hidden">Oculta</string>
+    <string name="product_catalog_visibility_search">Apenas resultados da busca</string>
+    <string name="product_catalog_visibility_catalog">Apenas compra</string>
+    <string name="product_catalog_visibility_visible">Resultados para compra e pesquisa</string>
+    <string name="product_catalog_visibility">Visibilidade do catálogo</string>
+    <string name="product_visibility_password_required">A senha é obrigatória</string>
+    <string name="product_visibility_password_protected">Protegida por senha</string>
+    <string name="product_visibility_private">Privada</string>
+    <string name="product_visibility_public">Pública</string>
+    <string name="product_visibility">Visibilidade</string>
+    <string name="product_status">Status</string>
+    <string name="product_settings">Configurações do produto</string>
+    <string name="product_detail_update_product_password_error">Erro ao atualizar a senha</string>
+    <string name="product_list_sorting_list_item">Opção de classificação selecionada</string>
+    <string name="product_list_filters_list_item">Opção de filtragem selecionada</string>
+    <string name="product_list_filters_show_products">Mostrar produtos</string>
+    <string name="product_list_filters_selected">Filtros \u2022 %d</string>
+    <string name="product_list_filters_count">Filtros (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Z a A</string>
+    <string name="product_list_sorting_z_to_a">Título: Z a A</string>
+    <string name="product_list_sorting_a_to_z_short">A a Z</string>
+    <string name="product_list_sorting_a_to_z">Título: A a Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Mais antigo</string>
+    <string name="product_list_sorting_oldest_to_newest">Data: mais antiga para mais recente</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Mais recente</string>
+    <string name="product_list_sorting_newest_to_oldest">Data: mais recente para mais antiga</string>
+    <string name="product_list_sorting_header">Classificar por</string>
+    <string name="product_list_filters">Filtros</string>
+    <string name="product_list_empty_filters">Nenhum produto encontrado</string>
+    <string name="product_filter_default">Qualquer</string>
+    <string name="product_type">Tipo de produto</string>
+    <string name="selection_count">%d seleções</string>
+    <string name="value_not_set">Não definido</string>
+    <string name="more_options">Mais opções</string>
+    <string name="clear">Limpar</string>
     <string name="product_status_pending">Avaliação pendente</string>
     <string name="settings_about_title">Sobre o WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Definido por Battery Saver</string>
@@ -517,6 +571,8 @@ Language: pt_BR
     <string name="error_user_username_instead_of_email">Faça login com seu nome de usuário do WordPress.com em vez do endereço de e-mail.</string>
     <string name="no_site_error">Este endereço não pertence a um site do WordPress. Ele precisa usar o WordPress para realizarmos uma conexão.</string>
     <string name="support_help_center">Central de ajuda</string>
+    <string name="product_type_grouped">Agrupado</string>
+    <string name="product_type_variable">Variável</string>
     <string name="product_backorders_notify">Permitir, mas notificar o cliente</string>
     <string name="product_backorders_yes">Permitir</string>
     <string name="product_backorders_no">Não permitir</string>

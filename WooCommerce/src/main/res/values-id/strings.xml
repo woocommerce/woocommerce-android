@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 12:54:04+0000
+Translation-Revision-Date: 2020-05-13 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_type_external">Eksternal</string>
+    <string name="product_type_simple">Sederhana</string>
+    <string name="product_status_privately_published">Diterbitkan secara privat</string>
+    <string name="empty_wpmedia_list_message">Belum ada gambar</string>
+    <string name="wpmedia_picker_title">Pusaka media WordPress</string>
+    <string name="image_source_wp_media_library">Pusaka media WordPress</string>
+    <string name="product_menu_order_caption">Menentukan posisi produk di katalog. Semakin rendah nilai angka, semakin posisi tinggi item di daftar produk. Anda juga dapat menggunakan angka negatif.</string>
+    <string name="product_menu_order">Urutan menu</string>
+    <string name="product_purchase_note_caption">Catatan opsional untuk dikirim kepada pelanggan setelah pembelian</string>
+    <string name="product_external_link_button_text_label">Teks ini akan ditampilkan di tombol yang ditautkan ke produk eksternalt</string>
+    <string name="product_external_link_button_text">Teks tombol</string>
+    <string name="product_external_link_label">Masukkan URL eksternal ke produk</string>
+    <string name="product_external_link">Tautan produk</string>
+    <string name="product_external_empty_link">Tambahkan tautan produk</string>
+    <string name="product_enable_reviews">Aktifkan ulasan</string>
+    <string name="product_slug_label">Ini versi judul produk yang ramah URL</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_visibility_headline">Pengaturan ini menentukan di halaman toko mana produk akan dicantumkan</string>
+    <string name="product_featured">Produk yang ditampilkan</string>
+    <string name="product_catalog_visibility_hidden">Tersembunyi</string>
+    <string name="product_catalog_visibility_search">Hanya hasil penelusuran</string>
+    <string name="product_catalog_visibility_catalog">Hanya Toko</string>
+    <string name="product_catalog_visibility_visible">Hasil penelusuran dan toko</string>
+    <string name="product_catalog_visibility">Visibilitas katalog</string>
+    <string name="product_visibility_password_required">Kata sandi diperlukan</string>
+    <string name="product_visibility_password_protected">Dilindungi kata sandi</string>
+    <string name="product_visibility_private">Pribadi</string>
+    <string name="product_visibility_public">Publik</string>
+    <string name="product_visibility">Visibilitas</string>
+    <string name="product_status">Status</string>
+    <string name="product_settings">Pengaturan produk</string>
+    <string name="product_detail_update_product_password_error">Terjadi error saat memperbarui kata sandi</string>
+    <string name="product_list_sorting_list_item">Pilihan pengurutan yang dipilih</string>
+    <string name="product_list_filters_list_item">Pilihan penyaring yang dipilih</string>
+    <string name="product_list_filters_show_products">Tampilkan produk</string>
+    <string name="product_list_filters_selected">Penyaring \u2022 %d</string>
+    <string name="product_list_filters_count">Penyaring (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Z ke A</string>
+    <string name="product_list_sorting_z_to_a">Judul: Z ke A</string>
+    <string name="product_list_sorting_a_to_z_short">A ke Z</string>
+    <string name="product_list_sorting_a_to_z">Judul: A ke Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Paling lama</string>
+    <string name="product_list_sorting_oldest_to_newest">Tanggal: Terlama hingga terbaru</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Paling baru</string>
+    <string name="product_list_sorting_newest_to_oldest">Tanggal: Terbaru hingga terlama</string>
+    <string name="product_list_sorting_header">Urutkan berdasarkan</string>
+    <string name="product_list_filters">Penyaring</string>
+    <string name="product_list_empty_filters">Produk tidak ditemukan</string>
+    <string name="product_filter_default">Sembarang</string>
+    <string name="product_type">Tipe produk</string>
+    <string name="selection_count">%d dipilih</string>
+    <string name="value_not_set">Tidak ditentukan</string>
+    <string name="more_options">Pilihan lainnya</string>
+    <string name="clear">Hapus</string>
     <string name="product_status_pending">Menunggu Peninjauan</string>
     <string name="settings_about_title">Tentang WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Diatur oleh Penghemat Baterai</string>
@@ -517,6 +571,8 @@ Language: id
     <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>
     <string name="no_site_error">Situs di alamat ini bukan situs WordPress. Agar kami dapat menghubungkannya, situs harus menggunakan WordPress.</string>
     <string name="support_help_center">Pusat Bantuan</string>
+    <string name="product_type_grouped">Dikelompokkan</string>
+    <string name="product_type_variable">Variabel</string>
     <string name="product_backorders_notify">Izinkan, tetapi beri tahu pelanggan</string>
     <string name="product_backorders_yes">Izinkan</string>
     <string name="product_backorders_no">Jangan izinkan</string>
