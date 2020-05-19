@@ -128,8 +128,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
      */
     fun setPlaceholderImageUris(imageUriList: List<Uri>?) {
         if (imageUriList.isNullOrEmpty()) {
-            adapter.clearPlaceholders()
-            adapter.notifyDataSetChanged()
+            if (adapter.clearPlaceholders()) {
+                adapter.notifyDataSetChanged()
+            }
         } else {
             val placeholders = ArrayList<Product.Image>()
 
