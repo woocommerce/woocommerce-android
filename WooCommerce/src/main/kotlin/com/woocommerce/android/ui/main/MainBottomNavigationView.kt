@@ -29,9 +29,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
         OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
     private lateinit var navAdapter: NavAdapter
     private lateinit var fragmentManager: FragmentManager
-    private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
     private lateinit var reviewsBadge: BadgeDrawable
+
+    private var listener: MainNavigationListener? = null
 
     companion object {
         private var previousNavPos: BottomNavigationPosition? = null
@@ -46,7 +47,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         get() = findNavigationPositionById(selectedItemId)
         set(navPos) = updateCurrentPosition(navPos)
 
-    fun init(fm: FragmentManager, listener: MainNavigationListener) {
+    fun init(fm: FragmentManager, listener: MainNavigationListener?) {
         this.fragmentManager = fm
         this.listener = listener
 
@@ -66,6 +67,17 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         // Default to the dashboard position
         active(DASHBOARD.position)
+    }
+
+    /**
+     * Resets the fragment manager by removing all the fragments
+     */
+    fun reset() {
+        val ft = fragmentManager.beginTransaction()
+        for (fragment in fragmentManager.fragments) {
+            ft.remove(fragment)
+        }
+        ft.commitNow()
     }
 
     /**
@@ -164,13 +176,13 @@ class MainBottomNavigationView @JvmOverloads constructor(
         val navPos = findNavigationPositionById(item.itemId)
         currentPosition = navPos
 
-        listener.onNavItemSelected(navPos)
+        listener?.onNavItemSelected(navPos)
         return true
     }
 
     override fun onNavigationItemReselected(item: MenuItem) {
         val navPos = findNavigationPositionById(item.itemId)
-        listener.onNavItemReselected(navPos)
+        listener?.onNavItemReselected(navPos)
     }
 
     /**

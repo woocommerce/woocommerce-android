@@ -494,6 +494,8 @@ class MainActivity : AppUpgradeActivity(),
      * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
     private fun restart() {
+        bottomNavView.reset()
+
         val intent = intent
         intent.addFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or
