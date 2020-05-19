@@ -70,9 +70,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     /**
-     * Resets the fragment manager by removing all the fragments
+     * Removes all the fragments - this is necessary to avoid leaks when the main activity
+     * is restarted after changing the selected site
      */
-    fun reset() {
+    fun removeFragments() {
         val ft = fragmentManager.beginTransaction()
         for (fragment in fragmentManager.fragments) {
             ft.remove(fragment)
