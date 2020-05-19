@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,7 +50,7 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
 
-    private val viewModel: ProductVariantViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
+    private val viewModel: ProductVariantViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)

@@ -21,13 +21,11 @@ abstract class ProductVariantModule {
         fun provideDefaultArgs(fragment: ProductVariantFragment): Bundle? {
             return fragment.arguments
         }
-
-        @JvmStatic
-        @Provides
-        fun provideSavedStateRegistryOwner(fragment: ProductVariantFragment): SavedStateRegistryOwner {
-            return fragment.findNavController().getBackStackEntry(R.id.nav_graph_products)
-        }
     }
+
+
+    @Binds
+    abstract fun bindSavedStateRegistryOwner(fragment: ProductVariantFragment): SavedStateRegistryOwner
 
     @Binds
     @IntoMap
