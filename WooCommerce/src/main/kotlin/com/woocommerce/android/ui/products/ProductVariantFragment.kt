@@ -93,9 +93,6 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
             new.variant?.takeIfNotEqualTo(old?.variant) { showVariationDetails(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
-            new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
-                imageGallery.setPlaceholderImageUris(it)
-            }
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
@@ -115,27 +112,11 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
     private fun showVariationDetails(variation: ProductVariant) {
         variationName = variation.optionName.fastStripHtml()
 
-        if (variation.image != null) {
+        if (variation.image == null) {
             imageGallery.visibility = View.GONE
-            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
-                addImageContainer.visibility = View.VISIBLE
-                addImageContainer.setOnClickListener {
-                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-                    viewModel.onAddImageClicked()
-                }
-            }
         } else {
-            addImageContainer.visibility = View.GONE
             imageGallery.visibility = View.VISIBLE
-            imageGallery.showProductImage(variation.image as Product.Image, this)
-        }
-
-        // show status badge for unpublished products
-        variation.status?.let { status ->
-            if (status != ProductStatus.PUBLISH) {
-                frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toLocalizedString(requireActivity())
-            }
+            imageGallery.showProductImage(variation.image, this)
         }
     }
 
