@@ -20,6 +20,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.FeatureFlag
@@ -65,6 +67,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
         if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
             iconTrash.setOnClickListener {
+                AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
                 confirmRemoveProductImage()
             }
         } else {
@@ -108,7 +111,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             images.addAll(draft.images)
         }
 
-        pagerAdapter = ImageViewerAdapter(requireActivity().supportFragmentManager, images)
+        pagerAdapter = ImageViewerAdapter(childFragmentManager, images)
         viewPager.adapter = pagerAdapter
 
         val position = pagerAdapter.indexOfImageId(remoteMediaId)

@@ -48,7 +48,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
-        const val KEY_WIP_EXPANDED = "wip_expanded"
         fun newInstance() = ProductListFragment()
     }
 
@@ -80,7 +79,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         val activity = requireActivity()
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
-        products_wip_card.isExpanded = savedInstanceState?.getBoolean(KEY_WIP_EXPANDED) ?: false
 
         productAdapter = ProductListAdapter(activity, this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
@@ -106,7 +104,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(KEY_LIST_STATE, productsRecycler.layoutManager?.onSaveInstanceState())
-        outState.putBoolean(KEY_WIP_EXPANDED, products_wip_card.isExpanded)
         super.onSaveInstanceState(outState)
     }
 
@@ -340,14 +337,24 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show) {
             products_wip_card.visibility = View.VISIBLE
-            products_wip_card.initView()
+            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+                products_wip_card.initView(
+                    getString(R.string.product_wip_title),
+                    getString(R.string.product_wip_message)
+                )
+            } else {
+                products_wip_card.initView(
+                    getString(R.string.product_limited_editing_title),
+                    getString(R.string.product_limited_editing_message)
+                )
+            }
         } else {
             products_wip_card.visibility = View.GONE
         }
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
-        if (show && FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+        if (show) {
             products_sort_filter_card.visibility = View.VISIBLE
             products_sort_filter_card.initView(this)
         } else {

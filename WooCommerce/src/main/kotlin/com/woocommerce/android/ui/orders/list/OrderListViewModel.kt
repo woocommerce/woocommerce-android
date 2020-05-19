@@ -130,7 +130,7 @@ class OrderListViewModel @AssistedInject constructor(
     fun initializeListsForMainTabs() {
         // "ALL" tab
         if (allPagedListWrapper == null) {
-            val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = true)
+            val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = false)
             allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
                     .also { it.fetchFirstPage() }
         }

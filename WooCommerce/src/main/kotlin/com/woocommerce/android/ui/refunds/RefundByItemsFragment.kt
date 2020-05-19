@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
@@ -58,6 +59,7 @@ class RefundByItemsFragment : BaseFragment() {
     private fun initializeViews() {
         issueRefund_products.layoutManager = LinearLayoutManager(context)
         issueRefund_products.setHasFixedSize(true)
+        issueRefund_products.isMotionEventSplittingEnabled = false
 
         issueRefund_selectButton.setOnClickListener {
             viewModel.onSelectButtonTapped()
@@ -160,7 +162,7 @@ class RefundByItemsFragment : BaseFragment() {
                             event.refundItem.maxQuantity,
                             event.refundItem.quantity
                     )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
                 is ShowRefundAmountDialog -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
@@ -170,7 +172,7 @@ class RefundByItemsFragment : BaseFragment() {
                             BigDecimal.ZERO,
                             event.message
                     )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
                 is OpenUrl -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

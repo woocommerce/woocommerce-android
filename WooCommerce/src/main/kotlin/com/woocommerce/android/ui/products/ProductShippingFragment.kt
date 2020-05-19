@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.isFloat
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
@@ -82,22 +84,28 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
     }
 
     private fun initListeners() {
-        fun editableToFloat(editable: Editable?): Float {
+        fun editableToFloat(editable: Editable?): Float? {
             val str = editable?.toString() ?: ""
-            return if (str.isEmpty()) 0.0f else str.toFloat()
+            return if (str.isFloat()) {
+                str.toFloat()
+            } else 0.0f
         }
 
         product_weight.setOnTextChangedListener {
             viewModel.updateProductDraft(weight = editableToFloat(it))
+            changesMade()
         }
         product_length.setOnTextChangedListener {
             viewModel.updateProductDraft(length = editableToFloat(it))
+            changesMade()
         }
         product_height.setOnTextChangedListener {
             viewModel.updateProductDraft(height = editableToFloat(it))
+            changesMade()
         }
         product_width.setOnTextChangedListener {
             viewModel.updateProductDraft(width = editableToFloat(it))
+            changesMade()
         }
         product_shipping_class_spinner.setClickListener {
             showShippingClassFragment()
@@ -144,7 +152,7 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
                 .actionProductShippingFragmentToProductShippingClassFragment(
                         productShippingClassSlug = viewModel.getProduct().productDraft?.shippingClass ?: ""
                 )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
@@ -159,6 +167,7 @@ class ProductShippingFragment : BaseProductFragment(), NavigationResult {
                 product_shipping_class_spinner.setText(
                         viewModel.getShippingClassByRemoteShippingClassId(selectedShippingClassId)
                 )
+                changesMade()
             }
         }
     }

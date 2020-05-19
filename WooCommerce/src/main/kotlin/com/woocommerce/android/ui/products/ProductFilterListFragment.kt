@@ -17,6 +17,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -132,7 +133,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
     override fun onProductFilterClick(selectedFilterPosition: Int) {
         val action = ProductFilterListFragmentDirections
                 .actionProductFilterListFragmentToProductFilterOptionListFragment(selectedFilterPosition)
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     override fun onResume() {
