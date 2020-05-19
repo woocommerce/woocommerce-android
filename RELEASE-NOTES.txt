@@ -1,6 +1,7 @@
 4.4
 -----
 * Fixes text color on support ticket views for dark mode
+* Adds a fix to retain the cursor position when updating product title
 
 4.3
 -----
