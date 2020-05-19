@@ -69,18 +69,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     /**
-     * Removes all the fragments - this is necessary to avoid leaks when the main activity
-     * is restarted after changing the selected site
-     */
-    fun removeFragments() {
-        val ft = fragmentManager.beginTransaction()
-        for (fragment in fragmentManager.fragments) {
-            ft.remove(fragment)
-        }
-        ft.commitNow()
-    }
-
-    /**
      * When we changed the background to white, the top shadow provided by BottomNavigationView wasn't
      * dark enough to provide enough separation between the bar and the content above it. For this
      * reason we add a darker top divider here.
