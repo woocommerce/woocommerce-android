@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.content.DialogInterface
-import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -30,7 +29,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -80,10 +78,6 @@ class ProductVariantViewModel @AssistedInject constructor(
     }
     private var viewState by variantViewStateData
 
-    // view state for the product images screen
-    final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
-    private var productImagesViewState by productImagesViewStateData
-
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
@@ -91,12 +85,7 @@ class ProductVariantViewModel @AssistedInject constructor(
         ProductVariantCardBuilder(this, resources, currencyFormatter, parameters)
     }
 
-    private val variationId: Long
-        get() = viewState.variant?.remoteVariationId ?: 0L
-
     init {
-        EventBus.getDefault().register(this)
-
         displayVariation()
     }
 
@@ -191,33 +180,6 @@ class ProductVariantViewModel @AssistedInject constructor(
         return Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
     }
 
-    fun isUploadingImages(remoteProductId: Long) = ProductImagesService.isUploadingForProduct(remoteProductId)
-
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
-        if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
-            return
-        }
-        if (ProductImagesService.isBusy()) {
-            triggerEvent(ShowSnackbar(string.product_image_service_busy))
-            return
-        }
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
-    }
-
-    /**
-     * Checks whether product images are uploading and ensures the view state reflects any currently
-     * uploading images
-     */
-    private fun checkImageUploads(variationId: Long) {
-        val isUploadingImages = ProductImagesService.isUploadingForProduct(variationId)
-        if (isUploadingImages != productImagesViewState.isUploadingImages) {
-            val uris = ProductImagesService.getUploadingImageUrisForProduct(variationId)
-            viewState = viewState.copy(uploadingImageUris = uris)
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = isUploadingImages)
-        }
-    }
-
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
         return currencyCode?.let {
             currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
@@ -255,7 +217,6 @@ class ProductVariantViewModel @AssistedInject constructor(
     data class VariantViewState(
         val variant: ProductVariant? = null,
         val isSkeletonShown: Boolean? = null,
-        val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
         val weightWithUnits: String? = null,
         val sizeWithUnits: String? = null,
@@ -267,11 +228,6 @@ class ProductVariantViewModel @AssistedInject constructor(
         val isOnSale: Boolean
             get() = salePriceWithCurrency != null
     }
-
-    @Parcelize
-    data class ProductImagesViewState(
-        val isUploadingImages: Boolean = false
-    ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductVariantViewModel>
