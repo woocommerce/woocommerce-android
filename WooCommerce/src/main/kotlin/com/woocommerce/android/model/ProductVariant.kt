@@ -1,8 +1,10 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.ProductVariant.Type
 import com.woocommerce.android.model.ProductVariant.Type.DOWNLOADABLE
@@ -40,16 +42,16 @@ data class ProductVariant(
     fun isSameVariant(variant: ProductVariant): Boolean {
         return remoteVariationId == variant.remoteVariationId &&
             remoteProductId == variant.remoteProductId &&
-            image == variant.image &&
-            regularPrice.isEqualTo(variant.regularPrice) &&
-            salePrice.isEqualTo(variant.salePrice) &&
+            image?.id == variant.image?.id &&
+            regularPrice isEquivalentTo variant.regularPrice &&
+            salePrice isEquivalentTo variant.salePrice &&
             isOnSale == variant.isOnSale &&
             isSaleScheduled == variant.isSaleScheduled &&
             saleEndDateGmt == variant.saleEndDateGmt &&
             saleStartDateGmt == variant.saleStartDateGmt &&
             stockQuantity == variant.stockQuantity &&
             stockStatus == variant.stockStatus &&
-            optionName == variant.optionName &&
+            optionName.fastStripHtml() == variant.optionName.fastStripHtml() &&
             priceWithCurrency == variant.priceWithCurrency &&
             isPurchasable == variant.isPurchasable &&
             type == variant.type &&
