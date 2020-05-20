@@ -1,6 +1,10 @@
 4.3
 -----
- 
+
+4.2.1
+-----
+* Fixed crash happening on Android 5.1 while applying dynamic themes
+
 4.2
 -----
 * Bugfix: Removed detached and non-functioning text counter in the support email dialog
