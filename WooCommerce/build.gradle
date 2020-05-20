@@ -47,7 +47,7 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.2"
+            versionName "4.2.1"
         }
         versionCode 129
 
