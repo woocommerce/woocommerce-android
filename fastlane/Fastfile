@@ -12,22 +12,23 @@ ENV["PROJECT_ROOT_FOLDER"]="./"
 ENV["validate_translations"]="buildVanillaRelease"
 
 SUPPORTED_LOCALES = [
-  { glotpress: "ar", google_play: "ar",  promo_config: {}},
-  { glotpress: "de", google_play: "de-DE",  promo_config: {} },
-  { glotpress: "es", google_play: "es-ES",  promo_config: {} },
-  { glotpress: "fr", google_play: "fr-FR",  promo_config: {} },
-  { glotpress: "he", google_play: "iw-IL",  promo_config: {} },
-  { glotpress: "id", google_play: "id",  promo_config: {} },
-  { glotpress: "it", google_play: "it-IT",  promo_config: {} },
-  { glotpress: "ja", google_play: "ja-JP",  promo_config: {} },
-  { glotpress: "ko", google_play: "ko-KR",  promo_config: {} },
-  { glotpress: "nl", google_play: "nl-NL",  promo_config: {} },
-  { glotpress: "pt-br", google_play: "pt-BR",  promo_config: {} },
-  { glotpress: "ru", google_play: "ru-RU",  promo_config: {} },
-  { glotpress: "sv", google_play: "sv-SE",  promo_config: {} },
-  { glotpress: "tr", google_play: "tr-TR",  promo_config: {} },
-  { glotpress: "zh-cn", google_play: "zh-CN",  promo_config: {} },
-  { glotpress: "zh-tw", google_play: "zh-TW",  promo_config: {} },
+  { glotpress: "en", google_play: "en-US", emulator: "en", promo_config: {}},
+  { glotpress: "ar", google_play: "ar", emulator: "ar", promo_config: {}},
+  { glotpress: "de", google_play: "de-DE", emulator: "de", promo_config: {} },
+  { glotpress: "es", google_play: "es-ES", emulator: "es", promo_config: {} },
+  { glotpress: "fr", google_play: "fr-FR", emulator: "fr", promo_config: {} },
+  { glotpress: "he", google_play: "iw-IL", emulator: "he", promo_config: {} },
+  { glotpress: "id", google_play: "id", emulator: "id", promo_config: {} },
+  { glotpress: "it", google_play: "it-IT", emulator: "it", promo_config: {} },
+  { glotpress: "ja", google_play: "ja-JP", emulator: "ja", promo_config: {} },
+  { glotpress: "ko", google_play: "ko-KR", emulator: "ko", promo_config: {} },
+  { glotpress: "nl", google_play: "nl-NL", emulator: "nl", promo_config: {} },
+  { glotpress: "pt-br", google_play: "pt-BR", emulator: "pt-BR", promo_config: {} },
+  { glotpress: "ru", google_play: "ru-RU", emulator: "ru", promo_config: {} },
+  { glotpress: "sv", google_play: "sv-SE", emulator: "sv", promo_config: {} },
+  { glotpress: "tr", google_play: "tr-TR", emulator: "tr", promo_config: {} },
+  { glotpress: "zh-cn", google_play: "zh-CN", emulator: "zh-CN", promo_config: {} },
+  { glotpress: "zh-tw", google_play: "zh-TW", emulator: "zh-TW", promo_config: {} },
 ].freeze
 
 ########################################################################
@@ -274,7 +275,7 @@ lane :localize_libs do | options |
   end
 end
 
-#####################################################################################
+  #####################################################################################
   # download_metadata_string 
   # -----------------------------------------------------------------------------------
   # This lane downloads the translated metadata (release notes,
@@ -308,6 +309,100 @@ end
     add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end 
+
+  #####################################################################################
+  # screenshots
+  # -----------------------------------------------------------------------------------
+  # This lane creates screenshots
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane screenshots
+  #
+  # Example:
+  # fastlane screenshots
+  #####################################################################################
+  desc "Create raw screenshots"
+  lane :screenshots do |options|
+    # Build the app and test targets
+    gradle(task: "assembleVanillaDebug assembleVanillaDebugAndroidTest")
+
+    if options[:locales]
+      locales = options[:locales].split(',')
+    else
+      locales = SUPPORTED_LOCALES.
+        # Depending on how automated this is, possibly on whether we wipe the
+        # emulator before running or not, the zh-CN locale might break due to
+        # Pinwin Keyboard wanting contacts access. If that's the case, you can
+        # skip it by uncommeting the following line.
+        #reject { |locale| locale[:glotpress] == 'zh-cn' }.
+        map { |locale|  locale[:emulator] }
+    end
+
+    rebuild_screenshot_devices
+
+    UI.message("Attempting screenshots for locales: #{locales}")
+
+    screenshot_device = {
+      screenshot_type: 'phone',
+      device_name: 'Pixel_2_XL_API_29',
+      device_serial: options[:phone_serial],
+    }
+
+    screenshot_options = {
+      output_directory: screenshots_directory,
+      app_package_name: "com.woocommerce.android",
+      app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
+      tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
+      # Because the screenshot tests are together with other UI tests, we need
+      # to specify to run only them and not all of the others.
+      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
+      reinstall_app: false,
+      # By default, don't clear previous because we differentiate between light
+      # and dark mode
+      clear_previous_screenshots: options.fetch(:clear_previous_screenshots, false),
+      # Needs to be root to save screenshots consistently
+      use_adb_root: true,
+      locales: locales,
+      use_timestamp_suffix: false,
+      test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
+      # Don't care about the .html summary
+      skip_open_summary: true,
+      launch_arguments: [
+        "disableMocks true",
+      ]
+    }
+
+    take_android_emulator_screenshots(
+      devices: [ screenshot_device ],
+      screenshot_options: screenshot_options
+    )
+  end
+
+  #####################################################################################
+  # rebuild_screenshot_devices
+  # -----------------------------------------------------------------------------------
+  # This lane rebuilds all of the emulators used for generating screenshots. Beware –
+  # running this action will overwrite the following emulators:
+  #     - Pixel 2 XL API 28
+  # It will not overwrite any other devices.
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane rebuild_screenshot_devices
+  #
+  # Example:
+  # fastlane rebuild_screenshot_devices
+  #####################################################################################
+  desc "Rebuild screenshot devices"
+  lane :rebuild_screenshot_devices do |options|
+
+    emulators = [
+        Dir.pwd + "/emulators/Pixel_2_XL_API_29.ini",
+    ]
+
+    emulators.each do |emulator_configuration|
+        sh("helpers/copy-device.sh '#{emulator_configuration}'")
+    end
+  end
 
 ########################################################################
 # Helper Lanes
@@ -394,4 +489,8 @@ end
     FileUtils.rm_rf("#{temp_dir}")
   end
 
+end
+
+def screenshots_directory
+  File.join(Dir.pwd, "screenshots")
 end
