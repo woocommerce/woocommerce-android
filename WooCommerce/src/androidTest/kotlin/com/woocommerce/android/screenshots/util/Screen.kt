@@ -305,7 +305,7 @@ open class Screen {
         return getCurrentActivity()!!.resources.getString(resourceID)
     }
 
-    protected fun idleFor(milliseconds: Int) {
+    fun idleFor(milliseconds: Int) {
         try {
             Thread.sleep(milliseconds.toLong())
         } catch (ex: Exception) {
