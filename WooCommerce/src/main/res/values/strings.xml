@@ -211,8 +211,8 @@
     <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
-    <string name="orderdetail_orderstatus_created">Created %1$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
     <string name="orderdetail_shipping_method">Shipping method</string>
     <string name="orderdetail_shipping_details">Shipping details</string>
     <string name="orderdetail_billing_details">Billing details</string>
@@ -220,12 +220,12 @@
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
+    <string name="orderdetail_product_multiple">Products</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
@@ -494,8 +494,10 @@
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
-    <string name="product_wip_title">Limited editing available</string>
-    <string name="product_wip_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
+    <string name="product_limited_editing_title">Limited editing available</string>
+    <string name="product_limited_editing_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
+    <string name="product_wip_title">New editing options available</string>
+    <string name="product_wip_message">We\'ve added more editing functionalities to products. You can now update images, edit product settings &amp; share products!</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_hidden">Hidden</string>
     <string name="product_variant_list_empty">Add options like size and color from web. These will show up as options on the product page of your site</string>

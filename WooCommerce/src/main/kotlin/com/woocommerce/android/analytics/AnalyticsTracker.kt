@@ -258,6 +258,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_LIST_MENU_SEARCH_TAPPED,
         PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED,
         PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED,
+        PRODUCT_LIST_SORTING_OPTION_SELECTED,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
@@ -276,9 +277,21 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
-        PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_DETAIL_UPDATE_SUCCESS,
         PRODUCT_DETAIL_UPDATE_ERROR,
+
+        // -- Product settings
+        PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
+        PRODUCT_DETAIL_ADD_IMAGE_TAPPED,
+        PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED,
+        PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+        PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED,
+        PRODUCT_SETTINGS_STATUS_TAPPED,
+        PRODUCT_SETTINGS_CATALOG_VISIBILITY_TAPPED,
+        PRODUCT_SETTINGS_SLUG_TAPPED,
+        PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED,
+        PRODUCT_SETTINGS_VISIBILITY_TAPPED,
+        PRODUCT_SETTINGS_MENU_ORDER_TAPPED,
 
         // -- Product filters
         PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
@@ -513,12 +526,19 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_IMAGE_SOURCE = "source"
         const val KEY_FILTERS = "filters"
 
+        const val KEY_SORT_ORDER = "order"
+        const val VALUE_SORT_NAME_ASC = "name,ascending"
+        const val VALUE_SORT_NAME_DESC = "name,descending"
+        const val VALUE_SORT_DATE_ASC = "date,ascending"
+        const val VALUE_SORT_DATE_DESC = "date,descending"
+
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_ORDER_FULFILL = "order_fulfill"
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"
+        const val IMAGE_SOURCE_WPMEDIA = "wpmedia"
 
         const val KEY_REFUND_IS_FULL = "is_full"
         const val KEY_REFUND_TYPE = "method"

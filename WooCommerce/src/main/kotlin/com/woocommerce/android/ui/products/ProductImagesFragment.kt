@@ -20,6 +20,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product
@@ -57,6 +58,11 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_done)?.isVisible = viewModel.hasImageChanges()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
@@ -85,6 +91,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
         addImageButton.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
             showImageSourceDialog()
         }
     }
@@ -118,7 +125,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
                 image.id
         )
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     private fun showImageSourceDialog() {
@@ -126,12 +133,24 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
                 .also {
                     it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                        )
                         chooseProductImage()
                     }
                     it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                        )
                         captureProductImage()
                     }
                     it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
+                        AnalyticsTracker.track(
+                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+                        )
                         showWPMediaPicker()
                     }
                 }
@@ -143,7 +162,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun showWPMediaPicker() {
         val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
-        findNavController().navigate(action)
+        findNavController().navigateSafely(action)
     }
 
     private fun chooseProductImage() {
@@ -207,6 +226,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 }
             }
         }
+
+        changesMade()
     }
 
     /**

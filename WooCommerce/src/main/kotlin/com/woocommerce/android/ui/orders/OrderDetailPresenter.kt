@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.os.Handler
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
@@ -23,10 +24,9 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -86,7 +86,6 @@ class OrderDetailPresenter @Inject constructor(
     override var orderModel: WCOrderModel? = null
     override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
-    override var isUsingCachedShipmentTrackings = false
     override var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel? = null
 
     /**
@@ -95,6 +94,7 @@ class OrderDetailPresenter @Inject constructor(
      * are fetched from db
      */
     override var isShipmentTrackingsFetched: Boolean = false
+    override var isShipmentTrackingsFailed: Boolean = false
     private var pendingRemoteOrderId: Long? = null
     private var pendingMarkReadNotification: NotificationModel? = null
 
@@ -103,6 +103,7 @@ class OrderDetailPresenter @Inject constructor(
     private var isRefreshingOrderStatusOptions = false
 
     private var deferredRefunds: Deferred<WooResult<List<WCRefundModel>>>? = null
+    override val coroutineScope = CoroutineScope(dispatchers.main)
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -111,6 +112,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun dropView() {
+        super.dropView()
         orderView = null
         isNotesInit = false
         dispatcher.unregister(this)
@@ -145,7 +147,7 @@ class OrderDetailPresenter @Inject constructor(
             val refunds = loadRefundsFromDb(it)
             orderView?.showRefunds(it, refunds)
 
-            GlobalScope.launch(dispatchers.main) {
+            coroutineScope.launch {
                 fetchRefunds(it.remoteOrderId)
                 val freshRefunds = awaitRefunds()
                 orderView?.showRefunds(it, freshRefunds)
@@ -160,10 +162,9 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun refreshOrderAfterDelay(refreshDelay: Long) {
-        GlobalScope.launch(dispatchers.computation) {
-            delay(refreshDelay)
+        Handler().postDelayed({
             refreshOrderDetail(false)
-        }
+        }, refreshDelay)
     }
 
     override fun loadOrderNotes() {
@@ -209,15 +210,12 @@ class OrderDetailPresenter @Inject constructor(
 
     override fun loadOrderShipmentTrackings() {
         orderModel?.let { order ->
-            // Preload trackings from the db is available
-            loadShipmentTrackingsFromDb()
-
-            if (networkStatus.isConnected()) {
+            // Preload trackings from the db if we've already fetched it
+            if (isShipmentTrackingsFetched) {
+                loadShipmentTrackingsFromDb()
+            } else if (networkStatus.isConnected() && !isShipmentTrackingsFailed) {
                 // Attempt to refresh trackings from api in the background
                 requestShipmentTrackingsFromApi(order)
-            } else {
-                // Track so when the device is connected shipment trackings can be refreshed
-                isUsingCachedShipmentTrackings = true
             }
         }
     }
@@ -256,7 +254,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     private fun fetchRefunds(remoteOrderId: Long) {
-        deferredRefunds = GlobalScope.async {
+        deferredRefunds = coroutineScope.async {
             refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
         }
     }
@@ -368,12 +366,12 @@ class OrderDetailPresenter @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
             if (event.isError || (orderIdentifier.isNullOrBlank() && pendingRemoteOrderId == null)) {
+                orderView?.showLoadOrderError()
                 val message = event.error?.message ?: "empty orderIdentifier"
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : $message")
-                orderView?.showLoadOrderError()
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
-                GlobalScope.launch(dispatchers.main) {
+                coroutineScope.launch {
                     orderModel?.let { order ->
                         fetchRefunds(order.remoteOrderId)
                         val refunds = awaitRefunds()
@@ -404,13 +402,13 @@ class OrderDetailPresenter @Inject constructor(
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS) {
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order shipment tracking info: ${event.error.message}")
+                isShipmentTrackingsFailed = true
             } else {
                 orderModel?.let { order ->
                     AnalyticsTracker.track(
                             Stat.ORDER_TRACKING_LOADED,
                             mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
-                    isUsingCachedShipmentTrackings = false
                     isShipmentTrackingsFetched = true
                     loadShipmentTrackingsFromDb()
                 }
@@ -518,7 +516,7 @@ class OrderDetailPresenter @Inject constructor(
                     requestOrderNotesFromApi(order)
                 }
 
-                if (isUsingCachedShipmentTrackings) {
+                if (!isShipmentTrackingsFetched) {
                     requestShipmentTrackingsFromApi(order)
                 }
             }
