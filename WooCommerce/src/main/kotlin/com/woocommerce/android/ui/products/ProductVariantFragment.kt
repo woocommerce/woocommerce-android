@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -25,12 +25,12 @@ import com.woocommerce.android.ui.products.ProductVariantViewModel.VariationExit
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
-import kotlinx.android.synthetic.main.fragment_product_detail.*
+import kotlinx.android.synthetic.main.fragment_product_variant.*
+import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
 class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, BackPressListener {
@@ -53,7 +53,7 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
     private val viewModel: ProductVariantViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_detail, container, false)
+        return inflater.inflate(R.layout.fragment_product_variant, container, false)
     }
 
     override fun onDestroyView() {
@@ -113,10 +113,12 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
         variationName = variation.optionName.fastStripHtml()
 
         if (variation.image == null) {
-            imageGallery.visibility = View.GONE
+            variationImage.visibility = View.GONE
         } else {
-            imageGallery.visibility = View.VISIBLE
-            imageGallery.showProductImage(variation.image, this)
+            variationImage.visibility = View.VISIBLE
+            GlideApp.with(this).load(variation.image.source)
+                .placeholder(R.drawable.ic_product)
+                .into(variationImage)
         }
     }
 
