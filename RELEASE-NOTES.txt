@@ -1,5 +1,6 @@
 4.4
 -----
+* Minor style tweaks to login screens
 * Fixes text color on support ticket views for dark mode
 * Adds a fix to retain the cursor position when updating product title
 
