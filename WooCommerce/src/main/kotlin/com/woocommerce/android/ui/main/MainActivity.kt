@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.main
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -111,7 +110,6 @@ class MainActivity : AppUpgradeActivity(),
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
-    private var isMainThemeApplied = false
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -119,26 +117,13 @@ class MainActivity : AppUpgradeActivity(),
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
-    /**
-     * Manually set the theme here so the splash screen will be visible while this activity
-     * is loading. Also setting it here ensures all fragments used in this activity will also
-     * use this theme at runtime (in the case of switching the theme at runtime).
-     */
-    override fun getTheme(): Theme {
-        return super.getTheme().also {
-            // Since applying the theme overwrites all theme properties and then applies,
-            // we only want to do this once per session to avoid unnecessary GC as well as
-            // OOM crashes in older versions of Android.
-            if (!isMainThemeApplied) {
-                it.applyStyle(R.style.Theme_Woo_DayNight, true)
-                isMainThemeApplied = true
-            } }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
+        // Set the theme here so the splash theme will be used while the activity
+        // is loading.
+        setTheme(R.style.Theme_Woo_DayNight)
         setContentView(R.layout.activity_main)
 
         // Set the toolbar
