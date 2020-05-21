@@ -225,8 +225,10 @@ class ProductImagesService : JobIntentService() {
                 handleSuccess(event.media)
             } else -> {
                 // otherwise this is an upload progress event
-                val progress = (event.progress * 100).toInt()
-                notifHandler.setProgress(progress)
+                if (!isCancelled) {
+                    val progress = (event.progress * 100).toInt()
+                    notifHandler.setProgress(progress)
+                }
             }
         }
     }
