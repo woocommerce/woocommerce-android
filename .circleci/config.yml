@@ -11,7 +11,7 @@ orbs:
 version: 2.1
 jobs:
   Lint:
-    executor: 
+    executor:
       name: android/default
       api-version: "28"
     steps:
@@ -33,14 +33,14 @@ jobs:
               ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=${CIRCLE_PULL_REQUEST##*/} -DGITHUB_OAUTH2TOKEN=$GITHUB_API_TOKEN
             else
               echo "Not posting lint errors to Github because \$GITHUB_API_TOKEN is not found"
-            fi 
+            fi
       - android/save-gradle-cache:
           cache-prefix: lint-cache-v1
       - store_artifacts:
           path: WooCommerce/build/reports
           destination: reports
   Test:
-    executor: 
+    executor:
       name: android/default
       api-version: "28"
     steps:
@@ -55,7 +55,7 @@ jobs:
           cache-prefix: tests-cache-v1
       - android/save-test-results
   Installable Build:
-    executor: 
+    executor:
       name: android/default
       api-version: "28"
     steps:
