@@ -98,6 +98,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             setOnTextChangedListener {
                 viewModel.updateProductDraft(sku = it.toString())
                 viewModel.onSkuChanged(it.toString())
+                changesMade()
             }
         }
 
@@ -108,6 +109,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             setOnCheckedChangeListener { _, isChecked ->
                 enableManageStockStatus(isChecked)
                 viewModel.updateProductDraft(manageStock = isChecked)
+                changesMade()
             }
         }
 
@@ -115,6 +117,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             setText(product.stockQuantity.toString())
             setOnTextChangedListener {
                 viewModel.onStockQuantityChanged(it.toString())
+                changesMade()
             }
         }
 
@@ -144,6 +147,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             isChecked = product.soldIndividually
             setOnCheckedChangeListener { _, isChecked ->
                 viewModel.updateProductDraft(soldIndividually = isChecked)
+                changesMade()
             }
         }
     }
@@ -161,20 +165,20 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
     private fun displaySkuError(messageId: Int) {
         if (messageId != 0) {
             product_sku.setError(getString(messageId))
-            enablePublishMenuItem(false)
+            enableUpdateMenuItem(false)
         } else {
             product_sku.clearError()
-            enablePublishMenuItem(true)
+            enableUpdateMenuItem(true)
         }
     }
 
     private fun displayStockQuantityError(messageId: Int) {
         if (messageId != 0) {
             product_stock_quantity.setError(getString(messageId))
-            enablePublishMenuItem(false)
+            enableUpdateMenuItem(false)
         } else {
             product_stock_quantity.clearError()
-            enablePublishMenuItem(true)
+            enableUpdateMenuItem(true)
         }
     }
 
@@ -184,12 +188,14 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
                 selectedItem?.let {
                     edit_product_backorders.setText(getString(ProductBackorderStatus.toStringResource(it)))
                     viewModel.updateProductDraft(backorderStatus = ProductBackorderStatus.fromString(it))
+                    changesMade()
                 }
             }
             RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS -> {
                 selectedItem?.let {
                     edit_product_stock_status.setText(getString(ProductStockStatus.toStringResource(it)))
                     viewModel.updateProductDraft(stockStatus = ProductStockStatus.fromString(it))
+                    changesMade()
                 }
             }
         }

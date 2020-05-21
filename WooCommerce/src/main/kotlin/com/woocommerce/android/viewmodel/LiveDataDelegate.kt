@@ -23,7 +23,7 @@ class LiveDataDelegate<T : Parcelable>(
     savedState: SavedStateWithArgs,
     private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
-    private val onChange: (T) -> Unit = {}
+    private val onChange: (T?, T) -> Unit = { _, _ -> }
 ) {
     private val _liveData: MutableLiveData<T> = savedState.getLiveData(savedStateKey, initialValue)
     val liveData: LiveData<T> = _liveData
@@ -40,6 +40,7 @@ class LiveDataDelegate<T : Parcelable>(
 
         previousValue = null
         _liveData.observe(owner, Observer {
+            onChange(previousValue, it)
             observer(previousValue, it)
             previousValue = it
         })
@@ -47,6 +48,7 @@ class LiveDataDelegate<T : Parcelable>(
 
     fun observeForever(observer: (T?, T) -> Unit) {
         _liveData.observeForever {
+            onChange(previousValue, it)
             observer(previousValue, it)
             previousValue = it
         }
@@ -54,7 +56,6 @@ class LiveDataDelegate<T : Parcelable>(
 
     operator fun setValue(ref: Any, p: KProperty<*>, value: T) {
         _liveData.value = value
-        onChange(value)
     }
 
     operator fun getValue(ref: Any, p: KProperty<*>): T = _liveData.value!!

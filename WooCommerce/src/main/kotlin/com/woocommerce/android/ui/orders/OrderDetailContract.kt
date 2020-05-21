@@ -15,8 +15,8 @@ interface OrderDetailContract {
         var orderModel: WCOrderModel?
         var orderIdentifier: OrderIdentifier?
         var isUsingCachedNotes: Boolean
-        var isUsingCachedShipmentTrackings: Boolean
         var isShipmentTrackingsFetched: Boolean
+        var isShipmentTrackingsFailed: Boolean
         var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?
         fun refreshOrderDetail(displaySkeleton: Boolean = false)
         fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean = false)

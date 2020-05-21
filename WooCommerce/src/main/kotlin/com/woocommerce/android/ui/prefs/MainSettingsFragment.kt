@@ -30,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
@@ -157,26 +158,16 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         option_beta_features.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        // TODO: commenting out this code since we are enabling products for all users in the next release.
-        // Once product M2 editing features are live, we can enable product editing switch from this screen again.
-        option_beta_features.optionValue = getString(R.string.settings_enable_v4_stats_title)
-
-//         // if v4 stats is available, show both products & stats under the beta setting label, otherwise
-//         // only show products
-//        textBetaFeaturesDetail.text = if (AppPrefs.isUsingV4Api()) {
-//            getString(R.string.settings_enable_product_teaser_title) +
-//                    ", " +
-//                    getString(R.string.settings_enable_v4_stats_title)
-//        } else {
-//            getString(R.string.settings_enable_product_teaser_title)
-//        }
+        val productsTeaser = getString(R.string.settings_enable_product_teaser_title)
+        val statsTeaser = getString(R.string.settings_enable_v4_stats_title)
+        option_beta_features.optionValue = "$productsTeaser, $statsTeaser"
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
         option_feature_request.setOnClickListener {
@@ -186,12 +177,12 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         option_about.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_aboutFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
         }
 
         option_licenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
-            findNavController().navigate(R.id.action_mainSettingsFragment_to_licensesFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
         if (presenter.hasMultipleStores()) {

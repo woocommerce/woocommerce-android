@@ -30,6 +30,7 @@ import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -740,7 +741,7 @@ class MainActivity : AppUpgradeActivity(),
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(remoteProductId)
-        navController.navigate(action)
+        navController.navigateSafely(action)
     }
 
     override fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String?) {
@@ -754,14 +755,14 @@ class MainActivity : AppUpgradeActivity(),
                 remoteReviewId,
                 tempStatus,
                 launchedFromNotification)
-        navController.navigate(action)
+        navController.navigateSafely(action)
     }
 
     override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
         val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
                 stockStatus, productStatus, productType
         )
-        navController.navigate(action)
+        navController.navigateSafely(action)
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
@@ -784,7 +785,7 @@ class MainActivity : AppUpgradeActivity(),
 
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
-        navController.navigate(action)
+        navController.navigateSafely(action)
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {

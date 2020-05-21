@@ -29,6 +29,9 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         product_menu_order.setText(navArgs.menuOrder.toString())
+        product_menu_order.setOnTextChangedListener {
+            changesMade()
+        }
     }
 
     override fun hasChanges() = getMenuOrder() != navArgs.menuOrder

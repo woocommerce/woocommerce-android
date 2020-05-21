@@ -108,13 +108,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/productDetail_container"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cardsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:descendantFocusability="beforeDescendants"
+                android:overScrollMode="never"
+                android:scrollbars="vertical" />
 
-            </LinearLayout>
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

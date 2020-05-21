@@ -75,6 +75,8 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
             btnDraft.isChecked = it == btnDraft
             btnPending.isChecked = it == btnPending
             selectedStatus = getStatusForButtonId(it.id)
+
+            changesMade()
         }
     }
 

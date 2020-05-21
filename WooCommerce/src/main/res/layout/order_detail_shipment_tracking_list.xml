@@ -1,31 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/shipmentTrack_label"
             style="@style/Woo.Card.Header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/order_shipment_tracking"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:text="@string/order_shipment_tracking" />
 
         <View
-            android:id="@+id/divider"
+            android:id="@+id/shipmentTrack_labelDivider"
             style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_75"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_label" />
+            android:layout_marginStart="@dimen/major_100" />
 
         <!-- List: Order Shipment Trackings -->
         <androidx.recyclerview.widget.RecyclerView
@@ -33,12 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider"
             tools:itemCount="3"
             tools:listitem="@layout/order_detail_shipment_tracking_list_item"
-            tools:targetApi="lollipop"/>
+            tools:targetApi="lollipop" />
 
         <!-- Divider -->
         <View
@@ -46,10 +37,7 @@
             style="@style/Woo.Divider"
             android:layout_marginStart="@dimen/major_100"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_items"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <!-- Button: Add Tracking -->
         <com.google.android.material.button.MaterialButton
@@ -57,15 +45,12 @@
             style="@style/Woo.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/minor_100"
+            android:layout_gravity="center_vertical|end"
             android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/minor_100"
             android:text="@string/order_shipment_tracking_add_button"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:visibility="visible" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </merge>

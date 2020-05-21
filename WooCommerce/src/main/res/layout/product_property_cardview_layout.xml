@@ -29,6 +29,16 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_gravity="bottom" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/propertiesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
+            android:descendantFocusability="beforeDescendants"
+            android:overScrollMode="never"
+            android:scrollbars="vertical" />
+
     </LinearLayout>
     
 </merge>
