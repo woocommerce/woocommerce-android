@@ -190,13 +190,12 @@ class ProductImagesService : JobIntentService() {
         if (isCancelled) {
             currentUploads.clear()
         } else {
+            notifHandler.remove()
             currentUploads.remove(remoteProductId)
             productImageMap.remove(remoteProductId)
         }
 
         currentMediaUpload = null
-        notifHandler.remove()
-
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled))
     }
 

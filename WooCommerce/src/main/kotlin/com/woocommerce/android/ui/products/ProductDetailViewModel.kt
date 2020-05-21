@@ -412,14 +412,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                     }
             ))
             return false
-        } else if (event is ExitImages && isUploadingImages) {
+        } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
-                        triggerEvent(Exit)
+                        if (event is ExitProductDetail) {
+                            triggerEvent(ExitProduct)
+                        } else {
+                            triggerEvent(Exit)
+                        }
                     }
             ))
             return false
