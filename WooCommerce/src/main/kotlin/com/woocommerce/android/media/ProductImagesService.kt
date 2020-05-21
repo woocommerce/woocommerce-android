@@ -36,6 +36,8 @@ class ProductImagesService : JobIntentService() {
         private const val STRIP_LOCATION = true
         private const val TIMEOUT_PER_UPLOAD = 120L
 
+        private var isCancelled: Boolean = false
+
         // array of remoteProductId / uploading image uris for that product
         private val currentUploads = LongSparseArray<ArrayList<Uri>>()
 
@@ -46,7 +48,8 @@ class ProductImagesService : JobIntentService() {
 
         // posted when the list of images finishes uploading
         class OnProductImagesUpdateCompletedEvent(
-            val remoteProductId: Long
+            val remoteProductId: Long,
+            val isCancelled: Boolean
         )
 
         // posted when a single image has been uploaded
@@ -55,12 +58,27 @@ class ProductImagesService : JobIntentService() {
             val isError: Boolean = false
         )
 
-        fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
+        fun isUploadingForProduct(remoteProductId: Long) : Boolean {
+            return if (isCancelled) {
+                false
+            } else {
+                currentUploads.containsKey(remoteProductId)
+            }
+        }
 
         fun isBusy() = !currentUploads.isEmpty
 
         fun getUploadingImageUrisForProduct(remoteProductId: Long): List<Uri>? {
             return currentUploads.get(remoteProductId)
+        }
+
+        /**
+         * A JobIntentService can't truly be cancelled, but we can at least set a flag that tells it
+         * to stop continuing its work. Note that the upload notification may appear for a short
+         * time after cancellation, but it will disappear at the next upload progress event.
+         */
+        fun cancel() {
+            isCancelled = true
         }
     }
 
@@ -73,7 +91,6 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var doneSignal: CountDownLatch? = null
-
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
     override fun onCreate() {
@@ -113,6 +130,8 @@ class ProductImagesService : JobIntentService() {
         val totalUploads = localUriList.size
         notifHandler = ProductImagesNotificationHandler(this, remoteProductId)
 
+        isCancelled = false
+
         for (index in 0 until totalUploads) {
             notifHandler.update(index + 1, totalUploads)
             val localUri = localUriList[index]
@@ -124,7 +143,9 @@ class ProductImagesService : JobIntentService() {
                     localUri,
                     mediaStore
             )
-            if (media == null) {
+            if (isCancelled) {
+                break
+            } else if (media == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure()
             } else {
@@ -155,12 +176,15 @@ class ProductImagesService : JobIntentService() {
             }
         }
 
-        currentUploads.remove(remoteProductId)
-        productImageMap.remove(remoteProductId)
+        if (isCancelled) {
+            currentUploads.clear()
+        } else {
+            currentUploads.remove(remoteProductId)
+            productImageMap.remove(remoteProductId)
+        }
 
-        // remove the notification and alert that all uploads have completed
         notifHandler.remove()
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled))
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -188,16 +212,22 @@ class ProductImagesService : JobIntentService() {
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
                 handleSuccess(event.media)
             } else -> {
-                // otherwise this is an upload progress event, so update the notification progress
-                val progress = (event.progress * 100).toInt()
-                notifHandler.setProgress(progress)
+                // otherwise this is an upload progress event
+                if (isCancelled) {
+                    notifHandler.remove()
+                } else {
+                    val progress = (event.progress * 100).toInt()
+                    notifHandler.setProgress(progress)
+                }
             }
         }
     }
 
     private fun handleSuccess(uploadedMedia: MediaModel) {
         countDown()
-        EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
+        if (!isCancelled) {
+            EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
+        }
     }
 
     private fun handleFailure() {
