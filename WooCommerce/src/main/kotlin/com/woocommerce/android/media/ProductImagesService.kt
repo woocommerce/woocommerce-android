@@ -58,6 +58,9 @@ class ProductImagesService : JobIntentService() {
             val isError: Boolean = false
         )
 
+        // posted when the upload is cancelled
+        class OnUploadCancelled()
+
         fun isUploadingForProduct(remoteProductId: Long) : Boolean {
             return if (isCancelled) {
                 false
@@ -78,6 +81,7 @@ class ProductImagesService : JobIntentService() {
          */
         fun cancel() {
             isCancelled = true
+            EventBus.getDefault().post(OnUploadCancelled())
         }
     }
 
@@ -96,12 +100,14 @@ class ProductImagesService : JobIntentService() {
         WooLog.i(T.MEDIA, "productImagesService > created")
         AndroidInjection.inject(this)
         dispatcher.register(this)
+        EventBus.getDefault().register(this)
         super.onCreate()
     }
 
     override fun onDestroy() {
         WooLog.i(T.MEDIA, "productImagesService > destroyed")
         dispatcher.unregister(this)
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
@@ -142,9 +148,8 @@ class ProductImagesService : JobIntentService() {
                     localUri,
                     mediaStore
             )
-            if (isCancelled) {
-                break
-            } else if (media == null) {
+
+            if (media == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure()
             } else {
@@ -165,6 +170,11 @@ class ProductImagesService : JobIntentService() {
                 }
             }
 
+            if (isCancelled) {
+                currentUploads.clear()
+                break
+            }
+
             // remove this uri from the list of uploads for this product
             currentUploads.get(remoteProductId)?.let { oldList ->
                 val newList = ArrayList<Uri>().also {
@@ -175,9 +185,7 @@ class ProductImagesService : JobIntentService() {
             }
         }
 
-        if (isCancelled) {
-            currentUploads.clear()
-        } else {
+        if (!isCancelled) {
             currentUploads.remove(remoteProductId)
             productImageMap.remove(remoteProductId)
         }
@@ -212,9 +220,7 @@ class ProductImagesService : JobIntentService() {
                 handleSuccess(event.media)
             } else -> {
                 // otherwise this is an upload progress event
-                if (isCancelled) {
-                    notifHandler.remove()
-                } else {
+                if (!isCancelled) {
                     val progress = (event.progress * 100).toInt()
                     notifHandler.setProgress(progress)
                 }
@@ -240,5 +246,15 @@ class ProductImagesService : JobIntentService() {
                 it.countDown()
             }
         }
+    }
+
+    /**
+     * Posted above when we want to cancel the upload - note that it can't truly be cancelled but
+     * we can at least remove the upload notification
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnUploadCancelled) {
+        notifHandler.remove()
     }
 }
