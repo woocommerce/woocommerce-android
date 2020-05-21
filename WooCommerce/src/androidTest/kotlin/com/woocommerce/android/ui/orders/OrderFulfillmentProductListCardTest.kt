@@ -144,17 +144,17 @@ class OrderFulfillmentProductListCardTest : TestBase() {
         redirectToOrderFulfillment()
 
         // verify that the product total is displayed correctly for multiple quantities
-        // for single quantity: getString( R.string.orderdetail_product_lineitem_total_single, orderTotal)
+        // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_single,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "$${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: $13.00 ($11.00x2)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_multiple,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "$${mockWCOrderModel.getLineItemList()[1].total}.00",
                         "$${mockWCOrderModel.getLineItemList()[1].price}.00",
                         mockWCOrderModel.getLineItemList()[1].quantity?.toInt().toString()
@@ -182,17 +182,17 @@ class OrderFulfillmentProductListCardTest : TestBase() {
         redirectToOrderFulfillment()
 
         // verify that the product total is displayed correctly for multiple quantities
-        // for single quantity: getString( R.string.orderdetail_product_lineitem_total_single, orderTotal)
+        // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_single,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "€${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: €13.00 (€11.00x2)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_multiple,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "€${mockWCOrderModel.getLineItemList()[1].total}.00",
                         "€${mockWCOrderModel.getLineItemList()[1].price}.00",
                         mockWCOrderModel.getLineItemList()[1].quantity?.toInt().toString()
@@ -220,17 +220,17 @@ class OrderFulfillmentProductListCardTest : TestBase() {
         redirectToOrderFulfillment()
 
         // verify that the product total is displayed correctly for multiple quantities
-        // for single quantity: getString( R.string.orderdetail_product_lineitem_total_single, orderTotal)
+        // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_single,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "₹${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: ₹13.00 (₹11.00x2)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_multiple,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "₹${mockWCOrderModel.getLineItemList()[1].total}.00",
                         "₹${mockWCOrderModel.getLineItemList()[1].price}.00",
                         mockWCOrderModel.getLineItemList()[1].quantity?.toInt().toString()
@@ -258,17 +258,17 @@ class OrderFulfillmentProductListCardTest : TestBase() {
         redirectToOrderFulfillment()
 
         // verify that the product total is displayed correctly for multiple quantities
-        // for single quantity: getString( R.string.orderdetail_product_lineitem_total_single, orderTotal)
+        // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_single,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "A$${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: A$13.00 (A$11.00x2)
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
                 .check(matches(withText(appContext.getString(
-                        R.string.orderdetail_product_lineitem_total_multiple,
+                        R.string.orderdetail_product_lineitem_qty_and_price,
                         "A\$${mockWCOrderModel.getLineItemList()[1].total}.00",
                         "A\$${mockWCOrderModel.getLineItemList()[1].price}.00",
                         mockWCOrderModel.getLineItemList()[1].quantity?.toInt().toString()
