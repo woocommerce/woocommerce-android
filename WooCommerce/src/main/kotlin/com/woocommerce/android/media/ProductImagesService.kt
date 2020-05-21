@@ -74,8 +74,7 @@ class ProductImagesService : JobIntentService() {
 
         /**
          * A JobIntentService can't truly be cancelled, but we can at least set a flag that tells it
-         * to stop continuing its work. Note that the upload notification may appear for a short
-         * time after cancellation, but it will disappear at the next upload progress event.
+         * to stop continuing its work when the current task is done
          */
         fun cancel() {
             isCancelled = true

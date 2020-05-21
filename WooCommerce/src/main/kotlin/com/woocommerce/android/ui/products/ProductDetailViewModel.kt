@@ -382,15 +382,18 @@ class ProductDetailViewModel @AssistedInject constructor(
      * [Product] model locally, that still need to be saved to the backend.
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.isProductUpdated
+        val isProductDetailUpdated = viewState.isProductUpdated ?: false
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
                     viewState.isPasswordChanged
-        }
+        } ?: false
+
+        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated
+            is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
+            is ExitImages -> isUploadingImages
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
         if (isProductUpdated == true && event.shouldShowDiscardDialog) {
@@ -409,13 +412,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                     }
             ))
             return false
-        } else if (event is ExitProductDetail && ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
-            // images can't be assigned to the product until they finish uploading so ask whether to discard images.
+        } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
+            // images can't be assigned to the product until they finish uploading so ask whether
+            // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
-                        triggerEvent(ExitProduct)
+                        if (event is ExitProductDetail) {
+                            triggerEvent(ExitProduct)
+                        } else {
+                            triggerEvent(Exit)
+                        }
                     }
             ))
             return false
