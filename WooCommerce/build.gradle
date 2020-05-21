@@ -49,7 +49,7 @@ android {
         } else {
             versionName "4.3-rc-1"
         }
-        versionCode 128
+        versionCode 129
 
         minSdkVersion 21
         targetSdkVersion 29
