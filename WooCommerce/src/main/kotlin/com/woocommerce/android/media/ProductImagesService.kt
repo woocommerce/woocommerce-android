@@ -60,9 +60,9 @@ class ProductImagesService : JobIntentService() {
         )
 
         // posted when the upload is cancelled
-        class OnUploadCancelled()
+        class OnUploadCancelled
 
-        fun isUploadingForProduct(remoteProductId: Long) : Boolean {
+        fun isUploadingForProduct(remoteProductId: Long): Boolean {
             return if (isCancelled) {
                 false
             } else {
@@ -78,7 +78,8 @@ class ProductImagesService : JobIntentService() {
 
         /**
          * A JobIntentService can't truly be cancelled, but we can at least set a flag that tells it
-         * to stop continuing its work when the current task is done
+         * to stop continuing its work when the current task is done, and post an event the service
+         * can use to cancel the upload
          */
         fun cancel() {
             isCancelled = true
@@ -173,7 +174,6 @@ class ProductImagesService : JobIntentService() {
             }
 
             if (isCancelled) {
-                currentUploads.clear()
                 break
             }
 
@@ -187,13 +187,16 @@ class ProductImagesService : JobIntentService() {
             }
         }
 
-        if (!isCancelled) {
+        if (isCancelled) {
+            currentUploads.clear()
+        } else {
             currentUploads.remove(remoteProductId)
             productImageMap.remove(remoteProductId)
         }
 
         currentMediaUpload = null
         notifHandler.remove()
+
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled))
     }
 
@@ -215,27 +218,22 @@ class ProductImagesService : JobIntentService() {
                 handleFailure()
             }
             event.canceled -> {
-                WooLog.w(T.MEDIA, "productImagesService > upload media cancelled")
-                handleFailure()
+                WooLog.d(T.MEDIA, "productImagesService > upload media cancelled")
             }
             event.completed -> {
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
                 handleSuccess(event.media)
             } else -> {
                 // otherwise this is an upload progress event
-                if (!isCancelled) {
-                    val progress = (event.progress * 100).toInt()
-                    notifHandler.setProgress(progress)
-                }
+                val progress = (event.progress * 100).toInt()
+                notifHandler.setProgress(progress)
             }
         }
     }
 
     private fun handleSuccess(uploadedMedia: MediaModel) {
         countDown()
-        if (!isCancelled) {
-            EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
-        }
+        EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
     }
 
     private fun handleFailure() {
@@ -252,8 +250,8 @@ class ProductImagesService : JobIntentService() {
     }
 
     /**
-     * Posted above when we want to cancel the upload - removes the upload notification and
-     * dispatches a request to cancel and delete the partially uploaded media
+     * Posted above when we want the upload cancelled - removes the upload notification and
+     * dispatches a request to cancel the upload
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
