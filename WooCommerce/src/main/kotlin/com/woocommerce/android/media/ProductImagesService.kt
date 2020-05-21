@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
+import org.wordpress.android.fluxc.store.MediaStore.CancelMediaPayload
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
 import org.wordpress.android.fluxc.store.SiteStore
@@ -94,6 +95,7 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var doneSignal: CountDownLatch? = null
+    private var currentMediaUpload: MediaModel? = null
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
     override fun onCreate() {
@@ -142,23 +144,23 @@ class ProductImagesService : JobIntentService() {
             val localUri = localUriList[index]
 
             // create a media model from this local image uri
-            val media = ProductImagesUtils.mediaModelFromLocalUri(
+            currentMediaUpload = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
                     selectedSite.get().id,
                     localUri,
                     mediaStore
             )
 
-            if (media == null) {
+            if (currentMediaUpload == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure()
             } else {
-                media.postId = remoteProductId
-                media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+                currentMediaUpload!!.postId = remoteProductId
+                currentMediaUpload!!.setUploadState(MediaModel.MediaUploadState.UPLOADING)
 
                 // dispatch the upload request
                 WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
-                val payload = UploadMediaPayload(selectedSite.get(), media, STRIP_LOCATION)
+                val payload = UploadMediaPayload(selectedSite.get(), currentMediaUpload!!, STRIP_LOCATION)
                 dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
                 // wait for the upload to complete
@@ -190,6 +192,7 @@ class ProductImagesService : JobIntentService() {
             productImageMap.remove(remoteProductId)
         }
 
+        currentMediaUpload = null
         notifHandler.remove()
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled))
     }
@@ -249,12 +252,17 @@ class ProductImagesService : JobIntentService() {
     }
 
     /**
-     * Posted above when we want to cancel the upload - note that it can't truly be cancelled but
-     * we can at least remove the upload notification
+     * Posted above when we want to cancel the upload - removes the upload notification and
+     * dispatches a request to cancel and delete the partially uploaded media
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnUploadCancelled) {
         notifHandler.remove()
+
+        currentMediaUpload?.let {
+            val payload = CancelMediaPayload(selectedSite.get(), it, true)
+            dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
+        }
     }
 }
