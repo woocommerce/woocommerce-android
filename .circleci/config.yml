@@ -54,6 +54,19 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: tests-cache-v1
       - android/save-test-results
+      - run:
+          # The instrumentation tests are not currently used and do tend to get
+          # out of date when the UI changes, failing to build.
+          #
+          # This is a problem for the screenshots automation, which depends on
+          # those tests.
+          #
+          # This check lets developers know when they accidentally broke the
+          # instrumentation tests build, giving them a chance to either fix the
+          # build or remove the broken tests if they are now obsolete.
+          name: Check instrumentation tests build
+          command: ./gradlew --stacktrace assembleVanillaDebugAndroidTest
+
   Installable Build:
     executor:
       name: android/default
