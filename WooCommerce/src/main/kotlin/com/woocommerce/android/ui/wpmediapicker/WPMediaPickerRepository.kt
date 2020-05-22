@@ -69,7 +69,21 @@ class WPMediaPickerRepository @Inject constructor(
     /**
      * Returns all media for the current site that are in the database
      */
-    fun getSiteMediaList(): List<Product.Image> = mediaStore.getSiteImages(selectedSite.get()).map { it.toAppModel() }
+    fun getSiteMediaList(): List<Product.Image> {
+        val mediaList = mediaStore.getSiteImages(selectedSite.get())
+        val imageList = ArrayList<Product.Image>()
+
+        for (media in mediaList) {
+            // skip media with empty URLs - these are media that are still being uploaded
+            if (media.url.isNullOrEmpty()) {
+                WooLog.w(WooLog.T.MEDIA, "Empty media url")
+            } else {
+                imageList.add(media.toAppModel())
+            }
+        }
+
+        return imageList
+    }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
