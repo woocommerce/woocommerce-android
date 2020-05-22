@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.2-rc-1"
+            versionName "4.3-rc-2"
         }
-        versionCode 126
+        versionCode 130
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -140,7 +140,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
-    implementation('org.wordpress:utils:1.22') {
+    implementation('org.wordpress:utils:1.24') {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }

@@ -1,6 +1,9 @@
 4.4
 -----
+* Minor style tweaks to login screens
 * Fixes text color on support ticket views for dark mode
+* Adds a fix to retain the cursor position when updating product title
+* Fixed a potential memory leak while switching between stores
 
 4.3
 -----
@@ -12,6 +15,11 @@
 * All orders tab now displays future-dated orders
 * Fixed crash in order detail after returning from the refund screen
 * You can now filter and sort Products by clicking on the Products tab!
+* Fixes text color on support ticket views for dark mode
+
+4.2.1
+-----
+* Fixed crash happening on Android 5.1 while applying dynamic themes
  
 4.2
 -----

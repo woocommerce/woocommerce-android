@@ -1,6 +1,0 @@
-4.1:
-* Uygulamaya yepyeni renkler kazandırdık - yeni renklerin keyfini çıkarın.
-* Artık daha az parlak ekranları tercih eden herkes Karanlık modu kullanılabilir.
-* Sanal ürünlerin ayrıntı görünümünden Gönderim bölümünü kaldırdık (çünkü onlar gönderilmez).
-* Daha küçük bir ürün listeniz olduğunda öğeler bazen listeden kaybolurdu, ancak artık değil. Bu hata düzeltildi.
-* Çok nadir durumlarda, bir ürünün ayrıntılarını görüntülemeye çalışmak uygulamanın çökmesine neden olurdu. Bu hata da düzeltildi.

@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-01 12:08:15+0000
+Translation-Revision-Date: 2020-05-13 08:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_type_external">Extern</string>
+    <string name="product_type_simple">Enkel</string>
+    <string name="product_status_privately_published">Publicerat privat</string>
+    <string name="empty_wpmedia_list_message">Inga bilder ännu</string>
+    <string name="wpmedia_picker_title">WordPress mediebibliotek</string>
+    <string name="image_source_wp_media_library">WordPress mediebibliotek</string>
+    <string name="product_menu_order_caption">Bestämmer produktens placering i katalogen. Ju lägre siffervärdet är desto högre kommer artikeln att vara i produktlistan. Du kan också använda negativa siffror.</string>
+    <string name="product_menu_order">Menysortering</string>
+    <string name="product_purchase_note_caption">Ett valfritt meddelande som kan skickas till kunden efter köpet</string>
+    <string name="product_external_link_button_text_label">Denna text kommer att visas på knappen som länkar till den externa produkten</string>
+    <string name="product_external_link_button_text">Knapptext</string>
+    <string name="product_external_link_label">Ange den externa URL:en till produkten</string>
+    <string name="product_external_link">Produktlänk</string>
+    <string name="product_external_empty_link">Lägg till produktlänk</string>
+    <string name="product_enable_reviews">Aktivera recensioner</string>
+    <string name="product_slug_label">Detta är den URL-vänliga versionen av produktrubriken</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_visibility_headline">Denna inställning avgör vilka butikssidor produkterna kommer att listas på.</string>
+    <string name="product_featured">Utvald produkt</string>
+    <string name="product_catalog_visibility_hidden">Dold</string>
+    <string name="product_catalog_visibility_search">Endast sökresultat</string>
+    <string name="product_catalog_visibility_catalog">Endast butik</string>
+    <string name="product_catalog_visibility_visible">Butik och sökresultat</string>
+    <string name="product_catalog_visibility">Synlighet i katalog</string>
+    <string name="product_visibility_password_required">Lösenord är obligatoriskt</string>
+    <string name="product_visibility_password_protected">Lösenordsskyddat</string>
+    <string name="product_visibility_private">Privat</string>
+    <string name="product_visibility_public">Offentlig</string>
+    <string name="product_visibility">Synlighet</string>
+    <string name="product_status">Status</string>
+    <string name="product_settings">Produktinställningar</string>
+    <string name="product_detail_update_product_password_error">Fel när lösenordet uppdaterades</string>
+    <string name="product_list_sorting_list_item">Valt sorteringsalternativ</string>
+    <string name="product_list_filters_list_item">Valt filteralternativ</string>
+    <string name="product_list_filters_show_products">Visa produkter</string>
+    <string name="product_list_filters_selected">Filter \u2022 %d</string>
+    <string name="product_list_filters_count">Filter (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Ö till A</string>
+    <string name="product_list_sorting_z_to_a">Titel: Ö till A</string>
+    <string name="product_list_sorting_a_to_z_short">A till Ö</string>
+    <string name="product_list_sorting_a_to_z">Titel: A till Ö</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Äldsta</string>
+    <string name="product_list_sorting_oldest_to_newest">Datum: äldsta till nyaste</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Nyaste</string>
+    <string name="product_list_sorting_newest_to_oldest">Datum: nyaste till äldsta</string>
+    <string name="product_list_sorting_header">Sortera efter</string>
+    <string name="product_list_filters">Filter</string>
+    <string name="product_list_empty_filters">Inga produkter hittades</string>
+    <string name="product_filter_default">Alla</string>
+    <string name="product_type">Produkttyp</string>
+    <string name="selection_count">%d valda</string>
+    <string name="value_not_set">Inte inställd</string>
+    <string name="more_options">Fler alternativ</string>
+    <string name="clear">Rensa</string>
     <string name="product_status_pending">Väntande recension</string>
     <string name="settings_about_title">Om WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Ställs in av strömsparläget</string>
@@ -517,6 +571,8 @@ Language: sv_SE
     <string name="error_user_username_instead_of_email">Logga in med ditt WordPress.com användarnamn istället för din e-postadress.</string>
     <string name="no_site_error">Webbplatsen på denna adress är inte en WordPress-webbplats. För att vi ska kunna ansluta till den måste webbplatsen använda WordPress.</string>
     <string name="support_help_center">Hjälpcenter</string>
+    <string name="product_type_grouped">Grupperade</string>
+    <string name="product_type_variable">Variabel</string>
     <string name="product_backorders_notify">Tillåt, men meddela kunden</string>
     <string name="product_backorders_yes">Tillåt</string>
     <string name="product_backorders_no">Tillåt inte</string>

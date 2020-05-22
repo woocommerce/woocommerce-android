@@ -34,6 +34,10 @@
 
     <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary"/>
 
+    <style name="LoginTheme.Button.LoginOption" parent="TextAppearance.Woo.Body1">
+        <item name="android:textColor">@color/color_secondary</item>
+    </style>
+
     <style name="LoginTheme.TextLabel.Icon">
         <item name="drawableTint">@color/color_on_surface_medium</item>
         <item name="drawableTintMode">src_atop</item>

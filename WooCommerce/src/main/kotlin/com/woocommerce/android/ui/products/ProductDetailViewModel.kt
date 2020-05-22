@@ -762,11 +762,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      * uploading images
      */
     private fun checkImageUploads(remoteProductId: Long) {
-        val isUploadingImages = ProductImagesService.isUploadingForProduct(remoteProductId)
-        if (isUploadingImages != productImagesViewState.isUploadingImages) {
+        if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
             val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
             viewState = viewState.copy(uploadingImageUris = uris)
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = isUploadingImages)
+            productImagesViewState = productImagesViewState.copy(isUploadingImages = true)
+        } else if (productImagesViewState.isUploadingImages) {
+            viewState = viewState.copy(uploadingImageUris = emptyList())
+            productImagesViewState = productImagesViewState.copy(isUploadingImages = false)
         }
     }
 
