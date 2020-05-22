@@ -135,7 +135,9 @@ class ProductDetailCardBuilder(
             items.addPropertyIfNotEmpty(
                 PropertyGroup(
                     R.string.product_variations,
-                    properties
+                    properties,
+                    R.drawable.ic_gridicons_types,
+                    propertyFormat = R.string.product_variation_options
                 ) {
                     viewModel.onEditProductCardClicked(
                         ViewProductVariations(product.remoteId),
