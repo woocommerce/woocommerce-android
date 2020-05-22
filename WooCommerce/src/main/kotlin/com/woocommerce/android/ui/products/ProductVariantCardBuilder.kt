@@ -9,6 +9,10 @@ import com.woocommerce.android.extensions.addPropertyIfNotEmpty
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.ProductVariant.Type
+import com.woocommerce.android.model.ProductVariant.Type.DOWNLOADABLE
+import com.woocommerce.android.model.ProductVariant.Type.PHYSICAL
+import com.woocommerce.android.model.ProductVariant.Type.VIRTUAL
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
@@ -54,10 +58,10 @@ class ProductVariantCardBuilder(
         @DrawableRes val visibilityIcon: Int
         if (variation.status == PUBLISH) {
             visibility = resources.getString(R.string.product_variation_visible)
-            visibilityIcon = R.drawable.ic_password_visibility
+            visibilityIcon = R.drawable.ic_gridicons_visible
         } else {
             visibility = resources.getString(R.string.product_variant_hidden)
-            visibilityIcon = R.drawable.ic_password_visibility_off
+            visibilityIcon = R.drawable.ic_gridicons_not_visible
         }
         items.addPropertyIfNotEmpty(
             ComplexProperty(
@@ -73,14 +77,15 @@ class ProductVariantCardBuilder(
                 description,
                 R.drawable.ic_gridicons_align_left,
                 showTitle
-            ) {
-                viewModel.onEditVariationCardClicked(
-                    ViewProductDescriptionEditor(
-                        variationDescription, resources.getString(R.string.product_description)
-                    ),
-                    Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
-                )
-            }
+            )
+//            {
+//                viewModel.onEditVariationCardClicked(
+//                    ViewProductDescriptionEditor(
+//                        variationDescription, resources.getString(R.string.product_description)
+//                    ),
+//                    Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
+//                )
+//            }
         )
 
         // If we have pricing info, show price & sales price as a group,
@@ -135,12 +140,27 @@ class ProductVariantCardBuilder(
                 pricingGroup,
                 R.drawable.ic_gridicons_money,
                 hasPricingInfo
-            ) {
-                viewModel.onEditVariationCardClicked(
-                    ViewProductPricing(variation.remoteVariationId),
-                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
-                )
-            }
+            )
+//            {
+//                viewModel.onEditVariationCardClicked(
+//                    ViewProductPricing(variation.remoteVariationId),
+//                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
+//                )
+//            }
+        )
+
+        items.addPropertyIfNotEmpty(
+            ComplexProperty(
+                R.string.product_type,
+                getTypeDescription(variation.type),
+                R.drawable.ic_product
+            )
+//            {
+//                viewModel.onEditVariationCardClicked(
+//                    ViewProductPricing(variation.remoteVariationId),
+//                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
+//                )
+//            }
         )
 
         return ProductPropertyCard(type = PRIMARY, properties = items)
@@ -163,5 +183,13 @@ class ProductVariantCardBuilder(
             formattedFromDate,
             dateOnSaleTo.formatToMMMddYYYY()
         )
+    }
+
+    private fun getTypeDescription(type: Type): String {
+        return when (type) {
+            PHYSICAL -> resources.getString(R.string.product_type_physical)
+            VIRTUAL -> resources.getString(R.string.product_type_virtual)
+            DOWNLOADABLE -> resources.getString(R.string.product_type_downloadable)
+        }
     }
 }
