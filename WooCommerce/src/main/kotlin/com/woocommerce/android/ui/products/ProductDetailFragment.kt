@@ -47,6 +47,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
 
+    private var viewProductOnStoreMenuItem: MenuItem? = null
+
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -137,6 +139,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toLocalizedString(requireActivity())
             }
+
+            // display View Product on Store menu button only if the Product status is published,
+            // otherwise the page is redirected to a 404
+            viewProductOnStoreMenuItem?.isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled() &&
+                status == ProductStatus.PUBLISH
         }
     }
 
@@ -144,7 +151,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
 
-        menu.findItem(R.id.menu_view_product).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        viewProductOnStoreMenuItem = menu.findItem(R.id.menu_view_product)
         menu.findItem(R.id.menu_product_settings).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
 
         super.onCreateOptionsMenu(menu, inflater)
