@@ -258,6 +258,11 @@ class ProductImagesService : JobIntentService() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnUploadCancelled) {
         notifHandler.remove()
+        doneSignal?.let {
+            while (it.count > 0) {
+                it.countDown()
+            }
+        }
 
         currentMediaUpload?.let {
             val payload = CancelMediaPayload(selectedSite.get(), it, true)
