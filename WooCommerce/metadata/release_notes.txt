@@ -1,1 +1,4 @@
-* Fixed a few issues and irregularities with the new dark mode theme with, login screens, and the app icon for a more consistent user experience.
+* Filter and sort Products from the Products tab.
+* Shipment tracking appears on the order detail screen. Future-dated orders appear on the All orders tab.
+* Our new product editing functionality is in beta. Try it!
+* Fixed multiple crashes and the text color on support tickets in dark mode.
