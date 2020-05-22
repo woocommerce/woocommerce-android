@@ -112,6 +112,7 @@ class MainActivity : AppUpgradeActivity(),
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
+    private var isMainThemeApplied = false
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -125,7 +126,14 @@ class MainActivity : AppUpgradeActivity(),
      * use this theme at runtime (in the case of switching the theme at runtime).
      */
     override fun getTheme(): Theme {
-        return super.getTheme().also { it.applyStyle(R.style.Theme_Woo_DayNight, true) }
+        return super.getTheme().also {
+            // Since applying the theme overwrites all theme properties and then applies,
+            // we only want to do this once per session to avoid unnecessary GC as well as
+            // OOM crashes in older versions of Android.
+            if (!isMainThemeApplied) {
+                it.applyStyle(R.style.Theme_Woo_DayNight, true)
+                isMainThemeApplied = true
+            } }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

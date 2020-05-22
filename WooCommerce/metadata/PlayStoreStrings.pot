@@ -11,20 +11,19 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_043"
+msgid ""
+"4.3:\n"
+"* Filter and sort Products from the Products tab.\n"
+"* Shipment tracking appears on the order detail screen. Future-dated orders appear on the All orders tab.\n"
+"* Our new product editing functionality is in beta. Try it!\n"
+"* Fixed multiple crashes and the text color on support tickets in dark mode.\n"
+msgstr ""
+
 msgctxt "release_note_042"
 msgid ""
 "4.2:\n"
 "* Fixed a few issues and irregularities with the new dark mode theme with, login screens, and the app icon for a more consistent user experience.\n"
-msgstr ""
-
-msgctxt "release_note_041"
-msgid ""
-"4.1:\n"
-"* We just gave the app a fresh coat of paint — enjoy the new colors!\n"
-"* Dark mode is now available for anyone who prefers less-bright screens.\n"
-"* We removed the Shipping section from virtual products’ detail view (because, well, you don’t ship them).\n"
-"* If you have a smaller product list, items would sometimes disappear from it, but not anymore — we fixed that bug.\n"
-"* On very rare occasions, attempting to view the details of a product would crash the app. We fixed that bug, too.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
