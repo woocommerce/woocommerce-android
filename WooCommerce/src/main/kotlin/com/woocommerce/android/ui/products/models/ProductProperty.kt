@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.models
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.COMPLEX_PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.DIVIDER
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.EDITABLE
@@ -69,6 +70,7 @@ sealed class ProductProperty(val type: Type) {
         val properties: Map<String, String>,
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
+        @StringRes val propertyFormat: Int = R.string.product_property_default_formatter,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(PROPERTY_GROUP)
 
