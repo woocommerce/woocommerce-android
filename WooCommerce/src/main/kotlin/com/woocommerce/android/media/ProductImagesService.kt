@@ -114,44 +114,46 @@ class ProductImagesService : JobIntentService() {
         notifHandler = ProductImagesNotificationHandler(this, remoteProductId)
 
         for (index in 0 until totalUploads) {
-            notifHandler.update(index + 1, totalUploads)
-            val localUri = localUriList[index]
+            selectedSite.getIfExists()?.let { site ->
+                notifHandler.update(index + 1, totalUploads)
+                val localUri = localUriList[index]
 
-            // create a media model from this local image uri
-            val media = ProductImagesUtils.mediaModelFromLocalUri(
+                // create a media model from this local image uri
+                val media = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
-                    selectedSite.get().id,
+                    site.id,
                     localUri,
                     mediaStore
-            )
-            if (media == null) {
-                WooLog.w(T.MEDIA, "productImagesService > null media")
-                handleFailure()
-            } else {
-                media.postId = remoteProductId
-                media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+                )
+                if (media == null) {
+                    WooLog.w(T.MEDIA, "productImagesService > null media")
+                    handleFailure()
+                } else {
+                    media.postId = remoteProductId
+                    media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
 
-                // dispatch the upload request
-                WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
-                val payload = UploadMediaPayload(selectedSite.get(), media, STRIP_LOCATION)
-                dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+                    // dispatch the upload request
+                    WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
+                    val payload = UploadMediaPayload(site, media, STRIP_LOCATION)
+                    dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
-                // wait for the upload to complete
-                try {
-                    doneSignal = CountDownLatch(1)
-                    doneSignal!!.await(TIMEOUT_PER_UPLOAD, SECONDS)
-                } catch (e: InterruptedException) {
-                    WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+                    // wait for the upload to complete
+                    try {
+                        doneSignal = CountDownLatch(1)
+                        doneSignal!!.await(TIMEOUT_PER_UPLOAD, SECONDS)
+                    } catch (e: InterruptedException) {
+                        WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
+                    }
                 }
-            }
 
-            // remove this uri from the list of uploads for this product
-            currentUploads.get(remoteProductId)?.let { oldList ->
-                val newList = ArrayList<Uri>().also {
-                    it.addAll(oldList)
-                    it.remove(localUri)
+                // remove this uri from the list of uploads for this product
+                currentUploads.get(remoteProductId)?.let { oldList ->
+                    val newList = ArrayList<Uri>().also {
+                        it.addAll(oldList)
+                        it.remove(localUri)
+                    }
+                    currentUploads.put(remoteProductId, newList)
                 }
-                currentUploads.put(remoteProductId, newList)
             }
         }
 
