@@ -54,6 +54,15 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: tests-cache-v1
       - android/save-test-results
+  Ensure Screenshots Tests Build:
+    executor:
+      name: android/default
+      api-version: "28"
+    steps:
+      - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: tests-cache-v1
+      - <<: *copy_gradle_properties
       - run:
           # The instrumentation tests are not currently used and do tend to get
           # out of date when the UI changes, failing to build.
@@ -106,3 +115,4 @@ workflows:
       - Lint
       - Test
       - Installable Build
+      - Ensure Screenshots Tests Build
