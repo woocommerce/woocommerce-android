@@ -65,7 +65,7 @@ jobs:
           # instrumentation tests build, giving them a chance to either fix the
           # build or remove the broken tests if they are now obsolete.
           name: Check instrumentation tests build
-          command: ./gradlew --stacktrace assembleVanillaDebugAndroidTest
+          command: ./gradlew assembleVanillaDebugAndroidTest
 
   Installable Build:
     executor:
