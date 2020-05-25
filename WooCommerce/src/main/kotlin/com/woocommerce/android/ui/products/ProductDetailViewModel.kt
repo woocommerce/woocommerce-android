@@ -206,7 +206,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
 
-    fun hasImageChanges() = viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+    fun hasImageChanges(): Boolean {
+        return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
+            true
+        } else {
+            viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+        }
+    }
 
     fun hasSettingsChanges(): Boolean {
         return if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
@@ -376,22 +382,25 @@ class ProductDetailViewModel @AssistedInject constructor(
      * [Product] model locally, that still need to be saved to the backend.
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.isProductUpdated
+        val isProductDetailUpdated = viewState.isProductUpdated ?: false
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
                     viewState.isPasswordChanged
-        }
+        } ?: false
+
+        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated
+            is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
+            is ExitImages -> isUploadingImages
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
         if (isProductUpdated == true && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
-                        discardEditChanges()
+                        discardEditChanges(event)
 
                         // If user in Product detail screen, exit product detail,
                         // otherwise, redirect to Product Detail screen
@@ -403,12 +412,18 @@ class ProductDetailViewModel @AssistedInject constructor(
                     }
             ))
             return false
-        } else if (event is ExitProductDetail && ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
-            // images can't be assigned to the product until they finish uploading so ask whether to discard images.
+        } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
+            // images can't be assigned to the product until they finish uploading so ask whether
+            // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(ExitProduct)
+                        ProductImagesService.cancel()
+                        if (event is ExitProductDetail) {
+                            triggerEvent(ExitProduct)
+                        } else {
+                            triggerEvent(Exit)
+                        }
                     }
             ))
             return false
@@ -608,8 +623,12 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when discard is clicked on any of the product screens to restore the product to
      * the state it was in when the screen was first entered
      */
-    private fun discardEditChanges() {
+    private fun discardEditChanges(event: ProductExitEvent) {
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
+
+        if (event is ExitImages) {
+            ProductImagesService.cancel()
+        }
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
@@ -891,7 +910,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        loadProduct(event.remoteProductId)
+        if (event.isCancelled) {
+            viewState = viewState.copy(uploadingImageUris = emptyList())
+        } else {
+            loadProduct(event.remoteProductId)
+        }
+
         checkImageUploads(event.remoteProductId)
     }
 
