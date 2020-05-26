@@ -115,17 +115,6 @@ class ProductDetailCardBuilder(
             ))
         }
 
-        // we don't show reviews for variations because they're always empty
-        if (product.type != VARIABLE && product.reviewsAllowed) {
-            items.add(
-                RatingBar(
-                    R.string.product_reviews,
-                    StringUtils.formatCount(product.ratingCount),
-                    product.averageRating
-                )
-            )
-        }
-
         // show product variants only if product type is variable and if there are variations for the product
         if (product.type == VARIABLE && product.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
