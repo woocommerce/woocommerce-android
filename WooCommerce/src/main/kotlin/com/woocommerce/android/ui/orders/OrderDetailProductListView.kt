@@ -64,10 +64,15 @@ class OrderDetailProductListView @JvmOverloads constructor(
         val filteredItems = order.items.filter { leftoverProducts.contains(it.uniqueId) }
                 .map {
                     val newQuantity = leftoverProducts[it.uniqueId]
+                    val quantity = it.quantity.toBigDecimal()
+                    val totalTax = if (quantity > BigDecimal.ZERO) {
+                        it.totalTax.divide(quantity, 2, HALF_UP)
+                    } else BigDecimal.ZERO
+
                     it.copy(
                             quantity = newQuantity ?: error("Missing product"),
                             total = it.price.times(newQuantity.toBigDecimal()),
-                            totalTax = it.totalTax.divide(it.quantity.toBigDecimal(), 2, HALF_UP)
+                            totalTax = totalTax
                     )
                 }
 
