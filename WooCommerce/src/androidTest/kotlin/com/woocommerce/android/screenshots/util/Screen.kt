@@ -23,6 +23,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
@@ -102,6 +103,10 @@ open class Screen {
         // Need to use the NestedScrollViewExtension because Espresso doesn't natively support it:
         // https://medium.com/@devasierra/espresso-nestedscrollview-scrolling-via-kotlin-delegation-5e7f0aa64c09
         onView(withId(elementID)).perform(NestedScrollViewExtension())
+    }
+
+    fun clickOnViewWithText(text: String) {
+        clickOn(onView(withText(text)))
     }
 
     private fun clickOn(viewInteraction: ViewInteraction) {

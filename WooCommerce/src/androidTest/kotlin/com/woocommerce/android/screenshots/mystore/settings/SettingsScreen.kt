@@ -11,6 +11,7 @@ class SettingsScreen : Screen {
     companion object {
         const val BETA_FEATURES_BUTTON = R.id.option_beta_features
         const val LOG_OUT_BUTTON = R.id.btn_option_logout
+        const val THEME_BUTTON = R.id.option_theme
     }
 
     // Using BETA_FEATURES_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
@@ -45,5 +46,17 @@ class SettingsScreen : Screen {
 
         // Confirm Log Out
         clickButtonInDialogWithTitle(R.string.signout)
+    }
+
+    fun switchToLightTheme(): MyStoreScreen {
+        clickOn(THEME_BUTTON)
+        clickOnViewWithText("Light")
+        return goBackToMyStoreScreen()
+    }
+
+    fun switchToDarkTheme(): MyStoreScreen {
+        clickOn(THEME_BUTTON)
+        clickOnViewWithText("Dark")
+        return goBackToMyStoreScreen()
     }
 }
