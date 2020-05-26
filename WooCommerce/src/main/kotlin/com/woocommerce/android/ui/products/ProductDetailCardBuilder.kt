@@ -212,14 +212,11 @@ class ProductDetailCardBuilder(
 
             // display product sale dates using the site's timezone, if available
             if (product.isSaleScheduled) {
-                var dateOnSaleFrom = product.saleStartDateGmt?.let {
+                val dateOnSaleFrom = product.saleStartDateGmt?.let {
                     DateUtils.offsetGmtDate(it, parameters.gmtOffset)
                 }
                 val dateOnSaleTo = product.saleEndDateGmt?.let {
                     DateUtils.offsetGmtDate(it, parameters.gmtOffset)
-                }
-                if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                    dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), parameters.gmtOffset)
                 }
                 val saleDates = when {
                     (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
@@ -227,6 +224,9 @@ class ProductDetailCardBuilder(
                     }
                     (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
                         resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                    }
+                    (dateOnSaleFrom == null && dateOnSaleTo != null) -> {
+                        resources.getString(R.string.product_sale_date_to, dateOnSaleTo.formatToMMMddYYYY())
                     }
                     else -> null
                 }
