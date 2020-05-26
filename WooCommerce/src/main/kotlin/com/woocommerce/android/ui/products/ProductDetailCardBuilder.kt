@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.addPropertyIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductDetailViewModel.Parameters
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -16,7 +17,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -25,12 +25,12 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Property
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRICING
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCHASE_DETAILS
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -212,21 +212,18 @@ class ProductDetailCardBuilder(
 
             // display product sale dates using the site's timezone, if available
             if (product.isSaleScheduled) {
-                var dateOnSaleFrom = product.saleStartDateGmt?.let {
-                    DateUtils.offsetGmtDate(it, parameters.gmtOffset)
-                }
-                val dateOnSaleTo = product.saleEndDateGmt?.let {
-                    DateUtils.offsetGmtDate(it, parameters.gmtOffset)
-                }
-                if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                    dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), parameters.gmtOffset)
-                }
+                val dateOnSaleFrom = product.saleStartDateGmt?.offsetGmtDate(parameters.gmtOffset)
+                val dateOnSaleTo = product.saleEndDateGmt?.offsetGmtDate(parameters.gmtOffset)
+
                 val saleDates = when {
                     (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
                         getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
                     }
                     (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
                         resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                    }
+                    (dateOnSaleFrom == null && dateOnSaleTo != null) -> {
+                        resources.getString(R.string.product_sale_date_to, dateOnSaleTo.formatToMMMddYYYY())
                     }
                     else -> null
                 }

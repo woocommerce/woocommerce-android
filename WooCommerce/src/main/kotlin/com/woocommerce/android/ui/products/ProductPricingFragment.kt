@@ -172,7 +172,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
             }
         }
 
-        updateSaleStartDate(product.saleStartDateGmt, productData.gmtOffset)
+        updateSaleStartDate(product.saleStartDateGmt, product.saleEndDateGmt, productData.gmtOffset)
         with(scheduleSale_startDate) {
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
@@ -181,7 +181,7 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
                     )
 
-                    updateSaleStartDate(selectedDate, gmtOffset)
+                    updateSaleStartDate(selectedDate, product.saleEndDateGmt, gmtOffset)
                     changesMade()
                 })
             }
@@ -221,10 +221,29 @@ class ProductPricingFragment : BaseProductFragment(), ProductInventorySelectorDi
         }
     }
 
-    private fun updateSaleStartDate(selectedDate: Date?, offset: Float) {
-        val date = selectedDate ?: Date()
-        scheduleSale_startDate.setText(formatSaleDateForDisplay(date, offset))
-        viewModel.onStartDateChanged(date)
+    /**
+     * Method to update the start date of a sale using the [offset]
+     *
+     * If the [selectedStartDate] is empty or null, then the default is set to the current date,
+     * only if the [endDate] > the current date.
+     *
+     * The [viewModel] is only updated if the [selectedStartDate] is not null. This is to prevent
+     * the discard dialog from being displayed when there have been no user initiated changes made
+     * to the screen.
+     */
+    private fun updateSaleStartDate(
+        selectedStartDate: Date?,
+        endDate: Date?,
+        offset: Float
+    ) {
+        val currentDate = Date()
+        val date = selectedStartDate
+            ?: if (endDate?.after(currentDate) == true) {
+                currentDate
+            } else null
+
+        date?.let { scheduleSale_startDate.setText(formatSaleDateForDisplay(it, offset)) }
+        selectedStartDate?.let { viewModel.onStartDateChanged(it) }
     }
 
     private fun updateSaleEndDate(selectedDate: Date?, offset: Float) {
