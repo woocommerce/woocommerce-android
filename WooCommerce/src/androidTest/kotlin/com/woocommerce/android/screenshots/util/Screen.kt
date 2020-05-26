@@ -81,11 +81,7 @@ open class Screen {
         screenshotCount += 1
         val modeSuffix = if (isDarkTheme()) "dark" else "light"
         val screenshotName = "$screenshotCount-$name-$modeSuffix"
-//        try {
-            Screengrab.screenshot(screenshotName)
-//        } catch (e: Throwable) {
-//            Log.w("screenshots", "Error capturing $screenshotName", e)
-//        }
+        Screengrab.screenshot(screenshotName)
         return this as T
     }
 
