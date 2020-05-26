@@ -378,6 +378,24 @@ end
     )
   end
 
+  desc 'Compose screenshots'
+  lane :create_promo_screenshots do |options|
+    # This value is defined in style.css. It would be good if there was a way
+    # to make it parametric, so that if we update the CSS we don't risk this
+    # getting out of sync.
+    font_name = "ProximaNova-Bold.otf"
+    repo_font_path = File.join(Dir.pwd, "playstoreres/assets/#{font_name}")
+
+    install_font(repo_font_path)
+
+    promo_screenshots(
+      orig_folder: options.fetch(:source, screenshots_directory),
+      metadata_folder: File.join(Dir.pwd, "metadata"),
+      output_folder: File.join(Dir.pwd, "promo_sceenshots"),
+      force: options.fetch(:force, true)
+    )
+  end
+
   #####################################################################################
   # rebuild_screenshot_devices
   # -----------------------------------------------------------------------------------
@@ -493,4 +511,26 @@ end
 
 def screenshots_directory
   File.join(Dir.pwd, "screenshots")
+end
+
+def install_font(source_font_path)
+  unless File.exists?(source_font_path)
+    UI.abort_with_message!("Could not find font to install at #{source_font_path}")
+  end
+
+  font_name = File.basename(source_font_path)
+
+  user_font_directory = File.join(Dir.home, "Library/Fonts")
+  user_font_path = File.join(user_font_directory, font_name)
+
+  if File.exists?(user_font_path)
+    UI.message("Custom font #{font_name} is already installed locally.")
+  else
+    UI.message("Installing #{font_name} at #{user_font_path}...")
+
+    `mkdir -p #{user_font_directory}`
+    `cp #{source_font_path} #{user_font_path}`
+
+    UI.success("#{font_name} installed at #{user_font_path}.")
+  end
 end

@@ -1,0 +1,58 @@
+{
+  "version": 0.1,
+  "shadow_offset": 0,
+  "background_color": "#ff00ff",
+  "stylesheet": "playstoreres/assets/styles/style.css",
+  "devices": [
+    {
+      "name": "Pixel 2 XL",
+      "canvas_size": [1242,2208],
+      "text_size": [1200, 173],
+      "text_offset": [21, 115],
+      "font_size": "68px",
+      "screenshot_size": [768, 1532],
+      "screenshot_offset": [237, 482],
+      "screenshot_mask": "playstoreres/assets/google_pixel_2_xl_mask.png",
+      "device_frame": "playstoreres/assets/google_pixel_2_xl.png",
+      "device_frame_size": [1242,2208],
+      "device_frame_offset": [0, 0]
+    }
+  ],
+  "entries": [
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_01.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/1-order-dashboard-dark.png",
+      "text": "metadata/{locale}/promo_screenshot_1.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_02.png",
+      "background": "#C9356E",
+      "screenshot": "images/phoneScreenshots/4-order-list-light.png",
+      "text": "metadata/{locale}/promo_screenshot_2.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_03.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/2-order-detail-dark.png",
+      "text": "metadata/{locale}/promo_screenshot_3.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_04.png",
+      "background": "#C9356E",
+      "screenshot": "images/phoneScreenshots/5-product-list-light.png",
+      "text": "metadata/{locale}/promo_screenshot_4.txt"
+    },
+    {
+      "device": "Pixel 2 XL",
+      "filename": "Pixel_2_XL_05.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/3-review-list-dark.png",
+      "text": "metadata/{locale}/promo_screenshot_5.txt"
+    }
+  ]
+}
