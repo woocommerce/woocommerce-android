@@ -42,14 +42,6 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
     }
 
     /**
-     * For debug builds we want a cursor window size of 5MB so we can test for any problems caused by
-     * a larger size. Once we're confident this works we'll return 5MB in release builds to hopefully
-     * reduce the number of SQLiteBlobTooBigExceptions. Note that this is only called on API 28 and
-     * above since earlier versions don't allow adjusting the cursor window size.
-     */
-    override fun getCursorWindowSize() = if (BuildConfig.DEBUG) (1024L * 1024L * 5L) else 0L
-
-    /**
      * Useful during development when we want to test features with a "fresh" database. This can be
      * called from WooCommerce.onCreate() after we initialize the database. For safety, this has no
      * effect when called from a release build.
