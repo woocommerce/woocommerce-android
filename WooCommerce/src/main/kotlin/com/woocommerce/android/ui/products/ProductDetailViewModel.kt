@@ -407,7 +407,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                         if (event is ExitProductDetail) {
                             triggerEvent(ExitProduct)
                         } else {
-                            triggerEvent(Exit)
+                            triggerEvent(event)
                         }
                     }
             ))
@@ -422,7 +422,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                         if (event is ExitProductDetail) {
                             triggerEvent(ExitProduct)
                         } else {
-                            triggerEvent(Exit)
+                            triggerEvent(event)
                         }
                     }
             ))
