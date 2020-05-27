@@ -51,6 +51,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (isShippingInfoEmpty && isBillingInfoEmpty) {
             formatViewAsShippingOnly()
             customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
+            customerInfo_shippingMethodSection.hide()
             return
         }
 
