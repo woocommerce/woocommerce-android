@@ -187,6 +187,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun formatViewAsShippingOnly() {
-        customerInfo_viewMore.visibility = View.GONE
+        customerInfo_viewMore.hide()
+        customerInfo_morePanel.hide()
     }
 }
