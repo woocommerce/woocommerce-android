@@ -63,7 +63,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (shippingOnly || isBillingInfoEmpty) {
             formatViewAsShippingOnly()
         } else {
-            // if billing address is available, populte billing info, if not available, hide the address view
+            // if billing address is available, populate billing info, if not available, hide the address view
             if (billingAddrFull.trim().isEmpty()) {
                 customerInfo_billingLabel.visibility = View.GONE
                 customerInfo_billingAddr.visibility = View.GONE
