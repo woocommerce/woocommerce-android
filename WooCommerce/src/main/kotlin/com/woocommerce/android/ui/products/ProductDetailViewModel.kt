@@ -393,7 +393,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
-            is ExitImages -> isUploadingImages
+            is ExitImages -> isUploadingImages || hasImageChanges()
             else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
         }
         if (isProductUpdated == true && event.shouldShowDiscardDialog) {
