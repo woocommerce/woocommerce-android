@@ -65,12 +65,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         } else {
             // if billing address is available, populate billing info, if not available, hide the address view
             if (billingAddrFull.trim().isEmpty()) {
-                customerInfo_billingLabel.visibility = View.GONE
                 customerInfo_billingAddr.visibility = View.GONE
-                customerInfo_divider.visibility = View.GONE
                 customerInfo_divider2.visibility = View.GONE
             } else {
-                customerInfo_billingLabel.visibility = View.VISIBLE
                 customerInfo_billingAddr.visibility = View.VISIBLE
                 customerInfo_billingAddr.text = billingAddrFull
                 customerInfo_divider2.visibility = View.VISIBLE
