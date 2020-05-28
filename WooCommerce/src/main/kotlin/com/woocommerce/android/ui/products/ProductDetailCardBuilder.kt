@@ -35,6 +35,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.FormatUtils
 import java.math.BigDecimal
 import java.util.Date
 
@@ -288,7 +289,7 @@ class ProductDetailCardBuilder(
                 Pair(resources.getString(R.string.product_backorders),
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
                 Pair(resources.getString(R.string.product_stock_quantity),
-                    StringUtils.formatCount(this.stockQuantity)),
+                    FormatUtils.formatInt(this.stockQuantity)),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
             this.sku.isNotEmpty() -> mapOf(
