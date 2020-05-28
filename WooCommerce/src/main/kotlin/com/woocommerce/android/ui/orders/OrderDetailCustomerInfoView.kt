@@ -48,7 +48,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
 
         // display empty message if no shipping and billing details are available
-        if (isShippingInfoEmpty && isBillingInfoEmpty) {
+        if (isShippingInfoEmpty) {
             formatViewAsShippingOnly()
             customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
             customerInfo_shippingMethodSection.hide()
