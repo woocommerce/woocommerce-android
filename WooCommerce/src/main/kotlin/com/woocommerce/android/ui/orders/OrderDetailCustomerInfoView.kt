@@ -113,10 +113,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     fun initShippingSection(order: WCOrderModel, hide: Boolean) {
         if (!isShippingAvailable(order) || hide) {
-            customerInfo_divider.visibility = View.GONE
-            customerInfo_shippingSection.visibility = View.GONE
             customerInfo_shippingMethodSection.visibility = View.GONE
-            customerInfo_morePanel.visibility = View.VISIBLE
             formatViewAsShippingOnly()
             customerInfo_viewMore.setOnClickListener(null)
         } else {
