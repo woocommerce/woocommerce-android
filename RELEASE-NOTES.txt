@@ -5,6 +5,7 @@
 * Adds a fix to retain the cursor position when updating product title
 * Fixed a potential memory leak while switching between stores
 * Reverted the notification icon back to the W for better visibility
+* Adds a fix to display the exact stock status for a product in Product detail
 
 4.3
 -----
