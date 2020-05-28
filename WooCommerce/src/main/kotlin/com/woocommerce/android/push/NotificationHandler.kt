@@ -451,7 +451,7 @@ class NotificationHandler @Inject constructor(
     ): NotificationCompat.Builder {
         val channelId = getChannelIdForNoteType(context, noteType)
         return NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.img_woo_bubble_white)
+                .setSmallIcon(R.drawable.ic_woo_w_notification)
                 .setColor(ContextCompat.getColor(context, R.color.color_primary))
                 .setContentTitle(title)
                 .setContentText(message)
@@ -531,7 +531,7 @@ class NotificationHandler @Inject constructor(
             val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
             val groupBuilder = NotificationCompat.Builder(context, getChannelIdForNoteType(context, noteType))
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-                    .setSmallIcon(R.drawable.img_woo_bubble_white)
+                    .setSmallIcon(R.drawable.ic_woo_w_notification)
                     .setColor(ContextCompat.getColor(context, R.color.color_primary))
                     .setGroup(NOTIFICATION_GROUP_KEY)
                     .setGroupSummary(true)

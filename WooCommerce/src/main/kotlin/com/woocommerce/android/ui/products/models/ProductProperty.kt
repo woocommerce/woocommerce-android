@@ -31,13 +31,21 @@ sealed class ProductProperty(val type: Type) {
     data class Property(
         @StringRes val title: Int,
         val value: String
-    ) : ProductProperty(PROPERTY)
+    ) : ProductProperty(PROPERTY) {
+        override fun isNotEmpty(): Boolean {
+            return this.value.isNotBlank()
+        }
+    }
 
     data class RatingBar(
         @StringRes val title: Int,
         val value: String,
         val rating: Float
-    ) : ProductProperty(RATING_BAR)
+    ) : ProductProperty(RATING_BAR) {
+        override fun isNotEmpty(): Boolean {
+            return this.value.isNotBlank()
+        }
+    }
 
     data class ComplexProperty(
         @StringRes val title: Int? = null,
@@ -45,7 +53,11 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
         val onClick: (() -> Unit)? = null
-    ) : ProductProperty(COMPLEX_PROPERTY)
+    ) : ProductProperty(COMPLEX_PROPERTY) {
+        override fun isNotEmpty(): Boolean {
+            return value.isNotBlank()
+        }
+    }
 
     data class Link(
         @StringRes val title: Int,
@@ -72,7 +84,11 @@ sealed class ProductProperty(val type: Type) {
         val showTitle: Boolean = true,
         @StringRes val propertyFormat: Int = R.string.product_property_default_formatter,
         val onClick: (() -> Unit)? = null
-    ) : ProductProperty(PROPERTY_GROUP)
+    ) : ProductProperty(PROPERTY_GROUP) {
+        override fun isNotEmpty(): Boolean {
+            return this.properties.filter { it.value.isNotBlank() }.isNotEmpty()
+        }
+    }
 
     data class Switch(
         @StringRes val title: Int,
@@ -80,4 +96,8 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val onStateChanged: ((Boolean) -> Unit)
     ) : ProductProperty(SWITCH)
+
+    open fun isNotEmpty(): Boolean {
+        return true
+    }
 }

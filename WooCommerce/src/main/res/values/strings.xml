@@ -430,6 +430,7 @@
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
     <string name="product_sale_date_from">from %1$s</string>
+    <string name="product_sale_date_to">Until %1$s</string>
     <string name="product_tax_settings">Tax settings</string>
     <string name="product_tax_status">Tax status</string>
     <string name="product_tax_class">Tax class</string>

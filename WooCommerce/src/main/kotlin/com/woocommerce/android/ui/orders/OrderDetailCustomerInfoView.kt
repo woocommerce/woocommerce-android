@@ -35,9 +35,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         billingOnly: Boolean = false
     ) {
         // Populate Shipping & Billing information
-        val billingAddrFull = getBillingInformation(order)
-        val isShippingInfoEmpty = !order.hasSeparateShippingDetails()
-        val isBillingInfoEmpty = billingAddrFull.trim().isEmpty() &&
+        val billingAddressFull = getBillingInformation(order)
+        val isShippingInfoEmpty = !isShippingAvailable(order)
+        val isBillingInfoEmpty = billingAddressFull.trim().isEmpty() &&
                 order.billingEmail.isEmpty() && order.billingPhone.isEmpty()
 
         if (order.customerNote.isEmpty()) {
@@ -47,31 +47,20 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             customerInfo_customerNote.text = "\"${order.customerNote}\""
         }
 
-        // display empty message if no shipping and billing details are available
-        if (isShippingInfoEmpty && isBillingInfoEmpty) {
-            formatViewAsShippingOnly()
-            customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
-            return
-        }
-
         // show shipping section only for non virtual products or if shipping info available
-        val hideShipping = billingOnly || isShippingInfoEmpty
-        initShippingSection(order, hideShipping)
+        initShippingSection(order, false)
 
         // if only shipping is to be displayed or if billing details are not available, hide the billing section
         if (shippingOnly || isBillingInfoEmpty) {
             formatViewAsShippingOnly()
         } else {
-            // if billing address is available, populte billing info, if not available, hide the address view
-            if (billingAddrFull.trim().isEmpty()) {
-                customerInfo_billingLabel.visibility = View.GONE
+            // if billing address is available, populate billing info, if not available, hide the address view
+            if (billingAddressFull.trim().isEmpty()) {
                 customerInfo_billingAddr.visibility = View.GONE
-                customerInfo_divider.visibility = View.GONE
                 customerInfo_divider2.visibility = View.GONE
             } else {
-                customerInfo_billingLabel.visibility = View.VISIBLE
                 customerInfo_billingAddr.visibility = View.VISIBLE
-                customerInfo_billingAddr.text = billingAddrFull
+                customerInfo_billingAddr.text = billingAddressFull
                 customerInfo_divider2.visibility = View.VISIBLE
             }
 
@@ -104,27 +93,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 customerInfo_emailAddr.visibility = View.GONE
                 customerInfo_emailBtn.visibility = View.GONE
             }
-        }
-    }
 
-    fun isShippingAvailable(order: WCOrderModel) =
-            AddressUtils.getEnvelopeAddress(order.getShippingAddress()).isNotEmpty()
-
-    fun initShippingSection(order: WCOrderModel, hide: Boolean) {
-        if (!isShippingAvailable(order) || hide) {
-            customerInfo_divider.visibility = View.GONE
-            customerInfo_shippingSection.visibility = View.GONE
-            customerInfo_shippingMethodSection.visibility = View.GONE
-            customerInfo_morePanel.visibility = View.VISIBLE
-            formatViewAsShippingOnly()
-            customerInfo_viewMore.setOnClickListener(null)
-        } else {
-            val shippingName = context
-                    .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
-            val shippingAddr = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
-            val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
-            val shippingAddrFull = getFullAddress(shippingName, shippingAddr, shippingCountry)
-            customerInfo_shippingAddr.text = shippingAddrFull
             customerInfo_viewMore.setOnClickListener {
                 val isChecked = customerInfo_viewMoreButtonImage.rotation == 0F
                 if (isChecked) {
@@ -139,13 +108,34 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                     customerInfo_viewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
                 }
             }
+        }
+    }
 
-            val shippingMethodList = order.getShippingLineList()
-            if (shippingMethodList.isNullOrEmpty()) {
-                customerInfo_shippingMethodSection.visibility = View.GONE
+    fun isShippingAvailable(order: WCOrderModel) =
+            AddressUtils.getEnvelopeAddress(order.getShippingAddress()).isNotEmpty()
+
+    fun initShippingSection(order: WCOrderModel, hide: Boolean) {
+        if (hide) {
+            customerInfo_shippingSection.hide()
+        } else {
+            if (!isShippingAvailable(order)) {
+                customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
+                customerInfo_shippingMethodSection.hide()
             } else {
-                customerInfo_shippingMethodSection.visibility = View.VISIBLE
-                customerInfo_shippingMethod.text = shippingMethodList.first().methodTitle
+                val shippingName = context
+                    .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
+                val shippingAddress = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
+                val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
+                val shippingAddressFull = getFullAddress(shippingName, shippingAddress, shippingCountry)
+                customerInfo_shippingAddr.text = shippingAddressFull
+
+                val shippingMethodList = order.getShippingLineList()
+                if (shippingMethodList.isNullOrEmpty()) {
+                    customerInfo_shippingMethodSection.hide()
+                } else {
+                    customerInfo_shippingMethodSection.show()
+                    customerInfo_shippingMethod.text = shippingMethodList.first().methodTitle
+                }
             }
         }
     }
@@ -153,9 +143,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     private fun getBillingInformation(order: WCOrderModel): String {
         val billingName = context
                 .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
-        val billingAddr = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
+        val billingAddress = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
-        return getFullAddress(billingName, billingAddr, billingCountry)
+        return getFullAddress(billingName, billingAddress, billingCountry)
     }
 
     private fun getFullAddress(name: String, address: String, country: String): String {
@@ -187,6 +177,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun formatViewAsShippingOnly() {
-        customerInfo_viewMore.visibility = View.GONE
+        customerInfo_viewMore.hide()
+        customerInfo_morePanel.hide()
+        customerInfo_viewMore.setOnClickListener(null)
     }
 }

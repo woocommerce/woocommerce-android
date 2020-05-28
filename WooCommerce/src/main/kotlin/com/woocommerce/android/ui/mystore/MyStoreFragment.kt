@@ -136,9 +136,9 @@ class MyStoreFragment : TopLevelFragment(),
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
-                my_store_date_bar.clearDateRangeValues()
-                my_store_stats.loadDashboardStats(activeGranularity)
-                my_store_top_earners.loadTopEarnerStats(activeGranularity)
+                my_store_date_bar?.clearDateRangeValues()
+                my_store_stats?.loadDashboardStats(activeGranularity)
+                my_store_top_earners?.loadTopEarnerStats(activeGranularity)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
