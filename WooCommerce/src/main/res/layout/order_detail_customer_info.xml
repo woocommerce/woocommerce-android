@@ -20,14 +20,9 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/customerInfo_label"
             style="@style/Woo.Card.Header"
-            android:layout_marginBottom="@dimen/major_75"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/customer_information"/>
-
-        <View
-            style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100"/>
 
         <!-- Label: Customer note -->
         <LinearLayout
@@ -36,7 +31,12 @@
             android:layout_height="wrap_content"
             android:focusable="true"
             android:orientation="vertical"
+            android:layout_marginBottom="@dimen/major_100"
             tools:visibility="visible">
+
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_customerNoteTitle"
@@ -54,11 +54,6 @@
                 android:textIsSelectable="true"
                 tools:text="This is a nice note from the customer"/>
 
-            <View
-                style="@style/Woo.Divider"
-                android:layout_marginTop="@dimen/major_100"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/minor_00"/>
         </LinearLayout>
 
         <!-- Label: Shipping -->
@@ -69,6 +64,11 @@
             android:focusable="true"
             android:layout_marginBottom="@dimen/major_100"
             android:orientation="vertical">
+
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_shippingLabel"
@@ -85,38 +85,39 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
-        </LinearLayout>
 
-        <!-- Label: Shipping method -->
-        <LinearLayout
-            android:id="@+id/customerInfo_shippingMethodSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:orientation="vertical"
-            tools:visibility="visible"
-            android:visibility="visible">
-
-            <View
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/minor_00"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_shippingMethodLabel"
-                style="@style/Woo.Card.Title"
-                android:layout_width="wrap_content"
+            <!-- Label: Shipping method -->
+            <LinearLayout
+                android:id="@+id/customerInfo_shippingMethodSection"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_50"
-                android:text="@string/orderdetail_shipping_method"/>
+                android:focusable="true"
+                android:orientation="vertical"
+                tools:visibility="visible"
+                android:visibility="visible">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_shippingMethod"
-                style="@style/Woo.Card.Body"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/major_100"
-                tools:text="International Priority Mail Express Flat Rate"/>
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_shippingMethodLabel"
+                    style="@style/Woo.Card.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/minor_50"
+                    android:text="@string/orderdetail_shipping_method"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_shippingMethod"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="International Priority Mail Express Flat Rate"/>
+            </LinearLayout>
+
         </LinearLayout>
 
         <!-- Billing Section -->
