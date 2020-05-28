@@ -48,8 +48,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
 
         // show shipping section only for non virtual products or if shipping info available
-        val hideShipping = billingOnly || isShippingInfoEmpty
-        initShippingSection(order, hideShipping)
+        initShippingSection(order, false)
 
         // if only shipping is to be displayed or if billing details are not available, hide the billing section
         if (shippingOnly || isBillingInfoEmpty) {
@@ -118,22 +117,25 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     fun initShippingSection(order: WCOrderModel, hide: Boolean) {
         if (hide) {
             customerInfo_shippingSection.hide()
-        } else if (!isShippingAvailable(order)) {
-            customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
         } else {
-            val shippingName = context
-                .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
-            val shippingAddress = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
-            val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
-            val shippingAddressFull = getFullAddress(shippingName, shippingAddress, shippingCountry)
-            customerInfo_shippingAddr.text = shippingAddressFull
-
-            val shippingMethodList = order.getShippingLineList()
-            if (shippingMethodList.isNullOrEmpty()) {
-                customerInfo_shippingMethodSection.visibility = View.GONE
+            if (!isShippingAvailable(order)) {
+                customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
+                customerInfo_shippingMethodSection.hide()
             } else {
-                customerInfo_shippingMethodSection.visibility = View.VISIBLE
-                customerInfo_shippingMethod.text = shippingMethodList.first().methodTitle
+                val shippingName = context
+                    .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
+                val shippingAddress = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
+                val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
+                val shippingAddressFull = getFullAddress(shippingName, shippingAddress, shippingCountry)
+                customerInfo_shippingAddr.text = shippingAddressFull
+
+                val shippingMethodList = order.getShippingLineList()
+                if (shippingMethodList.isNullOrEmpty()) {
+                    customerInfo_shippingMethodSection.hide()
+                } else {
+                    customerInfo_shippingMethodSection.show()
+                    customerInfo_shippingMethod.text = shippingMethodList.first().methodTitle
+                }
             }
         }
     }
