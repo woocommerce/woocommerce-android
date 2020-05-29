@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-13 17:54:04+0000
+Translation-Revision-Date: 2020-05-26 12:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_wip_message">Мы добавили дополнительные функции редактирования. Теперь вы можете загружать изображения, изменять настройки товаров и делиться ими!</string>
+    <string name="product_wip_title">Доступны новые опции редактирования</string>
+    <string name="product_limited_editing_title">Доступны ограниченные возможности редактирования</string>
+    <string name="orderdetail_product_multiple">Товары</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Сторонний</string>
     <string name="product_type_simple">Обычный</string>
     <string name="product_status_privately_published">Опубликован как скрытый</string>
@@ -77,8 +84,7 @@ Language: ru
     <string name="product_shipping_empty">Добавить доставку</string>
     <string name="discard_images_message">Выполняется загрузка изображений продуктов. Отменить изменения?</string>
     <string name="product_inventory_update_stock_quantity_error">Введите номер</string>
-    <string name="product_wip_message">Мы добавили функцию редактирования простых продуктов. Следите за новостями, планируется дополнительное расширение возможностей!</string>
-    <string name="product_wip_title">Доступны ограниченные возможности редактирования</string>
+    <string name="product_limited_editing_message">Мы добавили функцию редактирования простых продуктов. Следите за новостями, планируется дополнительное расширение возможностей!</string>
     <string name="product_tax_status_shipping">Доставка</string>
     <string name="product_tax_status_taxable">Налогооблагаемый</string>
     <string name="product_tax_status_none">Нет</string>
@@ -673,7 +679,6 @@ Language: ru
     <string name="review_moderation_undo">Обзор помечен как %1$s</string>
     <string name="add_order_note_sublabel">При отключении примечание будет закрытым</string>
     <string name="order_error_fetch_generic">Ошибка при загрузке заказа</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Просмотреть, подготовить и отправить эти ожидающие заказы</string>
     <string name="back">Назад</string>
     <string name="notification_channel_review_title">Оповещения об обзоре товаров</string>
@@ -872,12 +877,9 @@ Language: ru
     <string name="orderdetail_product_image_contentdesc">Изображение товара</string>
     <string name="orderdetail_product_lineitem_sku">АРТИКУЛ:</string>
     <string name="orderdetail_product_lineitem_tax">Налог:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">отправить клиенту эл. письмо</string>
     <string name="orderdetail_billing_details">Платёжные сведения</string>
     <string name="orderdetail_shipping_details">Сведения о доставке</string>
-    <string name="orderdetail_orderstatus_created">Создано %1$s</string>
-    <string name="orderdetail_orderstatus_heading">№%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Заказ №%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Информация о клиенте</string>

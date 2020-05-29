@@ -77,8 +77,6 @@ Language: nl
     <string name="product_shipping_empty">Voeg verzendkosten toe</string>
     <string name="discard_images_message">Productafbeeldingen worden nog geüpload. Wil je de wijzigingen ongedaan maken?</string>
     <string name="product_inventory_update_stock_quantity_error">Voer een nummer in</string>
-    <string name="product_wip_message">We hebben bewerkingsfuncties toegevoegd aan simpele producten. Houd de nieuwe functies in de gaten!</string>
-    <string name="product_wip_title">Beperkte bewerkingsmogelijkheden beschikbaar</string>
     <string name="product_tax_status_shipping">Verzending</string>
     <string name="product_tax_status_taxable">Belastbaar</string>
     <string name="product_tax_status_none">Geen</string>
@@ -673,7 +671,6 @@ Language: nl
     <string name="review_moderation_undo">Beoordeling gemarkeerd als %1$s</string>
     <string name="add_order_note_sublabel">Als deze functie is uitgeschakeld, is de opmerking privé</string>
     <string name="order_error_fetch_generic">Fout bij ophalen bestelling</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Controleer deze bestellingen in behandeling, bereid ze voor en verzend ze</string>
     <string name="back">Terug</string>
     <string name="notification_channel_review_title">Meldingen productbeoordeling</string>
@@ -872,12 +869,9 @@ Language: nl
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Belasting:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-mail verzenden naar klant</string>
     <string name="orderdetail_billing_details">Factuurgegevens</string>
     <string name="orderdetail_shipping_details">Verzendgegevens</string>
-    <string name="orderdetail_orderstatus_created">%1$s aangemaakt</string>
-    <string name="orderdetail_orderstatus_heading">Nr. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Bestelnr. %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Klantgegevens</string>

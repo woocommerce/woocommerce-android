@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-13 08:54:04+0000
+Translation-Revision-Date: 2020-05-21 20:00:34+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_wip_message">Vi har lagt till fler redigeringsfunktionaliteter till produkter. Du kan nu uppdatera bilder, redigera produktinställningar och dela produkter!</string>
+    <string name="product_wip_title">Nya redigeringsalternativ tillgängliga</string>
+    <string name="product_limited_editing_title">Begränsad redigering tillgänglig</string>
+    <string name="orderdetail_product_multiple">Produkter</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Extern</string>
     <string name="product_type_simple">Enkel</string>
     <string name="product_status_privately_published">Publicerat privat</string>
@@ -77,8 +84,7 @@ Language: sv_SE
     <string name="product_shipping_empty">Lägg till frakt</string>
     <string name="discard_images_message">Produktbilderna laddas fortfarande upp. Vill du ignorera dina ändringar?</string>
     <string name="product_inventory_update_stock_quantity_error">Ange ett nummer</string>
-    <string name="product_wip_message">Vi har lagt till redigeringsfunktioner till enkla produkter. Håll utkik efter fler alternativ snart!</string>
-    <string name="product_wip_title">Begränsad redigering tillgänglig</string>
+    <string name="product_limited_editing_message">Vi har lagt till redigeringsfunktionalitet till enkla produkter. Håll utkik för fler alternativ snart!</string>
     <string name="product_tax_status_shipping">Frakt</string>
     <string name="product_tax_status_taxable">Momsbelagd</string>
     <string name="product_tax_status_none">Ingen</string>
@@ -673,7 +679,6 @@ Language: sv_SE
     <string name="review_moderation_undo">Recension markerad som %1$s</string>
     <string name="add_order_note_sublabel">Om detta inaktiveras kommer noteringen att vara privat</string>
     <string name="order_error_fetch_generic">Det gick inte att hämta ordern</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Granska, förbered och skicka dessa väntande ordrar</string>
     <string name="back">Tillbaka</string>
     <string name="notification_channel_review_title">Produktrecensionsaviseringar</string>
@@ -872,12 +877,9 @@ Language: sv_SE
     <string name="orderdetail_product_image_contentdesc">Produktbild</string>
     <string name="orderdetail_product_lineitem_sku">Artikelnr:</string>
     <string name="orderdetail_product_lineitem_tax">Moms:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-posta kund</string>
     <string name="orderdetail_billing_details">Faktureringsinformation</string>
     <string name="orderdetail_shipping_details">Leveransadress</string>
-    <string name="orderdetail_orderstatus_created">Skapad %1$s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Order med nummer %s</string>
     <string name="customer_full_name"> %1$s %2$s</string>
     <string name="customer_information">Kundinformation</string>

@@ -77,8 +77,6 @@ Language: es
     <string name="product_shipping_empty">Añadir envío</string>
     <string name="discard_images_message">Las imágenes del producto se están subiendo. ¿Quieres descartar los cambios?</string>
     <string name="product_inventory_update_stock_quantity_error">Introduce un número</string>
-    <string name="product_wip_message">Hemos añadido la función de edición a productos sencillos. Pronto estarán disponibles más opciones.</string>
-    <string name="product_wip_title">Edición limitada disponible</string>
     <string name="product_tax_status_shipping">En envío</string>
     <string name="product_tax_status_taxable">Imponible</string>
     <string name="product_tax_status_none">Ninguno</string>
@@ -673,7 +671,6 @@ Language: es
     <string name="review_moderation_undo">La reseña se ha marcado como %1$s</string>
     <string name="add_order_note_sublabel">Si se desactiva, la nota será privada</string>
     <string name="order_error_fetch_generic">Error al recuperar el pedido</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Revisa, prepara y envía estos pedidos pendientes</string>
     <string name="back">Volver</string>
     <string name="notification_channel_review_title">Alertas de reseña de producto</string>
@@ -872,12 +869,9 @@ Language: es
     <string name="orderdetail_product_image_contentdesc">Imagen del producto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Impuesto:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$sx%3$s)</string>
     <string name="orderdetail_email_contentdesc">enviar correo electrónico al cliente</string>
     <string name="orderdetail_billing_details">Detalles de la facturación</string>
     <string name="orderdetail_shipping_details">Detalles del envío</string>
-    <string name="orderdetail_orderstatus_created">Se ha creado %1$s</string>
-    <string name="orderdetail_orderstatus_heading">Núm. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Pedido núm. %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Información del cliente</string>

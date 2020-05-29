@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-12 09:54:05+0000
+Translation-Revision-Date: 2020-05-26 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_wip_message">我們已為產品新增更多編輯功能。你現在可以更新圖片、編輯產品設定並分享產品！</string>
+    <string name="product_wip_title">有可用的新編輯選項</string>
+    <string name="product_limited_editing_title">僅可進行有限編輯</string>
+    <string name="orderdetail_product_multiple">產品</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">簡單</string>
     <string name="product_status_privately_published">已私密發表</string>
@@ -77,8 +84,7 @@ Language: zh_TW
     <string name="product_shipping_empty">新增運費</string>
     <string name="discard_images_message">產品圖片仍在上傳中。是否要捨棄所做的變更？</string>
     <string name="product_inventory_update_stock_quantity_error">請輸入一個數字</string>
-    <string name="product_wip_message">我們已在簡單產品中新增了編輯功能。有更多選項即將登場，敬請密切注意！</string>
-    <string name="product_wip_title">僅可進行有限編輯</string>
+    <string name="product_limited_editing_message">我們已在簡單產品中新增了編輯功能。有更多選項即將登場，敬請密切注意！</string>
     <string name="product_tax_status_shipping">運送方式</string>
     <string name="product_tax_status_taxable">應課稅</string>
     <string name="product_tax_status_none">無</string>
@@ -673,7 +679,6 @@ Language: zh_TW
     <string name="review_moderation_undo">已將評論標記為 %1$s</string>
     <string name="add_order_note_sublabel">若停用，此備註將變成私人狀態</string>
     <string name="order_error_fetch_generic">擷取訂單時發生錯誤</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">審查、準備和運送這些待處理訂單</string>
     <string name="back">上一步</string>
     <string name="notification_channel_review_title">產品評論提醒</string>
@@ -872,12 +877,9 @@ Language: zh_TW
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
     <string name="orderdetail_product_lineitem_sku">貨號：</string>
     <string name="orderdetail_product_lineitem_tax">稅金：</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">傳送電子郵件給客戶</string>
     <string name="orderdetail_billing_details">帳單詳細資料</string>
     <string name="orderdetail_shipping_details">運送詳細資料</string>
-    <string name="orderdetail_orderstatus_created">已建立 %1$s</string>
-    <string name="orderdetail_orderstatus_heading">編號%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">訂單編號%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客資料</string>

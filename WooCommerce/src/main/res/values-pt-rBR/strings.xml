@@ -77,8 +77,6 @@ Language: pt_BR
     <string name="product_shipping_empty">Adicionar envio</string>
     <string name="discard_images_message">O upload das imagens de produtos não foi concluído. Quer descartar as alterações?</string>
     <string name="product_inventory_update_stock_quantity_error">Insira um número</string>
-    <string name="product_wip_message">Adicionamos a função de edição para produtos simples. Fique atento a mais opções em breve!</string>
-    <string name="product_wip_title">Recurso de edição limitado disponível</string>
     <string name="product_tax_status_shipping">Envio</string>
     <string name="product_tax_status_taxable">Tributável</string>
     <string name="product_tax_status_none">Nenhum</string>
@@ -673,7 +671,6 @@ Language: pt_BR
     <string name="review_moderation_undo">Avaliação marcada como %1$s</string>
     <string name="add_order_note_sublabel">Se estiverem desativadas, a observação será em caráter privado</string>
     <string name="order_error_fetch_generic">Erro ao buscar pedido</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Revise, prepare e envie esses pedidos pendentes</string>
     <string name="back">Voltar</string>
     <string name="notification_channel_review_title">Alertas de análises de produtos</string>
@@ -872,12 +869,9 @@ Language: pt_BR
     <string name="orderdetail_product_image_contentdesc">Imagem do produto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Imposto:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">enviar e-mail para o cliente</string>
     <string name="orderdetail_billing_details">Detalhes de cobrança</string>
     <string name="orderdetail_shipping_details">Detalhes de envio</string>
-    <string name="orderdetail_orderstatus_created">Criado em %1$s</string>
-    <string name="orderdetail_orderstatus_heading">nº %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Pedido nº %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informações do cliente</string>
