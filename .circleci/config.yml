@@ -11,7 +11,7 @@ orbs:
 version: 2.1
 jobs:
   Lint:
-    executor: 
+    executor:
       name: android/default
       api-version: "28"
     steps:
@@ -33,14 +33,14 @@ jobs:
               ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=${CIRCLE_PULL_REQUEST##*/} -DGITHUB_OAUTH2TOKEN=$GITHUB_API_TOKEN
             else
               echo "Not posting lint errors to Github because \$GITHUB_API_TOKEN is not found"
-            fi 
+            fi
       - android/save-gradle-cache:
           cache-prefix: lint-cache-v1
       - store_artifacts:
           path: WooCommerce/build/reports
           destination: reports
   Test:
-    executor: 
+    executor:
       name: android/default
       api-version: "28"
     steps:
@@ -54,8 +54,30 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: tests-cache-v1
       - android/save-test-results
+  Ensure Screenshots Tests Build:
+    executor:
+      name: android/default
+      api-version: "28"
+    steps:
+      - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: tests-cache-v1
+      - <<: *copy_gradle_properties
+      - run:
+          # The instrumentation tests are not currently used and do tend to get
+          # out of date when the UI changes, failing to build.
+          #
+          # This is a problem for the screenshots automation, which depends on
+          # those tests.
+          #
+          # This check lets developers know when they accidentally broke the
+          # instrumentation tests build, giving them a chance to either fix the
+          # build or remove the broken tests if they are now obsolete.
+          name: Check instrumentation tests build
+          command: ./gradlew assembleVanillaDebugAndroidTest
+
   Installable Build:
-    executor: 
+    executor:
       name: android/default
       api-version: "28"
     steps:
@@ -93,3 +115,4 @@ workflows:
       - Lint
       - Test
       - Installable Build
+      - Ensure Screenshots Tests Build
