@@ -1,0 +1,5 @@
+4.3:
+*Filtro e ordine per prodotto dalla scheda Prodotti.
+*La tracciabilità della spedizione viene visualizzata sulla schermata dei dettagli dell'ordine. Gli ordini con data futura vengono visualizzati nella scheda Tutti gli ordini.
+*La nuova funzionalità di modifica del prodotto è in fase beta. Provala!
+*Risolti più arresti anomali e il colore del testo sui ticket di supporto in Dark Mode.
