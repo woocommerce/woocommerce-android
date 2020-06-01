@@ -22,6 +22,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -43,12 +44,15 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.ProductCategoryViewHolderModel
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -68,6 +72,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
+import java.util.Stack
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
@@ -79,9 +84,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
-    private val resources: ResourceProvider
+    private val resources: ResourceProvider,
+    private val productCategoriesRepository: ProductCategoriesRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
+        const val DEFAULT_PRODUCT_CATEGORY_MARGIN = 32
+
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -119,6 +127,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
+    // view state for the product categories screen
+    final val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    private var productCategoriesViewState by productCategoriesViewStateData
+
+    private val _productCategories = MutableLiveData<List<ProductCategory>>()
+    val productCategories: LiveData<List<ProductCategory>> = _productCategories
+
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
@@ -152,6 +167,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 regularPrice = viewState.storedProduct?.regularPrice,
                 salePrice = viewState.storedProduct?.salePrice
         )
+    }
+
+    fun fetchProductCategories() {
+        if (_productCategories.value == null) {
+            loadProductCategories()
+        }
     }
 
     /**
@@ -605,6 +626,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
+        productCategoriesRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -920,6 +942,195 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Refreshes the list of categories by calling the [loadProductCategories] method
+     * which eventually checks, if there is anything new to fetch from the server
+     *
+     */
+    fun refreshProductCategories() {
+        productCategoriesViewState = productCategoriesViewState.copy(isRefreshing = true)
+        loadProductCategories()
+    }
+
+    /**
+     * Loads the list of categories from the database or from the server.
+     * This depends on whether categories are stored in the database, and if any new ones are
+     * required to be fetched.
+     *
+     * @param loadMore Whether to load more categories after the ones loaded
+     */
+    private fun loadProductCategories(loadMore: Boolean = false) {
+        if (productCategoriesViewState.isLoading == true) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading product categories")
+            return
+        }
+
+        if (loadMore && !productCategoriesRepository.canLoadMoreProductCategories) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more product categories")
+            return
+        }
+
+        launch {
+            val showSkeleton: Boolean
+            if (loadMore) {
+                showSkeleton = false
+            } else {
+                // if this is the initial load, first get the categories from the db and show them immediately
+                val productsInDb = productCategoriesRepository.getProductCategoriesList()
+                if (productsInDb.isEmpty()) {
+                    showSkeleton = true
+                } else {
+                    _productCategories.value = productsInDb
+                    showSkeleton = productCategoriesViewState.isRefreshing == false
+                }
+            }
+            productCategoriesViewState = productCategoriesViewState.copy(
+                isLoading = true,
+                isLoadingMore = loadMore,
+                isSkeletonShown = showSkeleton,
+                isEmptyViewVisible = false
+            )
+            fetchProductCategories(loadMore = loadMore)
+        }
+    }
+
+    /**
+     * Triggered when the user scrolls past the point of loaded categories
+     * already displayed on the screen or on record.
+     */
+    fun onLoadMoreCategoriesRequested() {
+        loadProductCategories(loadMore = true)
+    }
+
+    /**
+     * This method is used to fetch the categories from the backend. It does not
+     * check the database.
+     *
+     * @param loadMore Whether this is another page or the first one
+     * @param scrollToTop Whether to scroll to the top, this will trigger the [ScrollToTop] event
+     */
+    private suspend fun fetchProductCategories(loadMore: Boolean = false) {
+        if (networkStatus.isConnected()) {
+            _productCategories.value = productCategoriesRepository.fetchProductCategories(loadMore = loadMore)
+
+            productCategoriesViewState = productCategoriesViewState.copy(
+                isLoading = true,
+                canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
+                isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+
+        productCategoriesViewState = productCategoriesViewState.copy(
+            isSkeletonShown = false,
+            isLoading = false,
+            isLoadingMore = false,
+            isRefreshing = false
+        )
+    }
+
+    /**
+     * The method takes in a list of product categories and calculates the order and grouping of categories
+     * by their parent ids. This creates a stable sorted list of categories by name. The returned list also
+     * has margin data, which can be used to visually represent categories in a hierarchy under their
+     * parent ids.
+     *
+     * @param product the product for which the categories are being styled
+     * @param productCategories the list of product categories to sort and style
+     * @return [List<ProductCategoryViewHolderModel>] the sorted styled list of categories
+     */
+    fun sortAndStyleProductCategories(
+        product: Product,
+        productCategories: List<ProductCategory>
+    ): List<ProductCategoryViewHolderModel> {
+        // Get the categories of the product
+        val selectedCategories = product.categories
+        val parentChildMap = mutableMapOf<Long, Long>()
+
+        // Build a parent child relationship table
+        for (category in productCategories) {
+            parentChildMap[category.remoteCategoryId] = category.parentId
+        }
+
+        // Sort all incoming categories by their parent
+        val sortedList = sortCategoriesByNameAndParent(productCategories)
+
+        // Update the margin of the category
+        for (categoryViewHolderModel in sortedList) {
+            categoryViewHolderModel.margin = computeCascadingMargin(parentChildMap, categoryViewHolderModel.category)
+        }
+
+        // Mark the product categories as selected in the sorted list
+        for (productCategoryViewHolderModel in sortedList) {
+            for (selectedCategory in selectedCategories) {
+                if (productCategoryViewHolderModel.category.remoteCategoryId == selectedCategory.id &&
+                    productCategoryViewHolderModel.category.name == selectedCategory.name)
+                    productCategoryViewHolderModel.isSelected = true
+            }
+        }
+
+        return sortedList.toList()
+    }
+
+    /**
+     * The method does a Depth First Traversal of the Product Categories and returns an ordered list, which
+     * is grouped by their Parent id. The sort is stable, which means that it should return the same list
+     * when new categories are updated, and the sort is relative to the update.
+     *
+     * @param productCategoriesUnSorted All the categories to sort
+     * @return [Set<ProductCategoryViewHolderModel>] a sorted set of view holder models containing category view data
+     */
+    fun sortCategoriesByNameAndParent(
+        productCategoriesUnSorted: List<ProductCategory>
+    ): Set<ProductCategoryViewHolderModel> {
+        val sortedList = mutableSetOf<ProductCategoryViewHolderModel>()
+        val stack = Stack<ProductCategory>()
+        val visited = mutableSetOf<Long>()
+
+        // we first sort the list by name in a descending order
+        val productCategoriesSortedByNameDesc = productCategoriesUnSorted.sortedByDescending { it.name.toLowerCase() }
+
+        // add root nodes to the Stack
+        stack.addAll(productCategoriesSortedByNameDesc.filter { it.parentId == 0L })
+
+        // Go through the nodes until we've finished DFS
+        while (stack.isNotEmpty()) {
+            val category = stack.pop()
+            // Do not revisit a category
+            if (!visited.contains(category.remoteCategoryId)) {
+                visited.add(category.remoteCategoryId)
+                sortedList.add(ProductCategoryViewHolderModel(category))
+            }
+
+            // Find all children of the node from the main category list
+            val children = productCategoriesSortedByNameDesc.filter {
+                it.parentId == category.remoteCategoryId
+            }
+            if (!children.isNullOrEmpty()) {
+                stack.addAll(children)
+            }
+        }
+        return sortedList
+    }
+
+    /**
+     * Computes the cascading margin for the category name according to its parent
+     *
+     * @param hierarchy the map of parent to child relationship
+     * @param category the category for which the padding is being calculated
+     *
+     * @return Int the computed margin
+     */
+    private fun computeCascadingMargin(hierarchy: Map<Long, Long>, category: ProductCategory): Int {
+        var margin = DEFAULT_PRODUCT_CATEGORY_MARGIN
+        var parent = category.parentId
+        while (parent != 0L) {
+            margin += DEFAULT_PRODUCT_CATEGORY_MARGIN
+            parent = hierarchy[parent] ?: 0L
+        }
+        return margin
+    }
+
+    /**
      * A single product image has finished uploading
      */
     @Suppress("unused")
@@ -1063,6 +1274,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductImagesViewState(
         val isUploadingImages: Boolean = false
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductCategoriesViewState(
+        val isSkeletonShown: Boolean? = null,
+        val isLoading: Boolean? = null,
+        val isLoadingMore: Boolean? = null,
+        val canLoadMore: Boolean? = null,
+        val isRefreshing: Boolean? = null,
+        val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory
