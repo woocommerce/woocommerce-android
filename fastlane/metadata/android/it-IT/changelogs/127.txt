@@ -1,2 +1,0 @@
-4.2:
-* Corretti alcuni errori e delle irregolarità nel nuovo tema Dark Mode, nelle schermate di accesso e nell'icona dell'app, per un'esperienza utente più coerente.

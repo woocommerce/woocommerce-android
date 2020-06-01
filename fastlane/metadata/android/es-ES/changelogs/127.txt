@@ -1,2 +1,0 @@
-4.2:
-* Para ofrecer una experiencia de usuario más coherente, hemos corregido algunos errores e irregularidades del nuevo tema oscuro, de las pantallas de acceso y del icono de la aplicación.

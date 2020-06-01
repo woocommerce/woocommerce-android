@@ -1,2 +1,0 @@
-4.2:
-* Daha tutarlı bir kullanıcı deneyimi için oturum açma ekranları ve uygulaması simgesi ile yeni koyu mod temasında birkaç sorun ve düzensizlik giderildi.

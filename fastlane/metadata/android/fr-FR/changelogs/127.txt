@@ -1,2 +1,0 @@
-4.2 :
-* Correction de quelques problèmes et irrégularités au niveau du nouveau thème du mode sombre, des écrans de connexion et de l’icône d’application pour assurer une expérience utilisateur plus cohérente.

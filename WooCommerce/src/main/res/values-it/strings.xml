@@ -77,8 +77,6 @@ Language: it
     <string name="product_shipping_empty">Aggiungi spedizione</string>
     <string name="discard_images_message">Le immagini del prodotto sono ancora in caricamento. Desideri eliminare queste modifiche?</string>
     <string name="product_inventory_update_stock_quantity_error">Inserisci un numero</string>
-    <string name="product_wip_message">Abbiamo aggiunto funzionalità di modifica a prodotti semplici. Tieni d\'occhio le ulteriori opzioni che saranno presto disponibili.</string>
-    <string name="product_wip_title">Modifica limitata disponibile</string>
     <string name="product_tax_status_shipping">Spedizione</string>
     <string name="product_tax_status_taxable">Tassabile</string>
     <string name="product_tax_status_none">Nessuno</string>
@@ -673,7 +671,6 @@ Language: it
     <string name="review_moderation_undo">Recensione contrassegnata come %1$s</string>
     <string name="add_order_note_sublabel">Se disabilitata, la nota diventerà privata</string>
     <string name="order_error_fetch_generic">Errore durante il recupero dell\'ordine</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Rivedi, prepara e invia questi ordini in attesa</string>
     <string name="back">Indietro</string>
     <string name="notification_channel_review_title">Avvisi delle recensioni del prodotto</string>
@@ -872,12 +869,9 @@ Language: it
     <string name="orderdetail_product_image_contentdesc">Immagine prodotto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Tasse:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">invia e-mail al cliente</string>
     <string name="orderdetail_billing_details">Dati di fatturazione</string>
     <string name="orderdetail_shipping_details">Dati di spedizione</string>
-    <string name="orderdetail_orderstatus_created">%1$s creato</string>
-    <string name="orderdetail_orderstatus_heading">N. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Ordine n. %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informazioni cliente</string>

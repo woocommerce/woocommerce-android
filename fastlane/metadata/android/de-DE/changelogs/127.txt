@@ -1,2 +1,0 @@
-4.2:
-* Probleme und Unregelmäßigkeiten im neuen dunklen Modus, mit dem Anmeldebildschirm und dem App-Icon behoben, um eine konsistente Benutzererfahrung zu gewährleisten.
