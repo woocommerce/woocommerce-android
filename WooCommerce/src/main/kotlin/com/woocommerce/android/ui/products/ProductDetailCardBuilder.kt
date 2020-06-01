@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductDetailViewModel.Parameters
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
@@ -540,7 +541,12 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_gridicons_folder,
                 showTitle = showTitle,
                 maxLines = 5
-            )
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductCategories(this.remoteId)
+                    // TODO: add tracking event for clicking on categories
+                )
+            }
         } else {
             null
         }
