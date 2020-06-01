@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
@@ -227,6 +228,8 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
 
+    fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
+
     fun hasImageChanges(): Boolean {
         return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
             true
@@ -279,6 +282,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             is ExitExternalLink -> {
                 hasChanges = hasExternalLinkChanges()
+            }
+            is ExitProductCategories -> {
+                eventName = Stat.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
+                hasChanges = hasCategoryChanges()
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
