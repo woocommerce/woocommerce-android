@@ -77,8 +77,6 @@ Language: id
     <string name="product_shipping_empty">Tambahkan pengiriman</string>
     <string name="discard_images_message">Gambar produk sedang diunggah. Ingin membuang perubahan?</string>
     <string name="product_inventory_update_stock_quantity_error">Masukkan nomor</string>
-    <string name="product_wip_message">Kami telah menambahkan fungsionalitas penyuntingan ke produk sederhana. Nantikan lebih banyak opsi lainnya segera!</string>
-    <string name="product_wip_title">Penyuntingan terbatas tersedia</string>
     <string name="product_tax_status_shipping">Pengiriman</string>
     <string name="product_tax_status_taxable">Kena Pajak</string>
     <string name="product_tax_status_none">Tidak Ada</string>
@@ -673,7 +671,6 @@ Language: id
     <string name="review_moderation_undo">Ulasan ditandai %1$s</string>
     <string name="add_order_note_sublabel">Jika dinonaktifkan, catatan akan diatur sebagai pribadi</string>
     <string name="order_error_fetch_generic">Terjadi error saat mengambil pesanan</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Tinjau, siapkan, dan kirimkan pesanan yang tertunda ini</string>
     <string name="back">Kembali</string>
     <string name="notification_channel_review_title">Pemberitahuan ulasan produk</string>
@@ -872,12 +869,9 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>
-    <string name="orderdetail_orderstatus_created">Dibuat %1$s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Pesanan #%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informasi Pelanggan</string>

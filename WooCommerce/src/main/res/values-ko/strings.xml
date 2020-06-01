@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-13 08:54:04+0000
+Translation-Revision-Date: 2020-05-27 08:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_wip_message">제품에 더 많은 편집 기능을 추가했습니다. 이제 이미지를 업데이트하고 제품 설정을 편집하고 제품을 공유할 수 있습니다!</string>
+    <string name="product_wip_title">사용 가능한 새 편집 옵션</string>
+    <string name="product_limited_editing_title">제한적인 편집 가능</string>
+    <string name="orderdetail_product_multiple">제품</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">외부</string>
     <string name="product_type_simple">심플</string>
     <string name="product_status_privately_published">비공개로 게시됨</string>
@@ -77,8 +84,7 @@ Language: ko_KR
     <string name="product_shipping_empty">배송 추가</string>
     <string name="discard_images_message">제품 이미지를 아직 업로드 중입니다. 변경 사항을 삭제하시겠습니까?</string>
     <string name="product_inventory_update_stock_quantity_error">번호를 입력해 주세요.</string>
-    <string name="product_wip_message">간단한 제품에 편집 기능을 추가했습니다. 더 많은 옵션이 곧 제공됩니다!</string>
-    <string name="product_wip_title">제한적인 편집 가능</string>
+    <string name="product_limited_editing_message">간단한 제품에 편집 기능을 추가했습니다. 더 많은 옵션이 곧 제공됩니다!</string>
     <string name="product_tax_status_shipping">배송</string>
     <string name="product_tax_status_taxable">과세 가능</string>
     <string name="product_tax_status_none">없음</string>
@@ -673,7 +679,6 @@ Language: ko_KR
     <string name="review_moderation_undo">%1$s(으)로 표시된 리뷰</string>
     <string name="add_order_note_sublabel">해제된 경우 메모는 비공개가 됩니다.</string>
     <string name="order_error_fetch_generic">주문을 가져오는 동안 오류가 발생했습니다</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">대기 중인 주문 검토, 준비 및 배송</string>
     <string name="back">뒤로</string>
     <string name="notification_channel_review_title">제품 리뷰 알림</string>
@@ -872,12 +877,9 @@ Language: ko_KR
     <string name="orderdetail_product_image_contentdesc">상품 이미지</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">세금:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s(%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">고객에게 이메일 보내기</string>
     <string name="orderdetail_billing_details">청구 상세 내역</string>
     <string name="orderdetail_shipping_details">배송 상세 내역</string>
-    <string name="orderdetail_orderstatus_created">%1$s 작성</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">주문 #%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">고객 정보</string>

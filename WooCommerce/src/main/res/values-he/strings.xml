@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-13 13:54:06+0000
+Translation-Revision-Date: 2020-05-26 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_wip_message">הוספנו עוד אפשרויות לעריכה במוצרים. כעת אפשר לעדכן תמונות, לערוך את הגדרות המוצרים ולשתף מוצרים!</string>
+    <string name="product_wip_title">אפשרויות עריכה נוספות זמינות</string>
+    <string name="product_limited_editing_title">עריכה מוגבלת זמינה</string>
+    <string name="orderdetail_product_multiple">מוצרים</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">חיצוני</string>
     <string name="product_type_simple">פשוט</string>
     <string name="product_status_privately_published">פורסם כפרטי</string>
@@ -77,8 +84,7 @@ Language: he_IL
     <string name="product_shipping_empty">להוסיף משלוח</string>
     <string name="discard_images_message">תמונות המוצר עוד מועלות. האם למחוק את השינויים שביצעת?</string>
     <string name="product_inventory_update_stock_quantity_error">יש להזין מספר</string>
-    <string name="product_wip_message">הוספנו אפשרות עריכה למוצרים פשוטים. כדאי לשים לב לאפשרויות נוספות שיופיעו בקרוב!</string>
-    <string name="product_wip_title">עריכה מוגבלת זמינה</string>
+    <string name="product_limited_editing_message">הוספנו אפשרות עריכה למוצרים פשוטים. כדאי לשים לב לאפשרויות נוספות שיופיעו בקרוב!</string>
     <string name="product_tax_status_shipping">משלוח</string>
     <string name="product_tax_status_taxable">חייב במיסים</string>
     <string name="product_tax_status_none">ללא</string>
@@ -673,7 +679,6 @@ Language: he_IL
     <string name="review_moderation_undo">הביקורת סומנה בתור \"%1$s\"</string>
     <string name="add_order_note_sublabel">אם האפשרות מושבתת, הפתק יהיה פרטי</string>
     <string name="order_error_fetch_generic">שגיאה בהבאת ההזמנה</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">בדיקה, הכנה ומשלוח של ההזמנות שבהמתנה</string>
     <string name="back">חזרה</string>
     <string name="notification_channel_review_title">התראות לגבי ביקורות על המוצר</string>
@@ -872,12 +877,9 @@ Language: he_IL
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
     <string name="orderdetail_product_lineitem_sku">מק\"ט:</string>
     <string name="orderdetail_product_lineitem_tax">מס:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">שליחת הודעת אימייל ללקוח</string>
     <string name="orderdetail_billing_details">פרטי חיוב</string>
     <string name="orderdetail_shipping_details">פרטי משלוח</string>
-    <string name="orderdetail_orderstatus_created">נוצר ב-%1$s</string>
-    <string name="orderdetail_orderstatus_heading">מספר %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">הזמנה מספר %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">פרטי לקוח</string>

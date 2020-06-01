@@ -1,68 +1,119 @@
 <ar>
-4.2:
-* تم إصلاح بعض المشكلات وحالات عدم الانتظام مع قالب الوضع الداكن الجديد الذي يتضمن شاشات تسجيل الدخول وأيقونة التطبيق للاستمتاع بتجربة مستخدم أكثر اتساقًا.
+4.3:
+يمكنك تصفية المنتجات وفرزها من علامة تبويب "المنتجات".
+* يظهر تعقب الشحنة على شاشة تفاصيل الطلب. تظهر الطلبات ذات التواريخ اللاحقة على علامة تبويب "كل الطلبات".
+* وظائفنا الجديدة لتحرير المنتجات قيد التجريب. جرّبه!
+* تم إصلاح العديد من الأعطال ولون النص في تذاكر الدعم في الوضع الداكن.
 </ar>
 <de-DE>
-4.2:
-* Probleme und Unregelmäßigkeiten im neuen dunklen Modus, mit dem Anmeldebildschirm und dem App-Icon behoben, um eine konsistente Benutzererfahrung zu gewährleisten.
+4.3:
+* Im Produkte-Tab kannst du Produkte filtern und sortieren.
+* Die Sendungsverfolgung wird auf dem Bildschirm mit den Auftragsdetails angezeigt. Bestellungen mit einem Datum in der Zukunft werden im Tab „Alle Bestellungen“ angezeigt.
+* Unsere neue Produktbearbeitungsfunktion ist als Betaversion verfügbar. Probiere sie aus!
+* Wir haben mehrere Gründe für Abstürze und die Textfarbe auf den Support-Tickets im dunklen Modus behoben.
 </de-DE>
 <es-ES>
-4.2:
-* Para ofrecer una experiencia de usuario más coherente, hemos corregido algunos errores e irregularidades del nuevo tema oscuro, de las pantallas de acceso y del icono de la aplicación.
+4.3:
+* Filtra y ordena productos desde la pestaña Productos.
+* El seguimiento de envío se muestran en la pantalla de detalles del pedido. Los pedidos con fecha posterior a la actual se muestran en la pestaña Todos los pedidos.
+* La funcionalidad de edición de productos está disponible en versión beta. ¡Pruébala!
+* Hemos corregido muchos problemas, así como el color del texto de las incidencias en modo oscuro.
 </es-ES>
 <fr-FR>
-4.2 :
-* Correction de quelques problèmes et irrégularités au niveau du nouveau thème du mode sombre, des écrans de connexion et de l’icône d’application pour assurer une expérience utilisateur plus cohérente.
+4.3 :
+* Filtrez et triez les produits à partir de l'onglet Produits.
+* Le suivi de l'expédition apparaît sur l'écran des détails de la commande. Les commandes à venir apparaissent dans l'onglet Toutes les commandes.
+* Notre nouvelle fonctionnalité de modification des produits est en phase bêta. Essayez-la !
+* Résolution de plusieurs défaillances et d'un problème lié à la couleur du texte sur les billets d'assistance en mode sombre.
 </fr-FR>
 <iw-IL>
-4.2:
-* תיקנו מספר בעיות ותקלות בערכת העיצוב החדשה של המצב הכהה, במסכי ההתחברות ובסמל של האפליקציה כדי לאפשר חוויית משתמש עקבית יותר.
+4.3:
+* ניתן לסנן ולמיין מוצרים מהלשונית 'מוצרים'.
+* מעקב המשלוח מופיע במסך של פרטי ההזמנה. הזמנות עם תאריך עתידי יופיעו בלשונית 'כל ההזמנות'.
+* אפשרות העריכה החדשה שלנו למוצרים נמצאת בגרסת הביתא. ניתן לנסות אותה כעת!
+* תיקנו מספר קריסות ואת צבע הטקסט בכרטיסי תמיכה במצב הכהה.
 </iw-IL>
 <id>
-4.2:
-* Menyelesaikan beberapa masalah dan penyimpangan dengan tema mode gelap dengan, layar login, dan ikon aplikasi demi pengalaman pengguna yang lebih konsisten.
+4.3:
+* Menyaring dan mengurutkan Produk dari tab Produk.
+* Pelacakan pengiriman muncul di layar detail pesanan. Pesanan di tanggal yang akan datang muncul di tab Semua pesanan.
+* Fungsionalitas penyuntingan produk baru kami sedang dalam tahap beta. Cobalah!
+* Memperbaiki beberapa error yang menimbulkan crash dan warna teks di tiket dukungan pada mode gelap.
 </id>
 <it-IT>
-4.2:
-* Corretti alcuni errori e delle irregolarità nel nuovo tema Dark Mode, nelle schermate di accesso e nell'icona dell'app, per un'esperienza utente più coerente.
+4.3:
+*Filtro e ordine per prodotto dalla scheda Prodotti.
+*La tracciabilità della spedizione viene visualizzata sulla schermata dei dettagli dell'ordine. Gli ordini con data futura vengono visualizzati nella scheda Tutti gli ordini.
+*La nuova funzionalità di modifica del prodotto è in fase beta. Provala!
+*Risolti più arresti anomali e il colore del testo sui ticket di supporto in Dark Mode.
 </it-IT>
 <ja-JP>
-4.2:
-* 新しいダークモードテーマのログイン画面とアプリアイコンの問題と不規則性を、より一貫性のあるユーザーエクスペリエンスのために修正
+4.3:
+* 「商品」タブから商品を絞り込んで並べ替えます。
+* 配送状況の追跡は注文詳細の画面に表示されます。将来の日付に設定した注文はすべての注文タブに表示されます。
+* 新商品の編集機能はベータ版です。お試しください !
+* 複数のクラッシュと、ダークモードでのサポートチケットのテキストカラーを修正しました。
 </ja-JP>
 <ko-KR>
-4.2:
-* 더욱 일관된 사용자 환경을 위한 로그인 화면 및 앱 아이콘에 대한 새로운 다크 모드 테마와 관련하여 몇몇 문제 및 변칙이 해결됨
+4.3:
+* 제품 탭에서 제품을 필터링하고 정렬합니다.
+* 주문 세부정보 화면에 선적 추적 정보가 나타납니다. 향후 주문은 모든 주문 탭에 나타납니다.
+* 새로운 제품 편집 기능은 베타 버전입니다. 사용해 보세요!
+* 어두운 모드에서 지원 티켓의 여러 가지 충돌 문제 및 텍스트 색상이 수정되었습니다.
 </ko-KR>
 <nl-NL>
-4.2:
-* Een paar problemen en afwijkingen opgelost met het nieuwe nachtmodus-thema, zoals inlogschermen en het app-pictogram voor een consistentere gebruikerservaring.
+4.3:
+* Filter en sorteer producten vanuit het Producten-tabblad.
+* Verzending bijhouden wordt weergegeven op het scherm met bestelgegevens. Bestellingen met een toekomstige datum worden weergegeven op het tabblad Alle bestellingen.
+* Onze nieuwe productbewerkingsfunctie heeft de bèta-fase bereikt. Probeer hem nu zelf!
+* Verschillende problemen met crashes opgelost en de tekstkleur op support-tickets in de nachtmodus.
 </nl-NL>
 <pt-BR>
-4.2:
-* Correção de problemas e irregularidades no novo modo noturno, em telas de login e no ícone do app para uma experiência do usuário mais consistente.
+4.3:
+* Opções de filtro e classificação na guia Produtos.
+* Monitoramento de envio exibido na tela Detalhes do pedido. Pedidos futuros exibidos na guia Todos os pedidos.
+* Experimente a versão Beta da nova funcionalidade de edição de produtos.
+* Correção de várias falhas e da cor de texto em tíquetes de suporte no modo escuro.
 </pt-BR>
 <ru-RU>
-Версия 4.2:
-* Исправлены ошибки в теме нового темного режима, на экранах входа, а также несколько проблем со значком приложения.
+Версия 4.3:
+* Возможности фильтрования и сортировки продуктов на вкладке "Товары".
+* Отслеживание посылки доступно на экране сведений о заказе. Заказы на будущие даты можно посмотреть на вкладке “Все заказы”.
+* Новая функция редактирования товаров находится в стадии бета-тестирования. Попробуйте ее!
+* Исправлено несколько ошибок, приводящих к сбою приложения, а также цвет текста запросов в службу поддержки в тёмном режиме.
 </ru-RU>
 <sv-SE>
-4.2:
-* Åtgärdade vissa problem och oegentligheter med det nya temat med mörkt läge, inloggningsskärmarna och appikonen för en mer enhetlig användarupplevelse.
+4.3:
+* Filtrera och sortera produkter från fliken Produkter.
+* Leveransspårning visas på orderinformationsskärmen. Framtidsdaterade order visas på fliken Alla order.
+* Vår nya funktion för produktredigering är en betaversion. Testa den!
+* Fixade flera krascher och textfärgen på supportärenden i mörkt läge.
 </sv-SE>
 <tr-TR>
-4.2:
-* Daha tutarlı bir kullanıcı deneyimi için oturum açma ekranları ve uygulaması simgesi ile yeni koyu mod temasında birkaç sorun ve düzensizlik giderildi.
+4.3:
+* Ürünler sekmesinden Ürünleri filtreleyin ve sıralayın.
+* Sipariş ayrıntıları ekranında gönderim takibi görünüyor. Gelecek tarihli siparişler Tüm siparişler sekmesinde görünüyor.
+* Yeni ürün düzenleme işlevimiz beta sürümünde. Bir deneyin!
+* Karanlık modda destek biletleriyle ilgili birden çok kilitlenme hatası ve metin rengi düzeltildi.
 </tr-TR>
 <zh-CN>
-4.2：
-* 修复了新暗黑模式主题、登录屏幕和应用程序图标的一些问题和不规范之处，旨在提供更加一致的用户体验。
+4.3：
+* 从“产品”选项卡中对产品进行过滤和排序。
+* 订单详情屏幕上显示发货跟踪。“所有订单”选项卡上显示日期在未来的订单。
+* 我们的新产品编辑功能目前为测试版。不妨试试吧！
+* 修复了多个崩溃问题，以及深色模式下的支持申请单文本颜色问题。
 </zh-CN>
 <zh-TW>
-4.2：
-* 修正全新深色模式、登入畫面和應用程式圖示的問題和錯誤，提供更一致的使用者體驗。
+4.3：
+* 從產品分頁篩選和排序產品。
+* 訂單詳細資訊畫面會顯示送貨追蹤功能。「所有訂單」分頁會顯示未來日期的訂單。
+* 我們推出測試版產品編輯功能。立即試用！
+* 修復多個當機問題，並修正深色模式中支援聯絡單的文字顏色。
 </zh-TW>
 <en-US>
-4.2:
-* Fixed a few issues and irregularities with the new dark mode theme with, login screens, and the app icon for a more consistent user experience.
+4.3:
+* Filter and sort Products from the Products tab.
+* Shipment tracking appears on the order detail screen. Future-dated orders appear on the All orders tab.
+* Our new product editing functionality is in beta. Try it!
+* Fixed multiple crashes and the text color on support tickets in dark mode.
 </en-US>
