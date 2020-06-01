@@ -6,6 +6,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.categories.MockedProductCategoriesRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -16,6 +17,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
     wooCommerceStore: MockedWooStore,
     selectedSite: SelectedSite,
     productRepository: MockedProductDetailRepository,
+    productCategoryRepository: MockedProductCategoriesRepository,
     networkStatus: NetworkStatus,
     currencyFormatter: CurrencyFormatter,
     productImagesServiceWrapper: ProductImagesServiceWrapper,
@@ -30,7 +32,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         currencyFormatter,
         wooCommerceStore,
         productImagesServiceWrapper,
-        resources
+        resources,
+        productCategoryRepository
 ) {
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<MockedProductDetailViewModel>
