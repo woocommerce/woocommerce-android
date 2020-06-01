@@ -13,12 +13,14 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.OnProductCategoryClickListener
+import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.ProductCategoryViewHolderModel
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_categories_list.*
 
-class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener {
+class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnProductCategoryClickListener {
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter
 
     private val skeletonView = SkeletonView()
@@ -55,7 +57,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener {
 
         val activity = requireActivity()
 
-        productCategoriesAdapter = ProductCategoriesAdapter(activity.baseContext, this)
+        productCategoriesAdapter = ProductCategoriesAdapter(activity.baseContext, this, this)
         with(productCategoriesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productCategoriesAdapter
@@ -118,5 +120,20 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener {
     override fun onRequestAllowBackPress(): Boolean {
         // TODO:
         return true
+    }
+
+    override fun onProductCategoryClick(productCategoryViewHolderModel: ProductCategoryViewHolderModel) {
+        val product = requireNotNull(viewModel.getProduct().productDraft)
+        val selectedCategories = product.categories.toMutableList()
+
+        val found = selectedCategories.find {
+            it.id == productCategoryViewHolderModel.category.remoteCategoryId
+        }
+
+        if (!productCategoryViewHolderModel.isSelected && found != null) {
+            selectedCategories.remove(found)
+        } else if (productCategoryViewHolderModel.isSelected && found == null) {
+            selectedCategories.add(productCategoryViewHolderModel.category.toCategory())
+        }
     }
 }

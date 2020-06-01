@@ -19,7 +19,8 @@ import org.wordpress.android.util.HtmlUtils
 
 class ProductCategoriesAdapter(
     private val context: Context,
-    private val loadMoreListener: OnLoadMoreListener
+    private val loadMoreListener: OnLoadMoreListener,
+    private val clickListener: OnProductCategoryClickListener
 ) : RecyclerView.Adapter<ProductCategoryViewHolder>() {
     private val productCategoryList = ArrayList<ProductCategoryViewHolderModel>()
 
@@ -28,6 +29,10 @@ class ProductCategoriesAdapter(
         var margin: Int = DEFAULT_PRODUCT_CATEGORY_MARGIN,
         var isSelected: Boolean = false
     )
+
+    interface OnProductCategoryClickListener {
+        fun onProductCategoryClick(productCategoryViewHolderModel: ProductCategoryViewHolderModel)
+    }
 
     init {
         setHasStableIds(true)
@@ -57,11 +62,28 @@ class ProductCategoriesAdapter(
             txtCategoryName.layoutParams = newLayoutParams
 
             checkBox.isChecked = productCategory.isSelected
+
+            checkBox.setOnClickListener {
+                handleCategoryClick(this, productCategory)
+            }
+
+            itemView.setOnClickListener {
+                checkBox.isChecked = !checkBox.isChecked
+                handleCategoryClick(this, productCategory)
+            }
         }
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
         }
+    }
+
+    private fun handleCategoryClick(
+        holder: ProductCategoryViewHolder,
+        productCategory: ProductCategoryViewHolderModel
+    ) {
+        productCategory.isSelected = holder.checkBox.isChecked
+        clickListener.onProductCategoryClick(productCategory)
     }
 
     fun setProductCategories(productsCategories: List<ProductCategoryViewHolderModel>) {
