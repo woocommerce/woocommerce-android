@@ -538,7 +538,8 @@ class ProductDetailCardBuilder(
                 R.string.product_categories,
                 categories,
                 R.drawable.ic_gridicons_folder,
-                showTitle = showTitle
+                showTitle = showTitle,
+                maxLines = 5
             )
         } else {
             null
