@@ -228,6 +228,7 @@ dependencies {
     kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
 
+
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
 
