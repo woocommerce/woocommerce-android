@@ -101,9 +101,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     WooAnimUtils.fadeIn(empty_view)
-
-                    // TODO: create separate empty view for product categories
-                    empty_view.show(EmptyViewType.PRODUCT_LIST)
+                    empty_view.show(EmptyViewType.PRODUCT_CATEGORY_LIST)
                 } else {
                     WooAnimUtils.fadeOut(empty_view)
                     empty_view.hide()
