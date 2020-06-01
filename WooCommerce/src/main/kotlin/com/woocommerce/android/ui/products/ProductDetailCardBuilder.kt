@@ -94,7 +94,8 @@ class ProductDetailCardBuilder(
                 product.externalLink(),
                 product.shipping(),
                 product.inventory(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.categories()
             ).filterNotEmpty()
         )
     }
@@ -518,6 +519,27 @@ class ProductDetailCardBuilder(
             Link(R.string.product_view_affiliate) {
                 viewModel.onAffiliateLinkClicked(this.externalUrl)
             }
+        } else {
+            null
+        }
+    }
+
+    private fun Product.categories(): ProductProperty? {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            val productCategories = this.categories
+            val showTitle = productCategories.isNotEmpty()
+            val categories = if (showTitle) {
+                productCategories.joinToString(transform = { it.name })
+            } else {
+                resources.getString(R.string.product_category_empty)
+            }
+
+            ComplexProperty(
+                R.string.product_categories,
+                categories,
+                R.drawable.ic_gridicons_folder,
+                showTitle = showTitle
+            )
         } else {
             null
         }
