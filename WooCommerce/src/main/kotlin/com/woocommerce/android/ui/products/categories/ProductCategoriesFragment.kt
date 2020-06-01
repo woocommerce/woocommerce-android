@@ -17,4 +17,3 @@ class ProductCategoriesFragment : BaseProductFragment() {
         return true
     }
 }
-
