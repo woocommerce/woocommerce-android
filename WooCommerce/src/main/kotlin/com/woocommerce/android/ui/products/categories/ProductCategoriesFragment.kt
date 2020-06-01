@@ -2,9 +2,13 @@ package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -13,6 +17,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.OnProductCategoryClickListener
 import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.ProductCategoryViewHolderModel
 import com.woocommerce.android.util.WooAnimUtils
@@ -44,6 +49,22 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                viewModel.onDoneButtonClicked(ExitProductCategories(shouldShowDiscardDialog = false))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,6 +114,13 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         viewModel.productCategories.observe(viewLifecycleOwner, Observer {
             showProductCategories(it)
         })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ExitProductCategories -> findNavController().navigateUp()
+                else -> event.isHandled = false
+            }
+        })
     }
 
     private fun showProductCategories(productCategories: List<ProductCategory>) {
@@ -118,8 +146,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        // TODO:
-        return true
+        return viewModel.onBackButtonClicked(ExitProductCategories())
     }
 
     override fun onProductCategoryClick(productCategoryViewHolderModel: ProductCategoryViewHolderModel) {
@@ -130,10 +157,18 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
             it.id == productCategoryViewHolderModel.category.remoteCategoryId
         }
 
+        var changeRequired = false
         if (!productCategoryViewHolderModel.isSelected && found != null) {
             selectedCategories.remove(found)
+            changeRequired = true
         } else if (productCategoryViewHolderModel.isSelected && found == null) {
             selectedCategories.add(productCategoryViewHolderModel.category.toCategory())
+            changeRequired = true
+        }
+
+        if (changeRequired) {
+            viewModel.updateProductDraft(categories = selectedCategories)
+            changesMade()
         }
     }
 }

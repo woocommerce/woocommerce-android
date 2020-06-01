@@ -572,7 +572,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         purchaseNote: String? = null,
         externalUrl: String? = null,
         buttonText: String? = null,
-        menuOrder: Int? = null
+        menuOrder: Int? = null,
+        categories: List<Product.Category>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -608,6 +609,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     externalUrl = externalUrl ?: product.externalUrl,
                     buttonText = buttonText ?: product.buttonText,
                     menuOrder = menuOrder ?: product.menuOrder,
+                    categories = categories ?: product.categories,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -1194,6 +1196,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
