@@ -32,6 +32,10 @@ wc.zendesk.domain = http://www.google.com/
 wc.zendesk.oauth_client_id = woocommerce
 wc.sentry.dsn = https://00000000000000000000000000000000@sentry.io/0000000
 
+wc.screenshots.url = example.com
+wc.screenshots.username = user@example.com
+wc.screenshots.password = password
+
 # The type of in app update FLEXIBLE = 0; IMMEDIATE = 1
 wc.in_app_update_type = 0
 

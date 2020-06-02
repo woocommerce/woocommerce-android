@@ -1,0 +1,5 @@
+4.3 :
+* Filtrez et triez les produits à partir de l'onglet Produits.
+* Le suivi de l'expédition apparaît sur l'écran des détails de la commande. Les commandes à venir apparaissent dans l'onglet Toutes les commandes.
+* Notre nouvelle fonctionnalité de modification des produits est en phase bêta. Essayez-la !
+* Résolution de plusieurs défaillances et d'un problème lié à la couleur du texte sur les billets d'assistance en mode sombre.

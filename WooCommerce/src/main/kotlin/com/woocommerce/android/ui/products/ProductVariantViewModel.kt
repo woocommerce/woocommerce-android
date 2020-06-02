@@ -23,7 +23,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariation
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariationImageChooser
 import com.woocommerce.android.ui.products.ProductVariantViewModel.VariationExitEvent.ExitVariation
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.variations.ProductVariantCardBuilder
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate

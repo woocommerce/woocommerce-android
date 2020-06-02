@@ -1,0 +1,5 @@
+4.3:
+* Filter en sorteer producten vanuit het Producten-tabblad.
+* Verzending bijhouden wordt weergegeven op het scherm met bestelgegevens. Bestellingen met een toekomstige datum worden weergegeven op het tabblad Alle bestellingen.
+* Onze nieuwe productbewerkingsfunctie heeft de bèta-fase bereikt. Probeer hem nu zelf!
+* Verschillende problemen met crashes opgelost en de tekstkleur op support-tickets in de nachtmodus.

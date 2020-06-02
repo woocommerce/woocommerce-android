@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.DialogInterface
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +16,8 @@ import kotlinx.android.parcel.Parcelize
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
@@ -92,6 +95,20 @@ class ProductFilterListViewModel @AssistedInject constructor(
             productFilterOptionListViewState = productFilterOptionListViewState.copy(
                     screenTitle = filterItem.filterItemName
             )
+        }
+    }
+
+    fun onBackButtonClicked(): Boolean {
+        return if (hasChanges()) {
+            triggerEvent(ShowDiscardDialog(
+                negativeButtonId = string.keep_changes,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    triggerEvent(Exit)
+                }
+            ))
+            false
+        } else {
+            true
         }
     }
 
@@ -188,6 +205,14 @@ class ProductFilterListViewModel @AssistedInject constructor(
         }
     }
 
+    private fun hasChanges(): Boolean {
+        return (
+            arguments.selectedProductStatus != getFilterByProductStatus() ||
+                arguments.selectedProductType != getFilterByProductType() ||
+                arguments.selectedStockStatus != getFilterByStockStatus()
+            )
+    }
+
     @Parcelize
     data class ProductFilterListViewState(
         val screenTitle: String? = null,
@@ -223,7 +248,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
          * Compares this filter's options with the passed list, returns true only if both lists contain
          * the same filter options in the same order
          */
-        fun List<FilterListOptionItemUiModel>.isSameFilterOptions(
+        private fun List<FilterListOptionItemUiModel>.isSameFilterOptions(
             updatedFilterOptions: List<FilterListOptionItemUiModel>
         ): Boolean {
             if (this.size != updatedFilterOptions.size) {

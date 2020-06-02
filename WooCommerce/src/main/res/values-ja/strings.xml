@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-13 08:54:04+0000
+Translation-Revision-Date: 2020-05-28 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_wip_message">商品にその他の編集機能が加わりました。画像の更新、商品設定の編集、商品の共有を行えるようになりました。</string>
+    <string name="product_wip_title">新しい編集オプションが利用可能</string>
+    <string name="product_limited_editing_title">一部の編集機能が利用可能</string>
+    <string name="orderdetail_product_multiple">商品</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">シンプル</string>
     <string name="product_status_privately_published">非公開</string>
@@ -77,8 +84,7 @@ Language: ja_JP
     <string name="product_shipping_empty">配送を追加</string>
     <string name="discard_images_message">商品画像をアップロードしています。変更を破棄しますか ?</string>
     <string name="product_inventory_update_stock_quantity_error">数字を入力してください</string>
-    <string name="product_wip_message">シンプルな商品に編集機能が加わりました。その他のオプションもまもなく加わる予定です。</string>
-    <string name="product_wip_title">一部の編集機能が利用可能</string>
+    <string name="product_limited_editing_message">シンプルな商品に編集機能が加わりました。その他のオプションもまもなく加わる予定です。</string>
     <string name="product_tax_status_shipping">配送</string>
     <string name="product_tax_status_taxable">課税</string>
     <string name="product_tax_status_none">なし</string>
@@ -673,7 +679,6 @@ Language: ja_JP
     <string name="review_moderation_undo">レビューを%1$sとしてマークする</string>
     <string name="add_order_note_sublabel">無効にするとメモは公開されません</string>
     <string name="order_error_fetch_generic">注文を取得する際にエラーが発生しました</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">これらの保留中の注文を確認して準備し、配送してください</string>
     <string name="back">戻る</string>
     <string name="notification_channel_review_title">製品レビューアラート</string>
@@ -872,12 +877,9 @@ Language: ja_JP
     <string name="orderdetail_product_image_contentdesc">商品画像</string>
     <string name="orderdetail_product_lineitem_sku">商品コード:</string>
     <string name="orderdetail_product_lineitem_tax">税:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">顧客にメールを送信</string>
     <string name="orderdetail_billing_details">請求詳細</string>
     <string name="orderdetail_shipping_details">配送詳細</string>
-    <string name="orderdetail_orderstatus_created">%1$s が作成されました</string>
-    <string name="orderdetail_orderstatus_heading">番号%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">注文番号%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客情報</string>

@@ -1,2 +1,0 @@
-4.2:
-* Menyelesaikan beberapa masalah dan penyimpangan dengan tema mode gelap dengan, layar login, dan ikon aplikasi demi pengalaman pengguna yang lebih konsisten.

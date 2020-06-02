@@ -1,0 +1,5 @@
+4.3:
+* Filtrera och sortera produkter från fliken Produkter.
+* Leveransspårning visas på orderinformationsskärmen. Framtidsdaterade order visas på fliken Alla order.
+* Vår nya funktion för produktredigering är en betaversion. Testa den!
+* Fixade flera krascher och textfärgen på supportärenden i mörkt läge.

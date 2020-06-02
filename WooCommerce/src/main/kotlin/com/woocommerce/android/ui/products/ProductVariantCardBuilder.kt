@@ -1,11 +1,8 @@
-package com.woocommerce.android.ui.variations
+package com.woocommerce.android.ui.products
 
 import androidx.annotation.DrawableRes
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
-import com.woocommerce.android.extensions.addPropertyIfNotEmpty
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.model.ProductVariant
@@ -13,10 +10,7 @@ import com.woocommerce.android.model.ProductVariant.Type
 import com.woocommerce.android.model.ProductVariant.Type.DOWNLOADABLE
 import com.woocommerce.android.model.ProductVariant.Type.PHYSICAL
 import com.woocommerce.android.model.ProductVariant.Type.VIRTUAL
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
-import com.woocommerce.android.ui.products.ProductVariantViewModel
 import com.woocommerce.android.ui.products.ProductVariantViewModel.Parameters
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -44,9 +38,18 @@ class ProductVariantCardBuilder(
     }
 
     private fun getPrimaryCard(variation: ProductVariant): ProductPropertyCard {
-        val items = mutableListOf<ProductProperty>()
+        return ProductPropertyCard(
+            type = PRIMARY,
+            properties = listOf(
+                variation.visibility(),
+                variation.description(),
+                variation.price()
+            )
+        )
+    }
 
-        val variationDescription = variation.description
+    private fun ProductVariant.description(): ProductProperty {
+        val variationDescription = this.description
         val showTitle = variationDescription.isNotEmpty()
         val description = if (variationDescription.isEmpty()) {
             resources.getString(R.string.product_description)
@@ -54,30 +57,12 @@ class ProductVariantCardBuilder(
             variationDescription
         }
 
-        val visibility: String
-        @DrawableRes val visibilityIcon: Int
-        if (variation.status == PUBLISH) {
-            visibility = resources.getString(R.string.product_variation_visible)
-            visibilityIcon = R.drawable.ic_gridicons_visible
-        } else {
-            visibility = resources.getString(R.string.product_variant_hidden)
-            visibilityIcon = R.drawable.ic_gridicons_not_visible
-        }
-        items.addPropertyIfNotEmpty(
-            ComplexProperty(
-                value = visibility,
-                icon = visibilityIcon,
-                showTitle = false
-            )
+        return ComplexProperty(
+            R.string.product_description,
+            description,
+            R.drawable.ic_gridicons_align_left,
+            showTitle
         )
-
-        items.addPropertyIfNotEmpty(
-            ComplexProperty(
-                R.string.product_description,
-                description,
-                R.drawable.ic_gridicons_align_left,
-                showTitle
-            )
 //            {
 //                viewModel.onEditVariationCardClicked(
 //                    ViewProductDescriptionEditor(
@@ -86,32 +71,47 @@ class ProductVariantCardBuilder(
 //                    Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
 //                )
 //            }
-        )
+    }
 
-        // If we have pricing info, show price & sales price as a group,
-        // otherwise provide option to add pricing info for the variation
-        val hasPricingInfo = variation.regularPrice != null || variation.salePrice != null
+    private fun ProductVariant.visibility(): ProductProperty {
+        val visibility: String
+        @DrawableRes val visibilityIcon: Int
+        if (this.status == PUBLISH) {
+            visibility = resources.getString(R.string.product_variation_visible)
+            visibilityIcon = R.drawable.ic_gridicons_visible
+        } else {
+            visibility = resources.getString(R.string.product_variant_hidden)
+            visibilityIcon = R.drawable.ic_gridicons_not_visible
+        }
+
+        return ComplexProperty(value = visibility, icon = visibilityIcon, showTitle = false)
+    }
+
+    // If we have pricing info, show price & sales price as a group,
+    // otherwise provide option to add pricing info for the variation
+    private fun ProductVariant.price(): ProductProperty {
+        val hasPricingInfo = this.regularPrice != null || this.salePrice != null
         val pricingGroup = mutableMapOf<String, String>()
         if (hasPricingInfo) {
             // regular variation price
             pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(
-                variation.regularPrice,
+                this.regularPrice,
                 parameters.currencyCode
             )
             // display variation sale price if it's on sale
-            if (variation.isOnSale) {
+            if (this.isOnSale) {
                 pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(
-                    variation.salePrice,
+                    this.salePrice,
                     parameters.currencyCode
                 )
             }
 
             // display variation sale dates using the site's timezone, if available
-            if (variation.isSaleScheduled) {
-                var dateOnSaleFrom = variation.saleStartDateGmt?.let {
+            if (this.isSaleScheduled) {
+                var dateOnSaleFrom = this.saleStartDateGmt?.let {
                     DateUtils.offsetGmtDate(it, parameters.gmtOffset)
                 }
-                val dateOnSaleTo = variation.saleEndDateGmt?.let {
+                val dateOnSaleTo = this.saleEndDateGmt?.let {
                     DateUtils.offsetGmtDate(it, parameters.gmtOffset)
                 }
                 if (dateOnSaleTo != null && dateOnSaleFrom == null) {
@@ -134,36 +134,32 @@ class ProductVariantCardBuilder(
             pricingGroup[""] = resources.getString(R.string.product_price_empty)
         }
 
-        items.addPropertyIfNotEmpty(
-            PropertyGroup(
-                R.string.product_price,
-                pricingGroup,
-                R.drawable.ic_gridicons_money,
-                hasPricingInfo
-            )
+        return PropertyGroup(
+            R.string.product_price,
+            pricingGroup,
+            R.drawable.ic_gridicons_money,
+            hasPricingInfo
+        )
+//            {
+//                viewModel.onEditVariationCardClicked(
+//                    ViewProductPricing(this.remoteVariationId),
+//                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
+//                )
+//            }
+    }
+
+    private fun ProductVariant.type(): ProductProperty {
+        return ComplexProperty(
+            R.string.product_type,
+            getTypeDescription(this.type),
+            R.drawable.ic_product
+        )
 //            {
 //                viewModel.onEditVariationCardClicked(
 //                    ViewProductPricing(variation.remoteVariationId),
 //                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
 //                )
 //            }
-        )
-
-        items.addPropertyIfNotEmpty(
-            ComplexProperty(
-                R.string.product_type,
-                getTypeDescription(variation.type),
-                R.drawable.ic_product
-            )
-//            {
-//                viewModel.onEditVariationCardClicked(
-//                    ViewProductPricing(variation.remoteVariationId),
-//                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
-//                )
-//            }
-        )
-
-        return ProductPropertyCard(type = PRIMARY, properties = items)
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {

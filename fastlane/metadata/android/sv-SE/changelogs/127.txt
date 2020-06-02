@@ -1,2 +1,0 @@
-4.2:
-* Åtgärdade vissa problem och oegentligheter med det nya temat med mörkt läge, inloggningsskärmarna och appikonen för en mer enhetlig användarupplevelse.

@@ -77,8 +77,6 @@ Language: tr
     <string name="product_shipping_empty">Nakliye bilgisi ekle</string>
     <string name="discard_images_message">Ürün görselleri hala yükleniyor. Değişikliklerinizi iptal etmek mi istiyorsunuz?</string>
     <string name="product_inventory_update_stock_quantity_error">Lütfen bir numara girin</string>
-    <string name="product_wip_message">Basit ürünlere düzenleme işlevi ekledik. Yakında sunulacak daha fazla seçeneği takip edin!</string>
-    <string name="product_wip_title">Sınırlı düzenleme mevcut</string>
     <string name="product_tax_status_shipping">Gönderiliyor</string>
     <string name="product_tax_status_taxable">Vergilendirilebilir</string>
     <string name="product_tax_status_none">Hiçbiri</string>
@@ -671,7 +669,6 @@ Language: tr
     <string name="review_moderation_undo">İnceleme %1$s olarak işaretlendi</string>
     <string name="add_order_note_sublabel">Devre dışıysa not gizli olur</string>
     <string name="order_error_fetch_generic">Sipariş alınırken hata oluştu</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Bu bekleyen siparişleri inceleyin, hazırlayın ve gönderin</string>
     <string name="back">Geri</string>
     <string name="notification_channel_review_title">Ürün incelemesi uyarıları</string>
@@ -870,12 +867,9 @@ Language: tr
     <string name="orderdetail_product_image_contentdesc">Ürün Görseli</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Vergi:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">müşteriye e-posta gönderin</string>
     <string name="orderdetail_billing_details">Fatura Ayrıntıları</string>
     <string name="orderdetail_shipping_details">Gönderim Ayrıntıları</string>
-    <string name="orderdetail_orderstatus_created">Oluşturulma zamanı %1$s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Sipariş Numarası %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Müşteri Bilgileri</string>
