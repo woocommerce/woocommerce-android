@@ -250,7 +250,7 @@ object WcOrderTestUtils {
      * Generates a single [WCOrderModel] object for Order detail screen.
      */
     fun generateOrderDetail(
-        dateCreatedString: String = "",
+        dateCreatedString: String = "2019-04-05T17:12:00Z",
         note: String = "",
         billingFirstName: String = "",
         billingLastName: String = "",
@@ -273,7 +273,7 @@ object WcOrderTestUtils {
         paymentMethodTitle: String = "",
         currency: String = "USD",
         refundTotal: Double = 0.00,
-        datePaidString: String = ""
+        datePaidString: String = "2019-04-05T17:12:00Z"
     ): WCOrderModel {
         return WCOrderModel(2).apply {
             this.billingFirstName = billingFirstName

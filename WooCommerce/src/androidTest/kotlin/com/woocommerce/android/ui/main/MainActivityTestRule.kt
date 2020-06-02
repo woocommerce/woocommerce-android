@@ -5,6 +5,7 @@ import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.di.MockedProductDetailRepositoryModule
 import com.woocommerce.android.di.MockedSelectedSiteModule
 import com.woocommerce.android.helpers.mockPagedList
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.orders.MockedAddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModule
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
+import com.woocommerce.android.ui.products.WcProductTestUtils
 import com.woocommerce.android.ui.reviews.MockedReviewListModule
 import com.woocommerce.android.ui.reviews.ReviewsTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
@@ -53,6 +55,7 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         MockedOrderListModule.setMockedOrders(mockPagedList(orders))
         MockedOrderListModule.setMockedOrderStatusList(orderStatusList)
     }
+
 
     /**
      * Setting mock data for order detail screen
@@ -129,6 +132,7 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
     ) {
         MockedOrderProductListModule.setOrderInfo(order)
     }
+
 
     /**
      * Setting mock data for order product detail screen

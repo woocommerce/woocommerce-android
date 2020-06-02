@@ -11,10 +11,10 @@ class SiteAddressScreen : Screen {
 
     constructor() : super(SITE_ADDRESS_FIELD)
 
-    fun proceedWith(siteAddress: String): EmailAddressScreen {
+    fun proceedWith(siteAddress: String): SiteAddressScreen {
         typeTextInto(SITE_ADDRESS_FIELD, siteAddress)
         clickOn(NEXT_BUTTON)
 
-        return EmailAddressScreen()
+        return SiteAddressScreen()
     }
 }
