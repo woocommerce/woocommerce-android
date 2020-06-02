@@ -63,6 +63,7 @@ class ProductVariantCardBuilder(
             R.drawable.ic_gridicons_align_left,
             showTitle
         )
+        // TODO: This will be used once the variants are editable
 //            {
 //                viewModel.onEditVariationCardClicked(
 //                    ViewProductDescriptionEditor(
@@ -140,6 +141,7 @@ class ProductVariantCardBuilder(
             R.drawable.ic_gridicons_money,
             hasPricingInfo
         )
+        // TODO: This will be used once the variants are editable
 //            {
 //                viewModel.onEditVariationCardClicked(
 //                    ViewProductPricing(this.remoteVariationId),
@@ -154,6 +156,7 @@ class ProductVariantCardBuilder(
             getTypeDescription(this.type),
             R.drawable.ic_product
         )
+        // TODO: This will be used once the variants are editable
 //            {
 //                viewModel.onEditVariationCardClicked(
 //                    ViewProductPricing(variation.remoteVariationId),
