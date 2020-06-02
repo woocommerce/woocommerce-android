@@ -101,6 +101,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges()) {
             triggerEvent(ShowDiscardDialog(
+                negativeButtonId = string.keep_changes,
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     triggerEvent(Exit)
                 }

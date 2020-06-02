@@ -44,6 +44,7 @@
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
     <string name="keep_editing">Keep editing</string>
+    <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn More</string>
     <string name="try_it_now">Try it now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
