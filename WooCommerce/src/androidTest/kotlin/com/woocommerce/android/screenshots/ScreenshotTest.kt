@@ -21,25 +21,25 @@ class ScreenshotTest {
     @get:Rule
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
-    @Test
-    fun screenshots() {
-        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
-
-        WelcomeScreen
-            .logoutIfNeeded()
-            .selectLogin()
-            // Connect a WooCommerce store by URL
-            .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            // Enter email address
-            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            // No magic link, this is an automated test, enter password manually
-            .proceedWithPassword()
-            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
-
-        // My Store
-        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
-        MyStoreScreen()
-            .dismissTopBannerIfNeeded()
-            .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
-    }
+//    @Test
+//    fun screenshots() {
+//        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+//
+//        WelcomeScreen
+//            .logoutIfNeeded()
+//            .selectLogin()
+//            // Connect a WooCommerce store by URL
+//            .proceedWith(BuildConfig.SCREENSHOTS_URL)
+//            // Enter email address
+//            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
+//            // No magic link, this is an automated test, enter password manually
+//            .proceedWithPassword()
+//            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
+//
+//        // My Store
+//        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
+//        MyStoreScreen()
+//            .dismissTopBannerIfNeeded()
+//            .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
+//    }
 }
