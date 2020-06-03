@@ -109,6 +109,10 @@ open class Screen {
         clickOn(onView(withText(text)))
     }
 
+    fun clickOnViewWithText(textId: Int) {
+        clickOn(onView(withText(textId)))
+    }
+
     private fun clickOn(viewInteraction: ViewInteraction) {
         waitForElementToBeDisplayed(viewInteraction)
         idleFor(500) // allow for transitions

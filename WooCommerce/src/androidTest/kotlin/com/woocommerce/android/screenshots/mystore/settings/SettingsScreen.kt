@@ -50,13 +50,13 @@ class SettingsScreen : Screen {
 
     fun switchToLightTheme(): MyStoreScreen {
         clickOn(THEME_BUTTON)
-        clickOnViewWithText("Light")
+        clickOnViewWithText(R.string.settings_app_theme_option_light)
         return goBackToMyStoreScreen()
     }
 
     fun switchToDarkTheme(): MyStoreScreen {
         clickOn(THEME_BUTTON)
-        clickOnViewWithText("Dark")
+        clickOnViewWithText(R.string.settings_app_theme_option_dark)
         return goBackToMyStoreScreen()
     }
 }
