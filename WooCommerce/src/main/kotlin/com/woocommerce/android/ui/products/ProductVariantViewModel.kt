@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariation
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariationImageChooser
 import com.woocommerce.android.ui.products.ProductVariantViewModel.VariationExitEvent.ExitVariation
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -63,8 +64,8 @@ class ProductVariantViewModel @AssistedInject constructor(
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    private final val parameters: Parameters by lazy {
-        val params = savedState.get<Parameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
+    private final val parameters: SiteParameters by lazy {
+        val params = savedState.get<SiteParameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
         savedState[KEY_PRODUCT_PARAMETERS] = params
         params
     }
@@ -169,14 +170,19 @@ class ProductVariantViewModel @AssistedInject constructor(
     /**
      * Loads the product dependencies for a site such as dimensions, currency or timezone
      */
-    private fun loadParameters(): Parameters {
+    private fun loadParameters(): SiteParameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
         val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
 
-        return Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
+        return SiteParameters(
+            currencyCode,
+            weightUnit,
+            dimensionUnit,
+            gmtOffset
+        )
     }
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
@@ -203,14 +209,6 @@ class ProductVariantViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
-
-    @Parcelize
-    data class Parameters(
-        val currencyCode: String?,
-        val weightUnit: String?,
-        val dimensionUnit: String?,
-        val gmtOffset: Float
-    ) : Parcelable
 
     @Parcelize
     data class VariantViewState(

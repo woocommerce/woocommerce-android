@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.addIfNotEmpty
@@ -9,14 +8,14 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
-import com.woocommerce.android.ui.products.ProductVariantViewModel.Parameters
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -26,7 +25,7 @@ class ProductVariantCardBuilder(
     private val viewModel: ProductVariantViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val parameters: Parameters
+    private val parameters: SiteParameters
 ) {
     fun buildPropertyCards(variation: ProductVariant): List<ProductPropertyCard> {
         val cards = mutableListOf<ProductPropertyCard>()
@@ -95,48 +94,17 @@ class ProductVariantCardBuilder(
     // otherwise provide option to add pricing info for the variation
     private fun ProductVariant.price(): ProductProperty {
         val hasPricingInfo = this.regularPrice != null || this.salePrice != null
-        val pricingGroup = mutableMapOf<String, String>()
-        if (hasPricingInfo) {
-            // regular variation price
-            pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(
-                this.regularPrice,
-                parameters.currencyCode
-            )
-            // display variation sale price if it's on sale
-            if (this.isOnSale) {
-                pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(
-                    this.salePrice,
-                    parameters.currencyCode
-                )
-            }
-
-            // display variation sale dates using the site's timezone, if available
-            if (this.isSaleScheduled) {
-                var dateOnSaleFrom = this.saleStartDateGmt?.let {
-                    DateUtils.offsetGmtDate(it, parameters.gmtOffset)
-                }
-                val dateOnSaleTo = this.saleEndDateGmt?.let {
-                    DateUtils.offsetGmtDate(it, parameters.gmtOffset)
-                }
-                if (dateOnSaleTo != null && dateOnSaleFrom == null) {
-                    dateOnSaleFrom = DateUtils.offsetGmtDate(Date(), parameters.gmtOffset)
-                }
-                val saleDates = when {
-                    (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
-                        getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
-                    }
-                    (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
-                        resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
-                    }
-                    else -> null
-                }
-                saleDates?.let {
-                    pricingGroup[resources.getString(R.string.product_sale_dates)] = it
-                }
-            }
-        } else {
-            pricingGroup[""] = resources.getString(R.string.product_price_empty)
-        }
+        val pricingGroup = PriceUtils.getPriceGroup(
+            parameters,
+            resources,
+            currencyFormatter,
+            regularPrice,
+            salePrice,
+            isSaleScheduled,
+            isOnSale,
+            saleStartDateGmt,
+            saleEndDateGmt
+        )
 
         return PropertyGroup(
             R.string.product_price,

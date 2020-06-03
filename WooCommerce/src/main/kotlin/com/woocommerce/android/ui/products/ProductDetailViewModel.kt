@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -93,8 +94,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    final val parameters: Parameters by lazy {
-        val params = savedState.get<Parameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
+    final val parameters: SiteParameters by lazy {
+        val params = savedState.get<SiteParameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
         savedState[KEY_PRODUCT_PARAMETERS] = params
         params
     }
@@ -724,14 +725,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Loads the product dependencies for a site such as dimensions, currency or timezone
      */
-    private fun loadParameters(): Parameters {
+    private fun loadParameters(): SiteParameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
         val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
 
-        return Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
+        return SiteParameters(
+            currencyCode,
+            weightUnit,
+            dimensionUnit,
+            gmtOffset
+        )
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
@@ -986,14 +992,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
-
-    @Parcelize
-    data class Parameters(
-        val currencyCode: String?,
-        val weightUnit: String?,
-        val dimensionUnit: String?,
-        val gmtOffset: Float
-    ) : Parcelable
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
