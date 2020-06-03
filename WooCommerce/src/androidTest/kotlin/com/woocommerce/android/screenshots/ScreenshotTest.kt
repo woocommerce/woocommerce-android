@@ -24,11 +24,7 @@ class ScreenshotTest {
 //    @Test
 //    fun screenshots() {
 //        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
-//
-//        var SCREENSHOTS_URL = "https://usual-frigate.jurassic.ninja/"
-//        var SCREENSHOTS_USERNAME = "tapan.shah21@gmail.com"
-//        var SCREENSHOTS_PASSWORD = "Appletree0!"
-//
+
 //        WelcomeScreen
 //            .logoutIfNeeded()
 //            .selectLogin()
