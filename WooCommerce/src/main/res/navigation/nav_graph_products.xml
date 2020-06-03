@@ -62,7 +62,7 @@
             android:defaultValue="0L"
             app:argType="long" />
         <action
-            android:id="@+id/action_productVariantsFragment_to_productVariantFragment"
+            android:id="@+id/action_variantsFragment_to_variantFragment"
             app:destination="@id/productVariantFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />

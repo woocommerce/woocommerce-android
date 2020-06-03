@@ -139,7 +139,7 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
 
     private fun openVariantDetail(variant: ProductVariant) {
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            val action = ProductVariantsFragmentDirections.actionProductVariantsFragmentToProductVariantFragment(variant)
+            val action = ProductVariantsFragmentDirections.actionVariantsFragmentToVariantFragment(variant)
             findNavController().navigateSafely(action)
         }
     }

@@ -131,7 +131,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     init {
         EventBus.getDefault().register(this)
-        
         loadProduct(navArgs.remoteProductId)
     }
 
