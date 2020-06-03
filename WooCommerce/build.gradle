@@ -262,10 +262,20 @@ task copyGoogleServicesExampleFile(type: Copy) {
     rename('google-services.json-example', 'google-services.json')
 }
 
+def BASE_URL = base_url
+def EMAIL = email
+def PASSWORD = password
+def BAD_BASE_URL = bad_base_url
 // Add properties named "wc.xxx" to our BuildConfig
 android.buildTypes.all { buildType ->
     def inputFile = checkGradlePropertiesFile()
     def properties = loadPropertiesFromFile(inputFile)
+
+    buildType.buildConfigField "String", 'BASE_URL', base_url
+    buildType.buildConfigField "String", 'EMAIL', email
+    buildType.buildConfigField "String", 'PASSWORD', password
+    buildType.buildConfigField "String", 'BAD_BASE_URL', bad_base_url
+
     properties.any { property ->
         if (property.key.toLowerCase().startsWith("wc.")) {
             buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),

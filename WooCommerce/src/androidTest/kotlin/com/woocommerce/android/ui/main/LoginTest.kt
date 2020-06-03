@@ -1,29 +1,26 @@
 package com.woocommerce.android.ui.main
 
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
-import com.woocommerce.android.R
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R.id
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.anything
-import org.hamcrest.Matchers
-import org.hamcrest.core.AllOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import com.woocommerce.android.screenshots.login.WelcomeScreen
+import com.woocommerce.android.screenshots.login.SiteAddressScreen
+import com.woocommerce.android.screenshots.login.EmailAddressScreen
+import com.woocommerce.android.screenshots.login.MagicLinkScreen
+import com.woocommerce.android.screenshots.login.PasswordScreen
+import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -36,82 +33,82 @@ class LoginTest {
     @Test
     fun validLoginTest() {
 
-        // click login button on Welcome page
-        onView(withText("Log in")).perform(click())
 
-        // clear text on the Site address field
-        onView(withId(R.id.input)).perform(clearText())
+        // click Log in button on Welcome Screen
+        onView(withId(WelcomeScreen.LOGIN_BUTTON)).perform(click())
 
-        // enter site address
-        onView(withId(R.id.input)).perform(typeText("https://usual-frigate.jurassic.ninja"))
+        // enter Site address screen
+        onView(withId(SiteAddressScreen.SITE_ADDRESS_FIELD)).perform(typeText(BuildConfig.BASE_URL))
 
-        onView(withText("Next")).perform(click())
+        // click Next button
+        onView(withId(SiteAddressScreen.NEXT_BUTTON)).perform(click())
 
-        Thread.sleep(20000)
-
-        onView(withId(R.id.input)).perform(typeText(""))
-
-        Thread.sleep(3000)
-
-        onView(withText("Next")).perform(click())
-
-        Thread.sleep(3000)
-
-        onView(withText("Enter your password instead")).perform(click())
-
-        onView(withId(R.id.input)).perform(typeText(""), closeSoftKeyboard())
-
+        // wait for checking site validation
         Thread.sleep(5000)
 
-        onView(withText("Next")).perform(click())
+        // enter email address
+        onView(withId(EmailAddressScreen.EMAIL_ADDRESS_FIELD)).perform(typeText(BuildConfig.EMAIL))
 
+        // click Next button
+        onView(withId(EmailAddressScreen.NEXT_BUTTON)).perform(click())
+
+        // wait for Magic link screen
+        Thread.sleep(3000)
+
+        // click on the use password instead link
+        onView(withId(MagicLinkScreen.USE_PASSWORD_BUTTON)).perform(click())
+
+        // enter Password
+        onView(withId(PasswordScreen.PASSWORD_FIELD)).perform(typeText(BuildConfig.PASSWORD))
+
+        // click Next button
+        onView(withId(PasswordScreen.NEXT_BUTTON)).perform(click())
+
+        // Assert on the display of Logging in text
         onView(withText("Logging in")).check(matches(isDisplayed()))
-        Thread.sleep(5000)
 
-        onView(withText("Usual Frigate")).check(matches(isDisplayed()))
+        // assert that we are on My store screen
+        onView(withId(MyStoreScreen.SETTINGS_BUTTON_TEXT)).check(matches(isDisplayed()))
     }
 
     @Test
     fun invalidSiteAddressTest() {
-        onView(withText("Log in")).perform(click())
 
-        onView(withId(R.id.input)).perform(clearText())
+        //onView(withText("Log in")).perform(click())
+        onView(withId(WelcomeScreen.LOGIN_BUTTON)).perform(click())
 
-        onView(withId(R.id.input)).perform(typeText("https://usual-fry.com"))
+        // enter Site address screen
+        onView(withId(SiteAddressScreen.SITE_ADDRESS_FIELD)).perform(typeText(BuildConfig.BAD_BASE_URL))
 
-        onView(withText("Next")).perform(click())
+        // click Next button
+        onView(withId(SiteAddressScreen.NEXT_BUTTON)).perform(click())
 
-        Thread.sleep(4000)
-
-        onView(withId(R.id.textinput_error)).check(matches(withText("Check that the site URL entered is valid")))
+        // assert the validation error message
+        onView(withId(SiteAddressScreen.INPUT_ERROR)).check(matches(withText(SiteAddressScreen.MESSAGE)))
     }
 
     @Test
-    fun invalidSiteCreds() {
+    fun emptyEmailSiteCredentialsTest() {
 
-        onView(withText("Log in")).perform(click())
+        // click Log in button on Welcome Screen
+        onView(withId(WelcomeScreen.LOGIN_BUTTON)).perform(click())
 
-        onView(withId(id.input)).perform(clearText())
+        // enter Site address screen
+        onView(withId(SiteAddressScreen.SITE_ADDRESS_FIELD)).perform(typeText(BuildConfig.BASE_URL))
 
-        onView(withId(id.input)).perform(typeText("https://usual-frigate.jurassic.ninja"))
+        // click Next button
+        onView(withId(SiteAddressScreen.NEXT_BUTTON)).perform(click())
 
-        onView(withText("Next")).perform(click())
+        // wait for checking site validation
+        Thread.sleep(5000)
 
-        Thread.sleep(20000)
+        // click on Login with Site credentials link
+        onView(withId(MagicLinkScreen.LOGIN_WITH_SITE_CREDENTIALS_BUTTON)).perform(click())
 
-        onView(withId(id.login_site_button)).perform(click())
+        // enter Next button without entering email or password
+        onView(withId(PasswordScreen.NEXT_BUTTON)).perform(click())
 
-
-        Thread . sleep (3000)
-
-        onView(withContentDescription("Username")).perform(typeText("adcd@abcd.com"))
-
-        onView(AllOf.allOf(withId(R.id.input), withText("Password"),withId(R.id.input_layout))).perform(typeText("adcd"))
-
-        onView(withText("Next")).perform(click())
-
-        Thread . sleep (10000)
-
-        onView (withId(id.textinput_error)).check(matches(withText("Please enter a username")))
+        // assert on the validation error message for empty email address
+        onView (withId(id.textinput_error)).check(matches(withText(PasswordScreen.EMAIL_INPUT_VALIDATION)))
     }
 }
