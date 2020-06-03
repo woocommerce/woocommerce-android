@@ -33,7 +33,6 @@ class LoginTest {
     @Test
     fun validLoginTest() {
 
-
         // click Log in button on Welcome Screen
         onView(withId(WelcomeScreen.LOGIN_BUTTON)).perform(click())
 
