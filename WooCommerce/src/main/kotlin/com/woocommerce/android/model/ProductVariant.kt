@@ -3,13 +3,8 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
-import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.roundError
-import com.woocommerce.android.model.ProductVariant.Type
-import com.woocommerce.android.model.ProductVariant.Type.DOWNLOADABLE
-import com.woocommerce.android.model.ProductVariant.Type.PHYSICAL
-import com.woocommerce.android.model.ProductVariant.Type.VIRTUAL
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
@@ -35,7 +30,8 @@ data class ProductVariant(
     val optionName: String,
     var priceWithCurrency: String? = null,
     val isPurchasable: Boolean,
-    val type: Type,
+    val isVirtual: Boolean,
+    val isDownloadable: Boolean,
     val description: String,
     val status: ProductStatus?
 ) : Parcelable {
@@ -54,15 +50,10 @@ data class ProductVariant(
             optionName.fastStripHtml() == variant.optionName.fastStripHtml() &&
             priceWithCurrency == variant.priceWithCurrency &&
             isPurchasable == variant.isPurchasable &&
-            type == variant.type &&
+            isVirtual == variant.isVirtual &&
+            isDownloadable == variant.isDownloadable &&
             description == variant.description &&
             status == variant.status
-    }
-
-    enum class Type {
-        VIRTUAL,
-        DOWNLOADABLE,
-        PHYSICAL
     }
 }
 
@@ -88,7 +79,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
         this.stockQuantity,
         getAttributeOptionName(this.getProductVariantOptions()),
         isPurchasable = this.purchasable,
-        type = getVariantType(this.virtual, this.downloadable),
+        isDownloadable = this.downloadable,
+        isVirtual = this.virtual,
         description = this.description,
         status = ProductStatus.fromString(this.status)
     )
@@ -109,12 +101,4 @@ private fun getAttributeOptionName(variantOptions: List<ProductVariantOption>): 
         }
     }
     return optionName
-}
-
-private fun getVariantType(isVirtual: Boolean, isDownloadable: Boolean): Type {
-    return when {
-        isVirtual -> VIRTUAL
-        isDownloadable -> DOWNLOADABLE
-        else -> PHYSICAL
-    }
 }

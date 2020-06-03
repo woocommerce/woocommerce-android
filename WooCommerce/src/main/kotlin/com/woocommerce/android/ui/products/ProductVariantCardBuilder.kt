@@ -1,15 +1,13 @@
 package com.woocommerce.android.ui.products
 
+import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.addIfNotEmpty
+import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.model.ProductVariant
-import com.woocommerce.android.model.ProductVariant.Type
-import com.woocommerce.android.model.ProductVariant.Type.DOWNLOADABLE
-import com.woocommerce.android.model.ProductVariant.Type.PHYSICAL
-import com.woocommerce.android.model.ProductVariant.Type.VIRTUAL
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductVariantViewModel.Parameters
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -43,27 +41,29 @@ class ProductVariantCardBuilder(
             properties = listOf(
                 variation.visibility(),
                 variation.description(),
-                variation.price()
-            )
+                variation.price(),
+                variation.type()
+            ).filterNotEmpty()
         )
     }
 
-    private fun ProductVariant.description(): ProductProperty {
+    private fun ProductVariant.description(): ProductProperty? {
         val variationDescription = this.description
-        val showTitle = variationDescription.isNotEmpty()
         val description = if (variationDescription.isEmpty()) {
             resources.getString(R.string.product_description)
         } else {
             variationDescription
         }
 
-        return ComplexProperty(
-            R.string.product_description,
-            description,
-            R.drawable.ic_gridicons_align_left,
-            showTitle
-        )
-        // TODO: This will be used once the variants are editable
+        // TODO: Temporarily hide empty description until it's editable
+        return if (variationDescription.isNotEmpty()) {
+            ComplexProperty(
+                R.string.product_description,
+                description,
+                R.drawable.ic_gridicons_align_left,
+                variationDescription.isNotEmpty()
+            )
+            // TODO: This will be used once the variants are editable
 //            {
 //                viewModel.onEditVariationCardClicked(
 //                    ViewProductDescriptionEditor(
@@ -72,6 +72,9 @@ class ProductVariantCardBuilder(
 //                    Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
 //                )
 //            }
+        } else {
+            null
+        }
     }
 
     private fun ProductVariant.visibility(): ProductProperty {
@@ -151,9 +154,17 @@ class ProductVariantCardBuilder(
     }
 
     private fun ProductVariant.type(): ProductProperty {
+        var type = if (this.isVirtual)
+            resources.getString(R.string.product_type_virtual)
+        else
+            resources.getString(R.string.product_type_physical)
+
+        if (this.isDownloadable)
+            type += ", ${resources.getString(R.string.product_type_downloadable)}"
+
         return ComplexProperty(
             R.string.product_type,
-            getTypeDescription(this.type),
+            resources.getString(R.string.product_type_description, type).capitalize(),
             R.drawable.ic_product
         )
         // TODO: This will be used once the variants are editable
@@ -182,13 +193,5 @@ class ProductVariantCardBuilder(
             formattedFromDate,
             dateOnSaleTo.formatToMMMddYYYY()
         )
-    }
-
-    private fun getTypeDescription(type: Type): String {
-        return when (type) {
-            PHYSICAL -> resources.getString(R.string.product_type_physical)
-            VIRTUAL -> resources.getString(R.string.product_type_virtual)
-            DOWNLOADABLE -> resources.getString(R.string.product_type_downloadable)
-        }
     }
 }
