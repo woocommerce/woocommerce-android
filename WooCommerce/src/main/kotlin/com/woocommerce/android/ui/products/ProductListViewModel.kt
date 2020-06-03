@@ -106,13 +106,17 @@ class ProductListViewModel @AssistedInject constructor(
         productStatus: String?,
         productType: String?
     ) {
-        productFilterOptions.clear()
-        stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
-        productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
-        productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+        if (stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
+            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
+            productType != productFilterOptions[ProductFilterOption.TYPE]) {
+            productFilterOptions.clear()
+            stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
+            productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
+            productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
 
-        viewState = viewState.copy(filterCount = productFilterOptions.size)
-        refreshProducts()
+            viewState = viewState.copy(filterCount = productFilterOptions.size)
+            refreshProducts()
+        }
     }
 
     fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]

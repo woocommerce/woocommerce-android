@@ -82,7 +82,7 @@ class DashboardStatsView @JvmOverloads constructor(
     private var skeletonView = SkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
-    private var lastUpdatedHandler: Handler? = null
+    private val lastUpdatedHandler = Handler()
     private var lastUpdated: Date? = null
 
     private var isRequestingStats = false
@@ -144,20 +144,20 @@ class DashboardStatsView @JvmOverloads constructor(
 
         initChart()
 
-        lastUpdatedHandler = Handler()
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
     }
 
-    override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        super.onVisibilityChanged(changedView, visibility)
-        if (visibility == View.VISIBLE) {
-            updateRecencyMessage()
-        } else {
-            lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
-        }
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        updateRecencyMessage()
+    }
+
+    override fun onDetachedFromWindow() {
+        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        super.onDetachedFromWindow()
     }
 
     fun showSkeleton(show: Boolean) {
@@ -548,10 +548,10 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private fun updateRecencyMessage() {
         dashboard_recency_text.text = getRecencyMessage()
-        lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
-            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
     }
 
