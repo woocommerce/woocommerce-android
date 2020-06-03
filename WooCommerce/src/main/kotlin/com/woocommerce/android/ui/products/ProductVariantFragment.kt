@@ -7,32 +7,30 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductVariantViewModel.VariationExitEvent.ExitVariation
+import com.woocommerce.android.ui.products.ProductVariantViewModel.ShowVariantImage
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_variant.*
 import javax.inject.Inject
 
-class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, BackPressListener {
+class ProductVariantFragment : BaseFragment(), BackPressListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
@@ -174,15 +172,6 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
 
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClicked(ExitVariation())
-    }
-
-    override fun onGalleryImageClicked(image: Product.Image) {
-        viewModel.onImageGalleryClicked(image)
-    }
-
-    override fun onGalleryAddImageClicked() {
-        AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-        viewModel.onAddImageClicked()
     }
 
     override fun getFragmentTitle() = variationName

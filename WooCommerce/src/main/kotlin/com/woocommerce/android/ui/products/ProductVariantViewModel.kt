@@ -142,6 +142,12 @@ class ProductVariantViewModel @AssistedInject constructor(
         }
     }
 
+    fun onVariantImageClicked() {
+        variant.image?.let {
+            triggerEvent(ShowVariantImage(it))
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
@@ -191,6 +197,8 @@ class ProductVariantViewModel @AssistedInject constructor(
     sealed class VariationExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitVariation(shouldShowDiscardDialog: Boolean = true) : VariationExitEvent(shouldShowDiscardDialog)
     }
+
+    data class ShowVariantImage(val image: Product.Image) : Event()
 
     @Parcelize
     data class VariantViewState(
