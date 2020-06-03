@@ -30,7 +30,6 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_variant.*
-import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
 class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, BackPressListener {
@@ -95,7 +94,7 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
         }
 
-        viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
+        viewModel.variantDetailCards.observe(viewLifecycleOwner, Observer {
             showVariationCards(it)
         })
 

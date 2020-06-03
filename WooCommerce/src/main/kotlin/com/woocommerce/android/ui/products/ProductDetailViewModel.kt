@@ -395,9 +395,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
             is ExitImages -> isUploadingImages || hasImageChanges()
-            else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
+            else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
-        if (isProductUpdated == true && event.shouldShowDiscardDialog) {
+        if (isProductUpdated && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
@@ -1031,8 +1031,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val storedPassword: String? = null,
         val draftPassword: String? = null
     ) : Parcelable {
-        val isOnSale: Boolean
-            get() = salePriceWithCurrency != null
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
     }
