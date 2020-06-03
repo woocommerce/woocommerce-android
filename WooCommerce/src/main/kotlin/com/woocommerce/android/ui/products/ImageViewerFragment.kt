@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -19,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_image_viewer.*
  */
 class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
     companion object {
-        private const val KEY_IMAGE_URL = "image_url"
+        private const val KEY_PRODUCT_IMAGE = "productImage"
 
         interface ImageViewerListener {
             fun onImageTapped()
@@ -28,7 +29,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
 
         fun newInstance(imageModel: Product.Image): ImageViewerFragment {
             val args = Bundle().also {
-                it.putString(KEY_IMAGE_URL, imageModel.source)
+                it.putParcelable(KEY_PRODUCT_IMAGE, imageModel)
             }
             ImageViewerFragment().also {
                 it.arguments = args
@@ -37,12 +38,14 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         }
     }
 
-    private lateinit var imageUrl: String
+    val args: ImageViewerFragmentArgs by navArgs()
+
+    private var image: Product.Image? = null
     private var imageListener: ImageViewerListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        imageUrl = arguments?.getString(KEY_IMAGE_URL) ?: ""
+        image = arguments?.getParcelable(KEY_PRODUCT_IMAGE)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,7 +61,7 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(KEY_IMAGE_URL, imageUrl)
+        outState.putParcelable(KEY_PRODUCT_IMAGE, image)
         super.onSaveInstanceState(outState)
     }
 
@@ -74,10 +77,12 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     private fun loadImage() {
         showProgress(true)
 
-        GlideApp.with(this)
-                .load(imageUrl)
+        image?.source?.let {
+            GlideApp.with(this)
+                .load(it)
                 .listener(this)
                 .into(photoView)
+        }
     }
 
     private fun showProgress(show: Boolean) {

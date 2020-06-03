@@ -100,8 +100,10 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is LaunchUrlInChromeTab -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                is ShowVariantImage -> {
+                    val action = ProductVariantFragmentDirections
+                        .actionProductVariantFragmentToImageViewerFragment(event.image)
+                    findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }
@@ -118,6 +120,9 @@ class ProductVariantFragment : BaseFragment(), OnGalleryImageClickListener, Back
             GlideApp.with(this).load(variation.image.source)
                 .placeholder(R.drawable.ic_product)
                 .into(variationImage)
+            variationImage.setOnClickListener {
+                viewModel.onVariantImageClicked()
+            }
         }
     }
 

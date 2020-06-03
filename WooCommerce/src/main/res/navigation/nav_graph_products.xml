@@ -197,5 +197,18 @@
         <argument
             android:name="variant"
             app:argType="com.woocommerce.android.model.ProductVariant" />
+        <action
+            android:id="@+id/action_productVariantFragment_to_imageViewerFragment"
+            app:destination="@id/imageViewerFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/imageViewerFragment"
+        android:name="com.woocommerce.android.ui.products.ImageViewerFragment"
+        android:label="ImageViewerFragment" >
+        <argument
+            android:name="productImage"
+            app:argType="com.woocommerce.android.model.Product$Image" />
     </fragment>
 </navigation>
