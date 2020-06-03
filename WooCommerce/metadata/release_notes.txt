@@ -1,4 +1,3 @@
-* Filter and sort Products from the Products tab.
-* Shipment tracking appears on the order detail screen. Future-dated orders appear on the All orders tab.
-* Our new product editing functionality is in beta. Try it!
-* Fixed multiple crashes and the text color on support tickets in dark mode.
+* <b>New</b>: Added functionality to image and product management. Head to “Settings” in “My Store” to turn on new features!
+* <b>UI improvements</b>: Brought back the W notification icon for better visibility, fixed the text color on support tickets in dark mode, minor style tweaks to login screens.
+* <b>Fixes</b>: Product details display exact stock status, plugged a potential memory leak when switching between stores.
