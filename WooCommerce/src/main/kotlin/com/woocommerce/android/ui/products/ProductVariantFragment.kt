@@ -98,10 +98,8 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowVariantImage -> {
-                    val action = ProductVariantFragmentDirections
-                        .actionProductVariantFragmentToImageViewerFragment(event.image)
-                    findNavController().navigateSafely(action)
+                is LaunchUrlInChromeTab -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 else -> event.isHandled = false
             }
@@ -118,9 +116,6 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
             GlideApp.with(this).load(variation.image.source)
                 .placeholder(R.drawable.ic_product)
                 .into(variationImage)
-            variationImage.setOnClickListener {
-                viewModel.onVariantImageClicked()
-            }
         }
     }
 
