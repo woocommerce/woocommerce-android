@@ -94,7 +94,7 @@ sealed class ProductProperty(val type: Type) {
         @StringRes val title: Int,
         val isOn: Boolean,
         @DrawableRes val icon: Int? = null,
-        val onStateChanged: ((Boolean) -> Unit)
+        val onStateChanged: ((Boolean) -> Unit)? = null
     ) : ProductProperty(SWITCH)
 
     open fun isNotEmpty(): Boolean {

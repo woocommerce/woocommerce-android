@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
@@ -9,6 +10,7 @@ import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.Switch
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -71,17 +73,18 @@ class ProductVariantCardBuilder(
     }
 
     private fun ProductVariant.visibility(): ProductProperty {
-        val visibility: String
+        @StringRes val visibility: Int
         @DrawableRes val visibilityIcon: Int
-        if (this.status == PUBLISH) {
-            visibility = resources.getString(R.string.product_variation_visible)
+        val isOn: Boolean = this.status == PUBLISH
+        if (isOn) {
+            visibility = R.string.product_variation_visible
             visibilityIcon = R.drawable.ic_gridicons_visible
         } else {
-            visibility = resources.getString(R.string.product_variant_hidden)
+            visibility = R.string.product_variant_hidden
             visibilityIcon = R.drawable.ic_gridicons_not_visible
         }
 
-        return ComplexProperty(value = visibility, icon = visibilityIcon, showTitle = false)
+        return Switch(visibility, isOn, visibilityIcon)
     }
 
     // If we have pricing info, show price & sales price as a group,
