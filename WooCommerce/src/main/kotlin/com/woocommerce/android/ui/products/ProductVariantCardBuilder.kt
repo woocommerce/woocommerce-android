@@ -4,8 +4,6 @@ import androidx.annotation.DrawableRes
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
-import com.woocommerce.android.extensions.formatToMMMdd
-import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -17,9 +15,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.util.DateTimeUtils
-import java.math.BigDecimal
-import java.util.Date
 
 class ProductVariantCardBuilder(
     private val viewModel: ProductVariantViewModel,
