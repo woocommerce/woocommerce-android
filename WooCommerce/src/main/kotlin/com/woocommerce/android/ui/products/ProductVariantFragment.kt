@@ -98,8 +98,9 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is LaunchUrlInChromeTab -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                is ShowVariantImage -> {
+                    val action = ProductVariantFragmentDirections.actionGlobalWpMediaViewerFragment(event.image.source)
+                    findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }
@@ -116,6 +117,9 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
             GlideApp.with(this).load(variation.image.source)
                 .placeholder(R.drawable.ic_product)
                 .into(variationImage)
+            variationImage.setOnClickListener {
+                viewModel.onVariantImageClicked()
+            }
         }
     }
 
@@ -131,8 +135,8 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
         if (show) {
             hideProgressDialog()
             progressDialog = CustomProgressDialog.show(
-                    getString(R.string.product_update_dialog_title),
-                    getString(R.string.product_update_dialog_message)
+                getString(R.string.product_update_dialog_title),
+                getString(R.string.product_update_dialog_message)
             ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
             progressDialog?.isCancelable = false
         } else {
