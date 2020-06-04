@@ -949,13 +949,14 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Adds multiple images to the list of product draft's images
      */
     fun addProductImageListToDraft(imageList: ArrayList<Product.Image>) {
-        // add the existing images to the passed list...
+        // add the existing images to the passed list only
+        // if it does not exist in the list already
         viewState.productDraft?.let {
-            imageList.addAll(it.images)
-        }
+            val updatedImageList = (it.images + imageList).distinct().toList()
 
-        // ...then update the draft's images  with the combined list
-        updateProductDraft(images = imageList)
+            // ...then update the draft's images  with the combined list
+            updateProductDraft(images = updatedImageList)
+        }
     }
 
     /**
