@@ -40,8 +40,7 @@ class ProductVariantCardBuilder(
             properties = listOf(
                 variation.visibility(),
                 variation.description(),
-                variation.price(),
-                variation.type()
+                variation.price()
             ).filterNotEmpty()
         )
     }
@@ -119,47 +118,5 @@ class ProductVariantCardBuilder(
 //                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
 //                )
 //            }
-    }
-
-    private fun ProductVariant.type(): ProductProperty {
-        var type = if (this.isVirtual)
-            resources.getString(R.string.product_type_virtual)
-        else
-            resources.getString(R.string.product_type_physical)
-
-        if (this.isDownloadable)
-            type += ", ${resources.getString(R.string.product_type_downloadable)}"
-
-        return ComplexProperty(
-            R.string.product_type,
-            resources.getString(R.string.product_type_description, type).capitalize(),
-            R.drawable.ic_product
-        )
-        // TODO: This will be used once the variants are editable
-//            {
-//                viewModel.onEditVariationCardClicked(
-//                    ViewProductPricing(variation.remoteVariationId),
-//                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
-//                )
-//            }
-    }
-
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
-        } ?: amount.toString()
-    }
-
-    private fun getProductSaleDates(dateOnSaleFrom: Date, dateOnSaleTo: Date): String {
-        val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
-            dateOnSaleFrom.formatToMMMdd()
-        } else {
-            dateOnSaleFrom.formatToMMMddYYYY()
-        }
-        return resources.getString(
-            R.string.product_sale_date_from_to,
-            formattedFromDate,
-            dateOnSaleTo.formatToMMMddYYYY()
-        )
     }
 }
