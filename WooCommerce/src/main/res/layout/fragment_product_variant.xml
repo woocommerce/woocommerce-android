@@ -30,13 +30,14 @@
                 android:layout_height="wrap_content"
                 app:layout_collapseMode="parallax">
 
-                <ImageView
+                <com.woocommerce.android.widgets.BorderedImageView
                     android:id="@+id/variationImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/image_major_150"
-                    android:scaleType="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/image_major_120"
+                    android:layout_margin="@dimen/major_100"
                     android:contentDescription="@string/product_image_content_description"
-                    android:layout_gravity="center_horizontal" />
+                    android:scaleType="center"
+                    android:layout_gravity="start" />
 
                 <FrameLayout
                     android:id="@+id/addImageContainer"
