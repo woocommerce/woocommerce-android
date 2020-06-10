@@ -189,6 +189,7 @@
     <action
         android:id="@+id/action_global_wpMediaViewerFragment"
         app:destination="@id/wpMediaViewerFragment"
+        app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_scale_out" />
     <fragment
         android:id="@+id/productVariantFragment"
