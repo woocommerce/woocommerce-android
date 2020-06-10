@@ -48,7 +48,7 @@ SUPPORTED_LOCALES = [
   desc "Creates a new release branch from the current develop"
   lane :code_freeze do | options |
     old_version = android_codefreeze_prechecks(options)
-   
+
     android_bump_version_release()
     new_version = android_get_app_version()
     android_update_release_notes(new_version: new_version)
@@ -57,7 +57,7 @@ SUPPORTED_LOCALES = [
     
     localize_libs()
     android_tag_build()
-    get_prs_list(repository:GHHELPER_REPO, start_tag:"release/#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
+    get_prs_list(repository:GHHELPER_REPO, start_tag:"#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
   end
 
 #####################################################################################
