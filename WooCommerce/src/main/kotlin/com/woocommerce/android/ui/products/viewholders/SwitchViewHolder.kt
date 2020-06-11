@@ -30,8 +30,10 @@ class SwitchViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.
                 (item.onStateChanged)(isOn)
             }
             switch.isEnabled = true
+            itemView.isEnabled = true
         } else {
             switch.isEnabled = false
+            itemView.isEnabled = false
         }
     }
 }
