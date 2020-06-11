@@ -6,11 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
-import com.woocommerce.android.extensions.formatToMMMdd
-import com.woocommerce.android.extensions.formatToMMMddYYYY
-import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductDetailViewModel.Parameters
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
@@ -30,20 +26,19 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRICI
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCHASE_DETAILS
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.FormatUtils
-import java.math.BigDecimal
-import java.util.Date
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val parameters: Parameters
+    private val parameters: SiteParameters
 ) {
     /**
      * Add/Edit Product Release 1 is enabled by default for SIMPLE products
@@ -130,25 +125,6 @@ class ProductDetailCardBuilder(
                 product.downloads(),
                 product.purchaseNote()
             ).filterNotEmpty()
-        )
-    }
-
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
-        } ?: amount.toString()
-    }
-
-    private fun getProductSaleDates(dateOnSaleFrom: Date, dateOnSaleTo: Date): String {
-        val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
-            dateOnSaleFrom.formatToMMMdd()
-        } else {
-            dateOnSaleFrom.formatToMMMddYYYY()
-        }
-        return resources.getString(
-            R.string.product_sale_date_from_to,
-            formattedFromDate,
-            dateOnSaleTo.formatToMMMddYYYY()
         )
     }
 
@@ -240,15 +216,15 @@ class ProductDetailCardBuilder(
             return if (this.isOnSale) {
                 val group = mapOf(
                     resources.getString(R.string.product_regular_price)
-                        to formatCurrency(this.regularPrice, parameters.currencyCode),
+                        to PriceUtils.formatCurrency(this.regularPrice, parameters.currencyCode, currencyFormatter),
                     resources.getString(R.string.product_sale_price)
-                        to formatCurrency(this.salePrice, parameters.currencyCode)
+                        to PriceUtils.formatCurrency(this.salePrice, parameters.currencyCode, currencyFormatter)
                 )
                 PropertyGroup(R.string.product_price, group)
             } else {
                 ComplexProperty(
                     R.string.product_price,
-                    formatCurrency(this.regularPrice, parameters.currencyCode)
+                    PriceUtils.formatCurrency(this.regularPrice, parameters.currencyCode, currencyFormatter)
                 )
             }
         } else {
@@ -376,45 +352,17 @@ class ProductDetailCardBuilder(
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
         val hasPricingInfo = this.regularPrice != null || this.salePrice != null
-        val pricingGroup = mutableMapOf<String, String>()
-        if (hasPricingInfo) {
-            // regular product price
-            pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(
-                this.regularPrice,
-                parameters.currencyCode
-            )
-            // display product sale price if it's on sale
-            if (this.isOnSale) {
-                pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(
-                    this.salePrice,
-                    parameters.currencyCode
-                )
-            }
-
-            // display product sale dates using the site's timezone, if available
-            if (this.isSaleScheduled) {
-                val dateOnSaleFrom = this.saleStartDateGmt?.offsetGmtDate(parameters.gmtOffset)
-                val dateOnSaleTo = this.saleEndDateGmt?.offsetGmtDate(parameters.gmtOffset)
-
-                val saleDates = when {
-                    (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
-                        getProductSaleDates(dateOnSaleFrom, dateOnSaleTo)
-                    }
-                    (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
-                        resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
-                    }
-                    (dateOnSaleFrom == null && dateOnSaleTo != null) -> {
-                        resources.getString(R.string.product_sale_date_to, dateOnSaleTo.formatToMMMddYYYY())
-                    }
-                    else -> null
-                }
-                saleDates?.let {
-                    pricingGroup[resources.getString(R.string.product_sale_dates)] = it
-                }
-            }
-        } else {
-            pricingGroup[""] = resources.getString(R.string.product_price_empty)
-        }
+        val pricingGroup = PriceUtils.getPriceGroup(
+            parameters,
+            resources,
+            currencyFormatter,
+            regularPrice,
+            salePrice,
+            isSaleScheduled,
+            isOnSale,
+            saleStartDateGmt,
+            saleEndDateGmt
+        )
 
         return PropertyGroup(
             R.string.product_price,
@@ -489,7 +437,9 @@ class ProductDetailCardBuilder(
 
             PropertyGroup(
                 R.string.product_variations,
-                properties
+                properties,
+                R.drawable.ic_gridicons_types,
+                propertyFormat = R.string.product_variation_options
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductVariations(this.remoteId),

@@ -15,7 +15,7 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
         propertyView.show(
             LinearLayout.VERTICAL,
             context.getString(item.title),
-            getPropertyValue(item.properties),
+            getPropertyValue(item.properties, item.propertyFormat),
             item.icon
         )
         propertyView.setMaxLines(Integer.MAX_VALUE)
@@ -34,7 +34,7 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
 
     private fun getPropertyValue(
         properties: Map<String, String>,
-        @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter
+        @StringRes propertyValueFormatterId: Int
     ): String {
         var propertyValue = ""
         properties.forEach { property ->

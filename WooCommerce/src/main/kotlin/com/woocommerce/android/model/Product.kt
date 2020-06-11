@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -115,8 +116,8 @@ data class Product(
                 isSaleScheduled == product.isSaleScheduled &&
                 saleEndDateGmt == product.saleEndDateGmt &&
                 saleStartDateGmt == product.saleStartDateGmt &&
-                isSamePrice(regularPrice, product.regularPrice) &&
-                isSamePrice(salePrice, product.salePrice) &&
+                regularPrice isEquivalentTo product.regularPrice &&
+                salePrice isEquivalentTo product.salePrice &&
                 weight == product.weight &&
                 length == product.length &&
                 height == product.height &&
@@ -130,12 +131,6 @@ data class Product(
                 buttonText == product.buttonText &&
                 menuOrder == product.menuOrder &&
                 isSameImages(product.images)
-    }
-
-    private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
-        val val1 = first ?: BigDecimal.ZERO
-        val val2 = second ?: BigDecimal.ZERO
-        return val1.isEqualTo(val2)
     }
 
     /**

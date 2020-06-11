@@ -59,15 +59,20 @@ class WCProductPropertyView @JvmOverloads constructor(
      * Adds a click listener to the property view
      */
     fun setClickListener(onClickListener: ((view: View) -> Unit)? = null) {
-        onClickListener?.let {
+        if (onClickListener != null) {
             propertyGroupImg?.visibility = View.VISIBLE
             view?.setOnClickListener(onClickListener)
             this.isClickable = true
+        } else {
+            removeClickListener()
         }
     }
 
     fun removeClickListener() {
         this.isClickable = false
+        this.background = null
+        view?.setOnClickListener(null)
+        propertyGroupImg?.visibility = View.GONE
     }
 
     fun setMaxLines(maxLines: Int) {

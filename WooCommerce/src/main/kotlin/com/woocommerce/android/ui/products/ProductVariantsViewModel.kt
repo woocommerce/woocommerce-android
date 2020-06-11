@@ -6,13 +6,17 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductVariantsViewModel.ProductVariantsEvent.ShowVariantDetail
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -51,6 +55,11 @@ class ProductVariantsViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         productVariantsRepository.onCleanup()
+    }
+
+    fun onItemClick(variant: ProductVariant) {
+        AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
+        triggerEvent(ShowVariantDetail(variant))
     }
 
     private fun isLoadingMore() = viewState.isLoadingMore == true
@@ -122,8 +131,8 @@ class ProductVariantsViewModel @AssistedInject constructor(
         val currencyCode = productVariantsRepository.getCurrencyCode()
         productVariants.map { productVariant ->
             productVariant.priceWithCurrency = currencyCode?.let {
-                currencyFormatter.formatCurrency(productVariant.price ?: BigDecimal.ZERO, it)
-            } ?: productVariant.price.toString()
+                currencyFormatter.formatCurrency(productVariant.regularPrice ?: BigDecimal.ZERO, it)
+            } ?: productVariant.regularPrice.toString()
         }
         return productVariants
     }
@@ -136,6 +145,10 @@ class ProductVariantsViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
+
+    sealed class ProductVariantsEvent : Event() {
+        data class ShowVariantDetail(val variant: ProductVariant) : ProductVariantsEvent()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductVariantsViewModel>
