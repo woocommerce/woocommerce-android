@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_today_widget"
+    app:startDestination="@id/todayWidgetConfigureFragment">
+
+    <fragment
+        android:id="@+id/todayWidgetConfigureFragment"
+        tools:layout="@layout/fragment_today_widget_configure"
+        android:name="com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureFragment"
+        android:label="TodayWidgetConfigureFragment">
+    </fragment>
+</navigation>

@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewsModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
+import com.woocommerce.android.ui.widgets.WidgetModule
+import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigurationActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -68,4 +70,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = [SitePickerModule::class])
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = [WidgetModule::class])
+    abstract fun provideTodayWidgetConfigurationActivityInjector(): TodayWidgetConfigurationActivity
 }

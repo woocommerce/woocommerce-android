@@ -71,6 +71,14 @@
             android:label="@string/support_help"
             android:theme="@style/Theme.Woo.DayNight" />
 
+        <activity
+            android:name=".ui.widgets.stats.today.TodayWidgetConfigurationActivity"
+            android:theme="@style/Theme.Woo.DayNight">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
         <activity android:name="zendesk.support.guide.HelpCenterActivity"
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
 
