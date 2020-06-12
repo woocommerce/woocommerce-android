@@ -331,8 +331,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             listState = null
         }
 
-        // hidden until we need it again for M3
-//        showProductWIPNoticeCard(true)
+        showProductWIPNoticeCard(true)
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
