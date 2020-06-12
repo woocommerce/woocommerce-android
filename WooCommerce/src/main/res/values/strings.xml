@@ -194,6 +194,19 @@
     <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after July 1, 2020.</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for stores with WooCommerce 4.0 or stores with WooCommerce Admin plugin installed</string>
+
+    <!--
+        Stats widgets
+    -->
+    <string name="stats_widget_log_in_message">Please log in to the WooCommerce app to add a widget.</string>
+    <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
+    <string name="stats_today_widget_configure_title">Today\'s store stats</string>
+    <string name="stats_today_widget_configure_store_hint">Select your store</string>
+    <string name="stats_today_widget_configure_color_hint">Color</string>
+    <string name="stats_widget_site_selection_content_description">Site icon</string>
+    <string name="stats_widget_add">Add widget</string>
+    <string name="stats_widget_error_no_data">Couldn\'t load data</string>
+
     <!--
         Order List View
     -->
