@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-26 09:54:03+0000
+Translation-Revision-Date: 2020-06-10 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_sale_date_to">%1$s截止</string>
     <string name="product_wip_message">我們已為產品新增更多編輯功能。你現在可以更新圖片、編輯產品設定並分享產品！</string>
     <string name="product_wip_title">有可用的新編輯選項</string>
     <string name="product_limited_editing_title">僅可進行有限編輯</string>
