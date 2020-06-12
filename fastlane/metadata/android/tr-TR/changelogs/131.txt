@@ -1,5 +1,0 @@
-4.3:
-* Ürünler sekmesinden Ürünleri filtreleyin ve sıralayın.
-* Sipariş ayrıntıları ekranında gönderim takibi görünüyor. Gelecek tarihli siparişler Tüm siparişler sekmesinde görünüyor.
-* Yeni ürün düzenleme işlevimiz beta sürümünde. Bir deneyin!
-* Karanlık modda destek biletleriyle ilgili birden çok kilitlenme hatası ve metin rengi düzeltildi.

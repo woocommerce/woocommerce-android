@@ -1,5 +1,0 @@
-4.3:
-* Opções de filtro e classificação na guia Produtos.
-* Monitoramento de envio exibido na tela Detalhes do pedido. Pedidos futuros exibidos na guia Todos os pedidos.
-* Experimente a versão Beta da nova funcionalidade de edição de produtos.
-* Correção de várias falhas e da cor de texto em tíquetes de suporte no modo escuro.
