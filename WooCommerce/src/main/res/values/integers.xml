@@ -11,4 +11,7 @@
     <integer name="maxlength_product_shipping_properties">8</integer>
 
     <integer name="maxlength_order_refund_summary_reason">255</integer>
+
+    <!-- Specifies how often, in milliseconds, the stats widget should be updated -->
+    <integer name="stats_widget_update_period">600000</integer>
 </resources>
