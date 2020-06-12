@@ -186,8 +186,4 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun clearNotificationPreferences() {
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
-
-    override fun clearWidgetData() {
-        statsWidgetUpdaters.update(applicationContext)
-    }
 }
