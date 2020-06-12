@@ -156,9 +156,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        val productsTeaser = getString(R.string.settings_enable_product_teaser_title)
-        val statsTeaser = getString(R.string.settings_enable_v4_stats_title)
-        option_beta_features.optionValue = "$productsTeaser, $statsTeaser"
+        option_beta_features.optionValue = getString(R.string.settings_enable_v4_stats_title)
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
