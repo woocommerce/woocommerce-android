@@ -330,7 +330,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             productsRecycler.layoutManager?.onRestoreInstanceState(it)
             listState = null
         }
-        showProductWIPNoticeCard(true)
+
+        // hidden until we need it again for M3
+//        showProductWIPNoticeCard(true)
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
