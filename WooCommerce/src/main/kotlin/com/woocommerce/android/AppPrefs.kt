@@ -8,6 +8,8 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.STATS_WIDGET_COLOR_MODE
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.STATS_WIDGET_SELECTED_SITE_ID
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -41,7 +43,11 @@ object AppPrefs {
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
-        SELECTED_APP_THEME
+        SELECTED_APP_THEME,
+
+        // Widget settings
+        STATS_WIDGET_SELECTED_SITE_ID,
+        STATS_WIDGET_COLOR_MODE
     }
 
     /**
@@ -273,6 +279,38 @@ object AppPrefs {
         setString(DeletablePrefKey.SELECTED_APP_THEME, theme.toString())
     }
 
+    fun setStatsWidgetSelectedSiteId(siteId: Long, appWidgetId: Int) {
+        setLong(getSiteIdWidgetKey(appWidgetId), siteId)
+    }
+
+    fun getStatsWidgetSelectedSiteId(appWidgetId: Int): Long {
+        return getLong(getSiteIdWidgetKey(appWidgetId), -1)
+    }
+
+    fun removeStatsWidgetSelectedSiteId(appWidgetId: Int) {
+        remove(getSiteIdWidgetKey(appWidgetId))
+    }
+
+    private fun getSiteIdWidgetKey(appWidgetId: Int): String {
+        return STATS_WIDGET_SELECTED_SITE_ID.name + appWidgetId
+    }
+
+    fun setStatsWidgetColorModeId(colorModeId: Int, appWidgetId: Int) {
+        setInt(getColorModeIdWidgetKey(appWidgetId), colorModeId)
+    }
+
+    fun getStatsWidgetColorModeId(appWidgetId: Int): Int {
+        return getInt(getColorModeIdWidgetKey(appWidgetId), -1)
+    }
+
+    fun removeStatsWidgetColorModeId(appWidgetId: Int) {
+        remove(getColorModeIdWidgetKey(appWidgetId))
+    }
+
+    private fun getColorModeIdWidgetKey(appWidgetId: Int): String {
+        return STATS_WIDGET_COLOR_MODE.name + appWidgetId
+    }
+
     /**
      * Remove all user-related preferences.
      */
@@ -286,8 +324,14 @@ object AppPrefs {
     private fun getInt(key: PrefKey, default: Int = 0) =
             PreferenceUtils.getInt(getPreferences(), key.toString(), default)
 
+    private fun getInt(key: String, default: Int = 0) =
+        PreferenceUtils.getInt(getPreferences(), key, default)
+
     private fun setInt(key: PrefKey, value: Int) =
             PreferenceUtils.setInt(getPreferences(), key.toString(), value)
+
+    private fun setInt(key: String, value: Int) =
+        PreferenceUtils.setInt(getPreferences(), key, value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
         return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)?.let {
@@ -297,6 +341,12 @@ object AppPrefs {
 
     private fun setString(key: PrefKey, value: String) =
             PreferenceUtils.setString(getPreferences(), key.toString(), value)
+
+    private fun setLong(key: String, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), key, value)
+
+    private fun getLong(key: String, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), key, default)
 
     fun getBoolean(key: PrefKey, default: Boolean) =
             PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
@@ -308,6 +358,10 @@ object AppPrefs {
 
     private fun remove(key: PrefKey) {
         getPreferences().edit().remove(key.toString()).apply()
+    }
+
+    private fun remove(key: String) {
+        getPreferences().edit().remove(key).apply()
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())
