@@ -153,11 +153,7 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductImages -> {
-                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-                    viewProductImageChooser(fragment, target.product.remoteId)
-                } else if (target.imageModel != null) {
-                    viewProductImageViewer(fragment, target.product.remoteId)
-                }
+                viewProductImageChooser(fragment, target.product.remoteId)
             }
 
             is ViewProductMenuOrder -> {

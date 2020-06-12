@@ -65,13 +65,9 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             findNavController().navigateUp()
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            iconTrash.setOnClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
-                confirmRemoveProductImage()
-            }
-        } else {
-            iconTrash.visibility = View.GONE
+        iconTrash.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
+            confirmRemoveProductImage()
         }
 
         savedInstanceState?.let { bundle ->

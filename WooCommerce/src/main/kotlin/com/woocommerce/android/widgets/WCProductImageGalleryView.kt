@@ -64,12 +64,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
             try {
                 isGridView = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isGridView, false)
-                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(context)) {
-                    showAddImageIcon = attrArray.getBoolean(
-                            R.styleable.WCProductImageGalleryView_showAddImageIcon,
-                            false
-                    )
-                }
+                showAddImageIcon = attrArray.getBoolean(
+                        R.styleable.WCProductImageGalleryView_showAddImageIcon,
+                        false
+                )
             } finally {
                 attrArray.recycle()
             }

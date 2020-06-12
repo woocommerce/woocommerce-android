@@ -109,18 +109,14 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
-            option_image_optimization.visibility = View.VISIBLE
-            option_image_optimization.isChecked = AppPrefs.getImageOptimizationEnabled()
-            option_image_optimization.setOnCheckedChangeListener { _, isChecked ->
-                AnalyticsTracker.track(
-                        SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
-                        mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
-                )
-                AppPrefs.setImageOptimizationEnabled(isChecked)
-            }
-        } else {
-            option_image_optimization.visibility = View.GONE
+        option_image_optimization.visibility = View.VISIBLE
+        option_image_optimization.isChecked = AppPrefs.getImageOptimizationEnabled()
+        option_image_optimization.setOnCheckedChangeListener { _, isChecked ->
+            AnalyticsTracker.track(
+                    SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
+                    mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
+            )
+            AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings

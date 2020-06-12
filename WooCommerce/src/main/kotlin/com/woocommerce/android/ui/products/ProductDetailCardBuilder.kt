@@ -75,10 +75,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.title(),
                 product.description(),
-                product.totalOrders(),
-                product.variations(),
-                product.storeLink(),
-                product.affiliateLink()
+                product.variations()
             ).filterNotEmpty()
         )
     }
@@ -256,29 +253,25 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.shortDescription(): ProductProperty? {
-        return if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            val shortDescription = if (this.shortDescription.isEmpty()) {
-                resources.getString(R.string.product_short_description_empty)
-            } else {
-                this.shortDescription
-            }
-
-            ComplexProperty(
-                R.string.product_short_description,
-                shortDescription,
-                R.drawable.ic_gridicons_align_left
-            ) {
-                viewModel.onEditProductCardClicked(
-                    ViewProductShortDescriptionEditor(
-                        this.shortDescription,
-                        resources.getString(R.string.product_short_description)
-                    ),
-                    Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
-                )
-            }
+    private fun Product.shortDescription(): ProductProperty {
+        val shortDescription = if (this.shortDescription.isEmpty()) {
+            resources.getString(R.string.product_short_description_empty)
         } else {
-            null
+            this.shortDescription
+        }
+
+        return ComplexProperty(
+            R.string.product_short_description,
+            shortDescription,
+            R.drawable.ic_gridicons_align_left
+        ) {
+            viewModel.onEditProductCardClicked(
+                ViewProductShortDescriptionEditor(
+                    this.shortDescription,
+                    resources.getString(R.string.product_short_description)
+                ),
+                Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
+            )
         }
     }
 
@@ -351,7 +344,7 @@ class ProductDetailCardBuilder(
 
     // enable editing external product link
     private fun Product.externalLink(): ProductProperty? {
-        return if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled() && this.type == ProductType.EXTERNAL) {
+        return if (this.type == ProductType.EXTERNAL) {
             val hasExternalLink = this.externalUrl.isNotEmpty()
             val externalGroup = if (hasExternalLink) {
                 mapOf(Pair("", this.externalUrl))
@@ -469,16 +462,6 @@ class ProductDetailCardBuilder(
         }
     }
 
-    // we don't show total sales for variations because they're always zero
-    // we are removing the total orders sections from products M2 release
-    private fun Product.totalOrders(): ProductProperty? {
-        return if (this.type != VARIABLE && !FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            Property(R.string.product_total_orders, StringUtils.formatCount(this.totalSales))
-        } else {
-            null
-        }
-    }
-
     // show product variants only if product type is variable and if there are variations for the product
     private fun Product.variations(): ProductProperty? {
         return if (this.type == VARIABLE && this.numVariations > 0) {
@@ -495,28 +478,6 @@ class ProductDetailCardBuilder(
                     ViewProductVariations(this.remoteId),
                     Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
-            }
-        } else {
-            null
-        }
-    }
-
-    // display `View product on Store` (in M2 this is in the options menu)
-    private fun Product.storeLink(): ProductProperty? {
-        return if (!FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            Link(R.string.product_view_in_store) {
-                viewModel.onViewProductOnStoreLinkClicked(this.permalink)
-            }
-        } else {
-            null
-        }
-    }
-
-    private fun Product.affiliateLink(): ProductProperty? {
-        // enable viewing affiliate link for external products (in M2 this is editable)
-        return if (!FeatureFlag.PRODUCT_RELEASE_M2.isEnabled() && this.type == ProductType.EXTERNAL) {
-            Link(R.string.product_view_affiliate) {
-                viewModel.onAffiliateLinkClicked(this.externalUrl)
             }
         } else {
             null
