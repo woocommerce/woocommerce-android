@@ -24,7 +24,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
 

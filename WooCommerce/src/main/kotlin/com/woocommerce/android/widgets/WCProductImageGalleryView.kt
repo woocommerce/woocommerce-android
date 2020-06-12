@@ -20,7 +20,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils

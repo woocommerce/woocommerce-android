@@ -1,7 +1,6 @@
 package com.woocommerce.android.util
 
 import android.content.Context
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 
 /**

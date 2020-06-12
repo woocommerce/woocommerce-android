@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
-import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
 
