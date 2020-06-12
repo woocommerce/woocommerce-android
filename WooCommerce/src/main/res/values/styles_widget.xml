@@ -2,6 +2,11 @@
 <resources>
     <!--
     Stats Widget
+    Home screen widgets do not support the latest design changes from the support library i.e.
+    RecyclerView, ConstraintLayout etc,
+
+    The styles defined here should only be used for the stats home screen widgets and should
+    not be confused with the general styles defined in styles_base.xml.
     -->
     <style name="Woo.StatsWidgetHeader">
         <item name="android:clickable">true</item>

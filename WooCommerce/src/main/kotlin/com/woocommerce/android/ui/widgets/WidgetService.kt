@@ -6,7 +6,8 @@ import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetListProvider
 
 /**
- * The service to be connected to for a remote adapter to request RemoteViews.
+ * The service to be connected to a remote adapter to request RemoteViews.
+ *
  * Modify the [onGetViewFactory] method when you want to add multiple widgets to the app.
  * Note that a new [RemoteViewsFactory] must be added first.
  *
