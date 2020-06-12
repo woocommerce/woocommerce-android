@@ -96,7 +96,7 @@ class TodayWidgetListViewModelTest : BaseUnitTest() {
         whenever(widgetRepository.userIsLoggedIn()).thenReturn(false)
 
         var onError: Int? = null
-        viewModel.onDataSetChanged { appWidgetId  -> onError = appWidgetId }
+        viewModel.onDataSetChanged { appWidgetId -> onError = appWidgetId }
 
         assertThat(onError).isEqualTo(appWidgetId)
     }
