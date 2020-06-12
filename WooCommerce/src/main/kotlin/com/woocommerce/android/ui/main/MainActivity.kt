@@ -30,6 +30,7 @@ import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
@@ -50,6 +51,7 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -133,7 +135,8 @@ class MainActivity : AppUpgradeActivity(),
             if (!isMainThemeApplied) {
                 it.applyStyle(R.style.Theme_Woo_DayNight, true)
                 isMainThemeApplied = true
-            } }
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,12 +145,17 @@ class MainActivity : AppUpgradeActivity(),
 
         setContentView(R.layout.activity_main)
 
-        // Set the toolbar
-        setSupportActionBar(toolbar as Toolbar)
-
         presenter.takeView(this)
 
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+
+        // Set the toolbar
+        if (ActivityUtils.isRunningOnTv(this)) {
+            toolbar.hide()
+            bottomNavView.hide()
+        } else {
+            setSupportActionBar(toolbar as Toolbar)
+        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController

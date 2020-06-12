@@ -1,10 +1,13 @@
 package com.woocommerce.android.util
 
 import android.app.Activity
+import android.app.UiModeManager
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Context.UI_MODE_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
@@ -82,5 +85,10 @@ object ActivityUtils {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.statusBarColor = ContextCompat.getColor(activity, colorRes)
         }
+    }
+
+    fun isRunningOnTv(context: Context): Boolean {
+        val uiModeManager = context.getSystemService(UI_MODE_SERVICE) as UiModeManager
+        return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 }
