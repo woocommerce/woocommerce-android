@@ -5,6 +5,7 @@ import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.widgets.WidgetModule.TodayWidgetConfigureActivityModule
 import com.woocommerce.android.ui.widgets.WidgetModule.TodayWidgetConfigureFragmentModule
+import com.woocommerce.android.ui.widgets.WidgetModule.WidgetSiteSelectionFragmentModule
 import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureFragment
 import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureModule
 import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetUIMessageResolver
@@ -14,7 +15,8 @@ import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
     TodayWidgetConfigureActivityModule::class,
-    TodayWidgetConfigureFragmentModule::class
+    TodayWidgetConfigureFragmentModule::class,
+    WidgetSiteSelectionFragmentModule::class
 ])
 object WidgetModule {
     @Module
@@ -29,5 +31,12 @@ object WidgetModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [TodayWidgetConfigureModule::class])
         internal abstract fun todayWidgetConfigureFragment(): TodayWidgetConfigureFragment
+    }
+
+    @Module
+    abstract class WidgetSiteSelectionFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [WidgetSiteSelectionModule::class])
+        internal abstract fun widgetSiteSelectionFragment(): WidgetSiteSelectionFragment
     }
 }

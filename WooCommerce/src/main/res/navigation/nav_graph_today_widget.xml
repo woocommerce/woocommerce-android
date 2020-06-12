@@ -10,5 +10,15 @@
         tools:layout="@layout/fragment_today_widget_configure"
         android:name="com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureFragment"
         android:label="TodayWidgetConfigureFragment">
+        <action
+            android:id="@+id/action_todayWidgetConfigureFragment_to_widgetSiteSelectionDialogFragment"
+            app:destination="@id/widgetSiteSelectionFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
+    <fragment
+        android:id="@+id/widgetSiteSelectionFragment"
+        tools:layout="@layout/fragment_widget_site_selector"
+        android:name="com.woocommerce.android.ui.widgets.WidgetSiteSelectionFragment"
+        android:label="WidgetSiteSelectionFragment"/>
 </navigation>

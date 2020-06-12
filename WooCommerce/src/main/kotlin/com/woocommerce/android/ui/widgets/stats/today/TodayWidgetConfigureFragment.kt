@@ -10,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -87,7 +89,9 @@ class TodayWidgetConfigureFragment : BaseFragment() {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ViewWidgetSiteSelectionList -> {
-                    // TODO: redirect to site selection screen
+                    findNavController().navigateSafely(
+                        R.id.action_todayWidgetConfigureFragment_to_widgetSiteSelectionDialogFragment
+                    )
                 }
                 is ViewWidgetColorSelectionList -> {
                     // TODO: redirect to color selection dialog
