@@ -81,7 +81,7 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private var skeletonView = SkeletonView()
 
-    private lateinit var lastUpdatedRunnable: Runnable
+    private var lastUpdatedRunnable: Runnable? = null
     private val lastUpdatedHandler = Handler()
     private var lastUpdated: Date? = null
 
@@ -143,10 +143,9 @@ class DashboardStatsView @JvmOverloads constructor(
         })
 
         initChart()
-
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedRunnable?.let { lastUpdatedHandler.postDelayed(it, UPDATE_DELAY_TIME_MS) }
         }
     }
 
@@ -156,7 +155,7 @@ class DashboardStatsView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
-        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedRunnable?.let { lastUpdatedHandler.removeCallbacks(it) }
         super.onDetachedFromWindow()
     }
 
@@ -548,10 +547,10 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private fun updateRecencyMessage() {
         dashboard_recency_text.text = getRecencyMessage()
-        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedRunnable?.let { lastUpdatedHandler.removeCallbacks(it) }
 
         if (lastUpdated != null) {
-            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedRunnable?.let { lastUpdatedHandler.postDelayed(it, UPDATE_DELAY_TIME_MS) }
         }
     }
 

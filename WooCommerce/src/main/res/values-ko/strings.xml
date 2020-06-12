@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-27 08:54:05+0000
+Translation-Revision-Date: 2020-06-10 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_sale_date_to">%1$s까지</string>
     <string name="product_wip_message">제품에 더 많은 편집 기능을 추가했습니다. 이제 이미지를 업데이트하고 제품 설정을 편집하고 제품을 공유할 수 있습니다!</string>
     <string name="product_wip_title">사용 가능한 새 편집 옵션</string>
     <string name="product_limited_editing_title">제한적인 편집 가능</string>

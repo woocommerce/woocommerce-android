@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-13 08:54:04+0000
+Translation-Revision-Date: 2020-06-10 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_sale_date_to">Hasta el %1$s</string>
     <string name="product_type_external">Externo</string>
     <string name="product_type_simple">Sencillo</string>
     <string name="product_status_privately_published">Publicado como privado</string>
