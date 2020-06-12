@@ -16,6 +16,9 @@ import com.woocommerce.android.ui.widgets.WidgetUpdater
  * Through this class, broadcasts will be received when the App Widget is updated, enabled, disabled and deleted.
  */
 abstract class StatsWidget : AppWidgetProvider() {
+    companion object {
+        const val SITE_ID_KEY = "site_id_key"
+    }
     abstract val widgetUpdater: WidgetUpdater
 
     override fun onReceive(context: Context, intent: Intent?) {

@@ -6,6 +6,7 @@ import com.woocommerce.android.media.ProductImagesServiceModule
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import com.woocommerce.android.ui.widgets.stats.today.TodayStatsWidget
+import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetListProvider
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -42,6 +43,7 @@ import javax.inject.Singleton
 interface AppComponent : AndroidInjector<WooCommerce> {
     override fun inject(app: WooCommerce)
     fun inject(statsTodayWidget: TodayStatsWidget)
+    fun inject(todayWidgetListProvider: TodayWidgetListProvider)
 
     // Allows us to inject the application without having to instantiate any modules, and provides the Application
     // in the app graph
