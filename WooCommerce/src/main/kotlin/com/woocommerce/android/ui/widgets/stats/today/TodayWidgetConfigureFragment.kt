@@ -94,7 +94,9 @@ class TodayWidgetConfigureFragment : BaseFragment() {
                     )
                 }
                 is ViewWidgetColorSelectionList -> {
-                    // TODO: redirect to color selection dialog
+                    findNavController().navigateSafely(
+                        R.id.action_todayWidgetConfigureFragment_to_widgetColorSelectionFragment
+                    )
                 }
                 is WidgetAdded -> {
                     // TODO: add tracking event for widget added

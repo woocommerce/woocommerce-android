@@ -27,8 +27,8 @@ import javax.inject.Inject
 class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
-    { viewModelFactory }
+    private val viewModel: TodayWidgetConfigureViewModel
+        by navGraphViewModels(R.id.nav_graph_today_widget) { viewModelFactory }
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)

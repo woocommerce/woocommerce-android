@@ -18,7 +18,7 @@ class WidgetSiteSelectionAdapter(
     private val context: Context,
     private val glideRequest: GlideRequests,
     private val listener: OnWidgetSiteSelectedListener
-): RecyclerView.Adapter<WidgetSiteSelectionViewHolder>() {
+) : RecyclerView.Adapter<WidgetSiteSelectionViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
     private var sites = mutableListOf<SiteUiModel>()
 
