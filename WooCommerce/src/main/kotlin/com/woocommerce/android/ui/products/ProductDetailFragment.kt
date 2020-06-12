@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -120,12 +119,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
-            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
-                addImageContainer.visibility = View.VISIBLE
-                addImageContainer.setOnClickListener {
-                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-                    viewModel.onAddImageClicked()
-                }
+            addImageContainer.visibility = View.VISIBLE
+            addImageContainer.setOnClickListener {
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+                viewModel.onAddImageClicked()
             }
         } else {
             addImageContainer.visibility = View.GONE
@@ -142,8 +139,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
             // display View Product on Store menu button only if the Product status is published,
             // otherwise the page is redirected to a 404
-            viewProductOnStoreMenuItem?.isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled() &&
-                status == ProductStatus.PUBLISH
+            viewProductOnStoreMenuItem?.isVisible = status == ProductStatus.PUBLISH
         }
     }
 
@@ -152,7 +148,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
 
         viewProductOnStoreMenuItem = menu.findItem(R.id.menu_view_product)
-        menu.findItem(R.id.menu_product_settings).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        menu.findItem(R.id.menu_product_settings).isVisible = true
 
         super.onCreateOptionsMenu(menu, inflater)
     }
