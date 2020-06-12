@@ -14,6 +14,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.widgets.WidgetUpdater.StatsWidgetUpdaters
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -52,6 +53,7 @@ class MyStorePresenterTest {
     private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val statsWidgetUpdaters: StatsWidgetUpdaters = mock()
 
     private lateinit var presenter: MyStorePresenter
 
@@ -60,7 +62,9 @@ class MyStorePresenterTest {
     @Before
     fun setup() {
         presenter = spy(MyStorePresenter(
-                dispatcher, wooCommerceStore, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
+                dispatcher, wooCommerceStore, wcStatsStore,
+            wcOrderStore, selectedSite, networkStatus, statsWidgetUpdaters
+        ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()

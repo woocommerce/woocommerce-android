@@ -55,7 +55,8 @@ abstract class MockedMyStoreModule {
                                     mockDispatcher,
                                     OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
                             SelectedSite(mockContext, mock()),
-                            NetworkStatus(mockContext)
+                            NetworkStatus(mockContext),
+                        mock()
                     )
             )
 
