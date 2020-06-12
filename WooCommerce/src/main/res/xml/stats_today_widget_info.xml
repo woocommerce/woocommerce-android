@@ -8,4 +8,4 @@
     android:previewImage="@drawable/stats_today_widget_preview"
     android:resizeMode="none"
     android:updatePeriodMillis="@integer/stats_widget_update_period"
-    android:widgetCategory="home_screen"></appwidget-provider>
+    android:widgetCategory="home_screen"/>

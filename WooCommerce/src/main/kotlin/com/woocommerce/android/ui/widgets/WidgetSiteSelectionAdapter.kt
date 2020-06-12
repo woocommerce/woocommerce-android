@@ -46,7 +46,7 @@ class WidgetSiteSelectionAdapter(
             glideRequest.load(imageUrl)
                 .placeholder(R.drawable.ic_product)
                 .into(holder.imageView)
-        } ?: holder.imageView.setImageResource(R.drawable.ic_product)
+        } ?: holder.imageView.setImageResource(R.drawable.ic_gridicons_globe)
 
         holder.itemView.setOnClickListener {
             listener.onSiteSelected(site)
