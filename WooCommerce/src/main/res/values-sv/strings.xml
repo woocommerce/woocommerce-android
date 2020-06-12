@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-21 20:00:34+0000
+Translation-Revision-Date: 2020-06-05 14:03:58+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_sale_date_to">Fram till %1$s</string>
     <string name="product_wip_message">Vi har lagt till fler redigeringsfunktionaliteter till produkter. Du kan nu uppdatera bilder, redigera produktinställningar och dela produkter!</string>
     <string name="product_wip_title">Nya redigeringsalternativ tillgängliga</string>
     <string name="product_limited_editing_title">Begränsad redigering tillgänglig</string>
