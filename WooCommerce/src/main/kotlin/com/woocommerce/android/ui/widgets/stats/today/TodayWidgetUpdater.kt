@@ -68,7 +68,7 @@ class TodayWidgetUpdater
             // Widget data will only be displayed if network is available,
             // user is logged in and if stats v4 is available
             val errorMessage = if (!networkAvailable) {
-                R.string.offline_error
+                R.string.stats_widget_offline_error
             } else if (!hasAccessToken) {
                 R.string.stats_widget_log_in_message
             } else if (!isUsingV4Api) {
