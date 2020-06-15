@@ -32,6 +32,7 @@ import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -122,6 +123,10 @@ class MainActivity : AppUpgradeActivity(),
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
+    private val isOnTv by lazy {
+        ActivityUtils.isRunningOnTv(this)
+    }
+
     /**
      * Manually set the theme here so the splash screen will be visible while this activity
      * is loading. Also setting it here ensures all fragments used in this activity will also
@@ -148,14 +153,6 @@ class MainActivity : AppUpgradeActivity(),
         presenter.takeView(this)
 
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
-
-        // Set the toolbar
-        if (ActivityUtils.isRunningOnTv(this)) {
-            toolbar.hide()
-            bottomNavView.hide()
-        } else {
-            setSupportActionBar(toolbar as Toolbar)
-        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
@@ -349,11 +346,9 @@ class MainActivity : AppUpgradeActivity(),
 
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        val showBottomNav: Boolean
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
-            showBottomNav = true
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
@@ -400,6 +395,8 @@ class MainActivity : AppUpgradeActivity(),
             hideBottomNav()
         }
 
+        // Set the toolbar
+        setSupportActionBar(toolbar as Toolbar)
         getActiveTopLevelFragment()?.let {
             if (isAtRoot) {
                 it.updateActivityTitle()
@@ -715,7 +712,13 @@ class MainActivity : AppUpgradeActivity(),
                 }
             }
         } else {
-            bottomNavView.currentPosition = DASHBOARD
+            if (isOnTv) {
+                bottomNavView.currentPosition = ORDERS
+                hideBottomNav()
+                toolbar.hide()
+            } else {
+                bottomNavView.currentPosition = DASHBOARD
+            }
         }
     }
     // endregion
