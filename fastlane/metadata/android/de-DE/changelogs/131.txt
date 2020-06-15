@@ -1,5 +1,0 @@
-4.3:
-* Im Produkte-Tab kannst du Produkte filtern und sortieren.
-* Die Sendungsverfolgung wird auf dem Bildschirm mit den Auftragsdetails angezeigt. Bestellungen mit einem Datum in der Zukunft werden im Tab „Alle Bestellungen“ angezeigt.
-* Unsere neue Produktbearbeitungsfunktion ist als Betaversion verfügbar. Probiere sie aus!
-* Wir haben mehrere Gründe für Abstürze und die Textfarbe auf den Support-Tickets im dunklen Modus behoben.
