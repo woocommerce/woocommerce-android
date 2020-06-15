@@ -31,7 +31,7 @@
         <View
             style="@style/Woo.Divider"/>
 
-        <include android:id="@+id/stats_view_row" layout="@layout/dashboard_main_stats_row" />
+        <include android:id="@+id/stats_view" layout="@layout/dashboard_main_stats_row" />
 
         <FrameLayout
             android:id="@+id/chart_container"
