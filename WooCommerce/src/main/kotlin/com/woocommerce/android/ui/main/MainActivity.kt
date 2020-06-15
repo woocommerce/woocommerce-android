@@ -32,7 +32,6 @@ import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -149,6 +148,9 @@ class MainActivity : AppUpgradeActivity(),
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+
+        // Set the toolbar
+        setSupportActionBar(toolbar as Toolbar)
 
         presenter.takeView(this)
 
@@ -395,8 +397,6 @@ class MainActivity : AppUpgradeActivity(),
             hideBottomNav()
         }
 
-        // Set the toolbar
-        setSupportActionBar(toolbar as Toolbar)
         getActiveTopLevelFragment()?.let {
             if (isAtRoot) {
                 it.updateActivityTitle()
