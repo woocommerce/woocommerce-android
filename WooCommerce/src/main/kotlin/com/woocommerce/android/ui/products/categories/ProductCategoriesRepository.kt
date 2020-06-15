@@ -139,9 +139,14 @@ class ProductCategoriesRepository @Inject constructor(
                         RequestResult.API_ERROR
                     } else RequestResult.ERROR
                     addProductCategoryContinuation?.resume(requestResultType)
-                    // TODO: add tracking event here
+                    AnalyticsTracker.track(
+                        Stat.PARENT_CATEGORIES_LOAD_FAILED,
+                        this.javaClass.simpleName,
+                        event.error.type.toString(),
+                        event.error.message
+                    )
                 } else {
-                    // TODO: add tracking event here
+                    AnalyticsTracker.track(Stat.PARENT_CATEGORIES_LOADED)
                     addProductCategoryContinuation?.resume(RequestResult.SUCCESS)
                 }
                 addProductCategoryContinuation = null

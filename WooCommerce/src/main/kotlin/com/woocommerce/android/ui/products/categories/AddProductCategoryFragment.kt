@@ -13,6 +13,7 @@ import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -76,6 +77,7 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
+                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_DONE_BUTTON_TAPPED)
                 viewModel.addProductCategory(getCategoryName())
                 true
             }

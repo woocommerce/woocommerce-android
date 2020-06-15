@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -76,7 +77,7 @@ class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProduct
         productCategoriesLayout?.apply {
             scrollUpChild = productCategoriesRecycler
             setOnRefreshListener {
-                // TODO: add event tracking
+                AnalyticsTracker.track(Stat.PARENT_CATEGORIES_PULLED_TO_REFRESH)
                 viewModel.refreshParentCategories()
             }
         }
