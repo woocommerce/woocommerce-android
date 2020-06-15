@@ -6,14 +6,14 @@ import org.wordpress.android.fluxc.model.WCProductCategoryModel
 
 @Parcelize
 data class ProductCategory(
-    val remoteId: Long,
+    val remoteCategoryId: Long,
     val name: String,
     val slug: String,
     val parentId: Long? = 0L
 ) : Parcelable {
     fun toProductCategory(): ProductCategory {
         return ProductCategory(
-            this.remoteId,
+            this.remoteCategoryId,
             this.name,
             this.slug
         )
@@ -22,7 +22,7 @@ data class ProductCategory(
 
 fun WCProductCategoryModel.toProductCategory(): ProductCategory {
     return ProductCategory(
-        remoteId = this.remoteCategoryId,
+        remoteCategoryId = this.remoteCategoryId,
         name = this.name,
         slug = this.slug,
         parentId = this.parent
