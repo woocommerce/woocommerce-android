@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
-import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -154,11 +153,7 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductImages -> {
-                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-                    viewProductImageChooser(fragment, target.product.remoteId)
-                } else if (target.imageModel != null) {
-                    viewProductImageViewer(fragment, target.product.remoteId)
-                }
+                viewProductImageChooser(fragment, target.product.remoteId)
             }
 
             is ViewProductMenuOrder -> {
