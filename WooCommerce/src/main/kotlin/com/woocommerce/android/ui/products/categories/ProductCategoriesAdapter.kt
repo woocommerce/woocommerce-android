@@ -17,7 +17,8 @@ import org.wordpress.android.util.HtmlUtils
 
 class ProductCategoriesAdapter(
     private val context: Context,
-    private val loadMoreListener: OnLoadMoreListener
+    private val loadMoreListener: OnLoadMoreListener,
+    private val clickListener: OnProductCategoryClickListener
 ) : RecyclerView.Adapter<ProductCategoryViewHolder>() {
     private val productCategoryList = ArrayList<ProductCategoryItemUiModel>()
 
@@ -70,7 +71,7 @@ class ProductCategoriesAdapter(
         productCategory: ProductCategoryItemUiModel
     ) {
         productCategory.isSelected = holder.checkBox.isChecked
-//        clickListener.onProductCategoryClick(productCategory)
+        clickListener.onProductCategoryClick(productCategory)
     }
 
     fun setProductCategories(productsCategories: List<ProductCategoryItemUiModel>) {

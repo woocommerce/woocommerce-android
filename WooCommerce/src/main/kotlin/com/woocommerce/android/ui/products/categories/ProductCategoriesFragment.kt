@@ -23,7 +23,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_categories_list.*
 
-class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener {
+class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnProductCategoryClickListener {
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter
 
     private val skeletonView = SkeletonView()
@@ -76,7 +76,7 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener {
 
         val activity = requireActivity()
 
-        productCategoriesAdapter = ProductCategoriesAdapter(activity.baseContext, this)
+        productCategoriesAdapter = ProductCategoriesAdapter(activity.baseContext, this, this)
         with(productCategoriesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productCategoriesAdapter
@@ -143,5 +143,28 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener {
 
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClicked(ExitProductCategories())
+    }
+
+    override fun onProductCategoryClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        val product = requireNotNull(viewModel.getProduct().productDraft)
+        val selectedCategories = product.categories.toMutableList()
+
+        val found = selectedCategories.find {
+            it.remoteCategoryId == productCategoryItemUiModel.category.remoteCategoryId
+        }
+
+        var changeRequired = false
+        if (!productCategoryItemUiModel.isSelected && found != null) {
+            selectedCategories.remove(found)
+            changeRequired = true
+        } else if (productCategoryItemUiModel.isSelected && found == null) {
+            selectedCategories.add(productCategoryItemUiModel.category.toProductCategory())
+            changeRequired = true
+        }
+
+        if (changeRequired) {
+            viewModel.updateProductDraft(categories = selectedCategories)
+            changesMade()
+        }
     }
 }
