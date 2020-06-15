@@ -11,20 +11,24 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
+import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_ADDED_CATEGORY
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_categories_list.*
 
-class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnProductCategoryClickListener {
+class ProductCategoriesFragment : BaseProductFragment(),
+    OnLoadMoreListener, OnProductCategoryClickListener, NavigationResult {
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter
 
     private val skeletonView = SkeletonView()
@@ -176,6 +180,18 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
         if (changeRequired) {
             viewModel.updateProductDraft(categories = selectedCategories)
             changesMade()
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            RequestCodes.PRODUCT_ADD_CATEGORY -> {
+                val addedCategory = result.getParcelable(ARG_ADDED_CATEGORY) as? ProductCategory
+                addedCategory?.let {
+                    viewModel.onProductCategoryAdded(it)
+                    changesMade()
+                }
+            }
         }
     }
 }

@@ -10,12 +10,15 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.AddProductCategoryEvent.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -26,6 +29,10 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class AddProductCategoryFragment : BaseFragment(), BackPressListener {
+    companion object {
+        const val ARG_ADDED_CATEGORY = "arg-added-category"
+    }
+
     private var doneMenuItem: MenuItem? = null
 
     private var progressDialog: CustomProgressDialog? = null
@@ -111,6 +118,16 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
                     event.negativeBtnAction,
                     event.messageId
                 )
+                is ExitWithResult -> {
+                    val bundle = Bundle()
+                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.addedCategory)
+                    requireActivity().navigateBackWithResult(
+                        RequestCodes.PRODUCT_ADD_CATEGORY,
+                        bundle,
+                        R.id.nav_host_fragment_main,
+                        R.id.productCategoriesFragment
+                    )
+                }
                 else -> event.isHandled = false
             }
         })

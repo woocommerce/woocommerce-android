@@ -1003,6 +1003,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(AddProductCategory)
     }
 
+    fun onProductCategoryAdded(category: ProductCategory) {
+        val selectedCategories = viewState.productDraft?.categories?.toMutableList() ?: mutableListOf()
+        selectedCategories.add(category)
+        updateProductDraft(categories = selectedCategories)
+        refreshProductCategories()
+    }
+
     /**
      * Refreshes the list of categories by calling the [loadProductCategories] method
      * which eventually checks, if there is anything new to fetch from the server
