@@ -26,6 +26,8 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -33,6 +35,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
@@ -40,6 +43,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.*
@@ -249,6 +253,10 @@ class OrderListFragment : TopLevelFragment(),
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         } else {
             loadListForActiveTab()
+        }
+
+        if (ActivityUtils.isRunningOnTv(requireContext())) {
+            tabLayout.hide()
         }
     }
 
@@ -498,7 +506,9 @@ class OrderListFragment : TopLevelFragment(),
      */
     private fun calculateStartupTabPosition(): Int {
         val orderStatusOptions = getOrderStatusOptions()
-        return if (orderStatusFilter == PROCESSING.value) {
+        return if (ActivityUtils.isRunningOnTv(requireContext())) {
+            TAB_INDEX_ALL
+        } else if (orderStatusFilter == PROCESSING.value) {
             TAB_INDEX_PROCESSING
         } else if (AppPrefs.hasSelectedOrderListTabPosition()) {
             // If the user has already changed tabs once then select
