@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import kotlinx.android.synthetic.main.add_product_category_view.view.*
 
 class AddProductCategoryView @JvmOverloads constructor(
     ctx: Context,
@@ -13,5 +14,9 @@ class AddProductCategoryView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.add_product_category_view, this)
+    }
+
+    fun initView(callback: (View) -> Unit) {
+        addCategoriesButton.setOnClickListener { view -> callback(view) }
     }
 }

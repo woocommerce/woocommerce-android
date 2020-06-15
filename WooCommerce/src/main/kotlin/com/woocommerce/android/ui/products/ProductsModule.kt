@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
+import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
@@ -22,6 +23,8 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentM
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
+import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment
+import com.woocommerce.android.ui.products.categories.AddProductCategoryModule
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
 import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
@@ -62,7 +65,8 @@ import dagger.android.ContributesAndroidInjector
     ProductVisibilityFragmentModule::class,
     WPMediaPickerFragmentModule::class,
     ProductSortingFragmentModule::class,
-    ProductCategoriesFragmentModule::class
+    ProductCategoriesFragmentModule::class,
+    AddProductCategoryFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -210,5 +214,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductCategoriesModule::class])
         abstract fun productCategoriesFragment(): ProductCategoriesFragment
+    }
+
+    @Module
+    internal abstract class AddProductCategoryFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [AddProductCategoryModule::class])
+        abstract fun addProductCategoryFragment(): AddProductCategoryFragment
     }
 }

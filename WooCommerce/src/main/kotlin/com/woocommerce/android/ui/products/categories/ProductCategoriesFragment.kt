@@ -142,7 +142,10 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
     }
 
     private fun showAddCategoryButton(show: Boolean) {
-        addProductCategoryView.visibility = if (show) View.VISIBLE else View.GONE
+        with(addProductCategoryView) {
+            visibility = if (show) View.VISIBLE else View.GONE
+            initView { viewModel.onAddCategoryButtonClicked() }
+        }
     }
 
     override fun onRequestLoadMore() {

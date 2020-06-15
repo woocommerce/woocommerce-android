@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -996,6 +997,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (_productCategories.value == null) {
             loadProductCategories()
         }
+    }
+
+    fun onAddCategoryButtonClicked() {
+        triggerEvent(AddProductCategory)
     }
 
     /**
