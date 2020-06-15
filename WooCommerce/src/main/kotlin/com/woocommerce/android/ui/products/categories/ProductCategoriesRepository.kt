@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products.categories
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.toProductCategory
@@ -79,10 +81,15 @@ class ProductCategoriesRepository @Inject constructor(
         if (event.causeOfChange == FETCH_PRODUCT_CATEGORIES) {
             if (event.isError) {
                 loadContinuation?.resume(false)
-                // TODO: add tracking event when fetching categories fail
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_CATEGORIES_LOAD_FAILED,
+                    this.javaClass.simpleName,
+                    event.error.type.toString(),
+                    event.error.message
+                )
             } else {
                 canLoadMoreProductCategories = event.canLoadMore
-                // TODO: add tracking event when fetching categories succeeds
+                AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_LOADED)
                 loadContinuation?.resume(true)
             }
             loadContinuation = null
