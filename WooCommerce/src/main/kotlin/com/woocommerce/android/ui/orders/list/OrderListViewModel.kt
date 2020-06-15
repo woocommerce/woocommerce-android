@@ -14,6 +14,8 @@ import androidx.paging.PagedList
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
@@ -22,9 +24,14 @@ import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.
 import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardPresenter
+import com.woocommerce.android.ui.dashboard.DashboardPresenter.Companion
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -39,6 +46,9 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATION
 import org.wordpress.android.fluxc.action.NotificationAction.UPDATE_NOTIFICATION
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
+import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
@@ -47,6 +57,15 @@ import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCStatsStore
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import java.util.Locale
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -59,11 +78,14 @@ class OrderListViewModel @AssistedInject constructor(
     coroutineDispatchers: CoroutineDispatchers,
     protected val repository: OrderListRepository,
     private val orderStore: WCOrderStore,
+    private val wcStatsStore: WCStatsStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: OrderFetcher
+    private val fetcher: OrderFetcher,
+    private val currencyFormatter: CurrencyFormatter,
+    private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -96,6 +118,10 @@ class OrderListViewModel @AssistedInject constructor(
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
+    private val currency by lazy {
+        wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: "$"
+    }
+
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData<EmptyViewType?>(
                 offset = EMPTY_VIEW_THROTTLE,
@@ -121,6 +147,8 @@ class OrderListViewModel @AssistedInject constructor(
             // value in many different places in the order list view.
             _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
         }
+
+        loadStats()
     }
 
     /**
@@ -192,6 +220,7 @@ class OrderListViewModel @AssistedInject constructor(
                 activePagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
                 fetchPaymentGateways()
+                loadStats(true)
             }
         } else {
             viewState = viewState.copy(isRefreshPending = true)
@@ -364,6 +393,15 @@ class OrderListViewModel @AssistedInject constructor(
         triggerEvent(ShowErrorSnack(R.string.offline_error))
     }
 
+    fun loadStats(isForced: Boolean = false) {
+        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), DAYS, forced = isForced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
+
+        // fetch visitor stats
+        val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), DAYS, forced = isForced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
+    }
+
     override fun onCleared() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         clearLiveDataSources(activePagedListWrapper)
@@ -371,6 +409,45 @@ class OrderListViewModel @AssistedInject constructor(
         dispatcher.unregister(this)
         repository.onCleanup()
         super.onCleared()
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWCStatsChanged(event: OnWCStatsChanged) {
+        when (event.causeOfChange) {
+            FETCH_ORDER_STATS -> {
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD, "TV Orders stats - Error fetching stats: ${event.error.message}")
+                    return
+                }
+
+                // Track fresh data load
+                AnalyticsTracker.track(
+                    Stat.DASHBOARD_MAIN_STATS_LOADED,
+                    mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
+
+                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
+                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
+
+                viewState = viewState.copy(
+                    revenueStats = currencyFormatter.formatCurrency(revenueStats.values.last().toBigDecimal(), currency),
+                    orderStats = orderStats.values.last().toInt()
+                )
+            }
+
+            FETCH_VISITOR_STATS -> {
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD, "TV Orders stats - Error fetching visitor stats: ${event.error.message}")
+                    return
+                }
+
+                val visitorStats = wcStatsStore.getVisitorStats(
+                    selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
+                )
+
+                viewState = viewState.copy(visitorStats = visitorStats.values.last().toInt())
+            }
+        }
     }
 
     @Suppress("unused")
@@ -432,6 +509,8 @@ class OrderListViewModel @AssistedInject constructor(
             }
             allPagedListWrapper?.fetchFirstPage()
             processingPagedListWrapper?.fetchFirstPage()
+
+            loadStats(true)
         }
     }
 
@@ -442,7 +521,10 @@ class OrderListViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val isRefreshPending: Boolean = false,
-        val arePaymentGatewaysFetched: Boolean = false
+        val arePaymentGatewaysFetched: Boolean = false,
+        val visitorStats: Int? = null,
+        val revenueStats: String? = null,
+        val orderStats: Int? = null
     ) : Parcelable
 
     @AssistedInject.Factory
