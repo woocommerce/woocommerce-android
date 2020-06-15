@@ -24,7 +24,7 @@
                 android:layout_height="0dp"
                 android:layout_width="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/stats_view_row"
+                app:layout_constraintEnd_toStartOf="@+id/stats_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -42,13 +42,14 @@
                 tools:visibility="visible"/>
 
             <include
-                android:id="@+id/stats_view_row"
+                android:id="@+id/stats_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 layout="@layout/dashboard_main_stats_tv"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/order_list_view" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -91,6 +91,10 @@ class OrderListFragment : TopLevelFragment(),
     private val viewModel: OrderListViewModel by viewModels { viewModelFactory }
     private var listState: Parcelable? = null // Save the state of the recycler view
 
+    private val isOnTv by lazy {
+        ActivityUtils.isRunningOnTv(requireContext())
+    }
+
     // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
     // identical to the real value on the UI side.
     private var orderStatusFilter: String
@@ -257,8 +261,9 @@ class OrderListFragment : TopLevelFragment(),
             loadListForActiveTab()
         }
 
-        if (ActivityUtils.isRunningOnTv(requireContext())) {
+        if (isOnTv) {
             tabLayout.hide()
+            stats_view.show()
         }
     }
 
