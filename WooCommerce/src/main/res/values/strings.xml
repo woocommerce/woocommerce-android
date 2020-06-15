@@ -557,6 +557,8 @@
     <string name="add_product_category_empty">Enter a category name</string>
     <string name="product_category_name">Category name</string>
     <string name="product_category_parent">Parent category</string>
+    <string name="product_add_category_dialog_title">Adding category</string>
+    <string name="product_add_category_dialog_message">Please wait…</string>
     <!--
         Product images
     -->
