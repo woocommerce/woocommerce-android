@@ -53,6 +53,18 @@ data class ProductCategory(
 }
 
 /**
+ * Returns true if the passed category is in the current list of categories
+ */
+fun List<ProductCategory>.containsCategory(category: ProductCategory): Boolean {
+    this.forEach {
+        if (category.remoteCategoryId == it.remoteCategoryId) {
+            return true
+        }
+    }
+    return false
+}
+
+/**
  * The method does a Depth First Traversal of the Product Categories and returns an ordered list, which
  * is grouped by their Parent id. The sort is stable, which means that it should return the same list
  * when new categories are updated, and the sort is relative to the update.
