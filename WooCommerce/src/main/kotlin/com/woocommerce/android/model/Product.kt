@@ -73,7 +73,7 @@ data class Product(
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
-    val categories: List<Category>
+    val categories: List<ProductCategory>
 ) : Parcelable {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -93,13 +93,6 @@ data class Product(
         val name: String,
         val options: List<String>,
         val isVisible: Boolean
-    ) : Parcelable
-
-    @Parcelize
-    data class Category(
-        val id: Long,
-        val name: String,
-        val slug: String
     ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {
@@ -451,7 +444,7 @@ fun WCProductModel.toAppModel(): Product {
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         menuOrder = this.menuOrder,
         categories = this.getCategories().map {
-            Product.Category(
+            ProductCategory(
                 it.id,
                 it.name,
                 it.slug
