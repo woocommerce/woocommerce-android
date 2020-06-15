@@ -6,7 +6,8 @@ package com.woocommerce.android.model
  */
 enum class RequestResult {
     SUCCESS,
-    ERROR,
+    API_ERROR, // errors from the FluxC side
+    ERROR, // network or generic errors
     NO_ACTION_NEEDED,
     RETRY
 }
