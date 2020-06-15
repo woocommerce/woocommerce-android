@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/label_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:background="@color/color_surface"
+    android:gravity="center_horizontal"
+    android:padding="@dimen/major_300"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/visitors_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/visitors_label"
+            android:textAppearance="?attr/textAppearanceHeadline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/dashboard_stats_visitors"
+            tools:text="Visitors"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/visitors_value"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            tools:text="400"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/orders_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orders_label"
+            android:textAppearance="?attr/textAppearanceHeadline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/dashboard_stats_orders"
+            tools:text="Orders"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orders_value"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            tools:text="10"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/revenue_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/revenue_label"
+            android:textAppearance="?attr/textAppearanceHeadline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/dashboard_stats_revenue"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/revenue_value"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            tools:text="$1.6k"/>
+
+    </LinearLayout>
+
+</LinearLayout>
