@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -44,6 +45,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dashboard_main_stats_row.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.*
@@ -383,6 +385,18 @@ class OrderListFragment : TopLevelFragment(),
         }
 
         // setup observers
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.orderStats?.takeIfNotEqualTo(old?.orderStats) {
+                orders_value.text = it.toString()
+            }
+            new.revenueStats?.takeIfNotEqualTo(old?.revenueStats) {
+                revenue_value.text = it
+            }
+            new.visitorStats?.takeIfNotEqualTo(old?.visitorStats) {
+                visitors_value.text = it.toString()
+            }
+        }
+
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer {
             orderRefreshLayout?.isRefreshing = it == true
         })
