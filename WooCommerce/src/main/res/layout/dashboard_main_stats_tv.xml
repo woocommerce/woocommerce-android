@@ -3,28 +3,41 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/label_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
     android:baselineAligned="false"
-    android:background="@color/color_surface"
     android:gravity="center_horizontal"
-    android:padding="@dimen/major_300"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/visitors_layout"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderListHeader"
+            style="@style/Woo.ListHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dashboard_stats_todays_stats"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center_horizontal"
+        android:gravity="center"
+        android:background="@color/color_surface"
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/visitors_label"
-            android:textAppearance="?attr/textAppearanceHeadline4"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:paddingStart="@dimen/major_300"
+            android:paddingEnd="@dimen/major_300"
             android:text="@string/dashboard_stats_visitors"
             tools:text="Visitors"/>
 
@@ -34,21 +47,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:textColor="@color/color_primary"
+            android:textStyle="bold"
             android:text="\?"/>
 
     </LinearLayout>
 
+    <View
+        style="@style/Woo.Divider" />
+
     <LinearLayout
-        android:id="@+id/orders_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center_horizontal"
+        android:gravity="center"
+        android:background="@color/color_surface"
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orders_label"
-            android:textAppearance="?attr/textAppearanceHeadline4"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:paddingStart="@dimen/major_300"
+            android:paddingEnd="@dimen/major_300"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -61,21 +81,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:textColor="@color/color_primary"
+            android:textStyle="bold"
             tools:text="10"/>
 
     </LinearLayout>
 
+    <View
+        style="@style/Woo.Divider" />
+
     <LinearLayout
-        android:id="@+id/revenue_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center_horizontal"
+        android:gravity="center"
+        android:background="@color/color_surface"
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/revenue_label"
-            android:textAppearance="?attr/textAppearanceHeadline4"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:paddingStart="@dimen/major_300"
+            android:paddingEnd="@dimen/major_300"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -87,6 +114,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:textColor="@color/color_primary"
+            android:textStyle="bold"
             tools:text="$1.6k"/>
 
     </LinearLayout>
