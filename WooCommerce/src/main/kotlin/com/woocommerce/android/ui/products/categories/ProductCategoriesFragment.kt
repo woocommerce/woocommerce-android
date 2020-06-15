@@ -106,6 +106,9 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
                     empty_view.hide()
                 }
             }
+            new.isAddCategoryButtonVisible.takeIfNotEqualTo(old?.isAddCategoryButtonVisible) {
+                showAddCategoryButton(it)
+            }
         }
 
         viewModel.productCategories.observe(viewLifecycleOwner, Observer {
@@ -136,6 +139,10 @@ class ProductCategoriesFragment : BaseProductFragment(), OnLoadMoreListener, OnP
 
     private fun showLoadMoreProgress(show: Boolean) {
         loadMoreCategoriesProgress.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun showAddCategoryButton(show: Boolean) {
+        addProductCategoryView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun onRequestLoadMore() {

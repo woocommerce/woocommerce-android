@@ -1220,7 +1220,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val isAddCategoryButtonVisible: Boolean
+            get() = isSkeletonShown == false
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>

@@ -550,6 +550,7 @@
     <string name="product_category_empty">Add category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
     <string name="product_category_list_empty_message">Organise your products in categories</string>
+    <string name="product_add_category">Add category</string>
     <!--
         Product images
     -->
