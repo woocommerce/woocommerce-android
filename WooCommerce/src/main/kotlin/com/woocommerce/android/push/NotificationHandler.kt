@@ -497,7 +497,7 @@ class NotificationHandler @Inject constructor(
             }
         }
 
-        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId)
+        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId, noteType)
     }
 
     private fun showGroupNotificationForBuilder(
@@ -553,12 +553,12 @@ class NotificationHandler @Inject constructor(
                     .setSound(null)
                     .setVibrate(null)
 
-            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID)
+            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID, noteType)
         } else {
             // Set the individual notification we've already built as the group summary
             builder.setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID)
+            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID, noteType)
         }
     }
 
@@ -569,13 +569,15 @@ class NotificationHandler @Inject constructor(
         builder: NotificationCompat.Builder,
         context: Context,
         wpComNoteId: String,
-        pushId: Int
+        pushId: Int,
+        noteType: NotificationChannelType
     ) {
         // Open the app and load the notifications tab
         val resultIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
             putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId.toLong())
+            putExtra(MainActivity.FIELD_NOTIFICATION_TYPE, noteType.name)
             if (pushId == GROUP_NOTIFICATION_ID) {
                 putExtra(MainActivity.FIELD_OPENED_FROM_PUSH_GROUP, true)
             }
