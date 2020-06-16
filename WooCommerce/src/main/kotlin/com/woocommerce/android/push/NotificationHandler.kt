@@ -46,6 +46,7 @@ import java.net.URLDecoder
 import java.util.concurrent.ExecutionException
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
 class NotificationHandler @Inject constructor(
@@ -295,8 +296,15 @@ class NotificationHandler @Inject constructor(
 
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
 
-        val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
-        ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
+        // New order notifications have the same notification_note_id. So if there is a new incoming notification
+        // when there is an existing new order notification in the notification tray,
+        // the cha ching sound is not played and the new notification replaces the existing notification
+        // See issue for more details: https://github.com/woocommerce/woocommerce-android/issues/1076
+        // This solution is a temporary HACK to generate a random number for each new order notification
+        // and use that number to group notifications along with notification_note_id
+        val randomNumber = if (noteType == NEW_ORDER) Random.nextInt() else 0
+        val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId, randomNumber)
+        ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = data
 
         if (NotificationsUtils.isNotificationsEnabled(context)) {
             bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_RECEIVED, data)
@@ -326,10 +334,10 @@ class NotificationHandler @Inject constructor(
      * For a given remote note ID, return a unique local ID to track that notification with, or return
      * the existing local ID if a notification matching the remote note ID is already being displayed.
      */
-    private fun getLocalPushIdForWpComNoteId(wpComNoteId: String): Int {
+    private fun getLocalPushIdForWpComNoteId(wpComNoteId: String, randomNumber: Int): Int {
         // Update notification content for the same noteId if it is already showing
         for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
-            val noteBundle = ACTIVE_NOTIFICATIONS_MAP[id]
+            val noteBundle = ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(id, randomNumber)]
             if (noteBundle?.getString(PUSH_ARG_NOTE_ID, "") == wpComNoteId) {
                 return id
             }
@@ -338,6 +346,8 @@ class NotificationHandler @Inject constructor(
         // Notification isn't already showing
         return PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
     }
+
+    private fun getLocalPushId(wpComNoteId: Int, randomNumber: Int) = wpComNoteId + randomNumber
 
     private fun getLargeIconBitmap(context: Context, iconUrl: String?, shouldCircularizeIcon: Boolean): Bitmap? {
         iconUrl?.let {
