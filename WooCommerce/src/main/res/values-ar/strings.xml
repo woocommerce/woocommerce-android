@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-27 14:54:04+0000
+Translation-Revision-Date: 2020-06-09 16:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_sale_date_to">حتى %1$s</string>
     <string name="product_wip_message">أضفنا وظائف تحرير إضافية إلى المنتجات. يمكنك الآن تحديث الصور، وتحرير المنتجات والإعدادات، ومشاركة المنتجات!</string>
     <string name="product_wip_title">تتوافر خيارات تحرير جديدة</string>
     <string name="product_limited_editing_title">تتوافر وظائف تحرير محدودة</string>

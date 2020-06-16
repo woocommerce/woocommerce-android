@@ -1,5 +1,0 @@
-4.3:
-* Menyaring dan mengurutkan Produk dari tab Produk.
-* Pelacakan pengiriman muncul di layar detail pesanan. Pesanan di tanggal yang akan datang muncul di tab Semua pesanan.
-* Fungsionalitas penyuntingan produk baru kami sedang dalam tahap beta. Cobalah!
-* Memperbaiki beberapa error yang menimbulkan crash dan warna teks di tiket dukungan pada mode gelap.

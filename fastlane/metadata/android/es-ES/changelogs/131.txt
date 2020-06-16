@@ -1,5 +1,0 @@
-4.3:
-* Filtra y ordena productos desde la pestaña Productos.
-* El seguimiento de envío se muestran en la pantalla de detalles del pedido. Los pedidos con fecha posterior a la actual se muestran en la pestaña Todos los pedidos.
-* La funcionalidad de edición de productos está disponible en versión beta. ¡Pruébala!
-* Hemos corregido muchos problemas, así como el color del texto de las incidencias en modo oscuro.

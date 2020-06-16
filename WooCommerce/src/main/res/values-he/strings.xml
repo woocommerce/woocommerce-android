@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-05-26 10:54:04+0000
+Translation-Revision-Date: 2020-06-10 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_sale_date_to">עד %1$s</string>
     <string name="product_wip_message">הוספנו עוד אפשרויות לעריכה במוצרים. כעת אפשר לעדכן תמונות, לערוך את הגדרות המוצרים ולשתף מוצרים!</string>
     <string name="product_wip_title">אפשרויות עריכה נוספות זמינות</string>
     <string name="product_limited_editing_title">עריכה מוגבלת זמינה</string>
