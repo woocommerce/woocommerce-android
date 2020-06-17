@@ -30,9 +30,9 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     fun initView(orderModel: WCOrderModel, orderStatus: WCOrderStatusModel, listener: OrderStatusListener) {
         val dateStr = DateUtils.isToday(orderModel.dateCreated)
             ?.let { isToday ->
-                when {
-                    isToday -> DateUtils.getTimeString(context, orderModel.dateCreated)
-                    else -> DateUtils.getMediumDateFromString(context, orderModel.dateCreated)
+                when(isToday) {
+                    true -> DateUtils.getTimeString(context, orderModel.dateCreated)
+                    false -> DateUtils.getMediumDateFromString(context, orderModel.dateCreated)
                 }
             }.orEmpty()
 
