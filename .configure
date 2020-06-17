@@ -1,7 +1,7 @@
 {
   "project_name": "woocommerce-android",
-  "branch": "master",
-  "pinned_hash": "229445420aaa677cf46de5fa644f142a3e27541e",
+  "branch": "feature/woocommerce-shared-key",
+  "pinned_hash": "e5d85f939b13fa67902eacf1b4c60c3d1e7bbdb9",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/gradle.properties",
