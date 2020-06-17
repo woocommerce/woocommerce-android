@@ -53,7 +53,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 
         orderStatus_edit.setOnClickListener {
             AnalyticsTracker.track(
-                Stat.ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED, mapOf("status" to orderModel.status))
+                    Stat.ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED, mapOf("status" to orderModel.status))
             listener.openOrderStatusSelector()
         }
     }
