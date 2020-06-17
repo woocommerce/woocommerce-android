@@ -84,6 +84,11 @@ class ProductVariantViewModel @AssistedInject constructor(
         displayVariation()
     }
 
+
+    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.shippingClass ?: ""
+
     /**
      * Called when an existing image is selected in Product variant screen
      */
@@ -210,7 +215,8 @@ class ProductVariantViewModel @AssistedInject constructor(
         val priceWithCurrency: String? = null,
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
-        val gmtOffset: Float = 0f
+        val gmtOffset: Float = 0f,
+        val shippingClass: String? = null
     ) : Parcelable
 
     @AssistedInject.Factory

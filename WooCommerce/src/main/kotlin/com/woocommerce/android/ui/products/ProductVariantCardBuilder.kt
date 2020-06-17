@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.ProductVariant
@@ -37,7 +39,8 @@ class ProductVariantCardBuilder(
             properties = listOf(
                 variation.visibility(),
                 variation.description(),
-                variation.price()
+                variation.price(),
+                variation.shipping()
             ).filterNotEmpty()
         )
     }
@@ -116,5 +119,41 @@ class ProductVariantCardBuilder(
 //                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
 //                )
 //            }
+    }
+
+    private fun ProductVariant.shipping(): ProductProperty? {
+        return if (!this.isVirtual) {
+            val weightWithUnits = this.getWeightWithUnits(parameters.weightUnit)
+            val sizeWithUnits = this.getSizeWithUnits(parameters.dimensionUnit)
+            val hasShippingInfo = weightWithUnits.isNotEmpty() ||
+                sizeWithUnits.isNotEmpty() ||
+                this.shippingClass.isNotEmpty()
+            val shippingGroup = if (hasShippingInfo) {
+                mapOf(
+                    Pair(resources.getString(string.product_weight), weightWithUnits),
+                    Pair(resources.getString(string.product_dimensions), sizeWithUnits),
+                    Pair(
+                        resources.getString(string.product_shipping_class),
+                        viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
+                    )
+                )
+            } else mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+
+            PropertyGroup(
+                string.product_shipping,
+                shippingGroup,
+                drawable.ic_gridicons_shipping,
+                hasShippingInfo
+            )
+            // TODO: This will be used once the variants are editable
+//            {
+//                viewModel.onEditProductCardClicked(
+//                    ViewProductShipping(this.remoteId),
+//                    PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
+//                )
+//            }
+        } else {
+            null
+        }
     }
 }
