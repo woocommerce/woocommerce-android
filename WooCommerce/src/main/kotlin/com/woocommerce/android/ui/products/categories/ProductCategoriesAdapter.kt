@@ -106,7 +106,7 @@ class ProductCategoriesAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem.category.isSameCategory(newItem.category)
+            return oldItem.category == newItem.category
         }
     }
 }

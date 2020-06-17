@@ -26,13 +26,6 @@ data class ProductCategory(
         )
     }
 
-    fun isSameCategory(category: ProductCategory): Boolean {
-        return remoteCategoryId == category.remoteCategoryId &&
-            name == category.name &&
-            slug == category.slug &&
-            parentId == category.parentId
-    }
-
     /**
      * Computes the cascading margin for the category name according to its parent
      *
