@@ -25,12 +25,4 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Divider"
-        android:layout_width="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/categoryName"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
