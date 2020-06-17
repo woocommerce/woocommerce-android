@@ -5,6 +5,7 @@ import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.text.DateFormatSymbols
@@ -233,13 +234,14 @@ object DateUtils {
     /**
      * Given a date of format MMMM d, YYYY, returns true if it's today
      *
-     * returns false if the argument is not a valid date string.
+     * returns null if the argument is not a valid date string.
      */
     fun isToday(dateString: String): Boolean? {
         return try {
             val then = DateTimeUtils.dateUTCFromIso8601(dateString)
             DateUtils.isSameDay(Date(), then)
         } catch (e: Exception) {
+            WooLog.e(T.UTILS, "Unable to match dateString value with today date", e)
             null
         }
     }
