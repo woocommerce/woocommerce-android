@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -43,6 +44,7 @@ interface OrderDetailContract {
         var isRefreshPending: Boolean
         fun showSkeleton(show: Boolean)
         fun showRefunds(order: WCOrderModel, refunds: List<Refund> = emptyList())
+        fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel> = emptyList())
         fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)

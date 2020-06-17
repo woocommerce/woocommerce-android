@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DE
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -49,6 +50,7 @@ import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
@@ -65,6 +67,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -74,6 +77,7 @@ class OrderDetailPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val refundStore: WCRefundStore,
     private val productStore: WCProductStore,
+    private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
@@ -103,6 +107,7 @@ class OrderDetailPresenter @Inject constructor(
     private var isRefreshingOrderStatusOptions = false
 
     private var deferredRefunds: Deferred<WooResult<List<WCRefundModel>>>? = null
+    private var deferredShippingLabels: Deferred<WooResult<List<WCShippingLabelModel>>>? = null
     override val coroutineScope = CoroutineScope(dispatchers.main)
 
     override fun takeView(view: OrderDetailContract.View) {
@@ -136,6 +141,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadRefunds()
+                loadShippingLabels()
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
@@ -259,6 +265,41 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    private fun loadShippingLabels() {
+        orderModel?.let {
+            val cachedShippingLabels = loadShippingLabelsFromDb(it)
+            orderView?.showShippingLabels(it, cachedShippingLabels)
+
+            coroutineScope.launch {
+                fetchShippingLabels(it.remoteOrderId)
+                val freshShippingLabels = awaitShippingLabels()
+                orderView?.showShippingLabels(it, freshShippingLabels)
+            }
+        }
+    }
+
+    private fun loadShippingLabelsFromDb(order: WCOrderModel): List<ShippingLabel> {
+        return shippingLabelStore
+            .getShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId)
+            .map { it.toAppModel() }
+    }
+
+    private fun fetchShippingLabels(remoteOrderId: Long) {
+        deferredShippingLabels = coroutineScope.async {
+            shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
+        }
+    }
+
+    private suspend fun awaitShippingLabels(): List<ShippingLabel> {
+        return deferredShippingLabels?.await()?.let { shippingLabelResult ->
+            if (!shippingLabelResult.isError) {
+                shippingLabelResult.model?.map { it.toAppModel() } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        } ?: emptyList()
+    }
+
     /**
      * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
      * and if product exists in the local cache.
@@ -375,6 +416,10 @@ class OrderDetailPresenter @Inject constructor(
                     orderModel?.let { order ->
                         fetchRefunds(order.remoteOrderId)
                         val refunds = awaitRefunds()
+
+                        fetchShippingLabels(order.remoteOrderId)
+                        awaitShippingLabels()
+
                         orderView?.showOrderDetail(order, isFreshData = true)
                         orderView?.showRefunds(order, refunds)
                         orderView?.showSkeleton(false)

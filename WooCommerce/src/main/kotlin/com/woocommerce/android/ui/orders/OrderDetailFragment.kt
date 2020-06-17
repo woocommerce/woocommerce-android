@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -224,6 +225,10 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         } else {
             orderDetail_paymentInfo.showRefundTotal()
         }
+    }
+
+    override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
+        TODO("Not yet implemented")
     }
 
     override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
