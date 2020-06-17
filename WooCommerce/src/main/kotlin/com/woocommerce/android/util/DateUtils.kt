@@ -235,12 +235,12 @@ object DateUtils {
      *
      * returns false if the argument is not a valid date string.
      */
-    fun isToday(dateString: String): Boolean {
+    fun isToday(dateString: String): Boolean? {
         return try {
             val then = DateTimeUtils.dateUTCFromIso8601(dateString)
             DateUtils.isSameDay(Date(), then)
         } catch (e: Exception) {
-            false
+            null
         }
     }
 

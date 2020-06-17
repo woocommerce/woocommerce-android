@@ -11,7 +11,7 @@ import com.woocommerce.android.extensions.formatToMonthDateOnly
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 class DateUtilsTest {
     @Test
@@ -489,7 +489,7 @@ class DateUtilsTest {
     }
 
     @Test
-    fun `isToday() returns false when the date is empty`() {
-        assertFalse(DateUtils.isToday(""))
+    fun `isToday() returns null when the date string is empty`() {
+        assertNull(DateUtils.isToday(""))
     }
 }
