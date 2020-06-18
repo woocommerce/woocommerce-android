@@ -9,6 +9,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
@@ -159,6 +160,12 @@ class ProductNavigator @Inject constructor() {
                 val action = ProductSettingsFragmentDirections
                         .actionProductSettingsFragmentToProductMenuOrderFragment(target.menuOrder)
                 fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductCategories -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductCategoriesFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

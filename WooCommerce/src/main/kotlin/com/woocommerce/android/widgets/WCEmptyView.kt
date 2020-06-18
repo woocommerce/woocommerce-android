@@ -19,6 +19,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
@@ -38,6 +39,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         FILTER_RESULTS,
         NETWORK_ERROR,
         NETWORK_OFFLINE,
+        PRODUCT_CATEGORY_LIST
     }
 
     init {
@@ -161,6 +163,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = null
                 buttonText = context.getString(R.string.retry)
                 drawableId = R.drawable.ic_woo_error_state
+            }
+            PRODUCT_CATEGORY_LIST -> {
+                isTitleBold = true
+                title = context.getString(R.string.product_category_list_empty_title)
+                message = context.getString(R.string.product_category_list_empty_message)
+                buttonText = null
+                drawableId = R.drawable.img_empty_products
             }
         }
 
