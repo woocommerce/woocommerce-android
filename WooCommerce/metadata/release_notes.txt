@@ -1,3 +1,2 @@
-* <b>New</b>: Added functionality to image and product management. Head to “Settings” in “My Store” to turn on new features!
-* <b>UI improvements</b>: Brought back the W notification icon for better visibility, fixed the text color on support tickets in dark mode, minor style tweaks to login screens.
-* <b>Fixes</b>: Product details display exact stock status, plugged a potential memory leak when switching between stores.
+- Product enhancements: Update product images, product settings, and share product links right from the app.
+- California users can view a new privacy notice.
