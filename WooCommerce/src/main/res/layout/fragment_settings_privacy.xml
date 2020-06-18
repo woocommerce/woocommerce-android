@@ -47,6 +47,8 @@
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginTop="@dimen/minor_100"
+        android:paddingEnd="0dp"
+        android:paddingStart="0dp"
         android:text="@string/learn_more"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privacy_share_info"/>
@@ -81,9 +83,28 @@
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginTop="@dimen/minor_100"
+        android:paddingEnd="0dp"
+        android:paddingStart="0dp"
         android:text="@string/settings_privacy_policy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privacy_policy_info"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonPrivacyPolicyCA"
+        style="@style/Woo.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_app_title_aligned"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:paddingEnd="0dp"
+        android:paddingStart="0dp"
+        android:textAlignment="textEnd"
+        android:text="@string/settings_privacy_policy_ca"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonPrivacyPolicy" />
 
     <View
         android:id="@+id/divider3"
@@ -91,7 +112,7 @@
         android:layout_marginTop="@dimen/minor_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonPrivacyPolicy"/>
+        app:layout_constraintTop_toBottomOf="@+id/buttonPrivacyPolicyCA"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_tracking_info"
@@ -115,6 +136,8 @@
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginTop="@dimen/minor_100"
         android:layout_marginBottom="@dimen/minor_100"
+        android:paddingEnd="0dp"
+        android:paddingStart="0dp"
         android:text="@string/learn_more"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privacy_tracking_info"/>

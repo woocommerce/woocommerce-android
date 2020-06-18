@@ -24,7 +24,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
 
@@ -65,13 +64,9 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             findNavController().navigateUp()
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-            iconTrash.setOnClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
-                confirmRemoveProductImage()
-            }
-        } else {
-            iconTrash.visibility = View.GONE
+        iconTrash.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
+            confirmRemoveProductImage()
         }
 
         savedInstanceState?.let { bundle ->
