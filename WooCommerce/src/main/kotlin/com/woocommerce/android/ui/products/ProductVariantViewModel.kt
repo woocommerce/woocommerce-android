@@ -9,7 +9,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
@@ -17,8 +17,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariationImage
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariationImageChooser
 import com.woocommerce.android.ui.products.ProductVariantViewModel.VariationExitEvent.ExitVariation
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -84,26 +82,6 @@ class ProductVariantViewModel @AssistedInject constructor(
         displayVariation()
     }
 
-    /**
-     * Called when an existing image is selected in Product variant screen
-     */
-    fun onImageGalleryClicked(image: Product.Image) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.variant?.let {
-            triggerEvent(ViewVariationImage(it, image))
-        }
-    }
-
-    /**
-     * Called when the add image icon is clicked in Product variant screen
-     */
-    fun onAddImageClicked() {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.variant?.let {
-            triggerEvent(ViewVariationImageChooser(it.remoteVariationId))
-        }
-    }
-
     // TODO: This will be used in edit mode
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
@@ -144,6 +122,7 @@ class ProductVariantViewModel @AssistedInject constructor(
 
     fun onVariantImageClicked() {
         variant.image?.let {
+            AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
             triggerEvent(ShowVariantImage(it))
         }
     }
