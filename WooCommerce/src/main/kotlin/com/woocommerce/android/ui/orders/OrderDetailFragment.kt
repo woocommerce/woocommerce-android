@@ -228,7 +228,9 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
-        TODO("Not yet implemented")
+        orderDetail_shippingLabelList.initView(
+            shippingLabels, currencyFormatter.buildBigDecimalFormatter(order.currency)
+        )
     }
 
     override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {

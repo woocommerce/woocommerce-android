@@ -1,6 +1,7 @@
 package com.woocommerce.android.extensions
 
 import org.apache.commons.text.StringEscapeUtils
+import java.util.Locale
 
 /**
  * Checks if a given string is a number (supports positive or negative numbers)
@@ -57,4 +58,15 @@ fun String.fastStripHtml(): String {
 
     // use regex to strip tags, then convert entities in the result
     return htmlString.substring(start)
+}
+
+/**
+ * Translates a two-character country code into a human
+ * readable label.
+ *
+ * Example: US -> United States
+ */
+fun String.getCountryLabelByCountryCode(): String {
+    val locale = Locale(Locale.getDefault().language, this)
+    return locale.displayCountry
 }
