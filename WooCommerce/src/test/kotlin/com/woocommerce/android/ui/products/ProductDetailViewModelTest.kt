@@ -416,8 +416,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(sortedAndStyledList[1].category).isEqualTo(productCategories[7])
         assertThat(sortedAndStyledList[2].category).isEqualTo(productCategories[10])
 
-        assertThat(sortedAndStyledList[7].margin).isEqualTo(32)
-        assertThat(sortedAndStyledList[8].margin).isEqualTo(64)
-        assertThat(sortedAndStyledList[9].margin).isEqualTo(96)
+        assertThat(sortedAndStyledList[7].margin).isEqualTo(20)
+        assertThat(sortedAndStyledList[8].margin).isEqualTo(40)
+        assertThat(sortedAndStyledList[9].margin).isEqualTo(60)
     }
 }
