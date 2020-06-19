@@ -15,6 +15,5 @@ interface PrivacySettingsContract {
     interface View : BaseView<Presenter> {
         fun showCookiePolicy()
         fun showPrivacyPolicy()
-        fun showPrivacyPolicyCA()
     }
 }
