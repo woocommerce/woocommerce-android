@@ -15,7 +15,7 @@ data class ProductCategory(
     val parentId: Long = 0L
 ) : Parcelable {
     companion object {
-        const val DEFAULT_PRODUCT_CATEGORY_MARGIN = 32
+        const val DEFAULT_PRODUCT_CATEGORY_MARGIN = 20
     }
 
     fun toProductCategory(): ProductCategory {
