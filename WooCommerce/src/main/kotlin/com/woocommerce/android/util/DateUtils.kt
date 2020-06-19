@@ -241,7 +241,7 @@ object DateUtils {
             val then = DateTimeUtils.dateUTCFromIso8601(dateString)
             DateUtils.isSameDay(Date(), then)
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Unable to match dateString value with today date", e)
+            WooLog.e(T.UTILS, "Unable to match dateString with today date. (current dateString value: $dateString)", e)
             null
         }
     }
