@@ -86,6 +86,12 @@
         <attr name="android:enabled"/>
     </declare-styleable>
 
+    <declare-styleable name="ShippingLabelItemView">
+        <attr name="shippingLabelItemIcon" format="reference"/>
+        <attr name="shippingLabelItemTitle" format="string"/>
+        <attr name="shippingLabelItemValue" format="string"/>
+    </declare-styleable>
+
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
         <attr name="aevButton" format="string"/>
