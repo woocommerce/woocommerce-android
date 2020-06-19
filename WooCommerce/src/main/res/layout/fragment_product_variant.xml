@@ -34,6 +34,7 @@
                     android:id="@+id/variationImage"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/image_major_120"
+                    android:minWidth="@dimen/image_major_100"
                     android:layout_margin="@dimen/major_100"
                     android:contentDescription="@string/product_image_content_description"
                     android:scaleType="center"
