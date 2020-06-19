@@ -20,6 +20,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
     currencyFormatter: CurrencyFormatter,
     productImagesServiceWrapper: ProductImagesServiceWrapper,
     resources: ResourceProvider,
+    productCategoryRepository: MockedProductCategoriesRepository,
     @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
         arg0,
@@ -30,7 +31,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         currencyFormatter,
         wooCommerceStore,
         productImagesServiceWrapper,
-        resources
+        resources,
+        productCategoryRepository
 ) {
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<MockedProductDetailViewModel>

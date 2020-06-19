@@ -70,6 +70,7 @@ data class Product(
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
+    val categories: List<ProductCategory>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -130,7 +131,8 @@ data class Product(
                 externalUrl == product.externalUrl &&
                 buttonText == product.buttonText &&
                 menuOrder == product.menuOrder &&
-                isSameImages(product.images)
+                isSameImages(product.images) &&
+                isSameCategories(product.categories)
     }
 
     /**
@@ -218,6 +220,17 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the product categories
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasCategoryChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            !isSameCategories(it.categories)
+        } ?: false
+    }
+
+    /**
      * Compares this product's images with the passed list, returns true only if both lists contain
      * the same images in the same order
      */
@@ -227,6 +240,23 @@ data class Product(
         }
         for (i in images.indices) {
             if (images[i].id != updatedImages[i].id) {
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
+     * Compares this product's categories with the passed list, returns true only if both lists contain
+     * the same categories
+     */
+    private fun isSameCategories(updatedCategories: List<ProductCategory>): Boolean {
+        if (this.categories.size != updatedCategories.size) {
+            return false
+        }
+
+        categories.forEach {
+            if (!updatedCategories.containsCategory(it)) {
                 return false
             }
         }
@@ -277,7 +307,8 @@ data class Product(
                     purchaseNote = updatedProduct.purchaseNote,
                     externalUrl = updatedProduct.externalUrl,
                     buttonText = updatedProduct.buttonText,
-                    menuOrder = updatedProduct.menuOrder
+                    menuOrder = updatedProduct.menuOrder,
+                    categories = updatedProduct.categories
             )
         } ?: this.copy()
     }
@@ -291,6 +322,18 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
                 json.addProperty("id", image.id)
                 json.addProperty("name", image.name)
                 json.addProperty("source", image.source)
+            })
+        }
+        return jsonArray.toString()
+    }
+
+    fun categoriesToJson(): String {
+        val jsonArray = JsonArray()
+        for (category in categories) {
+            jsonArray.add(JsonObject().also { json ->
+                json.addProperty("id", category.remoteCategoryId)
+                json.addProperty("name", category.name)
+                json.addProperty("slug", category.slug)
             })
         }
         return jsonArray.toString()
@@ -336,6 +379,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.externalUrl = externalUrl
         it.buttonText = buttonText
         it.menuOrder = menuOrder
+        it.categories = categoriesToJson()
     }
 }
 
@@ -404,7 +448,14 @@ fun WCProductModel.toAppModel(): Product {
         soldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
-        menuOrder = this.menuOrder
+        menuOrder = this.menuOrder,
+        categories = this.getCategories().map {
+            ProductCategory(
+                it.id,
+                it.name,
+                it.slug
+            )
+        }
     )
 }
 

@@ -9,6 +9,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
@@ -81,11 +82,9 @@ class ProductVariantViewModel @AssistedInject constructor(
         displayVariation()
     }
 
-
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.shippingClass ?: ""
-
 
     private suspend fun loadShippingClassDependencies() {
         // Fetch current site's shipping class only if a shipping class is assigned to the product and if
@@ -136,6 +135,7 @@ class ProductVariantViewModel @AssistedInject constructor(
 
     fun onVariantImageClicked() {
         variant.image?.let {
+            AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
             triggerEvent(ShowVariantImage(it))
         }
     }

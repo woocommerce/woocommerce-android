@@ -44,10 +44,5 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductSlug(val slug: String) : ProductNavigationTarget()
     data class ViewProductMenuOrder(val menuOrder: Int) : ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
-
-    data class ViewVariationImage(
-        val variant: ProductVariant,
-        val imageModel: Product.Image? = null
-    ) : ProductNavigationTarget()
-    data class ViewVariationImageChooser(val variationId: Long) : ProductNavigationTarget()
+    data class ViewProductCategories(val remoteId: Long) : ProductNavigationTarget()
 }
