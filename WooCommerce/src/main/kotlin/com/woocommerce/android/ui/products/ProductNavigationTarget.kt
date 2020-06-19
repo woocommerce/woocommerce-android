@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
