@@ -89,23 +89,7 @@ class ProductVariantViewModel @AssistedInject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.shippingClass ?: ""
 
-    /**
-     * Called when an existing image is selected in Product variant screen
-     */
-    fun onImageGalleryClicked(image: Product.Image) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.variant?.let {
-            triggerEvent(ViewVariationImage(it, image))
-        }
-    }
 
-    /**
-     * Called when the add image icon is clicked in Product variant screen
-     */
-    fun onAddImageClicked() {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.variant?.let {
-            triggerEvent(ViewVariationImageChooser(it.remoteVariationId))
         }
     }
 
