@@ -9,7 +9,6 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
@@ -17,8 +16,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariationImage
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewVariationImageChooser
 import com.woocommerce.android.ui.products.ProductVariantViewModel.VariationExitEvent.ExitVariation
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -31,6 +28,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -90,6 +88,12 @@ class ProductVariantViewModel @AssistedInject constructor(
             ?: viewState.shippingClass ?: ""
 
 
+    private suspend fun loadShippingClassDependencies() {
+        // Fetch current site's shipping class only if a shipping class is assigned to the product and if
+        // the shipping class is not available in the local db
+        val shippingClassId = variant.shippingClassId
+        if (shippingClassId != 0L && productRepository.getProductShippingClassByRemoteId(shippingClassId) == null) {
+            productRepository.fetchProductShippingClassById(shippingClassId)
         }
     }
 
@@ -145,11 +149,17 @@ class ProductVariantViewModel @AssistedInject constructor(
 
     private fun updateCards() {
         viewState.variant?.let {
-            launch(dispatchers.computation) {
-                val cards = cardBuilder.buildPropertyCards(it)
-                withContext(dispatchers.main) {
-                    _variantDetailCards.value = cards
+            launch {
+                if (_variantDetailCards.value == null) {
+                    viewState = viewState.copy(isSkeletonShown = true)
                 }
+                delay(1000)
+                val cards = withContext(dispatchers.io) {
+                    loadShippingClassDependencies()
+                    cardBuilder.buildPropertyCards(it)
+                }
+                _variantDetailCards.value = cards
+                viewState = viewState.copy(isSkeletonShown = false)
             }
         }
     }

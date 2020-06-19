@@ -125,7 +125,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.show(app_bar_layout, R.layout.skeleton_variant_detail, delayed = true)
         } else {
             skeletonView.hide()
         }
