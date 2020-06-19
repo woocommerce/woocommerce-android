@@ -8,16 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
-        android:paddingTop="@dimen/margin_medium_large"
-        android:paddingBottom="@dimen/margin_medium_large">
+        android:paddingTop="@dimen/minor_100"
+        android:paddingBottom="@dimen/minor_100">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/addCategoriesButton"
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
             android:text="@string/product_add_category"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
