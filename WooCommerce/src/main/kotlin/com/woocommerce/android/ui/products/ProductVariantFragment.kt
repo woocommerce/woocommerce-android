@@ -116,7 +116,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
             variationImage.visibility = View.VISIBLE
             GlideApp.with(this)
                 .load(variation.image.source)
-                .load(R.drawable.ic_product)
+                .placeholder(R.drawable.ic_product)
                 .into(variationImage)
             variationImage.setOnClickListener {
                 viewModel.onVariantImageClicked()

@@ -28,7 +28,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -153,7 +152,6 @@ class ProductVariantViewModel @AssistedInject constructor(
                 if (_variantDetailCards.value == null) {
                     viewState = viewState.copy(isSkeletonShown = true)
                 }
-                delay(1000)
                 val cards = withContext(dispatchers.io) {
                     loadShippingClassDependencies()
                     cardBuilder.buildPropertyCards(it)
