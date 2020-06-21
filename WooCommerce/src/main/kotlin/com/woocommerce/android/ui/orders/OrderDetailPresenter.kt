@@ -139,6 +139,7 @@ class OrderDetailPresenter @Inject constructor(
             orderView?.showRefunds(cachedOrderDetailUiItem.orderModel, cachedOrderDetailUiItem.refunds)
             orderView?.showShippingLabels(cachedOrderDetailUiItem.orderModel, cachedOrderDetailUiItem.shippingLabels)
             orderView?.showOrderShipmentTrackings(cachedOrderDetailUiItem.shipmentTrackingList)
+            orderView?.showProductList(order, cachedOrderDetailUiItem.refunds, cachedOrderDetailUiItem.shippingLabels)
             fetchOrderDetailInfo(it)
         }
     }
@@ -149,6 +150,7 @@ class OrderDetailPresenter @Inject constructor(
             orderView?.showRefunds(freshOrderDetailUiItem.orderModel, freshOrderDetailUiItem.refunds)
             orderView?.showShippingLabels(freshOrderDetailUiItem.orderModel, freshOrderDetailUiItem.shippingLabels)
             orderView?.showOrderShipmentTrackings(freshOrderDetailUiItem.shipmentTrackingList)
+            orderView?.showProductList(order, freshOrderDetailUiItem.refunds, freshOrderDetailUiItem.shippingLabels)
         }
     }
 

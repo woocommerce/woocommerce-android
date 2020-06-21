@@ -47,6 +47,7 @@ interface OrderDetailContract {
         fun showSkeleton(show: Boolean)
         fun showRefunds(order: WCOrderModel, refunds: List<Refund> = emptyList())
         fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel> = emptyList())
+        fun showProductList(order: WCOrderModel, refunds: List<Refund>, shippingLabels: List<ShippingLabel>)
         fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)

@@ -228,6 +228,17 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         )
     }
 
+    override fun showProductList(order: WCOrderModel, refunds: List<Refund>, shippingLabels: List<ShippingLabel>) {
+        // populate the Order Product List Card if not all products are associated with any of the shipping labels
+        // available or if there is at least 1 product that is not refunded
+        val orderModel = order.toAppModel()
+        if (orderModel.hasUnpackagedProducts(shippingLabels) && orderModel.hasNonRefundedItems(refunds)) {
+            orderDetail_productList.show()
+        } else {
+            orderDetail_productList.hide()
+        }
+    }
+
     override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
         order?.let {
             // set the title to the order number

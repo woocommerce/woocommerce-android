@@ -93,6 +93,12 @@ data class Order(
     }
 
     fun hasNonRefundedItems(refunds: List<Refund>): Boolean = getMaxRefundQuantities(refunds).values.any { it > 0 }
+
+    fun hasUnpackagedProducts(shippingLabels: List<ShippingLabel>): Boolean {
+        val productNames = mutableSetOf<String>()
+        shippingLabels.map { productNames.addAll(it.productNames) }
+        return this.items.size != productNames.size
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {
