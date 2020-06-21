@@ -8,6 +8,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.ProductImageMap
@@ -80,6 +81,71 @@ class OrderDetailProductListView @JvmOverloads constructor(
 
         productList_lblProduct.setText(
             if (filteredItems.size > 1) {
+                R.string.orderdetail_product_multiple
+            } else {
+                R.string.orderdetail_product
+            }
+        )
+
+        productList_products.apply {
+            setHasFixedSize(false)
+            layoutManager = viewManager
+            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
+            adapter = viewAdapter
+
+            if (itemDecorationCount == 0) {
+                addItemDecoration(
+                    AlignedDividerDecoration(
+                        context,
+                        DividerItemDecoration.VERTICAL,
+                        R.id.productInfo_name,
+                        padding = context.resources.getDimensionPixelSize(R.dimen.major_100)
+                    )
+                )
+            }
+
+            // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
+            // and only processes the first click event. More details on this issue can be found here:
+            // https://github.com/woocommerce/woocommerce-android/issues/2074
+            isMotionEventSplittingEnabled = false
+        }
+
+        updateView(orderModel, orderListener)
+    }
+
+    /**
+     * Initialize and format this view.
+     *
+     * @param [orderModel] The order
+     * @param [orderItems] list of products to display.
+     * @param [productImageMap] Images for products.
+     * @param [expanded] If true, expanded view will be shown, else collapsed view.
+     * @param [formatCurrencyForDisplay] Function to use for formatting currencies for display.
+     * @param [orderListener] Listener for routing order click actions. If null, the buttons will be hidden.
+     * @param [productListener] Listener for routing product click actions.
+     */
+    fun initView(
+        orderModel: WCOrderModel,
+        orderItems: List<Order.Item>,
+        productImageMap: ProductImageMap,
+        expanded: Boolean,
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        orderListener: OrderActionListener? = null,
+        productListener: OrderProductActionListener? = null
+    ) {
+        isExpanded = expanded
+
+        val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        viewAdapter = OrderDetailProductListAdapter(
+            orderItems,
+            productImageMap,
+            formatCurrencyForDisplay,
+            isExpanded,
+            productListener
+        )
+
+        productList_lblProduct.setText(
+            if (orderItems.size > 1) {
                 R.string.orderdetail_product_multiple
             } else {
                 R.string.orderdetail_product

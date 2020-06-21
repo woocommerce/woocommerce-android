@@ -233,6 +233,15 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         // available or if there is at least 1 product that is not refunded
         val orderModel = order.toAppModel()
         if (orderModel.hasUnpackagedProducts(shippingLabels) && orderModel.hasNonRefundedItems(refunds)) {
+            orderDetail_productList.initView(
+                orderModel = order,
+                orderItems = orderModel.getUnpackagedAndNonRefundedProducts(refunds, shippingLabels),
+                productImageMap = productImageMap,
+                expanded = false,
+                formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                orderListener = this,
+                productListener = this
+            )
             orderDetail_productList.show()
         } else {
             orderDetail_productList.hide()
