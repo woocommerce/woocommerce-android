@@ -17,11 +17,12 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.getCountryLabelByCountryCode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.getEnvelopeAddress
 import com.woocommerce.android.model.loadProductItems
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.util.AddressUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_shipping_label_list.view.*
 import kotlinx.android.synthetic.main.order_detail_shipping_label_list_item.view.*
 import java.math.BigDecimal
@@ -122,8 +123,16 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                 itemView.shippingLabelList_lblPackage.text = context.getString(
                     R.string.orderdetail_shipping_label_item_header, adapterPosition + 1
                 )
-
                 itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(shippingLabel.trackingNumber)
+
+                shippingLabel.trackingLink?.let {
+                    itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(true)
+                    itemView.shippingLabelItem_trackingNumber.setTrackingLinkClickListener {
+                        ChromeCustomTabUtils.launchUrl(context, it)
+                        AppRatingDialog.incrementInteractions()
+                    }
+                } ?: itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(false)
+
                 itemView.shippingLabelItem_packageInfo.setShippingLabelValue(shippingLabel.packageName)
                 itemView.shippingLabelItem_carrierInfo.setShippingLabelValue(
                     context.getString(
