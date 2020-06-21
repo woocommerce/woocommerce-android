@@ -12,9 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -22,13 +19,10 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -49,9 +43,6 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
@@ -66,8 +57,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChange
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -75,13 +64,12 @@ class OrderDetailPresenter @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val refundStore: WCRefundStore,
     private val productStore: WCProductStore,
-    private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
-    private val notificationStore: NotificationStore
+    private val notificationStore: NotificationStore,
+    private val orderDetailRepository: OrderDetailRepository
 ) : OrderDetailContract.Presenter {
     companion object {
         private val TAG: String = OrderDetailPresenter::class.java.simpleName
@@ -106,8 +94,6 @@ class OrderDetailPresenter @Inject constructor(
     private var isNotesInit = false
     private var isRefreshingOrderStatusOptions = false
 
-    private var deferredRefunds: Deferred<WooResult<List<WCRefundModel>>>? = null
-    private var deferredShippingLabels: Deferred<WooResult<List<WCShippingLabelModel>>>? = null
     override val coroutineScope = CoroutineScope(dispatchers.main)
 
     override fun takeView(view: OrderDetailContract.View) {
@@ -122,6 +108,7 @@ class OrderDetailPresenter @Inject constructor(
         isNotesInit = false
         dispatcher.unregister(this)
         ConnectionChangeReceiver.getEventBus().unregister(this)
+        orderDetailRepository.onCleanup()
     }
 
     /**
@@ -140,34 +127,29 @@ class OrderDetailPresenter @Inject constructor(
             orderModel?.let { order ->
                 orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadRefunds()
+                loadOrderDetailInfo(order)
                 loadOrderNotes()
-                loadOrderShipmentTrackings()
-
-                if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
-                    loadShippingLabels()
-                }
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
-    private fun loadRefunds() {
+    override fun loadOrderDetailInfo(order: WCOrderModel) {
         orderModel?.let {
-            val refunds = loadRefundsFromDb(it)
-            orderView?.showRefunds(it, refunds)
-
-            coroutineScope.launch {
-                fetchRefunds(it.remoteOrderId)
-                val freshRefunds = awaitRefunds()
-                orderView?.showRefunds(it, freshRefunds)
-            }
+            val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(it)
+            orderView?.showRefunds(cachedOrderDetailUiItem.orderModel, cachedOrderDetailUiItem.refunds)
+            orderView?.showShippingLabels(cachedOrderDetailUiItem.orderModel, cachedOrderDetailUiItem.shippingLabels)
+            orderView?.showOrderShipmentTrackings(cachedOrderDetailUiItem.shipmentTrackingList)
+            fetchOrderDetailInfo(it)
         }
     }
 
-    private fun loadRefundsFromDb(order: WCOrderModel): List<Refund> {
-        return refundStore.getAllRefunds(selectedSite.get(), order.remoteOrderId)
-                .map { it.toAppModel() }
-                .reversed()
+    override fun fetchOrderDetailInfo(order: WCOrderModel) {
+        coroutineScope.launch {
+            val freshOrderDetailUiItem = orderDetailRepository.fetchOrderDetailInfo(order)
+            orderView?.showRefunds(freshOrderDetailUiItem.orderModel, freshOrderDetailUiItem.refunds)
+            orderView?.showShippingLabels(freshOrderDetailUiItem.orderModel, freshOrderDetailUiItem.shippingLabels)
+            orderView?.showOrderShipmentTrackings(freshOrderDetailUiItem.shipmentTrackingList)
+        }
     }
 
     override fun refreshOrderAfterDelay(refreshDelay: Long) {
@@ -255,52 +237,9 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean) {
-        fetchRefunds(remoteOrderId)
-
         orderView?.showSkeleton(displaySkeleton)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
-    }
-
-    private fun fetchRefunds(remoteOrderId: Long) {
-        deferredRefunds = coroutineScope.async {
-            refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
-        }
-    }
-
-    private fun loadShippingLabels() {
-        orderModel?.let {
-            val cachedShippingLabels = loadShippingLabelsFromDb(it)
-            orderView?.showShippingLabels(it, cachedShippingLabels)
-
-            coroutineScope.launch {
-                fetchShippingLabels(it.remoteOrderId)
-                val freshShippingLabels = awaitShippingLabels()
-                orderView?.showShippingLabels(it, freshShippingLabels)
-            }
-        }
-    }
-
-    private fun loadShippingLabelsFromDb(order: WCOrderModel): List<ShippingLabel> {
-        return shippingLabelStore
-            .getShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId)
-            .map { it.toAppModel() }
-    }
-
-    private fun fetchShippingLabels(remoteOrderId: Long) {
-        deferredShippingLabels = coroutineScope.async {
-            shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
-        }
-    }
-
-    private suspend fun awaitShippingLabels(): List<ShippingLabel> {
-        return deferredShippingLabels?.await()?.let { shippingLabelResult ->
-            if (!shippingLabelResult.isError) {
-                shippingLabelResult.model?.map { it.toAppModel() } ?: emptyList()
-            } else {
-                emptyList()
-            }
-        } ?: emptyList()
     }
 
     /**
@@ -395,16 +334,6 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    private suspend fun awaitRefunds(): List<Refund> {
-        return deferredRefunds?.await()?.let { requestResult ->
-            if (!requestResult.isError) {
-                requestResult.model?.map { it.toAppModel() } ?: emptyList()
-            } else {
-                emptyList()
-            }
-        } ?: emptyList()
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -417,19 +346,10 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
                 coroutineScope.launch {
                     orderModel?.let { order ->
-                        fetchRefunds(order.remoteOrderId)
-                        val refunds = awaitRefunds()
-
-                        if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
-                            fetchShippingLabels(order.remoteOrderId)
-                            awaitShippingLabels()
-                        }
-
                         orderView?.showOrderDetail(order, isFreshData = true)
-                        orderView?.showRefunds(order, refunds)
                         orderView?.showSkeleton(false)
                         loadOrderNotes()
-                        loadOrderShipmentTrackings()
+                        fetchOrderDetailInfo(order)
                     } ?: orderView?.showLoadOrderError()
                 }
             }
