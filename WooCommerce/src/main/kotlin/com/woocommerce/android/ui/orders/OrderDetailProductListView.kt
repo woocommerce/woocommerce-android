@@ -9,15 +9,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
-import java.math.RoundingMode.HALF_UP
 
 class OrderDetailProductListView @JvmOverloads constructor(
     ctx: Context,
@@ -29,89 +26,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
     }
     private lateinit var viewAdapter: OrderDetailProductListAdapter
     private var isExpanded = false
-
-    /**
-     * Initialize and format this view.
-     *
-     * @param [orderModel] The order containing the product list to display.
-     * @param [productImageMap] Images for products.
-     * @param [expanded] If true, expanded view will be shown, else collapsed view.
-     * @param [formatCurrencyForDisplay] Function to use for formatting currencies for display.
-     * @param [orderListener] Listener for routing order click actions. If null, the buttons will be hidden.
-     * @param [productListener] Listener for routing product click actions.
-     * @param [refunds] List of refunds order the order.
-     */
-    fun initView(
-        orderModel: WCOrderModel,
-        productImageMap: ProductImageMap,
-        expanded: Boolean,
-        formatCurrencyForDisplay: (BigDecimal) -> String,
-        orderListener: OrderActionListener? = null,
-        productListener: OrderProductActionListener? = null,
-        refunds: List<Refund>
-    ) {
-        isExpanded = expanded
-
-        val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-
-        val order = orderModel.toAppModel()
-        val leftoverProducts = order.getMaxRefundQuantities(refunds).filter { it.value > 0 }
-        val filteredItems = order.items.filter { leftoverProducts.contains(it.uniqueId) }
-                .map {
-                    val newQuantity = leftoverProducts[it.uniqueId]
-                    val quantity = it.quantity.toBigDecimal()
-                    val totalTax = if (quantity > BigDecimal.ZERO) {
-                        it.totalTax.divide(quantity, 2, HALF_UP)
-                    } else BigDecimal.ZERO
-
-                    it.copy(
-                            quantity = newQuantity ?: error("Missing product"),
-                            total = it.price.times(newQuantity.toBigDecimal()),
-                            totalTax = totalTax
-                    )
-                }
-
-        viewAdapter = OrderDetailProductListAdapter(
-                filteredItems,
-                productImageMap,
-                formatCurrencyForDisplay,
-                isExpanded,
-                productListener
-        )
-
-        productList_lblProduct.setText(
-            if (filteredItems.size > 1) {
-                R.string.orderdetail_product_multiple
-            } else {
-                R.string.orderdetail_product
-            }
-        )
-
-        productList_products.apply {
-            setHasFixedSize(false)
-            layoutManager = viewManager
-            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
-            adapter = viewAdapter
-
-            if (itemDecorationCount == 0) {
-                addItemDecoration(
-                    AlignedDividerDecoration(
-                        context,
-                        DividerItemDecoration.VERTICAL,
-                        R.id.productInfo_name,
-                        padding = context.resources.getDimensionPixelSize(R.dimen.major_100)
-                    )
-                )
-            }
-
-            // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
-            // and only processes the first click event. More details on this issue can be found here:
-            // https://github.com/woocommerce/woocommerce-android/issues/2074
-            isMotionEventSplittingEnabled = false
-        }
-
-        updateView(orderModel, orderListener)
-    }
 
     /**
      * Initialize and format this view.
