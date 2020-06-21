@@ -12,6 +12,7 @@ import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
+import java.util.Date
 
 @Parcelize
 data class ShippingLabel(
@@ -27,7 +28,8 @@ data class ShippingLabel(
     val paperSize: String,
     val productNames: List<String>,
     val originAddress: Address? = null,
-    val destinationAddress: Address? = null
+    val destinationAddress: Address? = null,
+    val refund: Refund? = null
 ) : Parcelable {
     @IgnoredOnParcel
     var trackingLink: String? = null
@@ -83,6 +85,12 @@ data class ShippingLabel(
             } ?: this.addressToString()
         }
     }
+
+    @Parcelize
+    data class Refund(
+        val status: String,
+        val refundDate: Date?
+    ) : Parcelable
 }
 
 fun WCShippingLabelModel.toAppModel(): ShippingLabel {
@@ -99,7 +107,8 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         paperSize,
         getProductNames().map { it.trim() },
         getOriginAddress()?.toAppModel(),
-        getDestinationAddress()?.toAppModel()
+        getDestinationAddress()?.toAppModel(),
+        getRefund()?.toAppModel()
     )
 }
 
@@ -114,6 +123,13 @@ fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(): ShippingLabel.Addres
         address2 ?: "",
         city ?: "",
         postcode ?: ""
+    )
+}
+
+fun WCShippingLabelModel.WCShippingLabelRefundModel.toAppModel(): ShippingLabel.Refund {
+    return ShippingLabel.Refund(
+        status ?: "",
+        requestDate?.let { Date(it) }
     )
 }
 

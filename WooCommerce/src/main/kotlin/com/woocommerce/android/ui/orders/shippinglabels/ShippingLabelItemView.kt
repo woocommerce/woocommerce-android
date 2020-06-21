@@ -46,6 +46,10 @@ class ShippingLabelItemView @JvmOverloads constructor(
         }
     }
 
+    fun setShippingLabelTitle(title: String) {
+        shippingLabelTitle.text = title
+    }
+
     fun setShippingLabelValue(value: String) {
         shippingLabelValue.text = value
     }

@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
 import com.woocommerce.android.extensions.getCountryLabelByCountryCode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
@@ -123,15 +124,31 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                 itemView.shippingLabelList_lblPackage.text = context.getString(
                     R.string.orderdetail_shipping_label_item_header, adapterPosition + 1
                 )
-                itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(shippingLabel.trackingNumber)
 
-                shippingLabel.trackingLink?.let {
-                    itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(true)
-                    itemView.shippingLabelItem_trackingNumber.setTrackingLinkClickListener {
-                        ChromeCustomTabUtils.launchUrl(context, it)
-                        AppRatingDialog.incrementInteractions()
-                    }
-                } ?: itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(false)
+                if (shippingLabel.refund != null) {
+                    itemView.shippingLabelItem_trackingNumber.setShippingLabelTitle(context.getString(
+                            R.string.orderdetail_shipping_label_refund_title,
+                            shippingLabel.serviceName
+                        ))
+
+                    itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(
+                        context.getString(R.string.orderdetail_shipping_label_refund_subtitle,
+                            formatCurrencyForDisplay(shippingLabel.rate),
+                            shippingLabel.refund.refundDate?.formatToMMMddYYYYhhmm() ?: ""
+                        )
+                    )
+                    itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(false)
+                } else {
+                    itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(shippingLabel.trackingNumber)
+
+                    shippingLabel.trackingLink?.let {
+                        itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(true)
+                        itemView.shippingLabelItem_trackingNumber.setTrackingLinkClickListener {
+                            ChromeCustomTabUtils.launchUrl(context, it)
+                            AppRatingDialog.incrementInteractions()
+                        }
+                    } ?: itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(false)
+                }
 
                 itemView.shippingLabelItem_packageInfo.setShippingLabelValue(shippingLabel.packageName)
                 itemView.shippingLabelItem_carrierInfo.setShippingLabelValue(
