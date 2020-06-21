@@ -31,7 +31,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
@@ -330,9 +329,9 @@ class OrderDetailPresenter @Inject constructor(
      * Removes the notification from the system bar if present, fetch the new order notification from the database,
      * and fire the event to mark it as read.
      */
-    override fun markOrderNotificationRead(context: Context, remoteNotificationId: Long) {
-        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNotificationId.toString())
-        notificationStore.getNotificationByRemoteId(remoteNotificationId)?.let {
+    override fun markOrderNotificationRead(context: Context, remoteNoteId: Long) {
+        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNoteId.toString())
+        notificationStore.getNotificationByRemoteId(remoteNoteId)?.let {
             // Send event that an order with a matching notification was opened
             AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                     AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
@@ -558,7 +557,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh order notes now that a connection is active is needed
@@ -577,18 +576,18 @@ class OrderDetailPresenter @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
-        when (event.causeOfChange) {
-            MARK_NOTIFICATIONS_READ -> onNotificationMarkedRead(event)
+        if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
+            onNotificationMarkedRead(event)
         }
     }
 
     @Suppress
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
         isRefreshingOrderStatusOptions = false
 
         if (event.isError) {
-            WooLog.e(T.ORDERS, "${OrderDetailPresenter.TAG} " +
+            WooLog.e(T.ORDERS, "$TAG " +
                     "- Error fetching order status options from the api : ${event.error.message}")
             return
         }
