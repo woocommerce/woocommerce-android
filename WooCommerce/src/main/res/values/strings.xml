@@ -269,6 +269,7 @@
     <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
+    <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>

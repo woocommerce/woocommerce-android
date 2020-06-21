@@ -90,6 +90,7 @@
         <attr name="shippingLabelItemIcon" format="reference"/>
         <attr name="shippingLabelItemTitle" format="string"/>
         <attr name="shippingLabelItemValue" format="string"/>
+        <attr name="showTrackShipmentButton" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="ActionableEmptyView">

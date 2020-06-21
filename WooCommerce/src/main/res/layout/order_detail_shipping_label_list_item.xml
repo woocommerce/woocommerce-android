@@ -39,6 +39,7 @@
             android:paddingBottom="@dimen/major_100"
             app:shippingLabelItemIcon="@drawable/ic_gridicons_location"
             app:shippingLabelItemTitle="@string/order_shipment_tracking_number"
+            app:showTrackShipmentButton="true"
             tools:shippingLabelItemValue="1234-242-343-23232" />
 
         <!-- Package more details panel -->

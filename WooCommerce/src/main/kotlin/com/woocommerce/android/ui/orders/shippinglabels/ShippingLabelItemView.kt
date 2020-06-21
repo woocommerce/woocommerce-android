@@ -35,6 +35,11 @@ class ShippingLabelItemView @JvmOverloads constructor(
                 a.getString(R.styleable.ShippingLabelItemView_shippingLabelItemValue)?.let {
                     shippingLabelValue.text = it
                 }
+
+                // show/hide shipment tracking button
+                val showTrackingBtn =
+                a.getBoolean(R.styleable.ShippingLabelItemView_showTrackShipmentButton, false)
+                shippingLabelItem_btnTrack.visibility = if (showTrackingBtn) View.VISIBLE else View.GONE
             } finally {
                 a.recycle()
             }
