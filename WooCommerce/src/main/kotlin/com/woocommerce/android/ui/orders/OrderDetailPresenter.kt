@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -141,9 +142,12 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadRefunds()
-                loadShippingLabels()
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
+
+                if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
+                    loadShippingLabels()
+                }
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
@@ -417,8 +421,10 @@ class OrderDetailPresenter @Inject constructor(
                         fetchRefunds(order.remoteOrderId)
                         val refunds = awaitRefunds()
 
-                        fetchShippingLabels(order.remoteOrderId)
-                        awaitShippingLabels()
+                        if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
+                            fetchShippingLabels(order.remoteOrderId)
+                            awaitShippingLabels()
+                        }
 
                         orderView?.showOrderDetail(order, isFreshData = true)
                         orderView?.showRefunds(order, refunds)
