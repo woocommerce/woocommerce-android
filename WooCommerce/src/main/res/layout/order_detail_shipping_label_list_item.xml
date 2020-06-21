@@ -16,7 +16,7 @@
         <!-- Package Header -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/shippingLabelList_lblPackage"
-            style="@style/Woo.Card.Header"
+            style="@style/Woo.Card.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/orderdetail_shipping_label_item_header" />

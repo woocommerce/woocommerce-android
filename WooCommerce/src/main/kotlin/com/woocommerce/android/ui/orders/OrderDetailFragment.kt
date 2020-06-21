@@ -229,7 +229,10 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
         orderDetail_shippingLabelList.initView(
-            shippingLabels, currencyFormatter.buildBigDecimalFormatter(order.currency)
+            order.toAppModel(),
+            shippingLabels,
+            productImageMap,
+            currencyFormatter.buildBigDecimalFormatter(order.currency)
         )
     }
 

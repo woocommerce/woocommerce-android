@@ -7,15 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.getCountryLabelByCountryCode
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.getEnvelopeAddress
+import com.woocommerce.android.model.loadProductItems
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.util.AddressUtils
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_shipping_label_list.view.*
 import kotlinx.android.synthetic.main.order_detail_shipping_label_list_item.view.*
 import java.math.BigDecimal
@@ -32,18 +38,22 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
     private lateinit var viewAdapter: ShippingLabelListAdapter
 
     fun initView(
+        order: Order,
         shippingLabels: List<ShippingLabel>,
+        productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
         val viewManager = LinearLayoutManager(context)
         viewAdapter = ShippingLabelListAdapter(
             context,
+            productImageMap,
+            order.items,
             shippingLabels,
             formatCurrencyForDisplay
         )
 
         shippingLabel_list.apply {
-            setHasFixedSize(false)
+            setHasFixedSize(true)
             layoutManager = viewManager
             itemAnimator = DefaultItemAnimator()
             adapter = viewAdapter
@@ -57,9 +67,13 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
 
     class ShippingLabelListAdapter(
         private val context: Context,
+        private val productImageMap: ProductImageMap,
+        private val orderItems: List<Order.Item>,
         private val shippingLabels: List<ShippingLabel>,
         private val formatCurrencyForDisplay: (BigDecimal) -> String
     ) : RecyclerView.Adapter<ShippingLabelListAdapter.ShippingLabelListViewHolder>() {
+        private val viewPool = RecyclerView.RecycledViewPool()
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShippingLabelListViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.order_detail_shipping_label_list_item, parent, false)
@@ -69,6 +83,13 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: ShippingLabelListViewHolder, position: Int) {
             val shippingLabel = shippingLabels[position]
             holder.bindTo(context, shippingLabel, formatCurrencyForDisplay)
+            holder.bindProductItems(
+                context,
+                productImageMap,
+                shippingLabel.loadProductItems(orderItems),
+                formatCurrencyForDisplay,
+                viewPool
+            )
         }
 
         override fun getItemCount() = shippingLabels.size
@@ -126,6 +147,37 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                             it.name, it.getEnvelopeAddress(), it.country.getCountryLabelByCountryCode()
                         )
                     )
+                }
+            }
+
+            fun bindProductItems(
+                context: Context,
+                productImageMap: ProductImageMap,
+                productItems: List<Order.Item>,
+                formatCurrencyForDisplay: (BigDecimal) -> String,
+                viewPool: RecyclerView.RecycledViewPool
+            ) {
+                val childLayoutManager = LinearLayoutManager(context)
+                itemView.shippingLabelList_products.apply {
+                    layoutManager = childLayoutManager
+                    adapter = OrderDetailProductListAdapter(
+                        productItems,
+                        productImageMap,
+                        formatCurrencyForDisplay,
+                        false,
+                        null
+                    )
+                    if (itemDecorationCount == 0) {
+                        addItemDecoration(
+                            AlignedDividerDecoration(
+                                context,
+                                DividerItemDecoration.VERTICAL,
+                                R.id.productInfo_name,
+                                padding = context.resources.getDimensionPixelSize(dimen.major_100)
+                            )
+                        )
+                    }
+                    setRecycledViewPool(viewPool)
                 }
             }
         }

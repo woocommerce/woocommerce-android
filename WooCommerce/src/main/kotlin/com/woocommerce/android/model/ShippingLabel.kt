@@ -53,7 +53,7 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         refundableAmount.toBigDecimal(),
         currency,
         paperSize,
-        getProductNames(),
+        getProductNames().map { it.trim() },
         getOriginAddress()?.toAppModel(),
         getDestinationAddress()?.toAppModel()
     )
@@ -72,6 +72,15 @@ fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(): ShippingLabel.Addres
         postcode ?: ""
     )
 }
+
+/**
+ * Method provides a list of [Order.Item] for the given [ShippingLabel.productNames]
+ * in a shipping label.
+ *
+ * Used to display the list of products associated with a shipping label
+ */
+fun ShippingLabel.loadProductItems(orderItems: List<Order.Item>) =
+    orderItems.filter { it.name in productNames }
 
 fun ShippingLabel.Address.getEnvelopeAddress(): String {
     return this.getAddressData().takeIf { it.postalCountry != null }?.let {
