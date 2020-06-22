@@ -329,13 +329,7 @@ end
     if options[:locales]
       locales = options[:locales].split(',')
     else
-      locales = SUPPORTED_LOCALES.
-        # Depending on how automated this is, possibly on whether we wipe the
-        # emulator before running or not, the zh-CN locale might break due to
-        # Pinwin Keyboard wanting contacts access. If that's the case, you can
-        # skip it by uncommeting the following line.
-        #reject { |locale| locale[:glotpress] == 'zh-cn' }.
-        map { |locale|  locale[:emulator] }
+      locales = SUPPORTED_LOCALES.map { |locale|  locale[:emulator] }
     end
 
     rebuild_screenshot_devices
