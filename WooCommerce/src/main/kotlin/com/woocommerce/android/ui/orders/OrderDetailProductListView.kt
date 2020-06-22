@@ -37,6 +37,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
      * @param [formatCurrencyForDisplay] Function to use for formatting currencies for display.
      * @param [orderListener] Listener for routing order click actions. If null, the buttons will be hidden.
      * @param [productListener] Listener for routing product click actions.
+     * @param [listTitle] title text for the product list
      */
     fun initView(
         orderModel: WCOrderModel,
@@ -45,7 +46,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
         expanded: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         orderListener: OrderActionListener? = null,
-        productListener: OrderProductActionListener? = null
+        productListener: OrderProductActionListener? = null,
+        listTitle: String? = null
     ) {
         isExpanded = expanded
 
@@ -58,13 +60,11 @@ class OrderDetailProductListView @JvmOverloads constructor(
             productListener
         )
 
-        productList_lblProduct.setText(
-            if (orderItems.size > 1) {
-                R.string.orderdetail_product_multiple
-            } else {
-                R.string.orderdetail_product
-            }
-        )
+        productList_lblProduct.text = listTitle ?: if (orderItems.size > 1) {
+            context.getString(R.string.orderdetail_product_multiple)
+        } else {
+            context.getString(R.string.orderdetail_product)
+        }
 
         productList_products.apply {
             setHasFixedSize(false)

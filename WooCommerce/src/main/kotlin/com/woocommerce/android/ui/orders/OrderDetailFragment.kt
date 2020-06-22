@@ -232,7 +232,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         // populate the Order Product List Card if not all products are associated with any of the shipping labels
         // available or if there is at least 1 product that is not refunded
         val orderModel = order.toAppModel()
-        if (orderModel.hasUnpackagedProducts(shippingLabels) && orderModel.hasNonRefundedItems(refunds)) {
+        val hasUnpackagedProducts = orderModel.hasUnpackagedProducts(shippingLabels)
+        if (hasUnpackagedProducts && orderModel.hasNonRefundedItems(refunds)) {
+            val listTitle = if (hasUnpackagedProducts) {
+                getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
+            } else null
+
             orderDetail_productList.initView(
                 orderModel = order,
                 orderItems = orderModel.getUnpackagedAndNonRefundedProducts(refunds, shippingLabels),
@@ -240,7 +245,8 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 expanded = false,
                 formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
                 orderListener = this,
-                productListener = this
+                productListener = this,
+                listTitle = listTitle
             )
             orderDetail_productList.show()
         } else {
