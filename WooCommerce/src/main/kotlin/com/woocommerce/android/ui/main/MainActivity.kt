@@ -584,12 +584,6 @@ class MainActivity : AppUpgradeActivity(),
                 if (isEnabled) {
                     // display the new stats UI only if user has opted in
                     replaceStatsFragment()
-                } else if (isAvailable) {
-                    // if the new stats UI is not enabled but the user has not opted out of it,
-                    // display the new stats availability banner
-                    (fragment as? DashboardFragment)?.showV4StatsAvailabilityBanner(
-                            AppPrefs.shouldDisplayV4StatsAvailabilityBanner()
-                    )
                 }
             }
             MyStoreFragment.TAG -> {
