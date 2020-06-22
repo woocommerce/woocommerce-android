@@ -19,18 +19,15 @@ import kotlinx.coroutines.delay
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_SINGLE_ORDER
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_SINGLE_ORDER
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -41,8 +38,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -55,12 +50,12 @@ class OrderDetailPresenterTest {
     private val uiMessageResolver: UIMessageResolver = mock()
     private val networkStatus: NetworkStatus = mock()
     private val notificationStore: NotificationStore = mock()
-    private val refundStore: WCRefundStore = mock()
-    private val shippingLabelStore: WCShippingLabelStore = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
+    private val orderDetailUiItem = OrderTestUtils.generateOrderDetailUiItem(order)
     private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
@@ -71,13 +66,12 @@ class OrderDetailPresenterTest {
                         coroutineDispatchers,
                         dispatcher,
                         orderStore,
-                        refundStore,
                         productStore,
-                    shippingLabelStore,
                         selectedSite,
                         uiMessageResolver,
                         networkStatus,
-                        notificationStore
+                        notificationStore,
+                        orderDetailRepository
                 )
         )
         // Use a dummy selected site
@@ -87,12 +81,9 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Displays the order detail view correctly`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
@@ -100,14 +91,11 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Displays the order notes view correctly`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
 
@@ -122,12 +110,9 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Display error message on fetch order notes error`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
 
@@ -144,12 +129,9 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Mark order complete - Displays undo snackbar correctly`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, true)
 
@@ -159,11 +141,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Mark order complete - Processes success correctly`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
@@ -179,11 +156,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Display error message on mark order complete error`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
@@ -202,11 +174,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Mark order complete - Reverts status after failure correctly`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
@@ -225,11 +192,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Do not mark order complete and just show offline message`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -240,11 +202,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Do not request order notes from api when not connected`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(presenter).orderModel
         doReturn(false).whenever(networkStatus).isConnected()
@@ -257,11 +214,6 @@ class OrderDetailPresenterTest {
     @Test
     fun `Request fresh notes from api on network connected event if using non-updated cached data`() =
             test {
-                doReturn(WooResult(emptyList<WCRefundModel>()))
-                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-                doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-                    .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
                 doReturn(true).whenever(presenter).isUsingCachedNotes
                 doReturn(order).whenever(presenter).orderModel
                 presenter.takeView(orderDetailView)
@@ -273,11 +225,6 @@ class OrderDetailPresenterTest {
     @Test
     fun `Do not refresh notes on network connected event if cached data already refreshed`() =
             test {
-                doReturn(WooResult(emptyList<WCRefundModel>()))
-                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-                doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-                    .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
                 doReturn(false).whenever(presenter).isUsingCachedNotes
                 doReturn(order).whenever(presenter).orderModel
                 presenter.takeView(orderDetailView)
@@ -288,12 +235,9 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Shows and hides the note list skeleton correctly`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
 
@@ -306,16 +250,13 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Request order shipment trackings from api`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(false).whenever(presenter).isShipmentTrackingsFetched
         doReturn(false).whenever(presenter).isShipmentTrackingsFailed
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
 
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
@@ -323,14 +264,11 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Do not request order shipment trackings from api when not connected`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         doReturn(false).whenever(networkStatus).isConnected()
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
 
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
@@ -339,11 +277,6 @@ class OrderDetailPresenterTest {
     @Test
     fun `Request fresh shipment tracking from api on network connected event if not already fetched`() =
             test {
-                doReturn(WooResult(emptyList<WCRefundModel>()))
-                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-                doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-                    .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
                 doReturn(false).whenever(presenter).isShipmentTrackingsFetched
                 doReturn(order).whenever(presenter).orderModel
                 presenter.takeView(orderDetailView)
@@ -355,11 +288,6 @@ class OrderDetailPresenterTest {
     @Test
     fun `Do not refresh shipment trackings on network connected event if data already fetched`() =
             test {
-                doReturn(WooResult(emptyList<WCRefundModel>()))
-                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-                doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-                    .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
                 doReturn(true).whenever(presenter).isShipmentTrackingsFetched
                 doReturn(order).whenever(presenter).orderModel
                 presenter.takeView(orderDetailView)
@@ -370,11 +298,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Do not request delete shipment tracking when network is not available`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(false).whenever(networkStatus).isConnected()
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(orderDetailView)
@@ -397,11 +320,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Request delete shipment tracking when network is available - error`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(orderDetailView)
 
@@ -428,11 +346,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Request delete shipment tracking when network is available - success`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(orderDetailView)
 
@@ -455,11 +368,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Add order shipment tracking when network is available - success`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(presenter).orderModel
 
@@ -474,11 +382,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Add order shipment tracking when network is available - error`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(orderDetailView)
 
@@ -497,16 +400,13 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Verify product is virtual for a single product in an order`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290")))
         val products = listOf(WCProductModel(1).apply { virtual = true })
         doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
 
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
@@ -516,16 +416,13 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Verify product is not virtual for a single product in an order`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290")))
         val products = listOf(WCProductModel(1))
         doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
 
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
@@ -535,11 +432,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Verify product is not virtual for multiple products in an order`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         order.lineItems = Gson().toJson(
                 listOf(
                         mapOf("product_id" to "290"),
@@ -555,6 +447,8 @@ class OrderDetailPresenterTest {
         doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
 
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
@@ -564,15 +458,12 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Verify product is not virtual for empty products in an order`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(emptyList<WCProductModel>()).whenever(productStore)
                 .getProductsByRemoteIds(any(), any())
 
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
@@ -583,16 +474,13 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Verify product is not virtual for empty productIds in an order`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         order.lineItems = Gson().toJson(listOf(mapOf(), mapOf(), mapOf("product_id" to null)))
         doReturn(emptyList<WCProductModel>()).whenever(productStore)
                 .getProductsByRemoteIds(any(), any())
 
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
@@ -602,12 +490,9 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Request order detail refresh when network available - success`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         presenter.takeView(orderDetailView)
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).getOrderDetailInfoFromDb(any())
+        doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
         doReturn(order).whenever(presenter).orderModel
         doReturn(order.getIdentifier()).whenever(presenter).orderIdentifier
         doReturn(true).whenever(networkStatus).isConnected()
@@ -642,11 +527,6 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Request order detail refresh when network available - error`() = test {
-        doReturn(WooResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(WooResult(emptyList<WCShippingLabelModel>()))
-            .whenever(shippingLabelStore).fetchShippingLabelsForOrder(any(), any())
-
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(orderDetailView)
 

@@ -51,7 +51,7 @@ object ProductTestUtils {
             remoteProductId = productId
             remoteVariationId = variantId
             price = "10.00"
-            imageUrl = ""
+            image = ""
             attributes = ""
         }.toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
