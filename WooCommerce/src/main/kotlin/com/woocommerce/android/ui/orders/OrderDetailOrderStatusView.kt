@@ -8,6 +8,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.getBillingName
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_detail_order_status.view.*
@@ -39,11 +40,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
             orderModel.number
         )
 
-        orderStatus_name.text = context.getString(
-            R.string.orderdetail_orderstatus_name,
-            orderModel.billingFirstName,
-            orderModel.billingLastName
-        )
+        orderStatus_name.text = orderModel.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
 
         orderStatus_orderTags.removeAllViews()
         orderStatus_orderTags.addView(getTagView(orderStatus))
