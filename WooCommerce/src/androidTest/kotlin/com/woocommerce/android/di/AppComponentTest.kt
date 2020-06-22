@@ -3,6 +3,7 @@ package com.woocommerce.android.di
 import android.app.Application
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
+import com.woocommerce.android.ui.products.MockedProductCategoriesModule
 import com.woocommerce.android.ui.products.MockedWooStoreModule
 import dagger.BindsInstance
 import dagger.Component
@@ -28,6 +29,7 @@ import javax.inject.Singleton
         MockedActivityBindingModule::class,
         MockedWooStoreModule::class,
         MockedProductDetailRepositoryModule::class,
+        MockedProductCategoriesModule::class,
         MockedSelectedSiteModule::class,
         FCMServiceModule::class,
         LoginAnalyticsModule::class,
@@ -40,7 +42,7 @@ interface AppComponentTest : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {
         @BindsInstance
-        override fun application(application: Application): AppComponentTest.Builder
+        override fun application(application: Application): Builder
 
         override fun build(): AppComponentTest
     }

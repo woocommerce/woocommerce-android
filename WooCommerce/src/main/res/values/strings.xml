@@ -563,6 +563,10 @@
     <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
     <string name="product_menu_order">Menu order</string>
     <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog. The lower the value of the number, the higher the item will be on the product list. You can also use negative numbers.</string>
+    <string name="product_categories">Categories</string>
+    <string name="product_category_empty">Add category</string>
+    <string name="product_category_list_empty_title">Add your first category</string>
+    <string name="product_category_list_empty_message">Organise your products in categories</string>
     <!--
         Product images
     -->
