@@ -32,6 +32,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTracking
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -41,6 +42,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
+    private val shippingLabelStore: WCShippingLabelStore,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus
 ) : OrderFulfillmentContract.Presenter {
@@ -117,7 +119,10 @@ class OrderFulfillmentPresenter @Inject constructor(
     override fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
             val trackings = getShipmentTrackingsFromDb(order)
-            orderView?.showOrderShipmentTrackings(trackings)
+            // display the option to add shipment tracking only if shipping labels are not available
+            if (shippingLabelStore.getShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId).isEmpty()) {
+                orderView?.showOrderShipmentTrackings(trackings)
+            }
         }
     }
 
