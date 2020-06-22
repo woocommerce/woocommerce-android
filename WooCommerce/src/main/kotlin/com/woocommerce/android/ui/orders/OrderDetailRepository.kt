@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.WooLog.T.ORDERS
@@ -59,9 +60,11 @@ class OrderDetailRepository @Inject constructor(
             .map { it.toAppModel() }
             .reversed()
 
-        val shippingLabels = shippingLabelStore
-            .getShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId)
-            .map { it.toAppModel() }
+        val shippingLabels = if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
+            shippingLabelStore
+                .getShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId)
+                .map { it.toAppModel() }
+        } else emptyList()
 
         val shipmentTrackingList = orderStore.getShipmentTrackingsForOrder(order)
 
@@ -78,26 +81,29 @@ class OrderDetailRepository @Inject constructor(
     ): OrderDetailUiItem {
         return coroutineScope {
             var fetchedRefunds: WooResult<List<WCRefundModel>>? = null
-            var fetchedShippingLabels: WooResult<List<WCShippingLabelModel>>? = null
             var fetchedShipmentTrackingList = false
 
             val fetchRefunds = async {
                 fetchedRefunds =
                     refundStore.fetchAllRefunds(selectedSite.get(), order.remoteOrderId)
             }
-            val fetchShippingLabels = async {
-                fetchedShippingLabels =
-                    shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId)
-            }
             val fetchShipmentTrackingList = async {
                 fetchedShipmentTrackingList = fetchShipmentTrackingList(order)
             }
             fetchRefunds.await()
-            fetchShippingLabels.await()
             fetchShipmentTrackingList.await()
 
+            val shippingLabels = if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
+                var fetchedShippingLabels: WooResult<List<WCShippingLabelModel>>? = null
+                val fetchShippingLabels = async {
+                    fetchedShippingLabels =
+                        shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId)
+                }
+                fetchShippingLabels.await()
+                fetchedShippingLabels?.model?.map { it.toAppModel() } ?: emptyList()
+            } else emptyList()
+
             val refunds = fetchedRefunds?.model?.map { it.toAppModel() } ?: emptyList()
-            val shippingLabels = fetchedShippingLabels?.model?.map { it.toAppModel() } ?: emptyList()
             val shipmentTrackingList = if (fetchedShipmentTrackingList) {
                 orderStore.getShipmentTrackingsForOrder(order)
             } else emptyList()
