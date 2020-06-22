@@ -18,6 +18,7 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.OrderDetailRepository.OrderDetailUiItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -136,10 +137,8 @@ class OrderDetailPresenter @Inject constructor(
     override fun loadOrderDetailInfo(order: WCOrderModel) {
         orderModel?.let {
             val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(it)
-            orderView?.showRefunds(cachedOrderDetailUiItem.orderModel, cachedOrderDetailUiItem.refunds)
-            orderView?.showShippingLabels(cachedOrderDetailUiItem.orderModel, cachedOrderDetailUiItem.shippingLabels)
-            orderView?.showOrderShipmentTrackings(cachedOrderDetailUiItem.shipmentTrackingList)
-            orderView?.showProductList(order, cachedOrderDetailUiItem.refunds, cachedOrderDetailUiItem.shippingLabels)
+            displayOrderDetailInfo(order, cachedOrderDetailUiItem)
+
             fetchOrderDetailInfo(it)
         }
     }
@@ -147,10 +146,18 @@ class OrderDetailPresenter @Inject constructor(
     override fun fetchOrderDetailInfo(order: WCOrderModel) {
         coroutineScope.launch {
             val freshOrderDetailUiItem = orderDetailRepository.fetchOrderDetailInfo(order)
-            orderView?.showRefunds(freshOrderDetailUiItem.orderModel, freshOrderDetailUiItem.refunds)
-            orderView?.showShippingLabels(freshOrderDetailUiItem.orderModel, freshOrderDetailUiItem.shippingLabels)
-            orderView?.showOrderShipmentTrackings(freshOrderDetailUiItem.shipmentTrackingList)
-            orderView?.showProductList(order, freshOrderDetailUiItem.refunds, freshOrderDetailUiItem.shippingLabels)
+            displayOrderDetailInfo(order, freshOrderDetailUiItem)
+        }
+    }
+
+    private fun displayOrderDetailInfo(order: WCOrderModel, orderDetailUiItem: OrderDetailUiItem) {
+        orderView?.showRefunds(orderDetailUiItem.orderModel, orderDetailUiItem.refunds)
+        orderView?.showShippingLabels(orderDetailUiItem.orderModel, orderDetailUiItem.shippingLabels)
+        orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
+
+        // if shipping labels are available, we don't need to display shipment tracking information separately
+        if (orderDetailUiItem.shippingLabels.isEmpty()) {
+            orderView?.showOrderShipmentTrackings(orderDetailUiItem.shipmentTrackingList)
         }
     }
 
@@ -369,20 +376,6 @@ class OrderDetailPresenter @Inject constructor(
                     isUsingCachedNotes = false
                     val notes = orderStore.getOrderNotesForOrder(order)
                     orderView?.updateOrderNotes(notes)
-                }
-            }
-        } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS) {
-            if (event.isError) {
-                WooLog.e(T.ORDERS, "$TAG - Error fetching order shipment tracking info: ${event.error.message}")
-                isShipmentTrackingsFailed = true
-            } else {
-                orderModel?.let { order ->
-                    AnalyticsTracker.track(
-                            Stat.ORDER_TRACKING_LOADED,
-                            mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
-
-                    isShipmentTrackingsFetched = true
-                    loadShipmentTrackingsFromDb()
                 }
             }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
