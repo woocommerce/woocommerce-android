@@ -18,15 +18,18 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 
@@ -94,6 +97,18 @@ abstract class MockedOrderFulfillmentModule {
                             RefundMapper()
                     ),
                     mockSelectedSite,
+                    WCShippingLabelStore(
+                    ShippingLabelRestClient(
+                        mockDispatcher,
+                        JetpackTunnelGsonRequestBuilder(),
+                        mockContext,
+                        mock(),
+                        mock(),
+                        mock()
+                    ),
+                    CoroutineEngine(Dispatchers.Unconfined, AppLogWrapper()),
+                    WCShippingLabelMapper()
+                    ),
                     mock(),
                     mockNetworkStatus
             ))

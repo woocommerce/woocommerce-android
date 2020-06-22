@@ -99,8 +99,8 @@ class OrderDetailPresenterTest {
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
 
-        // Fetch notes and fetch order shipment trackings
-        verify(dispatcher, times(2)).dispatch(any<Action<*>>())
+        // Fetch notes only
+        verify(dispatcher, times(1)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orderNotes).whenever(orderStore).getOrderNotesForOrder(any())
@@ -116,8 +116,8 @@ class OrderDetailPresenterTest {
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
 
-        // Fetch notes and fetch order shipment trackings
-        verify(dispatcher, times(2)).dispatch(any<Action<*>>())
+        // Fetch notes
+        verify(dispatcher, times(1)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
         presenter.onOrderChanged(OnOrderChanged(0).apply {
@@ -259,7 +259,7 @@ class OrderDetailPresenterTest {
         doReturn(orderDetailUiItem).whenever(orderDetailRepository).fetchOrderDetailInfo(any())
 
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+        verify(presenter, times(1)).loadOrderDetailInfo(any())
     }
 
     @Test
@@ -518,11 +518,17 @@ class OrderDetailPresenterTest {
 
         // verify order fetched from db is called
         verify(presenter).loadOrderDetailFromDb(any())
-        verify(orderDetailView, times(1)).showOrderDetail(order, true)
 
-        // verify order notes/shipment trackings is fetched
+        // verify order notes/order detail info is fetched
         verify(presenter, times(1)).loadOrderNotes()
-        verify(presenter, times(1)).loadOrderShipmentTrackings()
+        verify(presenter, times(1)).fetchOrderDetailInfo(any())
+
+        verify(orderDetailView, times(1)).showOrderDetail(order, true)
+        verify(orderDetailView, times(1)).showRefunds(order, orderDetailUiItem.refunds)
+        verify(orderDetailView, times(1)).showShippingLabels(order, orderDetailUiItem.shippingLabels)
+        verify(orderDetailView, times(1)).showProductList(
+            order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels
+        )
     }
 
     @Test
