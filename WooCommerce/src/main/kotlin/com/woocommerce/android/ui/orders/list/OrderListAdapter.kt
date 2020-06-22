@@ -11,6 +11,7 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.ui.orders.OrderStatusTag
@@ -65,16 +66,20 @@ class OrderListAdapter(
         val item = getItem(position)
         when (holder) {
             is OrderItemUIViewHolder -> {
-                assert(item is OrderListItemUI) {
-                    "If we are presenting WCOrderItemUIViewHolder, the item has to be of type WCOrderListUIItem " +
+                if (BuildConfig.DEBUG && item !is OrderListItemUI) {
+                    error(
+                        "If we are presenting WCOrderItemUIViewHolder, the item has to be of type WCOrderListUIItem " +
                             "for position: $position"
+                    )
                 }
                 holder.onBind((item as OrderListItemUI))
             }
             is SectionHeaderViewHolder -> {
-                assert(item is SectionHeader) {
-                    "If we are presenting SectionHeaderViewHolder, the item has to be of type SectionHeader " +
+                if (BuildConfig.DEBUG && item !is SectionHeader) {
+                    error(
+                        "If we are presenting SectionHeaderViewHolder, the item has to be of type SectionHeader " +
                             "for position: $position"
+                    )
                 }
                 holder.onBind((item as SectionHeader))
             }
