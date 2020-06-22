@@ -134,7 +134,7 @@ class OrderListAdapter(
             processTagView(orderItemUI.status, this)
 
             this.itemView.setOnClickListener {
-                listener.openOrderDetail(orderItemUI.remoteOrderId.value)
+                listener.openOrderDetail(orderItemUI.remoteOrderId.value, orderItemUI.status)
             }
         }
 

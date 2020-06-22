@@ -458,9 +458,13 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    override fun openOrderDetail(remoteOrderId: Long) {
+    override fun openOrderDetail(remoteOrderId: Long, orderStatus: String) {
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
+        (activity as? MainNavigationRouter)?.showOrderDetail(
+            localSiteId = selectedSite.get().id,
+            remoteOrderId = remoteOrderId,
+            orderStatus = orderStatus
+        )
     }
 
     private fun updateOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {

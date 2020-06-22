@@ -190,6 +190,7 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
             (activity as? MainNavigationRouter)?.showOrderDetail(
                     localSiteId = order.localSiteId,
                     remoteOrderId = order.remoteOrderId,
+                    orderStatus = order.status,
                     markComplete = true
             )
         }

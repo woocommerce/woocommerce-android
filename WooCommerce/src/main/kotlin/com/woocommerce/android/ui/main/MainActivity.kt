@@ -65,6 +65,7 @@ import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -739,7 +740,7 @@ class MainActivity : AppUpgradeActivity(),
                 NEW_ORDER -> {
                     selectedSite.getIfExists()?.let { site ->
                         note.getRemoteOrderId()?.let { orderId ->
-                            showOrderDetail(site.id, orderId, note.remoteNoteId)
+                            showOrderDetail(site.id, orderId, note.remoteNoteId, CoreOrderStatus.PROCESSING.value)
                         }
                     }
                 }
@@ -776,7 +777,7 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
-    override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+    override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, orderStatus: String, markComplete: Boolean) {
         if (bottomNavView.currentPosition != ORDERS) {
             bottomNavView.currentPosition = ORDERS
             val navPos = ORDERS.position
@@ -793,6 +794,11 @@ class MainActivity : AppUpgradeActivity(),
                 showOrderBadge(unfilledOrderCount - 1)
             }
         }
+
+        // Send tracks event
+        AnalyticsTracker.track(Stat.ORDER_OPEN, mapOf(
+            AnalyticsTracker.KEY_ID to remoteOrderId,
+            AnalyticsTracker.KEY_STATUS to orderStatus))
 
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
