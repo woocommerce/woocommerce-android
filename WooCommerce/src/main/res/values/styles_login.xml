@@ -5,6 +5,7 @@
      -->
     <style name="LoginTheme" parent="Theme.Woo.DayNight">
         <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:colorBackground">@color/color_surface</item>
     </style>
 
     <style name="LoginTheme.Toolbar">
