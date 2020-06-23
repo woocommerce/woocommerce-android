@@ -777,7 +777,13 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
-    override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, orderStatus: String, markComplete: Boolean) {
+    override fun showOrderDetail(
+        localSiteId: Int,
+        remoteOrderId: Long,
+        remoteNoteId: Long,
+        orderStatus: String,
+        markComplete: Boolean
+    ) {
         if (bottomNavView.currentPosition != ORDERS) {
             bottomNavView.currentPosition = ORDERS
             val navPos = ORDERS.position
