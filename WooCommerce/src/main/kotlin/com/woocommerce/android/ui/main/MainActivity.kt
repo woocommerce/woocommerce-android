@@ -799,12 +799,15 @@ class MainActivity : AppUpgradeActivity(),
             if (unfilledOrderCount > 0) {
                 showOrderBadge(unfilledOrderCount - 1)
             }
+        } else {
+            // Only send a tracks event if it's the original request to open the order to view the detail.
+            // When `markComplete` is true that means this is just a return from order fulfillment screen.
+            AnalyticsTracker.track(
+                Stat.ORDER_OPEN, mapOf(
+                AnalyticsTracker.KEY_ID to remoteOrderId,
+                AnalyticsTracker.KEY_STATUS to orderStatus)
+            )
         }
-
-        // Send tracks event
-        AnalyticsTracker.track(Stat.ORDER_OPEN, mapOf(
-            AnalyticsTracker.KEY_ID to remoteOrderId,
-            AnalyticsTracker.KEY_STATUS to orderStatus))
 
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
