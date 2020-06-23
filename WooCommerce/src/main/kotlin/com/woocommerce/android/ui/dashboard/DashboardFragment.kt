@@ -318,24 +318,4 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         AppPrefs.setShouldDisplayV4StatsRevertedBanner(false)
         showV4StatsRevertedBanner(false)
     }
-
-    /**
-     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
-     * TRY NOW button is clicked
-     * - The banner will no longer be displayed to the user
-     * - The old stats UI will be replaced with the new wc-admin stats
-     */
-    override fun onMyStoreStatsAvailabilityAccepted() {
-        AppPrefs.setIsV4StatsUIEnabled(true)
-    }
-
-    /**
-     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
-     * NO THANKS button is clicked
-     * - The banner will no longer be displayed to the user
-     * - The old stats UI will NOT be replaced with the new wc-admin stats
-     */
-    override fun onMyStoreStatsAvailabilityRejected() {
-        AppPrefs.setIsV4StatsUIEnabled(false)
-    }
 }

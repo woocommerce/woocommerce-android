@@ -578,10 +578,9 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun updateStatsView(isAvailable: Boolean) {
         val fragment = bottomNavView.getFragment(DASHBOARD)
-        val isEnabled = isAvailable && AppPrefs.isV4StatsUISupported()
         when (fragment.tag) {
             DashboardFragment.TAG -> {
-                if (isEnabled) {
+                if (isAvailable) {
                     // display the new stats UI only if user has opted in
                     replaceStatsFragment()
                 }
@@ -589,7 +588,7 @@ class MainActivity : AppUpgradeActivity(),
             MyStoreFragment.TAG -> {
                 // if new stats UI was enabled but is no longer enabled, display revert banner
                 // and replace the new stats UI with the old UI
-                if (!isEnabled) {
+                if (!isAvailable) {
                     AppPrefs.setShouldDisplayV4StatsRevertedBanner(true)
                     replaceStatsFragment()
                 }
