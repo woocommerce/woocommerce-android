@@ -1,6 +1,7 @@
 4.6
 -----
 * Added a fix to support multiple new order notifications for a store.
+* Added a placeholder for orders without a customer name.
  
 4.5
 -----
