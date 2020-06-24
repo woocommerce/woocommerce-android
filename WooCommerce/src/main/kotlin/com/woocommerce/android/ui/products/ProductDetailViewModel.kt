@@ -99,7 +99,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    final val parameters: SiteParameters by lazy {
+    val parameters: SiteParameters by lazy {
         val params = savedState.get<SiteParameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
         savedState[KEY_PRODUCT_PARAMETERS] = params
         params
@@ -108,7 +108,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var skuVerificationJob: Job? = null
 
     // view state for the product detail screen
-    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
+    val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
             updateCards()
         }
@@ -116,19 +116,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var viewState by productDetailViewStateData
 
     // view state for the product inventory screen
-    final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
+    val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
 
     // view state for the product pricing screen
-    final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
+    val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
     // view state for the product images screen
-    final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
+    val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
     // view state for the product categories screen
-    final val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
