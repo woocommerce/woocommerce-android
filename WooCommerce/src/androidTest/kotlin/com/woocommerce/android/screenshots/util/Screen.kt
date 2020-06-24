@@ -30,6 +30,7 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
 
@@ -115,17 +116,24 @@ open class Screen {
         idleFor(500) // allow for transitions
     }
 
-    fun typeTextInto(elementID: Int, text: String) {
-        waitForElementToBeDisplayed(elementID)
-        onView(withId(elementID))
-                .perform(ViewActions.replaceText(text))
-                .perform(ViewActions.closeSoftKeyboard())
-    }
-
     fun openToolbarActionMenu() {
         waitForElementToBeDisplayed(R.id.toolbar)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         openActionBarOverflowOrOptionsMenu(context)
+    }
+
+    fun typeTextInto(elementID: Int, text: String) {
+        waitForElementToBeDisplayed(elementID)
+        onView(withId(elementID))
+            .perform(ViewActions.replaceText(text))
+            .perform(ViewActions.closeSoftKeyboard())
+    }
+
+    fun typeTextInto(hint: String, text: String) {
+        waitForElementToBeDisplayed(onView(Matchers.allOf(ViewMatchers.withHint(hint))))
+        onView((Matchers.allOf(ViewMatchers.withHint(hint))))
+            .perform(ViewActions.replaceText(text))
+            .perform(ViewActions.closeSoftKeyboard())
     }
 
     fun flipSwitchOn(elementID: Int, elementParentId: Int = 0) {
