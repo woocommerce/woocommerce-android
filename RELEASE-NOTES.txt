@@ -1,6 +1,8 @@
 4.6
 -----
 * Added a fix to support multiple new order notifications for a store.
+* Updated the background color of the login views.
+* Moved privacy notice for CA users to the About App screen.
  
 4.5
 -----
