@@ -14,7 +14,6 @@ import androidx.paging.PagedList
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -53,7 +52,6 @@ private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
 @Suppress("LeakingThis")
-@OpenClassOnDebug
 class OrderListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     coroutineDispatchers: CoroutineDispatchers,

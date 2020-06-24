@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.notes
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
@@ -11,7 +10,6 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class OrderNoteRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,

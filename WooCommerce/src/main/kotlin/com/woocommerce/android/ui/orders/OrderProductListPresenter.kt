@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -9,7 +8,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class OrderProductListPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val refundStore: WCRefundStore,
