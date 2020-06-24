@@ -217,11 +217,12 @@ end
   # to the beta channel (but does not release it).
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
   # bundle exec fastlane build_and_upload_beta 
   # bundle exec fastlane build_and_upload_beta skip_confirm:true 
+  # bundle exec fastlane build_and_upload_beta create_release:true 
   #####################################################################################
   desc "Builds and uploads a new beta build to Google Play (without releasing it)"
   lane :build_and_upload_beta do | options |
@@ -248,6 +249,16 @@ end
       skip_upload_screenshots: true,
       json_key: './google-upload-credentials.json',
     )
+
+    if (options[:create_release])
+      apk_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }-universal.apk")
+      create_release(repository:GHHELPER_REPO, 
+        version: version["name"], 
+        release_notes_file_path:'./WooCommerce/metadata/release_notes.txt',
+        prerelease: true,
+        release_assets:"#{apk_file_path}"
+      )
+    end
   end
   
 #####################################################################################
