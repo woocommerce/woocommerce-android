@@ -54,9 +54,6 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
             AnalyticsTracker.track(PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
             showPrivacyPolicy()
         }
-        buttonPrivacyPolicyCA.setOnClickListener {
-            showPrivacyPolicyCA()
-        }
         buttonTracking.setOnClickListener {
             AnalyticsTracker.track(PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
             showCookiePolicy()
@@ -103,9 +100,5 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
 
     override fun showPrivacyPolicy() {
         ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
-    }
-
-    override fun showPrivacyPolicyCA() {
-        ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY_CA)
     }
 }

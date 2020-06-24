@@ -48,6 +48,10 @@ class AboutFragment : androidx.fragment.app.Fragment() {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
         }
 
+        about_privacy_ca.setOnClickListener {
+            ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY_CA)
+        }
+
         about_tos.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_TOS)
         }

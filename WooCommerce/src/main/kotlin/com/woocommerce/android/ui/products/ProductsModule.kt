@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductExternalLinkFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductFilterListFragmentModule
@@ -21,6 +22,8 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentM
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
+import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
+import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
@@ -58,7 +61,8 @@ import dagger.android.ContributesAndroidInjector
     ProductMenuOrderFragmentModule::class,
     ProductVisibilityFragmentModule::class,
     WPMediaPickerFragmentModule::class,
-    ProductSortingFragmentModule::class
+    ProductSortingFragmentModule::class,
+    ProductCategoriesFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -199,5 +203,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductSortingModule::class])
         abstract fun productSortingFragment(): ProductSortingFragment
+    }
+
+    @Module
+    internal abstract class ProductCategoriesFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductCategoriesModule::class])
+        abstract fun productCategoriesFragment(): ProductCategoriesFragment
     }
 }
