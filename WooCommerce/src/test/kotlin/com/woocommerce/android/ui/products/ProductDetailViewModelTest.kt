@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -56,7 +58,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
-    private val resources: ResourceProvider = mock()
+    private val resources: ResourceProvider = mock {
+        on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
+    }
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
@@ -135,9 +139,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(MutableLiveData(ProductImagesViewState()))
             .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
 
-        // Avoids the unnecessary stubbing exception
-        doReturn(TEST_STRING).whenever(resources).getString(any())
-
         val prodSettings = WCProductSettingsModel(0).apply {
             dimensionUnit = "cm"
             weightUnit = "kg"
@@ -150,22 +151,31 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(prodSettings).whenever(wooCommerceStore).getProductSettings(any())
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
-    }
 
-    private fun initViewModel() {
-        viewModel = spy(
-                ProductDetailViewModel(
-                    savedState,
-                    coroutinesTestRule.testDispatchers,
-                    selectedSite,
-                    productRepository,
-                    networkStatus,
-                    currencyFormatter,
-                    wooCommerceStore,
-                    productImagesServiceWrapper,
-                    resources,
-                    productCategoriesRepository
-                )
+        viewModel = spy(ProductDetailViewModel(
+            savedState,
+            coroutinesTestRule.testDispatchers,
+            selectedSite,
+            productRepository,
+            networkStatus,
+            currencyFormatter,
+            wooCommerceStore,
+            productImagesServiceWrapper,
+            resources,
+            productCategoriesRepository
+        ))
+
+        clearInvocations(
+            viewModel,
+            savedState,
+            selectedSite,
+            productRepository,
+            networkStatus,
+            currencyFormatter,
+            wooCommerceStore,
+            productImagesServiceWrapper,
+            resources,
+            productCategoriesRepository
         )
     }
 
@@ -174,14 +184,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        initViewModel()
-
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var cards: List<ProductPropertyCard>? = null
         viewModel.productDetailCards.observeForever {
             cards = it.map { card -> stripCallbacks(card) }
         }
+
+        viewModel.start()
 
         assertThat(cards).isEqualTo(expectedCards)
     }
@@ -202,10 +212,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Displays the product detail view correctly`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        initViewModel()
-
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
 
         assertThat(productData).isEqualTo(productWithParameters)
     }
@@ -215,12 +225,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         whenever(productRepository.fetchProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
         whenever(productRepository.getProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
 
-        initViewModel()
-
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
         }
+
+        viewModel.start()
 
         verify(productRepository, times(1)).fetchProduct(PRODUCT_REMOTE_ID)
 
@@ -232,12 +242,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(offlineProduct).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        initViewModel()
-
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
         }
+
+        viewModel.start()
 
         verify(productRepository, times(1)).getProduct(PRODUCT_REMOTE_ID)
         verify(productRepository, times(0)).fetchProduct(any())
@@ -249,26 +259,25 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Shows and hides product detail skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(null).whenever(productRepository).getProduct(any())
 
-        initViewModel()
-
         val isSkeletonShown = ArrayList<Boolean>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
         }
 
-        assertThat(isSkeletonShown).containsExactly(true, false)
+        viewModel.start()
+
+        assertThat(isSkeletonShown).containsExactly(false, true, false)
     }
 
     @Test
     fun `Displays the updated product detail view correctly`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        initViewModel()
-
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        assertThat(productData).isEqualTo(ProductDetailViewState())
+        viewModel.start()
+
         assertThat(productData).isEqualTo(productWithParameters)
 
         val updatedDescription = "Updated product description"
@@ -281,10 +290,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Displays update menu action if product is edited`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        initViewModel()
-
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
 
         assertThat(productData?.isProductUpdated).isNull()
 
@@ -299,14 +308,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(productRepository).updateProduct(any())
 
-        initViewModel()
-
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 isProgressDialogShown.add(it)
             }
         }
+
+        viewModel.start()
 
         viewModel.onUpdateButtonClicked()
 
@@ -318,8 +327,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        initViewModel()
-
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
@@ -327,6 +334,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
 
         viewModel.onUpdateButtonClicked()
 
@@ -340,8 +349,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(productRepository).updateProduct(any())
 
-        initViewModel()
-
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
@@ -349,6 +356,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
 
         viewModel.onUpdateButtonClicked()
 
@@ -362,8 +371,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(true).whenever(productRepository).updateProduct(any())
 
-        initViewModel()
-
         var successSnackbarShown = false
         viewModel.event.observeForever {
             if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
@@ -373,6 +380,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
 
         viewModel.onUpdateButtonClicked()
 
