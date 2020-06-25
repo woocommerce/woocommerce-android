@@ -40,6 +40,7 @@ class ProductVariantCardBuilder(
                 variation.visibility(),
                 variation.description(),
                 variation.price(),
+                variation.inventory(),
                 variation.shipping()
             ).filterNotEmpty()
         )
@@ -155,5 +156,21 @@ class ProductVariantCardBuilder(
         } else {
             null
         }
+    }
+
+    private fun ProductVariant.inventory(): ProductProperty {
+        return ComplexProperty(
+            string.product_inventory,
+            ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus),
+            drawable.ic_gridicons_list_checkmark,
+            true
+        )
+        // TODO: This will be used once the variants are editable
+//        {
+//            viewModel.onEditProductCardClicked(
+//                ViewProductInventory(this.remoteId),
+//                PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+//            )
+//        }
     }
 }
