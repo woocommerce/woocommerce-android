@@ -407,17 +407,4 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
         assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
     }
-
-    @Test
-    fun `Correctly computes the cascading margin for the product Category by their Parent Ids`() = runBlockingTest {
-        val sortedAndStyledList = viewModel.sortAndStyleProductCategories(product, productCategories)
-
-        assertThat(sortedAndStyledList[0].category).isEqualTo(productCategories[0])
-        assertThat(sortedAndStyledList[1].category).isEqualTo(productCategories[7])
-        assertThat(sortedAndStyledList[2].category).isEqualTo(productCategories[10])
-
-        assertThat(sortedAndStyledList[7].margin).isEqualTo(20)
-        assertThat(sortedAndStyledList[8].margin).isEqualTo(40)
-        assertThat(sortedAndStyledList[9].margin).isEqualTo(60)
-    }
 }

@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -29,7 +30,8 @@ class AddProductCategoryViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
     // view state for the add category screen
     val addProductCategoryViewStateData = LiveDataDelegate(savedState, AddProductCategoryViewState())
@@ -166,7 +168,7 @@ class AddProductCategoryViewModel @AssistedInject constructor(
                 if (productsInDb.isEmpty()) {
                     showSkeleton = true
                 } else {
-                    _parentCategories.value = productsInDb.sortCategories()
+                    _parentCategories.value = productsInDb.sortCategories(resourceProvider)
                     showSkeleton = false
                 }
             }
@@ -198,7 +200,7 @@ class AddProductCategoryViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             _parentCategories.value = productCategoriesRepository
                 .fetchProductCategories(loadMore = loadMore)
-                .sortCategories()
+                .sortCategories(resourceProvider)
 
             parentCategoryListViewState = parentCategoryListViewState.copy(
                 isLoading = true,

@@ -1114,7 +1114,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val selectedCategories = product.categories
 
         // Sort all incoming categories by their parent
-        val sortedList = productCategories.sortCategories()
+        val sortedList = productCategories.sortCategories(resources)
 
         // Mark the product categories as selected in the sorted list
         sortedList.map { productCategoryItemUiModel ->

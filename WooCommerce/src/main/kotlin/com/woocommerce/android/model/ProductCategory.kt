@@ -1,7 +1,10 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import androidx.annotation.DimenRes
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import java.util.Locale
@@ -15,7 +18,7 @@ data class ProductCategory(
     val parentId: Long = 0L
 ) : Parcelable {
     companion object {
-        const val DEFAULT_PRODUCT_CATEGORY_MARGIN = 20
+        @DimenRes const val DEFAULT_PRODUCT_CATEGORY_MARGIN = R.dimen.major_125
     }
 
     fun toProductCategory(): ProductCategory {
@@ -34,11 +37,14 @@ data class ProductCategory(
      *
      * @return Int the computed margin
      */
-    fun computeCascadingMargin(hierarchy: Map<Long, Long>): Int {
-        var margin = DEFAULT_PRODUCT_CATEGORY_MARGIN
+    fun computeCascadingMargin(
+        resourceProvider: ResourceProvider,
+        hierarchy: Map<Long, Long>
+    ): Int {
+        var margin = resourceProvider.getDimensionPixelSize(DEFAULT_PRODUCT_CATEGORY_MARGIN)
         var parent = this.parentId
         while (parent != 0L) {
-            margin += DEFAULT_PRODUCT_CATEGORY_MARGIN
+            margin += resourceProvider.getDimensionPixelSize(DEFAULT_PRODUCT_CATEGORY_MARGIN)
             parent = hierarchy[parent] ?: 0L
         }
         return margin
@@ -103,7 +109,9 @@ private fun List<ProductCategory>.sortByNameAndParent(): Set<ProductCategoryItem
  *
  * @return [List<ProductCategoryItemUiModel>] the sorted styled list of categories
  */
-fun List<ProductCategory>.sortCategories(): List<ProductCategoryItemUiModel> {
+fun List<ProductCategory>.sortCategories(
+    resourceProvider: ResourceProvider
+): List<ProductCategoryItemUiModel> {
     val parentChildMap = mutableMapOf<Long, Long>()
 
     // Build a parent child relationship table
@@ -116,7 +124,9 @@ fun List<ProductCategory>.sortCategories(): List<ProductCategoryItemUiModel> {
 
     // Update the margin of the category
     for (categoryViewHolderModel in sortedList) {
-        categoryViewHolderModel.margin = categoryViewHolderModel.category.computeCascadingMargin(parentChildMap)
+        categoryViewHolderModel.margin = categoryViewHolderModel.category.computeCascadingMargin(
+            resourceProvider, parentChildMap
+        )
     }
     return sortedList.toList()
 }
