@@ -25,6 +25,7 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.TEST_DISPATCHER
 import com.woocommerce.android.viewmodel.test
@@ -52,6 +53,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val repository: OrderListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val resourceProvider: ResourceProvider = mock()
     private val coroutineDispatchers = CoroutineDispatchers(
             TEST_DISPATCHER,
             TEST_DISPATCHER,
@@ -91,7 +93,9 @@ class OrderListViewModelTest : BaseUnitTest() {
                 networkStatus = networkStatus,
                 dispatcher = dispatcher,
                 selectedSite = selectedSite,
-                fetcher = orderFetcher)
+                fetcher = orderFetcher,
+                resourceProvider = resourceProvider
+        )
     }
 
     /**
