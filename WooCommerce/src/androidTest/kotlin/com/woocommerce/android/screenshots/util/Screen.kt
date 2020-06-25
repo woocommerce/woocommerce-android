@@ -3,6 +3,7 @@ package com.woocommerce.android.screenshots.util
 import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -23,12 +24,15 @@ import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withParent
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import tools.fastlane.screengrab.Screengrab
@@ -63,9 +67,20 @@ open class Screen {
             return isElementDisplayed(onView(withId(elementID)))
         }
 
-        private fun isElementDisplayed(element: ViewInteraction): Boolean {
+        fun isElementDisplayed(element: ViewInteraction): Boolean {
             return try {
                 element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
+        }
+
+        fun isToolbarTitle(title: String): Boolean {
+            return try {
+                onView(
+                    allOf(instanceOf(TextView::class.java), withParent(withId(R.id.toolbar)))
+                ).check(matches(withText(title)))
                 true
             } catch (e: Throwable) {
                 false
@@ -83,7 +98,7 @@ open class Screen {
         val modeSuffix = if (isDarkTheme()) "dark" else "light"
         val screenshotName = "$screenshotCount-$name-$modeSuffix"
 //        try {
-            Screengrab.screenshot(screenshotName)
+        Screengrab.screenshot(screenshotName)
 //        } catch (e: Throwable) {
 //            Log.w("screenshots", "Error capturing $screenshotName", e)
 //        }
@@ -92,7 +107,7 @@ open class Screen {
 
     fun isDarkTheme(): Boolean {
         return getCurrentActivity()!!.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 
     fun clickOn(elementID: Int) {
@@ -102,14 +117,14 @@ open class Screen {
     }
 
     fun scrollTo(elementID: Int) {
-        waitForElementToBeDisplayed(elementID)
+        waitForElementToBeDisplayedWithoutFailure(elementID)
 
         // Need to use the NestedScrollViewExtension because Espresso doesn't natively support it:
         // https://medium.com/@devasierra/espresso-nestedscrollview-scrolling-via-kotlin-delegation-5e7f0aa64c09
         onView(withId(elementID)).perform(NestedScrollViewExtension())
     }
 
-    private fun clickOn(viewInteraction: ViewInteraction) {
+    fun clickOn(viewInteraction: ViewInteraction) {
         waitForElementToBeDisplayed(viewInteraction)
         idleFor(500) // allow for transitions
         viewInteraction.perform(ViewActions.click(ViewActions.closeSoftKeyboard()))
@@ -139,21 +154,23 @@ open class Screen {
     fun flipSwitchOn(elementID: Int, elementParentId: Int = 0) {
         if (elementParentId == 0) {
             onView(withId(elementID))
-                    .check(matches(isNotChecked()))
-                    .perform(click())
+                .check(matches(isNotChecked()))
+                .perform(click())
         } else {
             onView(allOf(isDescendantOfA(withId(elementParentId)), withId(elementID)))
-                    .check(matches(isNotChecked()))
-                    .perform(click())
+                .check(matches(isNotChecked()))
+                .perform(click())
         }
     }
 
     fun selectItemWithTitleInTabLayout(stringID: Int, tabLayout: Int, elementParentId: Int) {
         val string = getTranslatedString(stringID)
-        val tabLayout = onView(allOf(
+        val tabLayout = onView(
+            allOf(
                 isDescendantOfA(withId(elementParentId)),
                 withId(tabLayout)
-        ))
+            )
+        )
 
         tabLayout.perform(selectTabWithText(string))
     }
@@ -164,8 +181,8 @@ open class Screen {
 
             override fun getConstraints(): Matcher<View>? {
                 return allOf(
-                        isDisplayed(),
-                        isAssignableFrom(TabLayout::class.java)
+                    isDisplayed(),
+                    isAssignableFrom(TabLayout::class.java)
                 )
             }
 
@@ -191,7 +208,7 @@ open class Screen {
         idleFor(1000)
 
         onView(withId(recyclerViewId))
-                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
     }
 
     fun clickButtonInDialogWithTitle(resourceID: Int) {
@@ -202,7 +219,7 @@ open class Screen {
 
     fun isDisplayingDialog(): Boolean {
         val dialog = onView(withId(R.id.button1))
-                .inRoot(isDialog())
+            .inRoot(isDialog())
 
         return isElementDisplayed(dialog)
     }
@@ -245,7 +262,7 @@ open class Screen {
         return isElementCompletelyDisplayed(onView(withId(elementID)))
     }
 
-    private fun isElementCompletelyDisplayed(element: ViewInteraction): Boolean {
+    fun isElementCompletelyDisplayed(element: ViewInteraction): Boolean {
         return try {
             element.check(matches(isCompletelyDisplayed()))
             true
@@ -257,10 +274,12 @@ open class Screen {
     // HELPERS
     private fun atLeastOneElementIsDisplayed(elementId: Int): Boolean {
         return try {
-            onView(allOf(
-                withId(elementId),
-                first()
-            )).check(matches(isDisplayed()))
+            onView(
+                allOf(
+                    withId(elementId),
+                    first()
+                )
+            ).check(matches(isDisplayed()))
             true
         } catch (e: Throwable) {
             false
@@ -295,16 +314,16 @@ open class Screen {
     private var mCurrentActivity: Activity? = null
     private fun getCurrentActivity(): Activity? {
         InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync {
-                    val resumedActivities: Collection<*> = ActivityLifecycleMonitorRegistry
-                            .getInstance()
-                            .getActivitiesInStage(RESUMED)
-                    mCurrentActivity = if (resumedActivities.iterator().hasNext()) {
-                        resumedActivities.iterator().next() as Activity?
-                    } else {
-                        resumedActivities.toTypedArray()[0] as Activity?
-                    }
+            .runOnMainSync {
+                val resumedActivities: Collection<*> = ActivityLifecycleMonitorRegistry
+                    .getInstance()
+                    .getActivitiesInStage(RESUMED)
+                mCurrentActivity = if (resumedActivities.iterator().hasNext()) {
+                    resumedActivities.iterator().next() as Activity?
+                } else {
+                    resumedActivities.toTypedArray()[0] as Activity?
                 }
+            }
         return mCurrentActivity
     }
 
