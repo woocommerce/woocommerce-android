@@ -37,9 +37,9 @@ class ProductVariantCardBuilder(
         return ProductPropertyCard(
             type = PRIMARY,
             properties = listOf(
-                variation.visibility(),
                 variation.description(),
                 variation.price(),
+                variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
             ).filterNotEmpty()
