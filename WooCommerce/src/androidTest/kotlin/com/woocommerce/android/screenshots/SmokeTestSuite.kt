@@ -1,19 +1,25 @@
 package com.woocommerce.android.screenshots
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.orders.OrderListScreen
 import com.woocommerce.android.ui.main.MainActivity
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @RunWith(AndroidJUnit4::class)
+@LargeTest
+@FixMethodOrder(MethodSorters.DEFAULT)
 class SmokeTestSuite {
     @Rule @JvmField
     val localeTestRule = LocaleTestRule()
@@ -65,5 +71,28 @@ class SmokeTestSuite {
         MyStoreScreen()
             .dismissTopBannerIfNeeded()
             .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
+    }
+
+    @Test
+    fun searchOrdersSuccess() {
+        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+        // Go to Orders
+        OrderListScreen
+            .navigateToOrders()
+            // Search for orders
+            .searchOrdersByName()
+            // select first Order
+            .selectFirstOrderFromTheSearchResult()
+            // Scroll Order details
+            .scrollToOrderDetails()
+            // Close Order details and go back to search
+            .goBackToSearch()
+            // Go back to Orders
+            .cancelSearch()
+
+        // Orders
+        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
+        OrderListScreen()
+            .then<OrderListScreen> { it.isTitleVisible() }
     }
 }
