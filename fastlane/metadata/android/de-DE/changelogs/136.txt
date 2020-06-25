@@ -1,10 +1,3 @@
-<de-DE>
 4.5:
 - Produktverbesserungen: Direkt in der App Produktabbildungen und Produkteinstellungen aktualisieren und Produktlinks teilen.
 - Benutzer in Kalifornien können einen neuen Datenschutzhinweis anzeigen.
-</de-DE>
-<en-US>
-4.5:
-- Product enhancements: Update product images, product settings, and share product links right from the app.
-- California users can view a new privacy notice.
-</en-US>

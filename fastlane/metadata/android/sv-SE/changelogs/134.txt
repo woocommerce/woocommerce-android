@@ -1,4 +1,0 @@
-4.4:
-* <b>Nyheter</b>: Fler funktioner för bild- och produkthantering. Gå till ”Inställningar” i “Min butik” för att aktivera nya funktioner!
-* <b>UI-förbättringar</b>: W-aviseringsikonen är tillbaka för bättre synlighet, fixade textfärgen på supportärenden i mörkt läge, små designförbättringar på inloggningsskärmen.
-* <b>Åtgärder</b>: Produktdetaljer visar exakt lagerstatus, stoppade en potentiell minnesläcka vid byte mellan butiker.
