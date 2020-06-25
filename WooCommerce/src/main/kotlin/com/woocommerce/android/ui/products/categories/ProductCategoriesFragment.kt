@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -23,6 +24,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_ADDED_CATEGORY
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_categories_list.*
@@ -85,6 +87,11 @@ class ProductCategoriesFragment : BaseProductFragment(),
         with(productCategoriesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productCategoriesAdapter
+            addItemDecoration(
+                AlignedDividerDecoration(
+                activity, DividerItemDecoration.VERTICAL, R.id.categoryName, clipToMargin = false
+            )
+            )
         }
 
         productCategoriesLayout?.apply {

@@ -32,6 +32,7 @@ import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -67,6 +68,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.util.Locale
 import javax.inject.Inject
 
 class MainActivity : AppUpgradeActivity(),
@@ -88,6 +90,7 @@ class MainActivity : AppUpgradeActivity(),
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
         const val FIELD_OPENED_FROM_ZENDESK = "opened-from-zendesk"
+        const val FIELD_NOTIFICATION_TYPE = "notification-type"
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -667,8 +670,16 @@ class MainActivity : AppUpgradeActivity(),
                 // Clear unread messages from the system bar
                 NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
-                // User clicked on a group of notifications. Just show the notifications tab.
-                bottomNavView.currentPosition = REVIEWS
+                // User clicked on a group of notifications. Redirect to the order list screen if
+                // the last notification received is a new order. Otherwise, redirect to the reviews screen
+                val notificationChannelType = intent.getStringExtra(FIELD_NOTIFICATION_TYPE)?.let {
+                    NotificationChannelType.valueOf(it.toUpperCase(Locale.US))
+                } ?: NotificationChannelType.REVIEW
+
+                bottomNavView.currentPosition = when (notificationChannelType) {
+                    NotificationChannelType.NEW_ORDER -> ORDERS
+                    else -> REVIEWS
+                }
             } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
                 // Reset this flag now that it's being processed
                 intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
