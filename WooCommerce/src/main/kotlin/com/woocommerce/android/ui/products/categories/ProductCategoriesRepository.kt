@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.categories
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toProductCategory
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -12,9 +13,12 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_CATEGORIES
+import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_CATEGORY
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.TERM_EXISTS
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -30,6 +34,7 @@ class ProductCategoriesRepository @Inject constructor(
     }
 
     private var loadContinuation: Continuation<Boolean>? = null
+    private var addProductCategoryContinuation: Continuation<RequestResult>? = null
     private var offset = 0
 
     var canLoadMoreProductCategories = true
@@ -73,24 +78,78 @@ class ProductCategoriesRepository @Inject constructor(
             .map { it.toProductCategory() }
     }
 
+    fun getProductCategoryByRemoteId(remoteId: Long) =
+        productStore.getProductCategoryByRemoteId(selectedSite.get(), remoteId)
+
+    fun getProductCategoryByNameAndParentId(categoryName: String, parentId: Long): ProductCategory? =
+        productStore.getProductCategoryByNameAndParentId(selectedSite.get(), categoryName, parentId)
+            ?.toProductCategory()
+
+    /**
+     * Fires the request to add a new product category
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun addProductCategory(categoryName: String, parentId: Long): RequestResult {
+        return try {
+            suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+                addProductCategoryContinuation = it
+
+                val productCategoryModel = WCProductCategoryModel().apply {
+                    name = categoryName
+                    parent = parentId
+                }
+                val payload = WCProductStore.AddProductCategoryPayload(selectedSite.get(), productCategoryModel)
+                dispatcher.dispatch(WCProductActionBuilder.newAddProductCategoryAction(payload))
+            } ?: RequestResult.NO_ACTION_NEEDED // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(
+                WooLog.T.PRODUCTS,
+                "CancellationException while adding product category: $categoryName", e
+            )
+            RequestResult.NO_ACTION_NEEDED
+        }
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductCategoriesChanged(event: OnProductCategoryChanged) {
-        if (event.causeOfChange == FETCH_PRODUCT_CATEGORIES) {
-            if (event.isError) {
-                loadContinuation?.resume(false)
-                AnalyticsTracker.track(
-                    Stat.PRODUCT_CATEGORIES_LOAD_FAILED,
-                    this.javaClass.simpleName,
-                    event.error.type.toString(),
-                    event.error.message
-                )
-            } else {
-                canLoadMoreProductCategories = event.canLoadMore
-                AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_LOADED)
-                loadContinuation?.resume(true)
+        when (event.causeOfChange) {
+            FETCH_PRODUCT_CATEGORIES -> {
+                if (event.isError) {
+                    loadContinuation?.resume(false)
+                    AnalyticsTracker.track(
+                        Stat.PRODUCT_CATEGORIES_LOAD_FAILED,
+                        this.javaClass.simpleName,
+                        event.error.type.toString(),
+                        event.error.message
+                    )
+                } else {
+                    canLoadMoreProductCategories = event.canLoadMore
+                    AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_LOADED)
+                    loadContinuation?.resume(true)
+                }
+                loadContinuation = null
             }
-            loadContinuation = null
+            ADDED_PRODUCT_CATEGORY -> {
+                if (event.isError) {
+                    val requestResultType = if (event.error.type == TERM_EXISTS) {
+                        RequestResult.API_ERROR
+                    } else RequestResult.ERROR
+                    addProductCategoryContinuation?.resume(requestResultType)
+                    AnalyticsTracker.track(
+                        Stat.PARENT_CATEGORIES_LOAD_FAILED,
+                        this.javaClass.simpleName,
+                        event.error.type.toString(),
+                        event.error.message
+                    )
+                } else {
+                    AnalyticsTracker.track(Stat.PARENT_CATEGORIES_LOADED)
+                    addProductCategoryContinuation?.resume(RequestResult.SUCCESS)
+                }
+                addProductCategoryContinuation = null
+            }
+            else -> { }
         }
     }
 }

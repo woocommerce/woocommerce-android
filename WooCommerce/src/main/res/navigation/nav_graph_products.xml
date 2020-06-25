@@ -176,11 +176,16 @@
             app:argType="long" />
     </fragment>
 
+    <include app:graph="@navigation/nav_graph_add_product_category" />
     <include app:graph="@navigation/nav_graph_product_settings" />
 
     <action
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
         app:destination="@id/nav_graph_product_settings" />
+
+    <action
+        android:id="@+id/action_productCategoriesFragment_to_addProductCategoryFragment"
+        app:destination="@id/nav_graph_add_product_category" />
 
     <action
         android:id="@+id/action_global_productImageViewerFragment"
