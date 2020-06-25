@@ -550,6 +550,15 @@
     <string name="product_category_empty">Add category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
     <string name="product_category_list_empty_message">Organise your products in categories</string>
+    <string name="product_add_category">Add category</string>
+    <string name="add_product_category_success">Product category added</string>
+    <string name="add_product_category_duplicate">Error creating category - Name already exists on your site.</string>
+    <string name="add_product_category_failed">Error creating category</string>
+    <string name="add_product_category_empty">Enter a category name</string>
+    <string name="product_category_name">Category name</string>
+    <string name="product_category_parent">Parent category</string>
+    <string name="product_add_category_dialog_title">Adding category</string>
+    <string name="product_add_category_dialog_message">Please wait…</string>
     <!--
         Product images
     -->
