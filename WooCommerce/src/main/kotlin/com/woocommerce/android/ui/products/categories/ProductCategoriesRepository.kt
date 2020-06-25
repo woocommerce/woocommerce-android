@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toProductCategory
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -23,6 +24,7 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
+@OpenClassOnDebug
 class ProductCategoriesRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
