@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -73,7 +72,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         )
     )
 
-
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
@@ -108,7 +106,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 PropertyGroup(
                     R.string.product_price,
                     mapOf(
-                        Pair(resources.getString(R.string.product_regular_price), productWithParameters.regularPriceWithCurrency!!)
+                        Pair(
+                            resources.getString(R.string.product_regular_price),
+                            productWithParameters.regularPriceWithCurrency!!
+                        )
                     ),
                     R.drawable.ic_gridicons_money
                 ),
@@ -410,33 +411,37 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Correctly sorts the Product Categories By their Parent Ids and by name`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val sortedByNameAndParent = viewModel.sortAndStyleProductCategories(
-            product, productCategories
-        ).toList()
-        assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
-        assertThat(sortedByNameAndParent[1].category).isEqualTo(productCategories[7])
-        assertThat(sortedByNameAndParent[2].category).isEqualTo(productCategories[10])
-        assertThat(sortedByNameAndParent[3].category).isEqualTo(productCategories[1])
-        assertThat(sortedByNameAndParent[4].category).isEqualTo(productCategories[6])
-        assertThat(sortedByNameAndParent[5].category).isEqualTo(productCategories[8])
-        assertThat(sortedByNameAndParent[6].category).isEqualTo(productCategories[9])
-        assertThat(sortedByNameAndParent[7].category).isEqualTo(productCategories[2])
-        assertThat(sortedByNameAndParent[8].category).isEqualTo(productCategories[3])
-        assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
-        assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
+    fun `Correctly sorts the Product Categories By their Parent Ids and by name`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val sortedByNameAndParent = viewModel.sortAndStyleProductCategories(
+                product, productCategories
+            ).toList()
+            assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
+            assertThat(sortedByNameAndParent[1].category).isEqualTo(productCategories[7])
+            assertThat(sortedByNameAndParent[2].category).isEqualTo(productCategories[10])
+            assertThat(sortedByNameAndParent[3].category).isEqualTo(productCategories[1])
+            assertThat(sortedByNameAndParent[4].category).isEqualTo(productCategories[6])
+            assertThat(sortedByNameAndParent[5].category).isEqualTo(productCategories[8])
+            assertThat(sortedByNameAndParent[6].category).isEqualTo(productCategories[9])
+            assertThat(sortedByNameAndParent[7].category).isEqualTo(productCategories[2])
+            assertThat(sortedByNameAndParent[8].category).isEqualTo(productCategories[3])
+            assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
+            assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
+        }
     }
 
     @Test
-    fun `Correctly computes the cascading margin for the product Category by their Parent Ids`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val sortedAndStyledList = viewModel.sortAndStyleProductCategories(product, productCategories)
+    fun `Correctly computes the cascading margin for the product Category by their Parent Ids`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val sortedAndStyledList = viewModel.sortAndStyleProductCategories(product, productCategories)
 
-        assertThat(sortedAndStyledList[0].category).isEqualTo(productCategories[0])
-        assertThat(sortedAndStyledList[1].category).isEqualTo(productCategories[7])
-        assertThat(sortedAndStyledList[2].category).isEqualTo(productCategories[10])
+            assertThat(sortedAndStyledList[0].category).isEqualTo(productCategories[0])
+            assertThat(sortedAndStyledList[1].category).isEqualTo(productCategories[7])
+            assertThat(sortedAndStyledList[2].category).isEqualTo(productCategories[10])
 
-        assertThat(sortedAndStyledList[7].margin).isEqualTo(32)
-        assertThat(sortedAndStyledList[8].margin).isEqualTo(64)
-        assertThat(sortedAndStyledList[9].margin).isEqualTo(96)
+            assertThat(sortedAndStyledList[7].margin).isEqualTo(32)
+            assertThat(sortedAndStyledList[8].margin).isEqualTo(64)
+            assertThat(sortedAndStyledList[9].margin).isEqualTo(96)
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.woocommerce.android.viewmodel
 
 import androidx.navigation.NavArgs
-import androidx.navigation.navArgs
 import android.os.Bundle
 import androidx.collection.ArrayMap
 import java.lang.reflect.Method
