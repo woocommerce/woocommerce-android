@@ -14,6 +14,7 @@ object ProductTestUtils {
             localSiteId = 1
             remoteProductId = productId
             status = "publish"
+            stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"
             regularPrice = "30.00"
@@ -28,6 +29,8 @@ object ProductTestUtils {
             height = "3"
             variations = "[]"
             attributes = "[]"
+            categories = ""
+            shortDescription = "short desc"
         }.toAppModel()
     }
 
