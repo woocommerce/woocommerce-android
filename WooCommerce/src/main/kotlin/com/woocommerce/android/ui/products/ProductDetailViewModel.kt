@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -1003,6 +1004,17 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onAddCategoryButtonClicked() {
+        triggerEvent(AddProductCategory)
+    }
+
+    fun onProductCategoryAdded(category: ProductCategory) {
+        val selectedCategories = viewState.productDraft?.categories?.toMutableList() ?: mutableListOf()
+        selectedCategories.add(category)
+        updateProductDraft(categories = selectedCategories)
+        refreshProductCategories()
+    }
+
     /**
      * Refreshes the list of categories by calling the [loadProductCategories] method
      * which eventually checks, if there is anything new to fetch from the server
@@ -1107,7 +1119,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val selectedCategories = product.categories
 
         // Sort all incoming categories by their parent
-        val sortedList = productCategories.sortCategories()
+        val sortedList = productCategories.sortCategories(resources)
 
         // Mark the product categories as selected in the sorted list
         sortedList.map { productCategoryItemUiModel ->
@@ -1217,7 +1229,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val isAddCategoryButtonVisible: Boolean
+            get() = isSkeletonShown == false
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
