@@ -7,7 +7,6 @@ import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductDetailViewModel.Parameters
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
