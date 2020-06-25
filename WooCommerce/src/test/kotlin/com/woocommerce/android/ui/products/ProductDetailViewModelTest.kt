@@ -36,7 +36,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
-import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.util.CoroutineTestRule
@@ -100,8 +99,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             type = PRIMARY,
             properties = listOf(
                 Editable(R.string.product_detail_title_hint, product.name),
-                ComplexProperty(R.string.product_description, product.description),
-                RatingBar(R.string.product_reviews, product.ratingCount.toString(), product.averageRating)
+                ComplexProperty(R.string.product_description, product.description)
             )
         ),
         ProductPropertyCard(
@@ -110,23 +108,40 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 PropertyGroup(
                     R.string.product_price,
                     mapOf(
-                        TEST_STRING to productWithParameters.regularPriceWithCurrency!!
+                        Pair(resources.getString(R.string.product_regular_price), productWithParameters.regularPriceWithCurrency!!)
                     ),
                     R.drawable.ic_gridicons_money
                 ),
                 PropertyGroup(
+                    R.string.product_shipping,
+                    mapOf(
+                        Pair(resources.getString(R.string.product_weight), productWithParameters.weightWithUnits!!),
+                        Pair(resources.getString(R.string.product_dimensions), productWithParameters.sizeWithUnits!!),
+                        Pair(resources.getString(R.string.product_shipping_class), "")
+                    ),
+                    R.drawable.ic_gridicons_shipping,
+                    true
+                ),
+                PropertyGroup(
                     R.string.product_inventory,
                     mapOf(
-                        "" to TEST_STRING
+                        Pair("", resources.getString(R.string.product_stock_status_instock))
                     ),
                     R.drawable.ic_gridicons_list_checkmark,
-                    false
+                    true
                 ),
                 ComplexProperty(
                     R.string.product_short_description,
-                    TEST_STRING,
+                    product.shortDescription,
                     R.drawable.ic_gridicons_align_left,
                     true
+                ),
+                ComplexProperty(
+                    R.string.product_categories,
+                    resources.getString(R.string.product_category_empty),
+                    R.drawable.ic_gridicons_folder,
+                    showTitle = false,
+                    maxLines = 5
                 )
             )
         )
