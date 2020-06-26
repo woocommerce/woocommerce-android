@@ -1,0 +1,3 @@
+4.5:
+- Miglioramenti prodotto: aggiornamento di immagini e impostazioni del prodotto e condivisione dei link di prodotti direttamente dall'app.
+- Gli utenti in California possono vedere la propria nota sulla privacy.

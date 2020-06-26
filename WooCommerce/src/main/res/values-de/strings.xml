@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-09 12:54:04+0000
+Translation-Revision-Date: 2020-06-24 09:54:33+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="settings_privacy_policy_ca">Datenschutzhinweis für Benutzer in Kalifornien</string>
+    <string name="keep_changes">Änderungen beibehalten</string>
     <string name="product_sale_date_to">Bis %1$s</string>
     <string name="product_type_external">Extern</string>
     <string name="product_type_simple">Einfach</string>

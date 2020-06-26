@@ -1,0 +1,3 @@
+4,5:
+– Produktförbättringar: uppdatera produktbilder, produktinställningar och dela produktlänkar direkt från appen.
+– Användare från Kalifornien kan visa ett nytt sekretessmeddelande.

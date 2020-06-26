@@ -1,4 +1,0 @@
-4.4:
-* <b>Novidade</b>: Funcionalidade adicionada à gestão de produtos e imagens. Acesse “Configurações” em “Minha loja” para ativar novas funcionalidades.
-* <b>Melhorias de IU</b>: Trouxemos o ícone de notificação W de volta para oferecer uma melhor visibilidade, corrigimos a cor do texto nos tíquetes de suporte no modo escuro e ajustamos o estilo das telas de login.
-* <b>Correções</b>: Os detalhes do produto exibem o status exato do estoque, pois consertamos uma possível evasão de memória ao alternar entre lojas.
