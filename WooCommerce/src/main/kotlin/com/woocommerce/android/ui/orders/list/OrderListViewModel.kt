@@ -27,6 +27,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -63,7 +64,8 @@ class OrderListViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: OrderFetcher
+    private val fetcher: OrderFetcher,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -75,7 +77,7 @@ class OrderListViewModel @AssistedInject constructor(
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
-        OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher)
+        OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())

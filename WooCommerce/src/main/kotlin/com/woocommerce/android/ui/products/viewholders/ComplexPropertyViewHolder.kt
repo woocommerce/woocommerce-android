@@ -20,7 +20,7 @@ class ComplexPropertyViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(p
             item.icon
         )
 
-        propertyView.setMaxLines(1)
+        propertyView.setMaxLines(item.maxLines)
         propertyView.showPropertyName(item.title != null && item.showTitle)
 
         if (item.onClick != null) {

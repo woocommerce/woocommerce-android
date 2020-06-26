@@ -38,7 +38,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
     return ProductVariant(
             this.remoteProductId,
             this.remoteVariationId,
-            this.imageUrl,
+            this.image,
             this.price.toBigDecimalOrNull()?.roundError(),
             ProductStockStatus.fromString(this.stockStatus),
             this.stockQuantity,

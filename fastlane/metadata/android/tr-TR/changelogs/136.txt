@@ -1,0 +1,3 @@
+4,5:
+- Ürün geliştirmeleri: Ürün görüntülerini, ürün ayarlarını güncelleyin ve ürün bağlantılarını doğrudan uygulamadan paylaşın.
+- Kaliforniya'daki kullanıcılar yeni bir gizlilik bildirimini görüntüleyebilirler.

@@ -1,0 +1,3 @@
+4.5:
+- Melhorias nos produtos: atualize imagens e configurações de produtos e compartilhe os links deles diretamente pelo app.
+- Novo aviso de privacidade disponível para usuários residentes da Califórnia.
