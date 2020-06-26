@@ -44,7 +44,7 @@ fun BottomNavigationPosition.createFragment(): TopLevelFragment = when (this) {
  * [MyStoreFragment] if v4 stats api is supported for the site
  */
 private fun createMyStoreFragment(): TopLevelFragment {
-    return if (AppPrefs.isUsingV4Api()) {
+    return if (AppPrefs.isV4StatsSupported()) {
         MyStoreFragment.newInstance()
     } else {
         DashboardFragment.newInstance()
@@ -57,7 +57,7 @@ private fun createMyStoreFragment(): TopLevelFragment {
  * [MyStoreFragment.TAG] if v4 stats api is supported for the site
  */
 private fun getMyStoreTag(): String {
-    return if (AppPrefs.isUsingV4Api()) {
+    return if (AppPrefs.isV4StatsSupported()) {
         MyStoreFragment.TAG
     } else {
         DashboardFragment.TAG

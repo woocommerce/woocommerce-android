@@ -117,7 +117,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             refreshDashboard(forced = this.isRefreshPending)
         }
 
-        if (AppPrefs.isUsingV4Api()) {
+        if (AppPrefs.isV4StatsSupported()) {
             mainActivity?.replaceStatsFragment()
         } else if (AppPrefs.shouldDisplayV4StatsRevertedBanner()) {
             showV4StatsRevertedBanner(true)

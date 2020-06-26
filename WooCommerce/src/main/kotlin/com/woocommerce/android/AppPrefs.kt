@@ -114,12 +114,11 @@ object AppPrefs {
 
     /**
      * Method to check if the v4 stats UI is supported.
-     * i.e. if the Woocommerce Admin plugin is installed/active on the site
      */
 
-    fun isUsingV4Api() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
+    fun isV4StatsSupported() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
 
-    fun setIsUsingV4Api(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
+    fun setV4StatsSupported(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
 
     /**
      * Flag to check products features are enabled
