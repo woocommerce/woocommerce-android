@@ -15,7 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
@@ -519,7 +519,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productPricingViewState = if (inputValue > regularPrice) {
             productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
-            val isOnSale = !(inputValue isEqualTo BigDecimal.ZERO)
+            val isOnSale = inputValue isNotEqualTo BigDecimal.ZERO
             updateProductDraft(salePrice = inputValue, isOnSale = isOnSale)
             productPricingViewState.copy(salePriceErrorMessage = 0)
         }
