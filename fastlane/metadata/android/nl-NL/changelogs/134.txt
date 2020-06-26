@@ -1,4 +1,0 @@
-4.4:
-* <b>Nieuw</b>: Functionaliteit aan beeld- en productbeheer toegevoegd. Ga naar 'Instellingen' in 'Mijn winkel' om deze nieuwe functies in te schakelen!
-* <b>UI-verbeteringen</b>: Het W-meldingspictogram is teruggebracht voor verbeterde zichtbaarheid, een probleem met de tekstkleur op ondersteuningstickets in de nachtmodus is opgelost en er zijn kleine stijlverbeteringen aangebracht aan inlogschermen.
-* <b>Fixes</b>: In de productgegevens wordt de exacte voorraadstatus weergegeven. Potentieel geheugenlek opgelost bij het wisselen tussen winkels.

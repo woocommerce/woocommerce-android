@@ -1,4 +1,0 @@
-4.4:
-* <b>Yeni</b>: Görsel ve ürün yönetimine işlev eklendi. Yeni özellikleri açmak için “Mağazam” sekmesindeki “Ayarlar” bölümüne gidin.
-* <b>Kullanıcı arayüzünde yapılan iyileştirmeler</b>: Daha iyi görünürlük için W bildirimi geri getirildi, karanlık modda destek biletlerinin metin rengi düzeltildi, oturum açma ekranlarında küçük sitl değişiklikleri yapıldı.
-* <b>Düzeltmeler</b>: Ürün ayrıntıları tam stok durumunu gösteriyor, mağazalar arası geçiş yaparken meydana gelen olası bir bellek sızıntısı giderildi.

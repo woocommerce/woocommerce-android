@@ -1,102 +1,70 @@
 <ar>
-4.4:
-* <b>جديد</b>: تمت إضافة وظيفة إلى إدارة الصور والمنتجات. يمكنك الانتقال إلى "الإعدادات" ضمن "متجري" لتشغيل ميزات جديدة!
-* <b>تحسينات واجهة المستخدم</b>: تم الرجوع إلى أيقونة تنبيهات ووردبريس لتحسين الرؤية وإصلاح لون النص الموجودة على بطاقات الدعم في الوضع الداكن وإدخال تعديلات طفيفة على شاشات تسجيل الدخول.
-* <b>الإصلاحات</b>: تعرض تفاصيل المنتج حالة المخزون الدقيقة، وتم إغلاق التسرب المحتمل في الذاكرة عند التبديل بين المتاجر.
+4.5:
+-  تحسينات المنتج: يمكنك تحديث صور المنتجات، وإعدادات المنتجات، ومشاركة روابط المنتجات مباشرة من التطبيق.
+- يمكن للمستخدمين في كاليفورنيا عرض إشعار الخصوصية الجديد.
 </ar>
 <de-DE>
-4.4:
-* <b>Neu</b>: Funktionen zu Bild- und Produktmanagement hinzugefügt. Gehe unter „Mein Shop“ zu „Einstellungen“, um die neuen Funktionen zu aktivieren.
-* <b>Verbesserungen an der Benutzeroberfläche</b>: W-Benachrichtigungssymbol zur besseren Sichtbarkeit wieder hinzugefügt; Textfarbe auf Supporttickets im dunklen Modus korrigiert; kleinere stilistische Verbesserungen an den Anmeldebildschirmen.
-* <b>Behoben</b>: Produktdetails zeigen exakten Lagerstatus an; potenziellen Speicherverlust beim Wechsel zwischen Shops behoben.
+4.5:
+- Produktverbesserungen: Direkt in der App Produktabbildungen und Produkteinstellungen aktualisieren und Produktlinks teilen.
+- Benutzer in Kalifornien können einen neuen Datenschutzhinweis anzeigen.
 </de-DE>
 <es-ES>
-4.4:
-* <b>Novedad</b>: Hemos añadido una función de gestión de imágenes y de productos. Dirígete a "Ajustes" en "Mi tienda" para activar las nuevas funciones.
-* <b>Mejoras en la interfaz de usuario</b>: * Hemos recuperado el icono de notificación W para ofrecer una mejor visibilidad, hemos corregido el color del texto de las incidencias en modo oscuro y hemos hecho pequeños cambios de estilo en las pantallas de acceso.
-* <b>Correcciones</b>: Los detalles de los productos muestran el estado exacto de las existencias. Hemos detectado una posible fuga de memoria al cambiar de tienda.
+4.5:
+- Mejoras del producto: actualiza las imágenes del producto y su configuración, y comparte enlaces del producto directamente desde la aplicación.
+- Los usuarios de California pueden ver un nuevo aviso de privacidad.
 </es-ES>
-<fr-FR>
-4.4 :
-* <b>Nouveau</b> : Ajout de fonctions à la gestion des images et des produits. Accédez aux « Réglages » dans « Ma boutique » pour activer de nouvelles fonctionnalités !
-* <b>Améliorations de l’interface utilisateur</b> : Rétablissement de l’icône de notification W pour une meilleure visibilité, résolution de la couleur de texte sur les tickets de support en mode sombre, légers ajustements du style sur les écrans de connexion.
-* <b>Résolution de bugs</b> : Les détails du produit affichent l’état exact des stocks, colmatage d’une fuite de mémoire potentielle lors du passage entre boutiques.
-</fr-FR>
 <iw-IL>
-4.4:
-* <b>חדש</b>: הוספנו פונקציונליות לניהול של תמונות ומוצרים. ניתן לעבור למקטע 'הגדרות' בלשונית 'החנות שלי' כדי להפעיל את התכונות החדשות!
-* <b>שיפורים בממשק המשתמש</b>: החזרנו את סמל ההודעות W לנראות טובה יותר, תיקנו את צבע הטקסט בכרטיסי תמיכה במצב כהה והוספנו כמה שינויים קטנים למסכי ההתחברות.
-* <b>תיקונים</b>: פרטי המוצר מציגים את מצב המלאי המדויק, תיקנו דליפת זיכרון אפשרית במעבר בין חנויות.
+4.5:
+- שיפורים במוצר: אפשר לעדכן תמונות מוצר והגדרות מוצר ולשתף קישורים למוצר ישירות מהאפליקציה.
+- משתמשים מקליפורניה יכולים להציג את הצהרת הפרטיות החדשה.
 </iw-IL>
-<id>
-4.4:
-* <b>Baru</b>: Penambahan fungsi pada manajemen gambar dan produk. Buka “Pengaturan” pada “My Store” untuk mengaktifkan fitur baru!
-* <b>Peningkatan UI</b>: Kembalinya ikon pemberitahuan W untuk memberikan visibilitas yang lebih baik, perbaikan warna teks untuk tiket dukungan pada mode gelap, sedikit perubahan gaya pada layar login.
-* <b>Perbaikan</b>: Detail produk menampilkan status stok yang tepat, potensi kebocoran memori ketika berpindah toko berhasil diatasi.
-</id>
 <it-IT>
-4.4:
-*<b>Novità</b>: più funzionalità alla gestione di immagine e prodotto. Vai su "Impostazioni" in "Il mio negozio" per attivare le nuove funzionalità!
-*<b>Miglioramenti a UI</b>: reinserimento dell'icona di notifica W per una migliore visibilità, corretto il colore del testo su ticket di supporto in Dark mode, minori aggiustamenti di stile a schermate di accesso.
-*<b>Correzioni</b>: dettagli prodotto mostrano stato esatto in magazzino, si inseriva una potenziale perdita di memoria quando si passava da un negozio all'altro.
+4.5:
+- Miglioramenti prodotto: aggiornamento di immagini e impostazioni del prodotto e condivisione dei link di prodotti direttamente dall'app.
+- Gli utenti in California possono vedere la propria nota sulla privacy.
 </it-IT>
 <ja-JP>
-4.4:
-* <b>新機能</b> :画像と商品の管理に機能を追加しました。「自分のストア」の「設定」に移動して、新しい機能を有効にしましょう。
-* <b>UI 改善</b> :読みやすさのために W の通知アイコンが復活、ダークモードのサポートチケットのテキスト色を修正、ログイン画面のスタイルの微調整。
-* <b>修正</b> :商品の説明に正確な在庫状況を表示、ストアを切り替える際の潜在的なメモリリークに対応。
+4.5: 
+- 商品の機能強化 : 商品画像および設定の更新と商品リンクの共有がアプリから直接できるようになりました。
+- カリフォルニア州のユーザーは新しいプライバシー通知を確認できます。
 </ja-JP>
 <ko-KR>
-4.4:
-* <b>새로운 기능</b>: 이미지 및 제품 관리에 기능이 추가되었습니다. 새로운 기능을 설정하려면 “내 스토어”의 “설정”으로 이동하세요!
-* <b>UI 개선 사항</b>: 가시성 향상을 위해 W 알림 아이콘이 다시 추가되었으며, 어둡게 모드의 지원 티켓 텍스트 색상을 수정하였고, 로그인 화면을 약간 조정했습니다.
-* <b>수정 사항</b>: 제품 세부 정보는 정확한 재고 상태를 표시하며 스토어 간 전환 시 잠재적인 메모리 누수를 방지합니다.
+4.5:
+- 향상된 제품 기능: 제품 이미지와 제품 설정을 업데이트하고 앱에서 바로 제품 링크를 공유하세요.
+- 캘리포니아 내 사용자가 개인정보 고지사항을 볼 수 있습니다.
 </ko-KR>
 <nl-NL>
-4.4:
-* <b>Nieuw</b>: Functionaliteit aan beeld- en productbeheer toegevoegd. Ga naar 'Instellingen' in 'Mijn winkel' om deze nieuwe functies in te schakelen!
-* <b>UI-verbeteringen</b>: Het W-meldingspictogram is teruggebracht voor verbeterde zichtbaarheid, een probleem met de tekstkleur op ondersteuningstickets in de nachtmodus is opgelost en er zijn kleine stijlverbeteringen aangebracht aan inlogschermen.
-* <b>Fixes</b>: In de productgegevens wordt de exacte voorraadstatus weergegeven. Potentieel geheugenlek opgelost bij het wisselen tussen winkels.
+4.5:
+- Productverbeteringen: werk productafbeeldingen, productinstellingen en links voor het delen van producten rechtstreeks vanuit de app bij.
+- Gebruikers uit Californië kunnen een nieuwe privacyverklaring bekijken.
 </nl-NL>
 <pt-BR>
-4.4:
-* <b>Novidade</b>: Funcionalidade adicionada à gestão de produtos e imagens. Acesse “Configurações” em “Minha loja” para ativar novas funcionalidades.
-* <b>Melhorias de IU</b>: Trouxemos o ícone de notificação W de volta para oferecer uma melhor visibilidade, corrigimos a cor do texto nos tíquetes de suporte no modo escuro e ajustamos o estilo das telas de login.
-* <b>Correções</b>: Os detalhes do produto exibem o status exato do estoque, pois consertamos uma possível evasão de memória ao alternar entre lojas.
+4.5:
+- Melhorias nos produtos: atualize imagens e configurações de produtos e compartilhe os links deles diretamente pelo app.
+- Novo aviso de privacidade disponível para usuários residentes da Califórnia.
 </pt-BR>
-<ru-RU>
-Версия 4.4
-* <b>Новые возможности</b>: Добавлены функции управления изображениями и продуктами. Чтобы включить их, перейдите в раздел "Настройки" на вкладке "Мой магазин".
-* <b>Улучшения пользовательского интерфейса</b>: Мы вернули значок уведомлений W для большей наглядности, изменили цвет текста обращений в службу поддержки в темном режиме и немного улучшили стиль экранов входа.
-* <b>Исправления</b>: В сведениях о продуктах теперь отображается точное количество товарных запасов, устранен потенциальный источник утечки памяти при переходе между магазинами.
-</ru-RU>
 <sv-SE>
-4.4:
-* <b>Nyheter</b>: Fler funktioner för bild- och produkthantering. Gå till ”Inställningar” i “Min butik” för att aktivera nya funktioner!
-* <b>UI-förbättringar</b>: W-aviseringsikonen är tillbaka för bättre synlighet, fixade textfärgen på supportärenden i mörkt läge, små designförbättringar på inloggningsskärmen.
-* <b>Åtgärder</b>: Produktdetaljer visar exakt lagerstatus, stoppade en potentiell minnesläcka vid byte mellan butiker.
+4,5:
+– Produktförbättringar: uppdatera produktbilder, produktinställningar och dela produktlänkar direkt från appen.
+– Användare från Kalifornien kan visa ett nytt sekretessmeddelande.
 </sv-SE>
 <tr-TR>
-4.4:
-* <b>Yeni</b>: Görsel ve ürün yönetimine işlev eklendi. Yeni özellikleri açmak için “Mağazam” sekmesindeki “Ayarlar” bölümüne gidin.
-* <b>Kullanıcı arayüzünde yapılan iyileştirmeler</b>: Daha iyi görünürlük için W bildirimi geri getirildi, karanlık modda destek biletlerinin metin rengi düzeltildi, oturum açma ekranlarında küçük sitl değişiklikleri yapıldı.
-* <b>Düzeltmeler</b>: Ürün ayrıntıları tam stok durumunu gösteriyor, mağazalar arası geçiş yaparken meydana gelen olası bir bellek sızıntısı giderildi.
+4,5:
+- Ürün geliştirmeleri: Ürün görüntülerini, ürün ayarlarını güncelleyin ve ürün bağlantılarını doğrudan uygulamadan paylaşın.
+- Kaliforniya'daki kullanıcılar yeni bir gizlilik bildirimini görüntüleyebilirler.
 </tr-TR>
 <zh-CN>
-4.4：
-* <b>新增功能</b>：增加了图片和产品管理功能。要启用新功能，请转到“我的商店”中的“设置”！
-* <b>UI 改进</b>：恢复了 W 通知图标以提高可见性；修正了深色模式下的支持申请单文本颜色；轻微调整了登录屏幕的风格。
-* <b>修复</b>：产品详细信息现在显示确切的库存状态，并消除了在商店之间切换时可能发生的内存泄漏问题。
+4.5：
+- 产品增强功能：更新产品图片、产品设置，并且直接通过应用程序共享产品链接。
+- 加州用户可以查看新的隐私声明。
 </zh-CN>
 <zh-TW>
-4.4：
-* <b>新功能</b>：已新增圖片和產品管理相關功能。前往「我的商店」中的「設定」開啟新功能！
-* <b>改善 UI</b>：恢復 W 通知圖示以提升可見度、修復深色模式下支援票證的文字顏色、微調登入畫面的樣式。
-* <b>修正</b>：產品詳細資訊會顯示確切的庫存狀態，修復在商店之間切換時，潛在記憶體的流失問題。
+4.5：
+- 產品改善功能：更新產品圖片、產品設定，並可直接從應用程式分享產品連結。
+- 加州使用者可檢閱新版隱私權聲明。
 </zh-TW>
 <en-US>
-4.4:
-* <b>New</b>: Added functionality to image and product management. Head to “Settings” in “My Store” to turn on new features!
-* <b>UI improvements</b>: Brought back the W notification icon for better visibility, fixed the text color on support tickets in dark mode, minor style tweaks to login screens.
-* <b>Fixes</b>: Product details display exact stock status, plugged a potential memory leak when switching between stores.
+4.5:
+- Product enhancements: Update product images, product settings, and share product links right from the app.
+- California users can view a new privacy notice.
 </en-US>

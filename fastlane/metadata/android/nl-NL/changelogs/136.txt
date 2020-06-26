@@ -1,0 +1,3 @@
+4.5:
+- Productverbeteringen: werk productafbeeldingen, productinstellingen en links voor het delen van producten rechtstreeks vanuit de app bij.
+- Gebruikers uit Californië kunnen een nieuwe privacyverklaring bekijken.

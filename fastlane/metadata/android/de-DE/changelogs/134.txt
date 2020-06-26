@@ -1,4 +1,0 @@
-4.4:
-* <b>Neu</b>: Funktionen zu Bild- und Produktmanagement hinzugefügt. Gehe unter „Mein Shop“ zu „Einstellungen“, um die neuen Funktionen zu aktivieren.
-* <b>Verbesserungen an der Benutzeroberfläche</b>: W-Benachrichtigungssymbol zur besseren Sichtbarkeit wieder hinzugefügt; Textfarbe auf Supporttickets im dunklen Modus korrigiert; kleinere stilistische Verbesserungen an den Anmeldebildschirmen.
-* <b>Behoben</b>: Produktdetails zeigen exakten Lagerstatus an; potenziellen Speicherverlust beim Wechsel zwischen Shops behoben.

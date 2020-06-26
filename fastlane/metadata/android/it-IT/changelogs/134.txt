@@ -1,4 +1,0 @@
-4.4:
-*<b>Novità</b>: più funzionalità alla gestione di immagine e prodotto. Vai su "Impostazioni" in "Il mio negozio" per attivare le nuove funzionalità!
-*<b>Miglioramenti a UI</b>: reinserimento dell'icona di notifica W per una migliore visibilità, corretto il colore del testo su ticket di supporto in Dark mode, minori aggiustamenti di stile a schermate di accesso.
-*<b>Correzioni</b>: dettagli prodotto mostrano stato esatto in magazzino, si inseriva una potenziale perdita di memoria quando si passava da un negozio all'altro.
