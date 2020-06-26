@@ -53,7 +53,7 @@ SUPPORTED_LOCALES = [
     new_version = android_get_app_version()
     extract_release_notes_for_version(version: new_version, 
       release_notes_file_path:"#{ENV["PROJECT_ROOT_FOLDER"]}RELEASE-NOTES.txt", 
-      extracted_notes_file_path:"#{ENV["PROJECT_ROOT_FOLDER"]}WooCommerce/metadata/release_notes.txt")
+      extracted_notes_file_path:release_notes_path)
     android_update_release_notes(new_version: new_version)
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
@@ -214,10 +214,10 @@ end
     )
 
     if (options[:create_release])
-      apk_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }-universal.apk")
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
       create_release(repository:GHHELPER_REPO, 
         version: version["name"], 
-        release_notes_file_path:'./WooCommerce/metadata/release_notes.txt',
+        release_notes_file_path:release_notes_path,
         release_assets:"#{apk_file_path},#{aab_file_path}"
       )
     end
@@ -264,10 +264,10 @@ end
     )
 
     if (options[:create_release])
-      apk_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }-universal.apk")
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
       create_release(repository:GHHELPER_REPO, 
         version: version["name"], 
-        release_notes_file_path:'./WooCommerce/metadata/release_notes.txt',
+        release_notes_file_path:release_notes_path,
         prerelease: true,
         release_assets:"#{apk_file_path}"
       )
@@ -354,7 +354,7 @@ end
     # Create the file names
     version=options[:version]
     name="wcandroid-#{version["name"]}.aab"
-    apk_name="wcandroid-#{version["name"]}-universal.apk"
+    apk_name=universal_apk_name(version)
     aab_file="WooCommerce-vanilla-release.aab"
     output_dir="WooCommerce/build/outputs/bundle/"
     build_dir="artifacts/"
@@ -418,4 +418,14 @@ end
     FileUtils.rm_rf("#{temp_dir}")
   end
 
+  #####################################################################################
+  # Utils
+  #####################################################################################
+  def release_notes_path
+    "#{ENV["PROJECT_ROOT_FOLDER"]}WooCommerce/metadata/release_notes.txt"
+  end
+
+  def universal_apk_name(version)
+    "wcandroid-#{ version["name"] }-universal.apk"
+  end
 end
