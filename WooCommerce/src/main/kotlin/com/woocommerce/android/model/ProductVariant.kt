@@ -33,8 +33,14 @@ data class ProductVariant(
     val isVirtual: Boolean,
     val isDownloadable: Boolean,
     val description: String,
-    val status: ProductStatus?
-) : Parcelable {
+    val status: ProductStatus?,
+    val shippingClass: String,
+    val shippingClassId: Long,
+    override val length: Float,
+    override val width: Float,
+    override val height: Float,
+    override val weight: Float
+) : Parcelable, IProduct {
     fun isSameVariant(variant: ProductVariant): Boolean {
         return remoteVariationId == variant.remoteVariationId &&
             remoteProductId == variant.remoteProductId &&
@@ -53,7 +59,13 @@ data class ProductVariant(
             isVirtual == variant.isVirtual &&
             isDownloadable == variant.isDownloadable &&
             description == variant.description &&
-            status == variant.status
+            status == variant.status &&
+            shippingClass == variant.shippingClass &&
+            shippingClassId == variant.shippingClassId &&
+            weight == variant.weight &&
+            length == variant.length &&
+            height == variant.height &&
+            width == variant.width
     }
 }
 
@@ -82,7 +94,13 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
         isDownloadable = this.downloadable,
         isVirtual = this.virtual,
         description = this.description,
-        status = ProductStatus.fromString(this.status)
+        status = ProductStatus.fromString(this.status),
+        shippingClass = this.shippingClass,
+        shippingClassId = this.shippingClassId.toLong(),
+        length = this.length.toFloatOrNull() ?: 0f,
+        width = this.width.toFloatOrNull() ?: 0f,
+        height = this.height.toFloatOrNull() ?: 0f,
+        weight = this.weight.toFloatOrNull() ?: 0f
     )
 }
 

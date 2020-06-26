@@ -82,6 +82,19 @@ class ProductVariantViewModel @AssistedInject constructor(
         displayVariation()
     }
 
+    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.shippingClass ?: ""
+
+    private suspend fun loadShippingClassDependencies() {
+        // Fetch current site's shipping class only if a shipping class is assigned to the product and if
+        // the shipping class is not available in the local db
+        val shippingClassId = variant.shippingClassId
+        if (shippingClassId != 0L && productRepository.getProductShippingClassByRemoteId(shippingClassId) == null) {
+            productRepository.fetchProductShippingClassById(shippingClassId)
+        }
+    }
+
     // TODO: This will be used in edit mode
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
@@ -135,11 +148,16 @@ class ProductVariantViewModel @AssistedInject constructor(
 
     private fun updateCards() {
         viewState.variant?.let {
-            launch(dispatchers.computation) {
-                val cards = cardBuilder.buildPropertyCards(it)
-                withContext(dispatchers.main) {
-                    _variantDetailCards.value = cards
+            launch {
+                if (_variantDetailCards.value == null) {
+                    viewState = viewState.copy(isSkeletonShown = true)
                 }
+                val cards = withContext(dispatchers.io) {
+                    loadShippingClassDependencies()
+                    cardBuilder.buildPropertyCards(it)
+                }
+                _variantDetailCards.value = cards
+                viewState = viewState.copy(isSkeletonShown = false)
             }
         }
     }
@@ -189,7 +207,8 @@ class ProductVariantViewModel @AssistedInject constructor(
         val priceWithCurrency: String? = null,
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
-        val gmtOffset: Float = 0f
+        val gmtOffset: Float = 0f,
+        val shippingClass: String? = null
     ) : Parcelable
 
     @AssistedInject.Factory

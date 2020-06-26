@@ -114,7 +114,8 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
             variationImage.visibility = View.GONE
         } else {
             variationImage.visibility = View.VISIBLE
-            GlideApp.with(this).load(variation.image.source)
+            GlideApp.with(this)
+                .load(variation.image.source)
                 .placeholder(R.drawable.ic_product)
                 .into(variationImage)
             variationImage.setOnClickListener {
@@ -125,7 +126,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.show(app_bar_layout, R.layout.skeleton_variant_detail, delayed = true)
         } else {
             skeletonView.hide()
         }

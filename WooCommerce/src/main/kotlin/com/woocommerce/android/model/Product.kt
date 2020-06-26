@@ -53,10 +53,6 @@ data class Product(
     val manageStock: Boolean,
     val stockQuantity: Int,
     val sku: String,
-    val length: Float,
-    val width: Float,
-    val height: Float,
-    val weight: Float,
     val shippingClass: String,
     val shippingClassId: Long,
     val isDownloadable: Boolean,
@@ -74,8 +70,12 @@ data class Product(
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
-    val categories: List<ProductCategory>
-) : Parcelable {
+    val categories: List<ProductCategory>,
+    override val length: Float,
+    override val width: Float,
+    override val height: Float,
+    override val weight: Float
+) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
     }
@@ -311,38 +311,6 @@ data class Product(
                     categories = updatedProduct.categories
             )
         } ?: this.copy()
-    }
-
-    /**
-     * Formats the [Product] weight with the given [weightUnit]
-     * for display purposes.
-     * Eg: 12oz
-     */
-    fun getWeightWithUnits(weightUnit: String?): String {
-        return if (weight > 0) {
-            "${weight.formatToString()}${weightUnit ?: ""}"
-        } else ""
-    }
-
-    /**
-     * Formats the [Product] size (length, width, height) with the given [dimensionUnit]
-     * if all the dimensions are available.
-     * Eg: 12 x 15 x 13 in
-     */
-    fun getSizeWithUnits(dimensionUnit: String?): String {
-        val hasLength = length > 0
-        val hasWidth = width > 0
-        val hasHeight = height > 0
-        val unit = dimensionUnit ?: ""
-        return if (hasLength && hasWidth && hasHeight) {
-            "${length.formatToString()} " +
-                    "x ${width.formatToString()} " +
-                    "x ${height.formatToString()} $unit"
-        } else if (hasWidth && hasHeight) {
-            "${width.formatToString()} x ${height.formatToString()} $unit"
-        } else {
-            ""
-        }.trim()
     }
 }
 
