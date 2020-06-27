@@ -234,7 +234,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         val orderModel = order.toAppModel()
         val hasUnpackagedProducts = orderModel.hasUnpackagedProducts(shippingLabels)
         if (hasUnpackagedProducts && orderModel.hasNonRefundedItems(refunds)) {
-            val listTitle = if (hasUnpackagedProducts) {
+            val listTitle = if (shippingLabels.isNotEmpty() && hasUnpackagedProducts) {
                 getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
             } else null
 
