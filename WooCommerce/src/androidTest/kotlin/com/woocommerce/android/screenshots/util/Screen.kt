@@ -23,6 +23,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
+import androidx.test.espresso.matcher.ViewMatchers.withHint
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -31,10 +32,10 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.R.id
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
 
@@ -105,6 +106,15 @@ open class Screen {
         return this as T
     }
 
+    fun isLoggedIn(): Boolean {
+        return try {
+            isElementDisplayed(id.dashboard)
+            true
+        } catch (e: Throwable) {
+            false
+        }
+    }
+
     fun isDarkTheme(): Boolean {
         return getCurrentActivity()!!.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
@@ -144,9 +154,9 @@ open class Screen {
             .perform(ViewActions.closeSoftKeyboard())
     }
 
-    fun typeTextInto(hint: String, text: String) {
-        waitForElementToBeDisplayed(onView(Matchers.allOf(ViewMatchers.withHint(hint))))
-        onView((Matchers.allOf(ViewMatchers.withHint(hint))))
+    fun typeTextInto(elementID: Int, hint: String, text: String) {
+        waitForAtLeastOneElementToBeDisplayed(elementID)
+        onView(allOf(withId(elementID), withHint(hint)))
             .perform(ViewActions.replaceText(text))
             .perform(ViewActions.closeSoftKeyboard())
     }

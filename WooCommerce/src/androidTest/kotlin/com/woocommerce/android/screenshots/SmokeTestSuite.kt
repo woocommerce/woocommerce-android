@@ -8,6 +8,7 @@ import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.orders.OrderListScreen
 import com.woocommerce.android.ui.main.MainActivity
+import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
@@ -27,6 +28,7 @@ class SmokeTestSuite {
     @get:Rule
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
+    @Before
     @Test
     fun loginUsingEmailSuccess() {
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
@@ -46,7 +48,7 @@ class SmokeTestSuite {
         // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         MyStoreScreen()
             .dismissTopBannerIfNeeded()
-            .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
+            .then<MyStoreScreen> { it.isLoggedIn() }
     }
 
     @Test
@@ -69,30 +71,43 @@ class SmokeTestSuite {
         // My Store
         // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         MyStoreScreen()
-            .dismissTopBannerIfNeeded()
-            .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
+            .then<MyStoreScreen> { it.isLoggedIn() }
     }
 
     @Test
     fun searchOrdersSuccess() {
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
-        // Go to Orders
         OrderListScreen
             .navigateToOrders()
-            // Search for orders
             .searchOrdersByName()
-            // select first Order
-            .selectFirstOrderFromTheSearchResult()
-            // Scroll Order details
+            .selectRandomOrderFromTheSearchResult()
             .scrollToOrderDetails()
             // Close Order details and go back to search
             .goBackToSearch()
-            // Go back to Orders
+            // Go back to Orders view
             .cancelSearch()
 
         // Orders
         // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         OrderListScreen()
-            .then<OrderListScreen> { it.isTitleVisible() }
+            .then<OrderListScreen> { it.isTitle("Orders") }
+    }
+
+    @Test
+    fun updateOrderInfoSuccess() {
+        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+        OrderListScreen
+            .navigateToOrders()
+            .selectRandomOrderFromTheList()
+            .scrollToOrderDetails()
+            // add product notes and email update to customer
+            .emailOrderNoteToCustomer()
+            // Close Order details and go back to orders list
+            .goBackToOrderList()
+
+        // Orders
+        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
+        OrderListScreen()
+            .then<OrderListScreen> { it.isTitle("Orders") }
     }
 }

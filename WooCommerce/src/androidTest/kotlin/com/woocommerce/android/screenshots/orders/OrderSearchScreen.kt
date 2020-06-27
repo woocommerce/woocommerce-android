@@ -6,14 +6,15 @@ import com.woocommerce.android.screenshots.util.Screen
 class OrderSearchScreen : Screen {
     companion object {
         const val LIST_VIEW = R.id.ordersList
-        const val LIST_ITEM = R.id.linearLayout
+        const val LIST_ITEM = R.id.divider
         const val SEARCH_TEXT_FIELD = R.id.search_src_text
         const val SEARCH_CLOSE_BTN = R.id.search_close_btn
     }
 
     constructor() : super(SEARCH_TEXT_FIELD)
 
-    fun selectFirstOrderFromTheSearchResult(): SingleOrderScreen {
+    // TASKS
+    fun selectRandomOrderFromTheSearchResult(): SingleOrderScreen {
         selectOrder(0)
         return SingleOrderScreen()
     }
@@ -26,14 +27,16 @@ class OrderSearchScreen : Screen {
     fun cancelSearch(): OrderListScreen {
         waitForElementToBeDisplayed(SEARCH_TEXT_FIELD)
         pressBack()
+        waitForElementToBeDisplayed(SEARCH_TEXT_FIELD)
         pressBack()
         return OrderListScreen()
     }
 
-    // Helpers
+    // HELPERS
 
     private fun selectOrder(index: Int): SingleOrderScreen {
-        val correctedIndex = index + 1 // account for the header
+        val randomInteger = (1..5).shuffled().first()
+        val correctedIndex = index + randomInteger // account for the header
         waitForElementToBeDisplayedWithoutFailure(LIST_ITEM)
         selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
         return SingleOrderScreen()

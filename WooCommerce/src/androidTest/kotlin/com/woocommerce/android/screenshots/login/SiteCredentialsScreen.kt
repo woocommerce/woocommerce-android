@@ -5,8 +5,7 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class SiteCredentialsScreen : Screen {
     companion object {
-        const val USERNAME_ADDRESS_FIELD = "Username"
-        const val PASSWORD_ADDRESS_FIELD = "Password"
+        const val TEXT_INPUT = R.id.input
         const val NEXT_BUTTON = R.id.primary_button
         const val SITE_TITLE = R.id.login_site_title_static
     }
@@ -14,8 +13,8 @@ class SiteCredentialsScreen : Screen {
     constructor() : super(SITE_TITLE)
 
     fun proceedWith(username: String, password: String): MagicLinkScreen {
-        typeTextInto(USERNAME_ADDRESS_FIELD, username)
-        typeTextInto(PASSWORD_ADDRESS_FIELD, password)
+        typeTextInto(TEXT_INPUT, "Username", username)
+        typeTextInto(TEXT_INPUT, "Password", password)
         clickOn(NEXT_BUTTON)
 
         return MagicLinkScreen()
