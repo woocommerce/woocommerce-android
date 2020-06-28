@@ -31,6 +31,10 @@
             tools:listitem="@layout/order_detail_product_list_item"
             tools:targetApi="lollipop" />
 
+        <View
+            style="@style/Woo.Divider.TitleAligned"
+            android:layout_marginTop="@dimen/major_100" />
+
         <!-- Package Tracking number -->
         <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
             android:id="@+id/shippingLabelItem_trackingNumber"

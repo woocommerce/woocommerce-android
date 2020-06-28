@@ -270,7 +270,7 @@
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s Refunded</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining items to ship</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
