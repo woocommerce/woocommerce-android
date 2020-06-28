@@ -137,7 +137,10 @@ class OrderDetailPresenter @Inject constructor(
     override fun loadOrderDetailInfo(order: WCOrderModel) {
         orderModel?.let {
             val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(it)
-            displayOrderDetailInfo(order, cachedOrderDetailUiItem)
+
+            // if there are no shipping labels cached in the db, we prefer not to show the product list
+            // till it can be fetched from the API
+            displayOrderDetailInfo(order, cachedOrderDetailUiItem, cachedOrderDetailUiItem.shippingLabels.isNotEmpty())
 
             fetchOrderDetailInfo(it)
         }
@@ -146,14 +149,23 @@ class OrderDetailPresenter @Inject constructor(
     override fun fetchOrderDetailInfo(order: WCOrderModel) {
         coroutineScope.launch {
             val freshOrderDetailUiItem = orderDetailRepository.fetchOrderDetailInfo(order)
-            displayOrderDetailInfo(order, freshOrderDetailUiItem)
+            displayOrderDetailInfo(order, freshOrderDetailUiItem, true)
         }
     }
 
-    private fun displayOrderDetailInfo(order: WCOrderModel, orderDetailUiItem: OrderDetailUiItem) {
+    private fun displayOrderDetailInfo(
+        order: WCOrderModel,
+        orderDetailUiItem: OrderDetailUiItem,
+        displayProductList: Boolean
+    ) {
         orderView?.showRefunds(orderDetailUiItem.orderModel, orderDetailUiItem.refunds)
         orderView?.showShippingLabels(orderDetailUiItem.orderModel, orderDetailUiItem.shippingLabels)
-        orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
+
+        // display the product list only if we know for sure,
+        // that there are no shipping labels available for the order
+        if (displayProductList) {
+            orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
+        }
 
         // if shipping labels are available, we don't need to display shipment tracking information separately
         if (orderDetailUiItem.shippingLabels.isEmpty()) {

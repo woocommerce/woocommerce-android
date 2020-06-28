@@ -33,7 +33,7 @@
 
         <View
             style="@style/Woo.Divider.TitleAligned"
-            android:layout_marginTop="@dimen/major_100" />
+            android:layout_marginTop="@dimen/minor_50" />
 
         <!-- Package Tracking number -->
         <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
