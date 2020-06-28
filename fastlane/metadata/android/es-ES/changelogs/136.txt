@@ -1,0 +1,3 @@
+4.5:
+- Mejoras del producto: actualiza las imágenes del producto y su configuración, y comparte enlaces del producto directamente desde la aplicación.
+- Los usuarios de California pueden ver un nuevo aviso de privacidad.

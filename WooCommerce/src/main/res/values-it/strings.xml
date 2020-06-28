@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-10 14:54:05+0000
+Translation-Revision-Date: 2020-06-12 13:00:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
     <string name="product_sale_date_to">Fino al giorno %1$s</string>
+    <string name="product_wip_message">Abbiamo aggiunto più funzionalità di modifica dei prodotti. Ora puoi aggiornare le immagini, modificare le impostazioni e condividere i prodotti.</string>
+    <string name="product_limited_editing_title">Funzionalità di editing limitate ora disponibili</string>
+    <string name="orderdetail_product_multiple">Prodotti</string>
     <string name="product_type_external">Esterno</string>
     <string name="product_type_simple">Semplice</string>
     <string name="product_status_privately_published">Pubblicato privatamente</string>

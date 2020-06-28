@@ -6,6 +6,21 @@
     android:background="@color/color_surface"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@color/skeleton_color"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"/>
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"/>
+
     <include layout="@layout/skeleton_product_category_list_item"/>
 
     <View style="@style/Woo.Divider" android:layout_marginStart="@dimen/major_100"/>

@@ -89,30 +89,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privacy_policy_info"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonPrivacyPolicyCA"
-        style="@style/Woo.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_app_title_aligned"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:paddingEnd="0dp"
-        android:paddingStart="0dp"
-        android:textAlignment="textEnd"
-        android:text="@string/settings_privacy_policy_ca"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonPrivacyPolicy" />
-
     <View
         android:id="@+id/divider3"
         style="@style/Woo.Divider.TitleAligned"
         android:layout_marginTop="@dimen/minor_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonPrivacyPolicyCA"/>
+        app:layout_constraintTop_toBottomOf="@+id/buttonPrivacyPolicy"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_tracking_info"
