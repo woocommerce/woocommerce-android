@@ -73,7 +73,8 @@ data class Product(
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
-    val categories: List<ProductCategory>
+    val categories: List<ProductCategory>,
+    val tags: List<ProductTag>
 ) : Parcelable {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -488,6 +489,13 @@ fun WCProductModel.toAppModel(): Product {
         menuOrder = this.menuOrder,
         categories = this.getCategories().map {
             ProductCategory(
+                it.id,
+                it.name,
+                it.slug
+            )
+        },
+        tags = this.getTags().map {
+            ProductTag(
                 it.id,
                 it.name,
                 it.slug
