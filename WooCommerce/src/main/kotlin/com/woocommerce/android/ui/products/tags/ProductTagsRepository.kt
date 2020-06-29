@@ -1,0 +1,95 @@
+package com.woocommerce.android.ui.products.tags
+
+import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.model.ProductTag
+import com.woocommerce.android.model.toProductTag
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import kotlinx.coroutines.CancellationException
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_TAGS
+import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.FetchProductTagsPayload
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductTagChanged
+import javax.inject.Inject
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+
+@OpenClassOnDebug
+class ProductTagsRepository @Inject constructor(
+    private val dispatcher: Dispatcher,
+    private val productStore: WCProductStore,
+    private val selectedSite: SelectedSite
+) {
+    companion object {
+        private const val ACTION_TIMEOUT = 10L * 1000
+        private const val PRODUCT_TAGS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_TAGS_PAGE_SIZE
+    }
+
+    private var loadContinuation: Continuation<Boolean>? = null
+    private var offset = 0
+
+    var canLoadMoreProductTags = true
+
+    init {
+        dispatcher.register(this)
+    }
+
+    fun onCleanup() {
+        dispatcher.unregister(this)
+    }
+
+    /**
+     * Submits a fetch request to get a list of products tags for the current site
+     * and returns the full list of product tags from the database
+     */
+    suspend fun fetchProductTags(loadMore: Boolean = false): List<ProductTag> {
+        try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                offset = if (loadMore) offset + PRODUCT_TAGS_PAGE_SIZE else 0
+                loadContinuation = it
+                val payload = FetchProductTagsPayload(
+                    selectedSite.get(),
+                    pageSize = PRODUCT_TAGS_PAGE_SIZE,
+                    offset = offset
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductTagsAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product tags", e)
+        }
+
+        return getProductTags()
+    }
+
+    /**
+     * Returns all product tags for the current site that are in the database
+     */
+    fun getProductTags(): List<ProductTag> {
+        return productStore.getTagsForSite(selectedSite.get())
+            .map { it.toProductTag() }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onProductTagsChanged(event: OnProductTagChanged) {
+        when (event.causeOfChange) {
+            FETCH_PRODUCT_TAGS -> {
+                if (event.isError) {
+                    loadContinuation?.resume(false)
+                    // TODO: add track event for load failure
+                } else {
+                    canLoadMoreProductTags = event.canLoadMore
+                    // TODO: add track event for load success
+                    loadContinuation?.resume(true)
+                }
+                loadContinuation = null
+            }
+            else -> { }
+        }
+    }
+}

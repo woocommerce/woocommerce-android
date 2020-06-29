@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmen
 import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductTagsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
@@ -42,6 +43,8 @@ import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
+import com.woocommerce.android.ui.products.tags.ProductTagsFragment
+import com.woocommerce.android.ui.products.tags.ProductTagsModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
@@ -70,7 +73,8 @@ import dagger.android.ContributesAndroidInjector
     ProductSortingFragmentModule::class,
     ProductCategoriesFragmentModule::class,
     AddProductCategoryFragmentModule::class,
-    ParentCategoryListFragmentModule::class
+    ParentCategoryListFragmentModule::class,
+    ProductTagsFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -232,5 +236,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ParentCategoryListModule::class])
         abstract fun parentCategoryListFragment(): ParentCategoryListFragment
+    }
+
+    @Module
+    internal abstract class ProductTagsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductTagsModule::class])
+        abstract fun productTagsFragment(): ProductTagsFragment
     }
 }
