@@ -15,12 +15,17 @@ import kotlinx.android.synthetic.main.product_tag_list_item.view.*
 
 class ProductTagsAdapter(
     private val context: Context,
-    private val loadMoreListener: OnLoadMoreListener
+    private val loadMoreListener: OnLoadMoreListener,
+    private val clickListener: OnProductTagClickListener
 ) : RecyclerView.Adapter<ProductTagViewHolder>() {
     private val productTags = ArrayList<ProductTag>()
 
     init {
         setHasStableIds(true)
+    }
+
+    interface OnProductTagClickListener {
+        fun onProductTagClick(productTag: ProductTag)
     }
 
     override fun getItemId(position: Int) = productTags[position].remoteTagId
@@ -35,10 +40,11 @@ class ProductTagsAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductTagViewHolder, position: Int) {
-        val productCategory = productTags[position]
+        val productTag = productTags[position]
 
         holder.apply {
-            txtTagName.text = productCategory.name
+            txtTagName.text = productTag.name
+            itemView.setOnClickListener { clickListener.onProductTagClick(productTag) }
         }
 
         if (position == itemCount - 1) {

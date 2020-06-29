@@ -19,13 +19,14 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
+import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.OnProductTagClickListener
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_tags.*
 
-class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener {
+class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProductTagClickListener {
     private lateinit var productTagsAdapter: ProductTagsAdapter
 
     private val skeletonView = SkeletonView()
@@ -78,7 +79,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener {
 
         val activity = requireActivity()
 
-        productTagsAdapter = ProductTagsAdapter(activity.baseContext, this)
+        productTagsAdapter = ProductTagsAdapter(activity.baseContext, this, this)
         with(productTagsRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productTagsAdapter
@@ -147,5 +148,9 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener {
 
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClicked(ExitProductTags())
+    }
+
+    override fun onProductTagClick(productTag: ProductTag) {
+        // TODO: update the input field UI with the selected tags
     }
 }
