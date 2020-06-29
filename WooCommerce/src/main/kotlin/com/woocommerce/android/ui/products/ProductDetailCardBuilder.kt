@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIn
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -528,7 +529,12 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_gridicons_tag,
                 showTitle = showTitle,
                 maxLines = 5
-            )
+            ) {
+                // TODO: add tracking event for clicking on tags
+                viewModel.onEditProductCardClicked(
+                    ViewProductTags(this.remoteId)
+                )
+            }
         } else {
             null
         }
