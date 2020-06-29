@@ -560,6 +560,8 @@
     <string name="product_category_parent">Parent category</string>
     <string name="product_add_category_dialog_title">Adding category</string>
     <string name="product_add_category_dialog_message">Please wait…</string>
+    <string name="product_tag_empty">Add tag</string>
+    <string name="product_tags">Tags</string>
     <!--
         Product images
     -->
