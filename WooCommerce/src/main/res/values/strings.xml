@@ -269,6 +269,7 @@
     <string name="orderdetail_shipping_label_item_payment_type">Credit card</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
+    <string name="orderdetail_shipping_label_tracking_number_title">%1$s tracking number</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>

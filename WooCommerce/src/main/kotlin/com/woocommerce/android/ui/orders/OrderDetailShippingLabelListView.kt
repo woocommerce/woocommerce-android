@@ -139,9 +139,11 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                     )
                     itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(false)
                 } else {
-                    itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(
-                        "${shippingLabel.serviceName} ${shippingLabel.trackingNumber}"
-                    )
+                    itemView.shippingLabelItem_trackingNumber.setShippingLabelTitle(context.getString(
+                        R.string.orderdetail_shipping_label_tracking_number_title,
+                        shippingLabel.serviceName
+                    ))
+                    itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(shippingLabel.trackingNumber)
 
                     shippingLabel.trackingLink?.let {
                         itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(true)
