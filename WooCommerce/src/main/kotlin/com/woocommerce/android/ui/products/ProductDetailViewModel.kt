@@ -583,7 +583,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         externalUrl: String? = null,
         buttonText: String? = null,
         menuOrder: Int? = null,
-        categories: List<ProductCategory>? = null
+        categories: List<ProductCategory>? = null,
+        tags: List<ProductTag>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -620,6 +621,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     buttonText = buttonText ?: product.buttonText,
                     menuOrder = menuOrder ?: product.menuOrder,
                     categories = categories ?: product.categories,
+                    tags = tags ?: product.tags,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -1137,6 +1139,18 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         return sortedList.toList()
+    }
+
+    fun onProductTagSelected(tag: ProductTag) {
+        val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
+        selectedTags.add(tag)
+        updateProductDraft(tags = selectedTags)
+    }
+
+    fun onProductTagSelectionRemoved(tag: ProductTag) {
+        val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
+        selectedTags.remove(tag)
+        updateProductDraft(tags = selectedTags)
     }
 
     fun fetchProductTags() {

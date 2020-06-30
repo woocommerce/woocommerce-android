@@ -128,10 +128,17 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
     private fun showProductTags(productTags: List<ProductTag>) {
         productTagsAdapter.setProductTags(productTags)
+        updateSelectedTags()
+    }
 
+    private fun updateSelectedTags() {
         val product = requireNotNull(viewModel.getProduct().productDraft)
         addProductTagView.addSelectedTags(product.tags)
-        addProductTagView.visibility = if (product.tags.isEmpty()) View.GONE else View.VISIBLE
+        showAddProductTagView(product.tags.isNotEmpty())
+    }
+
+    private fun showAddProductTagView(show: Boolean) {
+        addProductTagView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -155,6 +162,8 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     }
 
     override fun onProductTagClick(productTag: ProductTag) {
-        // TODO: update the input field UI with the selected tags
+        viewModel.onProductTagSelected(productTag)
+        updateSelectedTags()
+        changesMade()
     }
 }

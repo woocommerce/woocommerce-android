@@ -20,11 +20,15 @@ class AddProductTagView @JvmOverloads constructor(
         View.inflate(context, R.layout.add_product_tag_view, this)
     }
 
-    fun addSelectedTags(selectedTags: List<ProductTag>) {
+    fun addSelectedTags(
+        selectedTags: List<ProductTag>
+    ) {
         selectedTags.forEach { addTag(it) }
     }
 
-    fun addTag(tag: ProductTag) {
+    private fun addTag(
+        tag: ProductTag
+    ) {
         val selectedChipIds = selectedTagsGroup.getSelectedChipIds()
         if (!selectedChipIds.contains(tag.remoteTagId.toInt())) {
             val chip = Chip(context).apply {
