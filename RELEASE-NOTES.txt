@@ -1,3 +1,6 @@
+4.7
+-----
+ 
 4.6
 -----
 * Added a fix to support multiple new order notifications for a store.
