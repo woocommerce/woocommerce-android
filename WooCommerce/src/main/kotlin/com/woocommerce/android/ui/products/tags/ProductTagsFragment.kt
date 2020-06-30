@@ -128,6 +128,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
     private fun showProductTags(productTags: List<ProductTag>) {
         productTagsAdapter.setProductTags(productTags)
+
+        val product = requireNotNull(viewModel.getProduct().productDraft)
+        addProductTagView.addSelectedTags(product.tags)
+        addProductTagView.visibility = if (product.tags.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun showSkeleton(show: Boolean) {

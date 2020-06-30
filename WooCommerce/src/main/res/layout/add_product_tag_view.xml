@@ -12,6 +12,7 @@
         android:paddingBottom="@dimen/major_75">
 
         <com.google.android.material.chip.ChipGroup
+            android:id="@+id/selectedTagsGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_125"
