@@ -133,12 +133,14 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
     private fun updateSelectedTags() {
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        addProductTagView.addSelectedTags(product.tags)
-        showAddProductTagView(product.tags.isNotEmpty())
+        addProductTagView.addSelectedTags(product.tags, this)
+        showAddProductTagView()
     }
 
-    private fun showAddProductTagView(show: Boolean) {
-        addProductTagView.visibility = if (show) View.VISIBLE else View.GONE
+    private fun showAddProductTagView() {
+        with(addProductTagView) {
+            visibility = if (hasTags()) View.VISIBLE else View.GONE
+        }
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -161,9 +163,16 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         return viewModel.onBackButtonClicked(ExitProductTags())
     }
 
-    override fun onProductTagClick(productTag: ProductTag) {
+    override fun onProductTagAdded(productTag: ProductTag) {
         viewModel.onProductTagSelected(productTag)
         updateSelectedTags()
+        changesMade()
+    }
+
+    override fun onProductTagRemoved(productTag: ProductTag) {
+        viewModel.onProductTagSelectionRemoved(productTag)
+        addProductTagView.removeSelectedTag(productTag)
+        showAddProductTagView()
         changesMade()
     }
 }

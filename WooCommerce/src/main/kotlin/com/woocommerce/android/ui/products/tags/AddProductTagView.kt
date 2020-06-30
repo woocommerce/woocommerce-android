@@ -8,6 +8,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductTag
+import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.OnProductTagClickListener
 import kotlinx.android.synthetic.main.add_product_tag_view.view.*
 import java.util.ArrayList
 
@@ -21,13 +22,24 @@ class AddProductTagView @JvmOverloads constructor(
     }
 
     fun addSelectedTags(
-        selectedTags: List<ProductTag>
+        selectedTags: List<ProductTag>,
+        listener: OnProductTagClickListener
     ) {
-        selectedTags.forEach { addTag(it) }
+        selectedTags.forEach { addTag(it, listener) }
     }
 
+    fun removeSelectedTag(
+        selectedTag: ProductTag
+    ) {
+        val selectedChip = selectedTagsGroup.getSelectedChip(selectedTag.remoteTagId.toInt())
+        selectedChip?.let { selectedTagsGroup.removeView(it) }
+    }
+
+    fun hasTags() = selectedTagsGroup.childCount > 0
+
     private fun addTag(
-        tag: ProductTag
+        tag: ProductTag,
+        listener: OnProductTagClickListener
     ) {
         val selectedChipIds = selectedTagsGroup.getSelectedChipIds()
         if (!selectedChipIds.contains(tag.remoteTagId.toInt())) {
@@ -37,6 +49,7 @@ class AddProductTagView @JvmOverloads constructor(
                 isCloseIconVisible = true
                 isCheckable = false
                 isClickable = false
+                setOnCloseIconClickListener { listener.onProductTagRemoved(tag) }
             }
             selectedTagsGroup.addView(chip)
         }
@@ -51,5 +64,15 @@ class AddProductTagView @JvmOverloads constructor(
             }
         }
         return checkedIds
+    }
+
+    private fun ChipGroup.getSelectedChip(id: Int): Chip? {
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            if (child is Chip && child.id == id) {
+                return child
+            }
+        }
+        return null
     }
 }

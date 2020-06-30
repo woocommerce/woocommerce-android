@@ -25,7 +25,8 @@ class ProductTagsAdapter(
     }
 
     interface OnProductTagClickListener {
-        fun onProductTagClick(productTag: ProductTag)
+        fun onProductTagAdded(productTag: ProductTag)
+        fun onProductTagRemoved(productTag: ProductTag)
     }
 
     override fun getItemId(position: Int) = productTags[position].remoteTagId
@@ -44,7 +45,7 @@ class ProductTagsAdapter(
 
         holder.apply {
             txtTagName.text = productTag.name
-            itemView.setOnClickListener { clickListener.onProductTagClick(productTag) }
+            itemView.setOnClickListener { clickListener.onProductTagAdded(productTag) }
         }
 
         if (position == itemCount - 1) {
