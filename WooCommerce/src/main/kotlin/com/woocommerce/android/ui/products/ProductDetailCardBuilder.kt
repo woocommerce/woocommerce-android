@@ -530,9 +530,9 @@ class ProductDetailCardBuilder(
                 showTitle = showTitle,
                 maxLines = 5
             ) {
-                // TODO: add tracking event for clicking on tags
                 viewModel.onEditProductCardClicked(
-                    ViewProductTags(this.remoteId)
+                    ViewProductTags(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_TAGS_TAPPED
                 )
             }
         } else {

@@ -238,6 +238,17 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the product tags
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasTagChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            !isSameTags(it.tags)
+        } ?: false
+    }
+
+    /**
      * Compares this product's images with the passed list, returns true only if both lists contain
      * the same images in the same order
      */

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.BaseProductFragment
@@ -92,7 +93,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         productTagsLayout?.apply {
             scrollUpChild = productTagsRecycler
             setOnRefreshListener {
-                // TODO: add tracking event
+                AnalyticsTracker.track(Stat.PRODUCT_TAGS_PULLED_TO_REFRESH)
                 viewModel.refreshProductTags()
             }
         }
