@@ -562,6 +562,8 @@
     <string name="product_add_category_dialog_message">Please wait…</string>
     <string name="product_tag_empty">Add tag</string>
     <string name="product_tags">Tags</string>
+    <string name="product_tag_list_empty_title">Add your first tag</string>
+    <string name="product_tag_list_empty_message">Organise your products in tags</string>
     <!--
         Product images
     -->
