@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductDetailViewModel.Parameters
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
@@ -29,6 +30,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCHASE_DETAILS
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
@@ -88,7 +90,8 @@ class ProductDetailCardBuilder(
                 product.externalLink(),
                 product.shipping(),
                 product.inventory(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.categories()
             ).filterNotEmpty()
         )
     }
@@ -474,6 +477,33 @@ class ProductDetailCardBuilder(
                 viewModel.onEditProductCardClicked(
                     ViewProductVariations(this.remoteId),
                     Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                )
+            }
+        } else {
+            null
+        }
+    }
+
+    private fun Product.categories(): ProductProperty? {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            val productCategories = this.categories
+            val showTitle = productCategories.isNotEmpty()
+            val categories = if (showTitle) {
+                productCategories.joinToString(transform = { it.name })
+            } else {
+                resources.getString(R.string.product_category_empty)
+            }
+
+            ComplexProperty(
+                R.string.product_categories,
+                categories,
+                R.drawable.ic_gridicons_folder,
+                showTitle = showTitle,
+                maxLines = 5
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductCategories(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
                 )
             }
         } else {

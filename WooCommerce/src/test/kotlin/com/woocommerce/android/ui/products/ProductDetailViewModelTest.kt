@@ -16,6 +16,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductImagesViewState
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -54,6 +55,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
+    private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val resources: ResourceProvider = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -67,6 +69,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     )
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
+    private val productCategories = ProductTestUtils.generateProductCategories()
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
@@ -140,7 +143,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 currencyFormatter,
                 wooCommerceStore,
                 productImagesServiceWrapper,
-                resources
+                resources,
+                productCategoriesRepository
             )
         )
         val prodSettings = WCProductSettingsModel(0).apply {
@@ -384,5 +388,23 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             assertThat(productData?.isProductUpdated).isFalse()
             assertThat(productData?.productDraft).isEqualTo(product)
         }
+    }
+
+    @Test
+    fun `Correctly sorts the Product Categories By their Parent Ids and by name`() = runBlockingTest {
+        val sortedByNameAndParent = viewModel.sortAndStyleProductCategories(
+            product, productCategories
+        ).toList()
+        assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
+        assertThat(sortedByNameAndParent[1].category).isEqualTo(productCategories[7])
+        assertThat(sortedByNameAndParent[2].category).isEqualTo(productCategories[10])
+        assertThat(sortedByNameAndParent[3].category).isEqualTo(productCategories[1])
+        assertThat(sortedByNameAndParent[4].category).isEqualTo(productCategories[6])
+        assertThat(sortedByNameAndParent[5].category).isEqualTo(productCategories[8])
+        assertThat(sortedByNameAndParent[6].category).isEqualTo(productCategories[9])
+        assertThat(sortedByNameAndParent[7].category).isEqualTo(productCategories[2])
+        assertThat(sortedByNameAndParent[8].category).isEqualTo(productCategories[3])
+        assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
+        assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
     }
 }

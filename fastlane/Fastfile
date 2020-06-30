@@ -32,7 +32,7 @@ SUPPORTED_LOCALES = [
 
 ########################################################################
 # Release Lanes
-########################################################################  
+########################################################################
   #####################################################################################
   # code_freeze
   # -----------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ SUPPORTED_LOCALES = [
   # bundle exec fastlane code_freeze codefreeze_version:<version> [update_release_branch_version:<update flag>] [skip_confirm:<skip confirm>]
   #
   # Example:
-  # bundle exec fastlane code_freeze 
+  # bundle exec fastlane code_freeze
   # bundle exec fastlane code_freeze skip_confirm:true
   #####################################################################################
   desc "Creates a new release branch from the current develop"
@@ -54,14 +54,14 @@ SUPPORTED_LOCALES = [
     android_update_release_notes(new_version: new_version)
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
-    
+
     localize_libs()
     android_tag_build()
     get_prs_list(repository:GHHELPER_REPO, start_tag:"#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
   end
 
 #####################################################################################
-# update_appstore_strings 
+# update_appstore_strings
 # -----------------------------------------------------------------------------------
 # This lane gets the data from the txt files in the WooCommerce/metadata/ folder
 # and updates the .pot file that is then picked by GlotPress for translations.
@@ -73,7 +73,7 @@ SUPPORTED_LOCALES = [
 # fastlane update_appstore_strings version:1.1
 #####################################################################################
 desc "Updates the PlayStoreStrings.pot file"
-lane :update_appstore_strings do |options| 
+lane :update_appstore_strings do |options|
   prj_folder = Dir.pwd + "/.."
 
   files = {
@@ -92,10 +92,10 @@ lane :update_appstore_strings do |options|
     play_store_screenshot_8: prj_folder + "/WooCommerce/metadata/promo_screenshot_8.txt"
   }
 
-  android_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot", 
-    source_files: files, 
+  android_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot",
+    source_files: files,
     release_version: options[:version])
-end 
+end
 
   #####################################################################################
   # new_beta_release
@@ -123,7 +123,7 @@ end
   #####################################################################################
   # new_hotfix_release
   # -----------------------------------------------------------------------------------
-  # This lane updates the release branch for a new hotix release. 
+  # This lane updates the release branch for a new hotix release.
   # -----------------------------------------------------------------------------------
   # Usage:
   # bundle exec fastlane new_hotfix_release [skip_confirm:<skip confirm>] [version:<version>]
@@ -138,22 +138,23 @@ end
     android_bump_version_hotfix(previous_version_name: prev_ver, version_name: options[:version_name], version_code: options[:version_code])
     android_tag_build(tag_alpha: false)
   end
-  
+
   #####################################################################################
   # finalize_release
   # -----------------------------------------------------------------------------------
   # This lane finalize a release: updates store metadata and runs the release checks
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane finalize_release [skip_confirm:<skip confirm>] 
+  # bundle exec fastlane finalize_release [skip_confirm:<skip confirm>]
   #
   # Example:
-  # bundle exec fastlane finalize_release 
-  # bundle exec fastlane finalize_release skip_confirm:true 
+  # bundle exec fastlane finalize_release
+  # bundle exec fastlane finalize_release skip_confirm:true
   #####################################################################################
   desc "Updates store metadata and runs the release checks"
   lane :finalize_release do | options |
     android_finalize_prechecks(options)
+    configure_apply(force: is_ci)
     hotfix = android_current_branch_is_hotfix
     android_update_metadata(options) unless hotfix
     android_bump_version_final_release() unless hotfix
@@ -164,30 +165,30 @@ end
     # Wrap up
     removebranchprotection(repository:GHHELPER_REPO, branch: "release/#{version["name"]}")
     setfrozentag(repository:GHHELPER_REPO, milestone: version["name"], freeze: false)
-    close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
     create_new_milestone(repository:GHHELPER_REPO)
+    close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
   end
 
   #####################################################################################
   # build_release
   # -----------------------------------------------------------------------------------
-  # This lane builds the final release of the app and uploads it 
+  # This lane builds the final release of the app and uploads it
   # -----------------------------------------------------------------------------------
   # Usage:
   # bundle exec fastlane build_release [skip_confirm:<skip confirm>]
   #
   # Example:
-  # bundle exec fastlane build_release 
-  # bundle exec fastlane build_release skip_confirm:true 
+  # bundle exec fastlane build_release
+  # bundle exec fastlane build_release skip_confirm:true
   #####################################################################################
   desc "Builds and uploads release for distribution"
   lane :build_and_upload_release do | options |
-    android_build_prechecks(skip_confirm: options[:skip_confirm], 
+    android_build_prechecks(skip_confirm: options[:skip_confirm],
       alpha: false,
       beta: false,
       final: true)
     android_build_preflight()
-    
+
     # Create the file names
     version=android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
@@ -220,8 +221,8 @@ end
   # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>]
   #
   # Example:
-  # bundle exec fastlane build_and_upload_beta 
-  # bundle exec fastlane build_and_upload_beta skip_confirm:true 
+  # bundle exec fastlane build_and_upload_beta
+  # bundle exec fastlane build_and_upload_beta skip_confirm:true
   #####################################################################################
   desc "Builds and uploads a new beta build to Google Play (without releasing it)"
   lane :build_and_upload_beta do | options |
@@ -249,17 +250,17 @@ end
       json_key: './google-upload-credentials.json',
     )
   end
-  
+
 #####################################################################################
-# localize_libs 
+# localize_libs
 # -----------------------------------------------------------------------------------
 # This lane gets the data from the dependencies and updates the main strings.xml file
 # -----------------------------------------------------------------------------------
 # Usage:
-# fastlane localize_libs 
+# fastlane localize_libs
 #
 # Example:
-# fastlane localize_libs 
+# fastlane localize_libs
 #####################################################################################
 desc "Merge libraries strings files into the main app one"
 lane :localize_libs do | options |
@@ -275,7 +276,7 @@ lane :localize_libs do | options |
 end
 
 #####################################################################################
-  # download_metadata_string 
+  # download_metadata_string
   # -----------------------------------------------------------------------------------
   # This lane downloads the translated metadata (release notes,
   # app store strings, title, etc.) from GlotPress and updates the local files
@@ -287,7 +288,7 @@ end
   # fastlane download_metadata_string build_number:573 version:10.3
   #####################################################################################
   desc "Downloads translated metadata from GlotPress"
-  lane :download_metadata_strings do |options| 
+  lane :download_metadata_strings do |options|
     values = options[:version].split('.')
     files = {
       "release_note_#{values[0].to_s.rjust(2, "0")}#{values[1]}" => {desc: "changelogs/#{options[:build_number]}.txt", max_size: 0},
@@ -298,20 +299,20 @@ end
 
     delete_old_changelogs(build: options[:build_number])
     download_path=Dir.pwd + "/metadata/android"
-    gp_downloadmetadata(project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/", 
-      target_files: files, 
+    gp_downloadmetadata(project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/",
+      target_files: files,
       locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
       source_locale: "en-US",
       download_path: download_path)
-    
+
     android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]})
     add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
-  end 
+  end
 
 ########################################################################
 # Helper Lanes
-########################################################################  
+########################################################################
 desc "Get a list of pull request from `start_tag` to the current state"
 lane :get_pullrequests_list do | options |
   get_prs_list(repository:GHHELPER_REPO, start_tag:"#{options[:start_tag]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
@@ -366,7 +367,7 @@ end
 
   private_lane :add_us_release_notes do | options |
     en_release_notes_path  = Dir.pwd + "/.." + "/WooCommerce/metadata/release_notes.txt"
-    File.open(options[:relese_notes_path], "a") { |f| 
+    File.open(options[:relese_notes_path], "a") { |f|
       f.puts("<en-US>")
       f.puts("#{options[:version_name]}:")
       f.puts(File.open(en_release_notes_path).read)
@@ -390,7 +391,7 @@ end
     sh(command)
 
     sh("unzip \"#{temp_dir}/universal.apks\" -d \"#{temp_dir}\"")
-    FileUtils.cp_r("#{temp_dir}/universal.apk", "#{apk_path}", remove_destination: true)  
+    FileUtils.cp_r("#{temp_dir}/universal.apk", "#{apk_path}", remove_destination: true)
     FileUtils.rm_rf("#{temp_dir}")
   end
 

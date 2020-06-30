@@ -22,7 +22,9 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -30,9 +32,11 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -43,12 +47,15 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -79,7 +86,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
-    private val resources: ResourceProvider
+    private val resources: ResourceProvider,
+    private val productCategoriesRepository: ProductCategoriesRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -118,6 +126,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product images screen
     final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
+
+    // view state for the product categories screen
+    final val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    private var productCategoriesViewState by productCategoriesViewStateData
+
+    private val _productCategories = MutableLiveData<List<ProductCategory>>()
+    val productCategories: LiveData<List<ProductCategory>> = _productCategories
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -214,6 +229,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
+
     fun hasSettingsChanges(): Boolean {
         return if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
             true
@@ -258,6 +275,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             is ExitExternalLink -> {
                 hasChanges = hasExternalLinkChanges()
+            }
+            is ExitProductCategories -> {
+                eventName = Stat.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
+                hasChanges = hasCategoryChanges()
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -394,9 +415,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
             is ExitImages -> isUploadingImages || hasImageChanges()
-            else -> isProductDetailUpdated == true && isProductSubDetailUpdated == true
+            else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
-        if (isProductUpdated == true && event.shouldShowDiscardDialog) {
+        if (isProductUpdated && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
@@ -551,7 +572,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         purchaseNote: String? = null,
         externalUrl: String? = null,
         buttonText: String? = null,
-        menuOrder: Int? = null
+        menuOrder: Int? = null,
+        categories: List<ProductCategory>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -587,6 +609,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     externalUrl = externalUrl ?: product.externalUrl,
                     buttonText = buttonText ?: product.buttonText,
                     menuOrder = menuOrder ?: product.menuOrder,
+                    categories = categories ?: product.categories,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -605,6 +628,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
+        productCategoriesRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -969,6 +993,141 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun fetchProductCategories() {
+        if (_productCategories.value == null) {
+            loadProductCategories()
+        }
+    }
+
+    fun onAddCategoryButtonClicked() {
+        triggerEvent(AddProductCategory)
+    }
+
+    fun onProductCategoryAdded(category: ProductCategory) {
+        val selectedCategories = viewState.productDraft?.categories?.toMutableList() ?: mutableListOf()
+        selectedCategories.add(category)
+        updateProductDraft(categories = selectedCategories)
+        refreshProductCategories()
+    }
+
+    /**
+     * Refreshes the list of categories by calling the [loadProductCategories] method
+     * which eventually checks, if there is anything new to fetch from the server
+     *
+     */
+    fun refreshProductCategories() {
+        productCategoriesViewState = productCategoriesViewState.copy(isRefreshing = true)
+        loadProductCategories()
+    }
+
+    /**
+     * Loads the list of categories from the database or from the server.
+     * This depends on whether categories are stored in the database, and if any new ones are
+     * required to be fetched.
+     *
+     * @param loadMore Whether to load more categories after the ones loaded
+     */
+    private fun loadProductCategories(loadMore: Boolean = false) {
+        if (productCategoriesViewState.isLoading == true) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading product categories")
+            return
+        }
+
+        if (loadMore && !productCategoriesRepository.canLoadMoreProductCategories) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more product categories")
+            return
+        }
+
+        launch {
+            val showSkeleton: Boolean
+            if (loadMore) {
+                showSkeleton = false
+            } else {
+                // if this is the initial load, first get the categories from the db and show them immediately
+                val productsInDb = productCategoriesRepository.getProductCategoriesList()
+                if (productsInDb.isEmpty()) {
+                    showSkeleton = true
+                } else {
+                    _productCategories.value = productsInDb
+                    showSkeleton = productCategoriesViewState.isRefreshing == false
+                }
+            }
+            productCategoriesViewState = productCategoriesViewState.copy(
+                isLoading = true,
+                isLoadingMore = loadMore,
+                isSkeletonShown = showSkeleton,
+                isEmptyViewVisible = false
+            )
+            fetchProductCategories(loadMore = loadMore)
+        }
+    }
+
+    /**
+     * Triggered when the user scrolls past the point of loaded categories
+     * already displayed on the screen or on record.
+     */
+    fun onLoadMoreCategoriesRequested() {
+        loadProductCategories(loadMore = true)
+    }
+
+    /**
+     * This method is used to fetch the categories from the backend. It does not
+     * check the database.
+     *
+     * @param loadMore Whether this is another page or the first one
+     */
+    private suspend fun fetchProductCategories(loadMore: Boolean = false) {
+        if (networkStatus.isConnected()) {
+            _productCategories.value = productCategoriesRepository.fetchProductCategories(loadMore = loadMore)
+
+            productCategoriesViewState = productCategoriesViewState.copy(
+                isLoading = true,
+                canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
+                isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+
+        productCategoriesViewState = productCategoriesViewState.copy(
+            isSkeletonShown = false,
+            isLoading = false,
+            isLoadingMore = false,
+            isRefreshing = false
+        )
+    }
+
+    /**
+     * The method takes in a list of product categories and calculates the order and grouping of categories
+     * by their parent ids. This creates a stable sorted list of categories by name. The returned list also
+     * has margin data, which can be used to visually represent categories in a hierarchy under their
+     * parent ids.
+     *
+     * @param product the product for which the categories are being styled
+     * @param productCategories the list of product categories to sort and style
+     * @return [List<ProductCategoryItemUiModel>] the sorted styled list of categories
+     */
+    fun sortAndStyleProductCategories(
+        product: Product,
+        productCategories: List<ProductCategory>
+    ): List<ProductCategoryItemUiModel> {
+        // Get the categories of the product
+        val selectedCategories = product.categories
+
+        // Sort all incoming categories by their parent
+        val sortedList = productCategories.sortCategories(resources)
+
+        // Mark the product categories as selected in the sorted list
+        sortedList.map { productCategoryItemUiModel ->
+            for (selectedCategory in selectedCategories) {
+                if (productCategoryItemUiModel.category.name == selectedCategory.name) {
+                    productCategoryItemUiModel.isSelected = true
+                }
+            }
+        }
+
+        return sortedList.toList()
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -984,6 +1143,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
@@ -1034,8 +1194,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val storedPassword: String? = null,
         val draftPassword: String? = null
     ) : Parcelable {
-        val isOnSale: Boolean
-            get() = salePriceWithCurrency != null
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
     }
@@ -1065,6 +1223,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class ProductImagesViewState(
         val isUploadingImages: Boolean = false
     ) : Parcelable
+
+    @Parcelize
+    data class ProductCategoriesViewState(
+        val isSkeletonShown: Boolean? = null,
+        val isLoading: Boolean? = null,
+        val isLoadingMore: Boolean? = null,
+        val canLoadMore: Boolean? = null,
+        val isRefreshing: Boolean? = null,
+        val isEmptyViewVisible: Boolean? = null
+    ) : Parcelable {
+        val isAddCategoryButtonVisible: Boolean
+            get() = isSkeletonShown == false
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
