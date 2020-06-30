@@ -5,8 +5,9 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.TabNavComponent
-import com.woocommerce.android.screenshots.mystore.settings.SettingsScreen
-import com.woocommerce.android.screenshots.orders.OrderListScreen
+import com.woocommerce.android.screenshots.login.WelcomeScreen
+import com.woocommerce.android.screenshots.login.WelcomeScreen.Companion
+import com.woocommerce.android.screenshots.settings.SettingsScreen
 import com.woocommerce.android.screenshots.util.Screen
 
 class MyStoreScreen : Screen {
@@ -21,12 +22,11 @@ class MyStoreScreen : Screen {
     val tabBar = TabNavComponent()
     val stats = StatsComponent()
 
-    constructor(): super(DASHBOARD)
+    constructor() : super(DASHBOARD)
 
     fun openSettingsPane(): SettingsScreen {
         openToolbarActionMenu()
         onView(withText(SETTINGS_BUTTON_TEXT)).perform(click())
-
         return SettingsScreen()
     }
 
@@ -35,7 +35,11 @@ class MyStoreScreen : Screen {
             clickOn(STATS_CARD_VIEW_MORE)
             clickOn(STATS_CARD_DISMISS_BUTTON)
         }
-
         return this
+    }
+
+    fun logOut(): WelcomeScreen {
+        openSettingsPane().logOut()
+        return WelcomeScreen()
     }
 }

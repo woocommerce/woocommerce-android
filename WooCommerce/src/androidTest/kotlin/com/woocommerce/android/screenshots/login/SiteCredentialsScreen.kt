@@ -1,6 +1,7 @@
 package com.woocommerce.android.screenshots.login
 
 import com.woocommerce.android.R
+import com.woocommerce.android.screenshots.login.SiteAddressScreen.Companion
 import com.woocommerce.android.screenshots.util.Screen
 
 class SiteCredentialsScreen : Screen {

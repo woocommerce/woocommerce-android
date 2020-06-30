@@ -17,7 +17,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.isDialog
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
@@ -26,12 +25,12 @@ import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withHint
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
+import androidx.test.espresso.matcher.ViewMatchers.withParentIndex
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
-import com.woocommerce.android.R
 import com.woocommerce.android.R.id
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
@@ -39,19 +38,8 @@ import org.hamcrest.Matcher
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
 
-open class Screen {
-    private val elementID: Int
-
-    constructor(elementID: Int) {
-        this.elementID = elementID
-
-        // If we fail to find the element, attempt recovery
-        if (!waitForElementToBeDisplayedWithoutFailure(elementID)) {
-            recover()
-            waitForElementToBeDisplayed(elementID)
-        }
-    }
-
+open class Screen// If we fail to find the element, attempt recovery
+(private val elementID: Int) {
     open fun recover() = Unit
 
     companion object {
@@ -80,11 +68,20 @@ open class Screen {
         fun isToolbarTitle(title: String): Boolean {
             return try {
                 onView(
-                    allOf(instanceOf(TextView::class.java), withParent(withId(R.id.toolbar)))
+                    allOf(instanceOf(TextView::class.java), withParent(withId(id.toolbar)))
                 ).check(matches(withText(title)))
                 true
             } catch (e: Throwable) {
                 false
+            }
+        }
+
+        fun isLoggedOut(): Boolean {
+            return try {
+                isElementDisplayed(id.dashboard)
+                false
+            } catch (e: Throwable) {
+                true
             }
         }
     }
@@ -126,6 +123,20 @@ open class Screen {
         idleFor(500) // allow for transitions
     }
 
+    // click on element with text
+    fun clickOn(elementID: Int, status: String) {
+        waitForAtLeastOneElementToBeDisplayed(elementID)
+        clickOn(onView(allOf(withId(elementID), withText(status))))
+        idleFor(500) // allow for transitions
+    }
+
+    // click on element with parent (indexed)
+    fun clickOn(parentElementID: Int, elementID: Int) {
+        waitForAtLeastOneElementToBeDisplayed(parentElementID)
+        clickOn(onView(allOf(withId(elementID), withParentIndex(parentElementID))))
+        idleFor(500) // allow for transitions
+    }
+
     fun scrollTo(elementID: Int) {
         waitForElementToBeDisplayedWithoutFailure(elementID)
 
@@ -137,12 +148,12 @@ open class Screen {
     fun clickOn(viewInteraction: ViewInteraction) {
         waitForElementToBeDisplayed(viewInteraction)
         idleFor(500) // allow for transitions
-        viewInteraction.perform(ViewActions.click(ViewActions.closeSoftKeyboard()))
+        viewInteraction.perform(click(ViewActions.closeSoftKeyboard()))
         idleFor(500) // allow for transitions
     }
 
     fun openToolbarActionMenu() {
-        waitForElementToBeDisplayed(R.id.toolbar)
+        waitForElementToBeDisplayed(id.toolbar)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         openActionBarOverflowOrOptionsMenu(context)
     }
@@ -203,7 +214,7 @@ open class Screen {
                 for (i in 0 until tabLayout.tabCount) {
                     val tab = tabLayout.getTabAt(i)
                     if (tab?.text == string) {
-                        tab?.select()
+                        tab.select()
                     }
                 }
             }
@@ -221,14 +232,22 @@ open class Screen {
             .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
     }
 
+    fun selectItemAtIndexInRecyclerView1(index: Int, recyclerViewId: Int) {
+        waitForElementToBeDisplayed(recyclerViewId)
+        idleFor(1000)
+
+        onView(withId(recyclerViewId))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+    }
+
     fun clickButtonInDialogWithTitle(resourceID: Int) {
         val title = getTranslatedString(resourceID)
-        val dialogButton = onView(ViewMatchers.withText(title)).inRoot(isDialog())
+        val dialogButton = onView(withText(title)).inRoot(isDialog())
         clickOn(dialogButton)
     }
 
     fun isDisplayingDialog(): Boolean {
-        val dialog = onView(withId(R.id.button1))
+        val dialog = onView(withId(id.button1))
             .inRoot(isDialog())
 
         return isElementDisplayed(dialog)
@@ -272,7 +291,7 @@ open class Screen {
         return isElementCompletelyDisplayed(onView(withId(elementID)))
     }
 
-    fun isElementCompletelyDisplayed(element: ViewInteraction): Boolean {
+    private fun isElementCompletelyDisplayed(element: ViewInteraction): Boolean {
         return try {
             element.check(matches(isCompletelyDisplayed()))
             true
@@ -346,6 +365,13 @@ open class Screen {
             Thread.sleep(milliseconds.toLong())
         } catch (ex: Exception) {
             // do nothing
+        }
+    }
+
+    init {
+        if (!waitForElementToBeDisplayedWithoutFailure(elementID)) {
+            recover()
+            waitForElementToBeDisplayed(elementID)
         }
     }
 }

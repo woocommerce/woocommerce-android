@@ -2,11 +2,12 @@ package com.woocommerce.android.screenshots.orders
 
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
+import com.woocommerce.android.screenshots.util.TestDataGenerator
 
 class OrderSearchScreen : Screen {
     companion object {
         const val LIST_VIEW = R.id.ordersList
-        const val LIST_ITEM = R.id.divider
+        const val LIST_ITEM = R.id.orderNum
         const val SEARCH_TEXT_FIELD = R.id.search_src_text
         const val SEARCH_CLOSE_BTN = R.id.search_close_btn
     }
@@ -34,11 +35,10 @@ class OrderSearchScreen : Screen {
 
     // HELPERS
 
-    private fun selectOrder(index: Int): SingleOrderScreen {
-        val randomInteger = (1..5).shuffled().first()
-        val correctedIndex = index + randomInteger // account for the header
+    private fun selectOrder(index: Int) {
+        val correctedIndex = index + TestDataGenerator.getRandomInteger(1, 3) // account for the header
         waitForElementToBeDisplayedWithoutFailure(LIST_ITEM)
         selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
-        return SingleOrderScreen()
+        return
     }
 }

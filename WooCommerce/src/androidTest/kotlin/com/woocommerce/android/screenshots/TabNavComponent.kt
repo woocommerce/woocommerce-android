@@ -7,15 +7,13 @@ import com.woocommerce.android.screenshots.products.ProductListScreen
 import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
 import com.woocommerce.android.screenshots.util.Screen
 
-class TabNavComponent : Screen {
+class TabNavComponent() : Screen(MY_STORE_BUTTON) {
     companion object {
         const val MY_STORE_BUTTON = R.id.dashboard
         const val ORDERS_BUTTON = R.id.orders
         const val PRODUCTS_BUTTON = R.id.products
         const val REVIEWS_BUTTON = R.id.reviews
     }
-
-    constructor(): super(MY_STORE_BUTTON)
 
     fun gotoMyStoreScreen(): MyStoreScreen {
         clickOn(MY_STORE_BUTTON)
