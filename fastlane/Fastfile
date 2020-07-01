@@ -51,6 +51,9 @@ SUPPORTED_LOCALES = [
 
     android_bump_version_release()
     new_version = android_get_app_version()
+    extract_release_notes_for_version(version: new_version, 
+      release_notes_file_path:"#{ENV["PROJECT_ROOT_FOLDER"]}RELEASE-NOTES.txt", 
+      extracted_notes_file_path:release_notes_path)
     android_update_release_notes(new_version: new_version)
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
@@ -171,16 +174,17 @@ end
   end
 
   #####################################################################################
-  # build_release
+  # build_and_upload_release
   # -----------------------------------------------------------------------------------
   # This lane builds the final release of the app and uploads it
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_release [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_release [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_release
-  # bundle exec fastlane build_release skip_confirm:true
+  # bundle exec fastlane build_and_upload_release 
+  # bundle exec fastlane build_and_upload_release skip_confirm:true 
+  # bundle exec fastlane build_and_upload_release create_release:true 
   #####################################################################################
   desc "Builds and uploads release for distribution"
   lane :build_and_upload_release do | options |
@@ -210,6 +214,15 @@ end
       skip_upload_screenshots: true,
       json_key: './google-upload-credentials.json',
     )
+
+    if (options[:create_release])
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
+      create_release(repository:GHHELPER_REPO, 
+        version: version["name"], 
+        release_notes_file_path:release_notes_path,
+        release_assets:"#{apk_file_path},#{aab_file_path}"
+      )
+    end
   end
 
   #####################################################################################
@@ -219,11 +232,12 @@ end
   # to the beta channel (but does not release it).
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_and_upload_beta
-  # bundle exec fastlane build_and_upload_beta skip_confirm:true
+  # bundle exec fastlane build_and_upload_beta 
+  # bundle exec fastlane build_and_upload_beta skip_confirm:true 
+  # bundle exec fastlane build_and_upload_beta create_release:true 
   #####################################################################################
   desc "Builds and uploads a new beta build to Google Play (without releasing it)"
   lane :build_and_upload_beta do | options |
@@ -250,6 +264,16 @@ end
       skip_upload_screenshots: true,
       json_key: './google-upload-credentials.json',
     )
+
+    if (options[:create_release])
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
+      create_release(repository:GHHELPER_REPO, 
+        version: version["name"], 
+        release_notes_file_path:release_notes_path,
+        prerelease: true,
+        release_assets:"#{apk_file_path}"
+      )
+    end
   end
 
 #####################################################################################
@@ -334,7 +358,7 @@ end
     # Create the file names
     version=options[:version]
     name="wcandroid-#{version["name"]}.aab"
-    apk_name="wcandroid-#{version["name"]}-universal.apk"
+    apk_name=universal_apk_name(version)
     aab_file="WooCommerce-vanilla-release.aab"
     output_dir="WooCommerce/build/outputs/bundle/"
     build_dir="artifacts/"
@@ -404,4 +428,14 @@ end
     sh("git push origin HEAD")
   end
 
+  #####################################################################################
+  # Utils
+  #####################################################################################
+  def release_notes_path
+    "#{ENV["PROJECT_ROOT_FOLDER"]}WooCommerce/metadata/release_notes.txt"
+  end
+
+  def universal_apk_name(version)
+    "wcandroid-#{ version["name"] }-universal.apk"
+  end
 end
