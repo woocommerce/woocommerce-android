@@ -12,5 +12,5 @@ import org.junit.runners.Suite.SuiteClasses
 @LargeTest
 class SmokeTestSuite
 
-@Rule
-var retry: Retry = Retry(3)
+//@Rule
+//var retry: Retry = Retry(3)
