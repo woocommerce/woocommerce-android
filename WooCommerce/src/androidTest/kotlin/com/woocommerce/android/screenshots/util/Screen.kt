@@ -25,7 +25,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withHint
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
-import androidx.test.espresso.matcher.ViewMatchers.withParentIndex
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
@@ -123,17 +122,15 @@ open class Screen// If we fail to find the element, attempt recovery
         idleFor(500) // allow for transitions
     }
 
-    // click on element with text
     fun clickOn(elementID: Int, status: String) {
         waitForAtLeastOneElementToBeDisplayed(elementID)
-        clickOn(onView(allOf(withId(elementID), withText(status))))
-        idleFor(500) // allow for transitions
-    }
-
-    // click on element with parent (indexed)
-    fun clickOn(parentElementID: Int, elementID: Int) {
-        waitForAtLeastOneElementToBeDisplayed(parentElementID)
-        clickOn(onView(allOf(withId(elementID), withParentIndex(parentElementID))))
+        clickOn(
+            onView(
+                allOf(
+                    withId(elementID), withText(status)
+                )
+            )
+        )
         idleFor(500) // allow for transitions
     }
 
@@ -233,9 +230,9 @@ open class Screen// If we fail to find the element, attempt recovery
     }
 
     fun selectItemAtIndexInRecyclerView1(index: Int, recyclerViewId: Int) {
-        waitForElementToBeDisplayed(recyclerViewId)
-        idleFor(1000)
+        waitForElementToBeDisplayedWithoutFailure(recyclerViewId)
 
+        idleFor(1000)
         onView(withId(recyclerViewId))
             .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
     }

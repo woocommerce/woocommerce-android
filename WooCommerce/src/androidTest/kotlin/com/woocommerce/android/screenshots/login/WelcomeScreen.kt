@@ -2,8 +2,6 @@ package com.woocommerce.android.screenshots.login
 
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
-import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
-import com.woocommerce.android.screenshots.reviews.ReviewsListScreen.Companion
 import com.woocommerce.android.screenshots.util.Screen
 
 class WelcomeScreen : Screen {
