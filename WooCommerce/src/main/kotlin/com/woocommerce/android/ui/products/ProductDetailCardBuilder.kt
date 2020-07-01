@@ -44,11 +44,6 @@ class ProductDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: Parameters
 ) {
-    /**
-     * Add/Edit Product Release 1 is enabled by default for SIMPLE products
-     */
-    private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
-
     fun buildPropertyCards(product: Product): List<ProductPropertyCard> {
         val cards = mutableListOf<ProductPropertyCard>()
 
@@ -57,7 +52,7 @@ class ProductDetailCardBuilder(
         // display pricing/inventory card only if product is not a variable product
         // since pricing, inventory, shipping and SKU for a variable product can differ per variant
         if (product.type != VARIABLE) {
-            if (isAddEditProductRelease1Enabled(product.type)) {
+            if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
                 cards.addIfNotEmpty(getSecondaryCard(product))
             } else {
                 cards.addIfNotEmpty(getPricingAndInventoryCard(product))
@@ -153,7 +148,7 @@ class ProductDetailCardBuilder(
 
     // if add/edit products is enabled, purchase note appears in product settings
     private fun Product.purchaseNote(): ProductProperty? {
-        return if (this.purchaseNote.isNotBlank() && !isAddEditProductRelease1Enabled(this.type)) {
+        return if (this.purchaseNote.isNotBlank() && !FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             ReadMore(
                 R.string.product_purchase_note,
                 this.purchaseNote
@@ -190,7 +185,7 @@ class ProductDetailCardBuilder(
 
     // shipping group is part of the secondary card if edit product is enabled
     private fun Product.readOnlyShipping(): ProductProperty? {
-        return if (!isAddEditProductRelease1Enabled(this.type)) {
+        return if (!FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             val shippingGroup = mapOf(
                 Pair(resources.getString(R.string.product_weight), this.getWeightWithUnits(parameters.weightUnit)),
                 Pair(resources.getString(R.string.product_size), this.getSizeWithUnits(parameters.dimensionUnit)),
@@ -439,7 +434,7 @@ class ProductDetailCardBuilder(
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
-        return if (isAddEditProductRelease1Enabled(this.type)) {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             Editable(
                 R.string.product_detail_title_hint,
                 name,
@@ -451,7 +446,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.description(): ProductProperty? {
-        return if (isAddEditProductRelease1Enabled(this.type)) {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             val productDescription = this.description
             val showTitle = productDescription.isNotEmpty()
             val description = if (productDescription.isEmpty()) {
