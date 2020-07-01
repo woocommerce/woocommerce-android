@@ -87,6 +87,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
+                product.productType(),
                 product.externalLink(),
                 product.shipping(),
                 product.inventory(),
@@ -420,6 +421,19 @@ class ProductDetailCardBuilder(
                 ViewProductPricing(this.remoteId),
                 Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
+        }
+    }
+
+    private fun Product.productType(): ProductProperty? {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            val productType = resources.getString(this.getProductTypeFormattedForDisplay())
+            ComplexProperty(
+                R.string.product_type,
+                resources.getString(R.string.product_detail_product_type_hint, productType),
+                R.drawable.ic_gridicons_product
+            )
+        } else {
+            null
         }
     }
 
