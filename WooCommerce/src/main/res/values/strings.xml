@@ -539,6 +539,7 @@
     <string name="product_slug">Slug</string>
     <string name="product_slug_label">This is the URL-friendly version of the product title</string>
     <string name="product_enable_reviews">Enable reviews</string>
+    <string name="product_is_virtual">Virtual product</string>
     <string name="product_external_empty_link">Add product link</string>
     <string name="product_external_link">Product link</string>
     <string name="product_external_link_label">Enter the external URL to the product</string>
