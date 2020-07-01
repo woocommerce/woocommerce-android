@@ -188,6 +188,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onStop() {
         errorSnackbar?.dismiss()
+        removeTabLayoutFromAppBar(tabLayout)
         super.onStop()
     }
 
