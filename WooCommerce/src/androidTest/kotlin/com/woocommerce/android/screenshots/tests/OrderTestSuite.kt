@@ -3,7 +3,6 @@ package com.woocommerce.android.screenshots.tests
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.woocommerce.android.screenshots.orders.OrderListScreen
-import org.junit.After
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith

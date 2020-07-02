@@ -1,20 +1,19 @@
 package com.woocommerce.android.screenshots.orders
 
-import com.woocommerce.android.R.id
+import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
 import com.woocommerce.android.screenshots.util.TestDataGenerator
 
-class SingleOrderScreen : Screen {
+class SingleOrderScreen : Screen(ORDER_DETAIL_CONTAINER) {
     companion object {
-        const val ORDER_NUMBER_LABEL = id.orderDetail_container
-        const val ADD_NOTE_BTN = id.noteList_addNoteContainer
-        const val ADD_NOTE_EDITOR = id.addNote_editor
-        const val EMAIL_NOTE_SWITCH = id.switchSetting_switch
-        const val ADD_BTN = id.menu_add
-        const val BILLING_INFO_DDM = id.customerInfo_viewMore
+        const val ORDER_DETAIL_CONTAINER = R.id.orderDetail_container
+        const val ADD_NOTE_BTN = R.id.noteList_addNoteContainer
+        const val ADD_NOTE_EDITOR = R.id.addNote_editor
+        const val ADD_BTN = R.id.menu_add
+        const val BILLING_INFO_DDM = R.id.customerInfo_viewMore
+        const val NOTE_LIST_LABEL = R.id.notesList_lblNotes
+        const val NOTES_LIST = R.id.notesList_notes
     }
-
-    constructor() : super(ORDER_NUMBER_LABEL)
 
     // TASKS
     fun emailOrderNoteToCustomer(): SingleOrderScreen {
@@ -29,18 +28,18 @@ class SingleOrderScreen : Screen {
     }
 
     fun checkBillingInfo(): SingleOrderScreen {
-        scrollTo(id.notesList_lblNotes)
+        scrollTo(NOTE_LIST_LABEL)
         scrollTo(BILLING_INFO_DDM)
         clickOn(BILLING_INFO_DDM)
-        scrollTo(id.notesList_lblNotes)
+        scrollTo(NOTE_LIST_LABEL)
         clickOn(BILLING_INFO_DDM)
         return SingleOrderScreen()
     }
 
     // NAVIGATION
     fun scrollToNotesDetails(): SingleOrderScreen {
-        scrollTo(id.notesList_notes)
-        scrollTo(id.noteList_addNoteContainer)
+        scrollTo(NOTES_LIST)
+        scrollTo(ADD_NOTE_BTN)
         return SingleOrderScreen()
     }
 

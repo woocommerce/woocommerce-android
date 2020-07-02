@@ -4,7 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.util.Screen
 
-class ReviewsListScreen : Screen {
+class ReviewsListScreen : Screen(LIST_VIEW) {
     companion object {
         const val LIST_VIEW = R.id.reviewsList
 
@@ -12,8 +12,6 @@ class ReviewsListScreen : Screen {
     }
 
     val tabBar = TabNavComponent()
-
-    constructor() : super(LIST_VIEW)
 
     fun selectReview(index: Int): SingleReviewScreen {
         val correctedIndex = index + 1 // account for the header

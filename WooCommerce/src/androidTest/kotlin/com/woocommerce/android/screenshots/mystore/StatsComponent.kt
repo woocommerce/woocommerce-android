@@ -3,12 +3,10 @@ package com.woocommerce.android.screenshots.mystore
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
 
-class StatsComponent : Screen {
+class StatsComponent : Screen(STATS_DASHBOARD) {
     companion object {
         const val STATS_DASHBOARD = R.id.dashboard_stats
     }
-
-    constructor(): super(STATS_DASHBOARD)
 
     override fun recover() {
         super.recover()

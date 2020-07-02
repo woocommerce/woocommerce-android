@@ -17,6 +17,7 @@ class ProductTestSuite : TestBase() {
     @Test
     fun filterOutProductsSuccess() {
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+
         ProductListScreen
             .navigateToProducts()
             // Select filter and choose a random status

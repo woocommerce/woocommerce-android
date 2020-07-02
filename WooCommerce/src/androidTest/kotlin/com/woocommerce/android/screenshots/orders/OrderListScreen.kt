@@ -12,27 +12,23 @@ import com.woocommerce.android.screenshots.util.Screen
 import com.woocommerce.android.screenshots.util.TestDataGenerator
 import org.hamcrest.Matchers
 
-class OrderListScreen : Screen {
+class OrderListScreen() : Screen(ORDER_LIST_VIEW) {
     companion object {
         fun navigateToOrders(): OrderListScreen {
             if (!isToolbarTitle("Orders")) {
                 MyStoreScreen().tabBar.gotoOrdersScreen()
             }
 
-            Thread.sleep(1000)
-
             return OrderListScreen()
         }
 
-        const val LIST_VIEW = R.id.ordersList
-        const val LIST_ITEM = R.id.orderNum
+        const val ORDER_LIST_VIEW = R.id.ordersList
+        const val ORDER_LIST_ITEM = R.id.orderNum
         const val SEARCH_BUTTON = R.id.menu_search
         const val SEARCH_TEXT_FIELD = R.id.search_src_text
         const val SETTINGS_BUTTON_TEXT = R.string.settings
         const val PROCESSING_TAB = "PROCESSING"
     }
-
-    constructor() : super(LIST_VIEW)
 
     private val tabBar = TabNavComponent()
 
@@ -40,12 +36,12 @@ class OrderListScreen : Screen {
     fun searchOrdersByName(): OrderSearchScreen {
         clickOn(SEARCH_BUTTON)
         typeTextInto(SEARCH_TEXT_FIELD, TestDataGenerator.getAllProductsSearchRequest())
-        waitForElementToBeDisplayedWithoutFailure(LIST_VIEW)
+        waitForElementToBeDisplayedWithoutFailure(ORDER_LIST_VIEW)
         return OrderSearchScreen()
     }
 
     fun selectRandomOrderFromTheList(): SingleOrderScreen {
-        selectOrder(0)
+        selectOrder(TestDataGenerator.getRandomInteger(1, 3))
         return SingleOrderScreen()
     }
 
@@ -73,10 +69,9 @@ class OrderListScreen : Screen {
     }
 
     // HELPERS
-    private fun selectOrder(index: Int) {
-        val correctedIndex = index + TestDataGenerator.getRandomInteger(1, 3) // account for the header
-        waitForElementToBeDisplayedWithoutFailure(LIST_ITEM)
-        selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
+    private fun selectOrder(correctedIndex: Int) {
+        waitForElementToBeDisplayedWithoutFailure(ORDER_LIST_ITEM)
+        selectItemAtIndexInRecyclerView(correctedIndex, ORDER_LIST_VIEW, ORDER_LIST_ITEM)
         return
     }
 }

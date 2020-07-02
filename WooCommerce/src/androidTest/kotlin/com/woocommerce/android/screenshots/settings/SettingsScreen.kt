@@ -7,15 +7,13 @@ import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
 
-class SettingsScreen// Using BETA_FEATURES_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
+class SettingsScreen()// Using BETA_FEATURES_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
 // LOG_OUT_BUTTON
-    : Screen {
+    : Screen(BETA_FEATURES_BUTTON) {
     companion object {
         const val BETA_FEATURES_BUTTON = R.id.option_beta_features
         const val LOG_OUT_BUTTON = R.id.btn_option_logout
     }
-
-    constructor() : super(BETA_FEATURES_BUTTON)
 
     fun openBetaFeatures(): BetaFeaturesScreen {
         clickOn(BETA_FEATURES_BUTTON)

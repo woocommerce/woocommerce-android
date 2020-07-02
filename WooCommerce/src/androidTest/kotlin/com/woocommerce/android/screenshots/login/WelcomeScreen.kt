@@ -4,12 +4,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.util.Screen
 
-class WelcomeScreen : Screen {
+class WelcomeScreen : Screen(LOGIN_BUTTON) {
     companion object {
         const val LOGIN_BUTTON = R.id.button_login
+        const val DASHBOARD = R.id.dashboard
 
         fun logoutIfNeeded(): WelcomeScreen {
-            if (isElementDisplayed(R.id.dashboard)) {
+            if (isElementDisplayed(DASHBOARD)) {
                 MyStoreScreen().openSettingsPane().logOut()
             }
 
@@ -18,8 +19,6 @@ class WelcomeScreen : Screen {
             return WelcomeScreen()
         }
     }
-
-    constructor() : super(LOGIN_BUTTON)
 
     fun selectLogin(): SiteAddressScreen {
         clickOn(LOGIN_BUTTON)

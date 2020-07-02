@@ -11,14 +11,12 @@ import com.woocommerce.android.screenshots.settings.SettingsScreen
 import com.woocommerce.android.screenshots.util.Screen
 import com.woocommerce.android.screenshots.util.TestDataGenerator
 
-class ProductListScreen : Screen {
+class ProductListScreen : Screen(LIST_VIEW) {
     companion object {
         fun navigateToProducts(): ProductListScreen {
             if (!isToolbarTitle("Products")) {
                 MyStoreScreen().tabBar.gotoProductsScreen()
             }
-
-            Thread.sleep(1000)
 
             return ProductListScreen()
         }
@@ -33,26 +31,27 @@ class ProductListScreen : Screen {
         const val SHOW_PRODUCTS_ON_STATUS_BTN = R.id.filterOptionList_btnShowProducts
         const val SHOW_PRODUCTS_ON_FILTER_BTN = R.id.filterList_btnShowProducts
         const val SETTINGS_BUTTON_TEXT = R.string.settings
+        const val SORT_PRODUCTS_BUTTON = R.id.btn_product_sorting
+        const val SORTING_LIST = R.id.sorting_optionsList
+        const val SORTING_ITEM_MARK = R.id.sortingItem_tick
     }
 
     val tabBar = TabNavComponent()
-
-    constructor() : super(LIST_VIEW)
 
     // TASKS
     fun filterOutProductsBy(filter: String): ProductListScreen {
         clickOn(FILTERS_BUTTON)
         selectFilter(FILTER_ITEM, filter)
         waitForElementToBeDisplayed(FILTER_OPTION_LIST)
-        selectRandomItem(TestDataGenerator.getRandomInteger(2, 4), FILTER_OPTION_LIST, RADIO_BTN)
+        selectRandomItem(TestDataGenerator.getRandomInteger(1, 4), FILTER_OPTION_LIST, RADIO_BTN)
         clickOn(SHOW_PRODUCTS_ON_STATUS_BTN)
         return ProductListScreen()
     }
 
     fun sortProducts(): ProductListScreen {
-        clickOn(R.id.btn_product_sorting)
-        waitForElementToBeDisplayedWithoutFailure(R.id.sortingItem_tick)
-        selectRandomItem(TestDataGenerator.getRandomInteger(1, 4), R.id.sorting_optionsList, R.id.sortingItem_tick)
+        clickOn(SORT_PRODUCTS_BUTTON)
+        waitForElementToBeDisplayedWithoutFailure(SORTING_ITEM_MARK)
+        selectRandomItem(TestDataGenerator.getRandomInteger(1, 4), SORTING_LIST, SORTING_ITEM_MARK)
         return ProductListScreen()
     }
 

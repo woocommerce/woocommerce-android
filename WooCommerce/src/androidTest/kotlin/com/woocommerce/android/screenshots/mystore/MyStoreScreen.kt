@@ -6,11 +6,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
-import com.woocommerce.android.screenshots.login.WelcomeScreen.Companion
 import com.woocommerce.android.screenshots.settings.SettingsScreen
 import com.woocommerce.android.screenshots.util.Screen
 
-class MyStoreScreen : Screen {
+class MyStoreScreen : Screen(DASHBOARD) {
     companion object {
         const val DASHBOARD = R.id.dashboard_refresh_layout
         const val STATS_CARD = R.id.dashboard_stats_availability_card
@@ -21,8 +20,6 @@ class MyStoreScreen : Screen {
 
     val tabBar = TabNavComponent()
     val stats = StatsComponent()
-
-    constructor() : super(DASHBOARD)
 
     fun openSettingsPane(): SettingsScreen {
         openToolbarActionMenu()

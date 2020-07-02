@@ -6,6 +6,8 @@ import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.util.rules.RetryTest
+import com.woocommerce.android.screenshots.util.rules.RetryTest.Retry
 import com.woocommerce.android.ui.main.MainActivity
 import org.junit.FixMethodOrder
 import org.junit.Rule
