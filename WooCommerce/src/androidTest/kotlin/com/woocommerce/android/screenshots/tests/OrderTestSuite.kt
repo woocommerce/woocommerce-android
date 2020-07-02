@@ -43,8 +43,27 @@ class OrderTestSuite : TestBase() {
             .selectRandomOrderFromTheList()
             .checkBillingInfo()
             .scrollToNotesDetails()
-            // add product notes and email update to customer
-            .emailOrderNoteToCustomer()
+            // add order notes
+            .addOrderNote()
+            // Close Order details and go back to orders list
+            .goBackToOrderList()
+
+        // Orders
+        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
+        OrderListScreen()
+            .then<OrderListScreen> { it.isTitle("Orders") }
+            .logOut()
+    }
+
+    @Test
+    fun issueRefundSuccess() {
+        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+        OrderListScreen
+            .navigateToOrders()
+            .selectRandomOrderFromTheList()
+            .scrollToPaymentDetails()
+            // select product item, quantity, and add reason for refund
+            .issueRefund()
             // Close Order details and go back to orders list
             .goBackToOrderList()
 

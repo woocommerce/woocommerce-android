@@ -3,6 +3,7 @@ package com.woocommerce.android.screenshots.util
 import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
+import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
@@ -22,6 +23,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
+import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withHint
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
@@ -31,9 +33,11 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R.id
+import com.woocommerce.android.screenshots.util.matchers.AmbiguousViewMatcher.withIndex
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
 
@@ -122,16 +126,37 @@ open class Screen// If we fail to find the element, attempt recovery
         idleFor(500) // allow for transitions
     }
 
-    fun clickOn(elementID: Int, status: String) {
+    fun clickOn(elementID: Int, text: String) {
         waitForAtLeastOneElementToBeDisplayed(elementID)
         clickOn(
             onView(
                 allOf(
-                    withId(elementID), withText(status)
+                    withId(elementID), withText(text)
                 )
             )
         )
         idleFor(500) // allow for transitions
+    }
+
+    // Use in case of AmbiguousViewMatcherException
+    fun clickOn(elementID: Int, index: Int) {
+        waitForAtLeastOneElementToBeDisplayed(elementID)
+        onView(withIndex(withId(elementID), index)).perform(click())
+        idleFor(500) // allow for transitions
+    }
+
+    fun clickOn(viewInteraction: ViewInteraction) {
+        waitForElementToBeDisplayed(viewInteraction)
+        idleFor(500) // allow for transitions
+        viewInteraction.perform(click(ViewActions.closeSoftKeyboard()))
+        idleFor(500) // allow for transitions
+    }
+
+    fun clickOnInDialogViewWithText(text: String) {
+        onView(withText(text))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click())
     }
 
     fun scrollTo(elementID: Int) {
@@ -142,11 +167,15 @@ open class Screen// If we fail to find the element, attempt recovery
         onView(withId(elementID)).perform(NestedScrollViewExtension())
     }
 
-    fun clickOn(viewInteraction: ViewInteraction) {
-        waitForElementToBeDisplayed(viewInteraction)
-        idleFor(500) // allow for transitions
-        viewInteraction.perform(click(ViewActions.closeSoftKeyboard()))
-        idleFor(500) // allow for transitions
+    fun setValueInNumberPicker(number: Int) {
+        val numPicker = onView(
+            withClassName(
+                Matchers.equalTo(
+                    NumberPicker::class.java.name
+                )
+            )
+        )
+        numPicker.perform(setNumber(number))
     }
 
     fun openToolbarActionMenu() {
@@ -369,6 +398,23 @@ open class Screen// If we fail to find the element, attempt recovery
         if (!waitForElementToBeDisplayedWithoutFailure(elementID)) {
             recover()
             waitForElementToBeDisplayed(elementID)
+        }
+    }
+
+    open fun setNumber(num: Int): ViewAction? {
+        return object : ViewAction {
+            override fun perform(uiController: UiController, view: View) {
+                val np = view as NumberPicker
+                np.value = num
+            }
+
+            override fun getDescription(): String {
+                return "Set the passed number into the NumberPicker"
+            }
+
+            override fun getConstraints(): Matcher<View> {
+                return isAssignableFrom(NumberPicker::class.java)
+            }
         }
     }
 }
