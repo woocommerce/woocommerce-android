@@ -20,6 +20,18 @@ data class ProductTag(
     }
 }
 
+/**
+ * Returns true if the passed tag is in the current list of tags
+ */
+fun List<ProductTag>.containsTag(tag: ProductTag): Boolean {
+    this.forEach {
+        if (tag.remoteTagId == it.remoteTagId) {
+            return true
+        }
+    }
+    return false
+}
+
 fun WCProductTagModel.toProductTag(): ProductTag {
     return ProductTag(
         remoteTagId = this.remoteTagId,
