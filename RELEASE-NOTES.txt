@@ -4,6 +4,8 @@
 * Updated the background color of the login views.
 * Moved privacy notice for CA users to the About App screen.
 * Disabled beta options and removed Improved Stats as selectable option from it
+* Set Stats V4 as the default choice
+* Update Stats V3 due date warning message to September 1, 2020
  
 4.5
 -----
