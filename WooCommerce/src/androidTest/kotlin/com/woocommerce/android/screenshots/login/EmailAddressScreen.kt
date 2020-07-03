@@ -11,14 +11,14 @@ class EmailAddressScreen : Screen(EMAIL_ADDRESS_FIELD) {
     }
 
     fun proceedWith(emailAddress: String): MagicLinkScreen {
-        typeTextInto(EMAIL_ADDRESS_FIELD, emailAddress)
-        clickOn(NEXT_BUTTON)
+        typeOps.typeTextInto(EMAIL_ADDRESS_FIELD, emailAddress)
+        clickOps.clickOn(NEXT_BUTTON)
 
         return MagicLinkScreen()
     }
 
     fun proceedWithSiteLogin(): SiteCredentialsScreen {
-        clickOn(LOGIN_WITH_SITE_CREDENTIALS_BUTTON)
+        clickOps.clickOn(LOGIN_WITH_SITE_CREDENTIALS_BUTTON)
 
         return SiteCredentialsScreen()
     }

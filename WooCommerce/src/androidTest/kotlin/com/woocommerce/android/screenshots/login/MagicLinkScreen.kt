@@ -9,7 +9,7 @@ class MagicLinkScreen : Screen(USE_PASSWORD_BUTTON) {
     }
 
     fun proceedWithPassword(): PasswordScreen {
-        clickOn(USE_PASSWORD_BUTTON)
+        clickOps.clickOn(USE_PASSWORD_BUTTON)
         return PasswordScreen()
     }
 }

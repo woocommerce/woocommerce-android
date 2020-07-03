@@ -24,8 +24,6 @@ class ProductTestSuite : TestBase() {
             .filterOutProductsBy("Stock status")
             .cancelFilters()
 
-        // Orders
-        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         ProductListScreen()
             .then<ProductListScreen> { it.isTitle("Products") }
             .logOut()

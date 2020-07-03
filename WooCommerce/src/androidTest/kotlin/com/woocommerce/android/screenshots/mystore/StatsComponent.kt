@@ -10,8 +10,8 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
 
     override fun recover() {
         super.recover()
-        clickOn(R.id.reviews)
-        clickOn(R.id.dashboard)
+        clickOps.clickOn(R.id.reviews)
+        clickOps.clickOn(R.id.dashboard)
     }
 
     private fun waitForGraphToLoad() {
@@ -20,19 +20,19 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
         // a bit more flexible. I'm leaving the previous one and this comment for reference, just in case
         // the option doesn't prove to more reliable.
         // idleFor(1000)
-        if (!waitForElementToBeDisplayedWithoutFailure(R.id.dashboard_recency_text)) {
+        if (!waitOps.waitForElementToBeDisplayedWithoutFailure(R.id.dashboard_recency_text)) {
             recover()
-            waitForElementToBeDisplayed(R.id.dashboard_recency_text)
+            waitOps.waitForElementToBeDisplayed(R.id.dashboard_recency_text)
             // idle for a bit in order to load labels as well
-            idleFor(3000)
+            waitOps.idleFor(3000)
         } else {
             // idle for a bit in order to load labels as well
-            idleFor(3000)
+            waitOps.idleFor(3000)
         }
     }
 
     fun switchToStatsDashboardYearsTab() {
-        selectItemWithTitleInTabLayout(R.string.dashboard_stats_granularity_years, R.id.tab_layout, STATS_DASHBOARD)
+        selectOps.selectItemWithTitleInTabLayout(R.string.dashboard_stats_granularity_years, R.id.tab_layout, STATS_DASHBOARD)
         waitForGraphToLoad()
     }
 }

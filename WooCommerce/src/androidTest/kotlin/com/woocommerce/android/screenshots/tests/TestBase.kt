@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Rule
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
-open class TestBase() {
+open class TestBase {
     @Rule @JvmField
     val localeTestRule = LocaleTestRule()
 

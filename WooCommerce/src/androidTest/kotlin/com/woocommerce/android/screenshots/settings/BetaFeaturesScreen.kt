@@ -9,12 +9,12 @@ class BetaFeaturesScreen : Screen(PRODUCT_EDITING_SWITCH) {
     }
 
     fun enableProductEditing(): BetaFeaturesScreen {
-        flipSwitchOn(R.id.switchSetting_switch, PRODUCT_EDITING_SWITCH)
+        actionOps.flipSwitchOn(R.id.switchSetting_switch, PRODUCT_EDITING_SWITCH)
         return BetaFeaturesScreen()
     }
 
     fun goBackToSettingsScreen(): SettingsScreen {
-        pressBack()
+        actionOps.pressBack()
         return SettingsScreen()
     }
 }

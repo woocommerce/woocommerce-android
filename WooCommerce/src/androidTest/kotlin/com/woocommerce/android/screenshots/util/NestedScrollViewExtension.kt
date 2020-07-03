@@ -11,7 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 
-class NestedScrollViewExtension(scrolltoAction: ViewAction = ViewActions.scrollTo()) : ViewAction by scrolltoAction {
+class NestedScrollViewExtension(scrollToAction: ViewAction = ViewActions.scrollTo()) : ViewAction by scrollToAction {
     override fun getConstraints(): Matcher<View> {
         return Matchers.allOf(
                 ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),

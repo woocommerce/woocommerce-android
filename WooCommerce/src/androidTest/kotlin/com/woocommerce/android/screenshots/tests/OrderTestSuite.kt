@@ -28,8 +28,6 @@ class OrderTestSuite : TestBase() {
             // Go back to Orders view
             .cancelSearch()
 
-        // Orders
-        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         OrderListScreen()
             .then<OrderListScreen> { it.isTitle("Orders") }
             .logOut()
@@ -48,8 +46,6 @@ class OrderTestSuite : TestBase() {
             // Close Order details and go back to orders list
             .goBackToOrderList()
 
-        // Orders
-        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         OrderListScreen()
             .then<OrderListScreen> { it.isTitle("Orders") }
             .logOut()
@@ -67,8 +63,6 @@ class OrderTestSuite : TestBase() {
             // Close Order details and go back to orders list
             .goBackToOrderList()
 
-        // Orders
-        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         OrderListScreen()
             .then<OrderListScreen> { it.isTitle("Orders") }
             .logOut()

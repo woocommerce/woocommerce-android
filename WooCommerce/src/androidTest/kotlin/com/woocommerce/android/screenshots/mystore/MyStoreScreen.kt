@@ -22,15 +22,15 @@ class MyStoreScreen : Screen(DASHBOARD) {
     val stats = StatsComponent()
 
     fun openSettingsPane(): SettingsScreen {
-        openToolbarActionMenu()
+        actionOps.openToolbarActionMenu()
         onView(withText(SETTINGS_BUTTON_TEXT)).perform(click())
         return SettingsScreen()
     }
 
     fun dismissTopBannerIfNeeded(): MyStoreScreen {
         if (isElementDisplayed(STATS_CARD)) {
-            clickOn(STATS_CARD_VIEW_MORE)
-            clickOn(STATS_CARD_DISMISS_BUTTON)
+            clickOps.clickOn(STATS_CARD_VIEW_MORE)
+            clickOps.clickOn(STATS_CARD_DISMISS_BUTTON)
         }
         return this
     }

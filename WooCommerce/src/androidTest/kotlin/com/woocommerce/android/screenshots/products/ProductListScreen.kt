@@ -40,27 +40,26 @@ class ProductListScreen : Screen(LIST_VIEW) {
 
     // TASKS
     fun filterOutProductsBy(filter: String): ProductListScreen {
-        clickOn(FILTERS_BUTTON)
+        clickOps.clickOn(FILTERS_BUTTON)
         selectFilter(FILTER_ITEM, filter)
-        waitForElementToBeDisplayed(FILTER_OPTION_LIST)
-        selectRandomItem(TestDataGenerator.getRandomInteger(1, 4), FILTER_OPTION_LIST, RADIO_BTN)
-        clickOn(SHOW_PRODUCTS_ON_STATUS_BTN)
+        waitOps.waitForElementToBeDisplayed(FILTER_OPTION_LIST)
+        selectRandomItem(TestDataGenerator.getRandomInteger(1, 3), FILTER_OPTION_LIST, RADIO_BTN)
+        clickOps.clickOn(SHOW_PRODUCTS_ON_STATUS_BTN)
         return ProductListScreen()
     }
 
     fun sortProducts(): ProductListScreen {
-        clickOn(SORT_PRODUCTS_BUTTON)
-        waitForElementToBeDisplayedWithoutFailure(SORTING_ITEM_MARK)
-        selectRandomItem(TestDataGenerator.getRandomInteger(1, 4), SORTING_LIST, SORTING_ITEM_MARK)
+        clickOps.clickOn(SORT_PRODUCTS_BUTTON)
+        selectOps.selectItemAtIndexInRecyclerView1(TestDataGenerator.getRandomInteger(0, 3), SORTING_LIST)
         return ProductListScreen()
     }
 
     private fun selectFilter(elementID: Int, stockStatus: String) {
-        clickOn(elementID, stockStatus)
+        clickOps.clickOn(elementID, stockStatus)
     }
 
     fun selectRandomProductFromTheList(): SingleProductScreen {
-        selectRandomItem(TestDataGenerator.getRandomInteger(1, 6), LIST_VIEW, LIST_ITEM)
+        selectRandomItem(TestDataGenerator.getRandomInteger(0, 5), LIST_VIEW, LIST_ITEM)
         return SingleProductScreen()
     }
 
@@ -70,9 +69,9 @@ class ProductListScreen : Screen(LIST_VIEW) {
     }
 
     fun cancelFilters() {
-        clickOn(FILTERS_BUTTON)
-        clickOn(CLEAR_FILTERS)
-        clickOn(SHOW_PRODUCTS_ON_FILTER_BTN)
+        clickOps.clickOn(FILTERS_BUTTON)
+        clickOps.clickOn(CLEAR_FILTERS)
+        clickOps.clickOn(SHOW_PRODUCTS_ON_FILTER_BTN)
     }
 
     // CHECKS
@@ -84,11 +83,11 @@ class ProductListScreen : Screen(LIST_VIEW) {
     // HELPERS
 
     private fun selectRandomItem(randomInteger: Int, recyclerViewID: Int, elementID: Int) {
-        selectItemAtIndexInRecyclerView(randomInteger, recyclerViewID, elementID)
+        selectOps.selectItemAtIndexInRecyclerView(randomInteger, recyclerViewID, elementID)
     }
 
     private fun openSettingsPane(): SettingsScreen {
-        openToolbarActionMenu()
+        actionOps.openToolbarActionMenu()
         Espresso.onView(ViewMatchers.withText(SETTINGS_BUTTON_TEXT)).perform(ViewActions.click())
         return SettingsScreen()
     }

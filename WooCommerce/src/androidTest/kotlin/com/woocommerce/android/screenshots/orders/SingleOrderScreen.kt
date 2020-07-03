@@ -26,60 +26,61 @@ class SingleOrderScreen : Screen(ORDER_DETAIL_CONTAINER) {
 
     // TASKS
     fun addOrderNote(): SingleOrderScreen {
-        clickOn(ADD_NOTE_BTN)
-        waitForElementToBeDisplayed(ADD_NOTE_EDITOR)
-        typeTextInto(
+        clickOps.clickOn(ADD_NOTE_BTN)
+        waitOps.waitForElementToBeDisplayed(ADD_NOTE_EDITOR)
+        typeOps.typeTextInto(
             ADD_NOTE_EDITOR,
             TestDataGenerator.getHumanStyleDate()
         )
-        clickOn(ADD_BTN)
+        clickOps.clickOn(ADD_BTN)
         return SingleOrderScreen()
     }
 
     fun checkBillingInfo(): SingleOrderScreen {
-        scrollTo(NOTE_LIST_LABEL)
-        scrollTo(BILLING_INFO_DDM)
-        clickOn(BILLING_INFO_DDM)
-        scrollTo(NOTE_LIST_LABEL)
-        clickOn(BILLING_INFO_DDM)
+        actionOps.scrollTo(NOTE_LIST_LABEL)
+        actionOps.scrollTo(BILLING_INFO_DDM)
+        clickOps.clickOn(BILLING_INFO_DDM)
+        actionOps.scrollTo(NOTE_LIST_LABEL)
+        clickOps.clickOn(BILLING_INFO_DDM)
         return SingleOrderScreen()
     }
 
     fun issueRefund(): SingleOrderScreen {
-        clickOn(ISSUE_REFUND_BUTTON)
-        waitForElementToBeDisplayed(ISSUE_REFUND_PRODUCTS_LIST)
-        clickOn(REFUND_ITEMS_QUANTITY, 0)
-        setValueInNumberPicker(1)
-        clickOnInDialogViewWithText("OK")
-        clickOn(REFUND_ITEMS_NEXT_BUTTON)
-        typeTextInto(REFUND_REASON_FIELD, TestDataGenerator.getHumanStyleDate())
-        clickOn(REFUND_SUMMARY_BUTTON)
-        clickOnInDialogViewWithText("REFUND")
-        scrollTo(REFUNDED_PRODUCTS_SECTION)
-        clickOn(REFUNDED_PRODUCTS_ITEMS)
-        pressBack()
+        clickOps.clickOn(ISSUE_REFUND_BUTTON)
+        waitOps.waitForElementToBeDisplayed(ISSUE_REFUND_PRODUCTS_LIST)
+        clickOps.clickOn(REFUND_ITEMS_QUANTITY, 0)
+        actionOps.setValueInNumberPicker(1)
+        clickOps.clickOnInDialogViewWithText("OK")
+        clickOps.clickOn(REFUND_ITEMS_NEXT_BUTTON)
+        typeOps.typeTextInto(REFUND_REASON_FIELD, TestDataGenerator.getHumanStyleDate())
+        clickOps.clickOn(REFUND_SUMMARY_BUTTON)
+        clickOps.clickOnInDialogViewWithText("REFUND")
+        waitOps.waitForElementToBeDisplayedWithoutFailure(REFUNDED_PRODUCTS_SECTION)
+        actionOps.scrollTo(REFUNDED_PRODUCTS_SECTION)
+        clickOps.clickOn(REFUNDED_PRODUCTS_ITEMS)
+        actionOps.pressBack()
         return SingleOrderScreen()
     }
 
     // NAVIGATION
     fun scrollToNotesDetails(): SingleOrderScreen {
-        scrollTo(NOTES_LIST)
-        scrollTo(ADD_NOTE_BTN)
+        actionOps.scrollTo(NOTES_LIST)
+        actionOps.scrollTo(ADD_NOTE_BTN)
         return SingleOrderScreen()
     }
 
     fun scrollToPaymentDetails(): SingleOrderScreen {
-        scrollTo(PAYMENT_SECTION)
+        actionOps.scrollTo(PAYMENT_SECTION)
         return SingleOrderScreen()
     }
 
     fun goBackToSearch(): OrderSearchScreen {
-        pressBack()
+        actionOps.pressBack()
         return OrderSearchScreen()
     }
 
     fun goBackToOrderList(): OrderListScreen {
-        pressBack()
+        actionOps.pressBack()
         return OrderListScreen()
     }
 }

@@ -9,7 +9,7 @@ class SingleReviewScreen : Screen(PRODUCT_NAME_LABEL) {
     }
 
     fun goBackToReviewsScreen(): ReviewsListScreen {
-        pressBack()
+        actionOps.pressBack()
         return ReviewsListScreen()
     }
 }

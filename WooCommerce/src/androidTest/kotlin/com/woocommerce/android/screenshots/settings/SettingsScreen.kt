@@ -7,7 +7,7 @@ import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
 
-class SettingsScreen()// Using BETA_FEATURES_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
+class SettingsScreen// Using BETA_FEATURES_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
 // LOG_OUT_BUTTON
     : Screen(BETA_FEATURES_BUTTON) {
     companion object {
@@ -16,12 +16,12 @@ class SettingsScreen()// Using BETA_FEATURES_BUTTON even if we don't need to int
     }
 
     fun openBetaFeatures(): BetaFeaturesScreen {
-        clickOn(BETA_FEATURES_BUTTON)
+        clickOps.clickOn(BETA_FEATURES_BUTTON)
         return BetaFeaturesScreen()
     }
 
     fun goBackToMyStoreScreen(): MyStoreScreen {
-        pressBack()
+        actionOps.pressBack()
         return MyStoreScreen()
     }
 
@@ -39,9 +39,9 @@ class SettingsScreen()// Using BETA_FEATURES_BUTTON even if we don't need to int
             Espresso.onView(ViewMatchers.withId(LOG_OUT_BUTTON)).perform(NestedScrollViewExtension())
         }
 
-        clickOn(LOG_OUT_BUTTON)
+        clickOps.clickOn(LOG_OUT_BUTTON)
 
         // Confirm Log Out
-        clickButtonInDialogWithTitle(R.string.signout)
+        clickOps.clickButtonInDialogWithTitle(R.string.signout)
     }
 }

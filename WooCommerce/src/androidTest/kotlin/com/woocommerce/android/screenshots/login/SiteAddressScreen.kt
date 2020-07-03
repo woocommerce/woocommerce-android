@@ -10,8 +10,8 @@ class SiteAddressScreen : Screen(SITE_ADDRESS_FIELD) {
     }
 
     fun proceedWith(siteAddress: String): EmailAddressScreen {
-        typeTextInto(SITE_ADDRESS_FIELD, siteAddress)
-        clickOn(NEXT_BUTTON)
+        typeOps.typeTextInto(SITE_ADDRESS_FIELD, siteAddress)
+        clickOps.clickOn(NEXT_BUTTON)
 
         return EmailAddressScreen()
     }

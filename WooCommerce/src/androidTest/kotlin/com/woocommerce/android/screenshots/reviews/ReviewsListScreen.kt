@@ -15,7 +15,7 @@ class ReviewsListScreen : Screen(LIST_VIEW) {
 
     fun selectReview(index: Int): SingleReviewScreen {
         val correctedIndex = index + 1 // account for the header
-        selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, REVIEW_ICON)
+        selectOps.selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, REVIEW_ICON)
         return SingleReviewScreen()
     }
 }

@@ -12,7 +12,7 @@ import com.woocommerce.android.screenshots.util.Screen
 import com.woocommerce.android.screenshots.util.TestDataGenerator
 import org.hamcrest.Matchers
 
-class OrderListScreen() : Screen(ORDER_LIST_VIEW) {
+class OrderListScreen : Screen(ORDER_LIST_VIEW) {
     companion object {
         fun navigateToOrders(): OrderListScreen {
             if (!isToolbarTitle("Orders")) {
@@ -34,26 +34,26 @@ class OrderListScreen() : Screen(ORDER_LIST_VIEW) {
 
     // TASKS
     fun searchOrdersByName(): OrderSearchScreen {
-        clickOn(SEARCH_BUTTON)
-        typeTextInto(SEARCH_TEXT_FIELD, TestDataGenerator.getAllProductsSearchRequest())
-        waitForElementToBeDisplayedWithoutFailure(ORDER_LIST_VIEW)
+        clickOps.clickOn(SEARCH_BUTTON)
+        typeOps.typeTextInto(SEARCH_TEXT_FIELD, TestDataGenerator.getAllProductsSearchRequest())
+        waitOps.waitForElementToBeDisplayedWithoutFailure(ORDER_LIST_VIEW)
         return OrderSearchScreen()
     }
 
     fun selectRandomOrderFromTheList(): SingleOrderScreen {
-        selectOrder(TestDataGenerator.getRandomInteger(1, 3))
+        selectOrder(TestDataGenerator.getRandomInteger(0, 2))
         return SingleOrderScreen()
     }
 
     private fun openSettingsPane(): SettingsScreen {
-        openToolbarActionMenu()
+        actionOps.openToolbarActionMenu()
         Espresso.onView(ViewMatchers.withText(SETTINGS_BUTTON_TEXT)).perform(ViewActions.click())
         return SettingsScreen()
     }
 
     // NAVIGATION
     fun goToProcessingOrders(): OrderListScreen {
-        clickOn(Espresso.onView(Matchers.allOf(ViewMatchers.withText(PROCESSING_TAB))))
+        clickOps.clickOn(Espresso.onView(Matchers.allOf(ViewMatchers.withText(PROCESSING_TAB))))
         return OrderListScreen()
     }
 
@@ -70,8 +70,7 @@ class OrderListScreen() : Screen(ORDER_LIST_VIEW) {
 
     // HELPERS
     private fun selectOrder(correctedIndex: Int) {
-        waitForElementToBeDisplayedWithoutFailure(ORDER_LIST_ITEM)
-        selectItemAtIndexInRecyclerView(correctedIndex, ORDER_LIST_VIEW, ORDER_LIST_ITEM)
-        return
+        waitOps.waitForElementToBeDisplayedWithoutFailure(ORDER_LIST_VIEW)
+        clickOps.clickOn(ORDER_LIST_ITEM, correctedIndex)
     }
 }

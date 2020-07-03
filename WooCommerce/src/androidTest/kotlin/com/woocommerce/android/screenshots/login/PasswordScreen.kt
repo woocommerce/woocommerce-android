@@ -11,8 +11,8 @@ class PasswordScreen : Screen(PASSWORD_FIELD) {
     }
 
     fun proceedWith(password: String): MyStoreScreen {
-        typeTextInto(PASSWORD_FIELD, password)
-        clickOn(NEXT_BUTTON)
+        typeOps.typeTextInto(PASSWORD_FIELD, password)
+        clickOps.clickOn(NEXT_BUTTON)
 
         return MyStoreScreen()
     }

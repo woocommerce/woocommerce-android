@@ -14,28 +14,28 @@ class OrderSearchScreen : Screen(SEARCH_TEXT_FIELD) {
 
     // TASKS
     fun selectRandomOrderFromTheSearchResult(): SingleOrderScreen {
-        selectOrder(TestDataGenerator.getRandomInteger(1, 3))
+        selectOrder(TestDataGenerator.getRandomInteger(0, 2))
         return SingleOrderScreen()
     }
 
     fun dismissSearchResults(): OrderSearchScreen {
-        clickOn(SEARCH_CLOSE_BTN)
+        clickOps.clickOn(SEARCH_CLOSE_BTN)
         return OrderSearchScreen()
     }
 
     fun cancelSearch(): OrderListScreen {
-        waitForElementToBeDisplayed(SEARCH_TEXT_FIELD)
-        pressBack()
-        waitForElementToBeDisplayed(SEARCH_TEXT_FIELD)
-        pressBack()
+        waitOps.waitForElementToBeDisplayed(SEARCH_TEXT_FIELD)
+        actionOps.pressBack()
+        waitOps.waitForElementToBeDisplayed(SEARCH_TEXT_FIELD)
+        actionOps.pressBack()
         return OrderListScreen()
     }
 
     // HELPERS
 
     private fun selectOrder(correctedIndex: Int) {
-        waitForElementToBeDisplayedWithoutFailure(LIST_ITEM)
-        selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
+        waitOps.waitForElementToBeDisplayedWithoutFailure(LIST_ITEM)
+        clickOps.clickOn(LIST_ITEM, correctedIndex)
         return
     }
 }

@@ -11,9 +11,9 @@ class SiteCredentialsScreen : Screen(SITE_TITLE) {
     }
 
     fun proceedWith(username: String, password: String): MagicLinkScreen {
-        typeTextInto(TEXT_INPUT, "Username", username)
-        typeTextInto(TEXT_INPUT, "Password", password)
-        clickOn(NEXT_BUTTON)
+        typeOps.typeTextInto(TEXT_INPUT, "Username", username)
+        typeOps.typeTextInto(TEXT_INPUT, "Password", password)
+        clickOps.clickOn(NEXT_BUTTON)
 
         return MagicLinkScreen()
     }
