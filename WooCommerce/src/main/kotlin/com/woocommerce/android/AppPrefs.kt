@@ -133,7 +133,7 @@ object AppPrefs {
      * [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
      */
     fun shouldDisplayV4StatsRevertedBanner() =
-            getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, false)
+            getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, true)
 
     fun setShouldDisplayV4StatsRevertedBanner(shouldDisplayV4StatsRevertedBanner: Boolean) =
             setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, shouldDisplayV4StatsRevertedBanner)
