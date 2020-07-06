@@ -333,10 +333,10 @@ if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassw
     android {
         signingConfigs {
             release {
-                uploadStoreFile = rootProject.file(project.storeFile)
-                uploadStorePassword = project.storePassword
-                uploadKeyAlias = project.keyAlias
-                uploadKeyPassword = project.keyPassword
+                storeFile = rootProject.file(project.uploadStoreFile)
+                storePassword = project.uploadStorePassword
+                keyAlias = project.uploadKeyAlias
+                keyPassword = project.uploadKeyPassword
             }
         }
     }
