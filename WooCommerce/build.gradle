@@ -329,14 +329,14 @@ static def loadPropertiesFromFile(inputFile) {
 }
 
 // For app signing
-if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.hasProperty(it) } == 0) {
+if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !project.hasProperty(it) } == 0) {
     android {
         signingConfigs {
             release {
-                storeFile = rootProject.file(project.storeFile)
-                storePassword = project.storePassword
-                keyAlias = project.keyAlias
-                keyPassword = project.keyPassword
+                uploadStoreFile = rootProject.file(project.storeFile)
+                uploadStorePassword = project.storePassword
+                uploadKeyAlias = project.keyAlias
+                uploadKeyPassword = project.keyPassword
             }
         }
     }
