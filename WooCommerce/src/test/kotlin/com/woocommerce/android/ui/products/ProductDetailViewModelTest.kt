@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
@@ -56,6 +57,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
+    private val productTagsRepository: ProductTagsRepository = mock()
     private val resources: ResourceProvider = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -144,7 +146,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 wooCommerceStore,
                 productImagesServiceWrapper,
                 resources,
-                productCategoriesRepository
+                productCategoriesRepository,
+                productTagsRepository
             )
         )
         val prodSettings = WCProductSettingsModel(0).apply {

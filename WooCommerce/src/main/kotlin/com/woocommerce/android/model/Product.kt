@@ -73,7 +73,8 @@ data class Product(
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
-    val categories: List<ProductCategory>
+    val categories: List<ProductCategory>,
+    val tags: List<ProductTag>
 ) : Parcelable {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -131,7 +132,8 @@ data class Product(
                 buttonText == product.buttonText &&
                 menuOrder == product.menuOrder &&
                 isSameImages(product.images) &&
-                isSameCategories(product.categories)
+                isSameCategories(product.categories) &&
+                isSameTags(product.tags)
     }
 
     private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
@@ -236,6 +238,17 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes made to the product tags
+     * by comparing the updated product model ([updatedProduct]) with the product model stored
+     * in the local db and returns a [Boolean] flag
+     */
+    fun hasTagChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            !isSameTags(it.tags)
+        } ?: false
+    }
+
+    /**
      * Compares this product's images with the passed list, returns true only if both lists contain
      * the same images in the same order
      */
@@ -262,6 +275,23 @@ data class Product(
 
         categories.forEach {
             if (!updatedCategories.containsCategory(it)) {
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
+     * Compares this product's tags with the passed list, returns true only if both lists contain
+     * the same tags
+     */
+    private fun isSameTags(updatedTags: List<ProductTag>): Boolean {
+        if (this.tags.size != updatedTags.size) {
+            return false
+        }
+
+        tags.forEach {
+            if (!updatedTags.containsTag(it)) {
                 return false
             }
         }
@@ -313,7 +343,8 @@ data class Product(
                     externalUrl = updatedProduct.externalUrl,
                     buttonText = updatedProduct.buttonText,
                     menuOrder = updatedProduct.menuOrder,
-                    categories = updatedProduct.categories
+                    categories = updatedProduct.categories,
+                    tags = updatedProduct.tags
             )
         } ?: this.copy()
     }
@@ -376,6 +407,18 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         return jsonArray.toString()
     }
 
+    fun tagsToJson(): String {
+        val jsonArray = JsonArray()
+        for (tag in tags) {
+            jsonArray.add(JsonObject().also { json ->
+                json.addProperty("id", tag.remoteTagId)
+                json.addProperty("name", tag.name)
+                json.addProperty("slug", tag.slug)
+            })
+        }
+        return jsonArray.toString()
+    }
+
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
@@ -417,6 +460,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.buttonText = buttonText
         it.menuOrder = menuOrder
         it.categories = categoriesToJson()
+        it.tags = tagsToJson()
     }
 }
 
@@ -488,6 +532,13 @@ fun WCProductModel.toAppModel(): Product {
         menuOrder = this.menuOrder,
         categories = this.getCategories().map {
             ProductCategory(
+                it.id,
+                it.name,
+                it.slug
+            )
+        },
+        tags = this.getTags().map {
+            ProductTag(
                 it.id,
                 it.name,
                 it.slug
