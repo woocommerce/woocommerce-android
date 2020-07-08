@@ -6,6 +6,7 @@ copy_gradle_properties: &copy_gradle_properties
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
   android: wordpress-mobile/android@1.0
+  git: wordpress-mobile/git@1.0
   bundle-install: toshimaru/bundle-install@0.1.1
   slack: circleci/slack@3.4.2
 
@@ -114,7 +115,7 @@ jobs:
       name: android/default
       api-version: "28"
     steps:
-      - checkout
+      - git/shallow-checkout
       - bundle-install/bundle-install
       - run:
           name: Copy Secrets
@@ -126,7 +127,7 @@ jobs:
             APP_VERSION=$(./gradlew -q printVersionName | tail -1)
             echo "export SLACK_FAILURE_MESSAGE=':red_circle: Build for WooCommerce Android $APP_VERSION failed!'" >> $BASH_ENV
             echo "export SLACK_SUCCESS_MESSAGE=':tada: WooCommerce Android $APP_VERSION has been deployed!'" >> $BASH_ENV
-            if [[ $VERDSION == *"-rc-"* ]];
+            if [[ $VERSION == *"-rc-"* ]]; then
               bundle exec fastlane build_and_upload_beta skip_confirm:true create_release:true
             else
               bundle exec fastlane build_and_upload_release skip_confirm:true create_release:true
