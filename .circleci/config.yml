@@ -7,6 +7,7 @@ orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
   android: wordpress-mobile/android@1.0
   bundle-install: toshimaru/bundle-install@0.1.1
+  slack: circleci/slack@3.4.2
 
 version: 2.1
 jobs:
@@ -108,6 +109,37 @@ jobs:
       - store_artifacts:
           path: Artifacts
           destination: Artifacts
+  Release Build:
+    executor:
+      name: android/default
+      api-version: "28"
+    steps:
+      - checkout
+      - bundle-install/bundle-install
+      - run:
+          name: Copy Secrets
+          command: bundle exec fastlane run configure_apply
+      - android/restore-gradle-cache
+      - run:
+          name: Build APK
+          command: |
+            APP_VERSION=$(./gradlew -q printVersionName | tail -1)
+            echo "export SLACK_FAILURE_MESSAGE=':red_circle: Build for WooCommerce Android $APP_VERSION failed!'" >> $BASH_ENV
+            echo "export SLACK_SUCCESS_MESSAGE=':tada: WooCommerce Android $APP_VERSION has been deployed!'" >> $BASH_ENV
+            if [[ $VERDSION == *"-rc-"* ]];
+              bundle exec fastlane build_and_upload_beta skip_confirm:true create_release:true
+            else
+              bundle exec fastlane build_and_upload_release skip_confirm:true create_release:true
+            fi
+      - android/save-gradle-cache
+      - slack/status:
+          include_job_number_field: false
+          include_project_field: false
+          include_visit_job_action: false
+          webhook: '${SLACK_BUILD_WEBHOOK}'
+          failure_message: '${SLACK_FAILURE_MESSAGE}'
+          success_message: '${SLACK_SUCCESS_MESSAGE}'
+
 
 workflows:
   "WooCommerce Android":
@@ -116,3 +148,11 @@ workflows:
       - Test
       - Installable Build
       - Ensure Screenshots Tests Build
+  Release Build:
+    jobs:
+      - Release Build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+(\.\d+)*(-rc-\d)?$/
