@@ -120,6 +120,13 @@ jobs:
       - run:
           name: Copy Secrets
           command: bundle exec fastlane run configure_apply
+      - run:
+          name: Install other tools
+          command: |
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+            eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+            echo "export PATH='/home/linuxbrew/.linuxbrew/Cellar/bundletool/1.0.0/bin:$PATH'" >> $BASH_ENV
+            brew install bundletool
       - android/restore-gradle-cache
       - run:
           name: Build APK
@@ -133,13 +140,13 @@ jobs:
               bundle exec fastlane build_and_upload_release skip_confirm:true create_release:true
             fi
       - android/save-gradle-cache
-      - slack/status:
-          include_job_number_field: false
-          include_project_field: false
-          include_visit_job_action: false
-          webhook: '${SLACK_BUILD_WEBHOOK}'
-          failure_message: '${SLACK_FAILURE_MESSAGE}'
-          success_message: '${SLACK_SUCCESS_MESSAGE}'
+#      - slack/status:
+#          include_job_number_field: false
+#          include_project_field: false
+#          include_visit_job_action: false
+#          webhook: '${SLACK_BUILD_WEBHOOK}'
+#          failure_message: '${SLACK_FAILURE_MESSAGE}'
+#          success_message: '${SLACK_SUCCESS_MESSAGE}'
 
 
 workflows:
