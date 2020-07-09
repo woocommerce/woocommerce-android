@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/wordpress-mobile/release-toolkit
-  revision: 93295693bc6e83590f49ab7d27c158c66aecbd5c
+  revision: ff3c98fb9b26a7ac3c359eb31e6d5fc55a47e6ec
   branch: issue/fix-android-build-on-ci
   specs:
     fastlane-plugin-wpmreleasetoolkit (0.9.9)
