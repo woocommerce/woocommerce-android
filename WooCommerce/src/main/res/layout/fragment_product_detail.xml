@@ -123,9 +123,12 @@
 
     <!-- Add more details view -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/productDetail_addMoreContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <View
             android:id="@+id/productDetail_addMoreDivider"
@@ -135,7 +138,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
-            android:id="@+id/productDetail_addMoreContainer"
             style="@style/Woo.Card.WithoutPadding"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

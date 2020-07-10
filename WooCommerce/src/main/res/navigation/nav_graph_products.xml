@@ -184,6 +184,15 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+    <dialog
+        android:id="@+id/productDetailBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ProductDetailBottomSheetFragment"
+        tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </dialog>
 
     <include app:graph="@navigation/nav_graph_add_product_category" />
     <include app:graph="@navigation/nav_graph_product_settings" />
@@ -218,4 +227,9 @@
         android:id="@+id/action_global_wpMediaViewerFragment"
         app:destination="@id/wpMediaViewerFragment"
         app:popExitAnim="@anim/activity_scale_out" />
+    <action
+        android:id="@+id/action_global_productDetailBottomSheetFragment"
+        app:destination="@id/productDetailBottomSheetFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
 </navigation>

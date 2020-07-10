@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
@@ -180,6 +181,12 @@ class ProductNavigator @Inject constructor() {
             is ViewProductTags -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductTagsFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductDetailBottomSheet -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductDetailBottomSheetFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
             }
 
