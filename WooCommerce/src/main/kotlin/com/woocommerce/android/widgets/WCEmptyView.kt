@@ -21,6 +21,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILT
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_TAG_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
@@ -39,7 +40,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         FILTER_RESULTS,
         NETWORK_ERROR,
         NETWORK_OFFLINE,
-        PRODUCT_CATEGORY_LIST
+        PRODUCT_CATEGORY_LIST,
+        PRODUCT_TAG_LIST
     }
 
     init {
@@ -168,6 +170,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 isTitleBold = true
                 title = context.getString(R.string.product_category_list_empty_title)
                 message = context.getString(R.string.product_category_list_empty_message)
+                buttonText = null
+                drawableId = R.drawable.img_empty_products
+            }
+            PRODUCT_TAG_LIST -> {
+                isTitleBold = true
+                title = context.getString(R.string.product_tag_list_empty_title)
+                message = context.getString(R.string.product_tag_list_empty_message)
                 buttonText = null
                 drawableId = R.drawable.img_empty_products
             }
