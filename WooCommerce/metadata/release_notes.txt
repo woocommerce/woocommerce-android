@@ -1,2 +1,5 @@
-- Product enhancements: Update product images, product settings, and share product links right from the app.
-- California users can view a new privacy notice.
+New: Added placeholder for orders missing a customer’s name.
+
+Fix: Multiple new order notifications are now viewable.
+
+Adjustments: Updated background color of login views and moved privacy notice for CA users to “About App” screen.

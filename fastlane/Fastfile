@@ -51,11 +51,15 @@ SUPPORTED_LOCALES = [
 
     android_bump_version_release()
     new_version = android_get_app_version()
+    extract_release_notes_for_version(version: new_version, 
+      release_notes_file_path:"#{ENV["PROJECT_ROOT_FOLDER"]}RELEASE-NOTES.txt", 
+      extracted_notes_file_path:release_notes_path)
     android_update_release_notes(new_version: new_version)
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
 
     localize_libs()
+    send_strings_for_translation()
     android_tag_build()
     get_prs_list(repository:GHHELPER_REPO, start_tag:"#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
   end
@@ -170,16 +174,17 @@ end
   end
 
   #####################################################################################
-  # build_release
+  # build_and_upload_release
   # -----------------------------------------------------------------------------------
   # This lane builds the final release of the app and uploads it
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_release [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_release [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_release
-  # bundle exec fastlane build_release skip_confirm:true
+  # bundle exec fastlane build_and_upload_release 
+  # bundle exec fastlane build_and_upload_release skip_confirm:true 
+  # bundle exec fastlane build_and_upload_release create_release:true 
   #####################################################################################
   desc "Builds and uploads release for distribution"
   lane :build_and_upload_release do | options |
@@ -209,6 +214,15 @@ end
       skip_upload_screenshots: true,
       json_key: './google-upload-credentials.json',
     )
+
+    if (options[:create_release])
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
+      create_release(repository:GHHELPER_REPO, 
+        version: version["name"], 
+        release_notes_file_path:release_notes_path,
+        release_assets:"#{apk_file_path},#{aab_file_path}"
+      )
+    end
   end
 
   #####################################################################################
@@ -218,11 +232,12 @@ end
   # to the beta channel (but does not release it).
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_and_upload_beta
-  # bundle exec fastlane build_and_upload_beta skip_confirm:true
+  # bundle exec fastlane build_and_upload_beta 
+  # bundle exec fastlane build_and_upload_beta skip_confirm:true 
+  # bundle exec fastlane build_and_upload_beta create_release:true 
   #####################################################################################
   desc "Builds and uploads a new beta build to Google Play (without releasing it)"
   lane :build_and_upload_beta do | options |
@@ -249,6 +264,16 @@ end
       skip_upload_screenshots: true,
       json_key: './google-upload-credentials.json',
     )
+
+    if (options[:create_release])
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
+      create_release(repository:GHHELPER_REPO, 
+        version: version["name"], 
+        release_notes_file_path:release_notes_path,
+        prerelease: true,
+        release_assets:"#{apk_file_path}"
+      )
+    end
   end
 
 #####################################################################################
@@ -264,7 +289,6 @@ end
 #####################################################################################
 desc "Merge libraries strings files into the main app one"
 lane :localize_libs do | options |
-  main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
   libraries_strings_path = [
     {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id"]}
   ]
@@ -313,6 +337,9 @@ end
 ########################################################################
 # Helper Lanes
 ########################################################################
+main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
+update_strings_path = "./fastlane/resources/values/"
+
 desc "Get a list of pull request from `start_tag` to the current state"
 lane :get_pullrequests_list do | options |
   get_prs_list(repository:GHHELPER_REPO, start_tag:"#{options[:start_tag]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
@@ -331,7 +358,7 @@ end
     # Create the file names
     version=options[:version]
     name="wcandroid-#{version["name"]}.aab"
-    apk_name="wcandroid-#{version["name"]}-universal.apk"
+    apk_name=universal_apk_name(version)
     aab_file="WooCommerce-vanilla-release.aab"
     output_dir="WooCommerce/build/outputs/bundle/"
     build_dir="artifacts/"
@@ -395,4 +422,20 @@ end
     FileUtils.rm_rf("#{temp_dir}")
   end
 
+  private_lane :send_strings_for_translation do | options |
+    sh("cd .. && mkdir -p #{update_strings_path} && cp #{main_strings_path} #{update_strings_path} && git add #{update_strings_path}strings.xml")
+    sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
+    sh("git push origin HEAD")
+  end
+
+  #####################################################################################
+  # Utils
+  #####################################################################################
+  def release_notes_path
+    "#{ENV["PROJECT_ROOT_FOLDER"]}WooCommerce/metadata/release_notes.txt"
+  end
+
+  def universal_apk_name(version)
+    "wcandroid-#{ version["name"] }-universal.apk"
+  end
 end

@@ -539,7 +539,6 @@
     <string name="product_slug">Slug</string>
     <string name="product_slug_label">This is the URL-friendly version of the product title</string>
     <string name="product_enable_reviews">Enable reviews</string>
-    <string name="product_is_virtual">Virtual product</string>
     <string name="product_external_empty_link">Add product link</string>
     <string name="product_external_link">Product link</string>
     <string name="product_external_link_label">Enter the external URL to the product</string>
@@ -563,8 +562,6 @@
     <string name="product_add_category_dialog_message">Please wait…</string>
     <string name="product_tag_empty">Add tag</string>
     <string name="product_tags">Tags</string>
-    <string name="product_tag_list_empty_title">Add your first tag</string>
-    <string name="product_tag_list_empty_message">Organise your products in tags</string>
     <!--
         Product images
     -->
