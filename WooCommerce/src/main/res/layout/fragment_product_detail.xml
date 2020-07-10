@@ -120,4 +120,55 @@
 
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Add more details view -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <View
+            android:id="@+id/productDetail_addMoreDivider"
+            style="@style/Woo.Divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+            android:id="@+id/productDetail_addMoreContainer"
+            style="@style/Woo.Card.WithoutPadding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/orderdetail_addnote_contentdesc"
+            android:descendantFocusability="blocksDescendants"
+            android:gravity="center_vertical"
+            android:importantForAccessibility="yes"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productDetail_addMoreDivider">
+
+            <ImageView
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/ic_add" />
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Woo.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no"
+                android:paddingStart="@dimen/minor_00"
+                android:paddingEnd="@dimen/minor_00"
+                android:text="@string/product_detail_add_more" />
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
