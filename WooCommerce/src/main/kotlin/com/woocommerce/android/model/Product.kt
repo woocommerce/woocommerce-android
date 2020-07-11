@@ -139,6 +139,15 @@ data class Product(
                 isSameTags(product.tags)
     }
 
+    fun hasCategories() = categories.isNotEmpty()
+    fun hasTags() = tags.isNotEmpty()
+    fun hasShortDescription() = shortDescription.isNotEmpty()
+    fun hasShipping(): Boolean {
+        return weight > 0 ||
+            length > 0 || width > 0 || height > 0 ||
+            shippingClass.isNotEmpty()
+    }
+
     private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
         val val1 = first ?: BigDecimal.ZERO
         val val2 = second ?: BigDecimal.ZERO
