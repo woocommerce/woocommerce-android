@@ -28,11 +28,6 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_productDetailFragment_to_productShippingFragment"
-            app:destination="@id/productShippingFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_productDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment"
             app:enterAnim="@anim/activity_fade_in"
@@ -40,16 +35,6 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productExternalLinkFragment"
             app:destination="@id/productExternalLinkFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_productDetailFragment_to_productCategoriesFragment"
-            app:destination="@id/productCategoriesFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_productDetailFragment_to_productTagsFragment"
-            app:destination="@id/productTagsFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
@@ -232,4 +217,19 @@
         app:destination="@id/productDetailBottomSheetFragment"
         app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_fade_out" />
+    <action
+        android:id="@+id/action_global_productShippingFragment"
+        app:destination="@id/productShippingFragment"
+        app:enterAnim="@anim/activity_scale_in"
+        app:popExitAnim="@anim/activity_scale_out" />
+    <action
+        android:id="@+id/action_global_productCategoriesFragment"
+        app:destination="@id/productCategoriesFragment"
+        app:enterAnim="@anim/activity_scale_in"
+        app:popExitAnim="@anim/activity_scale_out" />
+    <action
+        android:id="@+id/action_global_productTagsFragment"
+        app:destination="@id/productTagsFragment"
+        app:enterAnim="@anim/activity_scale_in"
+        app:popExitAnim="@anim/activity_scale_out" />
 </navigation>

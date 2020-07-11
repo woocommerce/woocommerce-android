@@ -114,7 +114,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductShippingFragment(target.remoteId)
+                        .actionGlobalProductShippingFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -168,7 +168,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductCategories -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductCategoriesFragment(target.remoteId)
+                    .actionGlobalProductCategoriesFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
             }
 
@@ -180,7 +180,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductTags -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductTagsFragment(target.remoteId)
+                    .actionGlobalProductTagsFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
             }
 
