@@ -1,0 +1,6 @@
+4.6 :
+Nouveauté : Ajout d’un texte indicatif pour les commandes dont il manque le nom du client.
+
+Correctif : Plusieurs notifications de nouvelle commande sont désormais visibles.
+
+Ajustements : Mise à jour de la couleur d’arrière-plan des vues de connexion et déplacement de l’avis de confidentialité pour les utilisateurs californiens vers l’écran « À propos de l’application ».

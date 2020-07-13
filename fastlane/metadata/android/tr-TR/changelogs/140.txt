@@ -1,0 +1,6 @@
+4,6:
+Yeni: Müşteri adının eksik olduğu siparişler için yer tutucu eklendi.
+
+Düzeltme: Birden çok yeni sipariş bildirimi artık görüntülenebilir.
+
+Ayarlar: Oturum açma görünümlerinin arka plan rengi güncellendi ve CA kullanıcıları için gizlilik bildirimi "Uygulama Hakkında" ekranına taşındı.
