@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-09 14:54:04+0000
+Translation-Revision-Date: 2020-07-10 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Пожалуйста, подождите…</string>
+    <string name="product_add_category_dialog_title">Добавление категории</string>
+    <string name="product_category_parent">Родительская рубрика</string>
+    <string name="product_category_name">Имя категории</string>
+    <string name="add_product_category_empty">Введите имя категории</string>
+    <string name="add_product_category_failed">Ошибка создания категории</string>
+    <string name="add_product_category_duplicate">Ошибка создания категории — это имя уже существует на вашем сайте.</string>
+    <string name="add_product_category_success">Категория товара добавлена</string>
+    <string name="product_add_category">Добавить рубрику</string>
+    <string name="product_category_list_empty_message">Распределите свои товары по категориям</string>
+    <string name="product_category_list_empty_title">Добавьте первую категорию</string>
+    <string name="product_category_empty">Добавить рубрику</string>
+    <string name="product_categories">Категории</string>
+    <string name="orderdetail_customer_name_default">Гость</string>
+    <string name="settings_privacy_policy_ca">Заявление о защите конфиденциальности для пользователей из Калифорнии</string>
+    <string name="keep_changes">Сохранить изменения</string>
     <string name="product_sale_date_to">До %1$s</string>
     <string name="product_wip_message">Мы добавили дополнительные функции редактирования. Теперь вы можете загружать изображения, изменять настройки товаров и делиться ими!</string>
     <string name="product_wip_title">Доступны новые опции редактирования</string>
@@ -85,7 +101,7 @@ Language: ru
     <string name="product_shipping_empty">Добавить доставку</string>
     <string name="discard_images_message">Выполняется загрузка изображений продуктов. Отменить изменения?</string>
     <string name="product_inventory_update_stock_quantity_error">Введите номер</string>
-    <string name="product_limited_editing_message">Мы добавили функцию редактирования простых продуктов. Следите за новостями, планируется дополнительное расширение возможностей!</string>
+    <string name="product_limited_editing_message">Мы добавили функцию редактирования обычных товаров. Следите за новостями: планируется дополнительное расширение возможностей.</string>
     <string name="product_tax_status_shipping">Доставка</string>
     <string name="product_tax_status_taxable">Налогооблагаемый</string>
     <string name="product_tax_status_none">Нет</string>
