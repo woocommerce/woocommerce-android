@@ -211,6 +211,7 @@
     -->
     <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
+    <string name="orderdetail_customer_name_default">Guest</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
@@ -550,6 +551,19 @@
     <string name="product_category_empty">Add category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
     <string name="product_category_list_empty_message">Organise your products in categories</string>
+    <string name="product_add_category">Add category</string>
+    <string name="add_product_category_success">Product category added</string>
+    <string name="add_product_category_duplicate">Error creating category - Name already exists on your site.</string>
+    <string name="add_product_category_failed">Error creating category</string>
+    <string name="add_product_category_empty">Enter a category name</string>
+    <string name="product_category_name">Category name</string>
+    <string name="product_category_parent">Parent category</string>
+    <string name="product_add_category_dialog_title">Adding category</string>
+    <string name="product_add_category_dialog_message">Please wait…</string>
+    <string name="product_tag_empty">Add tag</string>
+    <string name="product_tags">Tags</string>
+    <string name="product_tag_list_empty_title">Add your first tag</string>
+    <string name="product_tag_list_empty_message">Organise your products in tags</string>
     <!--
         Product images
     -->

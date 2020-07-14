@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
+import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
@@ -19,9 +21,14 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmen
 import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductTagsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
+import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment
+import com.woocommerce.android.ui.products.categories.AddProductCategoryModule
+import com.woocommerce.android.ui.products.categories.ParentCategoryListFragment
+import com.woocommerce.android.ui.products.categories.ParentCategoryListModule
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
 import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
@@ -36,6 +43,8 @@ import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
+import com.woocommerce.android.ui.products.tags.ProductTagsFragment
+import com.woocommerce.android.ui.products.tags.ProductTagsModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
@@ -62,7 +71,10 @@ import dagger.android.ContributesAndroidInjector
     ProductVisibilityFragmentModule::class,
     WPMediaPickerFragmentModule::class,
     ProductSortingFragmentModule::class,
-    ProductCategoriesFragmentModule::class
+    ProductCategoriesFragmentModule::class,
+    AddProductCategoryFragmentModule::class,
+    ParentCategoryListFragmentModule::class,
+    ProductTagsFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -210,5 +222,26 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductCategoriesModule::class])
         abstract fun productCategoriesFragment(): ProductCategoriesFragment
+    }
+
+    @Module
+    internal abstract class AddProductCategoryFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [AddProductCategoryModule::class])
+        abstract fun addProductCategoryFragment(): AddProductCategoryFragment
+    }
+
+    @Module
+    internal abstract class ParentCategoryListFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ParentCategoryListModule::class])
+        abstract fun parentCategoryListFragment(): ParentCategoryListFragment
+    }
+
+    @Module
+    internal abstract class ProductTagsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductTagsModule::class])
+        abstract fun productTagsFragment(): ProductTagsFragment
     }
 }

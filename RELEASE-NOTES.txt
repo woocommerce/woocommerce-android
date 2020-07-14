@@ -1,11 +1,15 @@
+4.7
+-----
+* Disabled beta options and removed Improved Stats as selectable option from it
+* Set Stats V4 as the default choice
+* Update Stats V3 due date warning message to September 1, 2020
+ 
 4.6
 -----
 * Added a fix to support multiple new order notifications for a store.
 * Updated the background color of the login views.
 * Moved privacy notice for CA users to the About App screen.
-* Disabled beta options and removed Improved Stats as selectable option from it
-* Set Stats V4 as the default choice
-* Update Stats V3 due date warning message to September 1, 2020
+* Added a placeholder for orders without a customer name.
  
 4.5
 -----

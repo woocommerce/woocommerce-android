@@ -11,6 +11,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -26,6 +27,7 @@ class MockedOrderListViewModel @AssistedInject constructor(
     dispatcher: Dispatcher,
     selectedSite: SelectedSite,
     fetcher: OrderFetcher,
+    resourceProvider: ResourceProvider,
     @Assisted arg0: SavedStateWithArgs
 ) : OrderListViewModel(
         arg0,
@@ -36,7 +38,8 @@ class MockedOrderListViewModel @AssistedInject constructor(
         networkStatus,
         dispatcher,
         selectedSite,
-        fetcher
+        fetcher,
+        resourceProvider
 ) {
     override fun getLifecycle(): Lifecycle = mock()
 

@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
@@ -67,6 +68,7 @@ abstract class MockedOrderListModule {
             val repository = spy(OrderListRepository(mockDispatcher, testDispatchers, orderStore, gatewayStore, site))
             val mockSavedState: SavedStateWithArgs = mock()
             val orderFetcher: OrderFetcher = mock()
+            val mockResourceProvider: ResourceProvider = mock()
             doReturn(MutableLiveData(ViewState())).whenever(mockSavedState).getLiveData<ViewState>(any(), any())
 
             val viewModel = spy(MockedOrderListViewModel(
@@ -78,6 +80,7 @@ abstract class MockedOrderListModule {
                     dispatcher = mockDispatcher,
                     selectedSite = site,
                     fetcher = orderFetcher,
+                    resourceProvider = mockResourceProvider,
                     arg0 = mockSavedState
             ))
             viewModel.testOrderData = this.testOrders

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_add_product_category"
+    app:startDestination="@id/addProductCategoryFragment">
+    <fragment
+        android:id="@+id/addProductCategoryFragment"
+        android:name="com.woocommerce.android.ui.products.categories.AddProductCategoryFragment"
+        tools:layout="@layout/fragment_add_product_category">
+        <action
+            android:id="@+id/action_addProductCategoryFragment_to_parentCategoryListFragment"
+            app:destination="@id/parentCategoryListFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="selectedParentId"
+                android:defaultValue="0L"
+                app:argType="long" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/parentCategoryListFragment"
+        android:name="com.woocommerce.android.ui.products.categories.ParentCategoryListFragment"
+        tools:layout="@layout/fragment_product_categories_list">
+        <argument
+            android:name="selectedParentId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+</navigation>

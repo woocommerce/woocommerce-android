@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
@@ -56,6 +57,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
+    private val productTagsRepository: ProductTagsRepository = mock()
     private val resources: ResourceProvider = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -144,7 +146,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 wooCommerceStore,
                 productImagesServiceWrapper,
                 resources,
-                productCategoriesRepository
+                productCategoriesRepository,
+                productTagsRepository
             )
         )
         val prodSettings = WCProductSettingsModel(0).apply {
@@ -406,18 +409,5 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(sortedByNameAndParent[8].category).isEqualTo(productCategories[3])
         assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
         assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
-    }
-
-    @Test
-    fun `Correctly computes the cascading margin for the product Category by their Parent Ids`() = runBlockingTest {
-        val sortedAndStyledList = viewModel.sortAndStyleProductCategories(product, productCategories)
-
-        assertThat(sortedAndStyledList[0].category).isEqualTo(productCategories[0])
-        assertThat(sortedAndStyledList[1].category).isEqualTo(productCategories[7])
-        assertThat(sortedAndStyledList[2].category).isEqualTo(productCategories[10])
-
-        assertThat(sortedAndStyledList[7].margin).isEqualTo(32)
-        assertThat(sortedAndStyledList[8].margin).isEqualTo(64)
-        assertThat(sortedAndStyledList[9].margin).isEqualTo(96)
     }
 }

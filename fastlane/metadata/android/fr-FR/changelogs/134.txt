@@ -1,4 +1,0 @@
-4.4 :
-* <b>Nouveau</b> : Ajout de fonctions à la gestion des images et des produits. Accédez aux « Réglages » dans « Ma boutique » pour activer de nouvelles fonctionnalités !
-* <b>Améliorations de l’interface utilisateur</b> : Rétablissement de l’icône de notification W pour une meilleure visibilité, résolution de la couleur de texte sur les tickets de support en mode sombre, légers ajustements du style sur les écrans de connexion.
-* <b>Résolution de bugs</b> : Les détails du produit affichent l’état exact des stocks, colmatage d’une fuite de mémoire potentielle lors du passage entre boutiques.
