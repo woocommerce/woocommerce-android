@@ -54,6 +54,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
     private var isStatsRefreshed: Boolean = false
 
+    private val mainActivity
+        get() = activity as? MainActivity
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -72,7 +75,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
                     // check for new revenue stats availability
-                    (activity as? MainActivity)?.fetchRevenueStatsAvailability(selectedSite.get())
+                    mainActivity?.fetchRevenueStatsAvailability(selectedSite.get())
 
                     DashboardPresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
@@ -114,8 +117,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             refreshDashboard(forced = this.isRefreshPending)
         }
 
-        if (AppPrefs.isUsingV4Api() && AppPrefs.shouldDisplayV4StatsAvailabilityBanner()) {
-            showV4StatsAvailabilityBanner(true)
+        if (AppPrefs.isV4StatsSupported()) {
+            mainActivity?.replaceStatsFragment()
         } else if (AppPrefs.shouldDisplayV4StatsRevertedBanner()) {
             showV4StatsRevertedBanner(true)
         }
@@ -231,15 +234,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    override fun showV4StatsAvailabilityBanner(show: Boolean) {
-        if (show) {
-            dashboard_stats_availability_card.visibility = View.VISIBLE
-            dashboard_stats_availability_card.initView(this)
-        } else {
-            dashboard_stats_availability_card.visibility = View.GONE
-        }
-    }
-
     override fun getFragmentTitle(): String {
         selectedSite.getIfExists()?.let { site ->
             if (!site.displayName.isNullOrBlank()) {
@@ -323,30 +317,5 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onMyStoreStatsRevertedNoticeCardDismissed() {
         AppPrefs.setShouldDisplayV4StatsRevertedBanner(false)
         showV4StatsRevertedBanner(false)
-    }
-
-    /**
-     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
-     * TRY NOW button is clicked
-     * - The banner will no longer be displayed to the user
-     * - The old stats UI will be replaced with the new wc-admin stats
-     */
-    override fun onMyStoreStatsAvailabilityAccepted() {
-        AppPrefs.setIsV4StatsUIEnabled(true)
-        AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
-        showV4StatsAvailabilityBanner(false)
-        (activity as? MainActivity)?.replaceStatsFragment()
-    }
-
-    /**
-     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
-     * NO THANKS button is clicked
-     * - The banner will no longer be displayed to the user
-     * - The old stats UI will NOT be replaced with the new wc-admin stats
-     */
-    override fun onMyStoreStatsAvailabilityRejected() {
-        AppPrefs.setIsV4StatsUIEnabled(false)
-        AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
-        showV4StatsAvailabilityBanner(false)
     }
 }
