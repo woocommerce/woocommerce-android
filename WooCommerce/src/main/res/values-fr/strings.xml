@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-10 16:54:04+0000
+Translation-Revision-Date: 2020-07-08 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Veuillez patienter…</string>
+    <string name="product_add_category_dialog_title">Ajout d’une catégorie</string>
+    <string name="product_category_parent">Catégorie parente</string>
+    <string name="product_category_name">Nom de la catégorie</string>
+    <string name="add_product_category_empty">Entrer un nom de catégorie</string>
+    <string name="add_product_category_failed">Erreur lors de la création de la catégorie</string>
+    <string name="add_product_category_duplicate">Erreur lors de la création de la catégorie : le nom existe déjà sur votre site.</string>
+    <string name="add_product_category_success">Catégorie de produit ajoutée</string>
+    <string name="product_add_category">Ajouter une catégorie</string>
+    <string name="product_category_list_empty_message">Organiser vos produits en catégories</string>
+    <string name="product_category_list_empty_title">Ajouter votre première catégorie</string>
+    <string name="product_category_empty">Ajouter une catégorie</string>
+    <string name="product_categories">Catégories</string>
+    <string name="orderdetail_customer_name_default">Invité</string>
+    <string name="settings_privacy_policy_ca">Avis de confidentialité pour les utilisateurs en Californie</string>
+    <string name="keep_changes">Conserver les modifications</string>
     <string name="product_sale_date_to">Avant %1$s</string>
     <string name="product_type_external">Externe</string>
     <string name="product_type_simple">Simple</string>
