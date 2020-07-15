@@ -1,4 +1,0 @@
-4.4:
-* <b>Novedad</b>: Hemos añadido una función de gestión de imágenes y de productos. Dirígete a "Ajustes" en "Mi tienda" para activar las nuevas funciones.
-* <b>Mejoras en la interfaz de usuario</b>: * Hemos recuperado el icono de notificación W para ofrecer una mejor visibilidad, hemos corregido el color del texto de las incidencias en modo oscuro y hemos hecho pequeños cambios de estilo en las pantallas de acceso.
-* <b>Correcciones</b>: Los detalles de los productos muestran el estado exacto de las existencias. Hemos detectado una posible fuga de memoria al cambiar de tienda.

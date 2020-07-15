@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-10 13:54:04+0000
+Translation-Revision-Date: 2020-07-09 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_add_category_dialog_message">נא להמתין…</string>
+    <string name="product_add_category_dialog_title">מוסיף קטגוריות</string>
+    <string name="product_category_parent">קטגוריית אב</string>
+    <string name="product_category_name">שם קטגוריה</string>
+    <string name="add_product_category_empty">יש להזין את שם הקטגוריה</string>
+    <string name="add_product_category_failed">שגיאה ביצירת הקטגוריה</string>
+    <string name="add_product_category_duplicate">שגיאה ביצירת הקטגוריה – השם כבר קיים באתר שלך.</string>
+    <string name="add_product_category_success">קטגוריית המוצר נוספה</string>
+    <string name="product_add_category">להוסיף קטגוריה</string>
+    <string name="product_category_list_empty_message">לארגן את המוצרים שלך בקטגוריות</string>
+    <string name="product_category_list_empty_title">להוסיף את הקטגוריה הראשונה שלך</string>
+    <string name="product_category_empty">להוסיף קטגוריה</string>
+    <string name="product_categories">קטגוריות</string>
+    <string name="orderdetail_customer_name_default">אורח</string>
+    <string name="settings_privacy_policy_ca">הצהרת פרטיות למשתמשים מקליפורניה</string>
+    <string name="keep_changes">לשמור את השינויים</string>
     <string name="product_sale_date_to">עד %1$s</string>
     <string name="product_wip_message">הוספנו עוד אפשרויות לעריכה במוצרים. כעת אפשר לעדכן תמונות, לערוך את הגדרות המוצרים ולשתף מוצרים!</string>
     <string name="product_wip_title">אפשרויות עריכה נוספות זמינות</string>

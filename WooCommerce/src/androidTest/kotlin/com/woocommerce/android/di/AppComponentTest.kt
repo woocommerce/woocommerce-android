@@ -4,6 +4,7 @@ import android.app.Application
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import com.woocommerce.android.ui.products.MockedProductCategoriesModule
+import com.woocommerce.android.ui.products.MockedProductTagsModule
 import com.woocommerce.android.ui.products.MockedWooStoreModule
 import dagger.BindsInstance
 import dagger.Component
@@ -30,6 +31,7 @@ import javax.inject.Singleton
         MockedWooStoreModule::class,
         MockedProductDetailRepositoryModule::class,
         MockedProductCategoriesModule::class,
+        MockedProductTagsModule::class,
         MockedSelectedSiteModule::class,
         FCMServiceModule::class,
         LoginAnalyticsModule::class,

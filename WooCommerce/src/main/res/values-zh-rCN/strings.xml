@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-10 12:54:03+0000
+Translation-Revision-Date: 2020-07-09 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_add_category_dialog_message">请稍候…</string>
+    <string name="product_add_category_dialog_title">添加类别</string>
+    <string name="product_category_parent">父级类别</string>
+    <string name="product_category_name">类别名称</string>
+    <string name="add_product_category_empty">输入类别名称</string>
+    <string name="add_product_category_failed">创建类别时出错</string>
+    <string name="add_product_category_duplicate">创建类别时出错 - 您的站点上已存在此名称。</string>
+    <string name="add_product_category_success">已添加产品类别</string>
+    <string name="product_add_category">添加类别</string>
+    <string name="product_category_list_empty_message">将您的产品分类</string>
+    <string name="product_category_list_empty_title">添加您的第一个类别</string>
+    <string name="product_category_empty">添加类别</string>
+    <string name="product_categories">类别</string>
+    <string name="orderdetail_customer_name_default">访客</string>
+    <string name="settings_privacy_policy_ca">面向加州用户的隐私声明</string>
+    <string name="keep_changes">保存更改</string>
     <string name="product_sale_date_to">直至 %1$s</string>
     <string name="product_wip_message">我们为产品添加了更多的编辑功能。您现在可以更新图像、编辑产品设置和共享产品！</string>
     <string name="product_wip_title">提供新的编辑选项</string>

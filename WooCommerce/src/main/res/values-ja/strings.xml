@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-11 08:54:03+0000
+Translation-Revision-Date: 2020-07-10 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_add_category_dialog_message">しばらくお待ちください…</string>
+    <string name="product_add_category_dialog_title">カテゴリーを追加しています</string>
+    <string name="product_category_parent">親カテゴリー</string>
+    <string name="product_category_name">カテゴリー名</string>
+    <string name="add_product_category_empty">カテゴリー名を入力してください</string>
+    <string name="add_product_category_failed">カテゴリーの作成中にエラーが発生しました</string>
+    <string name="add_product_category_duplicate">カテゴリーの作成中にエラーが発生しました - 同じ名前がサイトにすでに存在しています。</string>
+    <string name="add_product_category_success">商品カテゴリーが追加されました</string>
+    <string name="product_add_category">カテゴリーを追加</string>
+    <string name="product_category_list_empty_message">商品をカテゴリーごとに整理</string>
+    <string name="product_category_list_empty_title">最初のカテゴリーを追加</string>
+    <string name="product_category_empty">カテゴリーを追加</string>
+    <string name="product_categories">カテゴリー</string>
+    <string name="orderdetail_customer_name_default">ゲスト</string>
+    <string name="settings_privacy_policy_ca">カリフォルニア州のユーザーへのプライバシー通知</string>
+    <string name="keep_changes">変更を保存</string>
     <string name="product_sale_date_to">%1$sまで</string>
     <string name="product_wip_message">商品にその他の編集機能が加わりました。画像の更新、商品設定の編集、商品の共有を行えるようになりました。</string>
     <string name="product_wip_title">新しい編集オプションが利用可能</string>

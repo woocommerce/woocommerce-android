@@ -1,0 +1,6 @@
+4.6:
+Nytt: Lade till platshållare för ordrar som saknar ett kundnamn.
+
+Korrigering: flera nya ordermeddelanden kan nu visas.
+
+Justeringar: uppdaterade bakgrundsfärgen för inloggningsvyer och flyttade sekretessmeddelande för CA-användare till Om appen-skärmen.

@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-10 18:54:46+0000
+Translation-Revision-Date: 2020-07-09 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Harap tunggu…</string>
+    <string name="product_add_category_dialog_title">Menambahkan kategori</string>
+    <string name="product_category_parent">Kategori induk</string>
+    <string name="product_category_name">Nama kategori</string>
+    <string name="add_product_category_empty">Masukkan nama kategori</string>
+    <string name="add_product_category_failed">Error dalam membuat kategori</string>
+    <string name="add_product_category_duplicate">Error dalam membuat kategori - Nama sudah terdaftar di situs Anda.</string>
+    <string name="add_product_category_success">Kategori produk ditambahkan</string>
+    <string name="product_add_category">Tambahkan kategori</string>
+    <string name="product_category_list_empty_message">Atur produk Anda di kategori</string>
+    <string name="product_category_list_empty_title">Tambahkan kategori pertama Anda</string>
+    <string name="product_category_empty">Tambahkan kategori</string>
+    <string name="product_categories">Kategori</string>
+    <string name="orderdetail_customer_name_default">Tamu</string>
+    <string name="settings_privacy_policy_ca">Pemberitahuan privasi untuk pengguna di California</string>
+    <string name="keep_changes">Simpan perubahan</string>
     <string name="product_sale_date_to">Sampai %1$s</string>
     <string name="product_type_external">Eksternal</string>
     <string name="product_type_simple">Sederhana</string>
