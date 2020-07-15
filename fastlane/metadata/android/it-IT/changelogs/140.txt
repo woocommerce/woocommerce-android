@@ -1,0 +1,6 @@
+4.6:
+Novità: aggiunto segnaposto per ordini in cui manca il nome del cliente.
+
+Correzione: sono ora visibili più notifiche di nuovi ordini.
+
+Modifiche: colore di sfondo delle viste di accesso aggiornato e nota della privacy per utenti in CA spostata sulla schermata "Info sull'app".

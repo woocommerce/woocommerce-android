@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-05 14:03:58+0000
+Translation-Revision-Date: 2020-07-01 09:04:56+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Vänta…</string>
+    <string name="product_add_category_dialog_title">Lägger till kategori</string>
+    <string name="product_category_parent">Överordnad kategori</string>
+    <string name="product_category_name">Kategorinamn</string>
+    <string name="add_product_category_empty">Ange ett kategorinamn</string>
+    <string name="add_product_category_failed">Fel vid skapande av kategori</string>
+    <string name="add_product_category_duplicate">Fel vid skapande av kategori – namn finns redan på din webbplats.</string>
+    <string name="add_product_category_success">Produktkategori tillagd</string>
+    <string name="product_add_category">Lägg till kategori</string>
+    <string name="product_category_list_empty_message">Organisera dina produkter i kategorier</string>
+    <string name="product_category_list_empty_title">Lägg till din första kategori</string>
+    <string name="product_category_empty">Lägg till kategori</string>
+    <string name="product_categories">Kategorier</string>
+    <string name="orderdetail_customer_name_default">Gäst</string>
+    <string name="settings_privacy_policy_ca">Integritetsnotis för användare i Kalifornien</string>
+    <string name="keep_changes">Behåll ändringar</string>
     <string name="product_sale_date_to">Fram till %1$s</string>
     <string name="product_wip_message">Vi har lagt till fler redigeringsfunktionaliteter till produkter. Du kan nu uppdatera bilder, redigera produktinställningar och dela produkter!</string>
     <string name="product_wip_title">Nya redigeringsalternativ tillgängliga</string>

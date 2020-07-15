@@ -13,6 +13,7 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -68,6 +69,9 @@ class MyStoreFragment : TopLevelFragment(),
     private val tabLayout: TabLayout by lazy {
         TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
     }
+
+    private val appBarLayout
+        get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -184,6 +188,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onStop() {
         errorSnackbar?.dismiss()
+        removeTabLayoutFromAppBar(tabLayout)
         super.onStop()
     }
 
@@ -355,18 +360,16 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (isActive && !appBar.children.contains(tabLayout)) {
-                appBar.addView(
-                        tabLayout,
-                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-                )
-            }
-        }
+        appBarLayout
+            ?.takeIf { isActive && !it.children.containsInstanceOf(tabLayout) }
+            ?.addView(
+                tabLayout,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            )
     }
 
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
+        appBarLayout?.removeView(tabLayout)
     }
 
     private fun isEmptyViewShowing() = empty_view.visibility == View.VISIBLE

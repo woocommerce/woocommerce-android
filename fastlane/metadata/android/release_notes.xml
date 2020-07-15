@@ -1,102 +1,136 @@
 <ar>
-4.4:
-* <b>جديد</b>: تمت إضافة وظيفة إلى إدارة الصور والمنتجات. يمكنك الانتقال إلى "الإعدادات" ضمن "متجري" لتشغيل ميزات جديدة!
-* <b>تحسينات واجهة المستخدم</b>: تم الرجوع إلى أيقونة تنبيهات ووردبريس لتحسين الرؤية وإصلاح لون النص الموجودة على بطاقات الدعم في الوضع الداكن وإدخال تعديلات طفيفة على شاشات تسجيل الدخول.
-* <b>الإصلاحات</b>: تعرض تفاصيل المنتج حالة المخزون الدقيقة، وتم إغلاق التسرب المحتمل في الذاكرة عند التبديل بين المتاجر.
+4.6:
+جديد: تمت إضافة عنصر نائب للطلبات التي تفتقد اسم العميل.
+
+إصلاح: تصبح العديد من تنبيهات الطلبات الجديدة قابلة للعرض الآن. 
+
+تعديلات: تم تحديث لون الخلفية في طرق عرض تسجيل الدخول، وتم نقل إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا إلى شاشة "حول التطبيق".
 </ar>
 <de-DE>
-4.4:
-* <b>Neu</b>: Funktionen zu Bild- und Produktmanagement hinzugefügt. Gehe unter „Mein Shop“ zu „Einstellungen“, um die neuen Funktionen zu aktivieren.
-* <b>Verbesserungen an der Benutzeroberfläche</b>: W-Benachrichtigungssymbol zur besseren Sichtbarkeit wieder hinzugefügt; Textfarbe auf Supporttickets im dunklen Modus korrigiert; kleinere stilistische Verbesserungen an den Anmeldebildschirmen.
-* <b>Behoben</b>: Produktdetails zeigen exakten Lagerstatus an; potenziellen Speicherverlust beim Wechsel zwischen Shops behoben.
+4,6:
+Neu: Platzhalter hinzugefügt für Bestellungen, die keinen Kundennamen enthalten.
+
+Behoben: Mehrere neue Bestellbestätigung können jetzt angezeigt werden.
+
+Anpassungen: Hintergrundfarbe der Anmeldebildschirme geändert und Datenschutzhinweis für Benutzer von Zertifizierungsstellen zum Bildschirm „About App“ (Über die App) hinzugefügt.
 </de-DE>
 <es-ES>
-4.4:
-* <b>Novedad</b>: Hemos añadido una función de gestión de imágenes y de productos. Dirígete a "Ajustes" en "Mi tienda" para activar las nuevas funciones.
-* <b>Mejoras en la interfaz de usuario</b>: * Hemos recuperado el icono de notificación W para ofrecer una mejor visibilidad, hemos corregido el color del texto de las incidencias en modo oscuro y hemos hecho pequeños cambios de estilo en las pantallas de acceso.
-* <b>Correcciones</b>: Los detalles de los productos muestran el estado exacto de las existencias. Hemos detectado una posible fuga de memoria al cambiar de tienda.
+4.6:
+Nuevo: hemos añadido un marcador de posición para los pedidos sin nombre de cliente.
+
+Corrección: las notificaciones de varios pedidos nuevos ahora son visibles.
+
+Ajustes: hemos cambiado el color de fondo de las vistas de inicio de sesión y hemos movido el aviso de privacidad para los usuarios de Californnia a "Sobre la aplicación".
 </es-ES>
 <fr-FR>
-4.4 :
-* <b>Nouveau</b> : Ajout de fonctions à la gestion des images et des produits. Accédez aux « Réglages » dans « Ma boutique » pour activer de nouvelles fonctionnalités !
-* <b>Améliorations de l’interface utilisateur</b> : Rétablissement de l’icône de notification W pour une meilleure visibilité, résolution de la couleur de texte sur les tickets de support en mode sombre, légers ajustements du style sur les écrans de connexion.
-* <b>Résolution de bugs</b> : Les détails du produit affichent l’état exact des stocks, colmatage d’une fuite de mémoire potentielle lors du passage entre boutiques.
+4.6 :
+Nouveauté : Ajout d’un texte indicatif pour les commandes dont il manque le nom du client.
+
+Correctif : Plusieurs notifications de nouvelle commande sont désormais visibles.
+
+Ajustements : Mise à jour de la couleur d’arrière-plan des vues de connexion et déplacement de l’avis de confidentialité pour les utilisateurs californiens vers l’écran « À propos de l’application ».
 </fr-FR>
 <iw-IL>
-4.4:
-* <b>חדש</b>: הוספנו פונקציונליות לניהול של תמונות ומוצרים. ניתן לעבור למקטע 'הגדרות' בלשונית 'החנות שלי' כדי להפעיל את התכונות החדשות!
-* <b>שיפורים בממשק המשתמש</b>: החזרנו את סמל ההודעות W לנראות טובה יותר, תיקנו את צבע הטקסט בכרטיסי תמיכה במצב כהה והוספנו כמה שינויים קטנים למסכי ההתחברות.
-* <b>תיקונים</b>: פרטי המוצר מציגים את מצב המלאי המדויק, תיקנו דליפת זיכרון אפשרית במעבר בין חנויות.
+4.6
+חדש: הוספנו מציין מיקום להזמנות עם שם לקוח חסר.
+
+תיקון: כעת ניתן להציג מספר הודעות של הזמנות חדשות.
+
+התאמות: עדכנו את צבע הרקע של תצוגת ההתחברות והעברנו את הודעת הפרטיות של משתמשים בקליפורניה למסך 'אודות האפליקציה'.
 </iw-IL>
 <id>
-4.4:
-* <b>Baru</b>: Penambahan fungsi pada manajemen gambar dan produk. Buka “Pengaturan” pada “My Store” untuk mengaktifkan fitur baru!
-* <b>Peningkatan UI</b>: Kembalinya ikon pemberitahuan W untuk memberikan visibilitas yang lebih baik, perbaikan warna teks untuk tiket dukungan pada mode gelap, sedikit perubahan gaya pada layar login.
-* <b>Perbaikan</b>: Detail produk menampilkan status stok yang tepat, potensi kebocoran memori ketika berpindah toko berhasil diatasi.
+4.6:
+Baru: Placeholder tambahan untuk pesanan yang tidak memiliki nama pelanggan.
+
+Perbaikan: Beberapa pemberitahuan pesanan baru sekarang dapat dilihat.
+
+Penyesuaian: Warna latar belakang tampilan login yang diperbarui dan pemberitahuan privasi untuk pengguna CA yang dipindahkan ke layar "Tentang Aplikasi".
 </id>
 <it-IT>
-4.4:
-*<b>Novità</b>: più funzionalità alla gestione di immagine e prodotto. Vai su "Impostazioni" in "Il mio negozio" per attivare le nuove funzionalità!
-*<b>Miglioramenti a UI</b>: reinserimento dell'icona di notifica W per una migliore visibilità, corretto il colore del testo su ticket di supporto in Dark mode, minori aggiustamenti di stile a schermate di accesso.
-*<b>Correzioni</b>: dettagli prodotto mostrano stato esatto in magazzino, si inseriva una potenziale perdita di memoria quando si passava da un negozio all'altro.
+4.6:
+Novità: aggiunto segnaposto per ordini in cui manca il nome del cliente.
+
+Correzione: sono ora visibili più notifiche di nuovi ordini.
+
+Modifiche: colore di sfondo delle viste di accesso aggiornato e nota della privacy per utenti in CA spostata sulla schermata "Info sull'app".
 </it-IT>
 <ja-JP>
-4.4:
-* <b>新機能</b> :画像と商品の管理に機能を追加しました。「自分のストア」の「設定」に移動して、新しい機能を有効にしましょう。
-* <b>UI 改善</b> :読みやすさのために W の通知アイコンが復活、ダークモードのサポートチケットのテキスト色を修正、ログイン画面のスタイルの微調整。
-* <b>修正</b> :商品の説明に正確な在庫状況を表示、ストアを切り替える際の潜在的なメモリリークに対応。
+4.6:
+新規: 顧客名がない注文用にプレースホルダーを追加しました。
+
+修正: 複数の新規オーダー通知が表示されるようになりました。
+
+調整: ログイン画面の背景色を更新し、カリフォルニア州のユーザー向けのプライバシー通知を「アプリについて」画面に移動しました。
 </ja-JP>
 <ko-KR>
-4.4:
-* <b>새로운 기능</b>: 이미지 및 제품 관리에 기능이 추가되었습니다. 새로운 기능을 설정하려면 “내 스토어”의 “설정”으로 이동하세요!
-* <b>UI 개선 사항</b>: 가시성 향상을 위해 W 알림 아이콘이 다시 추가되었으며, 어둡게 모드의 지원 티켓 텍스트 색상을 수정하였고, 로그인 화면을 약간 조정했습니다.
-* <b>수정 사항</b>: 제품 세부 정보는 정확한 재고 상태를 표시하며 스토어 간 전환 시 잠재적인 메모리 누수를 방지합니다.
+4.6:
+새로운 기능: 고객 이름이 누락된 주문의 플레이스 홀더를 추가했습니다.
+
+수정 사항: 이제 여러 개의 새로운 주문 알림을 볼 수 있습니다.
+
+조정 사항: 로그인 보기 배경 색상이 업데이트되었으며 캘리포니아 사용자를 위한 개인정보 공지가 "정보 앱" 화면으로 이동되었습니다.
 </ko-KR>
 <nl-NL>
-4.4:
-* <b>Nieuw</b>: Functionaliteit aan beeld- en productbeheer toegevoegd. Ga naar 'Instellingen' in 'Mijn winkel' om deze nieuwe functies in te schakelen!
-* <b>UI-verbeteringen</b>: Het W-meldingspictogram is teruggebracht voor verbeterde zichtbaarheid, een probleem met de tekstkleur op ondersteuningstickets in de nachtmodus is opgelost en er zijn kleine stijlverbeteringen aangebracht aan inlogschermen.
-* <b>Fixes</b>: In de productgegevens wordt de exacte voorraadstatus weergegeven. Potentieel geheugenlek opgelost bij het wisselen tussen winkels.
+4.6:
+Nieuw: Placeholder toegevoegd voor bestellingen zonder klantnaam.
+
+Fix: Er zijn nu meerdere nieuwe bestellingsmeldingen beschikbaar.
+
+Aanpassingen: Bijgewerkte achtergrondkleur voor de inlogweergaven en verplaatsing van de privacyverklaring voor gebruikers in Californië naar het scherm 'Over de app'.
 </nl-NL>
 <pt-BR>
-4.4:
-* <b>Novidade</b>: Funcionalidade adicionada à gestão de produtos e imagens. Acesse “Configurações” em “Minha loja” para ativar novas funcionalidades.
-* <b>Melhorias de IU</b>: Trouxemos o ícone de notificação W de volta para oferecer uma melhor visibilidade, corrigimos a cor do texto nos tíquetes de suporte no modo escuro e ajustamos o estilo das telas de login.
-* <b>Correções</b>: Os detalhes do produto exibem o status exato do estoque, pois consertamos uma possível evasão de memória ao alternar entre lojas.
+4.6:
+Novidade: espaço reservado para pedidos sem o nome do cliente.
+
+Correção: várias notificações de novo pedido agora podem ser visualizadas.
+
+Ajustes: cor de fundo das visualizações de login atualizada e aviso de privacidade referente a usuários residentes da Califórnia movido para a tela "Sobre o app".
 </pt-BR>
 <ru-RU>
-Версия 4.4
-* <b>Новые возможности</b>: Добавлены функции управления изображениями и продуктами. Чтобы включить их, перейдите в раздел "Настройки" на вкладке "Мой магазин".
-* <b>Улучшения пользовательского интерфейса</b>: Мы вернули значок уведомлений W для большей наглядности, изменили цвет текста обращений в службу поддержки в темном режиме и немного улучшили стиль экранов входа.
-* <b>Исправления</b>: В сведениях о продуктах теперь отображается точное количество товарных запасов, устранен потенциальный источник утечки памяти при переходе между магазинами.
+4.6:
+Новинка: в заказы без имени клиента добавлен заполнитель.
+
+Исправление: теперь может отображаться несколько уведомлений о новых заказах.
+
+Настройки: изменен цвет фона страницы входа, а уведомление о конфиденциальности для жителей Калифорнии перемещено на экран «О приложении».
 </ru-RU>
 <sv-SE>
-4.4:
-* <b>Nyheter</b>: Fler funktioner för bild- och produkthantering. Gå till ”Inställningar” i “Min butik” för att aktivera nya funktioner!
-* <b>UI-förbättringar</b>: W-aviseringsikonen är tillbaka för bättre synlighet, fixade textfärgen på supportärenden i mörkt läge, små designförbättringar på inloggningsskärmen.
-* <b>Åtgärder</b>: Produktdetaljer visar exakt lagerstatus, stoppade en potentiell minnesläcka vid byte mellan butiker.
+4.6:
+Nytt: Lade till platshållare för ordrar som saknar ett kundnamn.
+
+Korrigering: flera nya ordermeddelanden kan nu visas.
+
+Justeringar: uppdaterade bakgrundsfärgen för inloggningsvyer och flyttade sekretessmeddelande för CA-användare till Om appen-skärmen.
 </sv-SE>
 <tr-TR>
-4.4:
-* <b>Yeni</b>: Görsel ve ürün yönetimine işlev eklendi. Yeni özellikleri açmak için “Mağazam” sekmesindeki “Ayarlar” bölümüne gidin.
-* <b>Kullanıcı arayüzünde yapılan iyileştirmeler</b>: Daha iyi görünürlük için W bildirimi geri getirildi, karanlık modda destek biletlerinin metin rengi düzeltildi, oturum açma ekranlarında küçük sitl değişiklikleri yapıldı.
-* <b>Düzeltmeler</b>: Ürün ayrıntıları tam stok durumunu gösteriyor, mağazalar arası geçiş yaparken meydana gelen olası bir bellek sızıntısı giderildi.
+4,6:
+Yeni: Müşteri adının eksik olduğu siparişler için yer tutucu eklendi.
+
+Düzeltme: Birden çok yeni sipariş bildirimi artık görüntülenebilir.
+
+Ayarlar: Oturum açma görünümlerinin arka plan rengi güncellendi ve CA kullanıcıları için gizlilik bildirimi "Uygulama Hakkında" ekranına taşındı.
 </tr-TR>
 <zh-CN>
-4.4：
-* <b>新增功能</b>：增加了图片和产品管理功能。要启用新功能，请转到“我的商店”中的“设置”！
-* <b>UI 改进</b>：恢复了 W 通知图标以提高可见性；修正了深色模式下的支持申请单文本颜色；轻微调整了登录屏幕的风格。
-* <b>修复</b>：产品详细信息现在显示确切的库存状态，并消除了在商店之间切换时可能发生的内存泄漏问题。
+4.6：
+新增：为缺少客户姓名的订单添加了占位符。
+
+修复：现在可以查看多个新订单通知。
+
+调整：更新了登录视图的背景颜色，并将加州用户的隐私声明移至“关于应用程序”屏幕。
 </zh-CN>
 <zh-TW>
-4.4：
-* <b>新功能</b>：已新增圖片和產品管理相關功能。前往「我的商店」中的「設定」開啟新功能！
-* <b>改善 UI</b>：恢復 W 通知圖示以提升可見度、修復深色模式下支援票證的文字顏色、微調登入畫面的樣式。
-* <b>修正</b>：產品詳細資訊會顯示確切的庫存狀態，修復在商店之間切換時，潛在記憶體的流失問題。
+4.6：
+新功能：為缺少客戶姓名的訂單新增預留位置。
+
+修正：現在可以查看多個新訂單通知。
+
+調整：更新登入檢視的背景顏色，並將加州使用者的隱私權聲明移至「關於應用程式」畫面。
 </zh-TW>
 <en-US>
-4.4:
-* <b>New</b>: Added functionality to image and product management. Head to “Settings” in “My Store” to turn on new features!
-* <b>UI improvements</b>: Brought back the W notification icon for better visibility, fixed the text color on support tickets in dark mode, minor style tweaks to login screens.
-* <b>Fixes</b>: Product details display exact stock status, plugged a potential memory leak when switching between stores.
+4.6:
+New: Added placeholder for orders missing a customer’s name.
+
+Fix: Multiple new order notifications are now viewable.
+
+Adjustments: Updated background color of login views and moved privacy notice for CA users to “About App” screen.
 </en-US>

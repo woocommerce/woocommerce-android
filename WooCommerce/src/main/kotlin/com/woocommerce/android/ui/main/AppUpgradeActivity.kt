@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender.SendIntentException
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 
 abstract class AppUpgradeActivity : AppCompatActivity(),
         AppUpgradeActivityView,
@@ -201,12 +203,19 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
     private fun isAppUpdateFlexible() = AppUpdateType.FLEXIBLE == inAppUpdateType
 
     private fun requestAppUpdate(appUpdateInfo: AppUpdateInfo?) {
-        appUpdateManager.startUpdateFlowForResult(
+        try {
+            appUpdateManager.startUpdateFlowForResult(
                 appUpdateInfo,
                 inAppUpdateType,
                 this,
                 RequestCodes.IN_APP_UPDATE
-        )
+            )
+        } catch (e: SendIntentException) {
+            // It looks like there are cases when the in app update gets cancelled without any cause for the
+            // exception. But this is causing the app to crash when using this feature.
+            // See [Activity.startIntentSenderForResultInner] and #2458 for more details
+            WooLog.e(T.DEVICE, "In app update has been cancelled")
+        }
     }
 
     private fun handleFlexibleUpdateSuccess() {

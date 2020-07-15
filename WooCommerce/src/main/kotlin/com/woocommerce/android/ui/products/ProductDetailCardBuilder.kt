@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIn
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -86,7 +87,8 @@ class ProductDetailCardBuilder(
                 product.shipping(),
                 product.inventory(),
                 product.shortDescription(),
-                product.categories()
+                product.categories(),
+                product.tags()
             ).filterNotEmpty()
         )
     }
@@ -454,6 +456,33 @@ class ProductDetailCardBuilder(
                 viewModel.onEditProductCardClicked(
                     ViewProductCategories(this.remoteId),
                     Stat.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
+                )
+            }
+        } else {
+            null
+        }
+    }
+
+    private fun Product.tags(): ProductProperty? {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            val productTags = this.tags
+            val showTitle = productTags.isNotEmpty()
+            val tags = if (showTitle) {
+                productTags.joinToString(transform = { it.name })
+            } else {
+                resources.getString(R.string.product_tag_empty)
+            }
+
+            ComplexProperty(
+                R.string.product_tags,
+                tags,
+                R.drawable.ic_gridicons_tag,
+                showTitle = showTitle,
+                maxLines = 5
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductTags(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_TAGS_TAPPED
                 )
             }
         } else {

@@ -154,7 +154,7 @@ class MyStorePresenter @Inject constructor(
                     // display a different error snackbar if the error type is not "plugin not active", since
                     // this error is already being handled by the activity class
                     if (event.error.type == PLUGIN_NOT_ACTIVE) {
-                        AppPrefs.setIsUsingV4Api(false)
+                        AppPrefs.setV4StatsSupported(false)
                         dashboardView?.updateStatsAvailabilityError()
                     } else {
                         dashboardView?.showStatsError(event.granularity)

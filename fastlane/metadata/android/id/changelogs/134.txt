@@ -1,4 +1,0 @@
-4.4:
-* <b>Baru</b>: Penambahan fungsi pada manajemen gambar dan produk. Buka “Pengaturan” pada “My Store” untuk mengaktifkan fitur baru!
-* <b>Peningkatan UI</b>: Kembalinya ikon pemberitahuan W untuk memberikan visibilitas yang lebih baik, perbaikan warna teks untuk tiket dukungan pada mode gelap, sedikit perubahan gaya pada layar login.
-* <b>Perbaikan</b>: Detail produk menampilkan status stok yang tepat, potensi kebocoran memori ketika berpindah toko berhasil diatasi.

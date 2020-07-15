@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-11 08:54:03+0000
+Translation-Revision-Date: 2020-07-10 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Een moment geduld…</string>
+    <string name="product_add_category_dialog_title">Categorie wordt toegevoegd</string>
+    <string name="product_category_parent">Hoofdcategorie</string>
+    <string name="product_category_name">Naam categorie</string>
+    <string name="add_product_category_empty">Voer een categorienaam in</string>
+    <string name="add_product_category_failed">Fout bij maken van categorie</string>
+    <string name="add_product_category_duplicate">Fout bij maken van categorie - Naam bestaat al op je site.</string>
+    <string name="add_product_category_success">Productcategorie toegevoegd</string>
+    <string name="product_add_category">Categorie toevoegen</string>
+    <string name="product_category_list_empty_message">Deel je producten onder in categorieën</string>
+    <string name="product_category_list_empty_title">Voeg je eerste categorie toe</string>
+    <string name="product_category_empty">Categorie toevoegen</string>
+    <string name="product_categories">Categorieën</string>
+    <string name="orderdetail_customer_name_default">Gast</string>
+    <string name="settings_privacy_policy_ca">Privacyverklaring voor gebruikers in Californië</string>
+    <string name="keep_changes">Wijzigingen bewaren</string>
     <string name="product_sale_date_to">Tot %1$s</string>
     <string name="product_type_external">Extern</string>
     <string name="product_type_simple">Simpel</string>

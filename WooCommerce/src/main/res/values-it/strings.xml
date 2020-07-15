@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-10 14:54:05+0000
+Translation-Revision-Date: 2020-07-09 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Attendi…</string>
+    <string name="product_add_category_dialog_title">Aggiunta della categoria</string>
+    <string name="product_category_parent">Categoria madre</string>
+    <string name="product_category_name">Nome categoria</string>
+    <string name="add_product_category_empty">Inserisci il nome di una categoria</string>
+    <string name="add_product_category_failed">Errore durante la creazione della categoria</string>
+    <string name="add_product_category_duplicate">Errore durante la creazione della categoria: nome già esistente sul tuo sito.</string>
+    <string name="add_product_category_success">Categoria del prodotto aggiunta</string>
+    <string name="product_add_category">Aggiungi categoria</string>
+    <string name="product_category_list_empty_message">Organizza i prodotti in categorie</string>
+    <string name="product_category_list_empty_title">Aggiungi la prima categoria</string>
+    <string name="product_category_empty">Aggiungi categoria</string>
+    <string name="product_categories">Categorie</string>
+    <string name="orderdetail_customer_name_default">Ospite</string>
+    <string name="settings_privacy_policy_ca">Nota sulla privacy per utenti in California</string>
+    <string name="keep_changes">Mantieni le modifiche</string>
     <string name="product_sale_date_to">Fino al giorno %1$s</string>
+    <string name="product_wip_message">Abbiamo aggiunto più funzionalità di modifica dei prodotti. Ora puoi aggiornare le immagini, modificare le impostazioni e condividere i prodotti.</string>
+    <string name="product_limited_editing_title">Funzionalità di editing limitate ora disponibili</string>
+    <string name="orderdetail_product_multiple">Prodotti</string>
     <string name="product_type_external">Esterno</string>
     <string name="product_type_simple">Semplice</string>
     <string name="product_status_privately_published">Pubblicato privatamente</string>
