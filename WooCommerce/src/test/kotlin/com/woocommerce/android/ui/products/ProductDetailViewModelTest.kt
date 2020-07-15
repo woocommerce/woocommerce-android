@@ -146,6 +146,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_folder,
                     showTitle = false,
                     maxLines = 5
+                ),
+                ComplexProperty(
+                    R.string.product_tags,
+                    resources.getString(R.string.product_tag_empty),
+                    R.drawable.ic_gridicons_tag,
+                    showTitle = false,
+                    maxLines = 5
                 )
             )
         )

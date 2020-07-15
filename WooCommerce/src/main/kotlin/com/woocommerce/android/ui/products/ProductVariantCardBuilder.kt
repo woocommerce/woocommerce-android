@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.addIfNotEmpty
@@ -37,9 +36,10 @@ class ProductVariantCardBuilder(
         return ProductPropertyCard(
             type = PRIMARY,
             properties = listOf(
-                variation.visibility(),
                 variation.description(),
                 variation.price(),
+                variation.visibility(),
+                variation.inventory(),
                 variation.shipping()
             ).filterNotEmpty()
         )
@@ -48,7 +48,7 @@ class ProductVariantCardBuilder(
     private fun ProductVariant.description(): ProductProperty? {
         val variationDescription = this.description
         val description = if (variationDescription.isEmpty()) {
-            resources.getString(R.string.product_description)
+            resources.getString(string.product_description)
         } else {
             variationDescription
         }
@@ -56,16 +56,16 @@ class ProductVariantCardBuilder(
         // TODO: Temporarily hide empty description until it's editable
         return if (variationDescription.isNotEmpty()) {
             ComplexProperty(
-                R.string.product_description,
+                string.product_description,
                 description,
-                R.drawable.ic_gridicons_align_left,
+                drawable.ic_gridicons_align_left,
                 variationDescription.isNotEmpty()
             )
             // TODO: This will be used once the variants are editable
 //            {
 //                viewModel.onEditVariationCardClicked(
 //                    ViewProductDescriptionEditor(
-//                        variationDescription, resources.getString(R.string.product_description)
+//                        variationDescription, resources.getString(string.product_description)
 //                    ),
 //                    Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
 //                )
@@ -80,11 +80,11 @@ class ProductVariantCardBuilder(
         @DrawableRes val visibilityIcon: Int
         val isOn: Boolean = this.status == PUBLISH
         if (isOn) {
-            visibility = R.string.product_variation_visible
-            visibilityIcon = R.drawable.ic_gridicons_visible
+            visibility = string.product_variation_visible
+            visibilityIcon = drawable.ic_gridicons_visible
         } else {
-            visibility = R.string.product_variant_hidden
-            visibilityIcon = R.drawable.ic_gridicons_not_visible
+            visibility = string.product_variant_hidden
+            visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
         return Switch(visibility, isOn, visibilityIcon)
@@ -107,9 +107,9 @@ class ProductVariantCardBuilder(
         )
 
         return PropertyGroup(
-            R.string.product_price,
+            string.product_price,
             pricingGroup,
-            R.drawable.ic_gridicons_money,
+            drawable.ic_gridicons_money,
             hasPricingInfo
         )
         // TODO: This will be used once the variants are editable
@@ -155,5 +155,21 @@ class ProductVariantCardBuilder(
         } else {
             null
         }
+    }
+
+    private fun ProductVariant.inventory(): ProductProperty {
+        return ComplexProperty(
+            string.product_inventory,
+            ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus),
+            drawable.ic_gridicons_list_checkmark,
+            true
+        )
+        // TODO: This will be used once the variants are editable
+//        {
+//            viewModel.onEditProductCardClicked(
+//                ViewProductInventory(this.remoteId),
+//                PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+//            )
+//        }
     }
 }
