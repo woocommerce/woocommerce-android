@@ -397,30 +397,26 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun Product.description(): ProductProperty? {
-        return if (isAddEditProductRelease1Enabled(this.type)) {
-            val productDescription = this.description
-            val showTitle = productDescription.isNotEmpty()
-            val description = if (productDescription.isEmpty()) {
-                resources.getString(R.string.product_description_empty)
-            } else {
-                productDescription
-            }
-
-            ComplexProperty(
-                R.string.product_description,
-                description,
-                showTitle = showTitle
-            ) {
-                viewModel.onEditProductCardClicked(
-                    ViewProductDescriptionEditor(
-                        productDescription, resources.getString(R.string.product_description)
-                    ),
-                    PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
-                )
-            }
+    private fun Product.description(): ProductProperty {
+        val productDescription = this.description
+        val showTitle = productDescription.isNotEmpty()
+        val description = if (productDescription.isEmpty()) {
+            resources.getString(R.string.product_description_empty)
         } else {
-            null
+            productDescription
+        }
+
+        return ComplexProperty(
+            R.string.product_description,
+            description,
+            showTitle = showTitle
+        ) {
+            viewModel.onEditProductCardClicked(
+                ViewProductDescriptionEditor(
+                    productDescription, resources.getString(R.string.product_description)
+                ),
+                PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+            )
         }
     }
 
