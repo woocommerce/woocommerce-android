@@ -40,26 +40,26 @@ class ProductDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters
 ) {
-    /**
-     * Add/Edit Product Release 1 is enabled by default for SIMPLE products
-     */
-    private fun isAddEditProductRelease1Enabled(productType: ProductType) = productType == ProductType.SIMPLE
+    private fun isSimple(product: Product) = product.type == SIMPLE
 
     fun buildPropertyCards(product: Product): List<ProductPropertyCard> {
         val cards = mutableListOf<ProductPropertyCard>()
 
         cards.addIfNotEmpty(getPrimaryCard(product))
 
-        // display pricing/inventory card only if product is not a variable product
-        // since pricing, inventory, shipping and SKU for a variable product can differ per variant
-        if (product.type != VARIABLE) {
-            if (isAddEditProductRelease1Enabled(product.type)) {
-                cards.addIfNotEmpty(getSecondaryCard(product))
+        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            when (product.type) {
+                SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
+                VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
+                GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
+                EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
+            }
+        } else {
+            if (isSimple(product)) {
+                cards.addIfNotEmpty(getSimpleProductCard(product))
             } else {
                 cards.addIfNotEmpty(getPricingAndInventoryCard(product))
             }
-        } else {
-            cards.addIfNotEmpty(getVariableSecondaryCard(product))
         }
 
         cards.addIfNotEmpty(getPurchaseDetailsCard(product))
@@ -77,15 +77,11 @@ class ProductDetailCardBuilder(
         )
     }
 
-    /**
-     * New product detail card UI slated for new products release 1
-     */
-    private fun getSecondaryCard(product: Product): ProductPropertyCard {
+    private fun getSimpleProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                product.externalLink(),
                 product.shipping(),
                 product.inventory(),
                 product.shortDescription(),
@@ -95,12 +91,36 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getVariableSecondaryCard(product: Product): ProductPropertyCard {
+    private fun getGroupedProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.shortDescription(),
+                product.readOnlyInventory(),
+                product.categories(),
+                product.tags()
+            ).filterNotEmpty()
+        )
+    }
+
+    private fun getExternalProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.externalLink(),
+                product.shortDescription(),
+                product.readOnlyInventory(),
+                product.categories(),
+                product.tags()
+            ).filterNotEmpty()
+        )
+    }
+
+    private fun getVariableProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.variations(),
-                product.externalLink(),
                 product.shortDescription(),
                 product.categories(),
                 product.tags()
@@ -125,6 +145,7 @@ class ProductDetailCardBuilder(
             PRICING,
             cardTitle,
             listOf(
+                product.variations(),
                 product.readOnlyPrice(),
                 product.readOnlyInventory()
             ).filterNotEmpty()
@@ -145,7 +166,7 @@ class ProductDetailCardBuilder(
 
     // if add/edit products is enabled, purchase note appears in product settings
     private fun Product.purchaseNote(): ProductProperty? {
-        return if (this.purchaseNote.isNotBlank() && !isAddEditProductRelease1Enabled(this.type)) {
+        return if (this.purchaseNote.isNotBlank() && !isSimple(this)) {
             ReadMore(
                 R.string.product_purchase_note,
                 this.purchaseNote
@@ -182,7 +203,7 @@ class ProductDetailCardBuilder(
 
     // shipping group is part of the secondary card if edit product is enabled
     private fun Product.readOnlyShipping(): ProductProperty? {
-        return if (!isAddEditProductRelease1Enabled(this.type)) {
+        return if (!isSimple(this)) {
             val shippingGroup = mapOf(
                 Pair(resources.getString(R.string.product_weight), this.getWeightWithUnits(parameters.weightUnit)),
                 Pair(resources.getString(R.string.product_size), this.getSizeWithUnits(parameters.dimensionUnit)),
