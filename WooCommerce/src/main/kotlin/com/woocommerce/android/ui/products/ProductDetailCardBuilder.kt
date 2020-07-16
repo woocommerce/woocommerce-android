@@ -391,15 +391,11 @@ class ProductDetailCardBuilder(
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
-        return if (isAddEditProductRelease1Enabled(this.type)) {
-            Editable(
-                R.string.product_detail_title_hint,
-                name,
-                onTextChanged = viewModel::onProductTitleChanged
-            )
-        } else {
-            ComplexProperty(R.string.product_name, name)
-        }
+        return Editable(
+            R.string.product_detail_title_hint,
+            name,
+            onTextChanged = viewModel::onProductTitleChanged
+        )
     }
 
     private fun Product.description(): ProductProperty? {
