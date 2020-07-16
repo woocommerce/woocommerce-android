@@ -58,7 +58,10 @@ class ProductDetailCardBuilder(
             } else {
                 cards.addIfNotEmpty(getPricingAndInventoryCard(product))
             }
+        } else {
+            cards.addIfNotEmpty(getVariableSecondaryCard(product))
         }
+
         cards.addIfNotEmpty(getPurchaseDetailsCard(product))
 
         return cards
@@ -92,6 +95,20 @@ class ProductDetailCardBuilder(
             ).filterNotEmpty()
         )
     }
+
+    private fun getVariableSecondaryCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.variations(),
+                product.externalLink(),
+                product.shortDescription(),
+                product.categories(),
+                product.tags()
+            ).filterNotEmpty()
+        )
+    }
+
     /**
      * Existing product detail card UI which that will be replaced by the new design once
      * Product Release 1 changes are completed.
