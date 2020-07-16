@@ -72,8 +72,7 @@ class ProductDetailCardBuilder(
             type = PRIMARY,
             properties = listOf(
                 product.title(),
-                product.description(),
-                product.variations()
+                product.description()
             ).filterNotEmpty()
         )
     }
