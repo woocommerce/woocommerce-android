@@ -111,6 +111,7 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                product.price(),
                 product.externalLink(),
                 product.shortDescription(),
                 product.readOnlyInventory(),
