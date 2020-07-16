@@ -422,7 +422,7 @@ class ProductDetailCardBuilder(
 
     // show product variants only if product type is variable and if there are variations for the product
     private fun Product.variations(): ProductProperty? {
-        return if (this.type == VARIABLE && this.numVariations > 0) {
+        return if (this.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in this.attributes) {
                 properties[attribute.name] = attribute.options.size.toString()
