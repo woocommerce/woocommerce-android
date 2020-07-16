@@ -9,12 +9,16 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
+import com.woocommerce.android.ui.products.ProductType.EXTERNAL
+import com.woocommerce.android.ui.products.ProductType.GROUPED
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -220,28 +224,38 @@ class ProductDetailCardBuilder(
 
     // show stock properties as a group if stock management is enabled, otherwise show sku separately
     private fun Product.readOnlyInventory(): ProductProperty {
-        return if (this.manageStock) {
-            val group = mapOf(
-                Pair(resources.getString(R.string.product_stock_status),
-                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
-                ),
-                Pair(resources.getString(R.string.product_backorders),
-                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
-                ),
-                Pair(resources.getString(R.string.product_stock_quantity),
-                    StringUtils.formatCount(this.stockQuantity)
-                ),
-                Pair(resources.getString(R.string.product_sku), this.sku)
-            )
-            PropertyGroup(
-                R.string.product_inventory,
-                group
-            )
-        } else {
-            ComplexProperty(
-                R.string.product_sku,
-                this.sku
-            )
+        return when {
+            this.manageStock -> {
+                val group = mapOf(
+                    Pair(resources.getString(R.string.product_stock_status),
+                        ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
+                    ),
+                    Pair(resources.getString(R.string.product_backorders),
+                        ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
+                    ),
+                    Pair(resources.getString(R.string.product_stock_quantity),
+                        StringUtils.formatCount(this.stockQuantity)
+                    ),
+                    Pair(resources.getString(R.string.product_sku), this.sku)
+                )
+                PropertyGroup(
+                    R.string.product_inventory,
+                    group
+                )
+            }
+            FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() -> {
+                ComplexProperty(
+                    R.string.product_sku,
+                    this.sku,
+                    R.drawable.ic_gridicons_list_checkmark
+                )
+            }
+            else -> {
+                ComplexProperty(
+                    R.string.product_sku,
+                    this.sku
+                )
+            }
         }
     }
 
@@ -411,14 +425,18 @@ class ProductDetailCardBuilder(
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
-        return Editable(
-            R.string.product_detail_title_hint,
-            name,
-            onTextChanged = viewModel::onProductTitleChanged
-        )
+        return if (isSimple(this) || FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            Editable(
+                R.string.product_detail_title_hint,
+                name,
+                onTextChanged = viewModel::onProductTitleChanged
+            )
+        } else {
+            ComplexProperty(R.string.product_name, name)
+        }
     }
 
-    private fun Product.description(): ProductProperty {
+    private fun Product.description(): ProductProperty? {
         val productDescription = this.description
         val showTitle = productDescription.isNotEmpty()
         val description = if (productDescription.isEmpty()) {
@@ -427,17 +445,27 @@ class ProductDetailCardBuilder(
             productDescription
         }
 
-        return ComplexProperty(
-            R.string.product_description,
-            description,
-            showTitle = showTitle
-        ) {
-            viewModel.onEditProductCardClicked(
-                ViewProductDescriptionEditor(
-                    productDescription, resources.getString(R.string.product_description)
-                ),
-                PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
-            )
+        return when {
+            isSimple(this) || FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() -> {
+                ComplexProperty(
+                    R.string.product_description,
+                    description,
+                    showTitle = showTitle
+                ) {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductDescriptionEditor(
+                            productDescription, resources.getString(R.string.product_description)
+                        ),
+                        PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+                    )
+                }
+            }
+            productDescription.isNotEmpty() -> {
+                ComplexProperty(R.string.product_description, description)
+            }
+            else -> {
+                null
+            }
         }
     }
 
