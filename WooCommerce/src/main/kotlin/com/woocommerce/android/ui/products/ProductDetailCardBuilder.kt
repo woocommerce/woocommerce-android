@@ -373,7 +373,7 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_gridicons_link,
                 hasExternalLink
             ) {
-                viewModel.onEditProductCardClicked(ViewProductPricing(this.remoteId))
+                viewModel.onEditProductCardClicked(ViewProductExternalLink(this.remoteId))
             }
         } else {
             null
