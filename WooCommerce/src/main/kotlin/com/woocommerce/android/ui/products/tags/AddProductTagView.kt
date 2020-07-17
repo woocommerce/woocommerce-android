@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products.tags
 
 import android.content.Context
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -36,6 +38,12 @@ class AddProductTagView @JvmOverloads constructor(
     }
 
     fun hasTags() = selectedTagsGroup.childCount > 0
+
+    fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
+        addTagsEditText.doAfterTextChanged {
+            cb(it)
+        }
+    }
 
     private fun addTag(
         tag: ProductTag,
