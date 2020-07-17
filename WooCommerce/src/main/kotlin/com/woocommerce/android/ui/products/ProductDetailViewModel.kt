@@ -15,8 +15,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.addNewItem
+import com.woocommerce.android.extensions.containsItem
+import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
+import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -146,6 +150,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _productTags = MutableLiveData<List<ProductTag>>()
     val productTags: LiveData<List<ProductTag>> = _productTags
+
+    private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
+    val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -1175,16 +1182,52 @@ class ProductDetailViewModel @AssistedInject constructor(
         return sortedList.toList()
     }
 
+    /**
+     * Method called when a tag is entered
+     */
+    fun onProductTagAdded(tagName: String) {
+        // verify if the entered tagName exists for the site
+        // It so, the tag should be added to the product directly
+        productTagsRepository.getProductTagByName(tagName)?.let {
+            onProductTagSelected(it)
+        } ?: run {
+            // Since the tag does not exist for the site, add the tag to
+            // a list of newly added tags
+            _addedProductTags.addNewItem(ProductTag(name = tagName))
+            updateTagsMenuAction()
+        }
+    }
+
+    /**
+     * Method called when a tag is selected from the list of product tags
+     */
     fun onProductTagSelected(tag: ProductTag) {
         val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
         selectedTags.add(tag)
         updateProductDraft(tags = selectedTags)
+        updateTagsMenuAction()
     }
 
+    /**
+     * Method called when a tag is removed from the product
+     */
     fun onProductTagSelectionRemoved(tag: ProductTag) {
-        val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
-        selectedTags.remove(tag)
-        updateProductDraft(tags = selectedTags)
+        // check if the tag is newly added. If so, remove it from the newly added tags
+        if (_addedProductTags.containsItem(tag)) {
+            _addedProductTags.removeItem(tag)
+        } else {
+            val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
+            selectedTags.remove(tag)
+            updateProductDraft(tags = selectedTags)
+        }
+        updateTagsMenuAction()
+    }
+
+    private fun updateTagsMenuAction() {
+        productTagsViewState = productTagsViewState.copy(
+            shouldDisplayDoneMenuButton = viewState.productDraft?.tags?.isNotEmpty() == true ||
+                !_addedProductTags.isEmpty()
+        )
     }
 
     fun fetchProductTags() {
@@ -1396,7 +1439,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val shouldDisplayDoneMenuButton: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

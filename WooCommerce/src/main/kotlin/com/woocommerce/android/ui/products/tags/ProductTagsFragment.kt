@@ -97,6 +97,12 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
                 viewModel.refreshProductTags()
             }
         }
+
+        addProductTagView.setOnEditorActionListener {
+            viewModel.onProductTagAdded(it)
+            updateSelectedTags()
+            true
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -104,6 +110,9 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productTagsLayout.isRefreshing = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            new.shouldDisplayDoneMenuButton?.takeIfNotEqualTo(old?.shouldDisplayDoneMenuButton) {
+                showUpdateMenuItem(it)
+            }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     WooAnimUtils.fadeIn(empty_view)
@@ -117,6 +126,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
         viewModel.productTags.observe(viewLifecycleOwner, Observer {
             showProductTags(it)
+        })
+
+        viewModel.addedProductTags.observe(viewLifecycleOwner, Observer {
+            addTags(it, this)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -134,7 +147,11 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
     private fun updateSelectedTags() {
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        addProductTagView.addSelectedTags(product.tags, this)
+        addTags(product.tags, this)
+    }
+
+    private fun addTags(tags: List<ProductTag>, listener: OnProductTagClickListener) {
+        addProductTagView.addSelectedTags(tags, listener)
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -160,12 +177,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onProductTagAdded(productTag: ProductTag) {
         viewModel.onProductTagSelected(productTag)
         updateSelectedTags()
-        changesMade()
     }
 
     override fun onProductTagRemoved(productTag: ProductTag) {
         viewModel.onProductTagSelectionRemoved(productTag)
         addProductTagView.removeSelectedTag(productTag)
-        changesMade()
     }
 }
