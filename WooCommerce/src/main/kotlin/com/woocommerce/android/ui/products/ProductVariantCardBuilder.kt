@@ -87,7 +87,9 @@ class ProductVariantCardBuilder(
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
-        return Switch(visibility, isOn, visibilityIcon)
+        return Switch(visibility, isOn, visibilityIcon) {
+            viewModel.onVariantVisibilityChanged(isOn)
+        }
     }
 
     // If we have pricing info, show price & sales price as a group,

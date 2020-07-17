@@ -138,6 +138,10 @@ class ProductVariantViewModel @AssistedInject constructor(
         }
     }
 
+    fun onVariantVisibilityChanged(isVisible: Boolean) {
+
+    }
+
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
