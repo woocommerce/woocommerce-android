@@ -123,6 +123,7 @@ data class Product(
                 length == product.length &&
                 height == product.height &&
                 width == product.width &&
+                isVirtual == product.isVirtual &&
                 shippingClass == product.shippingClass &&
                 shippingClassId == product.shippingClassId &&
                 catalogVisibility == product.catalogVisibility &&
@@ -222,7 +223,8 @@ data class Product(
                     slug != it.slug ||
                     reviewsAllowed != it.reviewsAllowed ||
                     purchaseNote != it.purchaseNote ||
-                    menuOrder != it.menuOrder
+                    menuOrder != it.menuOrder ||
+                    isVirtual != it.isVirtual
         } ?: false
     }
 
@@ -326,6 +328,7 @@ data class Product(
                     regularPrice = updatedProduct.regularPrice,
                     salePrice = updatedProduct.salePrice,
                     isOnSale = updatedProduct.isOnSale,
+                    isVirtual = updatedProduct.isVirtual,
                     isSaleScheduled = updatedProduct.isSaleScheduled,
                     saleStartDateGmt = updatedProduct.saleStartDateGmt,
                     saleEndDateGmt = updatedProduct.saleEndDateGmt,
@@ -446,6 +449,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.taxClass = taxClass
         it.images = imagesToJson()
         it.reviewsAllowed = reviewsAllowed
+        it.virtual = isVirtual
         if (isSaleScheduled) {
             saleStartDateGmt?.let { dateOnSaleFrom ->
                 it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
