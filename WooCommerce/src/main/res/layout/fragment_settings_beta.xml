@@ -8,18 +8,6 @@
     android:background="?attr/colorSurface">
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-        android:id="@+id/switchStatsV4UI"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:toggleOptionDesc="@string/settings_enable_v4_stats_message"
-        app:toggleOptionTitle="@string/settings_enable_v4_stats_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        tools:visibility="visible"/>
-
-    <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchProductsUI"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -27,7 +15,6 @@
         app:toggleOptionTitle="@string/settings_enable_product_teaser_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchStatsV4UI"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,6 @@
+4.6:
+Nieuw: Placeholder toegevoegd voor bestellingen zonder klantnaam.
+
+Fix: Er zijn nu meerdere nieuwe bestellingsmeldingen beschikbaar.
+
+Aanpassingen: Bijgewerkte achtergrondkleur voor de inlogweergaven en verplaatsing van de privacyverklaring voor gebruikers in Californië naar het scherm 'Over de app'.
