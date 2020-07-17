@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.Editable
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -37,12 +36,8 @@ class AddProductTagView @JvmOverloads constructor(
         selectedChip?.let { selectedTagsGroup.removeView(it) }
     }
 
-    fun hasTags() = selectedTagsGroup.childCount > 0
-
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
-        addTagsEditText.doAfterTextChanged {
-            cb(it)
-        }
+        addTagsEditText.setOnTextChangedListener(cb)
     }
 
     private fun addTag(

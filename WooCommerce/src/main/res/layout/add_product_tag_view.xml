@@ -11,17 +11,19 @@
         android:paddingTop="@dimen/major_75"
         android:paddingBottom="@dimen/major_75">
 
-        <com.google.android.material.textfield.TextInputEditText
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/addTagsEditText"
-            style="@style/Woo.TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_125"
             android:layout_marginEnd="@dimen/major_125"
+            android:hint="@string/product_tag_empty"
+            android:inputType="text"
             android:imeOptions="actionDone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/selectedTagsGroup"
