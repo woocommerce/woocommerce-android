@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-09 16:54:04+0000
+Translation-Revision-Date: 2020-07-09 14:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_add_category_dialog_message">يُرجى الانتظار…</string>
+    <string name="product_add_category_dialog_title">إضافة تصنيف</string>
+    <string name="product_category_parent">التصنيف الأب</string>
+    <string name="product_category_name">اسم التصنيف</string>
+    <string name="add_product_category_empty">إدخال اسم التصنيف</string>
+    <string name="add_product_category_failed">خطأ في أثناء إنشاء التصنيف</string>
+    <string name="add_product_category_duplicate">خطأ في أثناء إنشاء التصنيف - الاسم موجود بالفعل على موقعك.</string>
+    <string name="add_product_category_success">تمت إضافة تصنيف المنتج</string>
+    <string name="product_add_category">إضافة فئة</string>
+    <string name="product_category_list_empty_message">تنظيم منتجاتك في تصنيفات</string>
+    <string name="product_category_list_empty_title">إضافة تصنيفك الأول</string>
+    <string name="product_category_empty">إضافة فئة</string>
+    <string name="product_categories">تصنيفات</string>
+    <string name="orderdetail_customer_name_default">زائر</string>
+    <string name="settings_privacy_policy_ca">إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا</string>
+    <string name="keep_changes">الاحتفاظ بالتغييرات</string>
     <string name="product_sale_date_to">حتى %1$s</string>
     <string name="product_wip_message">أضفنا وظائف تحرير إضافية إلى المنتجات. يمكنك الآن تحديث الصور، وتحرير المنتجات والإعدادات، ومشاركة المنتجات!</string>
     <string name="product_wip_title">تتوافر خيارات تحرير جديدة</string>

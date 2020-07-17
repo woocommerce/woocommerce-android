@@ -1,70 +1,136 @@
 <ar>
-4.5:
--  تحسينات المنتج: يمكنك تحديث صور المنتجات، وإعدادات المنتجات، ومشاركة روابط المنتجات مباشرة من التطبيق.
-- يمكن للمستخدمين في كاليفورنيا عرض إشعار الخصوصية الجديد.
+4.6:
+جديد: تمت إضافة عنصر نائب للطلبات التي تفتقد اسم العميل.
+
+إصلاح: تصبح العديد من تنبيهات الطلبات الجديدة قابلة للعرض الآن. 
+
+تعديلات: تم تحديث لون الخلفية في طرق عرض تسجيل الدخول، وتم نقل إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا إلى شاشة "حول التطبيق".
 </ar>
 <de-DE>
-4.5:
-- Produktverbesserungen: Direkt in der App Produktabbildungen und Produkteinstellungen aktualisieren und Produktlinks teilen.
-- Benutzer in Kalifornien können einen neuen Datenschutzhinweis anzeigen.
+4,6:
+Neu: Platzhalter hinzugefügt für Bestellungen, die keinen Kundennamen enthalten.
+
+Behoben: Mehrere neue Bestellbestätigung können jetzt angezeigt werden.
+
+Anpassungen: Hintergrundfarbe der Anmeldebildschirme geändert und Datenschutzhinweis für Benutzer von Zertifizierungsstellen zum Bildschirm „About App“ (Über die App) hinzugefügt.
 </de-DE>
 <es-ES>
-4.5:
-- Mejoras del producto: actualiza las imágenes del producto y su configuración, y comparte enlaces del producto directamente desde la aplicación.
-- Los usuarios de California pueden ver un nuevo aviso de privacidad.
+4.6:
+Nuevo: hemos añadido un marcador de posición para los pedidos sin nombre de cliente.
+
+Corrección: las notificaciones de varios pedidos nuevos ahora son visibles.
+
+Ajustes: hemos cambiado el color de fondo de las vistas de inicio de sesión y hemos movido el aviso de privacidad para los usuarios de Californnia a "Sobre la aplicación".
 </es-ES>
+<fr-FR>
+4.6 :
+Nouveauté : Ajout d’un texte indicatif pour les commandes dont il manque le nom du client.
+
+Correctif : Plusieurs notifications de nouvelle commande sont désormais visibles.
+
+Ajustements : Mise à jour de la couleur d’arrière-plan des vues de connexion et déplacement de l’avis de confidentialité pour les utilisateurs californiens vers l’écran « À propos de l’application ».
+</fr-FR>
 <iw-IL>
-4.5:
-- שיפורים במוצר: אפשר לעדכן תמונות מוצר והגדרות מוצר ולשתף קישורים למוצר ישירות מהאפליקציה.
-- משתמשים מקליפורניה יכולים להציג את הצהרת הפרטיות החדשה.
+4.6
+חדש: הוספנו מציין מיקום להזמנות עם שם לקוח חסר.
+
+תיקון: כעת ניתן להציג מספר הודעות של הזמנות חדשות.
+
+התאמות: עדכנו את צבע הרקע של תצוגת ההתחברות והעברנו את הודעת הפרטיות של משתמשים בקליפורניה למסך 'אודות האפליקציה'.
 </iw-IL>
+<id>
+4.6:
+Baru: Placeholder tambahan untuk pesanan yang tidak memiliki nama pelanggan.
+
+Perbaikan: Beberapa pemberitahuan pesanan baru sekarang dapat dilihat.
+
+Penyesuaian: Warna latar belakang tampilan login yang diperbarui dan pemberitahuan privasi untuk pengguna CA yang dipindahkan ke layar "Tentang Aplikasi".
+</id>
 <it-IT>
-4.5:
-- Miglioramenti prodotto: aggiornamento di immagini e impostazioni del prodotto e condivisione dei link di prodotti direttamente dall'app.
-- Gli utenti in California possono vedere la propria nota sulla privacy.
+4.6:
+Novità: aggiunto segnaposto per ordini in cui manca il nome del cliente.
+
+Correzione: sono ora visibili più notifiche di nuovi ordini.
+
+Modifiche: colore di sfondo delle viste di accesso aggiornato e nota della privacy per utenti in CA spostata sulla schermata "Info sull'app".
 </it-IT>
 <ja-JP>
-4.5: 
-- 商品の機能強化 : 商品画像および設定の更新と商品リンクの共有がアプリから直接できるようになりました。
-- カリフォルニア州のユーザーは新しいプライバシー通知を確認できます。
+4.6:
+新規: 顧客名がない注文用にプレースホルダーを追加しました。
+
+修正: 複数の新規オーダー通知が表示されるようになりました。
+
+調整: ログイン画面の背景色を更新し、カリフォルニア州のユーザー向けのプライバシー通知を「アプリについて」画面に移動しました。
 </ja-JP>
 <ko-KR>
-4.5:
-- 향상된 제품 기능: 제품 이미지와 제품 설정을 업데이트하고 앱에서 바로 제품 링크를 공유하세요.
-- 캘리포니아 내 사용자가 개인정보 고지사항을 볼 수 있습니다.
+4.6:
+새로운 기능: 고객 이름이 누락된 주문의 플레이스 홀더를 추가했습니다.
+
+수정 사항: 이제 여러 개의 새로운 주문 알림을 볼 수 있습니다.
+
+조정 사항: 로그인 보기 배경 색상이 업데이트되었으며 캘리포니아 사용자를 위한 개인정보 공지가 "정보 앱" 화면으로 이동되었습니다.
 </ko-KR>
 <nl-NL>
-4.5:
-- Productverbeteringen: werk productafbeeldingen, productinstellingen en links voor het delen van producten rechtstreeks vanuit de app bij.
-- Gebruikers uit Californië kunnen een nieuwe privacyverklaring bekijken.
+4.6:
+Nieuw: Placeholder toegevoegd voor bestellingen zonder klantnaam.
+
+Fix: Er zijn nu meerdere nieuwe bestellingsmeldingen beschikbaar.
+
+Aanpassingen: Bijgewerkte achtergrondkleur voor de inlogweergaven en verplaatsing van de privacyverklaring voor gebruikers in Californië naar het scherm 'Over de app'.
 </nl-NL>
 <pt-BR>
-4.5:
-- Melhorias nos produtos: atualize imagens e configurações de produtos e compartilhe os links deles diretamente pelo app.
-- Novo aviso de privacidade disponível para usuários residentes da Califórnia.
+4.6:
+Novidade: espaço reservado para pedidos sem o nome do cliente.
+
+Correção: várias notificações de novo pedido agora podem ser visualizadas.
+
+Ajustes: cor de fundo das visualizações de login atualizada e aviso de privacidade referente a usuários residentes da Califórnia movido para a tela "Sobre o app".
 </pt-BR>
+<ru-RU>
+4.6:
+Новинка: в заказы без имени клиента добавлен заполнитель.
+
+Исправление: теперь может отображаться несколько уведомлений о новых заказах.
+
+Настройки: изменен цвет фона страницы входа, а уведомление о конфиденциальности для жителей Калифорнии перемещено на экран «О приложении».
+</ru-RU>
 <sv-SE>
-4,5:
-– Produktförbättringar: uppdatera produktbilder, produktinställningar och dela produktlänkar direkt från appen.
-– Användare från Kalifornien kan visa ett nytt sekretessmeddelande.
+4.6:
+Nytt: Lade till platshållare för ordrar som saknar ett kundnamn.
+
+Korrigering: flera nya ordermeddelanden kan nu visas.
+
+Justeringar: uppdaterade bakgrundsfärgen för inloggningsvyer och flyttade sekretessmeddelande för CA-användare till Om appen-skärmen.
 </sv-SE>
 <tr-TR>
-4,5:
-- Ürün geliştirmeleri: Ürün görüntülerini, ürün ayarlarını güncelleyin ve ürün bağlantılarını doğrudan uygulamadan paylaşın.
-- Kaliforniya'daki kullanıcılar yeni bir gizlilik bildirimini görüntüleyebilirler.
+4,6:
+Yeni: Müşteri adının eksik olduğu siparişler için yer tutucu eklendi.
+
+Düzeltme: Birden çok yeni sipariş bildirimi artık görüntülenebilir.
+
+Ayarlar: Oturum açma görünümlerinin arka plan rengi güncellendi ve CA kullanıcıları için gizlilik bildirimi "Uygulama Hakkında" ekranına taşındı.
 </tr-TR>
 <zh-CN>
-4.5：
-- 产品增强功能：更新产品图片、产品设置，并且直接通过应用程序共享产品链接。
-- 加州用户可以查看新的隐私声明。
+4.6：
+新增：为缺少客户姓名的订单添加了占位符。
+
+修复：现在可以查看多个新订单通知。
+
+调整：更新了登录视图的背景颜色，并将加州用户的隐私声明移至“关于应用程序”屏幕。
 </zh-CN>
 <zh-TW>
-4.5：
-- 產品改善功能：更新產品圖片、產品設定，並可直接從應用程式分享產品連結。
-- 加州使用者可檢閱新版隱私權聲明。
+4.6：
+新功能：為缺少客戶姓名的訂單新增預留位置。
+
+修正：現在可以查看多個新訂單通知。
+
+調整：更新登入檢視的背景顏色，並將加州使用者的隱私權聲明移至「關於應用程式」畫面。
 </zh-TW>
 <en-US>
-4.5:
-- Product enhancements: Update product images, product settings, and share product links right from the app.
-- California users can view a new privacy notice.
+4.6:
+New: Added placeholder for orders missing a customer’s name.
+
+Fix: Multiple new order notifications are now viewable.
+
+Adjustments: Updated background color of login views and moved privacy notice for CA users to “About App” screen.
 </en-US>

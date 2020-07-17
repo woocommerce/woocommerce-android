@@ -1,0 +1,6 @@
+4,6:
+Neu: Platzhalter hinzugefügt für Bestellungen, die keinen Kundennamen enthalten.
+
+Behoben: Mehrere neue Bestellbestätigung können jetzt angezeigt werden.
+
+Anpassungen: Hintergrundfarbe der Anmeldebildschirme geändert und Datenschutzhinweis für Benutzer von Zertifizierungsstellen zum Bildschirm „About App“ (Über die App) hinzugefügt.
