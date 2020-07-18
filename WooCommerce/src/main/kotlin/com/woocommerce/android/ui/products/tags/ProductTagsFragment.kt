@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.OnProductTagClickListener
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_tags.*
@@ -31,6 +32,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     private lateinit var productTagsAdapter: ProductTagsAdapter
 
     private val skeletonView = SkeletonView()
+    private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +64,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+                viewModel.onProductTagDoneMenuActionClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -110,6 +112,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productTagsLayout.isRefreshing = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.shouldDisplayDoneMenuButton?.takeIfNotEqualTo(old?.shouldDisplayDoneMenuButton) {
                 showUpdateMenuItem(it)
             }
@@ -162,6 +165,24 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         }
     }
 
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                getString(R.string.product_add_tag_dialog_title),
+                getString(R.string.product_update_dialog_message)
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
+    }
+
     private fun showLoadMoreProgress(show: Boolean) {
         loadMoreTagsProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
@@ -182,5 +203,6 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onProductTagRemoved(productTag: ProductTag) {
         viewModel.onProductTagSelectionRemoved(productTag)
         addProductTagView.removeSelectedTag(productTag)
+        changesMade()
     }
 }

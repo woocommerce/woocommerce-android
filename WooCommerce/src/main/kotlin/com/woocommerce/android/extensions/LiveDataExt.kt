@@ -27,3 +27,10 @@ fun <T> MutableLiveData<MutableList<T>>.removeItem(item: T) {
         this.value = mutableListOf()
     }
 }
+
+fun <T> MutableLiveData<MutableList<T>>.getList(): MutableList<T> =
+    this.value ?: mutableListOf()
+
+fun <T> MutableLiveData<MutableList<T>>.clearList() {
+    this.value?.clear()
+}

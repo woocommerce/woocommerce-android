@@ -16,7 +16,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
+import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
+import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
@@ -30,6 +32,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -1182,6 +1185,33 @@ class ProductDetailViewModel @AssistedInject constructor(
         return sortedList.toList()
     }
 
+    fun onProductTagDoneMenuActionClicked() {
+        val tags = _addedProductTags.getList()
+        // check if there are tags entered that do not exist on the site. If so,
+        // call the API to add the tags to the site first
+        if (tags.isNotEmpty()) {
+            productTagsViewState = productTagsViewState.copy(isProgressDialogShown = true)
+            launch {
+                val addedTags = productTagsRepository.addProductTags(tags.map { it.name })
+                // if there are some tags that could not be added, display an error message
+                if (addedTags.size < tags.size) {
+                    triggerEvent(ShowSnackbar(string.product_add_tag_error))
+                }
+
+                // add the newly added tags to the product
+                _addedProductTags.clearList()
+                updateProductDraft(tags = addedTags.addTags(viewState.productDraft))
+
+                // redirect to the product detail screen
+                productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
+                onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+            }
+        } else {
+            // There are no newly added tags so redirect to the product detail screen
+            onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+        }
+    }
+
     /**
      * Method called when a tag is entered
      */
@@ -1202,9 +1232,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Method called when a tag is selected from the list of product tags
      */
     fun onProductTagSelected(tag: ProductTag) {
-        val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
-        selectedTags.add(tag)
-        updateProductDraft(tags = selectedTags)
+        updateProductDraft(tags = tag.addTag(viewState.productDraft))
         updateTagsMenuAction()
     }
 
@@ -1216,9 +1244,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (_addedProductTags.containsItem(tag)) {
             _addedProductTags.removeItem(tag)
         } else {
-            val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
-            selectedTags.remove(tag)
-            updateProductDraft(tags = selectedTags)
+            updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
         updateTagsMenuAction()
     }
@@ -1440,7 +1466,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val shouldDisplayDoneMenuButton: Boolean? = null
+        val shouldDisplayDoneMenuButton: Boolean? = null,
+        val isProgressDialogShown: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory
