@@ -13,13 +13,33 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Package Header -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/shippingLabelList_lblPackage"
-            style="@style/Woo.Card.Title"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/orderdetail_shipping_label_item_header" />
+            android:orientation="horizontal">
+
+            <!-- Package Header -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/shippingLabelList_lblPackage"
+                style="@style/Woo.Card.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/orderdetail_shipping_label_item_header"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/shippingLabelList_btnMenu"
+                style="@style/Woo.ImageButton.More"
+                android:contentDescription="@string/orderdetail_shipping_label_item_menu"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Product List -->
         <androidx.recyclerview.widget.RecyclerView
