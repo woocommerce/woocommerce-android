@@ -42,7 +42,7 @@ class RevenueStatsAvailabilityFetcher @Inject constructor(
             // only if there is no error OR if the error is because of plugin not available
             // this is because we don't want to update the availability if the error response is due of network issues
             if (!event.isError || (event.isError && event.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE)) {
-                AppPrefs.setIsUsingV4Api(event.availability)
+                AppPrefs.setV4StatsSupported(event.availability)
                 EventBus.getDefault().post(RevenueStatsAvailabilityChangeEvent(event.availability))
             }
         }

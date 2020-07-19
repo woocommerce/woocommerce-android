@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.6-rc-2"
+            versionName "4.6"
         }
-        versionCode 138
+        versionCode 140
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -312,6 +312,12 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     ]
 }
 
+task printVersionName {
+    doLast {
+        println android.defaultConfig.versionName
+    }
+}
+
 def checkGradlePropertiesFile() {
     def inputFile = file("${rootDir}/gradle.properties")
     if (!inputFile.exists()) {
@@ -329,14 +335,14 @@ static def loadPropertiesFromFile(inputFile) {
 }
 
 // For app signing
-if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.hasProperty(it) } == 0) {
+if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !project.hasProperty(it) } == 0) {
     android {
         signingConfigs {
             release {
-                storeFile = rootProject.file(project.storeFile)
-                storePassword = project.storePassword
-                keyAlias = project.keyAlias
-                keyPassword = project.keyPassword
+                storeFile = rootProject.file(project.uploadStoreFile)
+                storePassword = project.uploadStorePassword
+                keyAlias = project.uploadKeyAlias
+                keyPassword = project.uploadKeyPassword
             }
         }
     }

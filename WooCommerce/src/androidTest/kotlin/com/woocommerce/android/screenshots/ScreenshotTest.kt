@@ -39,7 +39,6 @@ class ScreenshotTest {
         // My Store
         // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         MyStoreScreen()
-            .dismissTopBannerIfNeeded()
             .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
     }
 }

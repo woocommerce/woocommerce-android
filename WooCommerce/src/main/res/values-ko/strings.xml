@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-06-10 08:54:04+0000
+Translation-Revision-Date: 2020-07-08 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_add_category_dialog_message">기다려주세요…</string>
+    <string name="product_add_category_dialog_title">카테고리 추가 중</string>
+    <string name="product_category_parent">상위 카테고리</string>
+    <string name="product_category_name">카테고리 이름</string>
+    <string name="add_product_category_empty">카테고리 이름 입력</string>
+    <string name="add_product_category_failed">카테고리 만들기 오류</string>
+    <string name="add_product_category_duplicate">카테고리 만들기 오류 - 이미 사이트에 존재하는 이름입니다.</string>
+    <string name="add_product_category_success">제품 카테고리 추가됨</string>
+    <string name="product_add_category">카테고리 추가</string>
+    <string name="product_category_list_empty_message">카테고리로 제품 정리</string>
+    <string name="product_category_list_empty_title">첫 번째 카테고리 추가</string>
+    <string name="product_category_empty">카테고리 추가</string>
+    <string name="product_categories">카테고리</string>
+    <string name="orderdetail_customer_name_default">비회원</string>
+    <string name="settings_privacy_policy_ca">캘리포니아 사용자를 위한 개인정보 공지</string>
+    <string name="keep_changes">변경 사항 유지</string>
     <string name="product_sale_date_to">%1$s까지</string>
     <string name="product_wip_message">제품에 더 많은 편집 기능을 추가했습니다. 이제 이미지를 업데이트하고 제품 설정을 편집하고 제품을 공유할 수 있습니다!</string>
     <string name="product_wip_title">사용 가능한 새 편집 옵션</string>
