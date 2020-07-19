@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -145,6 +146,9 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                     ))
                     itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(shippingLabel.trackingNumber)
                     itemView.shippingLabelList_btnMenu.visibility = View.VISIBLE
+                    itemView.shippingLabelList_btnMenu.setOnClickListener {
+                        showRefundPopup(context, shippingLabel)
+                    }
 
                     shippingLabel.trackingLink?.let {
                         itemView.shippingLabelItem_trackingNumber.showTrackingLinkButton(true)
@@ -210,6 +214,20 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                     }
                     setRecycledViewPool(viewPool)
                 }
+            }
+
+            private fun showRefundPopup(
+                context: Context,
+                item: ShippingLabel
+            ) {
+                val popup = PopupMenu(context, itemView.shippingLabelList_btnMenu)
+                popup.menuInflater.inflate(R.menu.menu_shipping_label, popup.menu)
+
+                popup.menu.findItem(R.id.menu_refund)?.setOnMenuItemClickListener {
+                    // TODO: open refund screen
+                    true
+                }
+                popup.show()
             }
         }
     }
