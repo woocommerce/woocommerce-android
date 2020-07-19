@@ -299,6 +299,14 @@
     <!--
         Refunds
     -->
+    <string name="shipping_label_refund_message">You can request a refund for a shipping label that has not been used to ship a package. It will take a least 14 days to process.</string>
+    <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
+    <string name="shipping_label_refund_amount_title">Amount eligible for refund</string>
+    <string name="shipping_label_refund_button">Refund label</string>
+
+    <!--
+        Refunds
+    -->
     <string name="order_refunds_available_for_refund">%s available for refund</string>
     <string name="order_refunds_title_with_amount">Refund %s</string>
     <string name="order_refunds_confirmation">Are you sure you want to issue a refund? This can’t be undone.</string>
