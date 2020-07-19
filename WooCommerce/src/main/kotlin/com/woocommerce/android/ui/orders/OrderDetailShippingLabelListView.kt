@@ -21,6 +21,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.loadProductItems
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelActionListener
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -44,15 +45,17 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
         order: Order,
         shippingLabels: List<ShippingLabel>,
         productImageMap: ProductImageMap,
-        formatCurrencyForDisplay: (BigDecimal) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        shippingLabelActionListener: ShippingLabelActionListener
     ) {
         val viewManager = LinearLayoutManager(context)
         viewAdapter = ShippingLabelListAdapter(
             context,
             productImageMap,
-            order.items,
+            order,
             shippingLabels,
-            formatCurrencyForDisplay
+            formatCurrencyForDisplay,
+            shippingLabelActionListener
         )
 
         shippingLabel_list.apply {
@@ -71,9 +74,10 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
     class ShippingLabelListAdapter(
         private val context: Context,
         private val productImageMap: ProductImageMap,
-        private val orderItems: List<Order.Item>,
+        private val order: Order,
         private val shippingLabels: List<ShippingLabel>,
-        private val formatCurrencyForDisplay: (BigDecimal) -> String
+        private val formatCurrencyForDisplay: (BigDecimal) -> String,
+        private val shippingLabelActionListener: ShippingLabelActionListener
     ) : RecyclerView.Adapter<ShippingLabelListAdapter.ShippingLabelListViewHolder>() {
         private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -85,11 +89,11 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: ShippingLabelListViewHolder, position: Int) {
             val shippingLabel = shippingLabels[position]
-            holder.bindTo(context, shippingLabel, formatCurrencyForDisplay)
+            holder.bindTo(context, order, shippingLabel, formatCurrencyForDisplay, shippingLabelActionListener)
             holder.bindProductItems(
                 context,
                 productImageMap,
-                shippingLabel.loadProductItems(orderItems),
+                shippingLabel.loadProductItems(order.items),
                 formatCurrencyForDisplay,
                 viewPool
             )
@@ -100,8 +104,10 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
         class ShippingLabelListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             fun bindTo(
                 context: Context,
+                order: Order,
                 shippingLabel: ShippingLabel,
-                formatCurrencyForDisplay: (BigDecimal) -> String
+                formatCurrencyForDisplay: (BigDecimal) -> String,
+                shippingLabelActionListener: ShippingLabelActionListener
             ) {
                 itemView.shippingLabelItem_viewMore.setOnClickListener {
                     val isChecked = itemView.shippingLabelItem_viewMoreButtonImage.rotation == 0F
@@ -147,7 +153,7 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                     itemView.shippingLabelItem_trackingNumber.setShippingLabelValue(shippingLabel.trackingNumber)
                     itemView.shippingLabelList_btnMenu.visibility = View.VISIBLE
                     itemView.shippingLabelList_btnMenu.setOnClickListener {
-                        showRefundPopup(context, shippingLabel)
+                        showRefundPopup(context, shippingLabel, order, shippingLabelActionListener)
                     }
 
                     shippingLabel.trackingLink?.let {
@@ -218,13 +224,15 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
 
             private fun showRefundPopup(
                 context: Context,
-                item: ShippingLabel
+                item: ShippingLabel,
+                order: Order,
+                shippingLabelActionListener: ShippingLabelActionListener
             ) {
                 val popup = PopupMenu(context, itemView.shippingLabelList_btnMenu)
                 popup.menuInflater.inflate(R.menu.menu_shipping_label, popup.menu)
 
                 popup.menu.findItem(R.id.menu_refund)?.setOnMenuItemClickListener {
-                    // TODO: open refund screen
+                    shippingLabelActionListener.openShippingLabelRefund(order.remoteId, item.id)
                     true
                 }
                 popup.show()
