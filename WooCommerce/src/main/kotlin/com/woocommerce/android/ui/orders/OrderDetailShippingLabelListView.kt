@@ -15,7 +15,6 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
-import com.woocommerce.android.extensions.getCountryLabelByCountryCode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.loadProductItems
@@ -165,7 +164,7 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                 shippingLabel.originAddress?.let {
                     itemView.shippingLabelItem_shipFrom.setShippingLabelValue(
                         AddressUtils.getFullAddress(
-                            it.name, it.getEnvelopeAddress(), it.country.getCountryLabelByCountryCode()
+                            it.name, it.getEnvelopeAddress(), AddressUtils.getCountryLabelByCountryCode(it.country)
                         )
                     )
                 }
@@ -173,7 +172,7 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
                 shippingLabel.destinationAddress?.let {
                     itemView.shippingLabelItem_shipTo.setShippingLabelValue(
                         AddressUtils.getFullAddress(
-                            it.name, it.getEnvelopeAddress(), it.country.getCountryLabelByCountryCode()
+                            it.name, it.getEnvelopeAddress(), AddressUtils.getCountryLabelByCountryCode(it.country)
                         )
                     )
                 }
