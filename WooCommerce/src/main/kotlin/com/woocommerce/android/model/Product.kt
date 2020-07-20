@@ -1,8 +1,10 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
@@ -382,6 +384,19 @@ data class Product(
         } else {
             ""
         }.trim()
+    }
+
+    @StringRes
+    fun getProductTypeFormattedForDisplay(): Int {
+        return when (this.type) {
+            ProductType.SIMPLE -> {
+                if (this.isVirtual) R.string.product_type_virtual
+                else R.string.product_type_physical
+            }
+            ProductType.VARIABLE -> R.string.product_type_variable
+            ProductType.GROUPED -> R.string.product_type_grouped
+            ProductType.EXTERNAL -> R.string.product_type_external
+        }
     }
 }
 
