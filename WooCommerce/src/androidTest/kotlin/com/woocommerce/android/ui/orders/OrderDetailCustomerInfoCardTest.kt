@@ -39,6 +39,7 @@ import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -276,13 +277,13 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         val billingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withText(billingAddrFull)))
 
-        // no shipping available so hide section
-        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_shippingLabel)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+        // no shipping available so display only empty address text
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(R.string.orderdetail_empty_shipping_address)))
+        onView(withId(R.id.customerInfo_shippingMethodSection)).check(matches(withEffectiveVisibility(GONE)))
     }
 
+    // This test is disabled, see https://github.com/woocommerce/woocommerce-android/issues/2636
+    @Ignore
     @Test
     fun verifyOrderDetailCardViewWithBillingPhonePopulatedSuccessfully() {
         // add mock data to order detail screen
@@ -292,6 +293,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Show Billing button
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo())
 
         // since the customer info phone is NOT empty, the view should be displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(VISIBLE)))
@@ -305,17 +310,14 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(GONE)))
 
-        // verify that billing address section is not displayed
-        onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        // verify that billing address is not displayed
+        onView(withId(R.id.customerInfo_billingLabel)).check(matches(withText(R.string.orderdetail_billing_details)))
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
 
-        // no shipping available so hide section
-        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_shippingLabel)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+        // no shipping available so display only empty address text
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(R.string.orderdetail_empty_shipping_address)))
+        onView(withId(R.id.customerInfo_shippingMethodSection)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
@@ -328,6 +330,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
+        // click on Show Billing button
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo())
+
         // verify the billing phone section is not displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
@@ -337,17 +343,14 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
 
-        // verify that billing address section is not displayed
-        onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        // verify that billing address is not displayed
+        onView(withId(R.id.customerInfo_billingLabel)).check(matches(withText(R.string.orderdetail_billing_details)))
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
 
-        // no shipping available so hide section
-        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_shippingLabel)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+        // no shipping available so display only empty address text
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(R.string.orderdetail_empty_shipping_address)))
+        onView(withId(R.id.customerInfo_shippingMethodSection)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
@@ -361,6 +364,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Show Billing button
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo())
 
         // since the customer info phone is NOT empty, the view should be displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(VISIBLE)))
@@ -395,6 +402,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
+        // click on Show Billing button
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo())
+
         // click on the call or message button
         onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
 
@@ -422,6 +433,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Show Billing button
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo())
 
         // click on the call or message button
         onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
@@ -483,6 +498,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
+        // click on Show Billing button
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo())
+
         // click on the Email icon
         onView(withId(R.id.customerInfo_emailBtn)).perform(WCMatchers.scrollTo(), click())
 
@@ -492,6 +511,8 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         )))
     }
 
+    // This test is disabled, see https://github.com/woocommerce/woocommerce-android/issues/2635
+    @Ignore
     @Test
     fun verifyCustomerInfoCardShippingHiddenWhenProductVirtual() {
         // add mock data to order detail screen
