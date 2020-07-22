@@ -100,6 +100,7 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                product.productType(),
                 product.shortDescription(),
                 product.readOnlyInventory(),
                 product.categories(),
@@ -113,6 +114,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
+                product.productType(),
                 product.externalLink(),
                 product.shortDescription(),
                 product.readOnlyInventory(),
@@ -126,6 +128,7 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                product.productType(),
                 product.variations(),
                 product.shortDescription(),
                 product.categories(),
