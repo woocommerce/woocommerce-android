@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.TestBase
 import org.hamcrest.Matchers.equalToIgnoringCase
 import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,6 +46,8 @@ class MainNavigationTest : TestBase() {
         assertPressingBackExitsApp()
     }
 
+    // This test is disabled, see https://github.com/woocommerce/woocommerce-android/issues/2634
+    @Ignore
     @Test
     fun pressingBackAfterBottomNavOptionChangeExitsApp() {
         // Make sure the bottom navigation view is showing
