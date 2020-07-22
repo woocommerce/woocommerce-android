@@ -303,6 +303,8 @@
     <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
     <string name="shipping_label_refund_amount_title">Amount eligible for refund</string>
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
+    <string name="shipping_label_refund_success">Refund was successfully submitted</string>
+    <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
     <!--
         Refunds
