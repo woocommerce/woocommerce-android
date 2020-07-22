@@ -250,7 +250,7 @@ object WcOrderTestUtils {
      * Generates a single [WCOrderModel] object for Order detail screen.
      */
     fun generateOrderDetail(
-        dateCreatedString: String = "",
+        dateCreatedString: String = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTime()),
         note: String = "",
         billingFirstName: String = "",
         billingLastName: String = "",
