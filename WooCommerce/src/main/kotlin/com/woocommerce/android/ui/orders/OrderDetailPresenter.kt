@@ -271,6 +271,9 @@ class OrderDetailPresenter @Inject constructor(
             selectedSite.get(), order.getLineItemList(), productStore
     )
 
+    override fun getProductsByIds(remoteProductIds: List<Long>) =
+        productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+
     override fun doChangeOrderStatus(newStatus: String) {
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
