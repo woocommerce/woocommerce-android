@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -35,7 +34,6 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class OrderFulfillmentPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,

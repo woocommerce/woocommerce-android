@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -60,7 +59,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,

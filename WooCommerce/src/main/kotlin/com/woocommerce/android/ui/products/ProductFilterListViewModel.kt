@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -24,7 +23,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
 
-@OpenClassOnDebug
 class ProductFilterListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,

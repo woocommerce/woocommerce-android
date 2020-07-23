@@ -7,7 +7,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -27,7 +26,6 @@ import java.math.BigDecimal
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 
-@OpenClassOnDebug
 class RefundDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,

@@ -59,6 +59,7 @@
     <string name="refunds">Refunds</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
+    <string name="product_variation_options">%1$s (%2$s options)</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -448,7 +449,7 @@
     <string name="product_schedule_remove_end_date_link_label">Remove end date</string>
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
-    <string name="product_sale_date_from">from %1$s</string>
+    <string name="product_sale_date_from">From %1$s</string>
     <string name="product_sale_date_to">Until %1$s</string>
     <string name="product_tax_settings">Tax settings</string>
     <string name="product_tax_status">Tax status</string>
@@ -461,6 +462,8 @@
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
+    <string name="product_type_description">%s product</string>
+    <string name="product_type_downloadable">downloadable</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
     <string name="product_sold_individually">Limit one per order</string>
@@ -567,6 +570,8 @@
     <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
     <string name="product_menu_order">Menu order</string>
     <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog. The lower the value of the number, the higher the item will be on the product list. You can also use negative numbers.</string>
+    <string name="product_variation_visible">Visible</string>
+    <string name="product_variation_hidden">Hidden</string>
     <string name="product_categories">Categories</string>
     <string name="product_category_empty">Add category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
