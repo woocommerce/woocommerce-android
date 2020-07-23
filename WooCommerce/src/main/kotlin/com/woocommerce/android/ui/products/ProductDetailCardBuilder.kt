@@ -288,7 +288,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.shortDescription(): ProductProperty? {
-        return if (hasShortDescription()) {
+        return if (hasShortDescription) {
             ComplexProperty(
                 R.string.product_short_description,
                 shortDescription,
@@ -341,7 +341,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.shipping(): ProductProperty? {
-        return if (!this.isVirtual && hasShipping()) {
+        return if (!this.isVirtual && hasShipping) {
             val weightWithUnits = this.getWeightWithUnits(parameters.weightUnit)
             val sizeWithUnits = this.getSizeWithUnits(parameters.dimensionUnit)
             val shippingGroup = mapOf(
@@ -504,7 +504,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.categories(): ProductProperty? {
-        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && hasCategories()) {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && hasCategories) {
             val categories = categories.joinToString(transform = { it.name })
 
             ComplexProperty(
@@ -524,7 +524,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.tags(): ProductProperty? {
-        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && hasTags()) {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && hasTags) {
             val tags = this.tags.joinToString(transform = { it.name })
 
             ComplexProperty(
