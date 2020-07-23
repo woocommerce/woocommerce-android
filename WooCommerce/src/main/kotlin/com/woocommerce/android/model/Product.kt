@@ -140,14 +140,15 @@ data class Product(
             isSameTags(product.tags)
     }
 
-    fun hasCategories() = categories.isNotEmpty()
-    fun hasTags() = tags.isNotEmpty()
-    fun hasShortDescription() = shortDescription.isNotEmpty()
-    fun hasShipping(): Boolean {
-        return weight > 0 ||
-            length > 0 || width > 0 || height > 0 ||
-            shippingClass.isNotEmpty()
-    }
+    val hasCategories get() = categories.isNotEmpty()
+    val hasTags get() = tags.isNotEmpty()
+    val hasShortDescription get() = shortDescription.isNotEmpty()
+    val hasShipping: Boolean
+        get() {
+            return weight > 0 ||
+                length > 0 || width > 0 || height > 0 ||
+                shippingClass.isNotEmpty()
+        }
 
     /**
      * Verifies if there are any changes made to the inventory fields
