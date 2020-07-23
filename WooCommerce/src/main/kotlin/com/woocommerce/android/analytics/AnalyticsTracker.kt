@@ -299,6 +299,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_TAGS_LOAD_FAILED,
         PRODUCT_TAGS_PULLED_TO_REFRESH,
 
+        // -- Product variation
+        PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED,
+        PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED,
+        PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED,
+        PRODUCT_VARIATION_IMAGE_TAPPED,
+
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_DETAIL_ADD_IMAGE_TAPPED,

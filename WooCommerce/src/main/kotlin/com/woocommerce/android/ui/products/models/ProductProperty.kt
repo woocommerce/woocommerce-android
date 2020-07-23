@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.models
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.COMPLEX_PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.DIVIDER
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.EDITABLE
@@ -10,6 +11,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_GROUP
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
 
 sealed class ProductProperty(val type: Type) {
     enum class Type {
@@ -20,7 +22,8 @@ sealed class ProductProperty(val type: Type) {
         EDITABLE,
         PROPERTY_GROUP,
         LINK,
-        READ_MORE
+        READ_MORE,
+        SWITCH
     }
 
     object Divider : ProductProperty(DIVIDER)
@@ -80,12 +83,20 @@ sealed class ProductProperty(val type: Type) {
         val properties: Map<String, String>,
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
+        @StringRes val propertyFormat: Int = R.string.product_property_default_formatter,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(PROPERTY_GROUP) {
         override fun isNotEmpty(): Boolean {
             return this.properties.filter { it.value.isNotBlank() }.isNotEmpty()
         }
     }
+
+    data class Switch(
+        @StringRes val title: Int,
+        val isOn: Boolean,
+        @DrawableRes val icon: Int? = null,
+        val onStateChanged: ((Boolean) -> Unit)? = null
+    ) : ProductProperty(SWITCH)
 
     open fun isNotEmpty(): Boolean {
         return true

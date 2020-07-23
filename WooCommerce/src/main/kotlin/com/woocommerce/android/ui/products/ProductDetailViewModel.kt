@@ -7,13 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVi
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -101,12 +102,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
+    private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
+
     /**
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    final val parameters: Parameters by lazy {
-        val params = savedState.get<Parameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
+    val parameters: SiteParameters by lazy {
+        val params = savedState.get<SiteParameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
         savedState[KEY_PRODUCT_PARAMETERS] = params
         params
     }
@@ -114,7 +117,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var skuVerificationJob: Job? = null
 
     // view state for the product detail screen
-    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
+    val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
             updateCards()
         }
@@ -122,19 +125,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var viewState by productDetailViewStateData
 
     // view state for the product inventory screen
-    final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
+    val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
 
     // view state for the product pricing screen
-    final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
+    val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
     private var productPricingViewState by productPricingViewStateData
 
     // view state for the product images screen
-    final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
+    val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
     private var productImagesViewState by productImagesViewStateData
 
     // view state for the product categories screen
-    final val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
     // view state for the product tags screen
@@ -162,7 +165,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     init {
+        start()
+    }
+
+    fun start() {
         EventBus.getDefault().register(this)
+        loadProduct(navArgs.remoteProductId)
     }
 
     fun getProduct() = viewState
@@ -171,10 +179,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
         return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
-    }
-
-    fun start(remoteProductId: Long) {
-        loadProduct(remoteProductId)
     }
 
     fun initialisePricing() {
@@ -795,14 +799,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Loads the product dependencies for a site such as dimensions, currency or timezone
      */
-    private fun loadParameters(): Parameters {
+    private fun loadParameters(): SiteParameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
         val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
             return@let Pair(settings.weightUnit, settings.dimensionUnit)
         } ?: Pair(null, null)
 
-        return Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
+        return SiteParameters(
+            currencyCode,
+            weightUnit,
+            dimensionUnit,
+            gmtOffset
+        )
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
@@ -1299,14 +1308,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
-
-    @Parcelize
-    data class Parameters(
-        val currencyCode: String?,
-        val weightUnit: String?,
-        val dimensionUnit: String?,
-        val gmtOffset: Float
-    ) : Parcelable
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
