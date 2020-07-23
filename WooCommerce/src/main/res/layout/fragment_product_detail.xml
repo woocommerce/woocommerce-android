@@ -151,24 +151,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productDetail_addMoreDivider">
 
-            <ImageView
-                android:layout_width="@dimen/image_minor_60"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_add" />
-
             <com.google.android.material.textview.MaterialTextView
                 style="@style/Woo.Button"
-                android:layout_width="wrap_content"
+                android:drawableStart="@drawable/ic_add"
+                android:gravity="start|center_vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="false"
                 android:focusable="false"
                 android:importantForAccessibility="no"
-                android:paddingStart="@dimen/minor_00"
-                android:paddingEnd="@dimen/minor_00"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
+                android:drawablePadding="@dimen/major_100"
                 android:text="@string/product_detail_add_more" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
