@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -54,10 +55,6 @@ data class Product(
     val manageStock: Boolean,
     val stockQuantity: Int,
     val sku: String,
-    val length: Float,
-    val width: Float,
-    val height: Float,
-    val weight: Float,
     val shippingClass: String,
     val shippingClassId: Long,
     val isDownloadable: Boolean,
@@ -76,8 +73,12 @@ data class Product(
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
     val categories: List<ProductCategory>,
-    val tags: List<ProductTag>
-) : Parcelable {
+    val tags: List<ProductTag>,
+    override val length: Float,
+    override val width: Float,
+    override val height: Float,
+    override val weight: Float
+) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
     }
@@ -119,8 +120,8 @@ data class Product(
                 isSaleScheduled == product.isSaleScheduled &&
                 saleEndDateGmt == product.saleEndDateGmt &&
                 saleStartDateGmt == product.saleStartDateGmt &&
-                isSamePrice(regularPrice, product.regularPrice) &&
-                isSamePrice(salePrice, product.salePrice) &&
+                regularPrice isEquivalentTo product.regularPrice &&
+                salePrice isEquivalentTo product.salePrice &&
                 weight == product.weight &&
                 length == product.length &&
                 height == product.height &&
@@ -137,12 +138,6 @@ data class Product(
                 isSameImages(product.images) &&
                 isSameCategories(product.categories) &&
                 isSameTags(product.tags)
-    }
-
-    private fun isSamePrice(first: BigDecimal?, second: BigDecimal?): Boolean {
-        val val1 = first ?: BigDecimal.ZERO
-        val val2 = second ?: BigDecimal.ZERO
-        return val1.isEqualTo(val2)
     }
 
     /**
@@ -352,38 +347,6 @@ data class Product(
                     tags = updatedProduct.tags
             )
         } ?: this.copy()
-    }
-
-    /**
-     * Formats the [Product] weight with the given [weightUnit]
-     * for display purposes.
-     * Eg: 12oz
-     */
-    fun getWeightWithUnits(weightUnit: String?): String {
-        return if (weight > 0) {
-            "${weight.formatToString()}${weightUnit ?: ""}"
-        } else ""
-    }
-
-    /**
-     * Formats the [Product] size (length, width, height) with the given [dimensionUnit]
-     * if all the dimensions are available.
-     * Eg: 12 x 15 x 13 in
-     */
-    fun getSizeWithUnits(dimensionUnit: String?): String {
-        val hasLength = length > 0
-        val hasWidth = width > 0
-        val hasHeight = height > 0
-        val unit = dimensionUnit ?: ""
-        return if (hasLength && hasWidth && hasHeight) {
-            "${length.formatToString()} " +
-                    "x ${width.formatToString()} " +
-                    "x ${height.formatToString()} $unit"
-        } else if (hasWidth && hasHeight) {
-            "${width.formatToString()} x ${height.formatToString()} $unit"
-        } else {
-            ""
-        }.trim()
     }
 
     @StringRes

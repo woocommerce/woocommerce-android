@@ -114,7 +114,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun reloadImageGallery() {
         viewModel.getProduct().productDraft?.let {
-            imageGallery.showProductImages(it, this)
+            imageGallery.showProductImages(it.images, this)
         }
     }
 
