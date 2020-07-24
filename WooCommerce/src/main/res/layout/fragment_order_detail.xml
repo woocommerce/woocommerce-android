@@ -41,9 +41,19 @@
                     tools:visibility="visible" />
 
                 <!-- Product List -->
+                <com.woocommerce.android.ui.orders.OrderDetailShippingLabelListView
+                    android:id="@+id/orderDetail_shippingLabelList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:contentDescription="@string/shipping_labels"/>
+
+                <!-- Product List -->
                 <com.woocommerce.android.ui.orders.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
                     style="@style/Woo.Card"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"

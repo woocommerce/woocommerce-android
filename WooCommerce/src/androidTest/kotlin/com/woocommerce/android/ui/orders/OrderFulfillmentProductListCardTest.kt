@@ -105,7 +105,7 @@ class OrderFulfillmentProductListCardTest : TestBase() {
         ))
 
         // verify that the product total label is visible
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_totalPaid))
                 .check(matches(withEffectiveVisibility(VISIBLE)))
 
         // verify that the product total tax label is visible
@@ -145,14 +145,14 @@ class OrderFulfillmentProductListCardTest : TestBase() {
 
         // verify that the product total is displayed correctly for multiple quantities
         // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "$${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: $13.00 ($11.00x2)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "$${mockWCOrderModel.getLineItemList()[1].total}.00",
@@ -183,14 +183,14 @@ class OrderFulfillmentProductListCardTest : TestBase() {
 
         // verify that the product total is displayed correctly for multiple quantities
         // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "€${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: €13.00 (€11.00x2)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "€${mockWCOrderModel.getLineItemList()[1].total}.00",
@@ -221,14 +221,14 @@ class OrderFulfillmentProductListCardTest : TestBase() {
 
         // verify that the product total is displayed correctly for multiple quantities
         // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "₹${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: ₹13.00 (₹11.00x2)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "₹${mockWCOrderModel.getLineItemList()[1].total}.00",
@@ -259,14 +259,14 @@ class OrderFulfillmentProductListCardTest : TestBase() {
 
         // verify that the product total is displayed correctly for multiple quantities
         // for single quantity: getString( R.string.orderdetail_product_lineitem_qty_and_price, orderTotal)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "A$${mockWCOrderModel.getLineItemList()[0].total}.00"
                 ))))
 
         // for multiple quantities: A$13.00 (A$11.00x2)
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_productQtyAndPrice))
+        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_totalPaid))
                 .check(matches(withText(appContext.getString(
                         R.string.orderdetail_product_lineitem_qty_and_price,
                         "A\$${mockWCOrderModel.getLineItemList()[1].total}.00",
@@ -285,18 +285,15 @@ class OrderFulfillmentProductListCardTest : TestBase() {
         redirectToOrderFulfillment()
 
         // sku is available for the first item. Verify it is displayed correctly
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_lblSku))
-                .check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_sku))
                 .check(matches(withEffectiveVisibility(VISIBLE)))
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_lblSku))
-                .check(matches(withText(appContext.getString(R.string.orderdetail_product_lineitem_sku))))
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(0, R.id.productInfo_sku))
-                .check(matches(withText(mockWCOrderModel.getLineItemList()[0].sku)))
+                .check(matches(withText(String.format(
+                        appContext.getString(R.string.orderdetail_product_lineitem_sku_value),
+                        mockWCOrderModel.getLineItemList()[0].sku
+                    ))))
 
         // sku is not available for the second item. Verify it is hidden
-        onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_lblSku))
-                .check(matches(withEffectiveVisibility(GONE)))
         onView(withRecyclerView(R.id.productList_products).atPositionOnView(1, R.id.productInfo_sku))
                 .check(matches(withEffectiveVisibility(GONE)))
     }
