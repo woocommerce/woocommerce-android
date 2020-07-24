@@ -521,6 +521,7 @@
     <string name="product_detail_title_hint">Product title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
     <string name="product_detail_product_type_hint">%1$s product</string>
+    <string name="product_detail_add_more">Add more details</string>
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
@@ -571,6 +572,16 @@
     <string name="product_tags">Tags</string>
     <string name="product_tag_list_empty_title">Add your first tag</string>
     <string name="product_tag_list_empty_message">Organise your products in tags</string>
+
+    <!--
+        Product Add more details Bottom sheet
+    -->
+    <string name="bottom_sheet_add_details_list_header">Add more details</string>
+    <string name="bottom_sheet_shipping_desc">Add weight and dimensions</string>
+    <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
+    <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
+    <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+
     <!--
         Product images
     -->
