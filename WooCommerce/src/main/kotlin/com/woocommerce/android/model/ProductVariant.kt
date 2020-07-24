@@ -1,13 +1,21 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
+import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.util.DateTimeUtils
@@ -33,7 +41,7 @@ data class ProductVariant(
     val isVirtual: Boolean,
     val isDownloadable: Boolean,
     val description: String,
-    val status: ProductStatus?,
+    val isVisible: Boolean,
     val shippingClass: String,
     val shippingClassId: Long,
     override val length: Float,
@@ -58,14 +66,57 @@ data class ProductVariant(
             isPurchasable == variant.isPurchasable &&
             isVirtual == variant.isVirtual &&
             isDownloadable == variant.isDownloadable &&
-            description == variant.description &&
-            status == variant.status &&
+            description.fastStripHtml() == variant.description.fastStripHtml() &&
+            isVisible == variant.isVisible &&
             shippingClass == variant.shippingClass &&
             shippingClassId == variant.shippingClassId &&
             weight == variant.weight &&
             length == variant.length &&
             height == variant.height &&
             width == variant.width
+    }
+
+    fun toDataModel(): WCProductVariationModel {
+        fun imagesToJson(): String {
+            return image?.let { variantImage ->
+                JsonObject().also { json ->
+                    json.addProperty("id", variantImage.id)
+                    json.addProperty("name", variantImage.name)
+                    json.addProperty("source", variantImage.source)
+                }.toString()
+            } ?: ""
+        }
+
+        return WCProductVariationModel().also {
+            it.remoteProductId = remoteProductId
+            it.remoteVariationId = remoteVariationId
+            it.image = imagesToJson()
+            it.regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) "" else regularPrice.toString()
+            it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
+            if (isSaleScheduled) {
+                saleStartDateGmt?.let { dateOnSaleFrom ->
+                    it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
+                }
+                it.dateOnSaleToGmt = saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+            } else {
+                it.dateOnSaleFromGmt = ""
+                it.dateOnSaleToGmt = ""
+            }
+            it.onSale = isOnSale
+            it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
+            it.stockQuantity = stockQuantity
+            it.purchasable = isPurchasable
+            it.virtual = isVirtual
+            it.downloadable = isDownloadable
+            it.description = description
+            it.status = if (isVisible) PUBLISH.value else PRIVATE.value
+            it.shippingClass = shippingClass
+            it.shippingClassId = shippingClassId.toInt()
+            it.length = length.toString()
+            it.width = width.toString()
+            it.height = height.toString()
+            it.weight = weight.toString()
+        }
     }
 }
 
@@ -93,8 +144,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
         isPurchasable = this.purchasable,
         isDownloadable = this.downloadable,
         isVirtual = this.virtual,
-        description = this.description,
-        status = ProductStatus.fromString(this.status),
+        description = this.description.fastStripHtml(),
+        isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
         length = this.length.toFloatOrNull() ?: 0f,
