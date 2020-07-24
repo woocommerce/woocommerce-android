@@ -24,6 +24,7 @@ import javax.inject.Singleton
         ReleaseNetworkModule::class,
         ReleaseWCNetworkModule::class,
         ReleaseOkHttpClientModule::class,
+        InterceptorModuleTest::class,
         ActivityBindingModule::class,
         SelectedSiteModule::class,
         FCMServiceModule::class,
@@ -32,7 +33,8 @@ import javax.inject.Singleton
         NetworkStatusModule::class,
         CurrencyModule::class,
         SupportModule::class,
-        OrderFetcherModule::class])
+        OrderFetcherModule::class
+])
 interface AppComponentTest : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

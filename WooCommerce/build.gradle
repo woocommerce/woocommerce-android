@@ -111,6 +111,10 @@ android {
     testOptions {
         animationsDisabled = true
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
 }
 
 dependencies {
@@ -223,14 +227,17 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
-    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
-    androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
     kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
+    androidTestImplementation('com.github.tomakehurst:wiremock:2.27.0') {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
+    androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+//    androidTestImplementation "com.github.tomakehurst:wiremock-standalone:2.27.0"
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
