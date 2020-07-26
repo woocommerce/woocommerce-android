@@ -89,7 +89,7 @@ data class Order(
         unpackagedOrderItems: List<Item> = this.items
     ): Map<Long, Int> {
         val map = mutableMapOf<Long, Int>()
-        val groupedRefunds = refunds.flatMap { unpackagedOrderItems }.groupBy { it.uniqueId }
+        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
         unpackagedOrderItems.map { item ->
             map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
         }

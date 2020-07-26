@@ -11,7 +11,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 
-final class MockedProductDetailViewModel @AssistedInject constructor(
+class MockedProductDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     wooCommerceStore: MockedWooStore,
     selectedSite: SelectedSite,

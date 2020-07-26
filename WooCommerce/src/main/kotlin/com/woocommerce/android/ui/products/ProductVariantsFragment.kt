@@ -1,22 +1,28 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.products.ProductVariantsViewModel.ProductVariantsEvent.ShowVariantDetail
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -29,15 +35,16 @@ import javax.inject.Inject
 class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
     companion object {
         const val TAG: String = "ProductVariantsFragment"
+        private const val LIST_STATE_KEY = "list_state"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductVariantsViewModel by viewModels { viewModelFactory }
-    private lateinit var productVariantsAdapter: ProductVariantsAdapter
 
     private val skeletonView = SkeletonView()
+    private var layoutManager: LayoutManager? = null
 
     private val navArgs: ProductVariantsFragmentArgs by navArgs()
 
@@ -61,9 +68,39 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        layoutManager?.let {
+            outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeViews(savedInstanceState)
         initializeViewModel()
+    }
+
+    private fun initializeViews(savedInstanceState: Bundle?) {
+        val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        this.layoutManager = layoutManager
+
+        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+            layoutManager.onRestoreInstanceState(it)
+        }
+
+        productVariantsList.layoutManager = layoutManager
+        productVariantsList.itemAnimator = null
+        productVariantsList.addItemDecoration(AlignedDividerDecoration(
+            requireContext(), DividerItemDecoration.VERTICAL, R.id.variantOptionName, clipToMargin = false
+        ))
+
+        productVariantsRefreshLayout?.apply {
+            scrollUpChild = productVariantsList
+            setOnRefreshListener {
+                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
+                viewModel.refreshProductVariants(navArgs.remoteProductId)
+            }
+        }
     }
 
     private fun initializeViewModel() {
@@ -92,33 +129,16 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowVariantDetail -> openVariantDetail(event.variant)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> activity?.onBackPressed()
             }
         })
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val activity = requireActivity()
-
-        productVariantsAdapter = ProductVariantsAdapter(activity, GlideApp.with(this), this)
-        with(productVariantsList) {
-            layoutManager = LinearLayoutManager(activity)
-            adapter = productVariantsAdapter
-            addItemDecoration(AlignedDividerDecoration(
-                    activity, DividerItemDecoration.VERTICAL, R.id.variantOptionName, clipToMargin = false
-            ))
-        }
-
-        productVariantsRefreshLayout?.apply {
-            scrollUpChild = productVariantsList
-            setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
-                viewModel.refreshProductVariants(navArgs.remoteProductId)
-            }
-        }
+    private fun openVariantDetail(variant: ProductVariant) {
+        val action = ProductVariantsFragmentDirections.actionVariantsFragmentToVariantFragment(variant)
+        findNavController().navigateSafely(action)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variations)
@@ -140,6 +160,14 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
     }
 
     private fun showProductVariants(productVariants: List<ProductVariant>) {
-        productVariantsAdapter.setProductVariantList(productVariants)
+        val adapter = (productVariantsList.adapter ?: ProductVariantsAdapter(
+            requireContext(),
+            GlideApp.with(this),
+            this,
+            viewModel::onItemClick
+        )) as ProductVariantsAdapter
+
+        productVariantsList.adapter = adapter
+        adapter.setProductVariantList(productVariants)
     }
 }

@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface OrderDetailContract {
@@ -39,6 +40,7 @@ interface OrderDetailContract {
         fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
         fun isVirtualProduct(order: WCOrderModel): Boolean
         fun refreshOrderAfterDelay(refreshDelay: Long)
+        fun getProductsByIds(remoteProductIds: List<Long>): List<WCProductModel>
     }
 
     interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener, OrderRefundActionListener,
