@@ -92,8 +92,10 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         edit_text.setOnEditorActionListener { _, action, _ ->
             if (action == EditorInfo.IME_ACTION_DONE) {
                 val text = edit_text.text.toString()
-                edit_text.setText("")
-                cb.invoke(text)
+                if (text.isNotEmpty()) {
+                    edit_text.setText("")
+                    cb.invoke(text)
+                } else false
             } else {
                 false
             }
