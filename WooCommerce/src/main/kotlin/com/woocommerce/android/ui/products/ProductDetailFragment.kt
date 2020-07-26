@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -41,16 +40,22 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
+    companion object {
+        private const val LIST_STATE_KEY = "list_state"
+    }
+
     private var productName = ""
+        set(value) {
+            field = value
+            updateActivityTitle()
+        }
+
     private val skeletonView = SkeletonView()
-    private val LIST_STATE_KEY = "list_state"
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
 
     private var viewProductOnStoreMenuItem: MenuItem? = null
-
-    private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -87,7 +92,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -117,7 +121,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun showProductDetails(product: Product) {
         productName = product.name.fastStripHtml()
-        updateActivityTitle()
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
@@ -129,7 +132,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         } else {
             addImageContainer.visibility = View.GONE
             imageGallery.visibility = View.VISIBLE
-            imageGallery.showProductImages(product, this)
+            imageGallery.showProductImages(product.images, this)
         }
 
         // show status badge for unpublished products
@@ -222,8 +225,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         progressDialog = null
     }
 
-    override fun getFragmentTitle() = productName
-
     private fun showProductCards(cards: List<ProductPropertyCard>) {
         val adapter: ProductPropertyCardsAdapter
         if (cardsRecyclerView.adapter == null) {
@@ -280,6 +281,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageClicked()
     }
+
+    override fun getFragmentTitle() = productName
 
     /**
      * Override the BaseProductFragment's fun since we want to return True if any changes have been

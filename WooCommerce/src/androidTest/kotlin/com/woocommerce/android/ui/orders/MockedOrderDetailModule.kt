@@ -23,11 +23,13 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient
 import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -35,6 +37,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.tools.FormattableContentMapper
 import org.wordpress.android.fluxc.utils.AppLogWrapper
@@ -104,13 +107,27 @@ abstract class MockedOrderDetailModule {
                     CoroutineEngine(Unconfined, AppLogWrapper()),
                     RefundMapper()
             )
+            val shippingLabelStore = WCShippingLabelStore(
+                ShippingLabelRestClient(
+                    mockDispatcher,
+                    JetpackTunnelGsonRequestBuilder(),
+                    mockContext,
+                    mock(),
+                    mock(),
+                    mock()
+                ),
+                CoroutineEngine(Unconfined, AppLogWrapper()),
+                WCShippingLabelMapper()
+            )
+            val orderStore = WCOrderStore(
+                mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
+            )
             val coroutineDispatchers = CoroutineDispatchers(Unconfined, Unconfined, Unconfined)
 
             val mockedOrderDetailPresenter = spy(OrderDetailPresenter(
                     coroutineDispatchers,
                     mockDispatcher,
-                    WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
-                    refundStore,
+                    orderStore,
                     WCProductStore(
                             mockDispatcher,
                             ProductRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
@@ -121,7 +138,14 @@ abstract class MockedOrderDetailModule {
                     NotificationStore(
                             mock(), mockContext,
                             NotificationRestClient(mockContext, mockDispatcher, mock(), mock(), mock()),
-                            NotificationSqlUtils(FormattableContentMapper(Gson())))
+                            NotificationSqlUtils(FormattableContentMapper(Gson()))),
+                    OrderDetailRepository(
+                        mockDispatcher,
+                        orderStore,
+                        refundStore,
+                        shippingLabelStore,
+                        mockSelectedSite
+                    )
             ))
 
             /*

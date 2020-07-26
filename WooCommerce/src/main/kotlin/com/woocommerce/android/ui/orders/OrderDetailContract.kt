@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface OrderDetailContract {
@@ -23,6 +25,8 @@ interface OrderDetailContract {
         fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
+        fun loadOrderDetailInfo(order: WCOrderModel)
+        fun fetchOrderDetailInfo(order: WCOrderModel)
         fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel>
         fun fetchAndLoadOrderNotesFromDb()
         fun loadOrderShipmentTrackings()
@@ -36,6 +40,7 @@ interface OrderDetailContract {
         fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
         fun isVirtualProduct(order: WCOrderModel): Boolean
         fun refreshOrderAfterDelay(refreshDelay: Long)
+        fun getProductsByIds(remoteProductIds: List<Long>): List<WCProductModel>
     }
 
     interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener, OrderRefundActionListener,
@@ -43,6 +48,8 @@ interface OrderDetailContract {
         var isRefreshPending: Boolean
         fun showSkeleton(show: Boolean)
         fun showRefunds(order: WCOrderModel, refunds: List<Refund> = emptyList())
+        fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel> = emptyList())
+        fun showProductList(order: WCOrderModel, refunds: List<Refund>, shippingLabels: List<ShippingLabel>)
         fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)

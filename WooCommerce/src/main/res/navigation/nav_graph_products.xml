@@ -56,6 +56,11 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_variantsFragment_to_variantFragment"
+            app:destination="@id/productVariantFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
@@ -232,4 +237,12 @@
         app:destination="@id/productTagsFragment"
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
+    <fragment
+        android:id="@+id/productVariantFragment"
+        android:name="com.woocommerce.android.ui.products.ProductVariantFragment"
+        android:label="productVariantFragment">
+        <argument
+            android:name="variant"
+            app:argType="com.woocommerce.android.model.ProductVariant" />
+    </fragment>
 </navigation>

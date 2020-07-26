@@ -32,7 +32,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val numberFormatter = NumberFormat.getNumberInstance().apply {
             maximumFractionDigits = 2
         }
-        productInfo_totalPaid.text = numberFormatter.format(item.quantity)
+        productInfo_quantity.text = numberFormatter.format(item.quantity)
 
         // Modify views for expanded or collapsed mode
         val viewMode = if (expanded) View.VISIBLE else View.GONE
@@ -42,21 +42,19 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val maxLinesInName = if (expanded) Int.MAX_VALUE else 2
         productInfo_name.maxLines = maxLinesInName
 
-        if (item.sku.isEmpty() || !expanded) {
-            productInfo_lblSku.visibility = View.GONE
+        if (item.sku.isEmpty()) {
             productInfo_sku.visibility = View.GONE
         } else {
-            productInfo_lblSku.visibility = View.VISIBLE
             productInfo_sku.visibility = View.VISIBLE
-            productInfo_sku.text = item.sku
+            productInfo_sku.text = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
         }
 
         val orderTotal = formatCurrencyForDisplay(item.total)
         val productPrice = formatCurrencyForDisplay(item.price)
 
-        productInfo_totalPaid.text = orderTotal
-        productInfo_productQtyAndPrice.text = context.getString(
-            R.string.orderdetail_product_lineitem_qty_and_price, item.quantity.toString(), productPrice
+        productInfo_totalPaid.text = context.getString(
+            R.string.orderdetail_product_lineitem_total_qty_and_price,
+            orderTotal, item.quantity.toString(), productPrice
         )
 
         if (expanded) {

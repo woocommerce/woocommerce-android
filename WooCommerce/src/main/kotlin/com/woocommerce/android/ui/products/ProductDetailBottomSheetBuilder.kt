@@ -71,7 +71,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getShipping(): ProductDetailBottomSheetUiItem? {
-        return if (!hasShipping()) {
+        return if (!hasShipping) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_SHIPPING,
                 ViewProductShipping(remoteId),
@@ -83,7 +83,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getCategories(): ProductDetailBottomSheetUiItem? {
-        return if (!hasCategories()) {
+        return if (!hasCategories) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_CATEGORIES,
                 ViewProductCategories(remoteId),
@@ -95,7 +95,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getTags(): ProductDetailBottomSheetUiItem? {
-        return if (!hasTags()) {
+        return if (!hasTags) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_TAGS,
                 ViewProductTags(remoteId)
@@ -106,7 +106,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getShortDescription(): ProductDetailBottomSheetUiItem? {
-        return if (!hasShortDescription()) {
+        return if (!hasShortDescription) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.SHORT_DESCRIPTION,
                 ViewProductShortDescriptionEditor(
