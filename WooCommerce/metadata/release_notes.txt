@@ -1,5 +1,5 @@
-New: Added placeholder for orders missing a customer’s name.
-
-Fix: Multiple new order notifications are now viewable.
-
-Adjustments: Updated background color of login views and moved privacy notice for CA users to “About App” screen.
+* Disabled beta options and removed Improved Stats as selectable option from it
+* Set Stats V4 as the default choice
+* Update Stats V3 due date warning message to September 1, 2020
+* Fixed cursor window size-related crashes for device running Android P and above
+ 
