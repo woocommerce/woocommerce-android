@@ -78,8 +78,7 @@ class ProductVariantCardBuilder(
     private fun ProductVariant.visibility(): ProductProperty {
         @StringRes val visibility: Int
         @DrawableRes val visibilityIcon: Int
-        val isOn: Boolean = this.status == PUBLISH
-        if (isOn) {
+        if (this.isVisible) {
             visibility = string.product_variation_visible
             visibilityIcon = drawable.ic_gridicons_visible
         } else {
@@ -87,8 +86,8 @@ class ProductVariantCardBuilder(
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
-        return Switch(visibility, isOn, visibilityIcon) {
-            viewModel.onVariantVisibilityChanged(isOn)
+        return Switch(visibility, this.isVisible, visibilityIcon) {
+            viewModel.onVariantVisibilityChanged(it)
         }
     }
 
