@@ -49,31 +49,34 @@ data class ProductVariant(
     override val height: Float,
     override val weight: Float
 ) : Parcelable, IProduct {
-    fun isSameVariant(variant: ProductVariant): Boolean {
-        return remoteVariationId == variant.remoteVariationId &&
-            remoteProductId == variant.remoteProductId &&
-            image?.id == variant.image?.id &&
-            regularPrice isEquivalentTo variant.regularPrice &&
-            salePrice isEquivalentTo variant.salePrice &&
-            isOnSale == variant.isOnSale &&
-            isSaleScheduled == variant.isSaleScheduled &&
-            saleEndDateGmt == variant.saleEndDateGmt &&
-            saleStartDateGmt == variant.saleStartDateGmt &&
-            stockQuantity == variant.stockQuantity &&
-            stockStatus == variant.stockStatus &&
-            optionName.fastStripHtml() == variant.optionName.fastStripHtml() &&
-            priceWithCurrency == variant.priceWithCurrency &&
-            isPurchasable == variant.isPurchasable &&
-            isVirtual == variant.isVirtual &&
-            isDownloadable == variant.isDownloadable &&
-            description.fastStripHtml() == variant.description.fastStripHtml() &&
-            isVisible == variant.isVisible &&
-            shippingClass == variant.shippingClass &&
-            shippingClassId == variant.shippingClassId &&
-            weight == variant.weight &&
-            length == variant.length &&
-            height == variant.height &&
-            width == variant.width
+    override fun equals(other: Any?): Boolean {
+        val variation = other as? ProductVariant
+        return variation?.let {
+            remoteVariationId == variation.remoteVariationId &&
+                remoteProductId == variation.remoteProductId &&
+                image?.id == variation.image?.id &&
+                regularPrice isEquivalentTo variation.regularPrice &&
+                salePrice isEquivalentTo variation.salePrice &&
+                isOnSale == variation.isOnSale &&
+                isSaleScheduled == variation.isSaleScheduled &&
+                saleEndDateGmt == variation.saleEndDateGmt &&
+                saleStartDateGmt == variation.saleStartDateGmt &&
+                stockQuantity == variation.stockQuantity &&
+                stockStatus == variation.stockStatus &&
+                optionName.fastStripHtml() == variation.optionName.fastStripHtml() &&
+                priceWithCurrency == variation.priceWithCurrency &&
+                isPurchasable == variation.isPurchasable &&
+                isVirtual == variation.isVirtual &&
+                isDownloadable == variation.isDownloadable &&
+                description.fastStripHtml() == variation.description.fastStripHtml() &&
+                isVisible == variation.isVisible &&
+                shippingClass == variation.shippingClass &&
+                shippingClassId == variation.shippingClassId &&
+                weight == variation.weight &&
+                length == variation.length &&
+                height == variation.height &&
+                width == variation.width
+        } ?: false
     }
 
     fun toDataModel(): WCProductVariationModel {

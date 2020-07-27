@@ -90,7 +90,7 @@ class ProductVariantsAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem.isSameVariant(newItem)
+            return oldItem != newItem
         }
     }
 
