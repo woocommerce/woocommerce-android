@@ -79,7 +79,7 @@ data class ProductVariant(
         } ?: false
     }
 
-    fun toDataModel(): WCProductVariationModel {
+    fun toDataModel(cachedVariation: WCProductVariationModel? = null): WCProductVariationModel {
         fun imagesToJson(): String {
             return image?.let { variantImage ->
                 JsonObject().also { json ->
@@ -90,7 +90,7 @@ data class ProductVariant(
             } ?: ""
         }
 
-        return WCProductVariationModel().also {
+        return (cachedVariation ?: WCProductVariationModel()).also {
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
             it.image = imagesToJson()
