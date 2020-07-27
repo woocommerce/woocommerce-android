@@ -287,25 +287,23 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.shortDescription(): ProductProperty {
-        val shortDescription = if (this.shortDescription.isEmpty()) {
-            resources.getString(R.string.product_short_description_empty)
+    private fun Product.shortDescription(): ProductProperty? {
+        return if (hasShortDescription) {
+            ComplexProperty(
+                R.string.product_short_description,
+                shortDescription,
+                R.drawable.ic_gridicons_align_left
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductShortDescriptionEditor(
+                        shortDescription,
+                        resources.getString(R.string.product_short_description)
+                    ),
+                    Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
+                )
+            }
         } else {
-            this.shortDescription
-        }
-
-        return ComplexProperty(
-            R.string.product_short_description,
-            shortDescription,
-            R.drawable.ic_gridicons_align_left
-        ) {
-            viewModel.onEditProductCardClicked(
-                ViewProductShortDescriptionEditor(
-                    this.shortDescription,
-                    resources.getString(R.string.product_short_description)
-                ),
-                Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
-            )
+            null
         }
     }
 
@@ -343,28 +341,22 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.shipping(): ProductProperty? {
-        return if (!this.isVirtual) {
+        return if (!this.isVirtual && hasShipping) {
             val weightWithUnits = this.getWeightWithUnits(parameters.weightUnit)
             val sizeWithUnits = this.getSizeWithUnits(parameters.dimensionUnit)
-            val hasShippingInfo = weightWithUnits.isNotEmpty() ||
-                sizeWithUnits.isNotEmpty() ||
-                this.shippingClass.isNotEmpty()
-            val shippingGroup = if (hasShippingInfo) {
-                mapOf(
-                    Pair(resources.getString(R.string.product_weight), weightWithUnits),
-                    Pair(resources.getString(R.string.product_dimensions), sizeWithUnits),
-                    Pair(
-                        resources.getString(R.string.product_shipping_class),
-                        viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
-                    )
+            val shippingGroup = mapOf(
+                Pair(resources.getString(R.string.product_weight), weightWithUnits),
+                Pair(resources.getString(R.string.product_dimensions), sizeWithUnits),
+                Pair(
+                    resources.getString(R.string.product_shipping_class),
+                    viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
                 )
-            } else mapOf(Pair("", resources.getString(R.string.product_shipping_empty)))
+            )
 
             PropertyGroup(
                 R.string.product_shipping,
                 shippingGroup,
-                R.drawable.ic_gridicons_shipping,
-                hasShippingInfo
+                R.drawable.ic_gridicons_shipping
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductShipping(this.remoteId),
@@ -512,20 +504,13 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.categories(): ProductProperty? {
-        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            val productCategories = this.categories
-            val showTitle = productCategories.isNotEmpty()
-            val categories = if (showTitle) {
-                productCategories.joinToString(transform = { it.name })
-            } else {
-                resources.getString(R.string.product_category_empty)
-            }
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && hasCategories) {
+            val categories = categories.joinToString(transform = { it.name })
 
             ComplexProperty(
                 R.string.product_categories,
                 categories,
                 R.drawable.ic_gridicons_folder,
-                showTitle = showTitle,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(
@@ -539,20 +524,13 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.tags(): ProductProperty? {
-        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            val productTags = this.tags
-            val showTitle = productTags.isNotEmpty()
-            val tags = if (showTitle) {
-                productTags.joinToString(transform = { it.name })
-            } else {
-                resources.getString(R.string.product_tag_empty)
-            }
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && hasTags) {
+            val tags = this.tags.joinToString(transform = { it.name })
 
             ComplexProperty(
                 R.string.product_tags,
                 tags,
                 R.drawable.ic_gridicons_tag,
-                showTitle = showTitle,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(

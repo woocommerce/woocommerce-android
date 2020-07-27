@@ -77,4 +77,11 @@ object AddressUtils {
                 .appendWithIfNotEmpty(address.postcode)
                 .toString()
     }
+
+    fun getFullAddress(name: String, address: String, country: String): String {
+        var fullAddr = if (!name.isBlank()) "$name\n" else ""
+        if (!address.isBlank()) fullAddr += "$address\n"
+        if (!country.isBlank()) fullAddr += country
+        return fullAddr
+    }
 }

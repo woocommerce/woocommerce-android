@@ -57,6 +57,7 @@
     <string name="discard">Discard</string>
     <string name="products">Products</string>
     <string name="refunds">Refunds</string>
+    <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
     <string name="review_notifications">Reviews</string>
@@ -224,8 +225,10 @@
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
@@ -258,6 +261,21 @@
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
+    <string name="orderdetail_shipping_label_item_header">Package %d</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>
+    <string name="orderdetail_shipping_label_item_shipto">Ship to</string>
+    <string name="orderdetail_shipping_label_item_package_info">Package details</string>
+    <string name="orderdetail_shipping_label_item_carrier">Shipping carriers and rates</string>
+    <string name="orderdetail_shipping_label_item_payment">Payment method</string>
+    <string name="orderdetail_shipping_label_item_payment_type">Credit card</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
+    <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining items to ship</string>
+    <string name="orderdetail_shipping_label_virtual_products_header">Remaining products</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -521,6 +539,7 @@
     <string name="product_detail_title_hint">Product title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
     <string name="product_detail_product_type_hint">%1$s product</string>
+    <string name="product_detail_add_more">Add more details</string>
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
@@ -571,6 +590,16 @@
     <string name="product_tags">Tags</string>
     <string name="product_tag_list_empty_title">Add your first tag</string>
     <string name="product_tag_list_empty_message">Organise your products in tags</string>
+
+    <!--
+        Product Add more details Bottom sheet
+    -->
+    <string name="bottom_sheet_add_details_list_header">Add more details</string>
+    <string name="bottom_sheet_shipping_desc">Add weight and dimensions</string>
+    <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
+    <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
+    <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+
     <!--
         Product images
     -->

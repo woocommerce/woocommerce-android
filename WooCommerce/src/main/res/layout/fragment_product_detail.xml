@@ -120,4 +120,51 @@
 
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Add more details view -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/productDetail_addMoreContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <View
+            android:id="@+id/productDetail_addMoreDivider"
+            style="@style/Woo.Divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+            style="@style/Woo.Card.WithoutPadding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/orderdetail_addnote_contentdesc"
+            android:descendantFocusability="blocksDescendants"
+            android:gravity="center_vertical"
+            android:importantForAccessibility="yes"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productDetail_addMoreDivider">
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Woo.Button"
+                android:drawableStart="@drawable/ic_add"
+                android:gravity="start|center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
+                android:drawablePadding="@dimen/major_100"
+                android:text="@string/product_detail_add_more" />
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
