@@ -201,8 +201,12 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onExit()
-        return false
+        return if (viewModel.event.value == Exit) {
+            true
+        } else {
+            viewModel.onExit()
+            false
+        }
     }
 
     override fun getFragmentTitle() = variationName
