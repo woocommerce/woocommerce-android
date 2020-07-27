@@ -311,11 +311,10 @@ class ProductDetailCardBuilder(
     // otherwise show sku separately
     private fun Product.inventory(): ProductProperty {
         val inventoryGroup = when {
-            this.type == GROUPED || this.type == EXTERNAL -> {
+            ProductType.isGroupedOrExternalProduct(this.type) ->
                 mapOf(
                     Pair(resources.getString(R.string.product_sku), this.sku)
                 )
-            }
             this.manageStock -> mapOf(
                 Pair(resources.getString(R.string.product_backorders),
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
