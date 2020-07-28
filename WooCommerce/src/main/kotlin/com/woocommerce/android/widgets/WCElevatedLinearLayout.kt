@@ -20,8 +20,7 @@ open class WCElevatedLinearLayout @JvmOverloads constructor(
         attrs?.let {
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCElevatedLinearLayout)
             try {
-                shapeElevation = attrArray.getDimension(
-                    R.styleable.WCElevatedLinearLayout_android_elevation, shapeElevation)
+                shapeElevation = attrArray.getDimension(R.styleable.WCElevatedLinearLayout_wcElevation, shapeElevation)
             } finally {
                 attrArray.recycle()
             }
