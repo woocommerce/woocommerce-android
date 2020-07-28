@@ -94,8 +94,8 @@ data class ProductVariant(
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
             it.image = imagesToJson()
-            it.regularPrice = if (regularPrice isEqualTo BigDecimal.ZERO) "" else regularPrice.toString()
-            it.salePrice = if (salePrice isEqualTo BigDecimal.ZERO) "" else salePrice.toString()
+            it.regularPrice = if (regularPrice isEquivalentTo BigDecimal.ZERO) "" else regularPrice.toString()
+            it.salePrice = if (salePrice isEquivalentTo BigDecimal.ZERO) "" else salePrice.toString()
             if (isSaleScheduled) {
                 saleStartDateGmt?.let { dateOnSaleFrom ->
                     it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
