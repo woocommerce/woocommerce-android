@@ -1,21 +1,17 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
-import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.roundError
-import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.util.DateTimeUtils
@@ -85,7 +81,7 @@ data class ProductVariant(
                 JsonObject().also { json ->
                     json.addProperty("id", variantImage.id)
                     json.addProperty("name", variantImage.name)
-                    json.addProperty("source", variantImage.source)
+                    json.addProperty("src", variantImage.source)
                 }.toString()
             } ?: ""
         }
@@ -93,7 +89,7 @@ data class ProductVariant(
         return (cachedVariation ?: WCProductVariationModel()).also {
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
-            it.image = imagesToJson()
+            it.image = "" //imagesToJson()
             it.regularPrice = if (regularPrice isEquivalentTo BigDecimal.ZERO) "" else regularPrice.toString()
             it.salePrice = if (salePrice isEquivalentTo BigDecimal.ZERO) "" else salePrice.toString()
             if (isSaleScheduled) {
