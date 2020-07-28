@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.navigateSafely
@@ -33,6 +34,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.fragment_product_variant.*
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductVariantFragment : BaseFragment(), BackPressListener {
@@ -80,6 +82,18 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         showUpdateMenuItem(viewModel.variantViewStateData.liveData.value?.isDoneButtonVisible ?: false)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onUpdateButtonClicked()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun showUpdateMenuItem(show: Boolean) {

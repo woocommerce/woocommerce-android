@@ -14,6 +14,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -23,6 +24,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -36,7 +38,9 @@ class ProductVariantViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
+    private val variationRepository: VariationDetailRepository,
     private val productRepository: ProductDetailRepository,
+    private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val resources: ResourceProvider
@@ -46,7 +50,7 @@ class ProductVariantViewModel @AssistedInject constructor(
     }
 
     private val navArgs: ProductVariantFragmentArgs by savedState.navArgs()
-    private val originalVariation: ProductVariant = navArgs.variant
+    private var originalVariation: ProductVariant = navArgs.variant
 
     private val parameters: SiteParameters by lazy {
         val params = savedState.get<SiteParameters>(KEY_VARIATION_PARAMETERS) ?: loadParameters()
@@ -73,19 +77,6 @@ class ProductVariantViewModel @AssistedInject constructor(
         showVariation(originalVariation.copy())
     }
 
-    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-            ?: viewState.shippingClass ?: ""
-
-    private suspend fun loadShippingClassDependencies() {
-        // Fetch current site's shipping class only if a shipping class is assigned to the product and if
-        // the shipping class is not available in the local db
-        val shippingClassId = viewState.variation.shippingClassId
-        if (shippingClassId != 0L && productRepository.getProductShippingClassByRemoteId(shippingClassId) == null) {
-            productRepository.fetchProductShippingClassById(shippingClassId)
-        }
-    }
-
     // TODO: This will be used in edit mode
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
@@ -97,22 +88,26 @@ class ProductVariantViewModel @AssistedInject constructor(
     }
 
     fun onExit() {
-        if (ProductImagesService.isUploadingForProduct(viewState.variation.remoteVariationId)) {
-            // images can't be assigned to the product until they finish uploading so ask whether to discard images.
-            triggerEvent(ShowDiscardDialog(
-                messageId = string.discard_images_message,
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
-        } else if (viewState.variation != originalVariation) {
-            triggerEvent(ShowDiscardDialog(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
-        } else {
-            triggerEvent(Exit)
+        when {
+            ProductImagesService.isUploadingForProduct(viewState.variation.remoteVariationId) -> {
+                // images can't be assigned to the product until they finish uploading so ask whether to discard images.
+                triggerEvent(ShowDiscardDialog(
+                    messageId = string.discard_images_message,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    }
+                ))
+            }
+            viewState.variation != originalVariation -> {
+                triggerEvent(ShowDiscardDialog(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    }
+                ))
+            }
+            else -> {
+                triggerEvent(Exit)
+            }
         }
     }
 
@@ -127,9 +122,59 @@ class ProductVariantViewModel @AssistedInject constructor(
         showVariation(viewState.variation.copy(isVisible = isVisible))
     }
 
+    fun onUpdateButtonClicked() {
+        viewState = viewState.copy(isProgressDialogShown =  true)
+        launch {
+            updateVariation(viewState.variation)
+        }
+    }
+
+    private suspend fun updateVariation(variation: ProductVariant) {
+        if (networkStatus.isConnected()) {
+            if (variationRepository.updateVariation(variation)) {
+                loadVariation(variation.remoteProductId, variation.remoteVariationId)
+            } else {
+                triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+
+        viewState = viewState.copy(isProgressDialogShown = false)
+    }
+
+    private fun loadVariation(remoteProductId: Long, remoteVariationId: Long) {
+        launch {
+            val variationInDb = variationRepository.getVariation(remoteProductId, remoteVariationId)
+            if (variationInDb != null) {
+                originalVariation = variationInDb
+                fetchVariation(remoteProductId, remoteVariationId)
+            } else {
+                viewState = viewState.copy(isSkeletonShown = true)
+                fetchVariation(remoteProductId, remoteVariationId)
+            }
+            viewState = viewState.copy(isSkeletonShown = false)
+            showVariation(originalVariation)
+        }
+    }
+
+    private suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long) {
+        if (networkStatus.isConnected()) {
+            val fetchedVariation = variationRepository.fetchVariation(remoteProductId, remoteVariationId)
+            if (fetchedVariation == null) {
+                triggerEvent(ShowSnackbar(string.variation_detail_fetch_variation_error))
+            } else {
+                originalVariation = fetchedVariation
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+            viewState = viewState.copy(isSkeletonShown = false)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
-        productRepository.onCleanup()
+        variationRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -140,7 +185,6 @@ class ProductVariantViewModel @AssistedInject constructor(
                     viewState = viewState.copy(isSkeletonShown = true)
                 }
                 val cards = withContext(dispatchers.io) {
-                    loadShippingClassDependencies()
                     cardBuilder.buildPropertyCards(it)
                 }
                 _variantDetailCards.value = cards
@@ -155,6 +199,13 @@ class ProductVariantViewModel @AssistedInject constructor(
             isDoneButtonVisible = variation != originalVariation
         )
     }
+
+    /**
+     * Fetch the shipping class name of a product based on the remote shipping class id
+     */
+    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.variation.shippingClass ?: ""
 
     /**
      * Loads the product dependencies for a site such as dimensions, currency or timezone
