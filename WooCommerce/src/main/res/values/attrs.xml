@@ -109,6 +109,11 @@
         <attr name="wcElevation" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="WCElevatedConstraintLayout">
+        <!-- Optional: resource id of dimension -->
+        <attr name="wcElevation" format="reference"/>
+    </declare-styleable>
+
     <!--
         Badge attributes for the bottom bar
     -->

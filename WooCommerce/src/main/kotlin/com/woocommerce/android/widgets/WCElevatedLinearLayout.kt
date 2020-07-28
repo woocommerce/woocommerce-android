@@ -27,7 +27,7 @@ open class WCElevatedLinearLayout @JvmOverloads constructor(
         }
 
         elevatedBackground = MaterialShapeDrawable.createWithElevationOverlay(context, shapeElevation)
-        elevatedBackground.setShadowCompatibilityMode(MaterialShapeDrawable.SHADOW_COMPAT_MODE_ALWAYS)
+        elevatedBackground.shadowCompatibilityMode = MaterialShapeDrawable.SHADOW_COMPAT_MODE_ALWAYS
     }
 
     override fun onFinishInflate() {
