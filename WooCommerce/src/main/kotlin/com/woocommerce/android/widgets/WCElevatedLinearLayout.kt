@@ -20,7 +20,8 @@ open class WCElevatedLinearLayout @JvmOverloads constructor(
         attrs?.let {
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCElevatedLinearLayout)
             try {
-                shapeElevation = attrArray.getDimension(R.styleable.WCElevatedLinearLayout_wcElevation, shapeElevation)
+                shapeElevation = attrArray.getDimension(
+                    R.styleable.WCElevatedLinearLayout_android_elevation, shapeElevation)
             } finally {
                 attrArray.recycle()
             }
@@ -44,9 +45,5 @@ open class WCElevatedLinearLayout @JvmOverloads constructor(
         if (parent is ViewGroup) {
             (parent as ViewGroup).clipChildren = false
         }
-    }
-
-    override fun setElevation(elevation: Float) {
-        elevatedBackground.elevation = elevation
     }
 }

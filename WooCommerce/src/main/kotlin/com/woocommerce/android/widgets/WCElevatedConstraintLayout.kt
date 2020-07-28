@@ -20,7 +20,7 @@ open class WCElevatedConstraintLayout @JvmOverloads constructor(
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCElevatedConstraintLayout)
             try {
                 shapeElevation = attrArray.getDimension(
-                    R.styleable.WCElevatedConstraintLayout_wcElevation, shapeElevation)
+                    R.styleable.WCElevatedConstraintLayout_android_elevation, shapeElevation)
             } finally {
                 attrArray.recycle()
             }
@@ -44,9 +44,5 @@ open class WCElevatedConstraintLayout @JvmOverloads constructor(
         if (parent is ViewGroup) {
             (parent as ViewGroup).clipChildren = false
         }
-    }
-
-    override fun setElevation(elevation: Float) {
-        elevatedBackground.elevation = elevation
     }
 }
