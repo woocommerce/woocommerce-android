@@ -50,6 +50,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
+                <!-- Feedback Request Card -->
+                <com.woocommerce.android.ui.feedback.FeedbackRequestCard
+                    android:id="@+id/store_feedback_request_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/minor_100"/>
+
                 <!-- Top earner stats -->
                 <com.woocommerce.android.ui.mystore.MyStoreTopEarnersView
                     android:id="@+id/my_store_top_earners"
