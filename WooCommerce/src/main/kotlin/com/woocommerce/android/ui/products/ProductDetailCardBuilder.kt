@@ -87,11 +87,11 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.price(),
                 product.productType(),
-                product.shipping(),
                 product.inventory(),
-                product.shortDescription(),
+                product.shipping(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
@@ -101,10 +101,10 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productType(),
-                product.shortDescription(),
                 product.inventory(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
@@ -116,10 +116,10 @@ class ProductDetailCardBuilder(
                 product.price(),
                 product.productType(),
                 product.externalLink(),
-                product.shortDescription(),
                 product.inventory(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
@@ -130,9 +130,9 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.productType(),
                 product.variations(),
-                product.shortDescription(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
