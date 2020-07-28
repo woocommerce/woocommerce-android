@@ -8,8 +8,8 @@ import com.woocommerce.android.widgets.WCElevatedConstraintLayout
 import kotlinx.android.synthetic.main.feedback_request_card.view.*
 
 class FeedbackRequestCard @JvmOverloads constructor(
-    ctx: Context, attrs:
-    AttributeSet? = null,
+    ctx: Context,
+    attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : WCElevatedConstraintLayout(ctx, attrs, defStyleAttr) {
     init {
