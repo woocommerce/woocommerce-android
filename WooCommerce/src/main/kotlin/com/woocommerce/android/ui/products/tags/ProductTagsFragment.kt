@@ -198,6 +198,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onProductTagAdded(productTag: ProductTag) {
         viewModel.onProductTagSelected(productTag)
         updateSelectedTags()
+        changesMade()
     }
 
     override fun onProductTagRemoved(productTag: ProductTag) {
