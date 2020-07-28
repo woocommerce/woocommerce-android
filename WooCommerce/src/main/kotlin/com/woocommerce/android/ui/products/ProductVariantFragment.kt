@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductVariantViewModel.ShowVariantImage
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -43,6 +45,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
@@ -135,6 +138,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowVariantImage -> {
                     val action = ProductVariantFragmentDirections.actionGlobalWpMediaViewerFragment(event.image.source)
                     findNavController().navigateSafely(action)

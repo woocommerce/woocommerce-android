@@ -134,7 +134,7 @@ class ProductVariantViewModel @AssistedInject constructor(
             if (variationRepository.updateVariation(variation)) {
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
+                triggerEvent(ShowSnackbar(string.variation_detail_update_variation_error))
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
