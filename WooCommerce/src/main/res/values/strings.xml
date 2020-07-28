@@ -885,6 +885,11 @@
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
 
+    <!-- In-App Feedback -->
+    <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
+    <string name="feedback_request_make_better">Could be better</string>
+    <string name="feedback_request_like_it">I like it</string>
+
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
     <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>

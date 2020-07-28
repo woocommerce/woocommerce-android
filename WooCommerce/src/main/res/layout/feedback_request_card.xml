@@ -14,10 +14,10 @@
         android:layout_margin="@dimen/major_100"
         android:textAlignment="center"
         android:textStyle="bold"
+        android:text="@string/feedback_request_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Enjoying the WooCommerce app?" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         style="@style/Woo.Button.Colored.White"
@@ -28,13 +28,13 @@
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/minor_100"
         android:layout_marginBottom="@dimen/major_75"
+        android:text="@string/feedback_request_make_better"
         android:textAllCaps="false"
         android:textColor="@color/color_secondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lbl_feedbackReq_title"
         app:layout_constraintEnd_toStartOf="@+id/feedbackReq_guideline"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Could be better" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <Button
         style="@style/Woo.Button.Colored"
@@ -45,12 +45,12 @@
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_75"
+        android:text="@string/feedback_request_like_it"
         android:textAllCaps="false"
         app:layout_constraintStart_toEndOf="@+id/feedbackReq_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lbl_feedbackReq_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="I like it" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/feedbackReq_guideline"
