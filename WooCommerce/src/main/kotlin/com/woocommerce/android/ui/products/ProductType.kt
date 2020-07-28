@@ -20,5 +20,7 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
                 else -> SIMPLE
             }
         }
+
+        fun isGroupedOrExternalProduct(type: ProductType) = type == GROUPED || type == EXTERNAL
     }
 }
