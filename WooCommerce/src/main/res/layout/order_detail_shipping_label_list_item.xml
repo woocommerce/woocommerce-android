@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Package Header -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/shippingLabelList_lblPackage"
+            style="@style/Woo.Card.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/orderdetail_shipping_label_item_header" />
+
+        <!-- Product List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/shippingLabelList_products"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            tools:itemCount="3"
+            tools:listitem="@layout/order_detail_product_list_item"
+            tools:targetApi="lollipop" />
+
+        <View
+            style="@style/Woo.Divider.TitleAligned"
+            android:layout_marginTop="@dimen/minor_50" />
+
+        <!-- Package Tracking number -->
+        <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
+            android:id="@+id/shippingLabelItem_trackingNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/major_100"
+            app:shippingLabelItemIcon="@drawable/ic_gridicons_location"
+            app:shippingLabelItemTitle="@string/order_shipment_tracking_number"
+            app:showTrackShipmentButton="true"
+            tools:shippingLabelItemValue="1234-242-343-23232" />
+
+        <!-- Package more details panel -->
+        <LinearLayout
+            android:id="@+id/shippingLabelItem_morePanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <View style="@style/Woo.Divider.TitleAligned" />
+
+            <!-- Package ship from address -->
+            <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
+                android:id="@+id/shippingLabelItem_shipFrom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shippingLabelItemIcon="@drawable/ic_gridicons_ship_from"
+                app:shippingLabelItemTitle="@string/orderdetail_shipping_label_item_shipfrom"
+                tools:shippingLabelItemValue="Michael Fredrickson, 123 Seasame pl Warner, FL, 12345-6789, United States" />
+
+            <View
+                style="@style/Woo.Divider.TitleAligned"
+                android:layout_marginTop="@dimen/major_100" />
+
+            <!-- Package ship to address -->
+            <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
+                android:id="@+id/shippingLabelItem_shipTo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shippingLabelItemIcon="@drawable/ic_gridicons_ship_to"
+                app:shippingLabelItemTitle="@string/orderdetail_shipping_label_item_shipto"
+                tools:shippingLabelItemValue="Michael Fredrickson, 123 Seasame pl Warner, FL, 12345-6789, United States" />
+
+            <View
+                style="@style/Woo.Divider.TitleAligned"
+                android:layout_marginTop="@dimen/major_100" />
+
+            <!-- Package info (name etc) -->
+            <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
+                android:id="@+id/shippingLabelItem_packageInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shippingLabelItemIcon="@drawable/ic_gridicons_customize"
+                app:shippingLabelItemTitle="@string/orderdetail_shipping_label_item_package_info"
+                tools:shippingLabelItemValue="Gift Box 1" />
+
+            <View
+                style="@style/Woo.Divider.TitleAligned"
+                android:layout_marginTop="@dimen/major_100" />
+
+            <!-- Package carrier and rates info -->
+            <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
+                android:id="@+id/shippingLabelItem_carrierInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shippingLabelItemIcon="@drawable/ic_gridicons_shipping"
+                app:shippingLabelItemTitle="@string/orderdetail_shipping_label_item_carrier"
+                tools:shippingLabelItemValue="USPS Priority mail" />
+
+            <View
+                style="@style/Woo.Divider.TitleAligned"
+                android:layout_marginTop="@dimen/major_100" />
+
+            <!-- Package payment method -->
+            <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
+                android:id="@+id/shippingLabelItem_paymentInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/major_100"
+                app:shippingLabelItemIcon="@drawable/ic_gridicons_money"
+                app:shippingLabelItemTitle="@string/orderdetail_shipping_label_item_payment"
+                app:shippingLabelItemValue="@string/orderdetail_shipping_label_item_payment_type" />
+
+        </LinearLayout>
+
+        <!-- VIEW MORE Button -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/shippingLabelItem_viewMore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:contentDescription="@string/orderdetail_shipping_label_item_show_shipping"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/shippingLabelItem_divider"
+                style="@style/Woo.Divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/shippingLabelItem_viewMoreButtonTitle"
+                style="@style/Woo.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
+                android:text="@string/orderdetail_shipping_label_item_show_shipping"
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/shippingLabelItem_viewMoreButtonImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shippingLabelItem_divider" />
+
+            <ImageView
+                android:id="@+id/shippingLabelItem_viewMoreButtonImage"
+                android:layout_width="@dimen/min_tap_target"
+                android:layout_height="@dimen/min_tap_target"
+                android:background="@null"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no"
+                android:padding="@dimen/minor_100"
+                android:src="@drawable/ic_arrow_down"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shippingLabelItem_divider" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

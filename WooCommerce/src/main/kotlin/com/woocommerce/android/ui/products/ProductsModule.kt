@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFrag
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductDetailBottomSheetFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductExternalLinkFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductFilterListFragmentModule
@@ -21,6 +22,8 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmen
 import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductTagsFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductVariantFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
@@ -42,6 +45,8 @@ import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
+import com.woocommerce.android.ui.products.tags.ProductTagsFragment
+import com.woocommerce.android.ui.products.tags.ProductTagsModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
@@ -49,6 +54,7 @@ import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
     ProductDetailFragmentModule::class,
+    ProductVariantFragmentModule::class,
     ProductListFragmentModule::class,
     ProductFilterListFragmentModule::class,
     ProductFilterOptionListFragmentModule::class,
@@ -70,7 +76,9 @@ import dagger.android.ContributesAndroidInjector
     ProductSortingFragmentModule::class,
     ProductCategoriesFragmentModule::class,
     AddProductCategoryFragmentModule::class,
-    ParentCategoryListFragmentModule::class
+    ParentCategoryListFragmentModule::class,
+    ProductTagsFragmentModule::class,
+    ProductDetailBottomSheetFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -99,6 +107,13 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductDetailModule::class])
         abstract fun productDetailFragment(): ProductDetailFragment
+    }
+
+    @Module
+    abstract class ProductVariantFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductVariantModule::class])
+        abstract fun productVariantFragment(): ProductVariantFragment
     }
 
     @Module
@@ -232,5 +247,19 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ParentCategoryListModule::class])
         abstract fun parentCategoryListFragment(): ParentCategoryListFragment
+    }
+
+    @Module
+    internal abstract class ProductTagsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductTagsModule::class])
+        abstract fun productTagsFragment(): ProductTagsFragment
+    }
+
+    @Module
+    internal abstract class ProductDetailBottomSheetFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductDetailBottomSheetModule::class])
+        abstract fun productDetailBottomSheetFragment(): ProductDetailBottomSheetFragment
     }
 }

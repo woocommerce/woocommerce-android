@@ -12,8 +12,6 @@ class MyStoreScreen : Screen {
     companion object {
         const val DASHBOARD = R.id.dashboard_refresh_layout
 
-        const val STATS_CARD = R.id.dashboard_stats_availability_card
-        const val STATS_CARD_VIEW_MORE = R.id.dashboard_stats_availability_card
         const val STATS_CARD_DISMISS_BUTTON = R.id.btn_no_thanks
 
         const val SETTINGS_BUTTON_TEXT = R.string.settings
@@ -29,14 +27,5 @@ class MyStoreScreen : Screen {
         onView(withText(SETTINGS_BUTTON_TEXT)).perform(click())
 
         return SettingsScreen()
-    }
-
-    fun dismissTopBannerIfNeeded(): MyStoreScreen {
-        if (isElementDisplayed(STATS_CARD)) {
-            clickOn(STATS_CARD_VIEW_MORE)
-            clickOn(STATS_CARD_DISMISS_BUTTON)
-        }
-
-        return this
     }
 }

@@ -57,7 +57,9 @@
     <string name="discard">Discard</string>
     <string name="products">Products</string>
     <string name="refunds">Refunds</string>
+    <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
+    <string name="product_variation_options">%1$s (%2$s options)</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -191,7 +193,7 @@
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
     <string name="my_store_stats_reverted_title">Upgrade to keep seeing your stats</string>
-    <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after July 1, 2020.</string>
+    <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after September 1, 2020.</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for stores with WooCommerce 4.0 or stores with WooCommerce Admin plugin installed</string>
     <!--
@@ -223,8 +225,10 @@
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
@@ -257,6 +261,21 @@
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
+    <string name="orderdetail_shipping_label_item_header">Package %d</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>
+    <string name="orderdetail_shipping_label_item_shipto">Ship to</string>
+    <string name="orderdetail_shipping_label_item_package_info">Package details</string>
+    <string name="orderdetail_shipping_label_item_carrier">Shipping carriers and rates</string>
+    <string name="orderdetail_shipping_label_item_payment">Payment method</string>
+    <string name="orderdetail_shipping_label_item_payment_type">Credit card</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
+    <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining items to ship</string>
+    <string name="orderdetail_shipping_label_virtual_products_header">Remaining products</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -430,7 +449,7 @@
     <string name="product_schedule_remove_end_date_link_label">Remove end date</string>
     <string name="product_sale_dates">Sale dates</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
-    <string name="product_sale_date_from">from %1$s</string>
+    <string name="product_sale_date_from">From %1$s</string>
     <string name="product_sale_date_to">Until %1$s</string>
     <string name="product_tax_settings">Tax settings</string>
     <string name="product_tax_status">Tax status</string>
@@ -443,6 +462,8 @@
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
+    <string name="product_type_description">%s product</string>
+    <string name="product_type_downloadable">downloadable</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
     <string name="product_sold_individually">Limit one per order</string>
@@ -517,6 +538,8 @@
     <string name="product_detail_update_product_password_error">Error updating password</string>
     <string name="product_detail_title_hint">Product title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
+    <string name="product_detail_product_type_hint">%1$s product</string>
+    <string name="product_detail_add_more">Add more details</string>
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
@@ -539,6 +562,7 @@
     <string name="product_slug">Slug</string>
     <string name="product_slug_label">This is the URL-friendly version of the product title</string>
     <string name="product_enable_reviews">Enable reviews</string>
+    <string name="product_is_virtual">Virtual product</string>
     <string name="product_external_empty_link">Add product link</string>
     <string name="product_external_link">Product link</string>
     <string name="product_external_link_label">Enter the external URL to the product</string>
@@ -547,6 +571,8 @@
     <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
     <string name="product_menu_order">Menu order</string>
     <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog. The lower the value of the number, the higher the item will be on the product list. You can also use negative numbers.</string>
+    <string name="product_variation_visible">Visible</string>
+    <string name="product_variation_hidden">Hidden</string>
     <string name="product_categories">Categories</string>
     <string name="product_category_empty">Add category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
@@ -560,6 +586,20 @@
     <string name="product_category_parent">Parent category</string>
     <string name="product_add_category_dialog_title">Adding category</string>
     <string name="product_add_category_dialog_message">Please wait…</string>
+    <string name="product_tag_empty">Add tag</string>
+    <string name="product_tags">Tags</string>
+    <string name="product_tag_list_empty_title">Add your first tag</string>
+    <string name="product_tag_list_empty_message">Organise your products in tags</string>
+
+    <!--
+        Product Add more details Bottom sheet
+    -->
+    <string name="bottom_sheet_add_details_list_header">Add more details</string>
+    <string name="bottom_sheet_shipping_desc">Add weight and dimensions</string>
+    <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
+    <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
+    <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+
     <!--
         Product images
     -->
@@ -612,7 +652,6 @@
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
-    <string name="settings_enable_v4_stats_message">Try the new stats available with the WooCommerce admin plugin</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
@@ -843,6 +882,8 @@
     <string name="product_type_grouped">Grouped</string>
     <string name="product_type_external">External</string>
     <string name="product_type_variable">Variable</string>
+    <string name="product_type_physical">Physical</string>
+    <string name="product_type_virtual">Virtual</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

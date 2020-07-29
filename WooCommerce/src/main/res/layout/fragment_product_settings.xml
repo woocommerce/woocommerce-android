@@ -41,6 +41,14 @@
                 tools:optionValue="Shop only" />
 
             <View style="@style/Woo.Divider" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/productIsVirtual"
+                style="@style/Widget.Woo.Settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
+                android:text="@string/product_is_virtual" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout

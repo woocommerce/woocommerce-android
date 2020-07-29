@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/shippingLabelIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_125"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:contentDescription="@string/product_property_edit"
+        android:src="@drawable/ic_gridicons_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelTitle"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_200"
+        android:layout_marginTop="@dimen/major_100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/shippingLabelItem_btnTrack"
+        app:layout_constraintStart_toEndOf="@+id/shippingLabelIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Shipping Label header"
+        tools:visibility="visible" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelValue"
+        style="@style/Woo.Card.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="@dimen/major_200"
+        android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:ellipsize="end"
+        android:lineSpacingExtra="@dimen/minor_25"
+        android:textAlignment="viewStart"
+        app:layout_constraintEnd_toStartOf="@+id/shippingLabelItem_btnTrack"
+        app:layout_constraintStart_toEndOf="@+id/shippingLabelIcon"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelTitle"
+        app:layout_goneMarginStart="@dimen/major_100"
+        app:layout_goneMarginTop="@dimen/major_100"
+        tools:text="Shipping label value." />
+
+    <ImageButton
+        android:id="@+id/shippingLabelItem_btnTrack"
+        style="@style/Woo.ImageButton.More"
+        android:contentDescription="@string/orderdetail_shipping_label_tracking_info"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_gridicons_external"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        tools:visibility="gone"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

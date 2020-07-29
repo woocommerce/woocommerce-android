@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
@@ -24,6 +25,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
@@ -112,7 +114,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductShippingFragment(target.remoteId)
+                        .actionGlobalProductShippingFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -166,13 +168,25 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductCategories -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductCategoriesFragment(target.remoteId)
+                    .actionGlobalProductCategoriesFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
             }
 
             is AddProductCategory -> {
                 val action = ProductCategoriesFragmentDirections
                     .actionProductCategoriesFragmentToAddProductCategoryFragment()
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductTags -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductTagsFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductDetailBottomSheet -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductDetailBottomSheetFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
             }
 

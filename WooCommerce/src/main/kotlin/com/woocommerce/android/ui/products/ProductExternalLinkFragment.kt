@@ -44,9 +44,11 @@ class ProductExternalLinkFragment : BaseProductFragment() {
 
         product_url.setOnTextChangedListener {
             viewModel.updateProductDraft(externalUrl = it.toString())
+            changesMade()
         }
         product_button_text.setOnTextChangedListener {
             viewModel.updateProductDraft(buttonText = it.toString())
+            changesMade()
         }
     }
 

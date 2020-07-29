@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.mystore
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -36,7 +35,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @ActivityScope
 class MyStorePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -156,7 +154,7 @@ class MyStorePresenter @Inject constructor(
                     // display a different error snackbar if the error type is not "plugin not active", since
                     // this error is already being handled by the activity class
                     if (event.error.type == PLUGIN_NOT_ACTIVE) {
-                        AppPrefs.setIsUsingV4Api(false)
+                        AppPrefs.setV4StatsSupported(false)
                         dashboardView?.updateStatsAvailabilityError()
                     } else {
                         dashboardView?.showStatsError(event.granularity)

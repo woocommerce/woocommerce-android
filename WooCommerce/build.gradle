@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.6"
+            versionName "4.7-rc-1"
         }
-        versionCode 140
+        versionCode 141
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -208,6 +208,7 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:2.1.0", {
@@ -310,6 +311,12 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     violations = [
             ["CHECKSTYLE", ".", ".*/build/.*\\.xml\$", "Checkstyle"]
     ]
+}
+
+task printVersionName {
+    doLast {
+        println android.defaultConfig.versionName
+    }
 }
 
 def checkGradlePropertiesFile() {

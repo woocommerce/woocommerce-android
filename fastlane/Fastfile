@@ -59,6 +59,7 @@ SUPPORTED_LOCALES = [
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
 
     localize_libs()
+    send_strings_for_translation()
     android_tag_build()
     get_prs_list(repository:GHHELPER_REPO, start_tag:"#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
   end
@@ -288,7 +289,6 @@ end
 #####################################################################################
 desc "Merge libraries strings files into the main app one"
 lane :localize_libs do | options |
-  main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
   libraries_strings_path = [
     {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id"]}
   ]
@@ -337,6 +337,9 @@ end
 ########################################################################
 # Helper Lanes
 ########################################################################
+main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
+update_strings_path = "./fastlane/resources/values/"
+
 desc "Get a list of pull request from `start_tag` to the current state"
 lane :get_pullrequests_list do | options |
   get_prs_list(repository:GHHELPER_REPO, start_tag:"#{options[:start_tag]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
@@ -371,7 +374,7 @@ end
     end
 
     Dir.chdir("..") do
-      sh("mkdir -p #{build_dir} && cp -v #{output_dir}#{options[:flavor]}Release/#{aab_file} #{build_dir}#{name}")
+      sh("mkdir -p #{build_dir} && cp -v #{output_dir}#{options[:flavor].downcase}Release/#{aab_file} #{build_dir}#{name}")
       UI.message("Bundle ready: #{name}")
       extract_universal_apk(bundle_path:"#{build_dir}#{name}", apk_path:"#{build_dir}#{apk_name}")
     end
@@ -404,19 +407,32 @@ end
     apk_path=options[:apk_path]
     temp_dir = Dir.mktmpdir()
 
-    command = "source ./tools/gradle-functions.sh"
-    command << "&& bundletool build-apks --bundle=\"#{bundle_path}\" \\
-    --output=\"#{temp_dir}/universal.apks\" \\
-    --mode=universal \\
-    --ks=\"$(get_gradle_property gradle.properties storeFile)\" \\
-    --ks-pass=\"pass:$(get_gradle_property gradle.properties storePassword)\" \\
-    --ks-key-alias=\"$(get_gradle_property gradle.properties keyAlias)\" \\
-    --key-pass=\"pass:$(get_gradle_property gradle.properties keyPassword)\""
+    command = ""
+    if is_ci 
+      command << "bundletool build-apks --bundle=\"#{bundle_path}\" \\
+      --output=\"#{temp_dir}/universal.apks\" \\
+      --mode=universal"
+    else
+      command = "source ./tools/gradle-functions.sh"
+      command << "&& bundletool build-apks --bundle=\"#{bundle_path}\" \\
+      --output=\"#{temp_dir}/universal.apks\" \\
+      --mode=universal \\
+      --ks=\"$(get_gradle_property gradle.properties storeFile)\" \\
+      --ks-pass=\"pass:$(get_gradle_property gradle.properties storePassword)\" \\
+      --ks-key-alias=\"$(get_gradle_property gradle.properties keyAlias)\" \\
+      --key-pass=\"pass:$(get_gradle_property gradle.properties keyPassword)\""
+    end
     sh(command)
 
     sh("unzip \"#{temp_dir}/universal.apks\" -d \"#{temp_dir}\"")
     FileUtils.cp_r("#{temp_dir}/universal.apk", "#{apk_path}", remove_destination: true)
     FileUtils.rm_rf("#{temp_dir}")
+  end
+
+  private_lane :send_strings_for_translation do | options |
+    sh("cd .. && mkdir -p #{update_strings_path} && cp #{main_strings_path} #{update_strings_path} && git add #{update_strings_path}strings.xml")
+    sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
+    sh("git push origin HEAD")
   end
 
   #####################################################################################

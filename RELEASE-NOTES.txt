@@ -1,5 +1,12 @@
+4.8
+-----
+ 
 4.7
 -----
+* Disabled beta options and removed Improved Stats as selectable option from it
+* Set Stats V4 as the default choice
+* Update Stats V3 due date warning message to September 1, 2020
+* Fixed cursor window size-related crashes for device running Android P and above
  
 4.6
 -----

@@ -11,7 +11,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 
-final class MockedProductDetailViewModel @AssistedInject constructor(
+class MockedProductDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     wooCommerceStore: MockedWooStore,
     selectedSite: SelectedSite,
@@ -21,6 +21,7 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
     productImagesServiceWrapper: ProductImagesServiceWrapper,
     resources: ResourceProvider,
     productCategoryRepository: MockedProductCategoriesRepository,
+    productTagRepository: MockedProductTagsRepository,
     @Assisted val arg0: SavedStateWithArgs
 ) : ProductDetailViewModel(
         arg0,
@@ -32,7 +33,8 @@ final class MockedProductDetailViewModel @AssistedInject constructor(
         wooCommerceStore,
         productImagesServiceWrapper,
         resources,
-        productCategoryRepository
+        productCategoryRepository,
+        productTagRepository
 ) {
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<MockedProductDetailViewModel>

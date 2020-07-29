@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -23,7 +22,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersCh
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class AddOrderTrackingProviderListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,

@@ -6,7 +6,6 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavArgs
-import androidx.navigation.NavArgsLazy
 import java.io.Serializable
 
 /**
@@ -15,8 +14,14 @@ import java.io.Serializable
  *
  *  The advantage of mixing the the arguments with the saved state is that they are automatically preserved
  *  in the [SavedStateHandle].
+ *
+ *  [defaultArgs] are used to supply arguments for testing
  */
-class SavedStateWithArgs(private val savedState: SavedStateHandle, val arguments: Bundle?) {
+open class SavedStateWithArgs(
+    private val savedState: SavedStateHandle,
+    val arguments: Bundle?,
+    val defaultArgs: NavArgs? = null
+) {
     init {
         // there's a specific case, when the app is destroyed and the original arguments are lost;
         // the SaveStateHandle would contain the the preserved values, which must be restored
@@ -44,7 +49,7 @@ class SavedStateWithArgs(private val savedState: SavedStateHandle, val arguments
     fun contains(key: String): Boolean = savedState.contains(key)
 
     @MainThread
-    inline fun <reified Args : NavArgs> navArgs() = NavArgsLazy(Args::class) {
+    inline fun <reified Args : NavArgs> navArgs() = NavArgsWithDefaultLazy(Args::class, defaultArgs) {
         arguments ?: throw IllegalStateException("$this has null arguments")
     }
 }
