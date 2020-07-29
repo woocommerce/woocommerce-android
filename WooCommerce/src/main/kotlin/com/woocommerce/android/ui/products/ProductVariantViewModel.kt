@@ -132,6 +132,8 @@ class ProductVariantViewModel @AssistedInject constructor(
     private suspend fun updateVariation(variation: ProductVariant) {
         if (networkStatus.isConnected()) {
             if (variationRepository.updateVariation(variation)) {
+                originalVariation = variation
+                showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
             } else {
                 triggerEvent(ShowSnackbar(string.variation_detail_update_variation_error))
