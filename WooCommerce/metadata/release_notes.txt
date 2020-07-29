@@ -1,5 +1,3 @@
-* Disabled beta options and removed Improved Stats as selectable option from it
-* Set Stats V4 as the default choice
-* Update Stats V3 due date warning message to September 1, 2020
-* Fixed cursor window size-related crashes for device running Android P and above
- 
+<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.
+
+<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.
