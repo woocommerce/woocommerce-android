@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.roundError
@@ -76,12 +77,13 @@ data class ProductVariant(
     }
 
     fun toDataModel(cachedVariation: WCProductVariationModel? = null): WCProductVariationModel {
-        fun imagesToJson(): String {
+        fun imageToJson(): String {
             return image?.let { variantImage ->
                 JsonObject().also { json ->
                     json.addProperty("id", variantImage.id)
                     json.addProperty("name", variantImage.name)
                     json.addProperty("src", variantImage.source)
+                    json.addProperty("date_created_gmt", variantImage.dateCreated.formatToYYYYmmDDhhmmss())
                 }.toString()
             } ?: ""
         }
@@ -89,7 +91,7 @@ data class ProductVariant(
         return (cachedVariation ?: WCProductVariationModel()).also {
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
-            it.image = "" //imagesToJson()
+            it.image = imageToJson()
             it.regularPrice = if (regularPrice isEquivalentTo BigDecimal.ZERO) "" else regularPrice.toString()
             it.salePrice = if (salePrice isEquivalentTo BigDecimal.ZERO) "" else salePrice.toString()
             if (isSaleScheduled) {
@@ -111,10 +113,10 @@ data class ProductVariant(
             it.status = if (isVisible) PUBLISH.value else PRIVATE.value
             it.shippingClass = shippingClass
             it.shippingClassId = shippingClassId.toInt()
-            it.length = length.toString()
-            it.width = width.toString()
-            it.height = height.toString()
-            it.weight = weight.toString()
+            it.length = if (length == 0f) "" else length.formatToString()
+            it.width = if (width == 0f) "" else width.formatToString()
+            it.weight = if (weight == 0f) "" else weight.formatToString()
+            it.height = if (height == 0f) "" else height.formatToString()
         }
     }
 }
