@@ -123,7 +123,7 @@ class ProductVariantViewModel @AssistedInject constructor(
     }
 
     fun onUpdateButtonClicked() {
-        viewState = viewState.copy(isProgressDialogShown =  true)
+        viewState = viewState.copy(isProgressDialogShown = true)
         launch {
             updateVariation(viewState.variation)
         }

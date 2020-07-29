@@ -101,16 +101,15 @@ class VariationDetailRepository @Inject constructor(
     private fun getCachedVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
-
     fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariant? =
         getCachedVariation(remoteProductId, remoteVariationId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onVariationChanged(event: OnVariationChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_VARIATION
-            && event.remoteProductId == remoteProductId
-            && event.remoteVariationId == remoteVariationId) {
+        if (event.causeOfChange == FETCH_SINGLE_VARIATION &&
+            event.remoteProductId == remoteProductId &&
+            event.remoteVariationId == remoteVariationId) {
             if (continuationFetchVariation?.isActive == true) {
                 if (event.isError) {
                     continuationFetchVariation?.resume(false)
