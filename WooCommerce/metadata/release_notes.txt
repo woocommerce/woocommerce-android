@@ -1,5 +1,3 @@
-New: Added placeholder for orders missing a customer’s name.
+<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.
 
-Fix: Multiple new order notifications are now viewable.
-
-Adjustments: Updated background color of login views and moved privacy notice for CA users to “About App” screen.
+<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.
