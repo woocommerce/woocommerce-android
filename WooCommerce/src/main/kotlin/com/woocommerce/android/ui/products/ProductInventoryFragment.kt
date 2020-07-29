@@ -102,6 +102,16 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
             }
         }
 
+        // Only the SKU field should be displayed for external and grouped products
+        if (ProductType.isGroupedOrExternalProduct(product.type)) {
+            manageStock_switch.visibility = View.GONE
+            product_stock_quantity.visibility = View.GONE
+            edit_product_backorders.visibility = View.GONE
+            edit_product_stock_status.visibility = View.GONE
+            soldIndividually_switch.visibility = View.GONE
+            return
+        }
+
         val manageStock = product.manageStock
         enableManageStockStatus(manageStock)
         with(manageStock_switch) {

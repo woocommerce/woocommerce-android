@@ -590,7 +590,8 @@
     <string name="product_tags">Tags</string>
     <string name="product_tag_list_empty_title">Add your first tag</string>
     <string name="product_tag_list_empty_message">Organise your products in tags</string>
-
+    <string name="product_add_tag_dialog_title">Adding tag</string>
+    <string name="product_add_tag_error">Error occurred when adding tags</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -884,6 +885,11 @@
     <string name="product_type_variable">Variable</string>
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
+
+    <!-- In-App Feedback -->
+    <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
+    <string name="feedback_request_make_better">Could be better</string>
+    <string name="feedback_request_like_it">I like it</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

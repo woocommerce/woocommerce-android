@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui
+package com.woocommerce.android.helpers
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.WooCommerce
