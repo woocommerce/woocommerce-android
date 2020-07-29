@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.TextView.Subtitle1"
+        android:id="@+id/lbl_feedbackReq_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:text="@string/feedback_request_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        style="@style/Woo.Button.Outlined"
+        android:id="@+id/btn_feedbackReq_negative"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/major_75"
+        android:text="@string/feedback_request_make_better"
+        android:textAllCaps="false"
+        android:textColor="@color/color_secondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_feedbackReq_title"
+        app:layout_constraintEnd_toStartOf="@+id/feedbackReq_guideline"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <Button
+        style="@style/Woo.Button.Colored"
+        android:id="@+id/btn_feedbackReq_positive"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_75"
+        android:text="@string/feedback_request_like_it"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@+id/feedbackReq_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_feedbackReq_title"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/feedbackReq_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+</androidx.constraintlayout.widget.ConstraintLayout>

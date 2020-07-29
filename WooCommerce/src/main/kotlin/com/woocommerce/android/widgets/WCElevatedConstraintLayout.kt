@@ -3,25 +3,24 @@ package com.woocommerce.android.widgets
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.woocommerce.android.R
 
-open class WCElevatedLinearLayout @JvmOverloads constructor(
+open class WCElevatedConstraintLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
+    defStyleAttr: Int = 0
+) : ConstraintLayout(context, attrs, defStyleAttr) {
     private var shapeElevation = context.resources.getDimension(R.dimen.plane_01)
     private var elevatedBackground: MaterialShapeDrawable
 
     init {
         attrs?.let {
-            val attrArray = context.obtainStyledAttributes(it, R.styleable.WCElevatedLinearLayout)
+            val attrArray = context.obtainStyledAttributes(it, R.styleable.WCElevatedConstraintLayout)
             try {
                 shapeElevation = attrArray.getDimension(
-                    R.styleable.WCElevatedLinearLayout_android_elevation, shapeElevation)
+                    R.styleable.WCElevatedConstraintLayout_android_elevation, shapeElevation)
             } finally {
                 attrArray.recycle()
             }

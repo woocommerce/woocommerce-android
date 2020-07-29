@@ -9,7 +9,7 @@
     android:clipToPadding="false"
     android:padding="@dimen/major_100"
     android:orientation="horizontal"
-    app:wcElevation="@dimen/plane_02"
+    android:elevation="@dimen/plane_02"
     tools:showIn="@layout/activity_site_picker">
 
     <com.google.android.material.button.MaterialButton

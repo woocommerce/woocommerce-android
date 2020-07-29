@@ -20,10 +20,14 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import kotlinx.android.synthetic.main.fragment_dashboard.view.dashboard_refresh_layout
+import kotlinx.android.synthetic.main.fragment_dashboard.view.scroll_view
+import kotlinx.android.synthetic.main.fragment_my_store.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
@@ -82,6 +86,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     refreshDashboard(forced = true)
                 }
                 scrollUpChild = scroll_view
+            }
+
+            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
+                dashboard_feedback_request_card.visibility = View.VISIBLE
             }
         }
         return view
