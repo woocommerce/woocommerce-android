@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ShowImage
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -88,12 +89,11 @@ class VariationDetailViewModel @AssistedInject constructor(
         showVariation(originalVariation.copy())
     }
 
-    // TODO: This will be used in edit mode
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product variation screen
      */
-    fun onEditVariationCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
+    fun onEditVariationCardClicked(target: VariationNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
     }
@@ -125,11 +125,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     fun onImageClicked() {
         viewState.variation.image?.let {
             AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-            triggerEvent(
-                ShowImage(
-                    it
-                )
-            )
+            triggerEvent(ShowImage(it))
         }
     }
 
@@ -241,8 +237,6 @@ class VariationDetailViewModel @AssistedInject constructor(
             gmtOffset
         )
     }
-
-    data class ShowImage(val image: Product.Image) : Event()
 
     @Parcelize
     data class VariationViewState(

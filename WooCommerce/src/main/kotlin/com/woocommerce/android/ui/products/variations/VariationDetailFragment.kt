@@ -46,6 +46,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var navigator: VariationNavigator
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
@@ -139,11 +140,8 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowImage -> {
-                    val action = VariationDetailFragmentDirections.actionGlobalWpMediaViewerFragment(
-                        event.image.source
-                    )
-                    findNavController().navigateSafely(action)
+                is VariationNavigationTarget -> {
+                    navigator.navigate(this, event)
                 }
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                     requireActivity(),
