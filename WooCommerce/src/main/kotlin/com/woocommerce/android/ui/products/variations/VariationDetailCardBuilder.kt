@@ -87,7 +87,7 @@ class VariationDetailCardBuilder(
         }
 
         return Switch(visibility, this.isVisible, visibilityIcon) {
-            viewModel.onVisibilityChanged(it)
+            viewModel.onVariationChanged(isVisible = it)
         }
     }
 
