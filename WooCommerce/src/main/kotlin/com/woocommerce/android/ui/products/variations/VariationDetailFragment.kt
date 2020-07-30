@@ -10,23 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Variation
+import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.ShowImage
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.fragment_variation_detail.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(), BackPressListener {
+class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
@@ -224,6 +224,18 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
         } else {
             viewModel.onExit()
             false
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            RequestCodes.AZTEC_EDITOR_VARIATION_DESCRIPTION -> {
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.onVariationChanged(
+                        description = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                    )
+                }
+            }
         }
     }
 
