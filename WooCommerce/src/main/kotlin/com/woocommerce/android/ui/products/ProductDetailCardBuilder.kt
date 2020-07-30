@@ -87,11 +87,11 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.price(),
                 product.productType(),
-                product.shipping(),
                 product.inventory(),
-                product.shortDescription(),
+                product.shipping(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
@@ -101,10 +101,10 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productType(),
-                product.shortDescription(),
-                product.readOnlyInventory(),
+                product.inventory(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
@@ -116,10 +116,10 @@ class ProductDetailCardBuilder(
                 product.price(),
                 product.productType(),
                 product.externalLink(),
-                product.shortDescription(),
-                product.readOnlyInventory(),
+                product.inventory(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
@@ -130,9 +130,9 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.productType(),
                 product.variations(),
-                product.shortDescription(),
                 product.categories(),
-                product.tags()
+                product.tags(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }
@@ -307,9 +307,14 @@ class ProductDetailCardBuilder(
         }
     }
 
-    // show stock properties as a group if stock management is enabled, otherwise show sku separately
+    // show stock properties as a group if stock management is enabled and if the product type is [SIMPLE],
+    // otherwise show sku separately
     private fun Product.inventory(): ProductProperty {
         val inventoryGroup = when {
+            ProductType.isGroupedOrExternalProduct(this.type) ->
+                mapOf(
+                    Pair(resources.getString(R.string.product_sku), this.sku)
+                )
             this.manageStock -> mapOf(
                 Pair(resources.getString(R.string.product_backorders),
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
@@ -370,7 +375,7 @@ class ProductDetailCardBuilder(
 
     // enable editing external product link
     private fun Product.externalLink(): ProductProperty? {
-        return if (this.type == ProductType.EXTERNAL) {
+        return if (this.type == EXTERNAL) {
             val hasExternalLink = this.externalUrl.isNotEmpty()
             val externalGroup = if (hasExternalLink) {
                 mapOf(Pair("", this.externalUrl))

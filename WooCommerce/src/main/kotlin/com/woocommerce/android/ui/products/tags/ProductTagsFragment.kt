@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.OnProductTagClickListener
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_tags.*
@@ -31,6 +32,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     private lateinit var productTagsAdapter: ProductTagsAdapter
 
     private val skeletonView = SkeletonView()
+    private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +64,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+                viewModel.onProductTagDoneMenuActionClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -97,6 +99,12 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
                 viewModel.refreshProductTags()
             }
         }
+
+        addProductTagView.setOnEditorActionListener {
+            viewModel.onProductTagAdded(it)
+            updateSelectedTags()
+            true
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -104,6 +112,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productTagsLayout.isRefreshing = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.shouldDisplayDoneMenuButton?.takeIfNotEqualTo(old?.shouldDisplayDoneMenuButton) {
+                showUpdateMenuItem(it)
+            }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     WooAnimUtils.fadeIn(empty_view)
@@ -117,6 +129,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
         viewModel.productTags.observe(viewLifecycleOwner, Observer {
             showProductTags(it)
+        })
+
+        viewModel.addedProductTags.observe(viewLifecycleOwner, Observer {
+            addTags(it, this)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -134,14 +150,11 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
     private fun updateSelectedTags() {
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        addProductTagView.addSelectedTags(product.tags, this)
-        showAddProductTagView()
+        addTags(product.tags, this)
     }
 
-    private fun showAddProductTagView() {
-        with(addProductTagView) {
-            visibility = if (hasTags()) View.VISIBLE else View.GONE
-        }
+    private fun addTags(tags: List<ProductTag>, listener: OnProductTagClickListener) {
+        addProductTagView.addSelectedTags(tags, listener)
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -150,6 +163,24 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                getString(R.string.product_add_tag_dialog_title),
+                getString(R.string.product_update_dialog_message)
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
@@ -173,7 +204,6 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onProductTagRemoved(productTag: ProductTag) {
         viewModel.onProductTagSelectionRemoved(productTag)
         addProductTagView.removeSelectedTag(productTag)
-        showAddProductTagView()
         changesMade()
     }
 }

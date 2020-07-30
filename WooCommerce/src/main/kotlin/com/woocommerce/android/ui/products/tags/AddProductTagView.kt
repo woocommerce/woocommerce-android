@@ -31,21 +31,23 @@ class AddProductTagView @JvmOverloads constructor(
     fun removeSelectedTag(
         selectedTag: ProductTag
     ) {
-        val selectedChip = selectedTagsGroup.getSelectedChip(selectedTag.remoteTagId.toInt())
+        val selectedChip = selectedTagsGroup.getSelectedChip(selectedTag.name)
         selectedChip?.let { selectedTagsGroup.removeView(it) }
     }
 
-    fun hasTags() = selectedTagsGroup.childCount > 0
+    fun setOnEditorActionListener(cb: (text: String) -> Boolean) {
+        addTagsEditText.setOnEditorActionListener(cb)
+    }
 
     private fun addTag(
         tag: ProductTag,
         listener: OnProductTagClickListener
     ) {
         val selectedChipIds = selectedTagsGroup.getSelectedChipIds()
-        if (!selectedChipIds.contains(tag.remoteTagId.toInt())) {
+        if (!selectedChipIds.contains(tag.name)) {
             val chip = Chip(context).apply {
                 text = tag.name
-                id = tag.remoteTagId.toInt()
+                this.tag = tag.name
                 isCloseIconVisible = true
                 isCheckable = false
                 isClickable = false
@@ -55,21 +57,21 @@ class AddProductTagView @JvmOverloads constructor(
         }
     }
 
-    private fun ChipGroup.getSelectedChipIds(): MutableList<Int> {
-        val checkedIds = ArrayList<Int>()
+    private fun ChipGroup.getSelectedChipIds(): MutableList<String> {
+        val checkedIds = ArrayList<String>()
         for (i in 0 until childCount) {
             val child = getChildAt(i)
             if (child is Chip) {
-                checkedIds.add(child.getId())
+                checkedIds.add(child.tag as String)
             }
         }
         return checkedIds
     }
 
-    private fun ChipGroup.getSelectedChip(id: Int): Chip? {
+    private fun ChipGroup.getSelectedChip(tag: String): Chip? {
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child is Chip && child.id == id) {
+            if (child is Chip && child.tag == tag) {
                 return child
             }
         }

@@ -11,12 +11,22 @@ data class ProductTag(
     val slug: String = "",
     val description: String = ""
 ) : Parcelable {
-    fun toProductTag(): ProductTag {
-        return ProductTag(
-            this.remoteTagId,
-            this.name,
-            this.slug
-        )
+    /**
+     * Adds tag to a product
+     */
+    fun addTag(product: Product?): List<ProductTag> {
+        val selectedTags = product?.tags?.toMutableList() ?: mutableListOf()
+        if (!selectedTags.contains(this)) { selectedTags.add(this) }
+        return selectedTags
+    }
+
+    /**
+     * Removes tag from a product
+     */
+    fun removeTag(product: Product?): List<ProductTag> {
+        val selectedTags = product?.tags?.toMutableList() ?: mutableListOf()
+        selectedTags.remove(this)
+        return selectedTags
     }
 }
 
@@ -30,6 +40,15 @@ fun List<ProductTag>.containsTag(tag: ProductTag): Boolean {
         }
     }
     return false
+}
+
+/**
+ * Adds a list of tags to a product
+ */
+fun List<ProductTag>.addTags(product: Product?): List<ProductTag> {
+    val selectedTags = product?.tags?.toMutableList() ?: mutableListOf()
+    selectedTags.addAll(this)
+    return selectedTags
 }
 
 fun WCProductTagModel.toProductTag(): ProductTag {

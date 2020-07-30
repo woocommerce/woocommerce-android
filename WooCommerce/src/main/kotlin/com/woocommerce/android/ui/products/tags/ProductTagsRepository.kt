@@ -33,6 +33,7 @@ class ProductTagsRepository @Inject constructor(
     }
 
     private var loadContinuation: Continuation<Boolean>? = null
+    private var addProductTagsContinuation: Continuation<Boolean>? = null
     private var offset = 0
 
     var canLoadMoreProductTags = true
@@ -75,6 +76,34 @@ class ProductTagsRepository @Inject constructor(
         return productStore.getTagsForSite(selectedSite.get())
             .map { it.toProductTag() }
     }
+
+    /**
+     * Fires the request to add a new product tags
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun addProductTags(tagNames: List<String>): List<ProductTag> {
+        try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                addProductTagsContinuation = it
+
+                val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
+                dispatcher.dispatch(WCProductActionBuilder.newAddProductTagsAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.e(
+                WooLog.T.PRODUCTS,
+                "CancellationException while adding product tags: $tagNames", e
+            )
+        }
+        return getProductTagsByNames(tagNames)
+    }
+
+    fun getProductTagsByNames(names: List<String>) =
+        productStore.getProductTagsByNames(selectedSite.get(), names).map { it.toProductTag() }
+
+    fun getProductTagByName(name: String) =
+        productStore.getProductTagByName(selectedSite.get(), name)?.toProductTag()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
