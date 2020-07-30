@@ -18,7 +18,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductNavigationTarget
-import com.woocommerce.android.ui.products.VariationDetailFragmentArgs
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers

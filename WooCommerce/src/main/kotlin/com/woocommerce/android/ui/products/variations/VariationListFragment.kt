@@ -23,8 +23,6 @@ import com.woocommerce.android.model.Variation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.VariationListFragmentArgs
-import com.woocommerce.android.ui.products.VariationListFragmentDirections
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
