@@ -1,3 +1,6 @@
+4.8
+-----
+ 
 4.7
 -----
 * Disabled beta options and removed Improved Stats as selectable option from it
