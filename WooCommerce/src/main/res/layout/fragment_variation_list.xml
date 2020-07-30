@@ -3,17 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/productVariantsRefreshLayout"
+    android:id="@+id/variationListRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.products.ProductVariantsFragment">
+    tools:context="com.woocommerce.android.ui.products.VariationListFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/productVariantsList"
+            android:id="@+id/variationList"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -21,7 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:background="?attr/colorSurface"
             tools:itemCount="3"
-            tools:listitem="@layout/product_variant_list_item"/>
+            tools:listitem="@layout/variation_list_item"/>
 
         <com.woocommerce.android.widgets.ActionableEmptyView
             android:id="@+id/empty_view"

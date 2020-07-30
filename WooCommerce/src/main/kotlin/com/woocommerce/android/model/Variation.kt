@@ -20,7 +20,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 @Parcelize
-data class ProductVariant(
+data class Variation(
     val remoteProductId: Long,
     val remoteVariationId: Long,
     val image: Product.Image?,
@@ -47,7 +47,7 @@ data class ProductVariant(
     override val weight: Float
 ) : Parcelable, IProduct {
     override fun equals(other: Any?): Boolean {
-        val variation = other as? ProductVariant
+        val variation = other as? Variation
         return variation?.let {
             remoteVariationId == variation.remoteVariationId &&
                 remoteProductId == variation.remoteProductId &&
@@ -121,8 +121,8 @@ data class ProductVariant(
     }
 }
 
-fun WCProductVariationModel.toAppModel(): ProductVariant {
-    return ProductVariant(
+fun WCProductVariationModel.toAppModel(): Variation {
+    return Variation(
         this.remoteProductId,
         this.remoteVariationId,
         this.getImage()?.let {
@@ -158,16 +158,16 @@ fun WCProductVariationModel.toAppModel(): ProductVariant {
 
 /**
  * Given a list of [ProductVariantOption]
- * returns the product variant combination name in the format {option1} - {option2}
+ * returns the product variation combination name in the format {option1} - {option2}
  */
-private fun getAttributeOptionName(variantOptions: List<ProductVariantOption>): String {
+private fun getAttributeOptionName(variationOptions: List<ProductVariantOption>): String {
     var optionName = ""
-    for (variantOption in variantOptions) {
-        if (!variantOption.option.isNullOrEmpty()) {
+    for (variationOption in variationOptions) {
+        if (!variationOption.option.isNullOrEmpty()) {
             if (optionName.isNotEmpty()) {
                 optionName += " - "
             }
-            optionName += "${variantOption.option}"
+            optionName += "${variationOption.option}"
         }
     }
     return optionName

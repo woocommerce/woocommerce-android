@@ -6,7 +6,7 @@ import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
-import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.Variation
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -18,20 +18,20 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 
-class ProductVariantCardBuilder(
-    private val viewModel: ProductVariantViewModel,
+class VariationDetailCardBuilder(
+    private val viewModel: VariationDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters
 ) {
-    fun buildPropertyCards(variation: ProductVariant): List<ProductPropertyCard> {
+    fun buildPropertyCards(variation: Variation): List<ProductPropertyCard> {
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(variation))
 
         return cards
     }
 
-    private fun getPrimaryCard(variation: ProductVariant): ProductPropertyCard {
+    private fun getPrimaryCard(variation: Variation): ProductPropertyCard {
         return ProductPropertyCard(
             type = PRIMARY,
             properties = listOf(
@@ -44,7 +44,7 @@ class ProductVariantCardBuilder(
         )
     }
 
-    private fun ProductVariant.description(): ProductProperty? {
+    private fun Variation.description(): ProductProperty? {
         val variationDescription = this.description
         val description = if (variationDescription.isEmpty()) {
             resources.getString(string.product_description)
@@ -74,25 +74,25 @@ class ProductVariantCardBuilder(
         }
     }
 
-    private fun ProductVariant.visibility(): ProductProperty {
+    private fun Variation.visibility(): ProductProperty {
         @StringRes val visibility: Int
         @DrawableRes val visibilityIcon: Int
         if (this.isVisible) {
             visibility = string.product_variation_visible
             visibilityIcon = drawable.ic_gridicons_visible
         } else {
-            visibility = string.product_variant_hidden
+            visibility = string.product_variation_hidden
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
         return Switch(visibility, this.isVisible, visibilityIcon) {
-            viewModel.onVariantVisibilityChanged(it)
+            viewModel.onVisibilityChanged(it)
         }
     }
 
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
-    private fun ProductVariant.price(): ProductProperty {
+    private fun Variation.price(): ProductProperty {
         val hasPricingInfo = this.regularPrice != null || this.salePrice != null
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
@@ -121,7 +121,7 @@ class ProductVariantCardBuilder(
 //            }
     }
 
-    private fun ProductVariant.shipping(): ProductProperty? {
+    private fun Variation.shipping(): ProductProperty? {
         return if (!this.isVirtual) {
             val weightWithUnits = this.getWeightWithUnits(parameters.weightUnit)
             val sizeWithUnits = this.getSizeWithUnits(parameters.dimensionUnit)
@@ -157,7 +157,7 @@ class ProductVariantCardBuilder(
         }
     }
 
-    private fun ProductVariant.inventory(): ProductProperty {
+    private fun Variation.inventory(): ProductProperty {
         return ComplexProperty(
             string.product_inventory,
             ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus),

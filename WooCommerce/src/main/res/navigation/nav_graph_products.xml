@@ -13,8 +13,8 @@
             android:defaultValue="0L"
             app:argType="long" />
         <action
-            android:id="@+id/action_productDetailFragment_to_productVariantsFragment"
-            app:destination="@id/productVariantsFragment"
+            android:id="@+id/action_productDetailFragment_to_variationListFragment"
+            app:destination="@id/variationListFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
@@ -49,16 +49,17 @@
             app:argType="long" />
     </fragment>
     <fragment
-        android:id="@+id/productVariantsFragment"
-        android:name="com.woocommerce.android.ui.products.ProductVariantsFragment"
-        tools:layout="@layout/fragment_product_variants">
+        android:id="@+id/variationListFragment"
+        android:name="com.woocommerce.android.ui.products.VariationListFragment"
+        android:label="variationListFragment"
+        tools:layout="@layout/fragment_variation_list">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
         <action
-            android:id="@+id/action_variantsFragment_to_variantFragment"
-            app:destination="@id/productVariantFragment"
+            android:id="@+id/action_variationListFragment_to_variationDetailFragment"
+            app:destination="@id/variationDetailFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
@@ -238,11 +239,11 @@
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
     <fragment
-        android:id="@+id/productVariantFragment"
-        android:name="com.woocommerce.android.ui.products.ProductVariantFragment"
-        android:label="productVariantFragment">
+        android:id="@+id/variationDetailFragment"
+        android:name="com.woocommerce.android.ui.products.VariationDetailFragment"
+        android:label="variationDetailFragment">
         <argument
-            android:name="variant"
-            app:argType="com.woocommerce.android.model.ProductVariant" />
+            android:name="variation"
+            app:argType="com.woocommerce.android.model.Variation" />
     </fragment>
 </navigation>

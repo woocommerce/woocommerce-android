@@ -329,7 +329,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Aztec editor
         AZTEC_EDITOR_DONE_BUTTON_TAPPED,
 
-        // -- Product variants
+        // -- Product variations
         PRODUCT_VARIANTS_PULLED_TO_REFRESH,
         PRODUCT_VARIANTS_LOADED,
         PRODUCT_VARIANTS_LOAD_ERROR,

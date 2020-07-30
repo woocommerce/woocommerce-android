@@ -11,7 +11,7 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class ProductVariantsModule {
+abstract class VariationListModule {
     @Module
     companion object {
         @JvmStatic
@@ -22,9 +22,9 @@ abstract class ProductVariantsModule {
     }
     @Binds
     @IntoMap
-    @ViewModelKey(ProductVariantsViewModel::class)
-    abstract fun bindFactory(factory: ProductVariantsViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(VariationListViewModel::class)
+    abstract fun bindFactory(factory: VariationListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
-    abstract fun bindSavedStateRegistryOwner(fragment: ProductVariantsFragment): SavedStateRegistryOwner
+    abstract fun bindSavedStateRegistryOwner(fragment: VariationListFragment): SavedStateRegistryOwner
 }

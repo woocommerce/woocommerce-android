@@ -10,9 +10,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.Variation
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductVariantsViewModel.ViewState
+import com.woocommerce.android.ui.products.VariationListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -24,14 +24,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
-class ProductVariantsViewModelTest : BaseUnitTest() {
+class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
-    private val productVariantsRepository: ProductVariantsRepository = mock()
+    private val variationListRepository: VariationListRepository = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
 
     private val productRemoteId = 1L
-    private lateinit var viewModel: ProductVariantsViewModel
-    private val productVariants = ProductTestUtils.generateProductVariantList(productRemoteId)
+    private lateinit var viewModel: VariationListViewModel
+    private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
     private val savedState: SavedStateWithArgs = mock()
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -44,10 +44,10 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
 
     private fun createViewModel() {
         viewModel = spy(
-                ProductVariantsViewModel(
+                VariationListViewModel(
                         savedState,
                         coroutineDispatchers,
-                        productVariantsRepository,
+                        variationListRepository,
                         networkStatus,
                         currencyFormatter
                 )
@@ -55,20 +55,20 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product variant list view correctly`() {
-        doReturn(productVariants).whenever(productVariantsRepository).getProductVariantList(productRemoteId)
+    fun `Displays the product variation list view correctly`() {
+        doReturn(variations).whenever(variationListRepository).getProductVariationList(productRemoteId)
 
         createViewModel()
 
-        val fetchedProductVariantList = ArrayList<ProductVariant>()
-        viewModel.productVariantList.observeForever { it?.let { fetchedProductVariantList.addAll(it) } }
+        val fetchedVariationList = ArrayList<Variation>()
+        viewModel.variationList.observeForever { it?.let { fetchedVariationList.addAll(it) } }
 
         viewModel.start(productRemoteId)
-        assertThat(fetchedProductVariantList).isEqualTo(productVariants)
+        assertThat(fetchedVariationList).isEqualTo(variations)
     }
 
     @Test
-    fun `Do not fetch product variants from api when not connected`() = test {
+    fun `Do not fetch product variations from api when not connected`() = test {
         doReturn(false).whenever(networkStatus).isConnected()
 
         createViewModel()
@@ -80,15 +80,15 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
 
         viewModel.start(productRemoteId)
 
-        verify(productVariantsRepository, times(1)).getProductVariantList(productRemoteId)
-        verify(productVariantsRepository, times(0)).fetchProductVariants(productRemoteId)
+        verify(variationListRepository, times(1)).getProductVariationList(productRemoteId)
+        verify(variationListRepository, times(0)).fetchProductVariations(productRemoteId)
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
 
     @Test
-    fun `Shows and hides product variants skeleton correctly`() = test {
-        doReturn(emptyList<ProductVariant>()).whenever(productVariantsRepository).getProductVariantList(productRemoteId)
+    fun `Shows and hides product variations skeleton correctly`() = test {
+        doReturn(emptyList<Variation>()).whenever(variationListRepository).getProductVariationList(productRemoteId)
 
         createViewModel()
 
@@ -102,9 +102,9 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display empty view on fetch product variants error`() = test {
-        whenever(productVariantsRepository.fetchProductVariants(productRemoteId)).thenReturn(null)
-        whenever(productVariantsRepository.getProductVariantList(productRemoteId)).thenReturn(null)
+    fun `Display empty view on fetch product variations error`() = test {
+        whenever(variationListRepository.fetchProductVariations(productRemoteId)).thenReturn(null)
+        whenever(variationListRepository.getProductVariationList(productRemoteId)).thenReturn(null)
 
         createViewModel()
 
@@ -115,7 +115,7 @@ class ProductVariantsViewModelTest : BaseUnitTest() {
 
         viewModel.start(productRemoteId)
 
-        verify(productVariantsRepository, times(1)).fetchProductVariants(productRemoteId)
+        verify(variationListRepository, times(1)).fetchProductVariations(productRemoteId)
         assertThat(showEmptyView).containsExactly(true, false)
     }
 }

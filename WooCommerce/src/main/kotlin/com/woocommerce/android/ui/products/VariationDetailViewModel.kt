@@ -13,7 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.Variation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
-class ProductVariantViewModel @AssistedInject constructor(
+class VariationDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
@@ -49,8 +49,8 @@ class ProductVariantViewModel @AssistedInject constructor(
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
     }
 
-    private val navArgs: ProductVariantFragmentArgs by savedState.navArgs()
-    private var originalVariation: ProductVariant = navArgs.variant
+    private val navArgs: VariationDetailFragmentArgs by savedState.navArgs()
+    private var originalVariation: Variation = navArgs.variation
 
     private val parameters: SiteParameters by lazy {
         val params = savedState.get<SiteParameters>(KEY_VARIATION_PARAMETERS) ?: loadParameters()
@@ -58,19 +58,19 @@ class ProductVariantViewModel @AssistedInject constructor(
         params
     }
 
-    // view state for the variant detail screen
-    val variantViewStateData = LiveDataDelegate(savedState, VariantViewState(originalVariation)) { old, new ->
+    // view state for the variation detail screen
+    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
         if (old?.variation != new.variation) {
             updateCards()
         }
     }
-    private var viewState by variantViewStateData
+    private var viewState by variationViewStateData
 
-    private val _variantDetailCards = MutableLiveData<List<ProductPropertyCard>>()
-    val variantDetailCards: LiveData<List<ProductPropertyCard>> = _variantDetailCards
+    private val _variationDetailCards = MutableLiveData<List<ProductPropertyCard>>()
+    val variationDetailCards: LiveData<List<ProductPropertyCard>> = _variationDetailCards
 
     private val cardBuilder by lazy {
-        ProductVariantCardBuilder(this, resources, currencyFormatter, parameters)
+        VariationDetailCardBuilder(this, resources, currencyFormatter, parameters)
     }
 
     init {
@@ -80,7 +80,7 @@ class ProductVariantViewModel @AssistedInject constructor(
     // TODO: This will be used in edit mode
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
-     * is selected in Product variant screen
+     * is selected in Product variation screen
      */
     fun onEditVariationCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
@@ -111,14 +111,14 @@ class ProductVariantViewModel @AssistedInject constructor(
         }
     }
 
-    fun onVariantImageClicked() {
+    fun onImageClicked() {
         viewState.variation.image?.let {
             AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-            triggerEvent(ShowVariantImage(it))
+            triggerEvent(ShowImage(it))
         }
     }
 
-    fun onVariantVisibilityChanged(isVisible: Boolean) {
+    fun onVisibilityChanged(isVisible: Boolean) {
         showVariation(viewState.variation.copy(isVisible = isVisible))
     }
 
@@ -129,7 +129,7 @@ class ProductVariantViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun updateVariation(variation: ProductVariant) {
+    private suspend fun updateVariation(variation: Variation) {
         if (networkStatus.isConnected()) {
             if (variationRepository.updateVariation(variation)) {
                 originalVariation = variation
@@ -183,19 +183,19 @@ class ProductVariantViewModel @AssistedInject constructor(
     private fun updateCards() {
         viewState.variation.let {
             launch {
-                if (_variantDetailCards.value == null) {
+                if (_variationDetailCards.value == null) {
                     viewState = viewState.copy(isSkeletonShown = true)
                 }
                 val cards = withContext(dispatchers.io) {
                     cardBuilder.buildPropertyCards(it)
                 }
-                _variantDetailCards.value = cards
+                _variationDetailCards.value = cards
                 viewState = viewState.copy(isSkeletonShown = false)
             }
         }
     }
 
-    private fun showVariation(variation: ProductVariant) {
+    private fun showVariation(variation: Variation) {
         viewState = viewState.copy(
             variation = variation,
             isDoneButtonVisible = variation != originalVariation
@@ -227,11 +227,11 @@ class ProductVariantViewModel @AssistedInject constructor(
         )
     }
 
-    data class ShowVariantImage(val image: Product.Image) : Event()
+    data class ShowImage(val image: Product.Image) : Event()
 
     @Parcelize
-    data class VariantViewState(
-        val variation: ProductVariant,
+    data class VariationViewState(
+        val variation: Variation,
         val isDoneButtonVisible: Boolean? = null,
         val isSkeletonShown: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
@@ -245,5 +245,5 @@ class ProductVariantViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<ProductVariantViewModel>
+    interface Factory : ViewModelAssistedFactory<VariationDetailViewModel>
 }

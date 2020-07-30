@@ -23,8 +23,8 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentMod
 import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductTagsFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductVariantFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductVariantsFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.VariationDetailFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.VariationListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment
@@ -54,11 +54,11 @@ import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
     ProductDetailFragmentModule::class,
-    ProductVariantFragmentModule::class,
+    VariationDetailFragmentModule::class,
     ProductListFragmentModule::class,
     ProductFilterListFragmentModule::class,
     ProductFilterOptionListFragmentModule::class,
-    ProductVariantsFragmentModule::class,
+    VariationListFragmentModule::class,
     ProductImagesFragmentModule::class,
     ProductImageViewerFragmentModule::class,
     ProductInventoryFragmentModule::class,
@@ -110,17 +110,17 @@ object ProductsModule {
     }
 
     @Module
-    abstract class ProductVariantFragmentModule {
+    abstract class VariationDetailFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductVariantModule::class])
-        abstract fun productVariantFragment(): ProductVariantFragment
+        @ContributesAndroidInjector(modules = [VariationDetailModule::class])
+        abstract fun variationDetailFragment(): VariationDetailFragment
     }
 
     @Module
-    internal abstract class ProductVariantsFragmentModule {
+    internal abstract class VariationListFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductVariantsModule::class])
-        abstract fun productVariantsFragment(): ProductVariantsFragment
+        @ContributesAndroidInjector(modules = [VariationListModule::class])
+        abstract fun variationListFragment(): VariationListFragment
     }
 
     @Module

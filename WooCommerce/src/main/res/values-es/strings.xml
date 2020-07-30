@@ -186,7 +186,7 @@ Language: es
     <string name="product_add_image_content_description">Añadir imagen</string>
     <string name="date_timeframe_future">Próximo</string>
     <string name="remove">Eliminar</string>
-    <string name="product_variant_hidden">Oculto</string>
+    <string name="product_variation_hidden">Oculto</string>
     <string name="login_discovery_error_generic">No hemos podido acceder a tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_ssl">No hemos podido acceder a tu sitio debido a un problema con el &lt;b>Certificado SSL&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_http_auth">No hemos podido acceder a tu sitio porque requiere &lt;b>Autentificación con HTTP&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
@@ -231,7 +231,7 @@ Language: es
     <string name="product_list_empty_search">Ningún producto coincide con tu búsqueda.</string>
     <string name="product_list_empty">Aún no hay ningún producto</string>
     <string name="product_stock_count">Existencias: %s</string>
-    <string name="product_stock_status_instock_with_variants">Existencias \u2022 %d variantes</string>
+    <string name="product_stock_status_instock_with_variations">Existencias \u2022 %d variantes</string>
     <string name="product_image_content_description">Imagen del producto</string>
     <string name="review_list_item_title">%1$s ha dejado una reseña sobre %2$s</string>
     <string name="wc_unapproved">Rechazada</string>

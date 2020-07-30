@@ -68,7 +68,7 @@ class ProductListAdapter(
                 if (product.type == VARIABLE) {
                     if (product.numVariations > 0) {
                         context.getString(
-                                R.string.product_stock_status_instock_with_variants,
+                                R.string.product_stock_status_instock_with_variations,
                                 product.numVariations
                         )
                     } else {

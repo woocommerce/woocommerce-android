@@ -19,34 +19,34 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.Variation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.products.ProductVariantsViewModel.ProductVariantsEvent.ShowVariantDetail
+import com.woocommerce.android.ui.products.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.fragment_product_variants.*
+import kotlinx.android.synthetic.main.fragment_variation_list.*
 import javax.inject.Inject
 
-class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
+class VariationListFragment : BaseFragment(), OnLoadMoreListener {
     companion object {
-        const val TAG: String = "ProductVariantsFragment"
+        const val TAG: String = "VariationListFragment"
         private const val LIST_STATE_KEY = "list_state"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: ProductVariantsViewModel by viewModels { viewModelFactory }
+    private val viewModel: VariationListViewModel by viewModels { viewModelFactory }
 
     private val skeletonView = SkeletonView()
     private var layoutManager: LayoutManager? = null
 
-    private val navArgs: ProductVariantsFragmentArgs by navArgs()
+    private val navArgs: VariationListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +54,7 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_variants, container, false)
+        return inflater.inflate(R.layout.fragment_variation_list, container, false)
     }
 
     override fun onDestroyView() {
@@ -88,17 +88,17 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
             layoutManager.onRestoreInstanceState(it)
         }
 
-        productVariantsList.layoutManager = layoutManager
-        productVariantsList.itemAnimator = null
-        productVariantsList.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variantOptionName, clipToMargin = false
+        variationList.layoutManager = layoutManager
+        variationList.itemAnimator = null
+        variationList.addItemDecoration(AlignedDividerDecoration(
+            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
-        productVariantsRefreshLayout?.apply {
-            scrollUpChild = productVariantsList
+        variationListRefreshLayout?.apply {
+            scrollUpChild = variationList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
-                viewModel.refreshProductVariants(navArgs.remoteProductId)
+                viewModel.refreshVariations(navArgs.remoteProductId)
             }
         }
     }
@@ -108,10 +108,10 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         viewModel.start(navArgs.remoteProductId)
     }
 
-    private fun setupObservers(viewModel: ProductVariantsViewModel) {
+    private fun setupObservers(viewModel: VariationListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productVariantsRefreshLayout.isRefreshing = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { variationListRefreshLayout.isRefreshing = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
@@ -123,21 +123,21 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
             }
         }
 
-        viewModel.productVariantList.observe(viewLifecycleOwner, Observer {
-            showProductVariants(it)
+        viewModel.variationList.observe(viewLifecycleOwner, Observer {
+            showVariations(it)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowVariantDetail -> openVariantDetail(event.variant)
+                is ShowVariationDetail -> openVariationDetail(event.variation)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> activity?.onBackPressed()
             }
         })
     }
 
-    private fun openVariantDetail(variant: ProductVariant) {
-        val action = ProductVariantsFragmentDirections.actionVariantsFragmentToVariantFragment(variant)
+    private fun openVariationDetail(variation: Variation) {
+        val action = VariationListFragmentDirections.actionVariationListFragmentToVariationDetailFragment(variation)
         findNavController().navigateSafely(action)
     }
 
@@ -149,7 +149,7 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(productVariantsList, R.layout.skeleton_product_list, delayed = true)
+            skeletonView.show(variationList, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
         }
@@ -159,15 +159,15 @@ class ProductVariantsFragment : BaseFragment(), OnLoadMoreListener {
         loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun showProductVariants(productVariants: List<ProductVariant>) {
-        val adapter = (productVariantsList.adapter ?: ProductVariantsAdapter(
+    private fun showVariations(variations: List<Variation>) {
+        val adapter = (variationList.adapter ?: VariationListAdapter(
             requireContext(),
             GlideApp.with(this),
             this,
             viewModel::onItemClick
-        )) as ProductVariantsAdapter
+        )) as VariationListAdapter
 
-        productVariantsList.adapter = adapter
-        adapter.setProductVariantList(productVariants)
+        variationList.adapter = adapter
+        adapter.setVariationList(variations)
     }
 }
