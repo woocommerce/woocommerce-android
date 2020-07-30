@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -13,7 +13,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.model.Variation
-import com.woocommerce.android.ui.products.VariationListAdapter.VariationViewHolder
+import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
 import kotlinx.android.synthetic.main.variation_list_item.view.*
 import org.wordpress.android.util.PhotonUtils
 
@@ -95,7 +96,12 @@ class VariationListAdapter(
     }
 
     fun setVariationList(variations: List<Variation>) {
-        val diffResult = DiffUtil.calculateDiff(VariationItemDiffUtil(variationList, variations))
+        val diffResult = DiffUtil.calculateDiff(
+            VariationItemDiffUtil(
+                variationList,
+                variations
+            )
+        )
         variationList = variations
         diffResult.dispatchUpdatesTo(this)
     }

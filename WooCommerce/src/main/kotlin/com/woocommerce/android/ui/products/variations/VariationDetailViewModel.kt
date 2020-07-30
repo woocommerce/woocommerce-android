@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.content.DialogInterface
 import android.os.Parcelable
@@ -16,6 +16,9 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Variation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.VariationDetailFragmentArgs
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -59,7 +62,11 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the variation detail screen
-    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
+    val variationViewStateData = LiveDataDelegate(savedState,
+        VariationViewState(
+            originalVariation
+        )
+    ) { old, new ->
         if (old?.variation != new.variation) {
             updateCards()
         }
@@ -70,7 +77,12 @@ class VariationDetailViewModel @AssistedInject constructor(
     val variationDetailCards: LiveData<List<ProductPropertyCard>> = _variationDetailCards
 
     private val cardBuilder by lazy {
-        VariationDetailCardBuilder(this, resources, currencyFormatter, parameters)
+        VariationDetailCardBuilder(
+            this,
+            resources,
+            currencyFormatter,
+            parameters
+        )
     }
 
     init {
@@ -114,7 +126,11 @@ class VariationDetailViewModel @AssistedInject constructor(
     fun onImageClicked() {
         viewState.variation.image?.let {
             AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-            triggerEvent(ShowImage(it))
+            triggerEvent(
+                ShowImage(
+                    it
+                )
+            )
         }
     }
 

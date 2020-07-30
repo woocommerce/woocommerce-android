@@ -50,7 +50,7 @@
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
-        android:name="com.woocommerce.android.ui.products.VariationListFragment"
+        android:name="com.woocommerce.android.ui.products.variations.VariationListFragment"
         android:label="variationListFragment"
         tools:layout="@layout/fragment_variation_list">
         <argument
@@ -240,7 +240,7 @@
         app:popExitAnim="@anim/activity_scale_out" />
     <fragment
         android:id="@+id/variationDetailFragment"
-        android:name="com.woocommerce.android.ui.products.VariationDetailFragment"
+        android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
         android:label="variationDetailFragment">
         <argument
             android:name="variation"

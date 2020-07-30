@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -7,6 +7,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.Variation
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -160,7 +161,10 @@ class VariationDetailCardBuilder(
     private fun Variation.inventory(): ProductProperty {
         return ComplexProperty(
             string.product_inventory,
-            ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus),
+            ProductStockStatus.stockStatusToDisplayString(
+                resources,
+                this.stockStatus
+            ),
             drawable.ic_gridicons_list_checkmark,
             true
         )

@@ -47,6 +47,10 @@ import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
 import com.woocommerce.android.ui.products.tags.ProductTagsFragment
 import com.woocommerce.android.ui.products.tags.ProductTagsModule
+import com.woocommerce.android.ui.products.variations.VariationDetailFragment
+import com.woocommerce.android.ui.products.variations.VariationDetailModule
+import com.woocommerce.android.ui.products.variations.VariationListFragment
+import com.woocommerce.android.ui.products.variations.VariationListModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module

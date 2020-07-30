@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel

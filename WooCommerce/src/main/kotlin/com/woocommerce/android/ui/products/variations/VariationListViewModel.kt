@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
@@ -35,7 +35,9 @@ class VariationListViewModel @AssistedInject constructor(
     private val _variationList = MutableLiveData<List<Variation>>()
     val variationList: LiveData<List<Variation>> = _variationList
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState,
+        ViewState()
+    )
     private var viewState by viewStateLiveData
 
     fun start(remoteProductId: Long) {
@@ -58,7 +60,11 @@ class VariationListViewModel @AssistedInject constructor(
 
     fun onItemClick(variation: Variation) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
-        triggerEvent(ShowVariationDetail(variation))
+        triggerEvent(
+            ShowVariationDetail(
+                variation
+            )
+        )
     }
 
     private fun isLoadingMore() = viewState.isLoadingMore == true

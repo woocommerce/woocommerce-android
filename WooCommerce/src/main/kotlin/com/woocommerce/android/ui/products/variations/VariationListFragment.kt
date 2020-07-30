@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -22,7 +22,10 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Variation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.products.VariationListViewModel.ShowVariationDetail
+import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.VariationListFragmentArgs
+import com.woocommerce.android.ui.products.VariationListFragmentDirections
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -32,7 +35,8 @@ import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.fragment_variation_list.*
 import javax.inject.Inject
 
-class VariationListFragment : BaseFragment(), OnLoadMoreListener {
+class VariationListFragment : BaseFragment(),
+    OnLoadMoreListener {
     companion object {
         const val TAG: String = "VariationListFragment"
         private const val LIST_STATE_KEY = "list_state"
@@ -137,7 +141,9 @@ class VariationListFragment : BaseFragment(), OnLoadMoreListener {
     }
 
     private fun openVariationDetail(variation: Variation) {
-        val action = VariationListFragmentDirections.actionVariationListFragmentToVariationDetailFragment(variation)
+        val action = VariationListFragmentDirections.actionVariationListFragmentToVariationDetailFragment(
+            variation
+        )
         findNavController().navigateSafely(action)
     }
 

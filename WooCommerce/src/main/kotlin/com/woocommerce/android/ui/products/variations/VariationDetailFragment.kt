@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -26,7 +26,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.VariationDetailViewModel.ShowImage
+import com.woocommerce.android.ui.products.VariationDetailFragmentDirections
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.ShowImage
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -140,7 +141,9 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowImage -> {
-                    val action = VariationDetailFragmentDirections.actionGlobalWpMediaViewerFragment(event.image.source)
+                    val action = VariationDetailFragmentDirections.actionGlobalWpMediaViewerFragment(
+                        event.image.source
+                    )
                     findNavController().navigateSafely(action)
                 }
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(

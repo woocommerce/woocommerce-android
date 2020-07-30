@@ -1,9 +1,10 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.Factory
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
@@ -27,5 +28,5 @@ abstract class VariationDetailModule {
     @Binds
     @IntoMap
     @ViewModelKey(VariationDetailViewModel::class)
-    abstract fun bindFactory(factory: VariationDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    abstract fun bindFactory(factory: Factory): ViewModelAssistedFactory<out ViewModel>
 }

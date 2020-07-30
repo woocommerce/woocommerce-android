@@ -12,7 +12,9 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Variation
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.VariationListViewModel.ViewState
+import com.woocommerce.android.ui.products.variations.VariationListRepository
+import com.woocommerce.android.ui.products.variations.VariationListViewModel
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -44,13 +46,13 @@ class VariationListViewModelTest : BaseUnitTest() {
 
     private fun createViewModel() {
         viewModel = spy(
-                VariationListViewModel(
-                        savedState,
-                        coroutineDispatchers,
-                        variationListRepository,
-                        networkStatus,
-                        currencyFormatter
-                )
+            VariationListViewModel(
+                savedState,
+                coroutineDispatchers,
+                variationListRepository,
+                networkStatus,
+                currencyFormatter
+            )
         )
     }
 
