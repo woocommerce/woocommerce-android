@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -103,6 +102,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
+            new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) {
+                productDetail_addMoreContainer.visibility = if (it) View.VISIBLE else View.GONE
+            }
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
@@ -147,9 +149,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewProductOnStoreMenuItem?.isVisible = status == ProductStatus.PUBLISH
         }
 
-        productDetail_addMoreContainer.visibility = if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            View.VISIBLE
-        } else View.GONE
         productDetail_addMoreContainer.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(
