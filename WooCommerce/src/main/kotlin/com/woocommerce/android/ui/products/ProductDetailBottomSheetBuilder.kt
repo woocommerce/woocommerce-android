@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -70,7 +71,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getShipping(): ProductDetailBottomSheetUiItem? {
-        return if (!hasShipping) {
+        return if (!isVirtual && !hasShipping) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_SHIPPING,
                 ViewProductShipping(remoteId),
@@ -82,7 +83,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getCategories(): ProductDetailBottomSheetUiItem? {
-        return if (!hasCategories) {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && !hasCategories) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_CATEGORIES,
                 ViewProductCategories(remoteId),
@@ -94,7 +95,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getTags(): ProductDetailBottomSheetUiItem? {
-        return if (!hasTags) {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && !hasTags) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_TAGS,
                 ViewProductTags(remoteId)
