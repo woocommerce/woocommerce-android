@@ -92,7 +92,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             weightWithUnits = "10kg",
             sizeWithUnits = "1 x 2 x 3 cm",
             salePriceWithCurrency = "CZK10.00",
-            regularPriceWithCurrency = "CZK30.00"
+            regularPriceWithCurrency = "CZK30.00",
+            showBottomSheetButton = false
     )
 
     private val expectedCards = listOf(
