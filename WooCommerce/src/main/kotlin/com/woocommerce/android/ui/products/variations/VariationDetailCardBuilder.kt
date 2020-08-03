@@ -5,9 +5,12 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.Variation
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -17,6 +20,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -107,14 +111,18 @@ class VariationDetailCardBuilder(
             pricingGroup,
             drawable.ic_gridicons_money,
             hasPricingInfo
-        )
-        // TODO: This will be used once the variants are editable
-//            {
-//                viewModel.onEditVariationCardClicked(
-//                    ViewProductPricing(this.remoteVariationId),
-//                    PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
-//                )
-//            }
+        ) {
+                viewModel.onEditVariationCardClicked(
+                    ViewPricing(PricingData(
+                        isSaleScheduled = isSaleScheduled,
+                        saleStartDate = saleStartDateGmt,
+                        saleEndDate = saleEndDateGmt,
+                        regularPrice = regularPrice,
+                        salePrice = salePrice
+                    )),
+                    PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
+                )
+            }
     }
 
     private fun Variation.shipping(): ProductProperty? {
