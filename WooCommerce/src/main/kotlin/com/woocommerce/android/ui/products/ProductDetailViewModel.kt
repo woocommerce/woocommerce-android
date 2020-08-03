@@ -486,31 +486,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onRegularPriceEntered(inputValue: BigDecimal) {
-        productPricingViewState = productPricingViewState.copy(regularPrice = inputValue)
-        val salePrice = productPricingViewState.salePrice ?: BigDecimal.ZERO
-
-        productPricingViewState = if (salePrice > inputValue) {
-            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else {
-            updateProductDraft(regularPrice = inputValue)
-            productPricingViewState.copy(salePriceErrorMessage = 0)
-        }
-    }
-
-    fun onSalePriceEntered(inputValue: BigDecimal) {
-        productPricingViewState = productPricingViewState.copy(salePrice = inputValue)
-        val regularPrice = productPricingViewState.regularPrice ?: BigDecimal.ZERO
-
-        productPricingViewState = if (inputValue > regularPrice) {
-            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else {
-            val isOnSale = inputValue isNotEqualTo BigDecimal.ZERO
-            updateProductDraft(salePrice = inputValue, isOnSale = isOnSale)
-            productPricingViewState.copy(salePriceErrorMessage = 0)
-        }
-    }
-
     fun onProductTitleChanged(title: String) {
         updateProductDraft(title = title)
     }
