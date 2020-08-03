@@ -45,7 +45,7 @@ import javax.inject.Inject
 
 class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInventorySelectorDialogListener {
     companion object {
-        val ARG_PRODUCT_PRICING_STATE = "ARG_PRODUCT_PRICING_STATE"
+        const val ARG_PRODUCT_PRICING_STATE = "ARG_PRODUCT_PRICING_STATE"
     }
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -60,7 +60,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
 
     private var startDatePickerDialog: DatePickerDialog? = null
     private var endDatePickerDialog: DatePickerDialog? = null
-    private var doneOrUpdateMenuItem: MenuItem? = null
+    private var doneButton: MenuItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -99,8 +99,9 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     override fun getFragmentTitle() = getString(R.string.product_price)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+        doneButton = menu.findItem(R.id.menu_done)
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -134,6 +135,9 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
                     scheduleSale_endDate.setText("")
                     View.GONE
                 }
+            }
+            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
+                doneButton?.isVisible = isVisible
             }
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
         }
@@ -302,19 +306,11 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     private fun displaySalePriceError(messageId: Int) {
         if (messageId != 0) {
             product_sale_price.error = getString(messageId)
-            enableUpdateMenuItem(false)
+            doneButton?.isEnabled = false
         } else {
             product_sale_price.error = null
-            enableUpdateMenuItem(true)
+            doneButton?.isEnabled = true
         }
-    }
-
-    private fun enableUpdateMenuItem(enable: Boolean) {
-        doneOrUpdateMenuItem?.isEnabled = enable
-    }
-
-    private fun showUpdateMenuItem(show: Boolean) {
-        doneOrUpdateMenuItem?.isVisible = show
     }
 
     private fun enableScheduleSale(scheduleSale: Boolean) {
