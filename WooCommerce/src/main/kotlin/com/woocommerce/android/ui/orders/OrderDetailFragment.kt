@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView.OrderDetailNoteListener
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelActionListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -47,7 +48,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
-        OrderStatusSelectorDialog.OrderStatusDialogListener, NavigationResult {
+        OrderStatusSelectorDialog.OrderStatusDialogListener, NavigationResult, ShippingLabelActionListener {
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
@@ -225,7 +226,8 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             order.toAppModel(),
             shippingLabels,
             productImageMap,
-            currencyFormatter.buildBigDecimalFormatter(order.currency)
+            currencyFormatter.buildBigDecimalFormatter(order.currency),
+            this
         )
     }
 
@@ -686,6 +688,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 presenter.refreshOrderAfterDelay(REFUNDS_REFRESH_DELAY)
             }
         }
+    }
+
+    override fun openShippingLabelRefund(orderId: Long, shippingLabelId: Long) {
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
+            orderId, shippingLabelId
+        )
+        findNavController().navigateSafely(action)
     }
 
     private fun showOrderStatusSelector() {
