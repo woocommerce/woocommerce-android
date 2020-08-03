@@ -173,23 +173,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_share -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
                 true
             }
 
             R.id.menu_done -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
                 true
             }
 
             R.id.menu_view_product -> {
-                viewModel.getProduct().productDraft?.permalink?.let {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-                    ChromeCustomTabUtils.launchUrl(requireContext(), it)
-                }
+                viewModel.onViewProductOnStoreLinkClicked()
                 true
             }
 

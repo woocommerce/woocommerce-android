@@ -12,6 +12,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -20,7 +22,6 @@ import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
@@ -191,6 +192,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
+        AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ShareProduct(it.permalink, it.name))
         }
@@ -306,6 +308,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates the product
      */
     fun onUpdateButtonClicked() {
+        AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
@@ -366,9 +369,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onViewProductOnStoreLinkClicked(url: String) {
+    fun onViewProductOnStoreLinkClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-        triggerEvent(LaunchUrlInChromeTab(url))
+        viewState.productDraft?.permalink?.let { url ->
+            triggerEvent(LaunchUrlInChromeTab(url))
+        }
     }
 
     fun onAffiliateLinkClicked(url: String) {
