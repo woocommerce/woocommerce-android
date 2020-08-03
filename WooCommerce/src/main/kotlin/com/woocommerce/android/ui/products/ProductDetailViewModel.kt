@@ -32,7 +32,6 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
-import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -42,7 +41,6 @@ import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.Produ
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
@@ -105,7 +103,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productTagsRepository: ProductTagsRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
@@ -135,10 +132,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product inventory screen
     val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
-
-    // view state for the product pricing screen
-    val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
-    private var productPricingViewState by productPricingViewStateData
 
     // view state for the product images screen
     val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
@@ -271,10 +264,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitInventory -> {
                 eventName = Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasInventoryChanges()
-            }
-            is ExitPricing -> {
-                eventName = Stat.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasPricingChanges()
             }
             is ExitShipping -> {
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
@@ -1292,7 +1281,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -1350,21 +1338,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val skuErrorMessage: Int? = null,
         val stockQuantityErrorMessage: Int? = null
     ) : Parcelable
-
-    @Parcelize
-    data class ProductPricingViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val taxClassList: List<TaxClass>? = null,
-        val saleStartDate: Date? = null,
-        val saleEndDate: Date? = null,
-        val salePriceErrorMessage: Int? = null,
-        val regularPrice: BigDecimal? = null,
-        val salePrice: BigDecimal? = null
-    ) : Parcelable {
-        val isRemoveMaxDateButtonVisible: Boolean
-            get() = saleEndDate != null
-    }
 
     @Parcelize
     data class ProductImagesViewState(
