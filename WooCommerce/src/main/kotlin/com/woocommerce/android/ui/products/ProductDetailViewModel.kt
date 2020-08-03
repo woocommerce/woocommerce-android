@@ -187,22 +187,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
 
-    fun getTaxClassBySlug(slug: String): TaxClass? {
-        return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
-    }
-
-    fun initialisePricing() {
-        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
-        productPricingViewState = productPricingViewState.copy(
-                currency = parameters.currencyCode,
-                decimals = decimals,
-                taxClassList = productRepository.getTaxClassesForSite(),
-                regularPrice = viewState.storedProduct?.regularPrice,
-                salePrice = viewState.storedProduct?.salePrice
-        )
-    }
-
     /**
      * Called when the Share menu button is clicked in Product detail screen
      */
@@ -239,14 +223,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
-    }
-
-    /**
-     * Called when the the Remove end date link is clicked
-     */
-    fun onRemoveEndDateClicked() {
-        productPricingViewState = productPricingViewState.copy(saleEndDate = null)
-        updateProductDraft(saleEndDate = Optional(null))
     }
 
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
@@ -398,36 +374,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onAffiliateLinkClicked(url: String) {
         AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED)
         triggerEvent(LaunchUrlInChromeTab(url))
-    }
-
-    /**
-     * Called when the sale start date is selected from the date picker in the pricing screen.
-     * Keeps track of the start and end date value when scheduling a sale.
-     */
-    fun onStartDateChanged(newDate: Date) {
-        // update end date to start date only if current end date < start date
-        val saleEndDate = viewState.productDraft?.saleEndDateGmt
-        if (saleEndDate?.before(newDate) == true) {
-            updateProductDraft(saleEndDate = Optional(newDate))
-            productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
-        }
-        updateProductDraft(saleStartDate = newDate)
-        productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
-    }
-
-    /**
-     * Called when the sale end date is selected from the date picker in the pricing screen.
-     * Keeps track of the start and end date value when scheduling a sale.
-     */
-    fun onEndDateChanged(newDate: Date?) {
-        // update start date to end date only if current start date > end date
-        val saleStartDate = viewState.productDraft?.saleStartDateGmt
-        if (newDate != null && saleStartDate?.after(newDate) == true) {
-            updateProductDraft(saleStartDate = newDate)
-            productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
-        }
-        updateProductDraft(saleEndDate = Optional(newDate))
-        productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
     }
 
     /**
@@ -634,7 +580,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                     images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
-                    isOnSale = isOnSale ?: product.isOnSale,
                     isVirtual = isVirtual ?: product.isVirtual,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,

@@ -28,11 +28,13 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -265,6 +267,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                             viewModel.addProductImageListToDraft(it)
                             changesMade()
                         }
+            }
+            RequestCodes.PRODUCT_DETAIL_PRICING -> {
+                result.getParcelable<PricingData>(ProductPricingFragment.ARG_PRODUCT_PRICING_STATE)?.let {
+                    viewModel.updateProductDraft(
+                        regularPrice = it.regularPrice,
+                        salePrice = it.salePrice,
+                        saleStartDate = it.saleStartDate,
+                        saleEndDate = Optional(it.saleEndDate),
+                        isSaleScheduled = it.isSaleScheduled,
+                        taxClass = it.taxClass?.name,
+                        taxStatus = it.taxStatus
+                    )
+                    changesMade()
+                }
             }
         }
     }
