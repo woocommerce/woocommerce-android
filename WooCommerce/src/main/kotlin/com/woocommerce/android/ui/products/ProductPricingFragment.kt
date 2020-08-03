@@ -29,9 +29,13 @@ import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.Produc
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import kotlinx.android.synthetic.main.fragment_product_pricing.*
@@ -46,6 +50,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val navArgs: ProductPricingFragmentArgs by navArgs()
     private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory }
@@ -135,8 +140,15 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult -> navigateBackWithResult(event.data)
                 is Exit -> findNavController().navigateUp()
+                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.messageId
+                )
                 else -> event.isHandled = false
             }
         })
@@ -153,7 +165,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
             initView(currency, decimals, currencyFormatter)
             pricingData.regularPrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onDataChanged(regularPrice = it)
+                viewModel.onRegularPriceEntered(it)
             })
         }
 
@@ -161,7 +173,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
             initView(currency, decimals, currencyFormatter)
             pricingData.salePrice?.let { setValue(it) }
             getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onDataChanged(salePrice = it)
+                viewModel.onSalePriceEntered(it)
             })
         }
 
@@ -183,11 +195,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
             }
         }
 
-        updateSaleStartDate(
-            pricingData.saleStartDate,
-            pricingData.saleEndDate,
-            viewModel.parameters.gmtOffset
-        )
+        updateSaleStartDate(pricingData.saleStartDate, pricingData.saleEndDate, viewModel.parameters.gmtOffset)
         with(scheduleSale_startDate) {
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
@@ -233,6 +241,8 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
                 }
             }
         }
+
+        viewModel.onPricingInitialized()
     }
 
     /**
