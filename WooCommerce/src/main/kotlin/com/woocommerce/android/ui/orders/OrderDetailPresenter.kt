@@ -218,18 +218,6 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun loadOrderShipmentTrackings() {
-        orderModel?.let { order ->
-            // Preload trackings from the db if we've already fetched it
-            if (isShipmentTrackingsFetched) {
-                loadShipmentTrackingsFromDb()
-            } else if (networkStatus.isConnected() && !isShipmentTrackingsFailed) {
-                // Attempt to refresh trackings from api in the background
-                requestShipmentTrackingsFromApi(order)
-            }
-        }
-    }
-
     /**
      * Fetch the order shipment trackings from the device database
      * Segregating the fetching from db and displaying to UI into two separate methods
