@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -35,7 +36,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
-    private lateinit var initialState: ProductPricingViewState
+    private var originalPricing: PricingData
     private val navArgs: ProductPricingFragmentArgs by savedState.navArgs()
 
     val viewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
@@ -51,11 +52,21 @@ class ProductPricingViewModel @AssistedInject constructor(
         get() = viewState.pricingData
 
     init {
-        initializePricing()
+        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+            ?: DEFAULT_DECIMAL_PRECISION
+
+        viewState = viewState.copy(
+            currency = parameters.currencyCode,
+            decimals = decimals,
+            taxClassList = productRepository.getTaxClassesForSite(),
+            pricingData = navArgs.pricingData
+        )
+
+        originalPricing = navArgs.pricingData
     }
 
     private val hasChanges: Boolean
-        get() = viewState != initialState
+        get() = viewState.pricingData != originalPricing
 
     private fun loadParameters(): SiteParameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -72,16 +83,11 @@ class ProductPricingViewModel @AssistedInject constructor(
         )
     }
 
-    private fun initializePricing() {
-        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-            ?: DEFAULT_DECIMAL_PRECISION
-        initialState = viewState.copy(
-            currency = parameters.currencyCode,
-            decimals = decimals,
-            taxClassList = productRepository.getTaxClassesForSite(),
-            pricingData = navArgs.pricingData
-        )
-        viewState = initialState
+    /*
+     * The views and currency are initialized, save the initial state for change detection
+     */
+    fun onPricingInitialized() {
+        originalPricing = viewState.pricingData.copy()
     }
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
@@ -90,7 +96,7 @@ class ProductPricingViewModel @AssistedInject constructor(
 
     fun onDataChanged(
         regularPrice: BigDecimal? = viewState.pricingData.regularPrice,
-        salePrice: BigDecimal? = viewState.pricingData.regularPrice,
+        salePrice: BigDecimal? = viewState.pricingData.salePrice,
         isSaleScheduled: Boolean? = viewState.pricingData.isSaleScheduled,
         saleStartDate: Date? = viewState.pricingData.saleStartDate,
         saleEndDate: Date? = viewState.pricingData.saleEndDate,
@@ -109,6 +115,28 @@ class ProductPricingViewModel @AssistedInject constructor(
             )
         )
         viewState = viewState.copy(isDoneButtonVisible = hasChanges)
+    }
+
+    fun onRegularPriceEntered(inputValue: BigDecimal) {
+        onDataChanged(regularPrice = inputValue)
+
+        val salePrice = viewState.pricingData.salePrice ?: BigDecimal.ZERO
+        viewState = if (salePrice > inputValue) {
+            viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
+        } else {
+            viewState.copy(salePriceErrorMessage = 0)
+        }
+    }
+
+    fun onSalePriceEntered(inputValue: BigDecimal) {
+        onDataChanged(salePrice = inputValue)
+
+        val regularPrice = viewState.pricingData.regularPrice ?: BigDecimal.ZERO
+        viewState = if (inputValue > regularPrice) {
+            viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
+        } else {
+            viewState.copy(salePriceErrorMessage = 0)
+        }
     }
 
     fun onDoneButtonClicked() {
