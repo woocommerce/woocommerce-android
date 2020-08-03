@@ -902,6 +902,7 @@
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
     <string name="feedback_request_make_better">Could be better</string>
     <string name="feedback_request_like_it">I like it</string>
+    <string name="feedback_survey_request_title">How can we improve?</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
