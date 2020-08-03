@@ -13,7 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -56,7 +56,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     private val navArgs: VariationDetailFragmentArgs by savedState.navArgs()
-    private var originalVariation: Variation = navArgs.variation
+    private var originalVariation: ProductVariation = navArgs.variation
 
     private val parameters: SiteParameters by lazy {
         val params = savedState.get<SiteParameters>(KEY_VARIATION_PARAMETERS) ?: loadParameters()
@@ -191,7 +191,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun updateVariation(variation: Variation) {
+    private suspend fun updateVariation(variation: ProductVariation) {
         if (networkStatus.isConnected()) {
             if (variationRepository.updateVariation(variation)) {
                 originalVariation = variation
@@ -257,7 +257,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun showVariation(variation: Variation) {
+    private fun showVariation(variation: ProductVariation) {
         viewState = viewState.copy(
             variation = variation,
             isDoneButtonVisible = variation != originalVariation
@@ -291,7 +291,7 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class VariationViewState(
-        val variation: Variation,
+        val variation: ProductVariation,
         val isDoneButtonVisible: Boolean? = null,
         val isSkeletonShown: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,

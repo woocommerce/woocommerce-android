@@ -10,7 +10,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.variations.VariationListRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
@@ -62,7 +62,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        val fetchedVariationList = ArrayList<Variation>()
+        val fetchedVariationList = ArrayList<ProductVariation>()
         viewModel.variationList.observeForever { it?.let { fetchedVariationList.addAll(it) } }
 
         viewModel.start(productRemoteId)
@@ -90,7 +90,8 @@ class VariationListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides product variations skeleton correctly`() = test {
-        doReturn(emptyList<Variation>()).whenever(variationListRepository).getProductVariationList(productRemoteId)
+        doReturn(emptyList<ProductVariation>())
+            .whenever(variationListRepository).getProductVariationList(productRemoteId)
 
         createViewModel()
 

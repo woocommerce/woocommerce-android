@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
 import com.woocommerce.android.ui.orders.OrdersModule
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
@@ -38,7 +39,8 @@ abstract class ActivityBindingModule {
             ProductsModule::class,
             ReviewsModule::class,
             SitePickerModule::class,
-            AztecModule::class
+            AztecModule::class,
+            ShippingLabelsModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 

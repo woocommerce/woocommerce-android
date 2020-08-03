@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaListFetched
+import org.wordpress.android.fluxc.utils.MimeType
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -54,7 +55,7 @@ class WPMediaPickerRepository @Inject constructor(
                         selectedSite.get(),
                         MEDIA_PAGE_SIZE,
                         loadMore,
-                        MEDIA_MIME_TYPE
+                        MimeType.Type.IMAGE
                 )
                 dispatcher.dispatch(MediaActionBuilder.newFetchMediaListAction(payload))
             }
