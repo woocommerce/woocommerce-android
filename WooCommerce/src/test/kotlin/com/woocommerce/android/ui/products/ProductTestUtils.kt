@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 
@@ -46,13 +47,13 @@ object ProductTestUtils {
 
     private fun generateProductVariation(
         productId: Long = 1L,
-        variationtId: Long = 1L
+        variationId: Long = 1L
     ): ProductVariation {
         return WCProductVariationModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
-            remoteVariationId = variationtId
+            remoteVariationId = variationId
             price = "10.00"
             image = ""
             attributes = ""
