@@ -16,9 +16,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -271,7 +268,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                         saleStartDate = it.saleStartDate,
                         saleEndDate = Optional(it.saleEndDate),
                         isSaleScheduled = it.isSaleScheduled,
-                        taxClass = it.taxClass?.name,
+                        taxClass = it.taxClass,
                         taxStatus = it.taxStatus
                     )
                     changesMade()

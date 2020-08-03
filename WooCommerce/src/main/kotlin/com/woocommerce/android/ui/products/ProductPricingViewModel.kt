@@ -27,8 +27,8 @@ import java.util.Date
 class ProductPricingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
+    productRepository: ProductDetailRepository,
     private val wooCommerceStore: WooCommerceStore,
-    private val productRepository: ProductDetailRepository,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
@@ -101,7 +101,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         saleStartDate: Date? = viewState.pricingData.saleStartDate,
         saleEndDate: Date? = viewState.pricingData.saleEndDate,
         taxStatus: ProductTaxStatus? = viewState.pricingData.taxStatus,
-        taxClass: TaxClass? = viewState.pricingData.taxClass
+        taxClass: String? = viewState.pricingData.taxClass
     ) {
         viewState = viewState.copy(
             pricingData = PricingData(
@@ -179,7 +179,7 @@ class ProductPricingViewModel @AssistedInject constructor(
 
     @Parcelize
     data class PricingData(
-        val taxClass: TaxClass? = null,
+        val taxClass: String? = null,
         val taxStatus: ProductTaxStatus? = null,
         val isSaleScheduled: Boolean? = null,
         val saleStartDate: Date? = null,

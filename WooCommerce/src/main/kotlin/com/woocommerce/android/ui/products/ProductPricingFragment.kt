@@ -29,6 +29,8 @@ import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.Produc
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Companion
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.util.CurrencyFormatter
@@ -294,7 +296,8 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         taxClassList: List<TaxClass>?,
         pricingData: PricingData
     ) {
-        val name = pricingData.taxClass?.name
+        val taxClass = viewModel.getTaxClassBySlug(pricingData.taxClass ?: Product.TAX_CLASS_DEFAULT)
+        val name = taxClass?.name
         if (!isAdded || name == null) return
 
         product_tax_class.setText(name)
@@ -370,7 +373,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
                     val selectedProductTaxClass = viewModel.getTaxClassBySlug(selectedTaxClass)
                     selectedProductTaxClass?.let {
                         product_tax_class.setText(it.name)
-                        viewModel.onDataChanged(taxClass = it)
+                        viewModel.onDataChanged(taxClass = it.slug)
                     }
                 }
             }
