@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.products
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
@@ -13,21 +16,27 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariant
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ProductVariantViewModel.VariationExitEvent.ExitVariation
 import com.woocommerce.android.ui.products.ProductVariantViewModel.ShowVariantImage
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.fragment_product_variant.*
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductVariantFragment : BaseFragment(), BackPressListener {
@@ -36,6 +45,9 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private var doneOrUpdateMenuItem: MenuItem? = null
 
     private var variationName = ""
         set(value) {
@@ -50,6 +62,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     private val viewModel: ProductVariantViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_variant, container, false)
     }
 
@@ -62,6 +75,32 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
+        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        showUpdateMenuItem(viewModel.variantViewStateData.liveData.value?.isDoneButtonVisible ?: false)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onUpdateButtonClicked()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showUpdateMenuItem(show: Boolean) {
+        doneOrUpdateMenuItem?.isVisible = show
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,9 +126,10 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
     private fun setupObservers(viewModel: ProductVariantViewModel) {
         viewModel.variantViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.variant?.takeIfNotEqualTo(old?.variant) { showVariationDetails(it) }
+            new.variation.takeIfNotEqualTo(old?.variation) { showVariationDetails(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { showUpdateMenuItem(it) }
         }
 
         viewModel.variantDetailCards.observe(viewLifecycleOwner, Observer {
@@ -98,10 +138,18 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowVariantImage -> {
                     val action = ProductVariantFragmentDirections.actionGlobalWpMediaViewerFragment(event.image.source)
                     findNavController().navigateSafely(action)
                 }
+                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.messageId
+                )
+                is Exit -> requireActivity().onBackPressed()
                 else -> event.isHandled = false
             }
         })
@@ -171,7 +219,12 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitVariation())
+        return if (viewModel.event.value == Exit) {
+            true
+        } else {
+            viewModel.onExit()
+            false
+        }
     }
 
     override fun getFragmentTitle() = variationName

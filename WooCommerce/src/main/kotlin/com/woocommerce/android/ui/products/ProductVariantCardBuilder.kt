@@ -7,7 +7,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.ProductVariant
-import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -78,8 +77,7 @@ class ProductVariantCardBuilder(
     private fun ProductVariant.visibility(): ProductProperty {
         @StringRes val visibility: Int
         @DrawableRes val visibilityIcon: Int
-        val isOn: Boolean = this.status == PUBLISH
-        if (isOn) {
+        if (this.isVisible) {
             visibility = string.product_variation_visible
             visibilityIcon = drawable.ic_gridicons_visible
         } else {
@@ -87,7 +85,9 @@ class ProductVariantCardBuilder(
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
-        return Switch(visibility, isOn, visibilityIcon)
+        return Switch(visibility, this.isVisible, visibilityIcon) {
+            viewModel.onVariantVisibilityChanged(it)
+        }
     }
 
     // If we have pricing info, show price & sales price as a group,

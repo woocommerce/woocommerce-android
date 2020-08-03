@@ -614,6 +614,11 @@
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
 
     <!--
+        Variations
+    -->
+    <string name="variation_detail_fetch_variation_error">Error fetching variation</string>
+    <string name="variation_detail_update_variation_error">Error updating variation</string>
+    <!--
         Product images
     -->
     <string name="product_images_title">Photos</string>
