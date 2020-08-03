@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -90,6 +91,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
             if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
                 dashboard_feedback_request_card.visibility = View.VISIBLE
+                val positiveCallback = { AppRatingDialog.showRateDialog(context) }
+                val negativeCallback = { /* TODO */ }
+                dashboard_feedback_request_card.initView(negativeCallback, positiveCallback)
             }
         }
         return view
