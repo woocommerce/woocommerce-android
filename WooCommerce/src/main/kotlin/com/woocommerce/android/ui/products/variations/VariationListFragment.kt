@@ -19,7 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
@@ -138,7 +138,7 @@ class VariationListFragment : BaseFragment(),
         })
     }
 
-    private fun openVariationDetail(variation: Variation) {
+    private fun openVariationDetail(variation: ProductVariation) {
         val action = VariationListFragmentDirections.actionVariationListFragmentToVariationDetailFragment(
             variation
         )
@@ -163,7 +163,7 @@ class VariationListFragment : BaseFragment(),
         loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun showVariations(variations: List<Variation>) {
+    private fun showVariations(variations: List<ProductVariation>) {
         val adapter = (variationList.adapter ?: VariationListAdapter(
             requireContext(),
             GlideApp.with(this),

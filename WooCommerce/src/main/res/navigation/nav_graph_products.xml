@@ -246,6 +246,6 @@
         android:label="variationDetailFragment">
         <argument
             android:name="variation"
-            app:argType="com.woocommerce.android.model.Variation" />
+            app:argType="com.woocommerce.android.model.ProductVariation" />
     </fragment>
 </navigation>

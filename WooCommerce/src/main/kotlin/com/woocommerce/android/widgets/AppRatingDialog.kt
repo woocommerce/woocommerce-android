@@ -104,7 +104,7 @@ object AppRatingDialog {
         }
     }
 
-    private fun showRateDialog(context: Context) {
+    fun showRateDialog(context: Context) {
         dialogRef?.get()?.let {
             // Dialog is already present
             return

@@ -5,7 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -52,7 +52,7 @@ class VariationDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): Variation? {
+    suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
         try {
             this.remoteProductId = remoteProductId
             this.remoteVariationId = remoteVariationId
@@ -80,7 +80,7 @@ class VariationDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun updateVariation(updatedVariation: Variation): Boolean {
+    suspend fun updateVariation(updatedVariation: ProductVariation): Boolean {
         return try {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationUpdateVariation = it
@@ -101,7 +101,7 @@ class VariationDetailRepository @Inject constructor(
     private fun getCachedVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
-    fun getVariation(remoteProductId: Long, remoteVariationId: Long): Variation? =
+    fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
         getCachedVariation(remoteProductId, remoteVariationId)?.toAppModel()
 
     @SuppressWarnings("unused")

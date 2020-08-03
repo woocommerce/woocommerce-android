@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_shipping_labels"
+    app:startDestination="@id/shippingLabelRefundFragment">
+    <fragment
+        android:id="@+id/shippingLabelRefundFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment"
+        tools:layout="@layout/fragment_shipping_label_refund">
+        <argument
+            android:name="orderId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="shippingLabelId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+</navigation>
