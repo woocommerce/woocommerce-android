@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
 import kotlinx.android.synthetic.main.variation_list_item.view.*
@@ -22,10 +22,10 @@ class VariationListAdapter(
     private val context: Context,
     private val glideRequest: GlideRequests,
     private val loadMoreListener: OnLoadMoreListener,
-    private val onItemClick: (variation: Variation) -> Unit
+    private val onItemClick: (variation: ProductVariation) -> Unit
 ) : RecyclerView.Adapter<VariationViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-    private var variationList = listOf<Variation>()
+    private var variationList = listOf<ProductVariation>()
 
     init {
         setHasStableIds(true)
@@ -78,8 +78,8 @@ class VariationListAdapter(
     }
 
     private class VariationItemDiffUtil(
-        val oldList: List<Variation>,
-        val newList: List<Variation>
+        val oldList: List<ProductVariation>,
+        val newList: List<ProductVariation>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
                 oldList[oldItemPosition].remoteVariationId == newList[newItemPosition].remoteVariationId
@@ -95,7 +95,7 @@ class VariationListAdapter(
         }
     }
 
-    fun setVariationList(variations: List<Variation>) {
+    fun setVariationList(variations: List<ProductVariation>) {
         val diffResult = DiffUtil.calculateDiff(
             VariationItemDiffUtil(
                 variationList,

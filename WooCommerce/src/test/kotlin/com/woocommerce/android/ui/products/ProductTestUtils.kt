@@ -2,8 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.Variation
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.ProductVariation
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 
@@ -48,7 +47,7 @@ object ProductTestUtils {
     private fun generateProductVariation(
         productId: Long = 1L,
         variationtId: Long = 1L
-    ): Variation {
+    ): ProductVariation {
         return WCProductVariationModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
@@ -60,8 +59,8 @@ object ProductTestUtils {
         }.toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
 
-    fun generateProductVariationList(productId: Long = 1L): List<Variation> {
-        with(ArrayList<Variation>()) {
+    fun generateProductVariationList(productId: Long = 1L): List<ProductVariation> {
+        with(ArrayList<ProductVariation>()) {
             add(generateProductVariation(productId, 1))
             add(generateProductVariation(productId, 2))
             add(generateProductVariation(productId, 3))

@@ -9,7 +9,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -32,8 +32,8 @@ class VariationListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
 
-    private val _variationList = MutableLiveData<List<Variation>>()
-    val variationList: LiveData<List<Variation>> = _variationList
+    private val _variationList = MutableLiveData<List<ProductVariation>>()
+    val variationList: LiveData<List<ProductVariation>> = _variationList
 
     val viewStateLiveData = LiveDataDelegate(savedState,
         ViewState()
@@ -58,7 +58,7 @@ class VariationListViewModel @AssistedInject constructor(
         variationListRepository.onCleanup()
     }
 
-    fun onItemClick(variation: Variation) {
+    fun onItemClick(variation: ProductVariation) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
         triggerEvent(
             ShowVariationDetail(
@@ -132,7 +132,7 @@ class VariationListViewModel @AssistedInject constructor(
         )
     }
 
-    private fun combineData(variations: List<Variation>): List<Variation> {
+    private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
         val currencyCode = variationListRepository.getCurrencyCode()
         variations.map { variation ->
             variation.priceWithCurrency = currencyCode?.let {
@@ -151,7 +151,7 @@ class VariationListViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
 
-    data class ShowVariationDetail(val variation: Variation) : Event()
+    data class ShowVariationDetail(val variation: ProductVariation) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<VariationListViewModel>

@@ -21,7 +21,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
@@ -157,7 +157,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
         })
     }
 
-    private fun showVariationDetails(variation: Variation) {
+    private fun showVariationDetails(variation: ProductVariation) {
         variationName = variation.optionName.fastStripHtml()
 
         if (variation.image == null) {

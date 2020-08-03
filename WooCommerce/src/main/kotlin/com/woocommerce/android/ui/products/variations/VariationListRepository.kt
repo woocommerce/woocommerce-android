@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.products.variations
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.Variation
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -49,7 +49,7 @@ class VariationListRepository @Inject constructor(
      * Submits a fetch request to get a list of products variations for the current site and productId
      * and returns the full list of product variations from the database
      */
-    suspend fun fetchProductVariations(remoteProductId: Long, loadMore: Boolean = false): List<Variation> {
+    suspend fun fetchProductVariations(remoteProductId: Long, loadMore: Boolean = false): List<ProductVariation> {
         try {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
@@ -72,7 +72,7 @@ class VariationListRepository @Inject constructor(
     /**
      * Returns all product variations for a product and current site that are in the database
      */
-    fun getProductVariationList(remoteProductId: Long): List<Variation> {
+    fun getProductVariationList(remoteProductId: Long): List<ProductVariation> {
         return productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
                 .map { it.toAppModel() }
     }

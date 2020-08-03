@@ -20,7 +20,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 @Parcelize
-data class Variation(
+data class ProductVariation(
     val remoteProductId: Long,
     val remoteVariationId: Long,
     val image: Product.Image?,
@@ -47,7 +47,7 @@ data class Variation(
     override val weight: Float
 ) : Parcelable, IProduct {
     override fun equals(other: Any?): Boolean {
-        val variation = other as? Variation
+        val variation = other as? ProductVariation
         return variation?.let {
             remoteVariationId == variation.remoteVariationId &&
                 remoteProductId == variation.remoteProductId &&
@@ -74,6 +74,10 @@ data class Variation(
                 height == variation.height &&
                 width == variation.width
         } ?: false
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
     }
 
     fun toDataModel(cachedVariation: WCProductVariationModel? = null): WCProductVariationModel {
@@ -121,8 +125,8 @@ data class Variation(
     }
 }
 
-fun WCProductVariationModel.toAppModel(): Variation {
-    return Variation(
+fun WCProductVariationModel.toAppModel(): ProductVariation {
+    return ProductVariation(
         this.remoteProductId,
         this.remoteVariationId,
         this.getImage()?.let {
