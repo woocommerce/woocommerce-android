@@ -29,7 +29,6 @@ data class Variation(
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
     val isSaleScheduled: Boolean,
-    val isOnSale: Boolean,
     val stockStatus: ProductStockStatus,
     val stockQuantity: Int,
     val optionName: String,
@@ -46,6 +45,9 @@ data class Variation(
     override val height: Float,
     override val weight: Float
 ) : Parcelable, IProduct {
+    val isOnSale: Boolean
+        get() = !(this.salePrice isEquivalentTo BigDecimal.ZERO)
+
     override fun equals(other: Any?): Boolean {
         val variation = other as? Variation
         return variation?.let {
@@ -138,7 +140,6 @@ fun WCProductVariationModel.toAppModel(): Variation {
         this.dateOnSaleToGmt.formatDateToISO8601Format(),
         this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
-        this.onSale,
         ProductStockStatus.fromString(this.stockStatus),
         this.stockQuantity,
         getAttributeOptionName(this.getProductVariantOptions()),

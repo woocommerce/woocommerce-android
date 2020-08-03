@@ -17,7 +17,6 @@ import com.woocommerce.android.model.Variation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -25,7 +24,6 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -166,7 +164,6 @@ class VariationDetailViewModel @AssistedInject constructor(
             saleEndDateGmt = saleEndDateGmt ?: viewState.variation.saleEndDateGmt,
             saleStartDateGmt = saleStartDateGmt ?: viewState.variation.saleStartDateGmt,
             isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
-            isOnSale = isOnSale ?: viewState.variation.isOnSale,
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
             stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,
             optionName = optionName ?: viewState.variation.optionName,
