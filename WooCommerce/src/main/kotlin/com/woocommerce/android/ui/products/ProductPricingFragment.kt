@@ -99,10 +99,16 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     override fun getFragmentTitle() = getString(R.string.product_price)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
         inflater.inflate(R.menu.menu_done, menu)
         doneButton = menu.findItem(R.id.menu_done)
+    }
 
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        doneButton?.isVisible = viewModel.hasChanges
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -119,7 +125,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                updateProductView(new.currency, new.decimals, viewModel.pricingData)
+                updateViews(new.currency, new.decimals, viewModel.pricingData)
             }
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.pricingData)
@@ -158,7 +164,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         })
     }
 
-    private fun updateProductView(
+    private fun updateViews(
         currency: String,
         decimals: Int,
         pricingData: PricingData

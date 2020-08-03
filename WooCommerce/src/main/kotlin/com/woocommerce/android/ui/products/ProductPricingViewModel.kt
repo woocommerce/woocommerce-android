@@ -65,7 +65,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         originalPricing = navArgs.pricingData
     }
 
-    private val hasChanges: Boolean
+    val hasChanges: Boolean
         get() = viewState.pricingData != originalPricing
 
     private fun loadParameters(): SiteParameters {
