@@ -64,13 +64,9 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the variation detail screen
-    val variationViewStateData = LiveDataDelegate(savedState,
-        VariationViewState(
-            originalVariation
-        )
-    ) { old, new ->
+    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
         if (old?.variation != new.variation) {
-            updateCards()
+            updateCards(new.variation)
         }
     }
     private var viewState by variationViewStateData
@@ -138,7 +134,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         saleEndDate: Optional<Date>? = null,
-        saleStartDate: Date? = null,
+        saleStartDate: Optional<Date>? = null,
         isSaleScheduled: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         stockQuantity: Int? = null,
@@ -162,7 +158,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             regularPrice = regularPrice ?: viewState.variation.regularPrice,
             salePrice = salePrice ?: viewState.variation.salePrice,
             saleEndDateGmt = if (saleEndDate != null) saleEndDate.value else viewState.variation.saleEndDateGmt,
-            saleStartDateGmt = saleStartDate ?: viewState.variation.saleStartDateGmt,
+            saleStartDateGmt = if (saleStartDate != null) saleStartDate.value else viewState.variation.saleStartDateGmt,
             isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
             stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,
@@ -239,18 +235,16 @@ class VariationDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    private fun updateCards() {
-        viewState.variation.let {
-            launch {
-                if (_variationDetailCards.value == null) {
-                    viewState = viewState.copy(isSkeletonShown = true)
-                }
-                val cards = withContext(dispatchers.io) {
-                    cardBuilder.buildPropertyCards(it)
-                }
-                _variationDetailCards.value = cards
-                viewState = viewState.copy(isSkeletonShown = false)
+    private fun updateCards(variation: ProductVariation) {
+        launch {
+            if (_variationDetailCards.value == null) {
+                viewState = viewState.copy(isSkeletonShown = true)
             }
+            val cards = withContext(dispatchers.io) {
+                cardBuilder.buildPropertyCards(variation)
+            }
+            _variationDetailCards.value = cards
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 

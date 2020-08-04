@@ -245,7 +245,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                         regularPrice = it.regularPrice,
                         salePrice = it.salePrice,
                         isSaleScheduled = it.isSaleScheduled,
-                        saleStartDate = it.saleStartDate,
+                        saleStartDate = Optional(it.saleStartDate),
                         saleEndDate = Optional(it.saleEndDate)
                     )
                 }

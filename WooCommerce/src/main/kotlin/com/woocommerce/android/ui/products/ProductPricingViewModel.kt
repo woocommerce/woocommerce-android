@@ -91,7 +91,7 @@ class ProductPricingViewModel @AssistedInject constructor(
      * The views and currency are initialized, save the initial state for change detection
      */
     fun onPricingInitialized() {
-        originalPricing = viewState.pricingData.copy()
+        originalPricing = pricingData.copy()
     }
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
@@ -99,13 +99,13 @@ class ProductPricingViewModel @AssistedInject constructor(
     }
 
     fun onDataChanged(
-        regularPrice: BigDecimal? = viewState.pricingData.regularPrice,
-        salePrice: BigDecimal? = viewState.pricingData.salePrice,
-        isSaleScheduled: Boolean? = viewState.pricingData.isSaleScheduled,
-        saleStartDate: Date? = viewState.pricingData.saleStartDate,
-        saleEndDate: Date? = viewState.pricingData.saleEndDate,
-        taxStatus: ProductTaxStatus? = viewState.pricingData.taxStatus,
-        taxClass: String? = viewState.pricingData.taxClass
+        regularPrice: BigDecimal? = pricingData.regularPrice,
+        salePrice: BigDecimal? = pricingData.salePrice,
+        isSaleScheduled: Boolean? = pricingData.isSaleScheduled,
+        saleStartDate: Date? = pricingData.saleStartDate,
+        saleEndDate: Date? = pricingData.saleEndDate,
+        taxStatus: ProductTaxStatus? = pricingData.taxStatus,
+        taxClass: String? = pricingData.taxClass
     ) {
         viewState = viewState.copy(
             pricingData = PricingData(
@@ -124,7 +124,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     fun onRegularPriceEntered(inputValue: BigDecimal) {
         onDataChanged(regularPrice = inputValue)
 
-        val salePrice = viewState.pricingData.salePrice ?: BigDecimal.ZERO
+        val salePrice = pricingData.salePrice ?: BigDecimal.ZERO
         viewState = if (salePrice > inputValue) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
@@ -132,13 +132,24 @@ class ProductPricingViewModel @AssistedInject constructor(
         }
     }
 
+    fun onScheduledSaleChanged(isSaleScheduled: Boolean) {
+        if (isSaleScheduled && pricingData.salePrice isEquivalentTo BigDecimal.ZERO) {
+            viewState = viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)
+        } else if (viewState.salePriceErrorMessage == string.product_pricing_scheduled_sale_price_error) {
+            viewState = viewState.copy(salePriceErrorMessage = 0)
+        }
+        onDataChanged(isSaleScheduled = isSaleScheduled)
+    }
+
     fun onSalePriceEntered(inputValue: BigDecimal) {
         onDataChanged(salePrice = inputValue)
 
-        val regularPrice = viewState.pricingData.regularPrice ?: BigDecimal.ZERO
+        val regularPrice = pricingData.regularPrice ?: BigDecimal.ZERO
         viewState = if (inputValue > regularPrice) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else {
+        } else if (pricingData.isSaleScheduled == true && inputValue isEquivalentTo BigDecimal.ZERO)
+            viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)
+        else {
             viewState.copy(salePriceErrorMessage = 0)
         }
     }
@@ -149,7 +160,15 @@ class ProductPricingViewModel @AssistedInject constructor(
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
         )
 
-        triggerEvent(ExitWithResult(viewState.pricingData))
+        val isSaleScheduled = pricingData.isSaleScheduled == true &&
+            (pricingData.saleStartDate != null || pricingData.saleEndDate != null)
+
+        val resultPricing = pricingData.copy(
+            isSaleScheduled = isSaleScheduled,
+            saleStartDate = if (isSaleScheduled) pricingData.saleStartDate else null,
+            saleEndDate = if (isSaleScheduled) pricingData.saleEndDate else null
+        )
+        triggerEvent(ExitWithResult(resultPricing))
     }
 
     fun onExit() {

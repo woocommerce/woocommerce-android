@@ -206,13 +206,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
             isChecked = scheduleSale
             setOnCheckedChangeListener { _, isChecked ->
                 enableScheduleSale(isChecked)
-                val startDate = DateUtils.localDateToGmtOrNull(scheduleSale_startDate.getText(), gmtOffset, true)
-                val endDate = DateUtils.localDateToGmtOrNull(scheduleSale_endDate.getText(), gmtOffset, false)
-                viewModel.onDataChanged(
-                    isSaleScheduled = isChecked,
-                    saleStartDate = startDate,
-                    saleEndDate = endDate
-                )
+                viewModel.onScheduledSaleChanged(isChecked)
             }
         }
 
