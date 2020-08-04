@@ -124,7 +124,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
-            updateCards()
+            updateCards(new.productDraft)
         }
     }
     private var viewState by productDetailViewStateData
@@ -592,13 +592,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    private fun updateCards() {
-        viewState.productDraft?.let {
-            launch(dispatchers.computation) {
-                val cards = cardBuilder.buildPropertyCards(it)
-                withContext(dispatchers.main) {
-                    _productDetailCards.value = cards
-                }
+    private fun updateCards(product: Product) {
+        launch(dispatchers.computation) {
+            val cards = cardBuilder.buildPropertyCards(product)
+            withContext(dispatchers.main) {
+                _productDetailCards.value = cards
             }
         }
         fetchBottomSheetList()
