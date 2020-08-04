@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.ProductVariation
@@ -15,6 +16,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Switch
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -45,7 +47,7 @@ class VariationDetailCardBuilder(
         )
     }
 
-    private fun ProductVariation.description(): ProductProperty? {
+    private fun ProductVariation.description(): ProductProperty {
         val variationDescription = this.description
         val description = if (variationDescription.isEmpty()) {
             resources.getString(string.product_description)
@@ -53,25 +55,18 @@ class VariationDetailCardBuilder(
             variationDescription
         }
 
-        // TODO: Temporarily hide empty description until it's editable
-        return if (variationDescription.isNotEmpty()) {
-            ComplexProperty(
-                string.product_description,
-                description,
-                drawable.ic_gridicons_align_left,
-                variationDescription.isNotEmpty()
+        return ComplexProperty(
+            string.product_description,
+            description,
+            drawable.ic_gridicons_align_left,
+            variationDescription.isNotEmpty()
+        ) {
+            viewModel.onEditVariationCardClicked(
+                ViewDescriptionEditor(
+                    variationDescription, resources.getString(string.product_description)
+                ),
+                Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
             )
-            // TODO: This will be used once the variants are editable
-//            {
-//                viewModel.onEditVariationCardClicked(
-//                    ViewProductDescriptionEditor(
-//                        variationDescription, resources.getString(string.product_description)
-//                    ),
-//                    Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
-//                )
-//            }
-        } else {
-            null
         }
     }
 
@@ -87,7 +82,7 @@ class VariationDetailCardBuilder(
         }
 
         return Switch(visibility, this.isVisible, visibilityIcon) {
-            viewModel.onVisibilityChanged(it)
+            viewModel.onVariationChanged(isVisible = it)
         }
     }
 

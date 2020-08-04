@@ -17,13 +17,13 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ShowImage
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -35,6 +35,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
+import java.util.Date
 
 class VariationDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -88,12 +90,11 @@ class VariationDetailViewModel @AssistedInject constructor(
         showVariation(originalVariation.copy())
     }
 
-    // TODO: This will be used in edit mode
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product variation screen
      */
-    fun onEditVariationCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
+    fun onEditVariationCardClicked(target: VariationNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
     }
@@ -125,16 +126,60 @@ class VariationDetailViewModel @AssistedInject constructor(
     fun onImageClicked() {
         viewState.variation.image?.let {
             AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-            triggerEvent(
-                ShowImage(
-                    it
-                )
-            )
+            triggerEvent(ShowImage(it))
         }
     }
 
-    fun onVisibilityChanged(isVisible: Boolean) {
-        showVariation(viewState.variation.copy(isVisible = isVisible))
+    fun onVariationChanged(
+        remoteProductId: Long? = null,
+        remoteVariationId: Long? = null,
+        image: Product.Image? = null,
+        regularPrice: BigDecimal? = null,
+        salePrice: BigDecimal? = null,
+        saleEndDateGmt: Date? = null,
+        saleStartDateGmt: Date? = null,
+        isSaleScheduled: Boolean? = null,
+        isOnSale: Boolean? = null,
+        stockStatus: ProductStockStatus? = null,
+        stockQuantity: Int? = null,
+        optionName: String? = null,
+        isPurchasable: Boolean? = null,
+        isVirtual: Boolean? = null,
+        isDownloadable: Boolean? = null,
+        description: String? = null,
+        isVisible: Boolean? = null,
+        shippingClass: String? = null,
+        shippingClassId: Long? = null,
+        length: Float? = null,
+        width: Float? = null,
+        height: Float? = null,
+        weight: Float? = null
+    ) {
+        showVariation(viewState.variation.copy(
+            remoteProductId = remoteProductId ?: viewState.variation.remoteProductId,
+            remoteVariationId = remoteVariationId ?: viewState.variation.remoteVariationId,
+            image = image ?: viewState.variation.image,
+            regularPrice = regularPrice ?: viewState.variation.regularPrice,
+            salePrice = salePrice ?: viewState.variation.salePrice,
+            saleEndDateGmt = saleEndDateGmt ?: viewState.variation.saleEndDateGmt,
+            saleStartDateGmt = saleStartDateGmt ?: viewState.variation.saleStartDateGmt,
+            isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
+            isOnSale = isOnSale ?: viewState.variation.isOnSale,
+            stockStatus = stockStatus ?: viewState.variation.stockStatus,
+            stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,
+            optionName = optionName ?: viewState.variation.optionName,
+            isPurchasable = isPurchasable ?: viewState.variation.isPurchasable,
+            isVirtual = isVirtual ?: viewState.variation.isVirtual,
+            isDownloadable = isDownloadable ?: viewState.variation.isDownloadable,
+            description = description ?: viewState.variation.description,
+            isVisible = isVisible ?: viewState.variation.isVisible,
+            shippingClass = shippingClass ?: viewState.variation.shippingClass,
+            shippingClassId = shippingClassId ?: viewState.variation.shippingClassId,
+            length = length ?: viewState.variation.length,
+            width = width ?: viewState.variation.width,
+            height = height ?: viewState.variation.height,
+            weight = weight ?: viewState.variation.weight
+        ))
     }
 
     fun onUpdateButtonClicked() {
@@ -241,8 +286,6 @@ class VariationDetailViewModel @AssistedInject constructor(
             gmtOffset
         )
     }
-
-    data class ShowImage(val image: Product.Image) : Event()
 
     @Parcelize
     data class VariationViewState(
