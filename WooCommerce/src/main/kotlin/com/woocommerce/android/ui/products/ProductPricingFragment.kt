@@ -32,7 +32,6 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Product.Companion
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.util.CurrencyFormatter

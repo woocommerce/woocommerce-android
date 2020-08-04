@@ -214,7 +214,8 @@ class ProductPricingViewModel @AssistedInject constructor(
         val saleStartDate: Date? = null,
         val saleEndDate: Date? = null,
         val regularPrice: BigDecimal? = null,
-        val salePrice: BigDecimal? = null) : Parcelable {
+        val salePrice: BigDecimal? = null
+    ) : Parcelable {
         override fun equals(other: Any?): Boolean {
             val data = other as? PricingData
             return data?.let {
