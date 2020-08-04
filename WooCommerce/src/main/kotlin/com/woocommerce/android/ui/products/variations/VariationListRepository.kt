@@ -1,8 +1,8 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -20,7 +20,7 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
-class ProductVariantsRepository @Inject constructor(
+class VariationListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val wooCommerceStore: WooCommerceStore,
@@ -28,13 +28,13 @@ class ProductVariantsRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
-        private const val PRODUCT_VARIANTS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
+        private const val PRODUCT_VARIATIONS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
     }
 
     private var loadContinuation: Continuation<Boolean>? = null
     private var offset = 0
 
-    var canLoadMoreProductVariants = true
+    var canLoadMoreProductVariations = true
         private set
 
     init {
@@ -46,33 +46,33 @@ class ProductVariantsRepository @Inject constructor(
     }
 
     /**
-     * Submits a fetch request to get a list of products variants for the current site and productId
-     * and returns the full list of product variants from the database
+     * Submits a fetch request to get a list of products variations for the current site and productId
+     * and returns the full list of product variations from the database
      */
-    suspend fun fetchProductVariants(remoteProductId: Long, loadMore: Boolean = false): List<ProductVariant> {
+    suspend fun fetchProductVariations(remoteProductId: Long, loadMore: Boolean = false): List<ProductVariation> {
         try {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                offset = if (loadMore) offset + PRODUCT_VARIANTS_PAGE_SIZE else 0
+                offset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
                 loadContinuation = it
                 val payload = WCProductStore.FetchProductVariationsPayload(
                         selectedSite.get(),
                         remoteProductId,
-                        pageSize = PRODUCT_VARIANTS_PAGE_SIZE,
+                        pageSize = PRODUCT_VARIATIONS_PAGE_SIZE,
                         offset = offset
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductVariationsAction(payload))
             }
         } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product variants", e)
+            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product variations", e)
         }
 
-        return getProductVariantList(remoteProductId)
+        return getProductVariationList(remoteProductId)
     }
 
     /**
-     * Returns all product variants for a product and current site that are in the database
+     * Returns all product variations for a product and current site that are in the database
      */
-    fun getProductVariantList(remoteProductId: Long): List<ProductVariant> {
+    fun getProductVariationList(remoteProductId: Long): List<ProductVariation> {
         return productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
                 .map { it.toAppModel() }
     }
@@ -95,7 +95,7 @@ class ProductVariantsRepository @Inject constructor(
                         event.error.message
                 )
             } else {
-                canLoadMoreProductVariants = event.canLoadMore
+                canLoadMoreProductVariations = event.canLoadMore
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_LOADED)
                 loadContinuation?.resume(true)
             }

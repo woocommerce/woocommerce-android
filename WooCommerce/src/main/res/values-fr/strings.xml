@@ -186,7 +186,7 @@ Language: fr
     <string name="product_add_image_content_description">Ajouter une image</string>
     <string name="date_timeframe_future">À venir</string>
     <string name="remove">Supprimer</string>
-    <string name="product_variant_hidden">Masqué</string>
+    <string name="product_variation_hidden">Masqué</string>
     <string name="login_discovery_error_generic">Nous n\'avons pas pu accéder à votre site. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
     <string name="login_discovery_error_ssl">Nous n\'avons pas pu accéder à votre site à cause d\'un problème avec le &lt;b>certificat SSL&lt;/b>. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
     <string name="login_discovery_error_http_auth">Nous n\'avons pas pu accéder à votre site car il requiert une &lt;b>authentification HTTP&lt;/b>. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
@@ -231,7 +231,7 @@ Language: fr
     <string name="product_list_empty_search">Aucun produit correspondant</string>
     <string name="product_list_empty">Aucun produit pour le moment</string>
     <string name="product_stock_count">%s en stock</string>
-    <string name="product_stock_status_instock_with_variants">Variantes en stock : \u2022 %d </string>
+    <string name="product_stock_status_instock_with_variations">Variantes en stock : \u2022 %d </string>
     <string name="product_image_content_description">Image produit</string>
     <string name="review_list_item_title">%1$s a laissé un avis sur %2$s</string>
     <string name="wc_unapproved">Désapprouvé</string>

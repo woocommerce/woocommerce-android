@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -21,12 +21,12 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ProductVariantViewModel.ShowVariantImage
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.ShowImage
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -35,11 +35,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.fragment_product_variant.*
+import kotlinx.android.synthetic.main.fragment_variation_detail.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ProductVariantFragment : BaseFragment(), BackPressListener {
+class VariationDetailFragment : BaseFragment(), BackPressListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
@@ -59,11 +59,11 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
 
-    private val viewModel: ProductVariantViewModel by viewModels { viewModelFactory }
+    private val viewModel: VariationDetailViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_variant, container, false)
+        return inflater.inflate(R.layout.fragment_variation_detail, container, false)
     }
 
     override fun onDestroyView() {
@@ -84,7 +84,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        showUpdateMenuItem(viewModel.variantViewStateData.liveData.value?.isDoneButtonVisible ?: false)
+        showUpdateMenuItem(viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -124,23 +124,25 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
         setupObservers(viewModel)
     }
 
-    private fun setupObservers(viewModel: ProductVariantViewModel) {
-        viewModel.variantViewStateData.observe(viewLifecycleOwner) { old, new ->
+    private fun setupObservers(viewModel: VariationDetailViewModel) {
+        viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.variation.takeIfNotEqualTo(old?.variation) { showVariationDetails(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { showUpdateMenuItem(it) }
         }
 
-        viewModel.variantDetailCards.observe(viewLifecycleOwner, Observer {
+        viewModel.variationDetailCards.observe(viewLifecycleOwner, Observer {
             showVariationCards(it)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowVariantImage -> {
-                    val action = ProductVariantFragmentDirections.actionGlobalWpMediaViewerFragment(event.image.source)
+                is ShowImage -> {
+                    val action = VariationDetailFragmentDirections.actionGlobalWpMediaViewerFragment(
+                        event.image.source
+                    )
                     findNavController().navigateSafely(action)
                 }
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
@@ -155,7 +157,7 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
         })
     }
 
-    private fun showVariationDetails(variation: ProductVariant) {
+    private fun showVariationDetails(variation: ProductVariation) {
         variationName = variation.optionName.fastStripHtml()
 
         if (variation.image == null) {
@@ -167,14 +169,14 @@ class ProductVariantFragment : BaseFragment(), BackPressListener {
                 .placeholder(R.drawable.ic_product)
                 .into(variationImage)
             variationImage.setOnClickListener {
-                viewModel.onVariantImageClicked()
+                viewModel.onImageClicked()
             }
         }
     }
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(app_bar_layout, R.layout.skeleton_variant_detail, delayed = true)
+            skeletonView.show(app_bar_layout, R.layout.skeleton_variation_detail, delayed = true)
         } else {
             skeletonView.hide()
         }
