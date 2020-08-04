@@ -113,7 +113,7 @@ class ProductPricingViewModel @AssistedInject constructor(
                 salePrice = salePrice,
                 isSaleScheduled = isSaleScheduled,
                 saleStartDate = saleStartDate,
-                saleEndDate = saleEndDate,
+                saleEndDate = fixEndDateIfNecessary(saleStartDate, saleEndDate),
                 taxStatus = taxStatus,
                 taxClass = taxClass
             )
@@ -169,6 +169,16 @@ class ProductPricingViewModel @AssistedInject constructor(
             saleEndDate = if (isSaleScheduled) pricingData.saleEndDate else null
         )
         triggerEvent(ExitWithResult(resultPricing))
+    }
+
+    private fun fixEndDateIfNecessary(startDate: Date?, endDate: Date?): Date? {
+        return endDate?.let {
+            if (startDate != null && endDate.before(startDate)) {
+                startDate
+            } else {
+                endDate
+            }
+        }
     }
 
     fun onExit() {
