@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ShowImage
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -136,10 +137,9 @@ class VariationDetailViewModel @AssistedInject constructor(
         image: Product.Image? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
-        saleEndDateGmt: Date? = null,
-        saleStartDateGmt: Date? = null,
+        saleEndDate: Optional<Date>? = null,
+        saleStartDate: Date? = null,
         isSaleScheduled: Boolean? = null,
-        isOnSale: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         stockQuantity: Int? = null,
         optionName: String? = null,
@@ -161,8 +161,8 @@ class VariationDetailViewModel @AssistedInject constructor(
             image = image ?: viewState.variation.image,
             regularPrice = regularPrice ?: viewState.variation.regularPrice,
             salePrice = salePrice ?: viewState.variation.salePrice,
-            saleEndDateGmt = saleEndDateGmt ?: viewState.variation.saleEndDateGmt,
-            saleStartDateGmt = saleStartDateGmt ?: viewState.variation.saleStartDateGmt,
+            saleEndDateGmt = if (saleEndDate != null) saleEndDate.value else viewState.variation.saleEndDateGmt,
+            saleStartDateGmt = saleStartDate ?: viewState.variation.saleStartDateGmt,
             isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
             stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,

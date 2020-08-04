@@ -27,8 +27,11 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.products.ProductPricingFragment
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -233,6 +236,17 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                     viewModel.onVariationChanged(
                         description = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                    )
+                }
+            }
+            RequestCodes.VARIATION_DETAIL_PRICING -> {
+                result.getParcelable<PricingData>(ProductPricingFragment.ARG_PRODUCT_PRICING_STATE)?.let {
+                    viewModel.onVariationChanged(
+                        regularPrice = it.regularPrice,
+                        salePrice = it.salePrice,
+                        isSaleScheduled = it.isSaleScheduled,
+                        saleStartDate = it.saleStartDate,
+                        saleEndDate = Optional(it.saleEndDate)
                     )
                 }
             }

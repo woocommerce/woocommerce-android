@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -48,6 +49,8 @@ class ProductPricingViewModel @AssistedInject constructor(
         params
     }
 
+    private val isProductPricing by lazy { navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING }
+
     val pricingData
         get() = viewState.pricingData
 
@@ -58,8 +61,9 @@ class ProductPricingViewModel @AssistedInject constructor(
         viewState = viewState.copy(
             currency = parameters.currencyCode,
             decimals = decimals,
-            taxClassList = productRepository.getTaxClassesForSite(),
-            pricingData = navArgs.pricingData
+            taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
+            pricingData = navArgs.pricingData,
+            isTaxSectionVisible = isProductPricing
         )
 
         originalPricing = navArgs.pricingData
@@ -171,7 +175,8 @@ class ProductPricingViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val salePriceErrorMessage: Int? = null,
         val isDoneButtonVisible: Boolean? = null,
-        val pricingData: PricingData = PricingData()
+        val pricingData: PricingData = PricingData(),
+        val isTaxSectionVisible: Boolean? = null
     ) : Parcelable {
         val isRemoveEndDateButtonVisible: Boolean
             get() = pricingData.saleEndDate != null

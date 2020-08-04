@@ -29,6 +29,8 @@ import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.Produc
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Companion
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -146,6 +148,13 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
             }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
                 doneButton?.isVisible = isVisible
+            }
+            new.isTaxSectionVisible?.takeIfNotEqualTo(old?.isTaxSectionVisible) { isVisible ->
+                if (isVisible) {
+                    product_tax_section?.show()
+                } else {
+                    product_tax_section?.hide()
+                }
             }
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
         }
