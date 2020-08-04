@@ -165,8 +165,8 @@ class OrderDetailPresenter @Inject constructor(
             orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
         }
 
-        // if shipping labels are available, we don't need to display shipment tracking information separately
-        if (orderDetailUiItem.shippingLabels.isEmpty()) {
+        // Display the shipment tracking list only if it's available and if there are no shipping labels available
+        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.shipmentTrackingList.isNotEmpty()) {
             orderView?.showOrderShipmentTrackings(orderDetailUiItem.shipmentTrackingList)
         }
     }
@@ -214,18 +214,6 @@ class OrderDetailPresenter @Inject constructor(
             } else {
                 isNotesInit = true
                 orderView?.showOrderNotes(notes)
-            }
-        }
-    }
-
-    override fun loadOrderShipmentTrackings() {
-        orderModel?.let { order ->
-            // Preload trackings from the db if we've already fetched it
-            if (isShipmentTrackingsFetched) {
-                loadShipmentTrackingsFromDb()
-            } else if (networkStatus.isConnected() && !isShipmentTrackingsFailed) {
-                // Attempt to refresh trackings from api in the background
-                requestShipmentTrackingsFromApi(order)
             }
         }
     }

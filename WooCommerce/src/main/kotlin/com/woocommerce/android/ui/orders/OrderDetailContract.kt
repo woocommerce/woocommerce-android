@@ -29,7 +29,6 @@ interface OrderDetailContract {
         fun fetchOrderDetailInfo(order: WCOrderModel)
         fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel>
         fun fetchAndLoadOrderNotesFromDb()
-        fun loadOrderShipmentTrackings()
         fun getOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>
         fun loadShipmentTrackingsFromDb()
         fun doChangeOrderStatus(newStatus: String)
