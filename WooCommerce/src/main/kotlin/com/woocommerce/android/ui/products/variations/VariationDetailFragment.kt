@@ -9,7 +9,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -19,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -126,6 +129,19 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun setupResultHandlers(viewModel: VariationDetailViewModel) {
+        handleResult<PricingData>(ProductPricingFragment.KEY_PRODUCT_PRICING_STATE) {
+            viewModel.onVariationChanged(
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
+                isSaleScheduled = it.isSaleScheduled,
+                saleStartDate = Optional(it.saleStartDate),
+                saleEndDate = Optional(it.saleEndDate)
+            )
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
@@ -236,17 +252,6 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                 if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                     viewModel.onVariationChanged(
                         description = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
-                    )
-                }
-            }
-            RequestCodes.VARIATION_DETAIL_PRICING -> {
-                result.getParcelable<PricingData>(ProductPricingFragment.ARG_PRODUCT_PRICING_STATE)?.let {
-                    viewModel.onVariationChanged(
-                        regularPrice = it.regularPrice,
-                        salePrice = it.salePrice,
-                        isSaleScheduled = it.isSaleScheduled,
-                        saleStartDate = Optional(it.saleStartDate),
-                        saleEndDate = Optional(it.saleEndDate)
                     )
                 }
             }

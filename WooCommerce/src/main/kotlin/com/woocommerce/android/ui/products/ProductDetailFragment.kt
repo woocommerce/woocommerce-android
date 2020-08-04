@@ -17,6 +17,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -90,6 +91,22 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
+        handleResult<PricingData>(ProductPricingFragment.KEY_PRODUCT_PRICING_STATE) {
+            viewModel.updateProductDraft(
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
+                saleStartDate = it.saleStartDate,
+                saleEndDate = Optional(it.saleEndDate),
+                isSaleScheduled = it.isSaleScheduled,
+                taxClass = it.taxClass,
+                taxStatus = it.taxStatus
+            )
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -258,20 +275,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                             viewModel.addProductImageListToDraft(it)
                             changesMade()
                         }
-            }
-            RequestCodes.PRODUCT_DETAIL_PRICING -> {
-                result.getParcelable<PricingData>(ProductPricingFragment.ARG_PRODUCT_PRICING_STATE)?.let {
-                    viewModel.updateProductDraft(
-                        regularPrice = it.regularPrice,
-                        salePrice = it.salePrice,
-                        saleStartDate = it.saleStartDate,
-                        saleEndDate = Optional(it.saleEndDate),
-                        isSaleScheduled = it.isSaleScheduled,
-                        taxClass = it.taxClass,
-                        taxStatus = it.taxStatus
-                    )
-                    changesMade()
-                }
             }
         }
     }

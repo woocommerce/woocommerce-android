@@ -9,7 +9,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.IdRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -28,7 +27,6 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Product
@@ -48,14 +46,13 @@ import javax.inject.Inject
 
 class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInventorySelectorDialogListener {
     companion object {
-        const val ARG_PRODUCT_PRICING_STATE = "ARG_PRODUCT_PRICING_STATE"
+        const val KEY_PRODUCT_PRICING_STATE = "key_product_pricing_state"
     }
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val navArgs: ProductPricingFragmentArgs by navArgs()
     private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory }
 
     private var productTaxStatusSelectorDialog: ProductInventorySelectorDialog? = null
@@ -166,7 +163,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult -> navigateBackWithResult(event.data)
+                is ExitWithResult -> navigateBackWithResult(KEY_PRODUCT_PRICING_STATE, event.data)
                 is Exit -> findNavController().navigateUp()
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                     requireActivity(),
@@ -381,23 +378,6 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
                 }
             }
         }
-    }
-
-    private fun navigateBackWithResult(state: PricingData) {
-        val bundle = Bundle().also {
-            it.putParcelable(ARG_PRODUCT_PRICING_STATE, state)
-        }
-        @IdRes val destinationId = when (navArgs.requestCode) {
-            RequestCodes.VARIATION_DETAIL_PRICING -> R.id.variationDetailFragment
-            else -> R.id.productDetailFragment
-        }
-
-        requireActivity().navigateBackWithResult(
-            navArgs.requestCode,
-            bundle,
-            R.id.nav_host_fragment_main,
-            destinationId
-        )
     }
 
     override fun onRequestAllowBackPress(): Boolean {
