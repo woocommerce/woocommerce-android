@@ -595,12 +595,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun updateCards(product: Product) {
-        launch(dispatchers.computation) {
-            val cards = cardBuilder.buildPropertyCards(product)
-            withContext(dispatchers.main) {
-                _productDetailCards.value = cards
-            }
-        }
+        _productDetailCards.value = cardBuilder.buildPropertyCards(product)
         fetchBottomSheetList()
     }
 

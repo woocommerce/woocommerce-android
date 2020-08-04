@@ -33,7 +33,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -240,10 +239,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             if (_variationDetailCards.value == null) {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            val cards = withContext(dispatchers.io) {
-                cardBuilder.buildPropertyCards(variation)
-            }
-            _variationDetailCards.value = cards
+            _variationDetailCards.value = cardBuilder.buildPropertyCards(variation)
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
