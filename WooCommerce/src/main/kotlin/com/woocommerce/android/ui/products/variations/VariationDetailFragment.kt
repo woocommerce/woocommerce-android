@@ -9,9 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -133,7 +131,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
     }
 
     private fun setupResultHandlers(viewModel: VariationDetailViewModel) {
-        handleResult<PricingData>(ProductPricingFragment.KEY_PRODUCT_PRICING_STATE) {
+        handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.onVariationChanged(
                 regularPrice = it.regularPrice,
                 salePrice = it.salePrice,

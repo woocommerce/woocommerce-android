@@ -95,7 +95,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
-        handleResult<PricingData>(ProductPricingFragment.KEY_PRODUCT_PRICING_STATE) {
+        handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 regularPrice = it.regularPrice,
                 salePrice = it.salePrice,

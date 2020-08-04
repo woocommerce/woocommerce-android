@@ -46,7 +46,7 @@ import javax.inject.Inject
 
 class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInventorySelectorDialogListener {
     companion object {
-        const val KEY_PRODUCT_PRICING_STATE = "key_product_pricing_state"
+        const val KEY_PRICING_DIALOG_RESULT = "key_pricing_dialog_result"
     }
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -163,7 +163,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult -> navigateBackWithResult(KEY_PRODUCT_PRICING_STATE, event.data)
+                is ExitWithResult -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                     requireActivity(),
