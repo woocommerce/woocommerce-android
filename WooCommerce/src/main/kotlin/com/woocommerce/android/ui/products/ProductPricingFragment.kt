@@ -112,7 +112,9 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        doneButton?.isVisible = viewModel.hasChanges
+        val viewState = viewModel.viewStateData.liveData.value
+        doneButton?.isVisible = viewState?.isDoneButtonVisible ?: false
+        doneButton?.isEnabled = viewState?.isDoneButtonEnabled ?: false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -148,6 +150,9 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
             }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
                 doneButton?.isVisible = isVisible
+            }
+            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
+                doneButton?.isEnabled = isEnabled
             }
             new.isTaxSectionVisible?.takeIfNotEqualTo(old?.isTaxSectionVisible) { isVisible ->
                 if (isVisible) {
@@ -256,8 +261,6 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
                 }
             }
         }
-
-        viewModel.onPricingInitialized()
     }
 
     /**
@@ -318,10 +321,8 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     private fun displaySalePriceError(messageId: Int) {
         if (messageId != 0) {
             product_sale_price.error = getString(messageId)
-            doneButton?.isEnabled = false
         } else {
             product_sale_price.error = null
-            doneButton?.isEnabled = true
         }
     }
 

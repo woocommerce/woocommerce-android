@@ -66,10 +66,10 @@ class ProductPricingViewModel @AssistedInject constructor(
             isTaxSectionVisible = isProductPricing
         )
 
-        originalPricing = navArgs.pricingData
+        originalPricing = navArgs.pricingData.copy()
     }
 
-    val hasChanges: Boolean
+    private val hasChanges: Boolean
         get() = viewState.pricingData != originalPricing
 
     private fun loadParameters(): SiteParameters {
@@ -85,13 +85,6 @@ class ProductPricingViewModel @AssistedInject constructor(
             dimensionUnit,
             gmtOffset
         )
-    }
-
-    /*
-     * The views and currency are initialized, save the initial state for change detection
-     */
-    fun onPricingInitialized() {
-        originalPricing = pricingData.copy()
     }
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
@@ -209,6 +202,8 @@ class ProductPricingViewModel @AssistedInject constructor(
     ) : Parcelable {
         val isRemoveEndDateButtonVisible: Boolean
             get() = pricingData.saleEndDate != null
+        val isDoneButtonEnabled: Boolean
+            get() = salePriceErrorMessage == 0
     }
 
     @Parcelize
