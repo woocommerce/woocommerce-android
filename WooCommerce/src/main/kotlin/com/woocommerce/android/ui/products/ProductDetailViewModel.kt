@@ -124,7 +124,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
-            updateCards(new.productDraft)
+            new.productDraft?.let {
+                updateCards(it)
+            }
         }
     }
     private var viewState by productDetailViewStateData
