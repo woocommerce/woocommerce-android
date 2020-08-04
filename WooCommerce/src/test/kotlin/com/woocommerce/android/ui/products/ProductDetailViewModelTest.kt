@@ -114,6 +114,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         Pair(
                             resources.getString(R.string.product_regular_price),
                             productWithParameters.regularPriceWithCurrency!!
+                        ),
+                        Pair(
+                            resources.getString(R.string.product_sale_price),
+                            productWithParameters.salePriceWithCurrency!!
                         )
                     ),
                     R.drawable.ic_gridicons_money
