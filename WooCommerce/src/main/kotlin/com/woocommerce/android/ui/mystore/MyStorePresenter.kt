@@ -30,7 +30,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
@@ -121,13 +121,8 @@ class MyStorePresenter @Inject constructor(
     }
 
     override fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean) {
-        coroutineScope.launch {
-            withContext(Dispatchers.Default) {
-                wcLeaderboardsStore.fetchProductLeaderboards(selectedSite.get(), granularity)
-                    .model
-                    ?.let { onWCTopPerformersChanged(it, granularity) }
-            }
-        }
+        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchRevenueStatsAction(statsPayload))
     }
 
     override fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean) {
@@ -136,10 +131,15 @@ class MyStorePresenter @Inject constructor(
     }
 
     override fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
-        val payload = FetchTopEarnersStatsPayload(
-            selectedSite.get(), granularity, NUM_TOP_EARNERS, forced = forced
-        )
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
+        coroutineScope.launch {
+            withContext(Dispatchers.Default) {
+                wcLeaderboardsStore.fetchProductLeaderboards(
+                    site = selectedSite.get(),
+                    unit = granularity,
+                    quantity = NUM_TOP_EARNERS
+                ).model?.let { onWCTopPerformersChanged(it, granularity) }
+            }
+        }
     }
 
     override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
