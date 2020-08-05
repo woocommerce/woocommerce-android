@@ -381,11 +381,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return if (viewModel.event.value == Exit) {
-            true
-        } else {
-            viewModel.onExit()
-            false
-        }
+        return (viewModel.event.value == Exit)
+        .also { if(it.not()) viewModel.onExit() }
     }
 }
