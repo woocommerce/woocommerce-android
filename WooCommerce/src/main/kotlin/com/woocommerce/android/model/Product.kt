@@ -66,7 +66,6 @@ data class Product(
     val attributes: List<Attribute>,
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
-    val isOnSale: Boolean,
     val soldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
@@ -81,6 +80,9 @@ data class Product(
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
     }
+
+    val isOnSale: Boolean
+        get() = !(this.salePrice isEquivalentTo BigDecimal.ZERO)
 
     @Parcelize
     data class Image(
@@ -333,7 +335,6 @@ data class Product(
                 soldIndividually = updatedProduct.soldIndividually,
                 regularPrice = updatedProduct.regularPrice,
                 salePrice = updatedProduct.salePrice,
-                isOnSale = updatedProduct.isOnSale,
                 isVirtual = updatedProduct.isVirtual,
                 isSaleScheduled = updatedProduct.isSaleScheduled,
                 saleStartDateGmt = updatedProduct.saleStartDateGmt,
@@ -516,7 +517,6 @@ fun WCProductModel.toAppModel(): Product {
         },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        isOnSale = this.onSale,
         soldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),

@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ShowImage
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -32,7 +33,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -63,13 +63,9 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the variation detail screen
-    val variationViewStateData = LiveDataDelegate(savedState,
-        VariationViewState(
-            originalVariation
-        )
-    ) { old, new ->
+    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
         if (old?.variation != new.variation) {
-            updateCards()
+            updateCards(new.variation)
         }
     }
     private var viewState by variationViewStateData
@@ -136,10 +132,9 @@ class VariationDetailViewModel @AssistedInject constructor(
         image: Product.Image? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
-        saleEndDateGmt: Date? = null,
-        saleStartDateGmt: Date? = null,
+        saleEndDate: Optional<Date>? = null,
+        saleStartDate: Optional<Date>? = null,
         isSaleScheduled: Boolean? = null,
-        isOnSale: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         stockQuantity: Int? = null,
         optionName: String? = null,
@@ -161,10 +156,9 @@ class VariationDetailViewModel @AssistedInject constructor(
             image = image ?: viewState.variation.image,
             regularPrice = regularPrice ?: viewState.variation.regularPrice,
             salePrice = salePrice ?: viewState.variation.salePrice,
-            saleEndDateGmt = saleEndDateGmt ?: viewState.variation.saleEndDateGmt,
-            saleStartDateGmt = saleStartDateGmt ?: viewState.variation.saleStartDateGmt,
+            saleEndDateGmt = if (saleEndDate != null) saleEndDate.value else viewState.variation.saleEndDateGmt,
+            saleStartDateGmt = if (saleStartDate != null) saleStartDate.value else viewState.variation.saleStartDateGmt,
             isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
-            isOnSale = isOnSale ?: viewState.variation.isOnSale,
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
             stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,
             optionName = optionName ?: viewState.variation.optionName,
@@ -240,18 +234,13 @@ class VariationDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    private fun updateCards() {
-        viewState.variation.let {
-            launch {
-                if (_variationDetailCards.value == null) {
-                    viewState = viewState.copy(isSkeletonShown = true)
-                }
-                val cards = withContext(dispatchers.io) {
-                    cardBuilder.buildPropertyCards(it)
-                }
-                _variationDetailCards.value = cards
-                viewState = viewState.copy(isSkeletonShown = false)
+    private fun updateCards(variation: ProductVariation) {
+        launch {
+            if (_variationDetailCards.value == null) {
+                viewState = viewState.copy(isSkeletonShown = true)
             }
+            _variationDetailCards.value = cardBuilder.buildPropertyCards(variation)
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 

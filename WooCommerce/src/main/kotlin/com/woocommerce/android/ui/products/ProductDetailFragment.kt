@@ -16,10 +16,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -28,10 +26,12 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -91,6 +91,22 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
+        handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
+                saleStartDate = it.saleStartDate,
+                saleEndDate = Optional(it.saleEndDate),
+                isSaleScheduled = it.isSaleScheduled,
+                taxClass = it.taxClass,
+                taxStatus = it.taxStatus
+            )
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -170,23 +186,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_share -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
                 true
             }
 
             R.id.menu_done -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
                 true
             }
 
             R.id.menu_view_product -> {
-                viewModel.getProduct().productDraft?.permalink?.let {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-                    ChromeCustomTabUtils.launchUrl(requireContext(), it)
-                }
+                viewModel.onViewProductOnStoreLinkClicked()
                 true
             }
 

@@ -120,9 +120,11 @@
         android:name="com.woocommerce.android.ui.products.ProductPricingFragment"
         tools:layout="@layout/fragment_product_pricing">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="pricingData"
+            app:argType="com.woocommerce.android.ui.products.ProductPricingViewModel$PricingData" />
     </fragment>
     <fragment
         android:id="@+id/productImageViewerFragment"
@@ -245,5 +247,8 @@
         <argument
             android:name="variation"
             app:argType="com.woocommerce.android.model.ProductVariation" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
+            app:destination="@id/productPricingFragment" />
     </fragment>
 </navigation>

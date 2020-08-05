@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -27,8 +28,11 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.products.ProductPricingFragment
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -123,6 +127,19 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun setupResultHandlers(viewModel: VariationDetailViewModel) {
+        handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
+                isSaleScheduled = it.isSaleScheduled,
+                saleStartDate = Optional(it.saleStartDate),
+                saleEndDate = Optional(it.saleEndDate)
+            )
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {

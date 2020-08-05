@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
@@ -419,7 +420,15 @@ class ProductDetailCardBuilder(
             hasPricingInfo
         ) {
             viewModel.onEditProductCardClicked(
-                ViewProductPricing(this.remoteId),
+                ViewProductPricing(PricingData(
+                    taxClass,
+                    taxStatus,
+                    isSaleScheduled,
+                    saleStartDateGmt,
+                    saleEndDateGmt,
+                    regularPrice,
+                    salePrice
+                )),
                 Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
         }

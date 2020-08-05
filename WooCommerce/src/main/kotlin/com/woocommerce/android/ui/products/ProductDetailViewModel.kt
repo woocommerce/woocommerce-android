@@ -12,6 +12,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -20,7 +22,6 @@ import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
@@ -31,7 +32,6 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
-import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.Produ
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
@@ -104,7 +103,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productTagsRepository: ProductTagsRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
@@ -126,7 +124,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
-            updateCards()
+            new.productDraft?.let {
+                updateCards(it)
+            }
         }
     }
     private var viewState by productDetailViewStateData
@@ -134,10 +134,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product inventory screen
     val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
     private var productInventoryViewState by productInventoryViewStateData
-
-    // view state for the product pricing screen
-    val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
-    private var productPricingViewState by productPricingViewStateData
 
     // view state for the product images screen
     val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
@@ -187,26 +183,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
 
-    fun getTaxClassBySlug(slug: String): TaxClass? {
-        return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
-    }
-
-    fun initialisePricing() {
-        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
-        productPricingViewState = productPricingViewState.copy(
-                currency = parameters.currencyCode,
-                decimals = decimals,
-                taxClassList = productRepository.getTaxClassesForSite(),
-                regularPrice = viewState.storedProduct?.regularPrice,
-                salePrice = viewState.storedProduct?.salePrice
-        )
-    }
-
     /**
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
+        AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ShareProduct(it.permalink, it.name))
         }
@@ -239,14 +220,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
-    }
-
-    /**
-     * Called when the the Remove end date link is clicked
-     */
-    fun onRemoveEndDateClicked() {
-        productPricingViewState = productPricingViewState.copy(saleEndDate = null)
-        updateProductDraft(saleEndDate = Optional(null))
     }
 
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
@@ -294,10 +267,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 eventName = Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasInventoryChanges()
             }
-            is ExitPricing -> {
-                eventName = Stat.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasPricingChanges()
-            }
             is ExitShipping -> {
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasShippingChanges()
@@ -330,6 +299,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates the product
      */
     fun onUpdateButtonClicked() {
+        AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
@@ -390,44 +360,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onViewProductOnStoreLinkClicked(url: String) {
+    fun onViewProductOnStoreLinkClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-        triggerEvent(LaunchUrlInChromeTab(url))
+        viewState.productDraft?.permalink?.let { url ->
+            triggerEvent(LaunchUrlInChromeTab(url))
+        }
     }
 
     fun onAffiliateLinkClicked(url: String) {
         AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED)
         triggerEvent(LaunchUrlInChromeTab(url))
-    }
-
-    /**
-     * Called when the sale start date is selected from the date picker in the pricing screen.
-     * Keeps track of the start and end date value when scheduling a sale.
-     */
-    fun onStartDateChanged(newDate: Date) {
-        // update end date to start date only if current end date < start date
-        val saleEndDate = viewState.productDraft?.saleEndDateGmt
-        if (saleEndDate?.before(newDate) == true) {
-            updateProductDraft(saleEndDate = Optional(newDate))
-            productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
-        }
-        updateProductDraft(saleStartDate = newDate)
-        productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
-    }
-
-    /**
-     * Called when the sale end date is selected from the date picker in the pricing screen.
-     * Keeps track of the start and end date value when scheduling a sale.
-     */
-    fun onEndDateChanged(newDate: Date?) {
-        // update start date to end date only if current start date > end date
-        val saleStartDate = viewState.productDraft?.saleStartDateGmt
-        if (newDate != null && saleStartDate?.after(newDate) == true) {
-            updateProductDraft(saleStartDate = newDate)
-            productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
-        }
-        updateProductDraft(saleEndDate = Optional(newDate))
-        productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
     }
 
     /**
@@ -540,31 +482,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onRegularPriceEntered(inputValue: BigDecimal) {
-        productPricingViewState = productPricingViewState.copy(regularPrice = inputValue)
-        val salePrice = productPricingViewState.salePrice ?: BigDecimal.ZERO
-
-        productPricingViewState = if (salePrice > inputValue) {
-            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else {
-            updateProductDraft(regularPrice = inputValue)
-            productPricingViewState.copy(salePriceErrorMessage = 0)
-        }
-    }
-
-    fun onSalePriceEntered(inputValue: BigDecimal) {
-        productPricingViewState = productPricingViewState.copy(salePrice = inputValue)
-        val regularPrice = productPricingViewState.regularPrice ?: BigDecimal.ZERO
-
-        productPricingViewState = if (inputValue > regularPrice) {
-            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else {
-            val isOnSale = inputValue isNotEqualTo BigDecimal.ZERO
-            updateProductDraft(salePrice = inputValue, isOnSale = isOnSale)
-            productPricingViewState.copy(salePriceErrorMessage = 0)
-        }
-    }
-
     fun onProductTitleChanged(title: String) {
         updateProductDraft(title = title)
     }
@@ -634,7 +551,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                     images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
-                    isOnSale = isOnSale ?: product.isOnSale,
                     isVirtual = isVirtual ?: product.isVirtual,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
@@ -678,15 +594,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().unregister(this)
     }
 
-    private fun updateCards() {
-        viewState.productDraft?.let {
-            launch(dispatchers.computation) {
-                val cards = cardBuilder.buildPropertyCards(it)
-                withContext(dispatchers.main) {
-                    _productDetailCards.value = cards
-                }
-            }
-        }
+    private fun updateCards(product: Product) {
+        _productDetailCards.value = cardBuilder.buildPropertyCards(product)
         fetchBottomSheetList()
     }
 
@@ -1369,7 +1278,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -1428,21 +1336,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val skuErrorMessage: Int? = null,
         val stockQuantityErrorMessage: Int? = null
     ) : Parcelable
-
-    @Parcelize
-    data class ProductPricingViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val taxClassList: List<TaxClass>? = null,
-        val saleStartDate: Date? = null,
-        val saleEndDate: Date? = null,
-        val salePriceErrorMessage: Int? = null,
-        val regularPrice: BigDecimal? = null,
-        val salePrice: BigDecimal? = null
-    ) : Parcelable {
-        val isRemoveMaxDateButtonVisible: Boolean
-            get() = saleEndDate != null
-    }
 
     @Parcelize
     data class ProductImagesViewState(
