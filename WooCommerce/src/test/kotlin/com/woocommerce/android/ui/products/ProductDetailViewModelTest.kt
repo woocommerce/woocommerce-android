@@ -10,7 +10,6 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -50,7 +49,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
-        private const val TEST_STRING = "test"
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -61,6 +59,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productTagsRepository: ProductTagsRepository = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
+        on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -79,6 +78,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     var coroutinesTestRule = CoroutineTestRule()
 
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
+    private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
     private val productCategories = ProductTestUtils.generateProductCategories()
     private lateinit var viewModel: ProductDetailViewModel
@@ -93,7 +93,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             sizeWithUnits = "1 x 2 x 3 cm",
             salePriceWithCurrency = "CZK10.00",
             regularPriceWithCurrency = "CZK30.00",
-            showBottomSheetButton = false
+            showBottomSheetButton = true
     )
 
     private val expectedCards = listOf(
@@ -117,14 +117,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     ),
                     R.drawable.ic_gridicons_money
                 ),
-                PropertyGroup(
-                    R.string.product_shipping,
-                    mapOf(
-                        Pair(resources.getString(R.string.product_weight), productWithParameters.weightWithUnits!!),
-                        Pair(resources.getString(R.string.product_dimensions), productWithParameters.sizeWithUnits!!),
-                        Pair(resources.getString(R.string.product_shipping_class), "")
-                    ),
-                    R.drawable.ic_gridicons_shipping,
+                ComplexProperty(
+                    R.string.product_type,
+                    resources.getString(R.string.product_detail_product_type_hint),
+                    R.drawable.ic_gridicons_product,
                     true
                 ),
                 PropertyGroup(
@@ -135,25 +131,32 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_list_checkmark,
                     true
                 ),
-                ComplexProperty(
-                    R.string.product_short_description,
-                    product.shortDescription,
-                    R.drawable.ic_gridicons_align_left,
+                PropertyGroup(
+                    R.string.product_shipping,
+                    mapOf(
+                        Pair(resources.getString(R.string.product_weight), productWithParameters.weightWithUnits!!),
+                        Pair(resources.getString(R.string.product_dimensions), productWithParameters.sizeWithUnits!!),
+                        Pair(resources.getString(R.string.product_shipping_class), "")
+                    ),
+                    R.drawable.ic_gridicons_shipping,
                     true
                 ),
                 ComplexProperty(
                     R.string.product_categories,
-                    resources.getString(R.string.product_category_empty),
+                    productWithTagsAndCategories.categories.joinToString(transform = { it.name }),
                     R.drawable.ic_gridicons_folder,
-                    showTitle = false,
                     maxLines = 5
                 ),
                 ComplexProperty(
                     R.string.product_tags,
-                    resources.getString(R.string.product_tag_empty),
+                    productWithTagsAndCategories.tags.joinToString(transform = { it.name }),
                     R.drawable.ic_gridicons_tag,
-                    showTitle = false,
                     maxLines = 5
+                ),
+                ComplexProperty(
+                    R.string.product_short_description,
+                    product.shortDescription,
+                    R.drawable.ic_gridicons_align_left
                 )
             )
         )
@@ -210,23 +213,19 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product detail properties correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        // This is still a feature flagged functionality => it'll fail on CircleCI
-        // TODO: Remove the check once it's available
-        if (BuildConfig.DEBUG) {
-            doReturn(true).whenever(networkStatus).isConnected()
-            doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(productWithTagsAndCategories).whenever(productRepository).getProduct(any())
 
-            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-            var cards: List<ProductPropertyCard>? = null
-            viewModel.productDetailCards.observeForever {
-                cards = it.map { card -> stripCallbacks(card) }
-            }
-
-            viewModel.start()
-
-            assertThat(cards).isEqualTo(expectedCards)
+        var cards: List<ProductPropertyCard>? = null
+        viewModel.productDetailCards.observeForever {
+            cards = it.map { card -> stripCallbacks(card) }
         }
+
+        viewModel.start()
+
+        assertThat(cards).isEqualTo(expectedCards)
     }
 
     private fun stripCallbacks(card: ProductPropertyCard): ProductPropertyCard {

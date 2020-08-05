@@ -15,10 +15,20 @@ enum class FeatureFlag {
         return when (this) {
             // This feature will live switched on from the
             // setting screen. i.e. check AppPrefs.isProductsFeatureEnabled() method
-            PRODUCT_RELEASE_M3, APP_FEEDBACK, SHIPPING_LABELS_M1 -> BuildConfig.DEBUG
+            // Also, turn on the feature during testing
+            PRODUCT_RELEASE_M3, APP_FEEDBACK, SHIPPING_LABELS_M1 -> BuildConfig.DEBUG || isTesting()
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
+        }
+    }
+
+    private fun isTesting(): Boolean {
+        return try {
+            Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
         }
     }
 }
