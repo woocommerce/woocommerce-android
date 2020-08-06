@@ -9,12 +9,12 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 interface MyStoreContract {
     interface Presenter : BasePresenter<View> {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
-        fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
         fun fetchHasOrders()
         fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean)
         fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean)
-        fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean)
+        suspend fun fetchTopPerformersStats(granularity: StatsGranularity, forced: Boolean)
+        suspend fun loadTopPerformersStats(granularity: StatsGranularity, forced: Boolean = false)
     }
 
     interface View : BaseView<Presenter> {
@@ -24,8 +24,8 @@ interface MyStoreContract {
         fun showStats(revenueStatsModel: WCRevenueStatsModel?, granularity: StatsGranularity)
         fun showStatsError(granularity: StatsGranularity)
         fun updateStatsAvailabilityError()
-        fun showTopEarners(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity)
-        fun showTopEarnersError(granularity: StatsGranularity)
+        fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity)
+        fun showTopPerformersError(granularity: StatsGranularity)
         fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity)
         fun showVisitorStatsError(granularity: StatsGranularity)
         fun showErrorSnack()

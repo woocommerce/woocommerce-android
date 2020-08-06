@@ -28,6 +28,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
 import kotlinx.android.synthetic.main.my_store_stats.*
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -236,14 +237,14 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun showTopEarners(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
+    override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_earners.showErrorView(false)
             my_store_top_earners.updateView(topPerformers)
         }
     }
 
-    override fun showTopEarnersError(granularity: StatsGranularity) {
+    override fun showTopPerformersError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_earners.updateView(emptyList())
             my_store_top_earners.showErrorView(true)
@@ -309,9 +310,11 @@ class MyStoreFragment : TopLevelFragment(),
                     my_store_stats.clearChartData()
                     my_store_date_bar.clearDateRangeValues()
                 }
-                presenter.loadStats(activeGranularity, forced)
-                presenter.loadTopEarnerStats(activeGranularity, forced)
-                presenter.fetchHasOrders()
+                presenter.run {
+                    loadStats(activeGranularity, forced)
+                    coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
+                    fetchHasOrders()
+                }
             }
             else -> isRefreshPending = true
         }
@@ -332,7 +335,9 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
         my_store_top_earners.showErrorView(false)
-        presenter.loadTopEarnerStats(period)
+        presenter.coroutineScope.launch {
+            presenter.loadTopPerformersStats(period)
+        }
     }
 
     override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {

@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,6 +23,7 @@ import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
@@ -52,7 +52,7 @@ class MyStorePresenter @Inject constructor(
         private val TAG = MyStorePresenter::class.java
         private const val NUM_TOP_EARNERS = 3
         private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
-        private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
+        private val topPerformersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
         init {
             resetForceRefresh()
@@ -66,8 +66,8 @@ class MyStorePresenter @Inject constructor(
             for (i in 0 until statsForceRefresh.size) {
                 statsForceRefresh[i] = true
             }
-            for (i in 0 until topEarnersForceRefresh.size) {
-                topEarnersForceRefresh[i] = true
+            for (i in 0 until topPerformersForceRefresh.size) {
+                topPerformersForceRefresh[i] = true
             }
         }
     }
@@ -105,19 +105,21 @@ class MyStorePresenter @Inject constructor(
         fetchVisitorStats(granularity, forceRefresh)
     }
 
-    override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
+    override suspend fun loadTopPerformersStats(
+        granularity: StatsGranularity,
+        forced: Boolean) {
         if (!networkStatus.isConnected()) {
             dashboardView?.isRefreshPending = true
             return
         }
 
-        val forceRefresh = forced || topEarnersForceRefresh[granularity.ordinal]
+        val forceRefresh = forced || topPerformersForceRefresh[granularity.ordinal]
         if (forceRefresh) {
-            topEarnersForceRefresh[granularity.ordinal] = false
+            topPerformersForceRefresh[granularity.ordinal] = false
             dashboardView?.showTopEarnersSkeleton(true)
         }
 
-        fetchTopEarnerStats(granularity, forceRefresh)
+        fetchTopPerformersStats(granularity, forceRefresh)
     }
 
     override fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean) {
@@ -130,12 +132,24 @@ class MyStorePresenter @Inject constructor(
         dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
     }
 
-    override fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
-        coroutineScope.launch {
-            withContext(Dispatchers.Default) {
-                requestProductLeaderboards(granularity, forced)
-                    .model?.let { onWCTopPerformersChanged(it, granularity) }
-            }
+    override suspend fun fetchTopPerformersStats(
+        granularity: StatsGranularity,
+        forced: Boolean
+    ) {
+        withContext(Dispatchers.Default) {
+            requestProductLeaderboards(granularity, forced)
+                .also { handleTopPerformersResult(it, granularity) }
+        }
+    }
+
+    private suspend fun handleTopPerformersResult(
+        result: WooResult<List<WCTopPerformerProductModel>>,
+        granularity: StatsGranularity
+    ) {
+        withContext(Dispatchers.Main) {
+            result.model?.let {
+                onWCTopPerformersChanged(it, granularity)
+            } ?: dashboardView?.showTopPerformersError(granularity)
         }
     }
 
@@ -220,19 +234,21 @@ class MyStorePresenter @Inject constructor(
         }
     }
 
-    private suspend fun onWCTopPerformersChanged(
+    fun onWCTopPerformersChanged(
         topPerformers: List<WCTopPerformerProductModel>?,
         granularity: StatsGranularity
-    ) = withContext(Dispatchers.Main) {
+    ) {
         dashboardView?.showTopEarnersSkeleton(false)
-        topPerformers?.let {
+        topPerformers
+            ?.takeIf { it.isNotEmpty() }
+            ?.let {
             // Track fresh data loaded
             AnalyticsTracker.track(
                 Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
                 mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
             )
-            dashboardView?.showTopEarners(topPerformers, granularity)
-        } ?: dashboardView?.showTopEarnersError(granularity)
+            dashboardView?.showTopPerformers(topPerformers, granularity)
+        } ?: dashboardView?.showTopPerformersError(granularity)
     }
 
     @Suppress("unused")
