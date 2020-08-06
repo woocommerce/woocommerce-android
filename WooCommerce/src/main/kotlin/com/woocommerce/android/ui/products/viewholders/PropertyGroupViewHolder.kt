@@ -14,14 +14,24 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
         val context = itemView.context
 
         val propertyView = itemView as WCProductPropertyView
-        propertyView.show(
-            LinearLayout.VERTICAL,
-            context.getString(item.title),
-            getPropertyValue(item.properties, item.propertyFormat),
-            item.icon
-        )
-        propertyView.setMaxLines(Integer.MAX_VALUE)
-        propertyView.showPropertyName(item.showTitle)
+        if (item.properties.size == 1 && !item.showTitle) {
+            propertyView.show(
+                LinearLayout.VERTICAL,
+                getPropertyValue(item.properties, item.propertyFormat),
+                null,
+                item.icon
+            )
+            propertyView.showPropertyName(true)
+        } else {
+            propertyView.show(
+                LinearLayout.VERTICAL,
+                context.getString(item.title),
+                getPropertyValue(item.properties, item.propertyFormat),
+                item.icon
+            )
+            propertyView.setMaxLines(Integer.MAX_VALUE)
+            propertyView.showPropertyName(item.showTitle)
+        }
 
         if (item.onClick != null) {
             item.onClick.let { onClick ->

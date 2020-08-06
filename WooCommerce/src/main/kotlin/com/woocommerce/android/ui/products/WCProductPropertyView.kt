@@ -9,6 +9,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 
@@ -52,7 +53,7 @@ class WCProductPropertyView @JvmOverloads constructor(
     }
 
     fun showPropertyName(show: Boolean) {
-        propertyNameText?.visibility = if (show) View.VISIBLE else View.GONE
+        propertyNameText?.isVisible = show
     }
 
     /**
