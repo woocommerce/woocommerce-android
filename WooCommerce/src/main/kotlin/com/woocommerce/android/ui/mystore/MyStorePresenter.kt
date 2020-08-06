@@ -133,14 +133,30 @@ class MyStorePresenter @Inject constructor(
     override fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
         coroutineScope.launch {
             withContext(Dispatchers.Default) {
-                wcLeaderboardsStore.fetchProductLeaderboards(
-                    site = selectedSite.get(),
-                    unit = granularity,
-                    quantity = NUM_TOP_EARNERS
-                ).model?.let { onWCTopPerformersChanged(it, granularity) }
+                requestProductLeaderboards(granularity, forced)
+                    .model?.let { onWCTopPerformersChanged(it, granularity) }
             }
         }
     }
+
+    private suspend fun requestProductLeaderboards(granularity: StatsGranularity, forced: Boolean) =
+        when(forced) {
+            true -> requestUpdatedProductLeaderboards(granularity)
+            false -> requestStoredProductLeaderboards(granularity)
+        }
+
+    private suspend fun requestUpdatedProductLeaderboards(granularity: StatsGranularity) =
+        wcLeaderboardsStore.fetchProductLeaderboards(
+            site = selectedSite.get(),
+            unit = granularity,
+            quantity = NUM_TOP_EARNERS
+        )
+
+    private fun requestStoredProductLeaderboards(granularity: StatsGranularity) =
+        wcLeaderboardsStore.fetchCachedProductLeaderboards(
+            site = selectedSite.get(),
+            unit = granularity
+        )
 
     override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
