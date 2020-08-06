@@ -233,11 +233,10 @@ dependencies {
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
-    androidTestImplementation('com.github.tomakehurst:wiremock:2.27.0') {
+    androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
     androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-//    androidTestImplementation "com.github.tomakehurst:wiremock-standalone:2.27.0"
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
