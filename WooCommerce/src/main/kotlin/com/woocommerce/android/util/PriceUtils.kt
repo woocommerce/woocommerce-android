@@ -12,6 +12,7 @@ import java.util.Date
 
 object PriceUtils {
     fun getPriceGroup(
+        hasPricingInfo: Boolean,
         parameters: SiteParameters,
         resources: ResourceProvider,
         currencyFormatter: CurrencyFormatter,
@@ -22,7 +23,6 @@ object PriceUtils {
         saleStartDateGmt: Date?,
         saleEndDateGmt: Date?
     ): Map<String, String> {
-        val hasPricingInfo = regularPrice != null || salePrice != null
         val pricingGroup = mutableMapOf<String, String>()
         if (hasPricingInfo) {
             // regular product price

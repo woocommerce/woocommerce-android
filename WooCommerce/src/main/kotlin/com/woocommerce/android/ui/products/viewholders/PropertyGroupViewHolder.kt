@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyView
@@ -41,6 +42,12 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
             }
         } else {
             propertyView.removeClickListener()
+        }
+
+        if (item.isHighlighted) {
+            itemView.setForegroundColor(ContextCompat.getColor(context, R.color.warning_foreground_color))
+        } else {
+            itemView.resetColors()
         }
 
         val divider = propertyView.findViewById<View>(R.id.divider)

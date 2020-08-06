@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -15,6 +16,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.Switch
+import com.woocommerce.android.ui.products.models.ProductProperty.Warning
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -23,6 +25,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.math.BigDecimal
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -43,6 +46,7 @@ class VariationDetailCardBuilder(
             properties = listOf(
                 variation.description(),
                 variation.price(),
+                variation.warning(),
                 variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
@@ -89,11 +93,24 @@ class VariationDetailCardBuilder(
         }
     }
 
+    private fun ProductVariation.warning(): ProductProperty? {
+        val hasPricingInfo = !(this.regularPrice isEquivalentTo BigDecimal.ZERO) ||
+            !(this.regularPrice isEquivalentTo BigDecimal.ZERO)
+
+        return if (!hasPricingInfo && this.isVisible) {
+            Warning(resources.getString(string.variation_detail_price_warning))
+        } else {
+            null
+        }
+    }
+
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
     private fun ProductVariation.price(): ProductProperty {
-        val hasPricingInfo = this.regularPrice != null || this.salePrice != null
+        val hasPricingInfo = !(this.regularPrice isEquivalentTo BigDecimal.ZERO) ||
+            !(this.regularPrice isEquivalentTo BigDecimal.ZERO)
         val pricingGroup = PriceUtils.getPriceGroup(
+            hasPricingInfo,
             parameters,
             resources,
             currencyFormatter,
@@ -109,7 +126,9 @@ class VariationDetailCardBuilder(
             string.product_price,
             pricingGroup,
             drawable.ic_gridicons_money,
-            hasPricingInfo
+            showTitle = hasPricingInfo,
+            isDividerVisible = hasPricingInfo || !this.isVisible,
+            isHighlighted = !hasPricingInfo && this.isVisible
         ) {
                 viewModel.onEditVariationCardClicked(
                     ViewPricing(PricingData(

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
@@ -48,6 +49,7 @@ class WCProductPropertyView @JvmOverloads constructor(
         if (detail.isNullOrEmpty()) {
             propertyValueText?.visibility = View.GONE
         } else {
+            propertyValueText?.visibility = View.VISIBLE
             propertyValueText?.text = detail
         }
     }
@@ -89,6 +91,24 @@ class WCProductPropertyView @JvmOverloads constructor(
         } catch (e: NumberFormatException) {
             WooLog.e(WooLog.T.UTILS, e)
         }
+    }
+
+    fun setForegroundColor(@ColorInt color: Int) {
+        propertyValueText?.tag = propertyValueText?.currentTextColor
+        propertyValueText?.setTextColor(color)
+
+        propertyNameText?.tag = propertyNameText?.currentTextColor
+        propertyNameText?.setTextColor(color)
+
+        propertyGroupIcon?.setColorFilter(color)
+        propertyGroupImg?.setColorFilter(color)
+    }
+
+    fun resetColors() {
+        (propertyValueText?.tag as? Int)?.let { propertyValueText?.setTextColor(it) }
+        (propertyNameText?.tag as? Int)?.let { propertyNameText?.setTextColor(it) }
+        propertyGroupIcon?.clearColorFilter()
+        propertyGroupImg?.clearColorFilter()
     }
 
     private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL) {

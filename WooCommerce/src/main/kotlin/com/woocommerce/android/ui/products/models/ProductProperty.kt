@@ -87,6 +87,7 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
         val isDividerVisible: Boolean = true,
+        val isHighlighted: Boolean = false,
         @StringRes val propertyFormat: Int = R.string.product_property_default_formatter,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(PROPERTY_GROUP) {

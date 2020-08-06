@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -38,6 +39,7 @@ import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.FormatUtils
+import java.math.BigDecimal
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
@@ -400,8 +402,10 @@ class ProductDetailCardBuilder(
     private fun Product.price(): ProductProperty {
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
-        val hasPricingInfo = this.regularPrice != null || this.salePrice != null
+        val hasPricingInfo = !(this.regularPrice isEquivalentTo BigDecimal.ZERO) ||
+            !(this.regularPrice isEquivalentTo BigDecimal.ZERO)
         val pricingGroup = PriceUtils.getPriceGroup(
+            hasPricingInfo,
             parameters,
             resources,
             currencyFormatter,

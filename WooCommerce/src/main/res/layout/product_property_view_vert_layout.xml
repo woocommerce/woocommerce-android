@@ -85,7 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_75"
-        android:background="@drawable/ic_arrow_right"
+        android:src="@drawable/ic_arrow_right"
         android:contentDescription="@string/product_property_edit"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/divider"
