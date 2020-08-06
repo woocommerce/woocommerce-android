@@ -63,16 +63,8 @@ class VariationListViewModel @AssistedInject constructor(
 
     fun onItemClick(variation: ProductVariation) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
-        triggerEvent(
-            ShowVariationDetail(
-                variation
-            )
-        )
+        triggerEvent(ShowVariationDetail(variation))
     }
-
-    private fun isLoadingMore() = viewState.isLoadingMore == true
-
-    private fun isRefreshing() = viewState.isRefreshing == true
 
     private fun loadVariations(
         remoteProductId: Long,
