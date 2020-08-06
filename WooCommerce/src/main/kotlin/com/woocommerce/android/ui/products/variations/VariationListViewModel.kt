@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
@@ -39,6 +40,8 @@ class VariationListViewModel @AssistedInject constructor(
         ViewState()
     )
     private var viewState by viewStateLiveData
+
+    private var loadingJob: Job? = null
 
     fun start(remoteProductId: Long) {
         loadVariations(remoteProductId)
@@ -80,19 +83,14 @@ class VariationListViewModel @AssistedInject constructor(
             return
         }
 
-        if (loadMore && isLoadingMore()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already loading more product variations")
-            return
-        }
-
-        if (loadMore && isRefreshing()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already refreshing product variations")
+        if (loadingJob?.isActive == true) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading product variations")
             return
         }
 
         this.remoteProductId = remoteProductId
 
-        launch {
+        loadingJob = launch {
             viewState = viewState.copy(isLoadingMore = loadMore)
             if (!loadMore) {
                 // if this is the initial load, first get the product variations from the db and if there are any show
