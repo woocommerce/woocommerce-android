@@ -32,7 +32,8 @@ sealed class ProductProperty(val type: Type) {
 
     data class Property(
         @StringRes val title: Int,
-        val value: String
+        val value: String,
+        val isDividerVisible: Boolean = true
     ) : ProductProperty(PROPERTY) {
         override fun isNotEmpty(): Boolean {
             return this.value.isNotBlank()
@@ -85,6 +86,7 @@ sealed class ProductProperty(val type: Type) {
         val properties: Map<String, String>,
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
+        val isDividerVisible: Boolean = true,
         @StringRes val propertyFormat: Int = R.string.product_property_default_formatter,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(PROPERTY_GROUP) {

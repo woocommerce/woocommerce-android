@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products.viewholders
 
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyView
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -30,6 +32,9 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
         } else {
             propertyView.removeClickListener()
         }
+
+        val divider = propertyView.findViewById<View>(R.id.divider)
+        divider.isVisible = item.isDividerVisible
     }
 
     private fun getPropertyValue(
