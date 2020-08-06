@@ -14,6 +14,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -21,33 +25,32 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCTopEarnerModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
-import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class MyStorePresenterTest {
     private val myStoreView: MyStoreContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val wcLeaderboardsStore: WCLeaderboardsStore = mock()
     private val wcStatsStore: WCStatsStore = mock()
     private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -58,13 +61,24 @@ class MyStorePresenterTest {
     private lateinit var actionCaptor: KArgumentCaptor<Action<*>>
 
     @Before
+    @ExperimentalCoroutinesApi
     fun setup() {
-        presenter = spy(MyStorePresenter(
-                dispatcher, wooCommerceStore, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
+        presenter = spy(
+            MyStorePresenter(
+                dispatcher,
+                wooCommerceStore,
+                wcLeaderboardsStore,
+                wcStatsStore,
+                wcOrderStore,
+                selectedSite,
+                networkStatus
+            )
+        )
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
         actionCaptor = argumentCaptor()
+        Dispatchers.setMain(Dispatchers.Unconfined)
     }
 
     @Test
@@ -86,7 +100,7 @@ class MyStorePresenterTest {
 
         // Simulate OnChanged event from FluxC
         val onChanged = OnWCRevenueStatsChanged(
-                1, StatsGranularity.DAYS, "2019-07-30", "2019-07-30"
+            1, StatsGranularity.DAYS, "2019-07-30", "2019-07-30"
         )
         onChanged.causeOfChange = FETCH_REVENUE_STATS
         presenter.onWCRevenueStatsChanged(onChanged)
@@ -177,50 +191,69 @@ class MyStorePresenterTest {
 
     @Test
     fun `Requests top earners stats data correctly - forced`() {
-        presenter.takeView(myStoreView)
+        runBlocking {
+            whenever(
+                wcLeaderboardsStore.fetchProductLeaderboards(
+                    site = selectedSite.get(),
+                    unit = DAYS,
+                    quantity = 3
+                )
+            )
+                .thenReturn(WooResult(emptyList()))
 
-        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
-        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
-        assertEquals(FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
-
-        val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
-        assertEquals(StatsGranularity.DAYS, payload.granularity)
-        assertTrue(payload.forced)
+            presenter.takeView(myStoreView)
+            presenter.loadTopPerformersStats(StatsGranularity.DAYS, true)
+            verify(wcLeaderboardsStore, times(1))
+                .fetchProductLeaderboards(
+                    site = selectedSite.get(),
+                    unit = DAYS,
+                    quantity = 3
+                )
+            verify(wcLeaderboardsStore, times(0))
+                .fetchCachedProductLeaderboards(selectedSite.get(), DAYS)
+        }
     }
 
     @Test
-    fun `Requests top earners stats data correctly - not forced`() {
-        presenter.takeView(myStoreView)
-
-        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = false)
-        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
-        assertEquals(FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
-
-        val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
-        assertEquals(StatsGranularity.DAYS, payload.granularity)
+    fun `Requests top performers stats data correctly - not forced`() {
+        runBlocking {
+            whenever(
+                wcLeaderboardsStore.fetchProductLeaderboards(
+                    site = selectedSite.get(),
+                    unit = DAYS,
+                    quantity = 3
+                )
+            )
+                .thenReturn(WooResult(emptyList()))
+            presenter.takeView(myStoreView)
+            presenter.loadTopPerformersStats(StatsGranularity.DAYS, false)
+            verify(wcLeaderboardsStore, times(1))
+                .fetchProductLeaderboards(
+                    site = selectedSite.get(),
+                    unit = DAYS,
+                    quantity = 3
+                )
+            verify(wcLeaderboardsStore, times(0))
+                .fetchCachedProductLeaderboards(selectedSite.get(), DAYS)
+        }
     }
 
     @Test
     fun `Handles FETCH_TOP_EARNERS_STATS event correctly`() {
         presenter.takeView(myStoreView)
 
-        val topEarners = ArrayList<WCTopEarnerModel>()
-        topEarners.add(WCTopEarnerModel())
-        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(topEarners, StatsGranularity.DAYS).apply {
-            causeOfChange = FETCH_TOP_EARNERS_STATS
-        })
-        verify(myStoreView, times(1)).showTopEarners(topEarners, StatsGranularity.DAYS)
+        val topPerformers = ArrayList<WCTopPerformerProductModel>()
+        topPerformers.add(WCTopPerformerProductModel())
+        presenter.onWCTopPerformersChanged(topPerformers, DAYS)
+        verify(myStoreView, times(1)).showTopPerformers(topPerformers, StatsGranularity.DAYS)
     }
 
     @Test
     fun `Handles FETCH_TOP_EARNERS_STATS error event correctly`() {
         presenter.takeView(myStoreView)
 
-        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
-            causeOfChange = FETCH_TOP_EARNERS_STATS
-            error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
-        })
-        verify(myStoreView, times(1)).showTopEarnersError(StatsGranularity.DAYS)
+        presenter.onWCTopPerformersChanged(emptyList(), StatsGranularity.DAYS)
+        verify(myStoreView, times(1)).showTopPerformersError(StatsGranularity.DAYS)
     }
 
     @Test
@@ -267,7 +300,7 @@ class MyStorePresenterTest {
         verify(myStoreView, times(1)).showChartSkeleton(true)
 
         val onChanged = OnWCRevenueStatsChanged(
-                1, granularity = StatsGranularity.DAYS, startDate = "2019-07-30", endDate = "2019-07-30"
+            1, granularity = StatsGranularity.DAYS, startDate = "2019-07-30", endDate = "2019-07-30"
         )
         onChanged.causeOfChange = FETCH_REVENUE_STATS
         presenter.onWCRevenueStatsChanged(onChanged)
@@ -276,13 +309,19 @@ class MyStorePresenterTest {
 
     @Test
     fun `Show and hide top earners skeleton correctly`() {
-        presenter.takeView(myStoreView)
-        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
-        verify(myStoreView, times(1)).showTopEarnersSkeleton(true)
-
-        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
-            causeOfChange = FETCH_TOP_EARNERS_STATS
-        })
-        verify(myStoreView, times(1)).showTopEarnersSkeleton(false)
+        runBlocking {
+            whenever(
+                wcLeaderboardsStore.fetchProductLeaderboards(
+                    site = selectedSite.get(),
+                    unit = DAYS,
+                    quantity = 3
+                )
+            )
+                .thenReturn(WooResult(emptyList()))
+            presenter.takeView(myStoreView)
+            presenter.loadTopPerformersStats(StatsGranularity.DAYS, forced = true)
+            verify(myStoreView, times(1)).showTopEarnersSkeleton(true)
+            verify(myStoreView, times(1)).showTopEarnersSkeleton(false)
+        }
     }
 }
