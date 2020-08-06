@@ -189,6 +189,7 @@ class VariationDetailViewModel @AssistedInject constructor(
                 originalVariation = variation
                 showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
+                triggerEvent(ShowSnackbar(string.variation_detail_update_product_success))
             } else {
                 triggerEvent(ShowSnackbar(string.variation_detail_update_variation_error))
             }
