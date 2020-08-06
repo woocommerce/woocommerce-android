@@ -186,7 +186,7 @@ Language: pt_BR
     <string name="product_add_image_content_description">Adicionar imagem</string>
     <string name="date_timeframe_future">Próximos</string>
     <string name="remove">Remover</string>
-    <string name="product_variation_hidden">Oculta</string>
+    <string name="product_variation_disabled">Oculta</string>
     <string name="login_discovery_error_generic">Não foi possível acessar seu site. Entre em contato com seu host para resolver isso.</string>
     <string name="login_discovery_error_ssl">Não foi possível acessar seu site devido a um problema com o &lt;b>Certificado SSL&lt;/b>. Entre em contato com seu host para resolver isso.</string>
     <string name="login_discovery_error_http_auth">Não foi possível acessar seu site porque ele requer a &lt;b>Autenticação HTTP&lt;/b>. Entre em contato com seu host para resolver isso.</string>

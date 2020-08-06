@@ -49,7 +49,7 @@ class VariationListAdapter(
         holder.txtVariationOptionName.text = productVariation.optionName
 
         val variationPurchasable = if (!productVariation.isPurchasable) {
-            context.getString(R.string.product_variation_hidden)
+            context.getString(R.string.product_variation_disabled)
         } else {
             null
         }

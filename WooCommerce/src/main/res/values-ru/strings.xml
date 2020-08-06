@@ -194,7 +194,7 @@ Language: ru
     <string name="product_add_image_content_description">Добавить изображение</string>
     <string name="date_timeframe_future">Ближайшие</string>
     <string name="remove">Удалить</string>
-    <string name="product_variation_hidden">Скрыто</string>
+    <string name="product_variation_disabled">Скрыто</string>
     <string name="login_discovery_error_generic">Не удалось получить доступ к вашему сайту. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b>сертификатом SSL&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b>проверку подлинности HTTP&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>

@@ -184,7 +184,7 @@ Language: tr
     <string name="product_add_image_content_description">Görsel ekle</string>
     <string name="date_timeframe_future">Yakında</string>
     <string name="remove">Kaldır</string>
-    <string name="product_variation_hidden">Gizli</string>
+    <string name="product_variation_disabled">Gizli</string>
     <string name="login_discovery_error_generic">Sitenize erişimi başaramadık. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL Sertifikası&lt;/b> ile ilgili bir sorun nedeniyle sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP Kimlik Doğrulaması&lt;/b> gerektiğinden sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>

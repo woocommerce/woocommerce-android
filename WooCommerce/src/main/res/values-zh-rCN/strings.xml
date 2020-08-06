@@ -194,7 +194,7 @@ Language: zh_CN
     <string name="product_add_image_content_description">添加图片</string>
     <string name="date_timeframe_future">即将到来</string>
     <string name="remove">删除</string>
-    <string name="product_variation_hidden">已隐藏</string>
+    <string name="product_variation_disabled">已隐藏</string>
     <string name="login_discovery_error_generic">我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_ssl">由于 &lt;b>SSL 证书&lt;/b>的问题，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_http_auth">由于需要 &lt;b>HTTP 验证&lt;/b>，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>

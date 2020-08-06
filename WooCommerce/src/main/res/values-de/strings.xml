@@ -186,7 +186,7 @@ Language: de
     <string name="product_add_image_content_description">Bild hinzufügen</string>
     <string name="date_timeframe_future">Bevorstehend</string>
     <string name="remove">Entfernen</string>
-    <string name="product_variation_hidden">Versteckt</string>
+    <string name="product_variation_disabled">Versteckt</string>
     <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b>SSL-Zertifikat&lt;/b> konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b>HTTP-Authentifizierung&lt;/b> erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>

@@ -194,7 +194,7 @@ Language: he_IL
     <string name="product_add_image_content_description">להוסיף תמונה</string>
     <string name="date_timeframe_future">אירועים קרובים</string>
     <string name="remove">הסרה</string>
-    <string name="product_variation_hidden">מוסתר</string>
+    <string name="product_variation_disabled">מוסתר</string>
     <string name="login_discovery_error_generic">לא הייתה לנו אפשרות לגשת לאתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b>בתעודת SSL&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b>אימות HTTP&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>

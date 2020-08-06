@@ -194,7 +194,7 @@ Language: ar
     <string name="product_add_image_content_description">إضافة صورة</string>
     <string name="date_timeframe_future">القادم</string>
     <string name="remove">إزالة</string>
-    <string name="product_variation_hidden">مخفي</string>
+    <string name="product_variation_disabled">مخفي</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>

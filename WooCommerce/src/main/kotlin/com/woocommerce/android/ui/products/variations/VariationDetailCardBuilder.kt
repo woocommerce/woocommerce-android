@@ -77,10 +77,10 @@ class VariationDetailCardBuilder(
         @StringRes val visibility: Int
         @DrawableRes val visibilityIcon: Int
         if (this.isVisible) {
-            visibility = string.product_variation_visible
+            visibility = string.product_variation_enabled
             visibilityIcon = drawable.ic_gridicons_visible
         } else {
-            visibility = string.product_variation_hidden
+            visibility = string.product_variation_disabled
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 

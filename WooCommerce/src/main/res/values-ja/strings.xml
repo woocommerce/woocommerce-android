@@ -194,7 +194,7 @@ Language: ja_JP
     <string name="product_add_image_content_description">画像を追加</string>
     <string name="date_timeframe_future">次回</string>
     <string name="remove">削除</string>
-    <string name="product_variation_hidden">非表示</string>
+    <string name="product_variation_disabled">非表示</string>
     <string name="login_discovery_error_generic">サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 証明書&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 認証&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>

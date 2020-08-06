@@ -186,7 +186,7 @@ Language: nl
     <string name="product_add_image_content_description">Afbeelding toevoegen</string>
     <string name="date_timeframe_future">Komende</string>
     <string name="remove">Verwijderen</string>
-    <string name="product_variation_hidden">Verborgen</string>
+    <string name="product_variation_disabled">Verborgen</string>
     <string name="login_discovery_error_generic">We konden geen toegang krijgen tot je site. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b>SSL-certificaat&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b>HTTP-authenticatie is vereist&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
