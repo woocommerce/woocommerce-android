@@ -62,11 +62,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     private var endDatePickerDialog: DatePickerDialog? = null
     private var doneButton: MenuItem? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_pricing, container, false)
     }
@@ -176,11 +172,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         })
     }
 
-    private fun updateViews(
-        currency: String,
-        decimals: Int,
-        pricingData: PricingData
-    ) {
+    private fun updateViews(currency: String, decimals: Int, pricingData: PricingData) {
         if (!isAdded) return
 
         with(product_regular_price) {
@@ -269,11 +261,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
      * the discard dialog from being displayed when there have been no user initiated changes made
      * to the screen.
      */
-    private fun updateSaleStartDate(
-        selectedStartDate: Date?,
-        endDate: Date?,
-        offset: Float
-    ) {
+    private fun updateSaleStartDate(selectedStartDate: Date?, endDate: Date?, offset: Float) {
         val currentDate = Date()
         val date = selectedStartDate
             ?: if (endDate?.after(currentDate) == true) {
@@ -294,10 +282,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         viewModel.onDataChanged(saleEndDate = selectedDate)
     }
 
-    private fun updateProductTaxClassList(
-        taxClassList: List<TaxClass>?,
-        pricingData: PricingData
-    ) {
+    private fun updateProductTaxClassList(taxClassList: List<TaxClass>?, pricingData: PricingData) {
         val taxClass = viewModel.getTaxClassBySlug(pricingData.taxClass ?: Product.TAX_CLASS_DEFAULT)
         val name = taxClass?.name
         if (!isAdded || name == null) return
