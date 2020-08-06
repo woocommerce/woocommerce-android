@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.WARNING
 
 sealed class ProductProperty(val type: Type) {
     enum class Type {
@@ -23,7 +24,8 @@ sealed class ProductProperty(val type: Type) {
         PROPERTY_GROUP,
         LINK,
         READ_MORE,
-        SWITCH
+        SWITCH,
+        WARNING
     }
 
     object Divider : ProductProperty(DIVIDER)
@@ -97,6 +99,11 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val onStateChanged: ((Boolean) -> Unit)? = null
     ) : ProductProperty(SWITCH)
+
+    data class Warning(
+        val content: String = ""
+    ) : ProductProperty(WARNING)
+
 
     open fun isNotEmpty(): Boolean {
         return true
