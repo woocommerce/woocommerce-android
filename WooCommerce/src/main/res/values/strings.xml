@@ -504,7 +504,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
-    <string name="product_stock_status_instock_with_variants">In stock \u2022 %d variants</string>
+    <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
     <string name="product_stock_count">%s in stock</string>
@@ -535,7 +535,6 @@
     <string name="product_wip_title">New editing options available</string>
     <string name="product_wip_message">We\'ve added more editing functionalities to products. You can now update images, edit product settings &amp; share products!</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
-    <string name="product_variant_hidden">Hidden</string>
     <string name="product_variant_list_empty">Add options like size and color from web. These will show up as options on the product page of your site</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
@@ -613,6 +612,11 @@
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
 
+    <!--
+        Variations
+    -->
+    <string name="variation_detail_fetch_variation_error">Error fetching variation</string>
+    <string name="variation_detail_update_variation_error">Error updating variation</string>
     <!--
         Product images
     -->

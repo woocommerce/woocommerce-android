@@ -194,7 +194,7 @@ Language: zh_TW
     <string name="product_add_image_content_description">新增圖片</string>
     <string name="date_timeframe_future">即將到來</string>
     <string name="remove">移除</string>
-    <string name="product_variant_hidden">隱藏</string>
+    <string name="product_variation_hidden">隱藏</string>
     <string name="login_discovery_error_generic">無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_ssl">由於 &lt;b>SSL 憑證&lt;/b>發生問題，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_http_auth">由於你的網站須進行 &lt;b>HTTP 驗證&lt;/b>，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
@@ -239,7 +239,7 @@ Language: zh_TW
     <string name="product_list_empty_search">沒有相符的產品</string>
     <string name="product_list_empty">尚未有任何產品</string>
     <string name="product_stock_count">尚有 %s 件庫存</string>
-    <string name="product_stock_status_instock_with_variants">有庫存\u2022 %d 種子類選項</string>
+    <string name="product_stock_status_instock_with_variations">有庫存\u2022 %d 種子類選項</string>
     <string name="product_image_content_description">商品圖片</string>
     <string name="review_list_item_title">%1$s 在%2$s 上留下了評論</string>
     <string name="wc_unapproved">未核准</string>

@@ -57,7 +57,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductVariantsFragment(target.remoteId)
+                        .actionProductDetailFragmentToVariationListFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 

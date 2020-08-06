@@ -194,7 +194,7 @@ Language: ja_JP
     <string name="product_add_image_content_description">画像を追加</string>
     <string name="date_timeframe_future">次回</string>
     <string name="remove">削除</string>
-    <string name="product_variant_hidden">非表示</string>
+    <string name="product_variation_hidden">非表示</string>
     <string name="login_discovery_error_generic">サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 証明書&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 認証&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
@@ -239,7 +239,7 @@ Language: ja_JP
     <string name="product_list_empty_search">一致する商品はありません</string>
     <string name="product_list_empty">まだ商品がありません</string>
     <string name="product_stock_count">在庫%s個</string>
-    <string name="product_stock_status_instock_with_variants">在庫 \u2022 %d個のバリエーション</string>
+    <string name="product_stock_status_instock_with_variations">在庫 \u2022 %d個のバリエーション</string>
     <string name="product_image_content_description">商品画像</string>
     <string name="review_list_item_title">%1$sさんが%2$sに関するレビューを書きました</string>
     <string name="wc_unapproved">非承認</string>

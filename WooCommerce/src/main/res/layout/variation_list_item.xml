@@ -8,7 +8,7 @@
     android:background="?android:attr/selectableItemBackground">
 
     <FrameLayout
-        android:id="@+id/variantOptionImageFrame"
+        android:id="@+id/variationOptionImageFrame"
         android:layout_width="@dimen/image_minor_100"
         android:layout_height="@dimen/image_minor_100"
         android:layout_margin="@dimen/major_100"
@@ -20,7 +20,7 @@
         app:layout_constraintVertical_bias="0.50">
 
         <ImageView
-            android:id="@+id/variantOptionImage"
+            android:id="@+id/variationOptionImage"
             android:layout_width="@dimen/image_minor_100"
             android:layout_height="@dimen/image_minor_100"
             android:layout_gravity="center"
@@ -31,22 +31,22 @@
     </FrameLayout>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/variantOptionName"
+        android:id="@+id/variationOptionName"
         style="@style/Woo.ListItem.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:layout_marginBottom="@dimen/minor_00"
         android:maxLines="2"
-        app:layout_constraintBottom_toTopOf="@+id/variantOptionPriceAndStock"
+        app:layout_constraintBottom_toTopOf="@+id/variationOptionPriceAndStock"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/variantOptionImageFrame"
+        app:layout_constraintStart_toEndOf="@+id/variationOptionImageFrame"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Blue - Wool"
         tools:visibility="visible"/>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/variantOptionPriceAndStock"
+        android:id="@+id/variationOptionPriceAndStock"
         style="@style/Woo.ListItem.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -54,8 +54,8 @@
         android:layout_marginBottom="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/variantOptionImageFrame"
-        app:layout_constraintTop_toBottomOf="@+id/variantOptionName"
+        app:layout_constraintStart_toEndOf="@+id/variationOptionImageFrame"
+        app:layout_constraintTop_toBottomOf="@+id/variationOptionName"
         tools:text="Out of stock" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -194,7 +194,7 @@ Language: ar
     <string name="product_add_image_content_description">إضافة صورة</string>
     <string name="date_timeframe_future">القادم</string>
     <string name="remove">إزالة</string>
-    <string name="product_variant_hidden">مخفي</string>
+    <string name="product_variation_hidden">مخفي</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
@@ -239,7 +239,7 @@ Language: ar
     <string name="product_list_empty_search">لا توجد منتجات متطابقة</string>
     <string name="product_list_empty">لا توجد منتجات حتى الآن</string>
     <string name="product_stock_count">%s متوافرة</string>
-    <string name="product_stock_status_instock_with_variants">\u2022 %dمن التباينات متوافرة</string>
+    <string name="product_stock_status_instock_with_variations">\u2022 %dمن التباينات متوافرة</string>
     <string name="product_image_content_description">صورة المنتج</string>
     <string name="review_list_item_title">ترك %1$s مراجعة حول %2$s</string>
     <string name="wc_unapproved">غير موافق عليه</string>

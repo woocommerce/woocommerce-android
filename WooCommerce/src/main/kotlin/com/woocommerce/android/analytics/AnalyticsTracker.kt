@@ -304,6 +304,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED,
         PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED,
         PRODUCT_VARIATION_IMAGE_TAPPED,
+        PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED,
+        PRODUCT_VARIATION_UPDATE_SUCCESS,
+        PRODUCT_VARIATION_UPDATE_ERROR,
+        PRODUCT_VARIATION_LOADED,
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
@@ -325,7 +329,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Aztec editor
         AZTEC_EDITOR_DONE_BUTTON_TAPPED,
 
-        // -- Product variants
+        // -- Product variations
         PRODUCT_VARIANTS_PULLED_TO_REFRESH,
         PRODUCT_VARIANTS_LOADED,
         PRODUCT_VARIANTS_LOAD_ERROR,
