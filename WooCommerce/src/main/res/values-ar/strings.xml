@@ -94,7 +94,6 @@ Language: ar
     <string name="product_short_description_empty">ملخص موجز حول المنتج</string>
     <string name="product_short_description">وصف قصير</string>
     <string name="my_store_stats_availability_message">نطرح تحسينات على إحصاءات المتاجر باستخدام الإصدار 4.0 من WooCommerce أو المتاجر التي يتم تثبيت إضافة مسؤول WooCommerce بها</string>
-    <string name="my_store_stats_reverted_message">طرحنا تحسينات على التحليلات الخاصة بنا. يمكنك الترقية إلى الإصدار 4.0 من WooCommerce أو إصدار أعلى، أو يمكنك تثبيت إضافة مسؤول WooCommerce لمواصلة الاطِّلاع على إحصاءاتك بعد 1 يوليو 2020.</string>
     <string name="my_store_stats_reverted_title">الترقية لمواصلة الاطِّلاع على إحصاءاتك</string>
     <string name="product_pricing_update_sale_price_error">يجب أن يكون سعر التخفيض أقل من السعر العادي</string>
     <string name="product_schedule_remove_end_date_link_label">إزالة تاريخ الانتهاء</string>
@@ -266,7 +265,6 @@ Language: ar
     <string name="order_refunds_available_for_refund">%s متوافر للاسترداد</string>
     <string name="orderdetail_issue_refund_button">نشر مبلغ الاسترداد</string>
     <string name="orderdetail_refund_detail">%1$s عبر %2$s</string>
-    <string name="settings_enable_v4_stats_message">تجربة الإحصاءات الجديدة المتاحة مع\nإضافة مسؤول WooCommerce</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>
     <string name="order_begin_fulfillment">بدء التنفيذ</string>
