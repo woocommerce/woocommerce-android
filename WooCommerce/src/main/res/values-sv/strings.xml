@@ -213,7 +213,6 @@ Language: sv_SE
     <string name="product_add_image_content_description">Lägg till bild</string>
     <string name="date_timeframe_future">Kommande</string>
     <string name="remove">Ta bort</string>
-    <string name="product_variation_hidden">Dold</string>
     <string name="login_discovery_error_generic">Vi kunde inte komma åt din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b>SSL-certifikatet&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b>HTTP-autentisering&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
