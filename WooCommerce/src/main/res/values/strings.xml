@@ -585,6 +585,7 @@
     <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog. The lower the value of the number, the higher the item will be on the product list. You can also use negative numbers.</string>
     <string name="product_variation_enabled">Enabled</string>
     <string name="product_variation_disabled">Disabled</string>
+    <string name="product_variation_no_price_set">No price set</string>
     <string name="product_categories">Categories</string>
     <string name="product_category_empty">Add category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
