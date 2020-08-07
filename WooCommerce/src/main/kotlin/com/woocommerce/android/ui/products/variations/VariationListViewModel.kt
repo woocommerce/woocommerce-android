@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -34,7 +36,11 @@ class VariationListViewModel @AssistedInject constructor(
     private var remoteProductId = 0L
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
-    val variationList: LiveData<List<ProductVariation>> = _variationList
+    val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
+        val anyWithoutPrice = variations.any { it.isVisible && it.regularPrice.isNotSet() && it.salePrice.isNotSet() }
+        viewState = viewState.copy(isWarningVisible = anyWithoutPrice)
+        variations
+    }
 
     val viewStateLiveData = LiveDataDelegate(savedState,
         ViewState()
@@ -66,10 +72,7 @@ class VariationListViewModel @AssistedInject constructor(
         triggerEvent(ShowVariationDetail(variation))
     }
 
-    private fun loadVariations(
-        remoteProductId: Long,
-        loadMore: Boolean = false
-    ) {
+    private fun loadVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (loadMore && !variationListRepository.canLoadMoreProductVariations) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more product variations")
             return
@@ -99,10 +102,7 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun fetchVariations(
-        remoteProductId: Long,
-        loadMore: Boolean = false
-    ) {
+    private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             val fetchedVariations = variationListRepository.fetchProductVariations(remoteProductId, loadMore)
             if (fetchedVariations.isNullOrEmpty()) {
@@ -138,7 +138,8 @@ class VariationListViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val isWarningVisible: Boolean? = null
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
