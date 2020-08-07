@@ -8,7 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
-import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import java.math.BigDecimal
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -94,8 +93,7 @@ class VariationDetailCardBuilder(
     }
 
     private fun ProductVariation.warning(): ProductProperty? {
-        val hasPricingInfo = !(this.regularPrice isEquivalentTo BigDecimal.ZERO) ||
-            !(this.regularPrice isEquivalentTo BigDecimal.ZERO)
+        val hasPricingInfo = this.regularPrice.isNotSet() || this.salePrice.isNotSet()
 
         return if (!hasPricingInfo && this.isVisible) {
             Warning(resources.getString(string.variation_detail_price_warning))
@@ -107,8 +105,7 @@ class VariationDetailCardBuilder(
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
     private fun ProductVariation.price(): ProductProperty {
-        val hasPricingInfo = !(this.regularPrice isEquivalentTo BigDecimal.ZERO) ||
-            !(this.regularPrice isEquivalentTo BigDecimal.ZERO)
+        val hasPricingInfo = this.regularPrice.isNotSet() || this.salePrice.isNotSet()
         val pricingGroup = PriceUtils.getPriceGroup(
             hasPricingInfo,
             parameters,

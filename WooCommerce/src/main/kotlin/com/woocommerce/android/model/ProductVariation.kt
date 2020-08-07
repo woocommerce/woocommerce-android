@@ -6,7 +6,9 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
@@ -46,7 +48,7 @@ data class ProductVariation(
     override val weight: Float
 ) : Parcelable, IProduct {
     val isOnSale: Boolean
-        get() = !(this.salePrice isEquivalentTo BigDecimal.ZERO)
+        get() = salePrice.isSet()
 
     override fun equals(other: Any?): Boolean {
         val variation = other as? ProductVariation
@@ -98,8 +100,8 @@ data class ProductVariation(
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
             it.image = imageToJson()
-            it.regularPrice = if (regularPrice isEquivalentTo BigDecimal.ZERO) "" else regularPrice.toString()
-            it.salePrice = if (salePrice isEquivalentTo BigDecimal.ZERO) "" else salePrice.toString()
+            it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
+            it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
             if (isSaleScheduled) {
                 saleStartDateGmt?.let { dateOnSaleFrom ->
                     it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
