@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -93,9 +94,7 @@ class VariationDetailCardBuilder(
     }
 
     private fun ProductVariation.warning(): ProductProperty? {
-        val hasPricingInfo = this.regularPrice.isNotSet() || this.salePrice.isNotSet()
-
-        return if (!hasPricingInfo && this.isVisible) {
+        return if (regularPrice.isNotSet() && this.isVisible) {
             Warning(resources.getString(string.variation_detail_price_warning))
         } else {
             null
@@ -105,27 +104,25 @@ class VariationDetailCardBuilder(
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
     private fun ProductVariation.price(): ProductProperty {
-        val hasPricingInfo = this.regularPrice.isNotSet() || this.salePrice.isNotSet()
         val pricingGroup = PriceUtils.getPriceGroup(
-            hasPricingInfo,
             parameters,
             resources,
             currencyFormatter,
             regularPrice,
             salePrice,
             isSaleScheduled,
-            isOnSale,
             saleStartDateGmt,
             saleEndDateGmt
         )
 
+        val isWarningVisible = regularPrice.isNotSet() && this.isVisible
         return PropertyGroup(
             string.product_price,
             pricingGroup,
             drawable.ic_gridicons_money,
-            showTitle = hasPricingInfo,
-            isDividerVisible = hasPricingInfo || !this.isVisible,
-            isHighlighted = !hasPricingInfo && this.isVisible
+            showTitle = regularPrice.isSet(),
+            isHighlighted = isWarningVisible,
+            isDividerVisible = !isWarningVisible
         ) {
                 viewModel.onEditVariationCardClicked(
                     ViewPricing(PricingData(

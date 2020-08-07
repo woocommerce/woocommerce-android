@@ -24,7 +24,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 
 class VariationListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -125,9 +124,11 @@ class VariationListViewModel @AssistedInject constructor(
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
         val currencyCode = variationListRepository.getCurrencyCode()
         variations.map { variation ->
-            variation.priceWithCurrency = currencyCode?.let {
-                currencyFormatter.formatCurrency(variation.regularPrice ?: BigDecimal.ZERO, it)
-            } ?: variation.regularPrice.toString()
+            variation.regularPrice?.let { price ->
+                variation.priceWithCurrency = currencyCode?.let {
+                    currencyFormatter.formatCurrency(price, it)
+                } ?: price.toString()
+            }
         }
         return variations
     }

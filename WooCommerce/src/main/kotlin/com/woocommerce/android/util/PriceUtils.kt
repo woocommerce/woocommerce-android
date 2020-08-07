@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -12,19 +13,17 @@ import java.util.Date
 
 object PriceUtils {
     fun getPriceGroup(
-        hasPricingInfo: Boolean,
         parameters: SiteParameters,
         resources: ResourceProvider,
         currencyFormatter: CurrencyFormatter,
         regularPrice: BigDecimal?,
         salePrice: BigDecimal?,
         isSaleScheduled: Boolean,
-        isOnSale: Boolean,
         saleStartDateGmt: Date?,
         saleEndDateGmt: Date?
     ): Map<String, String> {
         val pricingGroup = mutableMapOf<String, String>()
-        if (hasPricingInfo) {
+        if (regularPrice.isSet()) {
             // regular product price
             pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(
                 regularPrice,
@@ -32,7 +31,7 @@ object PriceUtils {
                 currencyFormatter
             )
             // display product sale price if it's on sale
-            if (isOnSale) {
+            if (salePrice.isSet()) {
                 pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(
                     salePrice,
                     parameters.currencyCode,

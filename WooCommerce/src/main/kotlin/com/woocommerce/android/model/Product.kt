@@ -83,9 +83,6 @@ data class Product(
         const val TAX_CLASS_DEFAULT = "standard"
     }
 
-    val isOnSale: Boolean
-        get() = salePrice.isSet()
-
     @Parcelize
     data class Image(
         val id: Long,
@@ -180,7 +177,6 @@ data class Product(
                 salePrice.isNotEqualTo(it.salePrice) ||
                 saleStartDateGmt != it.saleStartDateGmt ||
                 saleEndDateGmt != it.saleEndDateGmt ||
-                isOnSale != it.isOnSale ||
                 taxClass != it.taxClass ||
                 taxStatus != it.taxStatus
         } ?: false
@@ -429,7 +425,6 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
         it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
         it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
-        it.onSale = isOnSale
         it.length = if (length == 0f) "" else length.formatToString()
         it.width = if (width == 0f) "" else width.formatToString()
         it.weight = if (weight == 0f) "" else weight.formatToString()
