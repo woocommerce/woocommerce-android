@@ -149,6 +149,7 @@ class MyStorePresenter @Inject constructor(
         granularity: StatsGranularity
     ) {
         withContext(Dispatchers.Main) {
+            dashboardView?.showTopEarnersSkeleton(false)
             result.model?.let {
                 onWCTopPerformersChanged(it, granularity)
             } ?: dashboardView?.showTopPerformersError(granularity)
@@ -240,7 +241,6 @@ class MyStorePresenter @Inject constructor(
         topPerformers: List<WCTopPerformerProductModel>?,
         granularity: StatsGranularity
     ) {
-        dashboardView?.showTopEarnersSkeleton(false)
         topPerformers
             ?.let {
             // Track fresh data loaded
