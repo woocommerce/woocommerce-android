@@ -26,7 +26,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 
-class MyStoreTopEarnersView @JvmOverloads constructor(
+class MyStoreTopPerformersView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

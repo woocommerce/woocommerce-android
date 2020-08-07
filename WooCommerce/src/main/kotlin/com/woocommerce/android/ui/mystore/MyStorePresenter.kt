@@ -107,16 +107,18 @@ class MyStorePresenter @Inject constructor(
 
     override suspend fun loadTopPerformersStats(
         granularity: StatsGranularity,
-        forced: Boolean) {
+        forced: Boolean
+    ) {
         if (!networkStatus.isConnected()) {
             dashboardView?.isRefreshPending = true
-            return
         }
 
         val forceRefresh = forced || topPerformersForceRefresh[granularity.ordinal]
         if (forceRefresh) {
             topPerformersForceRefresh[granularity.ordinal] = false
-            dashboardView?.showTopEarnersSkeleton(true)
+            withContext(Dispatchers.Main) {
+                dashboardView?.showTopEarnersSkeleton(true)
+            }
         }
 
         fetchTopPerformersStats(granularity, forceRefresh)
@@ -154,7 +156,7 @@ class MyStorePresenter @Inject constructor(
     }
 
     private suspend fun requestProductLeaderboards(granularity: StatsGranularity, forced: Boolean) =
-        when(forced) {
+        when (forced) {
             true -> requestUpdatedProductLeaderboards(granularity)
             false -> requestStoredProductLeaderboards(granularity)
         }
@@ -240,7 +242,6 @@ class MyStorePresenter @Inject constructor(
     ) {
         dashboardView?.showTopEarnersSkeleton(false)
         topPerformers
-            ?.takeIf { it.isNotEmpty() }
             ?.let {
             // Track fresh data loaded
             AnalyticsTracker.track(

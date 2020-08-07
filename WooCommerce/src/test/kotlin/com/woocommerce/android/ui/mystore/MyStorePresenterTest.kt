@@ -252,7 +252,7 @@ class MyStorePresenterTest {
     fun `Handles FETCH_TOP_EARNERS_STATS error event correctly`() {
         presenter.takeView(myStoreView)
 
-        presenter.onWCTopPerformersChanged(emptyList(), StatsGranularity.DAYS)
+        presenter.onWCTopPerformersChanged(null, StatsGranularity.DAYS)
         verify(myStoreView, times(1)).showTopPerformersError(StatsGranularity.DAYS)
     }
 
