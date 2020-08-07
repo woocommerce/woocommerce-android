@@ -1,0 +1,4 @@
+4.7:
+<b>Estatísticas:</b> agora seu gráfico de estatísticas corresponde ao que é exibido no Painel WP Admin. É necessário atualizar o WooCommerce para a versão 4.0 ou superior.
+
+<b>Correção de falhas:</b> estavam ocorrendo falhas na transferência de um número grande de dados. Isso já foi corrigido para dispositivos com o Android P e superior com um buffer maior.

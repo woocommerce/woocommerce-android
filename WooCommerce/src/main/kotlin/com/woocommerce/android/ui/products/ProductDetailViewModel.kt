@@ -677,6 +677,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 }
             }
         }
+        fetchBottomSheetList()
     }
 
     fun fetchBottomSheetList() {
@@ -685,6 +686,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
                     _productDetailBottomSheetList.value = detailList
+                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty())
                 }
             }
         }
@@ -1345,7 +1347,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated: Boolean? = null,
         val gmtOffset: Float = 0f,
         val storedPassword: String? = null,
-        val draftPassword: String? = null
+        val draftPassword: String? = null,
+        val showBottomSheetButton: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
