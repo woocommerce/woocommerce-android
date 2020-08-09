@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.Prod
 import kotlinx.android.synthetic.main.product_detail_bottom_sheet_list_item.view.*
 
 class ProductTypesBottomSheetAdapter(
-    private val onItemClicked: (productType: ProductType) -> Unit
+    private val onItemClicked: (productTypeUiItem: ProductTypesBottomSheetUiItem) -> Unit
 ) : RecyclerView.Adapter<ProductTypesBottomSheetViewHolder>() {
     private val options = ArrayList<ProductTypesBottomSheetUiItem>()
 
@@ -55,7 +55,7 @@ class ProductTypesBottomSheetAdapter(
 
         fun bind(
             item: ProductTypesBottomSheetUiItem,
-            onItemClicked: (productType: ProductType) -> Unit
+            onItemClicked: (productTypeUiItem: ProductTypesBottomSheetUiItem) -> Unit
         ) {
             productTypeName.text = view.context.getString(item.titleResource)
             productTypeDesc.text = view.context.getString(item.descResource)
@@ -63,7 +63,7 @@ class ProductTypesBottomSheetAdapter(
             productTypeIcon.setImageResource(item.iconResource)
 
             view.setOnClickListener {
-                onItemClicked(item.type)
+                onItemClicked(item)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.content.DialogInterface
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -18,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import kotlinx.android.parcel.Parcelize
 
 @OpenClassOnDebug
 class ProductTypesBottomSheetViewModel @AssistedInject constructor(
@@ -31,14 +33,14 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         _productTypesBottomSheetList.value = buildProductTypeList()
     }
 
-    fun onProductTypeSelected(type: ProductType) {
+    fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         triggerEvent(ShowDiscardDialog(
             titleId = R.string.product_type_confirm_dialog_title,
             messageId = R.string.product_type_confirm_dialog_message,
             positiveButtonId = R.string.product_type_confirm_button,
             negativeButtonId = R.string.cancel,
             positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                triggerEvent(ExitWithResult(type.value))
+                triggerEvent(ExitWithResult(productTypeUiItem))
             }
         ))
     }
@@ -73,15 +75,16 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         )
     }
 
-    data class ExitWithResult(val productType: String) : Event()
+    data class ExitWithResult(val productTypeUiItem: ProductTypesBottomSheetUiItem) : Event()
 
+    @Parcelize
     data class ProductTypesBottomSheetUiItem(
         val type: ProductType,
         val isVirtual: Boolean = false,
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int
-    )
+    ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductTypesBottomSheetViewModel>

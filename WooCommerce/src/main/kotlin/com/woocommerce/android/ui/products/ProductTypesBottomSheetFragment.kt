@@ -88,7 +88,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                     event.negativeButtonId
                 )
                 is ExitWithResult -> {
-                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.productType)
+                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.productTypeUiItem)
                 }
                 else -> event.isHandled = false
             }
