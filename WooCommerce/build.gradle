@@ -31,6 +31,7 @@ repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
     maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
+    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
 androidExtensions {
