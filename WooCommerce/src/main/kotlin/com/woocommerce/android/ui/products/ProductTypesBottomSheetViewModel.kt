@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.DialogInterface
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -13,6 +14,8 @@ import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 
@@ -29,7 +32,15 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     }
 
     fun onProductTypeSelected(type: ProductType) {
-        // TODO: display confirmation dialog
+        triggerEvent(ShowDiscardDialog(
+            titleId = R.string.product_type_confirm_dialog_title,
+            messageId = R.string.product_type_confirm_dialog_message,
+            positiveButtonId = R.string.product_type_confirm_button,
+            negativeButtonId = R.string.cancel,
+            positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                triggerEvent(ExitWithResult(type.value))
+            }
+        ))
     }
 
     private fun buildProductTypeList(): List<ProductTypesBottomSheetUiItem> {
@@ -61,6 +72,8 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             )
         )
     }
+
+    data class ExitWithResult(val productType: String) : Event()
 
     data class ProductTypesBottomSheetUiItem(
         val type: ProductType,
