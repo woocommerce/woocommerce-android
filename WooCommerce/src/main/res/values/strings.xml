@@ -603,6 +603,7 @@
     <string name="product_tag_list_empty_message">Organise your products in tags</string>
     <string name="product_add_tag_dialog_title">Adding tag</string>
     <string name="product_add_tag_error">Error occurred when adding tags</string>
+    <string name="product_type_edit">Change product type</string>
     <!--
         Product Add more details Bottom sheet
     -->

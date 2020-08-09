@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,23 +37,27 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
                 titleResource = R.string.product_type_physical,
-                descResource = R.string.product_type_physical_desc
+                descResource = R.string.product_type_physical_desc,
+                iconResource = R.drawable.ic_gridicons_product
             ),
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
                 isVirtual = true,
                 titleResource = R.string.product_type_virtual,
-                descResource = R.string.product_type_virtual_desc
+                descResource = R.string.product_type_virtual_desc,
+                iconResource = R.drawable.ic_gridicons_cloud_outline
             ),
             ProductTypesBottomSheetUiItem(
                 type = GROUPED,
                 titleResource = R.string.product_type_grouped,
-                descResource = R.string.product_type_grouped_desc
+                descResource = R.string.product_type_grouped_desc,
+                iconResource = R.drawable.ic_widgets
             ),
             ProductTypesBottomSheetUiItem(
                 type = EXTERNAL,
                 titleResource = R.string.product_type_external,
-                descResource = R.string.product_type_external_desc
+                descResource = R.string.product_type_external_desc,
+                iconResource = R.drawable.ic_gridicons_up_right
             )
         )
     }
@@ -61,7 +66,8 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         val type: ProductType,
         val isVirtual: Boolean = false,
         @StringRes val titleResource: Int,
-        @StringRes val descResource: Int
+        @StringRes val descResource: Int,
+        @DrawableRes val iconResource: Int
     )
 
     @AssistedInject.Factory

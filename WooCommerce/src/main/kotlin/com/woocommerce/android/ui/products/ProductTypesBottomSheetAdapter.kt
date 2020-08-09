@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -48,15 +49,19 @@ class ProductTypesBottomSheetAdapter(
     }
 
     class ProductTypesBottomSheetViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val txtDetailInfoName: TextView = view.productDetailInfoItem_name
-        private val txtDetailInfoDesc: TextView = view.productDetailInfoItem_desc
+        private val productTypeName: TextView = view.productDetailInfoItem_name
+        private val productTypeDesc: TextView = view.productDetailInfoItem_desc
+        private val productTypeIcon: ImageView = view.productDetailInfoItem_icon
 
         fun bind(
             item: ProductTypesBottomSheetUiItem,
             onItemClicked: (productType: ProductType) -> Unit
         ) {
-            txtDetailInfoName.text = view.context.getString(item.titleResource)
-            txtDetailInfoDesc.text = view.context.getString(item.descResource)
+            productTypeName.text = view.context.getString(item.titleResource)
+            productTypeDesc.text = view.context.getString(item.descResource)
+            productTypeIcon.visibility = View.VISIBLE
+            productTypeIcon.setImageResource(item.iconResource)
+
             view.setOnClickListener {
                 onItemClicked(item.type)
             }

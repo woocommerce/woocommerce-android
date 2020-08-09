@@ -50,6 +50,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        productDetailInfo_lblTitle.text = getString(R.string.product_type_list_header)
         productTypesBottomSheetAdapter = ProductTypesBottomSheetAdapter(
             viewModel::onProductTypeSelected
         )
