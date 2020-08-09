@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -91,6 +92,16 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
+        handleResult<String>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
+            viewModel.updateProductDraft(
+                type = ProductType.fromString(it)
+            )
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {

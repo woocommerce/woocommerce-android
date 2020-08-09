@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ExitWithResult
@@ -27,7 +26,7 @@ import javax.inject.Inject
 
 class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
     companion object {
-        const val ARG_SELECTED_PRODUCT_TYPE = "selected-product-type"
+        const val KEY_PRODUCT_TYPE_RESULT = "key_product_type_result"
     }
 
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
@@ -89,14 +88,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                     event.negativeButtonId
                 )
                 is ExitWithResult -> {
-                    val bundle = Bundle()
-                    bundle.putString(ARG_SELECTED_PRODUCT_TYPE, event.productType)
-                    requireActivity().navigateBackWithResult(
-                        RequestCodes.PRODUCT_TYPE_SELECTION,
-                        bundle,
-                        R.id.nav_host_fragment_main,
-                        R.id.productDetailFragment
-                    )
+                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.productType)
                 }
                 else -> event.isHandled = false
             }
