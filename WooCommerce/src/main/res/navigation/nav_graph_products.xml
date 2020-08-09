@@ -37,6 +37,11 @@
             app:destination="@id/productExternalLinkFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -178,6 +183,15 @@
     <dialog
         android:id="@+id/productDetailBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductDetailBottomSheetFragment"
+        tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </dialog>
+    <dialog
+        android:id="@+id/productTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="remoteProductId"

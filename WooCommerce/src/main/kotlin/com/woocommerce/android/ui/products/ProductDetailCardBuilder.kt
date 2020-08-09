@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
@@ -432,7 +433,12 @@ class ProductDetailCardBuilder(
                 R.string.product_type,
                 resources.getString(R.string.product_detail_product_type_hint, productType),
                 R.drawable.ic_gridicons_product
-            )
+            ) {
+                // TODO: add tracking event
+                viewModel.onEditProductCardClicked(
+                    ViewProductTypes(this.remoteId)
+                )
+            }
         } else {
             null
         }
