@@ -1,0 +1,4 @@
+4.7:
+<b>Estadísticas:</b> tus estadísticas coincidirán con lo que ves en wp-admin. Como tienes que ejecutar WooCommerce 4,0 o una versión posterior, asegúrate de actualizar la versión.
+
+<b>Resolución de errores:</b> Cuando se transferían grandes cantidades de datos, ocurrían errores. Lo hemos corregido en dispositivos Android P y posteriores con un mayor almacenamiento.

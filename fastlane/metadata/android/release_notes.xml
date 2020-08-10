@@ -1,136 +1,96 @@
 <ar>
-4.6:
-جديد: تمت إضافة عنصر نائب للطلبات التي تفتقد اسم العميل.
+4.7:
+<b>الإحصاءات:</b> سيطابق الرسم البياني لإحصاءاتك الآن ما تراه في wp-admin. نظرًا إلى أنَّك تحتاج إلى تشغيل الإصدار 4.0 من WooCommerce أو إصدار أحدث منه، فتأكَّد من أنَّك قمت بالتحديث.
 
-إصلاح: تصبح العديد من تنبيهات الطلبات الجديدة قابلة للعرض الآن. 
-
-تعديلات: تم تحديث لون الخلفية في طرق عرض تسجيل الدخول، وتم نقل إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا إلى شاشة "حول التطبيق".
+<b>إصلاح العطل:</b> كانت تحدث الأعطال عند نقل كميات كبيرة من البيانات. تم إصلاح هذا على الأجهزة التي تعمل بنظام التشغيل Android P والإصدارات الأحدث مع وجود مخزن مؤقت أكبر.
 </ar>
 <de-DE>
-4,6:
-Neu: Platzhalter hinzugefügt für Bestellungen, die keinen Kundennamen enthalten.
+4.7:
+<b>Statistiken:</b> Dein Statistikdiagramm stimmt jetzt mit deiner Ansicht in wp-admin überein. Bitte führe ein Update durch, da du WooCommerce 4.0 oder höher ausführen musst.
 
-Behoben: Mehrere neue Bestellbestätigung können jetzt angezeigt werden.
-
-Anpassungen: Hintergrundfarbe der Anmeldebildschirme geändert und Datenschutzhinweis für Benutzer von Zertifizierungsstellen zum Bildschirm „About App“ (Über die App) hinzugefügt.
+<b>Abstürze behoben:</b> Bei der Übertragung großer Datenmengen kam es zu Abstürzen. Wir haben das auf Geräten, auf denen Android P und höher ausgeführt wird, mit einem größeren Puffer behoben.
 </de-DE>
 <es-ES>
-4.6:
-Nuevo: hemos añadido un marcador de posición para los pedidos sin nombre de cliente.
+4.7:
+<b>Estadísticas:</b> tus estadísticas coincidirán con lo que ves en wp-admin. Como tienes que ejecutar WooCommerce 4,0 o una versión posterior, asegúrate de actualizar la versión.
 
-Corrección: las notificaciones de varios pedidos nuevos ahora son visibles.
-
-Ajustes: hemos cambiado el color de fondo de las vistas de inicio de sesión y hemos movido el aviso de privacidad para los usuarios de Californnia a "Sobre la aplicación".
+<b>Resolución de errores:</b> Cuando se transferían grandes cantidades de datos, ocurrían errores. Lo hemos corregido en dispositivos Android P y posteriores con un mayor almacenamiento.
 </es-ES>
 <fr-FR>
-4.6 :
-Nouveauté : Ajout d’un texte indicatif pour les commandes dont il manque le nom du client.
+4,7 :
+<b>Stats :</b> votre graphique des statistiques correspondra désormais à ce que vous voyez dans wp-admin. Étant donné que vous devez exécuter WooCommerce 4.0, veillez à effectuer la mise à jour.
 
-Correctif : Plusieurs notifications de nouvelle commande sont désormais visibles.
-
-Ajustements : Mise à jour de la couleur d’arrière-plan des vues de connexion et déplacement de l’avis de confidentialité pour les utilisateurs californiens vers l’écran « À propos de l’application ».
+<b>Correction d’incidents :</b> des incidents se produisaient lors du transfert de gros volumes de données. Ce problème a été résolu sur les appareils exécutant Android P ou version ultérieure grâce à un tampon plus important.
 </fr-FR>
 <iw-IL>
-4.6
-חדש: הוספנו מציין מיקום להזמנות עם שם לקוח חסר.
+4.7:
+<b>Stats:</b>  הגרף של הנתונים הסטטיסטיים מתאים כעת לנתונים שמוצגים ב-wp-admin. מאחר שעליך להפעיל את WooCommerce 4.0 או גרסאות מתקדמות יותר, עליך לעדכן את הגרסה.
 
-תיקון: כעת ניתן להציג מספר הודעות של הזמנות חדשות.
-
-התאמות: עדכנו את צבע הרקע של תצוגת ההתחברות והעברנו את הודעת הפרטיות של משתמשים בקליפורניה למסך 'אודות האפליקציה'.
+<b>Crash Fix:</b> קריסות התרחשו במהלך העברה של נתונים בכמויות גדולות. תיקנו את הבעיה הזאת במכשירים שמופעלים עם Android P או גרסאות מתקדמות יותר והרחבנו את הטווח.
 </iw-IL>
 <id>
-4.6:
-Baru: Placeholder tambahan untuk pesanan yang tidak memiliki nama pelanggan.
+4.7:
+<b>Statistik:</b> Grafik statistik Anda sekarang akan cocok dengan yang Anda lihat di wp-admin. Anda perlu mengoperasikan WooCommerce 4.0 atau versi lebih baru, pastikan Anda melakukan pembaruan.
 
-Perbaikan: Beberapa pemberitahuan pesanan baru sekarang dapat dilihat.
-
-Penyesuaian: Warna latar belakang tampilan login yang diperbarui dan pemberitahuan privasi untuk pengguna CA yang dipindahkan ke layar "Tentang Aplikasi".
+<b>Perbaikan Crash:</b> Crash terjadi saat sedang mentransfer data dalam jumlah besar. Kami memperbaikinya pada perangkat yang menjalankan Android P dan versi lebih baru dengan kapasitas penyangga yang lebih besar.
 </id>
 <it-IT>
-4.6:
-Novità: aggiunto segnaposto per ordini in cui manca il nome del cliente.
+4.7:
+<b>Statistiche:</b> il grafico delle tue statistiche ora corrisponde a ciò che visualizzi in wp-admin. Assicurati di effettuare l'aggiornamento perché dovrai utilizzare WooCommerce 4.0 o versioni superiori.
 
-Correzione: sono ora visibili più notifiche di nuovi ordini.
-
-Modifiche: colore di sfondo delle viste di accesso aggiornato e nota della privacy per utenti in CA spostata sulla schermata "Info sull'app".
+<b>Correzione di un arresto anomalo:</b> quando veniva trasferita una grande quantità di dati avvenivano arresti anomali. Abbiamo corretto questo problema sui dispositivi su cui è in esecuzione Android P e versioni successive con un buffer maggiore.
 </it-IT>
 <ja-JP>
-4.6:
-新規: 顧客名がない注文用にプレースホルダーを追加しました。
+4.7:
+<b>統計 :</b> 統計グラフが、wp-admin に表示される内容と一致するようになりました。 WooCommerce 4.0 以上を実行する必要があるため、必ずアップデートするようにしてください。
 
-修正: 複数の新規オーダー通知が表示されるようになりました。
-
-調整: ログイン画面の背景色を更新し、カリフォルニア州のユーザー向けのプライバシー通知を「アプリについて」画面に移動しました。
+<b>クラッシュの修正 :</b> 大量のデータを転送する際にクラッシュが起こっていました。 Android P を実行するデバイスと、バッファーが大きいデバイスでこの問題を修正しました。
 </ja-JP>
 <ko-KR>
-4.6:
-새로운 기능: 고객 이름이 누락된 주문의 플레이스 홀더를 추가했습니다.
+4.7:
+<b>통계:</b> 이제 통계 그래프에 wp-admin과 일치하는 콘텐츠가 표시됩니다. WooCommerce 4.0 이상을 실행해야 하므로 업데이트했는지 확인하세요.
 
-수정 사항: 이제 여러 개의 새로운 주문 알림을 볼 수 있습니다.
-
-조정 사항: 로그인 보기 배경 색상이 업데이트되었으며 캘리포니아 사용자를 위한 개인정보 공지가 "정보 앱" 화면으로 이동되었습니다.
+<b>충동 해결:</b> 대용량 데이터를 전송할 때 충돌 문제가 발생했었습니다. 버퍼 크기를 늘려 Android P 이상을 실행하는 기기에서 이 문제를 해결했습니다.
 </ko-KR>
 <nl-NL>
-4.6:
-Nieuw: Placeholder toegevoegd voor bestellingen zonder klantnaam.
+4.7:
+<b>Statistieken:</b> Je grafiek met statistieken komt nu overeen met wat je ziet in wp-admin. Zorg dat je de update uitvoert, want je hebt WooCommerce 4.0 of hoger nodig.
 
-Fix: Er zijn nu meerdere nieuwe bestellingsmeldingen beschikbaar.
-
-Aanpassingen: Bijgewerkte achtergrondkleur voor de inlogweergaven en verplaatsing van de privacyverklaring voor gebruikers in Californië naar het scherm 'Over de app'.
+<b>Crash-fix:</b> Wanneer grote hoeveelheden gegevens werden overgedragen, vonden er crashes plaats. We hebben dit opgelost op toestellen met Android P en hoger dankzij een grotere buffer.
 </nl-NL>
 <pt-BR>
-4.6:
-Novidade: espaço reservado para pedidos sem o nome do cliente.
+4.7:
+<b>Estatísticas:</b> agora seu gráfico de estatísticas corresponde ao que é exibido no Painel WP Admin. É necessário atualizar o WooCommerce para a versão 4.0 ou superior.
 
-Correção: várias notificações de novo pedido agora podem ser visualizadas.
-
-Ajustes: cor de fundo das visualizações de login atualizada e aviso de privacidade referente a usuários residentes da Califórnia movido para a tela "Sobre o app".
+<b>Correção de falhas:</b> estavam ocorrendo falhas na transferência de um número grande de dados. Isso já foi corrigido para dispositivos com o Android P e superior com um buffer maior.
 </pt-BR>
 <ru-RU>
-4.6:
-Новинка: в заказы без имени клиента добавлен заполнитель.
+4.7:
+<b>Статистика:</b> График статистики теперь совпадает с тем, что используется в wp-admin. Для этого требуется WooCommerce 4.0 или более поздней версии. Не забудьте обновить приложение.
 
-Исправление: теперь может отображаться несколько уведомлений о новых заказах.
-
-Настройки: изменен цвет фона страницы входа, а уведомление о конфиденциальности для жителей Калифорнии перемещено на экран «О приложении».
+<b>Исправление ошибок:</b> При переносе больших объемов данных происходили ошибки. Мы исправили эти ошибки на устройствах Android P и более поздних версий, увеличив буфер.
 </ru-RU>
-<sv-SE>
-4.6:
-Nytt: Lade till platshållare för ordrar som saknar ett kundnamn.
-
-Korrigering: flera nya ordermeddelanden kan nu visas.
-
-Justeringar: uppdaterade bakgrundsfärgen för inloggningsvyer och flyttade sekretessmeddelande för CA-användare till Om appen-skärmen.
-</sv-SE>
 <tr-TR>
-4,6:
-Yeni: Müşteri adının eksik olduğu siparişler için yer tutucu eklendi.
+4.7:
+<b>İstatistikler:</b> İstatistik grafiğiniz artık wp-admin'de gördüklerinizle aynı olacak. WooCommerce 4.0 veya üstünü çalıştırmanız gerektiğinden güncelleme yaptığınızdan emin olun.
 
-Düzeltme: Birden çok yeni sipariş bildirimi artık görüntülenebilir.
-
-Ayarlar: Oturum açma görünümlerinin arka plan rengi güncellendi ve CA kullanıcıları için gizlilik bildirimi "Uygulama Hakkında" ekranına taşındı.
+<b>Kilitlenmeyle İlgili Düzeltme:</b> Büyük miktarda veri aktarılırken kilitlenmeler yaşanıyordu. Daha büyük bir arabellekle, Android P ve daha yeni sürümleri çalıştıran cihazlarda bu sorun düzeltildi.
 </tr-TR>
 <zh-CN>
-4.6：
-新增：为缺少客户姓名的订单添加了占位符。
+4.7：
+<b>统计数据：</b>现在，您的统计数据图将与您在 wp-admin 中看到的信息相符。 当您需要运行 WooCommerce 4.0 或更高版本时，请务必进行更新。
 
-修复：现在可以查看多个新订单通知。
-
-调整：更新了登录视图的背景颜色，并将加州用户的隐私声明移至“关于应用程序”屏幕。
+<b>崩溃问题修复：</b>之前，在传输大量数据时，系统会崩溃。 我们在运行具有较大缓冲区的 Android P 及更高版本操作系统的设备上修复了此类问题。
 </zh-CN>
 <zh-TW>
-4.6：
-新功能：為缺少客戶姓名的訂單新增預留位置。
+4.7：
+<b>統計資料：</b>現在你的統計資料圖表資訊會與 wp-admin 中顯示資訊相符。 當你需要執行 WooCommerce 4.0 以上版本時，請務必更新。
 
-修正：現在可以查看多個新訂單通知。
-
-調整：更新登入檢視的背景顏色，並將加州使用者的隱私權聲明移至「關於應用程式」畫面。
+<b>當機修正：</b>過去轉移大量資料時會發生當機問題。 我們已改用更大的緩衝區，執行 Android P 以上版本的裝置已不會再出現此問題。
 </zh-TW>
 <en-US>
-4.6:
-New: Added placeholder for orders missing a customer’s name.
+4.7:
+<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.
 
-Fix: Multiple new order notifications are now viewable.
-
-Adjustments: Updated background color of login views and moved privacy notice for CA users to “About App” screen.
+<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.
 </en-US>
