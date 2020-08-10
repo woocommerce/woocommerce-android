@@ -12,5 +12,15 @@ class RatingBarViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent,
         val propertyView = itemView as WCProductPropertyView
         propertyView.show(LinearLayout.VERTICAL, context.getString(item.title), item.value, item.icon)
         propertyView.setRating(item.rating)
+
+        if (item.onClick != null) {
+            item.onClick.let { onClick ->
+                propertyView.setClickListener {
+                    onClick()
+                }
+            }
+        } else {
+            propertyView.removeClickListener()
+        }
     }
 }

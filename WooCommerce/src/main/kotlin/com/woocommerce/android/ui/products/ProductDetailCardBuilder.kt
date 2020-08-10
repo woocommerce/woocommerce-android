@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
@@ -457,7 +458,11 @@ class ProductDetailCardBuilder(
                 resources.getString(R.string.product_reviews_count, ratingCount),
                 ratingCount.toFloat(),
                 R.drawable.ic_reviews
-            )
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductReviews(this.remoteId)
+                )
+            }
         } else {
             null
         }
