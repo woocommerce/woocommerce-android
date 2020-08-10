@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRICING
@@ -88,6 +89,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.price(),
                 product.productType(),
+                product.productReviews(),
                 product.inventory(),
                 product.shipping(),
                 product.categories(),
@@ -102,6 +104,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productType(),
+                product.productReviews(),
                 product.inventory(),
                 product.categories(),
                 product.tags(),
@@ -116,6 +119,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.price(),
                 product.productType(),
+                product.productReviews(),
                 product.externalLink(),
                 product.inventory(),
                 product.categories(),
@@ -130,6 +134,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productType(),
+                product.productReviews(),
                 product.variations(),
                 product.categories(),
                 product.tags(),
@@ -439,6 +444,20 @@ class ProductDetailCardBuilder(
                     Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
                 )
             }
+        } else {
+            null
+        }
+    }
+
+    private fun Product.productReviews(): ProductProperty? {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && this.reviewsAllowed) {
+            val ratingCount = this.ratingCount
+            RatingBar(
+                R.string.product_reviews,
+                resources.getString(R.string.product_reviews_count, ratingCount),
+                ratingCount.toFloat(),
+                R.drawable.ic_reviews
+            )
         } else {
             null
         }
