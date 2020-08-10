@@ -26,6 +26,7 @@ allprojects {
         maven {
             url 'http://www.idescout.com/maven/repo/'
         }
+        maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
     }
 
     task checkstyle(type: Checkstyle) {
