@@ -30,6 +30,9 @@ SUPPORTED_LOCALES = [
   { glotpress: "zh-tw", google_play: "zh-TW",  promo_config: {} },
 ].freeze
 
+main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
+update_strings_path = "./fastlane/resources/values/"
+
 ########################################################################
 # Release Lanes
 ########################################################################
@@ -60,10 +63,29 @@ SUPPORTED_LOCALES = [
 
     localize_libs()
     send_strings_for_translation()
-    android_tag_build()
     get_prs_list(repository:GHHELPER_REPO, start_tag:"#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
+    
   end
 
+  #####################################################################################
+  # complete_code_freeze
+  # -----------------------------------------------------------------------------------
+  # This lane executes the last steps planned on code freeze
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane complete_code_freeze [skip_confirm:<skip confirm>]
+  #
+  # Example:
+  # bundle exec fastlane complete_code_freeze
+  # bundle exec fastlane complete_code_freeze skip_confirm:true
+  #####################################################################################
+  desc "Creates a new release branch from the current develop"
+  lane :complete_code_freeze do | options |
+    # TODO: We should probably add a precheck like we do on iOS to make sure 
+    # we're on the right branch and the repo is clean.
+    android_tag_build()
+  end
+  
 #####################################################################################
 # update_appstore_strings
 # -----------------------------------------------------------------------------------
@@ -337,9 +359,6 @@ end
 ########################################################################
 # Helper Lanes
 ########################################################################
-main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
-update_strings_path = "./fastlane/resources/values/"
-
 desc "Get a list of pull request from `start_tag` to the current state"
 lane :get_pullrequests_list do | options |
   get_prs_list(repository:GHHELPER_REPO, start_tag:"#{options[:start_tag]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
