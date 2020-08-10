@@ -606,6 +606,8 @@
     <string name="product_add_tag_dialog_title">Adding tag</string>
     <string name="product_add_tag_error">Error occurred when adding tags</string>
     <string name="product_type_edit">Change product type</string>
+    <string name="grouped_products">Grouped products</string>
+    <string name="grouped_products_count">%d products</string>
     <!--
         Product Add more details Bottom sheet
     -->

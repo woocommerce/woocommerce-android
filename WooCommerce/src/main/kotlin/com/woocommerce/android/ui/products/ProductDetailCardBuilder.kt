@@ -104,6 +104,7 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                product.groupedProducts(),
                 product.productType(),
                 product.productReviews(),
                 product.inventory(),
@@ -464,6 +465,19 @@ class ProductDetailCardBuilder(
                     Stat.PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED
                 )
             }
+        } else {
+            null
+        }
+    }
+
+    private fun Product.groupedProducts(): ProductProperty? {
+        val groupedProductsSize = this.groupedProductIds.size
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && groupedProductsSize > 0) {
+            ComplexProperty(
+                R.string.grouped_products,
+                resources.getString(R.string.grouped_products_count, groupedProductsSize),
+                R.drawable.ic_widgets
+            )
         } else {
             null
         }
