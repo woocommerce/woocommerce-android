@@ -434,9 +434,9 @@ class ProductDetailCardBuilder(
                 resources.getString(R.string.product_detail_product_type_hint, productType),
                 R.drawable.ic_gridicons_product
             ) {
-                // TODO: add tracking event
                 viewModel.onEditProductCardClicked(
-                    ViewProductTypes(this.remoteId)
+                    ViewProductTypes(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
                 )
             }
         } else {
