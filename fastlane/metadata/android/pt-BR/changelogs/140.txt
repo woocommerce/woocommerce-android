@@ -1,6 +1,0 @@
-4.6:
-Novidade: espaço reservado para pedidos sem o nome do cliente.
-
-Correção: várias notificações de novo pedido agora podem ser visualizadas.
-
-Ajustes: cor de fundo das visualizações de login atualizada e aviso de privacidade referente a usuários residentes da Califórnia movido para a tela "Sobre o app".
