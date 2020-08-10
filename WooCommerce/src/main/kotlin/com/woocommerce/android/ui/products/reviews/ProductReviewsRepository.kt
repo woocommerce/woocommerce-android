@@ -94,7 +94,7 @@ class ProductReviewsRepository @Inject constructor(
             isFetchingProductReviews = false
             if (event.isError) {
                 AnalyticsTracker.track(
-                    Stat.REVIEWS_LOAD_FAILED, mapOf(
+                    Stat.PRODUCT_REVIEWS_LOAD_FAILED, mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
                     AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
@@ -105,7 +105,7 @@ class ProductReviewsRepository @Inject constructor(
                 continuationReviews?.resume(false)
             } else {
                 AnalyticsTracker.track(
-                    Stat.REVIEWS_LOADED, mapOf(
+                    Stat.PRODUCT_REVIEWS_LOADED, mapOf(
                     AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore))
                 isLoadingMore = false
                 canLoadMore = event.canLoadMore

@@ -460,7 +460,8 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_reviews
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewProductReviews(this.remoteId)
+                    ViewProductReviews(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED
                 )
             }
         } else {

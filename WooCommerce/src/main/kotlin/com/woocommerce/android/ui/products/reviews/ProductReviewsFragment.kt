@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
@@ -78,7 +80,7 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = reviewsList
             setOnRefreshListener {
-                // TODO: add tracking event when product reviews are refreshed
+                AnalyticsTracker.track(Stat.PRODUCT_REVIEWS_PULLED_TO_REFRESH)
                 viewModel.refreshProductReviews()
             }
         }
