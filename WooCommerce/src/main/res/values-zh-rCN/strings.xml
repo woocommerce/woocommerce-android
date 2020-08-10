@@ -94,7 +94,6 @@ Language: zh_CN
     <string name="product_short_description_empty">产品摘要</string>
     <string name="product_short_description">简短说明</string>
     <string name="my_store_stats_availability_message">我们即将面向采用 WooCommerce 4.0 或安装了 WooCommerce Admin 插件的商店推出改进的统计功能</string>
-    <string name="my_store_stats_reverted_message">我们已经对我们的分析功能进行了改进。升级至 WooCommerce 4.0 或更高版本，或者安装 WooCommerce Admin 插件，以便能在 2020 年 7 月 1 日后继续查看统计信息。</string>
     <string name="my_store_stats_reverted_title">升级以继续查看统计信息</string>
     <string name="product_pricing_update_sale_price_error">售价必须低于正常价格</string>
     <string name="product_schedule_remove_end_date_link_label">移除结束日期</string>
@@ -266,7 +265,6 @@ Language: zh_CN
     <string name="order_refunds_available_for_refund">%s 可用于退款</string>
     <string name="orderdetail_issue_refund_button">发放退款</string>
     <string name="orderdetail_refund_detail">%1$s（通过 %2$s）</string>
-    <string name="settings_enable_v4_stats_message">试用新的统计页面（适用于\nWooCommerce Admin 插件）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
     <string name="beta_features">测试版功能</string>
     <string name="order_begin_fulfillment">开始履行</string>

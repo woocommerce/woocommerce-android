@@ -94,7 +94,6 @@ Language: ja_JP
     <string name="product_short_description_empty">商品についての簡単な概要</string>
     <string name="product_short_description">簡単な説明</string>
     <string name="my_store_stats_availability_message">WooCommerce 4.0 のストアまたは WooCommerce Admin プラグインがインストールされているストアに、強化された統計機能を提供開始します</string>
-    <string name="my_store_stats_reverted_message">アナリティクスの改善を提供開始しました。2020年7月1日以降も統計情報を引き続き表示するには、WooCommerce 4.0以降にアップグレードするか、WooCommerce Admin プラグインをインストールしてください。</string>
     <string name="my_store_stats_reverted_title">統計情報を引き続き表示するにはアップグレードしてください</string>
     <string name="product_pricing_update_sale_price_error">セール価格は標準価格未満である必要があります</string>
     <string name="product_schedule_remove_end_date_link_label">終了日を削除</string>
@@ -266,7 +265,6 @@ Language: ja_JP
     <string name="order_refunds_available_for_refund">%sが返金可能</string>
     <string name="orderdetail_issue_refund_button">返金を実行</string>
     <string name="orderdetail_refund_detail">%2$s により %1$s</string>
-    <string name="settings_enable_v4_stats_message">WooCommerce Admin プラグインで利用可能な\n新しい統計機能をお試しください</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
     <string name="beta_features">ベータ版の機能</string>
     <string name="order_begin_fulfillment">フルフィルメントを開始</string>

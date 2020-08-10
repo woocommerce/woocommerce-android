@@ -94,7 +94,6 @@ Language: ko_KR
     <string name="product_short_description_empty">간단한 제품 요약</string>
     <string name="product_short_description">간단한 설명</string>
     <string name="my_store_stats_availability_message">WooCommerce 4.0을 통한 스토어 또는 WooCommerce 관리자 플러그인이 설치된 스토어의 통계 개선 사항을 공개하고 있습니다.</string>
-    <string name="my_store_stats_reverted_message">분석 개선 사항을 공개했습니다. 2020년 7월 1일 이후 계속해서 통계를 확인하려면 WooCommerce 4.0 이상으로 업그레이드하거나 WooCommerce 관리자 플러그인을 설치하세요.</string>
     <string name="my_store_stats_reverted_title">업그레이드하여 계속 통계 확인</string>
     <string name="product_pricing_update_sale_price_error">할인 가격은 정가보다 낮아야 합니다.</string>
     <string name="product_schedule_remove_end_date_link_label">종료 날짜 제거</string>
@@ -266,7 +265,6 @@ Language: ko_KR
     <string name="order_refunds_available_for_refund">%s 환불 가능</string>
     <string name="orderdetail_issue_refund_button">환불 발행</string>
     <string name="orderdetail_refund_detail">%2$s을(를) 통한 %1$s</string>
-    <string name="settings_enable_v4_stats_message">WooCommerce 관리자 플러그인으로\n사용할 수 있는 새 통계를 확인해 보세요.</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>
     <string name="order_begin_fulfillment">처리 시작</string>

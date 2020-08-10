@@ -436,7 +436,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun hideEmptyView() {
-        empty_view.hide()
+        empty_view?.hide()
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {

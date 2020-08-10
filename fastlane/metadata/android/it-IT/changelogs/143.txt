@@ -1,0 +1,4 @@
+4.7:
+<b>Statistiche:</b> il grafico delle tue statistiche ora corrisponde a ciò che visualizzi in wp-admin. Assicurati di effettuare l'aggiornamento perché dovrai utilizzare WooCommerce 4.0 o versioni superiori.
+
+<b>Correzione di un arresto anomalo:</b> quando veniva trasferita una grande quantità di dati avvenivano arresti anomali. Abbiamo corretto questo problema sui dispositivi su cui è in esecuzione Android P e versioni successive con un buffer maggiore.
