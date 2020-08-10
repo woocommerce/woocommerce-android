@@ -429,6 +429,7 @@
         Product Reviews List
     -->
     <string name="review_list_item_title">%1$s left a review on %2$s</string>
+    <string name="product_review_list_item_title">%1$s left a review</string>
     <string name="review_moderation_undo">Review marked as %1$s</string>
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
