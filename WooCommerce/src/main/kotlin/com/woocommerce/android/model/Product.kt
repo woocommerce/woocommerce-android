@@ -9,7 +9,6 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
-import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isNotEqualTo

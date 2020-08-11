@@ -107,7 +107,6 @@ sealed class ProductProperty(val type: Type) {
         val content: String = ""
     ) : ProductProperty(WARNING)
 
-
     open fun isNotEmpty(): Boolean {
         return true
     }

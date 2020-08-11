@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.products.variations
 
 import android.content.Context
-import android.graphics.Typeface.BOLD
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
-import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener

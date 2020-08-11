@@ -28,7 +28,6 @@ class SwitchViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.
         itemView.setOnClickListener {
             switch.toggle()
         }
-        
         if (item.onStateChanged != null) {
             switch.setOnCheckedChangeListener { _, isOn ->
                 (item.onStateChanged)(isOn)
