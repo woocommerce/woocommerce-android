@@ -1,3 +1,6 @@
+4.9
+-----
+ 
 4.8
 -----
 * Added a fix to display the Add shipment tracking section only if the Shipment Tracking plugin is available
