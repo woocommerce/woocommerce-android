@@ -6,7 +6,6 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
-import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.roundError
@@ -47,9 +46,6 @@ data class ProductVariation(
     override val height: Float,
     override val weight: Float
 ) : Parcelable, IProduct {
-    val isOnSale: Boolean
-        get() = salePrice.isSet()
-
     override fun equals(other: Any?): Boolean {
         val variation = other as? ProductVariation
         return variation?.let {
@@ -58,7 +54,6 @@ data class ProductVariation(
                 image?.id == variation.image?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
-                isOnSale == variation.isOnSale &&
                 isSaleScheduled == variation.isSaleScheduled &&
                 saleEndDateGmt == variation.saleEndDateGmt &&
                 saleStartDateGmt == variation.saleStartDateGmt &&
@@ -111,7 +106,6 @@ data class ProductVariation(
                 it.dateOnSaleFromGmt = ""
                 it.dateOnSaleToGmt = ""
             }
-            it.onSale = isOnSale
             it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
             it.stockQuantity = stockQuantity
             it.purchasable = isPurchasable
