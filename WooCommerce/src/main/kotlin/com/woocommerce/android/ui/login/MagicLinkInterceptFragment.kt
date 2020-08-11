@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -75,7 +76,7 @@ class MagicLinkInterceptFragment : Fragment() {
 
         retryButton = view.findViewById(R.id.login_open_email_client)
         retryButton?.text = getString(R.string.retry)
-        showRetryButton(false)
+        retryButton?.isVisible = false
         retryButton?.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED)
             viewModel.fetchAccountInfo()
@@ -116,8 +117,8 @@ class MagicLinkInterceptFragment : Fragment() {
             }
         })
 
-        viewModel.showRetryOption.observe(viewLifecycleOwner, Observer {
-            showRetryButton(it)
+        viewModel.showRetryOption.observe(viewLifecycleOwner, Observer { isVisible ->
+            retryButton?.isVisible = isVisible
         })
     }
 
@@ -154,9 +155,5 @@ class MagicLinkInterceptFragment : Fragment() {
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
         activity?.finish()
-    }
-
-    private fun showRetryButton(show: Boolean) {
-        retryButton?.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

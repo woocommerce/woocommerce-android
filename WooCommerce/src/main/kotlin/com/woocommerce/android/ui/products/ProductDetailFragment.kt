@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -118,8 +119,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
-            new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) {
-                productDetail_addMoreContainer.visibility = if (it) View.VISIBLE else View.GONE
+            new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) { isVisible ->
+                productDetail_addMoreContainer.isVisible = isVisible
             }
         }
 

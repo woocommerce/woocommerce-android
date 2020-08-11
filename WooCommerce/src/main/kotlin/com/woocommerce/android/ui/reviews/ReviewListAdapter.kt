@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -355,7 +356,7 @@ class ReviewListAdapter(
             itemHolder.title.text = context.getString(
                     R.string.review_list_item_title, review.reviewerName, review.product?.name?.fastStripHtml())
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
-            itemHolder.divider.visibility = if (position < getContentItemsTotal() - 1) View.VISIBLE else View.GONE
+            itemHolder.divider.isVisible = position < getContentItemsTotal() - 1
 
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review)
