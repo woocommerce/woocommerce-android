@@ -373,9 +373,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             true -> {
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
                     showButton()
-                    addProductButton.setOnClickListener {
-                        showProductAddTypes()
-                    }
+                    addProductButton.setOnClickListener { showProductAddTypes() }
                 } else {
                     hideButton()
                 }
