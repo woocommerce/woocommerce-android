@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
@@ -189,6 +190,12 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigate(action)
 
                 ProductCategoriesFragmentDirections
+            }
+
+            is ViewProductTypes -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentMod
 import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductTagsFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductTypesBottomSheetFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.VariationDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.VariationListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
@@ -84,6 +85,7 @@ import dagger.android.ContributesAndroidInjector
     ParentCategoryListFragmentModule::class,
     ProductTagsFragmentModule::class,
     ProductDetailBottomSheetFragmentModule::class,
+    ProductTypesBottomSheetFragmentModule::class,
     ProductAddTypeBottomSheetFragmentModule::class
 ])
 object ProductsModule {
@@ -270,9 +272,16 @@ object ProductsModule {
     }
 
     @Module
+<<<<<<< HEAD
     internal abstract class ProductAddTypeBottomSheetFragmentModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductAddTypeBottomSheetModule::class])
         abstract fun productAddTypeFragment(): ProductAddTypeBottomSheetFragment
+=======
+    internal abstract class ProductTypesBottomSheetFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductTypesBottomSheetModule::class])
+        abstract fun productTypesBottomSheetFragment(): ProductTypesBottomSheetFragment
+>>>>>>> develop
     }
 }
