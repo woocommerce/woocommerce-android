@@ -8,6 +8,7 @@ import com.woocommerce.android.BuildConfig
  */
 enum class FeatureFlag {
     PRODUCT_RELEASE_M3,
+    PRODUCT_RELEASE_M4,
     SHIPPING_LABELS_M1,
     APP_FEEDBACK,
     DB_DOWNGRADE;
@@ -15,7 +16,7 @@ enum class FeatureFlag {
         return when (this) {
             // This feature will live switched on from the
             // setting screen. i.e. check AppPrefs.isProductsFeatureEnabled() method
-            PRODUCT_RELEASE_M3, APP_FEEDBACK, SHIPPING_LABELS_M1 -> BuildConfig.DEBUG
+            PRODUCT_RELEASE_M3, PRODUCT_RELEASE_M4, APP_FEEDBACK, SHIPPING_LABELS_M1 -> BuildConfig.DEBUG
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
