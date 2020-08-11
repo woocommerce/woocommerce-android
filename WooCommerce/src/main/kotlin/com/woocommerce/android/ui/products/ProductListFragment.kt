@@ -38,6 +38,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
@@ -367,12 +368,15 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private fun showAddProductButton(show: Boolean) {
         fun showButton() = run { addProductButton.visibility = View.VISIBLE }
         fun hideButton() = run { addProductButton.visibility = View.GONE }
+        fun showProductAddTypes() {
+            (activity as? MainNavigationRouter)?.showProductAddBottomSheet(remoteProductId)
+        }
         when (show) {
             true -> {
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
                     showButton()
                     addProductButton.setOnClickListener {
-                        Toast.makeText(context, "Add Product click", Toast.LENGTH_SHORT).show()
+                        showProductAddTypes()
                     }
                 } else {
                     hideButton()

@@ -195,7 +195,6 @@
     <action
         android:id="@+id/action_productCategoriesFragment_to_addProductCategoryFragment"
         app:destination="@id/nav_graph_add_product_category" />
-
     <action
         android:id="@+id/action_global_productImageViewerFragment"
         app:destination="@id/productImageViewerFragment"
@@ -246,4 +245,5 @@
             android:name="variation"
             app:argType="com.woocommerce.android.model.ProductVariation" />
     </fragment>
+
 </navigation>

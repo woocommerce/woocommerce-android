@@ -173,8 +173,7 @@ class ProductNavigator @Inject constructor() {
             }
 
             is AddProductCategory -> {
-                val action = ProductCategoriesFragmentDirections
-                    .actionProductCategoriesFragmentToAddProductCategoryFragment()
+                val action = ProductCategoriesFragmentDirections.actionProductCategoriesFragmentToAddProductCategoryFragment2()
                 fragment.findNavController().navigate(action)
             }
 
@@ -188,6 +187,8 @@ class ProductNavigator @Inject constructor() {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductDetailBottomSheetFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
+
+                ProductCategoriesFragmentDirections
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

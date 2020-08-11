@@ -771,6 +771,11 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
+    override fun showProductAddBottomSheet() {
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment()
+        navController.navigateSafely(action)
+    }
+
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
         if (bottomNavView.currentPosition != ORDERS) {
             bottomNavView.currentPosition = ORDERS

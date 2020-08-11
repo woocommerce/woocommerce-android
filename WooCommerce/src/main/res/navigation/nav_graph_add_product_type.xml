@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_add_product_type"
+    app:startDestination="@id/productAddTypeBottomSheetFragment">
+
+    <fragment
+        android:id="@+id/productAddTypeBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ProductAddTypeBottomSheetFragment"
+        android:label="ProductAddTypeBottomSheetFragment"
+        tools:layout="@layout/dialog_product_add_type_bottom_sheet_list"
+        />
+</navigation>

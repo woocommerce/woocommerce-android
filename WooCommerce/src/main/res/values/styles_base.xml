@@ -162,6 +162,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_margin">@dimen/minor_00</item>
     </style>
 
+    <style name="Woo.Card.Body.NoMargins" parent="Woo.Card.Body">
+        <item name="android:layout_marginStart">@dimen/minor_00</item>
+        <item name="android:layout_marginEnd">@dimen/minor_00</item>
+        <item name="android:layout_marginTop">@dimen/minor_00</item>
+        <item name="android:layout_marginBottom">@dimen/minor_00</item>
+    </style>
+
     <!--
         TextView Styles
     -->

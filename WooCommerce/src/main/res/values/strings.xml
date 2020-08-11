@@ -902,6 +902,17 @@
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
 
+    <!-- Product add -->
+    <string name="product_add_type_list_header">Select a product type</string>
+    <string name="product_add_type_simple">Simple product</string>
+    <string name="product_add_type_variable">Variable product</string>
+    <string name="product_add_type_grouped">Grouped product</string>
+    <string name="product_add_type_external">External product</string>
+    <string name="product_add_type_simple_desc">A unique item to sell</string>
+    <string name="product_add_type_variable_desc">A product with variations like color or size</string>
+    <string name="product_add_type_grouped_desc">A collection of related products</string>
+    <string name="product_add_type_external_desc">Link a product to an external website</string>
+
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
     <string name="feedback_request_make_better">Could be better</string>
