@@ -1,3 +1,3 @@
-<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.
-
-<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.
+* Added a fix to display the Add shipment tracking section only if the Shipment Tracking plugin is available
+* Fixed a rare crash caused by attempting to hide a non-active view
+ 
