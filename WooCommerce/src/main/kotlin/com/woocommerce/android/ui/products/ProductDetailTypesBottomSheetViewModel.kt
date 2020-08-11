@@ -19,10 +19,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 
-interface ProductTypeBottomSheetBuilder {
-    fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem>
-}
-
 @OpenClassOnDebug
 class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,

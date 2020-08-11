@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -26,15 +28,14 @@ class ProductAddTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndro
     @Inject lateinit var viewModelFactory: ViewModelFactory
     val viewModel: ProductAddTypesBottomSheetViewModel by viewModels { viewModelFactory }
 
-    private lateinit var productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter
-
-    override fun androidInjector(): AndroidInjector<Any> {
-        return childInjector
+    private val productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter by lazy {
+        ProductTypesBottomSheetAdapter(viewModel::onProductTypeSelected)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_product_detail_bottom_sheet_list, container, false)
-    }
+    override fun androidInjector(): AndroidInjector<Any> = childInjector
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.dialog_product_detail_bottom_sheet_list, container, false)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         AndroidSupportInjection.inject(this)
@@ -49,11 +50,11 @@ class ProductAddTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndro
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        setupViews()
+    }
 
-        productDetailInfo_lblTitle.text = getString(R.string.product_type_list_header)
-        productTypesBottomSheetAdapter = ProductTypesBottomSheetAdapter(
-            viewModel::onProductTypeSelected
-        )
+    private fun setupViews() {
+        productDetailInfo_lblTitle.text = getString(string.product_type_list_header)
         productDetailInfo_optionsList.apply {
             adapter = productTypesBottomSheetAdapter
             layoutManager = LinearLayoutManager(activity)

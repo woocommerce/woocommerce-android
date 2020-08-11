@@ -368,9 +368,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private fun showAddProductButton(show: Boolean) {
         fun showButton() = run { addProductButton.visibility = View.VISIBLE }
         fun hideButton() = run { addProductButton.visibility = View.GONE }
-        fun showProductAddTypes() {
-            (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
-        }
+        fun showProductAddTypes() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
         when (show) {
             true -> {
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {

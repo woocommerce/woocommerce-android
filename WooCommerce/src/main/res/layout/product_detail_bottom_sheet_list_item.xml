@@ -18,6 +18,7 @@
         android:contentDescription="@string/product_type_edit"
         android:src="@drawable/ic_product"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible"/>
 
